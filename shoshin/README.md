@@ -60,3 +60,9 @@ c = 0
 #
 P_s1', P_s2', c = Physics (P_s1, P_s2, O_s1, O_s2)
 ```
+
+#### Features / directions to be patiently pursued and announced
+- random variables and distributions availabie in SE
+- programming the `Percept()` function directly, which takes raw perceptibles as input and returns custom perceptibles / features as output
+- 
+
