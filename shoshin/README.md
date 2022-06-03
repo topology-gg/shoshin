@@ -64,5 +64,5 @@ P_s1', P_s2', c = Physics (P_s1, P_s2, O_s1, O_s2)
 #### Features / directions to be patiently pursued and announced
 - random variables and distributions availabie in SE
 - programming the `Percept()` function directly, which takes raw perceptibles as input and returns custom perceptibles / features as output
-- 
-
+- tokenomics to drive innovation on meta across all asymmetric factions/characters (see Notion)
+- standardizing Object and Agent such that other onchain reality can choose to be compatible with Object standard, thus allowing NPC (compatible to Agent standard) to travel across realities, realizing AI interoperability.
