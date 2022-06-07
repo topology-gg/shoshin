@@ -85,24 +85,56 @@ async def block_info_mock(starknet):
 @pytest.mark.asyncio
 async def test (account_factory, starknet, block_info_mock):
 
-    # accounts = account_factory
+    # Deploy contract
     contract = await starknet.deploy (source = 'contracts/engine.cairo')
     LOGGER.info (f'> Deployed engine.cairo.')
 
+    # Loop the baby
     ret = await contract.loop(
-        len = 24
+        len = 24 * 5 ## 5 seconds, 24 fps
     ).call()
 
-    LOGGER.info (f'> Record: (ignoring location; showing only object state)')
-    agent_0_record = ret.main_call_events[0].arr
-    agent_0_record = [ {'state' : r.object_state, 'loc' : [r.location.x, r.location.y]} for r in agent_0_record]
-    for e in agent_0_record:
-        LOGGER.info (f"  .. object state = {e['state']}")
-
-    # Assemble record
+    # Organize events into record dict
+    record = ret.main_call_events[0].arr
     record = {
-        'agent_0' : agent_0_record
+        'agent_0' : [ {
+            'object_state' : r.agent_0.object_state,
+            'pos' : [r.agent_0.character_state.pos.x, r.agent_0.character_state.pos.y],
+            'hitboxes' : {
+                'action' : {
+                    'origin' : [r.agent_0.hitboxes.action.origin.x, r.agent_0.hitboxes.action.origin.y],
+                    'dimension' : [r.agent_0.hitboxes.action.dimension.x, r.agent_0.hitboxes.action.dimension.y]
+                },
+                'body' : {
+                    'origin' : [r.agent_0.hitboxes.body.origin.x, r.agent_0.hitboxes.body.origin.y],
+                    'dimension' : [r.agent_0.hitboxes.body.dimension.x, r.agent_0.hitboxes.body.dimension.y]
+                }
+            }
+        } for r in record ],
+        'agent_1' : [ {
+            'object_state' : r.agent_1.object_state,
+            'pos' : [r.agent_1.character_state.pos.x, r.agent_1.character_state.pos.y],
+            'hitboxes' : {
+                'action' : {
+                    'origin' : [r.agent_1.hitboxes.action.origin.x, r.agent_1.hitboxes.action.origin.y],
+                    'dimension' : [r.agent_1.hitboxes.action.dimension.x, r.agent_1.hitboxes.action.dimension.y]
+                },
+                'body' : {
+                    'origin' : [r.agent_1.hitboxes.body.origin.x, r.agent_1.hitboxes.body.origin.y],
+                    'dimension' : [r.agent_1.hitboxes.body.dimension.x, r.agent_1.hitboxes.body.dimension.y]
+                }
+            }
+        } for r in record]
     }
+
+    # Debug log
+    for i in [0,1]:
+        LOGGER.info (f'> Agent_{i} records:')
+        for r in record[f'agent_{i}']:
+            LOGGER.info (f"  .. {r}")
+        LOGGER.info ('')
+
+    # Export record
     json_string = json.dumps(record)
-    with open('test_engine.json', 'w') as f:
+    with open('artifacts/test_engine.json', 'w') as f:
         json.dump (json_string, f)

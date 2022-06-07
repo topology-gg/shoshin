@@ -3,20 +3,22 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from contracts.constants import (
-    ns_action, ns_object_state,
-    Vec2_fp, AgentFrameState
+    ns_action, ns_stimulus, ns_object_state
 )
 
 func _compute_object_next_state {range_check_ptr} (
         state : felt,
+        stimulus : felt,
         agent_action : felt
     ) -> (state_nxt : felt):
 
     ## what's the generated code pattern for cost-efficient state machine representation?
 
     if state == ns_object_state.IDLE_0:
-        # interrupt by environment
-        # return ()
+        # interrupt by stimulus - priority > agent action
+        if stimulus == ns_stimulus.HIT_BY_PUNCH:
+            return (ns_object_state.HIT_0)
+        end
 
         # interrupt by agent action
         if agent_action == ns_action.PUNCH:
@@ -28,6 +30,10 @@ func _compute_object_next_state {range_check_ptr} (
     end
 
     if state == ns_object_state.IDLE_1:
+        # interrupt by stimulus - priority > agent action
+        if stimulus == ns_stimulus.HIT_BY_PUNCH:
+            return (ns_object_state.HIT_0)
+        end
 
         # interrupt by agent action
         if agent_action == ns_action.PUNCH:
@@ -39,6 +45,10 @@ func _compute_object_next_state {range_check_ptr} (
     end
 
     if state == ns_object_state.IDLE_2:
+        # interrupt by stimulus - priority > agent action
+        if stimulus == ns_stimulus.HIT_BY_PUNCH:
+            return (ns_object_state.HIT_0)
+        end
 
         # interrupt by agent action
         if agent_action == ns_action.PUNCH:
@@ -50,6 +60,100 @@ func _compute_object_next_state {range_check_ptr} (
     end
 
     if state == ns_object_state.IDLE_3:
+        # interrupt by stimulus - priority > agent action
+        if stimulus == ns_stimulus.HIT_BY_PUNCH:
+            return (ns_object_state.HIT_0)
+        end
+
+        # interrupt by agent action
+        if agent_action == ns_action.PUNCH:
+            return (ns_object_state.PUNCH_STA0)
+        end
+
+        # otherwise
+        return (ns_object_state.IDLE_4)
+    end
+
+    if state == ns_object_state.IDLE_4:
+        # interrupt by stimulus - priority > agent action
+        if stimulus == ns_stimulus.HIT_BY_PUNCH:
+            return (ns_object_state.HIT_0)
+        end
+
+        # interrupt by agent action
+        if agent_action == ns_action.PUNCH:
+            return (ns_object_state.PUNCH_STA0)
+        end
+
+        # otherwise
+        return (ns_object_state.IDLE_5)
+    end
+
+    if state == ns_object_state.IDLE_5:
+        # interrupt by stimulus - priority > agent action
+        if stimulus == ns_stimulus.HIT_BY_PUNCH:
+            return (ns_object_state.HIT_0)
+        end
+
+        # interrupt by agent action
+        if agent_action == ns_action.PUNCH:
+            return (ns_object_state.PUNCH_STA0)
+        end
+
+        # otherwise
+        return (ns_object_state.IDLE_6)
+    end
+
+    if state == ns_object_state.IDLE_6:
+        # interrupt by stimulus - priority > agent action
+        if stimulus == ns_stimulus.HIT_BY_PUNCH:
+            return (ns_object_state.HIT_0)
+        end
+
+        # interrupt by agent action
+        if agent_action == ns_action.PUNCH:
+            return (ns_object_state.PUNCH_STA0)
+        end
+
+        # otherwise
+        return (ns_object_state.IDLE_7)
+    end
+
+    if state == ns_object_state.IDLE_7:
+        # interrupt by stimulus - priority > agent action
+        if stimulus == ns_stimulus.HIT_BY_PUNCH:
+            return (ns_object_state.HIT_0)
+        end
+
+        # interrupt by agent action
+        if agent_action == ns_action.PUNCH:
+            return (ns_object_state.PUNCH_STA0)
+        end
+
+        # otherwise
+        return (ns_object_state.IDLE_8)
+    end
+
+    if state == ns_object_state.IDLE_8:
+        # interrupt by stimulus - priority > agent action
+        if stimulus == ns_stimulus.HIT_BY_PUNCH:
+            return (ns_object_state.HIT_0)
+        end
+
+        # interrupt by agent action
+        if agent_action == ns_action.PUNCH:
+            return (ns_object_state.PUNCH_STA0)
+        end
+
+        # otherwise
+        return (ns_object_state.IDLE_9)
+    end
+
+    if state == ns_object_state.IDLE_9:
+        # interrupt by stimulus - priority > agent action
+        if stimulus == ns_stimulus.HIT_BY_PUNCH:
+            return (ns_object_state.HIT_0)
+        end
 
         # interrupt by agent action
         if agent_action == ns_action.PUNCH:
@@ -88,31 +192,25 @@ func _compute_object_next_state {range_check_ptr} (
         return (ns_object_state.IDLE_0)
     end
 
+    ## Consider the case when one combos == land another hit while opponent is in hit state
+    if state == ns_object_state.HIT_0:
+        return (ns_object_state.HIT_1)
+    end
+
+    if state == ns_object_state.HIT_1:
+        return (ns_object_state.HIT_2)
+    end
+
+    if state == ns_object_state.HIT_2:
+        return (ns_object_state.HIT_3)
+    end
+
+    if state == ns_object_state.HIT_3:
+        return (ns_object_state.IDLE_0)
+    end
+
     with_attr error_message ("Input state not recognized."):
         assert 0 = 1
     end
     return (0)
 end
-
-# @event
-# func event_array (arr_len : felt, arr : AgentFrameState*):
-# end
-
-# @view
-# func trigger_event_array_emission {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} (
-#     ) -> ():
-
-#     let (arr : AgentFrameState*) = alloc ()
-#     assert arr[0] = AgentFrameState (0, Vec2_fp(0,1))
-#     assert arr[1] = AgentFrameState (0, Vec2_fp(2,3))
-#     assert arr[2] = AgentFrameState (0, Vec2_fp(4,5))
-#     assert arr[3] = AgentFrameState (0, Vec2_fp(6,7))
-#     assert arr[4] = AgentFrameState (0, Vec2_fp(8,9))
-
-#     event_array.emit (
-#         arr_len = 5,
-#         arr = arr
-#     )
-
-#     return ()
-# end
