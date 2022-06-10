@@ -26,39 +26,29 @@ Expressing the above functions in succinct notations
 - Scene physical state changes + registering collision events: $ \sum O_s + \sum P_s \rightarrow \sum P_s' + \overrightarrow{c}$
 - Encoding scene physical state into perceptibles: $ \sum P_s \rightarrow \overrightarrow{p}$
 
-### Ordering of compute events per tick, given two agents
+### Ordering of compute events per tick for agents, object states, and character physical states
 ```
-#
-# Encode physicality into perceptibles
-#
-p = Percept (P_s1, P_s2)
 
-#
-# Churn the agent state machines 
-#
-A_s1', A_a1 = Agent1 (p, A_s1)
-A_s2', A_a2 = Agent2 (p, A_s2)
+## Percept from character & environment physicality
+C_1, C_2 => P
 
-#
-# Reset perceptibles
-#
-p = 0
+## Agency
+A_i, P => A_i' , a_i
+(for all i)
 
-#
-# Churn the object state machines
-#
-O_s1' = Object1 (c, A_a1, O_s1)
-O_s2' = Object2 (c, A_a2, O_s2)
+## Reset perceptibles
+P = 0
 
-#
-# Reset collisions
-#
-c = 0
+## Object state
+O_i, a_i, S => O_i'
+(for all i)
 
-#
-# Forward physics & record collisions
-#
-P_s1', P_s2', c = Physics (P_s1, P_s2, O_s1, O_s2)
+## Reset stimuli
+S = 0
+
+## Character & environment physicality 
+Σ C_i, Σ O_i' => Σ C_i', S
+
 ```
 
 #### Features / directions to be patiently pursued and announced
