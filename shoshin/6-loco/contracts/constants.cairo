@@ -19,9 +19,13 @@ struct Stm:
 end
 
 namespace ns_scene:
-    const X_MAX = 400
-    const X_MIN = -400
-    const BIGNUM = 1000
+    const X_MAX = 500
+    const X_MIN = -500
+    const BIGNUM = 2000
+end
+
+namespace ns_env:
+    const STORM_PENALTY = 10
 end
 
 namespace ns_character_dimension:
@@ -34,6 +38,8 @@ namespace ns_character_dimension:
     const PUNCH_HITBOX_W = 112 - 64
     const PUNCH_HITBOX_H = BODY_HITBOX_H / 2
     const PUNCH_HITBOX_Y = BODY_HITBOX_H / 2
+
+    const BODY_KNOCKED_ADJUST_W = BODY_KNOCKED_LATE_HITBOX_W - BODY_HITBOX_W
 end
 
 namespace ns_action:

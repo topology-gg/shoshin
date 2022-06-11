@@ -4,7 +4,7 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math_cmp import is_le, is_not_zero
 from contracts.constants import (
-    ns_scene, ns_character_dimension, ns_stimulus, ns_object_qualifiers,
+    ns_scene, ns_character_dimension, ns_stimulus, ns_object_qualifiers, ns_env,
     Vec2, Rectangle, CharacterState, Hitboxes
 )
 from contracts.dynamics import (
@@ -56,8 +56,8 @@ func _physicality {range_check_ptr} (
     #
     # 1. Movement first pass (candidate positions)
     #
-    let (candidate_character_state_0) = _euler_forward_no_hitbox (last_character_state_0, curr_object_state_0)
-    let (candidate_character_state_1) = _euler_forward_no_hitbox (last_character_state_1, curr_object_state_1)
+    let (candidate_character_state_0) = _euler_forward_no_hitbox (last_character_state_0, curr_object_state_0, curr_object_counter_0)
+    let (candidate_character_state_1) = _euler_forward_no_hitbox (last_character_state_1, curr_object_state_1, curr_object_counter_1)
 
     #
     # 2. Create hitboxes
@@ -177,15 +177,12 @@ func _physicality {range_check_ptr} (
     ## Body clash:   body 0 against body 1 (should stop movement; not implemented in this milestone)
     let (bool_body_overlap) = _test_rectangle_overlap (hitboxes_0.body, hitboxes_1.body)
 
-    ## Enviroment clash: body 0/1 against environment blocker (floor, walls); should stop movement; not implemented in this milestone
-
-
     #
     # 4. Movement second pass, incorporating hitbox overlap (final positions)
     #
     let (
-        curr_character_state_0,
-        curr_character_state_1
+        curr_character_state_0_,
+        curr_character_state_1_
     ) = _euler_forward_consider_hitbox (
         last_character_state_0,
         candidate_character_state_0,
@@ -203,28 +200,46 @@ func _physicality {range_check_ptr} (
     # let acc_fp_1 = candidate_character_state_1.acc_fp
 
     #
-    # 5. Compute character integrity
+    # 5. Compute character integrity, considering getting hit + storm circle
     #
+    let (bool_oob_left_0)  = is_le (curr_character_state_0_.pos.x, ns_scene.X_MIN)
+    let (bool_oob_left_1)  = is_le (curr_character_state_1_.pos.x, ns_scene.X_MIN)
+    let (bool_oob_right_0) = is_le (ns_scene.X_MAX, curr_character_state_0_.pos.x)
+    let (bool_oob_right_1) = is_le (ns_scene.X_MAX, curr_character_state_1_.pos.x)
+
+    local int_0
+    local int_1
+    if bool_oob_left_0 + bool_oob_right_0 != 0:
+        assert int_0 = curr_character_state_0_.int - ns_env.STORM_PENALTY
+    else:
+        assert int_0 = curr_character_state_0_.int
+    end
+    if bool_oob_left_1 + bool_oob_right_1 != 0:
+        assert int_1 = curr_character_state_1_.int - ns_env.STORM_PENALTY
+    else:
+        assert int_1 = curr_character_state_1_.int
+    end
+
     # let int_0 = candidate_character_state_0.int - bool_agent_0_hit
     # let int_1 = candidate_character_state_1.int - bool_agent_1_hit
 
     #
     # 6. Produce charcater state
     #
-    # let curr_character_state_0 = CharacterState (
-    #     pos = pos_0,
-    #     vel_fp = vel_fp_0,
-    #     acc_fp = acc_fp_0,
-    #     dir = candidate_character_state_0.dir,
-    #     int = int_0
-    # )
-    # let curr_character_state_1 = CharacterState (
-    #     pos = pos_1,
-    #     vel_fp = vel_fp_1,
-    #     acc_fp = acc_fp_1,
-    #     dir = candidate_character_state_1.dir,
-    #     int = int_1
-    # )
+    let curr_character_state_0 = CharacterState (
+        pos    = curr_character_state_0_.pos,
+        vel_fp = curr_character_state_0_.vel_fp,
+        acc_fp = curr_character_state_0_.acc_fp,
+        dir    = curr_character_state_0_.dir,
+        int    = int_0
+    )
+    let curr_character_state_1 = CharacterState (
+        pos    = curr_character_state_1_.pos,
+        vel_fp = curr_character_state_1_.vel_fp,
+        acc_fp = curr_character_state_1_.acc_fp,
+        dir    = curr_character_state_1_.dir,
+        int    = int_1
+    )
 
     #
     # 7. Produce stimuli

@@ -14,7 +14,8 @@ from contracts.numerics import (
 
 func _euler_forward_no_hitbox {range_check_ptr} (
         character_state : CharacterState,
-        object_state : felt
+        object_state : felt,
+        object_count : felt
     ) -> (
         character_state_fwd : CharacterState,
     ):
@@ -42,6 +43,31 @@ func _euler_forward_no_hitbox {range_check_ptr} (
             assert acc_fp_x = ns_dynamics.MOVE_ACC_FP
         end
         jmp update_vel
+    end
+
+    if object_state == ns_object_state.KNOCKED:
+        if object_count == 0:
+            if character_state.dir == 1:
+                ## back off the difference between normal body sprite width and knocked sprite width
+                return (CharacterState(
+                    pos = Vec2 (character_state.pos.x - ns_character_dimension.BODY_KNOCKED_ADJUST_W, character_state.pos.y),
+                    vel_fp = Vec2 (0,0),
+                    acc_fp =  Vec2 (0,0),
+                    dir = character_state.dir,
+                    int = character_state.int
+                ))
+            else:
+                return (CharacterState(
+                    pos = Vec2 (character_state.pos.x + 1, character_state.pos.y),
+                    vel_fp = Vec2 (0,0),
+                    acc_fp =  Vec2 (0,0),
+                    dir = character_state.dir,
+                    int = character_state.int
+                ))
+            end
+        else:
+            return (character_state)
+        end
     end
 
     # otherwise, deaccelerate dramatically

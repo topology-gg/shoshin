@@ -29,8 +29,8 @@ func loop {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} (
     #
     let (arr_frames : FrameScene*) = alloc ()
     let null_rect = Rectangle (Vec2(ns_scene.BIGNUM,ns_scene.BIGNUM), Vec2(0,0))
-    let agent_0_origin = Vec2 (-60,0)
-    let agent_1_origin = Vec2 (100,0)
+    let agent_0_origin = Vec2 (-200,0)
+    let agent_1_origin = Vec2 (250,0)
     let agent_0_body = Rectangle (agent_0_origin, Vec2(ns_character_dimension.BODY_HITBOX_W, ns_character_dimension.BODY_HITBOX_H))
     let agent_1_body = Rectangle (agent_1_origin, Vec2(ns_character_dimension.BODY_HITBOX_W, ns_character_dimension.BODY_HITBOX_H))
     let character_state_0 = CharacterState (

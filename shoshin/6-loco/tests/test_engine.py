@@ -100,8 +100,8 @@ async def test (account_factory, starknet, block_info_mock):
 
     # Loop the baby
     ret = await contract.loop(
-        # len = 24 * 5 ## 5 seconds, 24 fps
-        len = 13
+        len = 24 * 5 ## 5 seconds, 24 fps
+        # len = 13
     ).call()
 
     # Organize events into record dict
