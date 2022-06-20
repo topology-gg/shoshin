@@ -356,7 +356,9 @@ func _object {range_check_ptr} (
     #
     if state == ns_object_state.DASH_FORWARD:
         # interruptible by agent action
-        # TODO!!
+        if agent_action == ns_action.UPSWING:
+            return (ns_object_state.UPSWING, 0)
+        end
 
         # continue dashing forward if frame count not reached yet
         if counter == ns_object_state_duration.DASH_FORWARD:
