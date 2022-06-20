@@ -89,27 +89,25 @@ func _agent {range_check_ptr} (
             assert arr_actions[28] = ns_action.NULL
             assert arr_actions[29] = ns_action.NULL
             assert arr_actions[30] = ns_action.NULL
-            assert arr_actions[31] = ns_action.NULL
-            assert arr_actions[32] = ns_action.NULL
 
-            assert arr_actions[33] = ns_action.SLASH
+            assert arr_actions[31] = ns_action.SLASH
+            assert arr_actions[32] = ns_action.NULL
+            assert arr_actions[33] = ns_action.NULL
             assert arr_actions[34] = ns_action.NULL
             assert arr_actions[35] = ns_action.NULL
             assert arr_actions[36] = ns_action.NULL
+
             assert arr_actions[37] = ns_action.NULL
             assert arr_actions[38] = ns_action.NULL
-
             assert arr_actions[39] = ns_action.NULL
             assert arr_actions[40] = ns_action.NULL
             assert arr_actions[41] = ns_action.NULL
             assert arr_actions[42] = ns_action.NULL
             assert arr_actions[43] = ns_action.NULL
             assert arr_actions[44] = ns_action.NULL
-            assert arr_actions[45] = ns_action.NULL
-            assert arr_actions[46] = ns_action.NULL
 
             assert input_buffer_nxt = InputBuffer (
-                arr_actions_len = 47,
+                arr_actions_len = 45,
                 arr_actions     = arr_actions
             )
         else:
