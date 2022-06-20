@@ -5,7 +5,8 @@ from starkware.cairo.common.alloc import alloc
 from contracts.constants import (
     ns_action, ns_stimulus, ns_object_state, ns_character_dimension, ns_scene,
     Vec2, CharacterState, Frame, FrameScene,
-    Rectangle, Hitboxes, Stm, Perceptibles
+    Rectangle, Hitboxes, Stm, Perceptibles,
+    InputBuffer
 )
 from contracts.object import (
     _object
@@ -14,7 +15,7 @@ from contracts.physics import (
     _physicality,
     _test_rectangle_overlap
 )
-from contracts.agent import (
+from contracts.agent_ib import (
     _agent, ns_agent_state
 )
 
@@ -29,7 +30,7 @@ func loop {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} (
     #
     let (arr_frames : FrameScene*) = alloc ()
     let null_rect = Rectangle (Vec2(ns_scene.BIGNUM,ns_scene.BIGNUM), Vec2(0,0))
-    let agent_0_origin = Vec2 (200,0)
+    let agent_0_origin = Vec2 (-200,0)
     let agent_1_origin = Vec2 (400,0)
     let agent_0_body = Rectangle (agent_0_origin, Vec2(ns_character_dimension.BODY_HITBOX_W, ns_character_dimension.BODY_HITBOX_H))
     let agent_1_body = Rectangle (agent_1_origin, Vec2(ns_character_dimension.BODY_HITBOX_W, ns_character_dimension.BODY_HITBOX_H))
@@ -44,7 +45,7 @@ func loop {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} (
 
     assert arr_frames[0] = FrameScene (
         agent_0 = Frame (
-            agent_state = ns_agent_state.IDLE,
+            agent_state = ns_agent_state.DEMO,
             agent_action = ns_action.NULL,
             agent_stm = Stm (reg0 = 0),
             object_state = ns_object_state.IDLE,
@@ -57,7 +58,7 @@ func loop {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} (
             stimulus = ns_stimulus.NULL
         ),
         agent_1 = Frame (
-            agent_state = ns_agent_state.IDLE,
+            agent_state = ns_agent_state.DEMO,
             agent_action = ns_action.NULL,
             agent_stm = Stm (reg0 = 0),
             object_state = ns_object_state.IDLE,
@@ -71,10 +72,13 @@ func loop {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} (
         )
     )
 
+    tempvar arr_empty : felt* = new ()
     _loop (
         idx = 1,
         len = len,
-        arr_frames = arr_frames
+        arr_frames = arr_frames,
+        input_buffer_0 = InputBuffer (0, arr_empty),
+        input_buffer_1 = InputBuffer (0, arr_empty)
     )
 
     event_array.emit (len, arr_frames)
@@ -85,7 +89,9 @@ end
 func _loop {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} (
         idx : felt,
         len : felt,
-        arr_frames : FrameScene*
+        arr_frames : FrameScene*,
+        input_buffer_0 : InputBuffer,
+        input_buffer_1 : InputBuffer
     ) -> ():
     alloc_locals
 
@@ -119,13 +125,26 @@ func _loop {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} (
     # Agency Phase:
     # A_i, P => A_i', a_i for i = [0,1]
     #
-    # let (agent_state_0, a_0, agent_stm_0) = _agent (last_frame.agent_0.agent_state, perceptibles_0, last_frame.agent_0.agent_stm)
+    let (
+        agent_state_0,
+        agent_stm_0,
+        agent_input_buffer_0_
+    ) = _agent (
+        last_frame.agent_0.agent_state,
+        last_frame.agent_0.agent_stm,
+        perceptibles_0,
+        input_buffer_0
+    )
+    let a_0 = agent_input_buffer_0_.arr_actions [0]
+    let agent_input_buffer_0 = InputBuffer (
+        agent_input_buffer_0_.arr_actions_len - 1,
+        & agent_input_buffer_0_.arr_actions [1]
+    )
     # let (agent_state_1, a_1, agent_stm_1) = _agent (last_frame.agent_1.agent_state, perceptibles_1, last_frame.agent_1.agent_stm)
 
-    let agent_state_0 = last_frame.agent_0.agent_state
+    # let agent_state_0 = last_frame.agent_0.agent_state
     # let a_0 = ns_action.DASH_FORWARD
-    let a_0 = ns_action.DASH_BACKWARD
-    let agent_stm_0 = last_frame.agent_0.agent_stm
+    # let agent_stm_0 = last_frame.agent_0.agent_stm
 
     let agent_state_1 = last_frame.agent_1.agent_state
     let a_1 = ns_action.NULL
@@ -203,7 +222,11 @@ func _loop {syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr} (
     #
     # Tail recursion
     #
-    _loop (idx + 1, len, arr_frames)
+    tempvar arr_empty : felt* = new ()
+    _loop (
+        idx + 1, len, arr_frames,
+        agent_input_buffer_0, InputBuffer (0,arr_empty)
+    )
     return ()
 end
 

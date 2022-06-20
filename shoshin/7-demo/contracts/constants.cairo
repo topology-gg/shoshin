@@ -80,7 +80,7 @@ namespace ns_object_state_duration:
     const MOVE_FORWARD  = 5
     const MOVE_BACKWARD = 5
     const DASH_FORWARD  = 4
-    const DASH_BACKWARD = 5
+    const DASH_BACKWARD = 4
     const UPSWING = 4
     const SIDECUT = 4
 end
@@ -122,7 +122,7 @@ namespace ns_object_state:
 
     const DASH_FORWARD = 57  # 57 - 61, 5 frames in sequence
 
-    const DASH_BACKWARD = 62 # 62 - 67, 6 frames in sequence
+    const DASH_BACKWARD = 62 # 62 - 66, 5 frames in sequence
 
     const UPSWING = 68 # 68 - 72, 5 frames in sequence
 
@@ -137,6 +137,11 @@ end
 struct Rectangle:
     member origin : Vec2
     member dimension : Vec2
+end
+
+struct InputBuffer:
+    member arr_actions_len : felt
+    member arr_actions : felt*
 end
 
 struct Hitboxes:

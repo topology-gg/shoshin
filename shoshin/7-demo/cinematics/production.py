@@ -10,7 +10,7 @@ PRIME = 361850278866613121369732278309507010562310721533159669997309205613587202
 PRIME_HALF = PRIME//2
 
 # FRAME_PERIOD = 0.5
-FRAME_PERIOD = 0.1
+FRAME_PERIOD = 0.07
 
 def draw_background ():
 	target_rect = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -104,11 +104,11 @@ record = json.loads (json_str)
 n_frames = len (record['agent_0'])
 
 for frame in record ['agent_0']:
-	print (frame['object_state'], end=' ')
+	print (frame['object_state'], frame['object_counter'])
 print()
-for frame in record ['agent_1']:
-	print (frame['object_state'], end=' ')
-print()
+# for frame in record ['agent_1']:
+# 	print (frame['object_state'], end=' ')
+# print()
 
 SPRITES = {
 	0  : pygame.image.load('../art/jessica/idle/frame_0.png'),
@@ -181,7 +181,6 @@ SPRITES = {
 	64 : pygame.image.load('../art/jessica/dash_backward/frame_2.png'),
 	65 : pygame.image.load('../art/jessica/dash_backward/frame_3.png'),
 	66 : pygame.image.load('../art/jessica/dash_backward/frame_4.png'),
-	67 : pygame.image.load('../art/jessica/dash_backward/frame_5.png'),
 
 	68 : pygame.image.load('../art/jessica/upswing/frame_0.png'),
 	69 : pygame.image.load('../art/jessica/upswing/frame_1.png'),
@@ -200,10 +199,12 @@ STATES_HIT = [
 	17,18,19,20
 ]
 
-STATES_PUNCH = [
-	10,11,12,13,14,15,16,
-	26,27,28,29,30,31,
-	44
+STATES_SIDECUT = [
+	73, 74, 75, 76, 77
+]
+
+STATES_DASH = [
+	57, 58, 59, 60, 61, 62, 63, 64, 65, 66
 ]
 
 def draw_character (frame, flip):
@@ -233,15 +234,17 @@ def draw_character (frame, flip):
 	X_OFFSET = 25
 	Y_OFFSET = 8
 
-	char_y += Y_OFFSET
+	if state not in STATES_DASH:
+		char_y += Y_OFFSET
+
 	if flip == 0: # not flipped
 		char_x -= X_OFFSET
 
 		if state in STATES_HIT: ## adjust for hit sprite shifts
 			char_x -= 20
 
-		if state in [21,23,25]: ## adjust for jump sprite shifts
-			char_x -= 20
+		if state in STATES_SIDECUT:
+			char_x -= 25
 
 	else: # flipped
 		char_x -= (X_OFFSET-4)
@@ -304,7 +307,6 @@ def draw_debug (frame, flip):
 	#
 	# draw action hitbox
 	#
-	print(f"(action_w, action_h) = ({action_w}, {action_h})")
 	action_hitbox = pygame.Surface( (action_w, action_h), pygame.SRCALPHA )   # per-pixel alpha
 	action_hitbox.fill( (229,78,48,HITBOX_ALPHA) )
 
@@ -340,7 +342,7 @@ while True:
 		# Draw debug view
 		#
 		# print(agent_idx)
-		draw_debug (frame, flip=agent_idx)
+		# draw_debug (frame, flip=agent_idx)
 		# print()
 
 

@@ -160,14 +160,18 @@ async def test (account_factory, starknet, block_info_mock):
         } for r in record]
     }
 
+    #
     # Debug log
-    # for i in [0,1]:
-    #     LOGGER.info (f'> Agent_{i} records:')
-    #     for r in record[f'agent_{i}']:
-    #         LOGGER.info (f"  .. {r}")
-    #     LOGGER.info ('')
+    #
+    for i in [0,1]:
+        LOGGER.info (f'> Agent_{i} records:')
+        for r in record[f'agent_{i}']:
+            LOGGER.info (f"  .. {r}")
+        LOGGER.info ('')
 
+    #
     # Export record
+    #
     json_string = json.dumps(record)
     path = 'artifacts/test_engine.json'
     with open(path, 'w') as f:

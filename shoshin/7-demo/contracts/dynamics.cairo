@@ -91,16 +91,25 @@ func _euler_forward_no_hitbox {range_check_ptr} (
         end
     end
 
-    # otherwise, deaccelerate dramatically
-    if sign_vel_x == 1:
-        assert acc_fp_x = -1 * ns_dynamics.DEACC_FP
-    else:
-        if sign_vel_x == -1:
-            assert acc_fp_x = ns_dynamics.DEACC_FP
-        else:
-            assert acc_fp_x = 0
-        end
-    end
+    # # otherwise, deaccelerate dramatically
+    # if sign_vel_x == 1:
+    #     assert acc_fp_x = -1 * ns_dynamics.DEACC_FP
+    # else:
+    #     if sign_vel_x == -1:
+    #         assert acc_fp_x = ns_dynamics.DEACC_FP
+    #     else:
+    #         assert acc_fp_x = 0
+    #     end
+    # end
+
+    # otherwise, set velocity to zero (instant stop)
+    return (CharacterState(
+        pos = Vec2 (character_state.pos.x, character_state.pos.y),
+        vel_fp = Vec2 (0,0),
+        acc_fp =  Vec2 (0,0),
+        dir = character_state.dir,
+        int = character_state.int
+    ))
 
     #
     # Update vel_fp with acc_fp
