@@ -1,0 +1,4 @@
+# Apibara configuration file
+# This file is mounted in the docker-compose container.
+[admin.storage]
+connection_string = "mongodb://apibara:apibara@mongo:27017"
