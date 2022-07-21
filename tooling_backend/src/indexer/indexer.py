@@ -10,7 +10,7 @@ indexer_id = "my-indexer"
 
 async def handle_events(info: Info, block_events: NewEvents):
     """Handle a group of events grouped by block."""
-    print(block_events.block_number)
+    print(block_events.block.number)
     for event in block_events.events:
         print(event)
 
@@ -25,19 +25,10 @@ async def handle_events(info: Info, block_events: NewEvents):
 
 async def handle_block(info: Info, block: NewBlock):
     """Handle a new _live_ block."""
-    # Use the StarkNet json rpc client to get information about the current block.
-    block = await info.rpc_client.get_block_by_hash(block.new_head.hash)
-    block_time = datetime.fromtimestamp(block["accepted_time"])
-    block["timestamp"] = block_time.isoformat()
-
-    # Store the block into the `blocks` collection.
-    await info.storage.insert_one("blocks", block)
+    print(block.new_head)
 
 
 async def run_indexer(server_url=None, mongo_url=None, restart=None):
-    if mongo_url is None:
-        mongo_url = "mongodb://apibara:apibara@localhost:27017"
-
     if restart:
         async with Client.connect(server_url) as client:
             existing = await client.indexer_client().get_indexer(indexer_id)
@@ -57,6 +48,7 @@ async def run_indexer(server_url=None, mongo_url=None, restart=None):
             apibara_url=server_url,
             storage_url=mongo_url,
         ),
+        network_name="starknet-goerli",
         indexer_id=indexer_id,
         new_events_handler=handle_events,
     )
