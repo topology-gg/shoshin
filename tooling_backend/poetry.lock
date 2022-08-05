@@ -173,7 +173,7 @@ python-versions = "~=3.7"
 
 [[package]]
 name = "cairo-lang"
-version = "0.9.0"
+version = "0.9.1"
 description = "Compiler and runner for the Cairo language"
 category = "main"
 optional = false
@@ -1016,7 +1016,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "starknet.py"
-version = "0.3.4a0"
+version = "0.4.4a0"
 description = "A python SDK for StarkNet"
 category = "main"
 optional = false
@@ -1024,9 +1024,10 @@ python-versions = ">=3.7.2,<3.10"
 
 [package.dependencies]
 asgiref = ">=3.4.1,<4.0.0"
-cairo-lang = "0.9.0"
+cairo-lang = "0.9.1"
 crypto-cpp-py = ">=1.0.4,<2.0.0"
-web3 = ">=5.28.0,<6"
+marshmallow = ">=3.15.0,<4.0.0"
+marshmallow-oneofschema = ">=3.0.1,<4.0.0"
 
 [package.extras]
 docs = ["enum-tools[sphinx] (==0.9.0)", "sphinx (>=4.3.1,<5.0.0)"]
@@ -1187,7 +1188,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = ">3.7.2,<3.10"
-content-hash = "2ef4aed01807f6f06c203db67ed5b74df57af441182fd21e758785fa79e8b739"
+content-hash = "ec242d13b1a5f7e0323b65560758ef05f98b2560285b63dc6bedf0c6a6d2009a"
 
 [metadata.files]
 aiochannel = [
@@ -1404,7 +1405,7 @@ cachetools = [
     {file = "cachetools-5.2.0.tar.gz", hash = "sha256:6a94c6402995a99c3970cc7e4884bb60b4a8639938157eeed436098bf9831757"},
 ]
 cairo-lang = [
-    {file = "cairo-lang-0.9.0.zip", hash = "sha256:678627df46b3b18771e5e069af1e219bd4c88aaacd692b6042b4d45e0fc05b75"},
+    {file = "cairo-lang-0.9.1.zip", hash = "sha256:a34cc1a019330d8eabf70869fd3d92a530af26de70844a42037db4679ac0e1e0"},
 ]
 certifi = [
     {file = "certifi-2022.6.15-py3-none-any.whl", hash = "sha256:fe86415d55e84719d75f8b69414f6438ac3547d2078ab91b67e779ef69378412"},
@@ -2256,7 +2257,7 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 "starknet.py" = [
-    {file = "starknet.py-0.3.4a0.tar.gz", hash = "sha256:a10b41cba18e0dd458c5d7c87df22c5aded3ff936a9ed6061b311e65c013dce8"},
+    {file = "starknet.py-0.4.4a0.tar.gz", hash = "sha256:8baccee74c3ea7b3952ff2f1d939be5ecfe2e4b7628668816a8af4750c0445c2"},
 ]
 sympy = [
     {file = "sympy-1.10.1-py3-none-any.whl", hash = "sha256:df75d738930f6fe9ebe7034e59d56698f29e85f443f743e51e47df0caccc2130"},
