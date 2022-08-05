@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from apibara import Client, IndexerRunner, Info, NewBlock, NewEvents
 from apibara.indexer.runner import IndexerRunnerConfiguration
 from apibara.model import EventFilter
@@ -10,7 +8,7 @@ indexer_id = "my-indexer"
 
 async def handle_events(info: Info, block_events: NewEvents):
     """Handle a group of events grouped by block."""
-    print(block_events.block.number)
+    print(f"Received events for block {block_events.block.number}")
     for event in block_events.events:
         print(event)
 
@@ -29,6 +27,10 @@ async def handle_block(info: Info, block: NewBlock):
 
 
 async def run_indexer(server_url=None, mongo_url=None, restart=None):
+    print("Starting Apibara indexer")
+    if mongo_url is None:
+        mongo_url = "mongodb://apibara:apibara@localhost:27017"
+
     if restart:
         async with Client.connect(server_url) as client:
             existing = await client.indexer_client().get_indexer(indexer_id)
@@ -69,5 +71,7 @@ async def run_indexer(server_url=None, mongo_url=None, restart=None):
         ],
         index_from_block=201_000,
     )
+
+    print("Initialization completed. Entering main loop.")
 
     await runner.run()

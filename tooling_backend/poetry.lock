@@ -41,7 +41,7 @@ frozenlist = ">=1.1.0"
 
 [[package]]
 name = "apibara"
-version = "0.4.1"
+version = "0.4.3"
 description = "Apibara cliend SDK. Build web3-powered applications."
 category = "main"
 optional = false
@@ -328,11 +328,11 @@ eth-utils = ">=1.2.0,<2.0.0"
 parsimonious = ">=0.8.0,<0.9.0"
 
 [package.extras]
-dev = ["bumpversion (>=0.5.3,<1)", "pytest-watch (>=4.1.0,<5)", "wheel", "twine", "ipython", "pytest (==4.4.1)", "pytest-pythonpath (>=0.7.1)", "pytest-xdist (==1.22.3)", "tox (>=2.9.1,<3)", "eth-hash", "hypothesis (>=4.18.2,<5.0.0)", "flake8 (==4.0.1)", "isort (>=4.2.15,<5)", "mypy (==0.910)", "pydocstyle (>=3.0.0,<4)", "Sphinx (>=1.6.5,<2)", "jinja2 (>=3.0.0,<3.1.0)", "sphinx-rtd-theme (>=0.1.9)", "towncrier (>=21,<22)"]
-doc = ["Sphinx (>=1.6.5,<2)", "jinja2 (>=3.0.0,<3.1.0)", "sphinx-rtd-theme (>=0.1.9)", "towncrier (>=21,<22)"]
-lint = ["flake8 (==4.0.1)", "isort (>=4.2.15,<5)", "mypy (==0.910)", "pydocstyle (>=3.0.0,<4)"]
-test = ["pytest (==4.4.1)", "pytest-pythonpath (>=0.7.1)", "pytest-xdist (==1.22.3)", "tox (>=2.9.1,<3)", "eth-hash", "hypothesis (>=4.18.2,<5.0.0)"]
 tools = ["hypothesis (>=4.18.2,<5.0.0)"]
+test = ["hypothesis (>=4.18.2,<5.0.0)", "eth-hash", "tox (>=2.9.1,<3)", "pytest-xdist (==1.22.3)", "pytest-pythonpath (>=0.7.1)", "pytest (==4.4.1)"]
+lint = ["pydocstyle (>=3.0.0,<4)", "mypy (==0.910)", "isort (>=4.2.15,<5)", "flake8 (==4.0.1)"]
+doc = ["towncrier (>=21,<22)", "sphinx-rtd-theme (>=0.1.9)", "jinja2 (>=3.0.0,<3.1.0)", "Sphinx (>=1.6.5,<2)"]
+dev = ["towncrier (>=21,<22)", "sphinx-rtd-theme (>=0.1.9)", "jinja2 (>=3.0.0,<3.1.0)", "Sphinx (>=1.6.5,<2)", "pydocstyle (>=3.0.0,<4)", "mypy (==0.910)", "isort (>=4.2.15,<5)", "flake8 (==4.0.1)", "hypothesis (>=4.18.2,<5.0.0)", "eth-hash", "tox (>=2.9.1,<3)", "pytest-xdist (==1.22.3)", "pytest-pythonpath (>=0.7.1)", "pytest (==4.4.1)", "ipython", "twine", "wheel", "pytest-watch (>=4.1.0,<5)", "bumpversion (>=0.5.3,<1)"]
 
 [[package]]
 name = "eth-account"
@@ -1187,7 +1187,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = ">3.7.2,<3.10"
-content-hash = "7a15dc13045b4451284a9c7ac1624cce64bfec94fef26d81dcfa5e5addc9272b"
+content-hash = "2ef4aed01807f6f06c203db67ed5b74df57af441182fd21e758785fa79e8b739"
 
 [metadata.files]
 aiochannel = [
@@ -1272,8 +1272,8 @@ aiosignal = [
     {file = "aiosignal-1.2.0.tar.gz", hash = "sha256:78ed67db6c7b7ced4f98e495e572106d5c432a93e1ddd1bf475e1dc05f5b7df2"},
 ]
 apibara = [
-    {file = "apibara-0.4.1-py3-none-any.whl", hash = "sha256:190e24a524ac16b4fd3164b0ecdcbb5fbe8e9ba5ca78588f491454e388052a10"},
-    {file = "apibara-0.4.1.tar.gz", hash = "sha256:4c8fd88c39e8f62b2fcd32e468de3bc10f6c00c5a56c020ca795c33ff69cd886"},
+    {file = "apibara-0.4.3-py3-none-any.whl", hash = "sha256:388acf187aa0b899ea9999b51828f2546c426ad7f6d64be432e5dbb8a74bb34d"},
+    {file = "apibara-0.4.3.tar.gz", hash = "sha256:3186996d60b83442d947df82d42c7b794c42ea0444d714247b7cc12423987706"},
 ]
 asgiref = [
     {file = "asgiref-3.5.2-py3-none-any.whl", hash = "sha256:1d2880b792ae8757289136f1db2b7b99100ce959b2aa57fd69dab783d05afac4"},
@@ -1287,9 +1287,7 @@ asynctest = [
     {file = "asynctest-0.13.0-py3-none-any.whl", hash = "sha256:5da6118a7e6d6b54d83a8f7197769d046922a44d2a99c21382f0a6e4fadae676"},
     {file = "asynctest-0.13.0.tar.gz", hash = "sha256:c27862842d15d83e6a34eb0b2866c323880eb3a75e4485b079ea11748fd77fac"},
 ]
-atomicwrites = [
-    {file = "atomicwrites-1.4.1.tar.gz", hash = "sha256:81b2c9071a49367a7f770170e5eec8cb66567cfbbc8c73d20ce5ca4a8d71cf11"},
-]
+atomicwrites = []
 attrs = [
     {file = "attrs-21.4.0-py2.py3-none-any.whl", hash = "sha256:2d27e3784d7a565d36ab851fe94887c5eccd6a463168875832a1be79c82828b4"},
     {file = "attrs-21.4.0.tar.gz", hash = "sha256:626ba8234211db98e869df76230a137c4c40a12d72445c45d5f5b716f076e2fd"},
@@ -2311,17 +2309,11 @@ typing-inspect = [
     {file = "typing_inspect-0.7.1-py3-none-any.whl", hash = "sha256:3cd7d4563e997719a710a3bfe7ffb544c6b72069b6812a02e9b414a8fa3aaa6b"},
     {file = "typing_inspect-0.7.1.tar.gz", hash = "sha256:047d4097d9b17f46531bf6f014356111a1b6fb821a24fe7ac909853ca2a782aa"},
 ]
-urllib3 = [
-    {file = "urllib3-1.26.10-py2.py3-none-any.whl", hash = "sha256:8298d6d56d39be0e3bc13c1c97d133f9b45d797169a0e11cdd0e0489d786f7ec"},
-    {file = "urllib3-1.26.10.tar.gz", hash = "sha256:879ba4d1e89654d9769ce13121e0f94310ea32e8d2f8cf587b77c08bbcdb30d6"},
-]
+urllib3 = []
 varint = [
     {file = "varint-1.0.2.tar.gz", hash = "sha256:a6ecc02377ac5ee9d65a6a8ad45c9ff1dac8ccee19400a5950fb51d594214ca5"},
 ]
-web3 = [
-    {file = "web3-5.30.0-py3-none-any.whl", hash = "sha256:664fbb668522874a8bb15ec06c605f1e0c754bbc0d7a040ee47536c648b46af0"},
-    {file = "web3-5.30.0.tar.gz", hash = "sha256:e141d90408fd9fe5156e2ef22884a160bef8bfd55e6cecd51181af3162ea84dd"},
-]
+web3 = []
 websockets = [
     {file = "websockets-9.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:d144b350045c53c8ff09aa1cfa955012dd32f00c7e0862c199edcabb1a8b32da"},
     {file = "websockets-9.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:b4ad84b156cf50529b8ac5cc1638c2cf8680490e3fccb6121316c8c02620a2e4"},
