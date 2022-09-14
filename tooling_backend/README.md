@@ -18,9 +18,11 @@ Then install `poetry` and use it to install the package dependencies.
     python3 -m pip install poetry
     poetry install
 
-Start Apibara and MongoDB using the provided `docker-compose` file:
+Start MongoDB using the provided `docker-compose` file:
 
     docker-compose up
+
+Notice that you can use any managed MongoDB like MongoDB Atlas.
 
 Then start the indexer by running the `indexer start` command. The `indexer` command runs the cli application defined in `src/indexer/main.py`. This is a standard Click application.
 
@@ -39,4 +41,3 @@ You can change the id of the indexer by changing the value of the `indexer_id` v
 ## Running in production
 
 This template includes a `Dockerfile` that you can use to package the indexer for production usage.
-

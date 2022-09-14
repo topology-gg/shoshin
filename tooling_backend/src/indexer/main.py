@@ -22,16 +22,14 @@ def cli():
 
 
 @cli.command()
-@click.option("--server-url", default=None, help="Apibara Server url.")
+@click.option("--server-url", default=None, help="Apibara stream url.")
 @click.option("--mongo-url", default=None, help="MongoDB url.")
 @click.option("--restart", is_flag=True, help="Restart indexing from the beginning.")
 @async_command
 async def start(server_url, mongo_url, restart):
     """Start the Apibara indexer."""
-    # Use local apibara server url and mongodb url by default.
-    # Start them by running docker-compose.
     if server_url is None:
-        server_url = "localhost:7171"
+        server_url = "goerli.starknet.stream.apibara.com"
     if mongo_url is None:
         mongo_url = "mongodb://apibara:apibara@localhost:27017"
     await run_indexer(
