@@ -29,7 +29,6 @@ async def run_indexer(server_url=None, mongo_url=None, restart=None):
             storage_url=mongo_url,
         ),
         reset_state=restart,
-        network_name="starknet-goerli",
         indexer_id=indexer_id,
         new_events_handler=handle_events,
     )
