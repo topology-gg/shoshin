@@ -38,7 +38,7 @@ async def run_indexer(server_url=None, mongo_url=None, restart=None):
     #
     # For now, this also helps the SDK map between human-readable
     # event names and StarkNet events.
-    runner.create_if_not_exists(
+    runner.add_event_filters(
         filters=[
             EventFilter.from_event_name(
                 name="Transfer",
