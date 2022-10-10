@@ -6,7 +6,7 @@ import {useState, useEffect, useRef} from 'react';
 export default function Home() {
 
     // Constants
-    const INIT_PROGRAM = 'LN,LN,GET,ST,ST,PUT'
+    const INIT_PROGRAM = 'XP,XP,GET,XN,XN,PUT'
     const DIM = 20
 
     // React states
@@ -16,11 +16,9 @@ export default function Home() {
     const [loop, setLoop] = useState();
 
     // React reference
-    const atomIndexRef = useRef([3,6]);
-    const gripIndexRef = useRef([3,4]);
-    const animationIndexRef = useRef(0);
-    const gripStateRef = useRef('open'); // open, close
-    const atomStateRef = useRef('free'); // free, possessed
+    const animationIndexRef = useRef();
+    const atomStatesRef = useRef([]); // contain index and status; atom status = {'free', 'possessed'}
+    const mechStatesRef = useRef([]); // contain index and status; mech status = {'open', 'closed'}
 
     // Handle click event
     function handleClick (){
@@ -38,9 +36,8 @@ export default function Home() {
         // Stop and reset simulation
         else {
             setAnimationState ('Stop')
-            document.querySelector(`#cell-${gripIndexRef.current[0]}-${gripIndexRef.current[1]}`).classList.remove(`grip_${gripStateRef.current}`);
-            document.querySelector(`#cell-${atomIndexRef.current[0]}-${atomIndexRef.current[1]}`).classList.remove('atom');
-            document.querySelector("#cell-3-3").classList.remove('machine');
+            document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
+            document.querySelector(`#cell-${atomStatesRef.current[0].index.x}-${atomStatesRef.current[0].index.x}`).classList.remove('atom');
 
             reset_scene ()
         }
@@ -52,12 +49,22 @@ export default function Home() {
     }, [])
 
     function reset_scene (){
+        // set reference values
         animationIndexRef.current = 0
-        gripIndexRef.current = [3,4]
-        atomIndexRef.current = [3,6]
-        document.querySelector("#cell-3-3").classList.add('machine');
-        document.querySelector(`#cell-3-4`).classList.add('grip_open');
-        document.querySelector(`#cell-3-6`).classList.add('atom');
+        atomStatesRef.current = [
+            {status:'free', index:{x:6, y:3}}
+        ]
+        mechStatesRef.current = [
+            {status:'open', index:{x:3, y:3}}
+        ]
+
+        // draw to scene
+        for (const atom of atomStatesRef.current) {
+            document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.add('atom');
+        }
+        for (const mech of mechStatesRef.current) {
+            document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
+        }
     }
 
     // Timer for looping
@@ -79,52 +86,56 @@ export default function Home() {
         // atom operator churn
 
         // machine churn
-        updateGrip ()
+        updateMech ()
+
+        // housekeeping
+        updateAnimationIndex ()
     }
 
-    function updateGrip (){
+    function updateMech (){
 
-        // save current grip index
-        // console.log('running animationIndex:', animationIndexRef.current, 'gripIndex =', current_grip)
-        const current_grip = gripIndexRef.current
-        document.querySelector(`#cell-${gripIndexRef.current[0]}-${gripIndexRef.current[1]}`).classList.remove(`grip_${gripStateRef.current}`);
-        document.querySelector(`#cell-${atomIndexRef.current[0]}-${atomIndexRef.current[1]}`).classList.remove('atom');
-
-        // set new grip style by decoding current instruction
-        // note: should refactor style-setting away from instruction-decode
+        // Decode instruction; return if no-op
         const inst = instructions[animationIndexRef.current]
-        // console.log ('running instruction:', inst)
-        if (inst == 'LN' && current_grip[1] < 6) {
-            gripIndexRef.current = [current_grip[0], current_grip[1]+1]
-            if (atomStateRef.current == 'possessed') {
-                atomIndexRef.current = gripIndexRef.current
+        if (inst == '_') return;
+
+        // Save current mech index and clear visual
+        const mech = mechStatesRef.current[0]
+        const atom = atomStatesRef.current[0]
+        document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.remove(`mech_${mech.status}`);
+        document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.remove('atom');
+
+        // Compute new mech
+        if (inst == 'XP' && mech.index.x < 6) { // X += 1
+            mechStatesRef.current[0] = {index:{x:mech.index.x+1, y:mech.index.y}, status:mech.status}
+
+            if (atom.status == 'possessed') {
+                atomStatesRef.current[0] = {index:mechStatesRef.current[0].index, status:atom.status}
             }
         }
-        else if (inst == 'ST' && current_grip[1] > 0) {
-            gripIndexRef.current = [current_grip[0], current_grip[1]-1]
-            if (atomStateRef.current == 'possessed') {
-                atomIndexRef.current = gripIndexRef.current
+        else if (inst == 'XN' && mech.index.x > 0) { // X -= 1
+            mechStatesRef.current[0] = {index:{x:mech.index.x-1, y:mech.index.y}, status:mech.status}
+
+            if (atom.status == 'possessed') {
+                atomStatesRef.current[0] = {index:mechStatesRef.current[0].index, status:atom.status}
             }
         }
-        else if (inst == 'GET') {
-            gripStateRef.current = 'close'
-            console.log(gripIndexRef.current, atomIndexRef.current)
-            if (isIdenticalIndex(gripIndexRef.current,atomIndexRef.current)) {
-                atomStateRef.current = 'possessed'
+        else if (inst == 'GET' && mech.status == 'open') { // pick up atom if available in grid
+            mechStatesRef.current[0] = {index:mech.index, status:'close'}
+            if (isIdenticalIndex(mech.index, atom.index)) {
+                atomStatesRef.current[0] = {index:atom.index, status:'possessed'}
             }
         }
-        else if (inst == 'PUT') {
-            gripStateRef.current = 'open'
-            if (isIdenticalIndex(gripIndexRef.current,atomIndexRef.current)) {
-                atomStateRef.current = 'free'
+        else if (inst == 'PUT' && mech.status == 'close') { // drop atom if currently possessing
+            mechStatesRef.current[0] = {index:mech.index, status:'open'}
+            if (isIdenticalIndex(mech.index, atom.index)) {
+                atomStatesRef.current[0] = {index:atom.index, status:'free'}
             }
         }
 
         // Update visual
-        document.querySelector(`#cell-${gripIndexRef.current[0]}-${gripIndexRef.current[1]}`).classList.add(`grip_${gripStateRef.current}`);
-        document.querySelector(`#cell-${atomIndexRef.current[0]}-${atomIndexRef.current[1]}`).classList.add('atom');
+        document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.add(`mech_${mechStatesRef.current[0].status}`);
+        document.querySelector(`#cell-${atomStatesRef.current[0].index.x}-${atomStatesRef.current[0].index.y}`).classList.add('atom');
 
-        updateAnimationIndex ()
         return;
     }
 
@@ -172,11 +183,11 @@ export default function Home() {
                                 {
                                     Array.from({length:DIM}).map ((_,j) => (
                                         (i==3) & (j==3) ?
-                                        <div id={`cell-${i}-${j}`} key={`cell-${i}-${j}`} className={styles.card} onClick={() => handleClick(i,j)}>
+                                        <div id={`cell-${j}-${i}`} key={`cell-${j}-${i}`} className={styles.card} onClick={() => handleClick(i,j)}>
                                             {/* {i},{j} */}.
                                         </div>
                                         :
-                                        <div id={`cell-${i}-${j}`} key={`cell-${i}-${j}`} className={styles.card} onClick={() => handleClick(i,j)}>
+                                        <div id={`cell-${j}-${i}`} key={`cell-${j}-${i}`} className={styles.card} onClick={() => handleClick(i,j)}>
                                             {/* {i},{j} */}.
                                         </div>
                                     ))
