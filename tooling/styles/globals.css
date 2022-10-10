@@ -1,0 +1,42 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.machine {
+    background-color: #0070f3;
+}
+
+.grip_open {
+    border: 1px solid #FFFFFF;
+}
+
+.grip_close {
+    border: 1px solid #FF7A00;
+}
+
+.atom {
+    background-color: #5E1914;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    color: white;
+    background: black;
+  }
+}
