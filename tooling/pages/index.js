@@ -5,8 +5,11 @@ import {useState, useEffect, useRef} from 'react';
 
 export default function Home() {
 
+    // Constants
+    const INIT_PROGRAM = 'LN,LN,GET,ST,ST,PUT'
+    const DIM = 20
+
     // React states
-    const INIT_PROGRAM = 'LN,_,LN,GET,ST,_,ST,PUT'
     const [program, setProgram] = useState(INIT_PROGRAM);
     const [instructions, setInstructions] = useState([]);
     const [animationState, setAnimationState] = useState ('Stop');
@@ -164,10 +167,10 @@ export default function Home() {
 
                 <div className={styles.grid_parent}>
                     {
-                        Array.from({length:7}).map ((_,i) => (
+                        Array.from({length:DIM}).map ((_,i) => (
                             <div key={`row-${i}`} className={styles.grid_row}>
                                 {
-                                    Array.from({length:7}).map ((_,j) => (
+                                    Array.from({length:DIM}).map ((_,j) => (
                                         (i==3) & (j==3) ?
                                         <div id={`cell-${i}-${j}`} key={`cell-${i}-${j}`} className={styles.card} onClick={() => handleClick(i,j)}>
                                             {/* {i},{j} */}.
