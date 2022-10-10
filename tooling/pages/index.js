@@ -7,6 +7,8 @@ export default function Home() {
 
     // Constants
     const INIT_PROGRAM = 'XP,XP,GET,XN,XN,PUT'
+    const MECH_INIT_X = 3
+    const MECH_INIT_Y = 3
     const DIM = 20
 
     // React states
@@ -43,6 +45,36 @@ export default function Home() {
         }
     }
 
+    function setMechInitX (x_str){
+        document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
+
+        if (!x_str) return;
+        const x = parseInt(x_str)
+        if (x < DIM & x >= 0) {
+
+            mechStatesRef.current[0].index.x = x;
+
+            for (const mech of mechStatesRef.current) {
+                document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
+            }
+        }
+    }
+    function setMechInitY (y_str){
+        document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
+
+        if (!y_str) return;
+        const y = parseInt(y_str)
+        if (y < DIM & y >= 0) {
+
+            mechStatesRef.current[0].index.y = y;
+
+            for (const mech of mechStatesRef.current) {
+                console.log(mech.index.x, mech.index.y)
+                document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
+            }
+        }
+    }
+
     // Initialize scene
     useEffect(() => {
         reset_scene ()
@@ -55,8 +87,10 @@ export default function Home() {
             {status:'free', index:{x:6, y:3}}
         ]
         mechStatesRef.current = [
-            {status:'open', index:{x:3, y:3}}
+            {status:'open', index:{x:MECH_INIT_X, y:MECH_INIT_Y}}
         ]
+        document.getElementById("input-mech-init-x").value = MECH_INIT_X
+        document.getElementById("input-mech-init-y").value = MECH_INIT_Y
 
         // draw to scene
         for (const atom of atomStatesRef.current) {
@@ -105,7 +139,7 @@ export default function Home() {
         document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.remove('atom');
 
         // Compute new mech
-        if (inst == 'XP' && mech.index.x < 6) { // X += 1
+        if (inst == 'XP' && mech.index.x < DIM) { // X += 1
             mechStatesRef.current[0] = {index:{x:mech.index.x+1, y:mech.index.y}, status:mech.status}
 
             if (atom.status == 'possessed') {
@@ -167,13 +201,32 @@ export default function Home() {
                 </h1>
 
                 <p className={styles.description}>
+
+                    <input
+                        className={styles.program}
+                        onChange={event => {setMechInitX(event.target.value)}}
+                        defaultValue={MECH_INIT_X}
+                        style={{width:'30px', textAlign:'center'}}
+                        id={'input-mech-init-x'}
+                    ></input>
+
+                    <input
+                        className={styles.program}
+                        onChange={event => {setMechInitY(event.target.value)}}
+                        defaultValue={MECH_INIT_Y}
+                        style={{width:'30px', textAlign:'center'}}
+                        id={'input-mech-init-y'}
+                    ></input>
+
                     <input
                         className={styles.program}
                         onChange={event => {setProgram(event.target.value)}}
                         defaultValue={INIT_PROGRAM}
                         style={{width:'300px'}}
                     ></input>
+
                     <button onClick={handleClick}>{animationState == 'Stop' ? 'Run' : 'Stop'}</button>
+
                 </p>
 
                 <div className={styles.grid_parent}>
@@ -184,11 +237,11 @@ export default function Home() {
                                     Array.from({length:DIM}).map ((_,j) => (
                                         (i==3) & (j==3) ?
                                         <div id={`cell-${j}-${i}`} key={`cell-${j}-${i}`} className={styles.card} onClick={() => handleClick(i,j)}>
-                                            {/* {i},{j} */}.
+                                            {/* {i},{j} */}·
                                         </div>
                                         :
                                         <div id={`cell-${j}-${i}`} key={`cell-${j}-${i}`} className={styles.card} onClick={() => handleClick(i,j)}>
-                                            {/* {i},{j} */}.
+                                            {/* {i},{j} */}·
                                         </div>
                                     ))
                                 }

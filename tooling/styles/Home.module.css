@@ -99,7 +99,8 @@
     color: inherit;
     text-decoration: none;
     /* border: 1px solid; */
-    border-radius: 10px;
+    /* border-radius: 10px; */
+    border-radius: 0.5rem;
     transition: color 0.15s ease, border-color 0.15s ease;
     max-width: 300px;
 }
