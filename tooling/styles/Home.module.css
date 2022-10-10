@@ -43,9 +43,9 @@
 }
 
 .title {
-  margin: 0;
+  margin-bottom: 2rem;
   line-height: 1.15;
-  font-size: 4rem;
+  font-size: 3rem;
 }
 
 .title,
@@ -54,7 +54,7 @@
 }
 
 .description {
-  margin: 4rem 0;
+  margin: 0rem 0;
   line-height: 1.5;
   font-size: 1.5rem;
 }
@@ -75,6 +75,7 @@
   /* justify-content: center; */
   /* flex-wrap: wrap; */
   max-width: 800px;
+  margin-top: 2rem;
 }
 
 .grid_row {

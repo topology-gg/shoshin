@@ -38,8 +38,14 @@ export default function Home() {
         // Stop and reset simulation
         else {
             setAnimationState ('Stop')
-            document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
-            document.querySelector(`#cell-${atomStatesRef.current[0].index.x}-${atomStatesRef.current[0].index.x}`).classList.remove('atom');
+
+            for (const mech of mechStatesRef.current) {
+                document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.remove(`mech_${mech.status}`);
+            }
+
+            for (const atom of atomStatesRef.current) {
+                document.querySelector(`#cell-${atom.index.x}-${atom.index.x}`).classList.remove('atom');
+            }
 
             reset_scene ()
         }
@@ -115,6 +121,9 @@ export default function Home() {
     )
 
     function simulationLoop (){
+        // clear current visual
+        clearVisual ()
+
         // atom source replenish
 
         // atom operator churn
@@ -122,8 +131,29 @@ export default function Home() {
         // machine churn
         updateMech ()
 
+        // set new visual
+        setVisual ()
+
         // housekeeping
         updateAnimationIndex ()
+    }
+
+    function clearVisual (){
+        for (const atom of atomStatesRef.current) {
+            document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.remove('atom');
+        }
+        for (const mech of mechStatesRef.current) {
+            document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.remove(`mech_${mech.status}`);
+        }
+    }
+
+    function setVisual (){
+        for (const atom of atomStatesRef.current) {
+            document.querySelector(`#cell-${atomStatesRef.current[0].index.x}-${atomStatesRef.current[0].index.y}`).classList.add('atom');
+        }
+        for (const mech of mechStatesRef.current) {
+            document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.add(`mech_${mechStatesRef.current[0].status}`);
+        }
     }
 
     function updateMech (){
@@ -132,13 +162,9 @@ export default function Home() {
         const inst = instructions[animationIndexRef.current]
         if (inst == '_') return;
 
-        // Save current mech index and clear visual
+        // Compute new mech
         const mech = mechStatesRef.current[0]
         const atom = atomStatesRef.current[0]
-        document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.remove(`mech_${mech.status}`);
-        document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.remove('atom');
-
-        // Compute new mech
         if (inst == 'XP' && mech.index.x < DIM) { // X += 1
             mechStatesRef.current[0] = {index:{x:mech.index.x+1, y:mech.index.y}, status:mech.status}
 
@@ -166,10 +192,6 @@ export default function Home() {
             }
         }
 
-        // Update visual
-        document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.add(`mech_${mechStatesRef.current[0].status}`);
-        document.querySelector(`#cell-${atomStatesRef.current[0].index.x}-${atomStatesRef.current[0].index.y}`).classList.add('atom');
-
         return;
     }
 
@@ -196,9 +218,11 @@ export default function Home() {
             </Head>
 
             <main className={styles.main}>
-                <h1 className={styles.title}>
+                <h2 className={styles.title}>
                     MovyMovy
-                </h1>
+                </h2>
+
+                <button onClick={handleClick}>{animationState == 'Stop' ? 'Run' : 'Stop'}</button>
 
                 <p className={styles.description}>
 
@@ -224,8 +248,6 @@ export default function Home() {
                         defaultValue={INIT_PROGRAM}
                         style={{width:'300px'}}
                     ></input>
-
-                    <button onClick={handleClick}>{animationState == 'Stop' ? 'Run' : 'Stop'}</button>
 
                 </p>
 
