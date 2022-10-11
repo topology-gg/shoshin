@@ -20,7 +20,7 @@ export default function Home() {
     const [loop, setLoop] = useState();
 
     // React reference
-    const animationIndexRef = useRef();
+    const animationIndexRef = useRef<number>();
     const atomInitStatesRef = useRef([]); // contain index and status; atom status = {'free', 'possessed'}
     const mechInitStatesRef = useRef([]); // contain index and status; mech status = {'open', 'closed'}
     const atomStatesRef = useRef([]); // contain index and status; atom status = {'free', 'possessed'}
