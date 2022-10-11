@@ -3,6 +3,7 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import {useState, useEffect, useRef} from 'react';
 import simulator from "./simulator"
+import MechState from '../src/types/MechState';
 
 export default function Home() {
 
@@ -24,7 +25,7 @@ export default function Home() {
     const atomInitStatesRef = useRef([]); // contain index and status; atom status = {'free', 'possessed'}
     const mechInitStatesRef = useRef([]); // contain index and status; mech status = {'open', 'closed'}
     const atomStatesRef = useRef([]); // contain index and status; atom status = {'free', 'possessed'}
-    const mechStatesRef = useRef([]); // contain index and status; mech status = {'open', 'closed'}
+    const mechStatesRef = useRef<MechState[]>([]); // contain index and status; mech status = {'open', 'closed'}
     const framesRef = useRef([]);
 
     // Handle click event
@@ -235,7 +236,7 @@ export default function Home() {
                             <div key={`row-${i}`} className={styles.grid_row}>
                                 {
                                     Array.from({length:DIM}).map ((_,j) => (
-                                        (i==3) & (j==3) ?
+                                        (i==3) && (j==3) ?
                                         <div id={`cell-${j}-${i}`} key={`cell-${j}-${i}`} className={styles.card} onClick={() => handleClick(i,j)}>
                                             {/* {i},{j} */}·
                                         </div>
