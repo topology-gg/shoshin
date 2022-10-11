@@ -2,7 +2,6 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import {useState, useEffect, useRef} from 'react';
-import simulator from "./simulator"
 
 export default function Home() {
 
@@ -10,7 +9,6 @@ export default function Home() {
     const INIT_PROGRAM = 'XP,XP,GET,XN,XN,PUT'
     const MECH_INIT_X = 3
     const MECH_INIT_Y = 3
-    const ATOM_INIT_XY = [{x:6, y:3}]
     const DIM = 20
 
     // React states
@@ -21,53 +19,33 @@ export default function Home() {
 
     // React reference
     const animationIndexRef = useRef();
-    const atomInitStatesRef = useRef([]); // contain index and status; atom status = {'free', 'possessed'}
-    const mechInitStatesRef = useRef([]); // contain index and status; mech status = {'open', 'closed'}
     const atomStatesRef = useRef([]); // contain index and status; atom status = {'free', 'possessed'}
     const mechStatesRef = useRef([]); // contain index and status; mech status = {'open', 'closed'}
-    const framesRef = useRef([]);
 
     // Handle click event
     function handleClick (){
         // Run simulation
         if (animationState == 'Stop') {
-
             // Parse program into array of instructions and store to react state
-            const instructions = program.split(',')
-            if (instructions.length == 0) {return;}
-            setInstructions (instructions)
-
-            // Prepare input
-            const constants = {DIM:DIM}
-
-            // Run simulation to get all frames and set to reference
-            const frames = simulator (
-                20, // n_cycles,
-                mechInitStatesRef.current,
-                atomInitStatesRef.current,
-                instructions, // instructions
-                constants,
-            )
-            framesRef.current = frames
-
-            // Begin animation
-            setAnimationState ('Run')
-            setLoop(
-                setInterval(() => {simulationLoop()}, 300)
-            );
-            // console.log('Running with instruction:', instructions)
+            const instr_arr = program.split(',')
+            setInstructions (instr_arr)
+            if (instr_arr.length > 0) {
+                setAnimationState ('Run')
+                console.log('Running with instruction:', instr_arr)
+            }
         }
 
         // Stop and reset simulation
         else {
             setAnimationState ('Stop')
-            clearInterval (loop);
 
             for (const mech of mechStatesRef.current) {
+                console.log('remove mech:', mech)
                 document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.remove(`mech_${mech.status}`);
             }
 
             for (const atom of atomStatesRef.current) {
+                console.log('remove atom:', atom)
                 document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.remove(`atom_${atom.status}`);
             }
 
@@ -76,15 +54,13 @@ export default function Home() {
     }
 
     function setMechInitX (x_str){
-
-        // clear visual first
         document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
 
         if (!x_str) return;
         const x = parseInt(x_str)
         if (x < DIM & x >= 0) {
 
-            mechInitStatesRef.current[0].index.x = x;
+            mechStatesRef.current[0].index.x = x;
 
             for (const mech of mechStatesRef.current) {
                 document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
@@ -92,15 +68,13 @@ export default function Home() {
         }
     }
     function setMechInitY (y_str){
-
-        // clear visual first
         document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
 
         if (!y_str) return;
         const y = parseInt(y_str)
         if (y < DIM & y >= 0) {
 
-            mechInitStatesRef.current[0].index.y = y;
+            mechStatesRef.current[0].index.y = y;
 
             for (const mech of mechStatesRef.current) {
                 document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
@@ -116,16 +90,12 @@ export default function Home() {
     function reset_scene (){
         // set reference values
         animationIndexRef.current = 0
-        atomInitStatesRef.current = ATOM_INIT_XY.map(
-            function (xy,i) {
-                return {status:'free', index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null}
-            }
-        )
-        mechInitStatesRef.current = [
-            {status:'open', index:{x:MECH_INIT_X, y:MECH_INIT_Y}, id:'mech0', typ:'singleton'}
+        atomStatesRef.current = [
+            {status:'free', index:{x:6, y:3}}
         ]
-        atomStatesRef.current = atomInitStatesRef.current
-        mechStatesRef.current = mechInitStatesRef.current
+        mechStatesRef.current = [
+            {status:'open', index:{x:MECH_INIT_X, y:MECH_INIT_Y}}
+        ]
         document.getElementById("input-mech-init-x").value = MECH_INIT_X
         document.getElementById("input-mech-init-y").value = MECH_INIT_Y
 
@@ -138,25 +108,35 @@ export default function Home() {
         }
     }
 
+    // Timer for looping
+    useEffect(() => {
+            if (animationState == 'Run') {
+                setLoop(
+                    setInterval(() => {simulationLoop()}, 300)
+                );
+            }
+            else {
+                clearInterval (loop);
+            }
+        }, [animationState]
+    )
+
     function simulationLoop (){
         // clear current visual
         clearVisual ()
 
-        // update refs from a new frame
-        updateRefs ()
+        // atom source replenish
+
+        // atom operator churn
+
+        // machine churn
+        updateMech ()
 
         // set new visual
         setVisual ()
 
         // housekeeping
         updateAnimationIndex ()
-    }
-
-    function updateRefs (){
-        const frame = framesRef.current [animationIndexRef.current]
-
-        atomStatesRef.current = frame.atoms
-        mechStatesRef.current = frame.mechs
     }
 
     function clearVisual (){
@@ -177,13 +157,66 @@ export default function Home() {
         }
     }
 
+    function updateMech (){
+
+        // Decode instruction; return if no-op
+        const inst = instructions[animationIndexRef.current]
+        if (inst == '_') return;
+
+        // Iterate over all mechs and compute their new state
+        // TODO: support multiple mech types each with their instruction set
+        // TODO: refactor mech instruction decode and effect out of this file
+        for (const mech of mechStatesRef.current) {
+            const atom = atomStatesRef.current[0]
+
+            if (inst == 'XP' && mech.index.x < DIM) { // X += 1
+                mechStatesRef.current[0] = {index:{x:mech.index.x+1, y:mech.index.y}, status:mech.status}
+
+                // see if this mech possesses any atom, if so move it along
+                if (atom.status == 'possessed') {
+                    atomStatesRef.current[0] = {index:mechStatesRef.current[0].index, status:atom.status}
+                }
+            }
+            else if (inst == 'XN' && mech.index.x > 0) { // X -= 1
+                mechStatesRef.current[0] = {index:{x:mech.index.x-1, y:mech.index.y}, status:mech.status}
+
+                // see if this mech possesses any atom, if so move it along
+                if (atom.status == 'possessed') {
+                    atomStatesRef.current[0] = {index:mechStatesRef.current[0].index, status:atom.status}
+                }
+            }
+            else if (inst == 'GET' && mech.status == 'open') { // pick up atom if available in grid
+                mechStatesRef.current[0] = {index:mech.index, status:'close'}
+
+                // see if this grid has free atom, if so possess it with this mech
+                if (isIdenticalIndex(mech.index, atom.index)) {
+                    atomStatesRef.current[0] = {index:atom.index, status:'possessed'}
+                }
+            }
+            else if (inst == 'PUT' && mech.status == 'close') { // drop atom if currently possessing
+                mechStatesRef.current[0] = {index:mech.index, status:'open'}
+
+                // see if both "this mech possesses atom" and "underlying grid is empty", if so free the atom
+                if (isIdenticalIndex(mech.index, atom.index)) {
+                    atomStatesRef.current[0] = {index:atom.index, status:'free'}
+                }
+            }
+        }
+
+        return;
+    }
+
     function updateAnimationIndex (){
-        if (animationIndexRef.current == framesRef.current.length - 1) {
+        if (animationIndexRef.current == instructions.length - 1) {
             animationIndexRef.current = 0
         }
         else {
             animationIndexRef.current += 1
         }
+    }
+
+    function isIdenticalIndex (ind1, ind2){
+        return JSON.stringify(ind1) == JSON.stringify(ind2)
     }
 
     // Render
