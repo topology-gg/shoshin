@@ -34,10 +34,10 @@ export default function simulator(
     //
     // Forward system by n_cycles, recording frames emitted; a frame carries all objects with their states i.e. frame == state screenshot
     //
-    var frames = [frame_init]
+    var frame_s = [frame_init]
     for (var i=0; i<n_cycles; i++) {
         //
-        // Prepare instruction
+        // Prepare instruction for each mech
         //
         const instr = instructions[i % instructions.length];
         var instruction_per_mech = {}
@@ -46,18 +46,19 @@ export default function simulator(
         }
 
         // Run simulate_one_cycle()
-        const frame = _simulate_one_cycle (
+        const last_frame = frame_s[frame_s.length-1]
+        const new_frame = _simulate_one_cycle (
             instruction_per_mech,
-            frames[frames.length-1],
+            last_frame,
             constants
         )
-        console.log('frame', i, ":", frame)
+        // console.log('frame.atoms', i, ":", JSON.stringify(frame.atoms))
 
         // Record frame emitted
-        frames.push(frame)
+        frame_s.push(new_frame)
     }
 
-    return frames
+    return frame_s
 }
 
 //
@@ -79,7 +80,7 @@ function _simulate_one_cycle (
     // Iterate through each mechs
     //
     var mechs_new = []
-    var atoms_new = atoms_curr
+    var atoms_new = JSON.parse(JSON.stringify(atoms_curr)) // object cloning
     var grid_populated_bools_new = JSON.parse(JSON.stringify(grid_populated_bools)) // object cloning
 
     for (const mech of mechs_curr) {

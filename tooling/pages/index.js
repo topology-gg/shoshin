@@ -10,8 +10,7 @@ export default function Home() {
     const INIT_PROGRAM = 'XP,XP,GET,XN,XN,PUT'
     const MECH_INIT_X = 3
     const MECH_INIT_Y = 3
-    const ATOM_INIT_X = 6
-    const ATOM_INIT_Y = 3
+    const ATOM_INIT_XY = [{x:6, y:3}]
     const DIM = 20
 
     // React states
@@ -22,6 +21,8 @@ export default function Home() {
 
     // React reference
     const animationIndexRef = useRef();
+    const atomInitStatesRef = useRef([]); // contain index and status; atom status = {'free', 'possessed'}
+    const mechInitStatesRef = useRef([]); // contain index and status; mech status = {'open', 'closed'}
     const atomStatesRef = useRef([]); // contain index and status; atom status = {'free', 'possessed'}
     const mechStatesRef = useRef([]); // contain index and status; mech status = {'open', 'closed'}
     const framesRef = useRef([]);
@@ -37,22 +38,17 @@ export default function Home() {
             setInstructions (instructions)
 
             // Prepare input
-            const mechs = mechStatesRef.current
-            const atoms = [{status:'free', index:{x:ATOM_INIT_X, y:ATOM_INIT_Y}, id:'atom0', typ:'vanilla', possessed_by:null}]
             const constants = {DIM:DIM}
-            console.log("mechs input:", mechs)
-            console.log("atoms input:", atoms) // why does this line not print index:{x:ATOM_INIT_X, y:ATOM_INIT_Y} as assigned on L41??
 
             // Run simulation to get all frames and set to reference
             const frames = simulator (
-                10, // n_cycles,
-                mechs,
-                atoms,
+                20, // n_cycles,
+                mechInitStatesRef.current,
+                atomInitStatesRef.current,
                 instructions, // instructions
                 constants,
             )
             framesRef.current = frames
-            // console.log('frames:',frames)
 
             // Begin animation
             setAnimationState ('Run')
@@ -88,7 +84,7 @@ export default function Home() {
         const x = parseInt(x_str)
         if (x < DIM & x >= 0) {
 
-            mechStatesRef.current[0].index.x = x;
+            mechInitStatesRef.current[0].index.x = x;
 
             for (const mech of mechStatesRef.current) {
                 document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
@@ -104,7 +100,7 @@ export default function Home() {
         const y = parseInt(y_str)
         if (y < DIM & y >= 0) {
 
-            mechStatesRef.current[0].index.y = y;
+            mechInitStatesRef.current[0].index.y = y;
 
             for (const mech of mechStatesRef.current) {
                 document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
@@ -120,12 +116,16 @@ export default function Home() {
     function reset_scene (){
         // set reference values
         animationIndexRef.current = 0
-        atomStatesRef.current = [
-            {status:'free', index:{x:ATOM_INIT_X, y:ATOM_INIT_Y}, id:'atom0', typ:'vanilla', possessed_by:null}
-        ]
-        mechStatesRef.current = [
+        atomInitStatesRef.current = ATOM_INIT_XY.map(
+            function (xy,i) {
+                return {status:'free', index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null}
+            }
+        )
+        mechInitStatesRef.current = [
             {status:'open', index:{x:MECH_INIT_X, y:MECH_INIT_Y}, id:'mech0', typ:'singleton'}
         ]
+        atomStatesRef.current = atomInitStatesRef.current
+        mechStatesRef.current = mechInitStatesRef.current
         document.getElementById("input-mech-init-x").value = MECH_INIT_X
         document.getElementById("input-mech-init-y").value = MECH_INIT_Y
 
@@ -137,19 +137,6 @@ export default function Home() {
             document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
         }
     }
-
-    // // Timer for looping
-    // useEffect(() => {
-    //         if (animationState == 'Run') {
-    //             setLoop(
-    //                 setInterval(() => {simulationLoop()}, 300)
-    //             );
-    //         }
-    //         else {
-    //             clearInterval (loop);
-    //         }
-    //     }, [animationState]
-    // )
 
     function simulationLoop (){
         // clear current visual
@@ -166,7 +153,6 @@ export default function Home() {
     }
 
     function updateRefs (){
-        // console.log('running frame index:', animationIndexRef.current)
         const frame = framesRef.current [animationIndexRef.current]
 
         atomStatesRef.current = frame.atoms
