@@ -23,8 +23,12 @@ a {
     border: 1px solid #FF7A00;
 }
 
-.atom {
+.atom_free {
     background-color: #DA2C43;
+}
+
+.atom_possessed {
+    background-color: #FF6347;
 }
 
 * {

@@ -40,11 +40,13 @@ export default function Home() {
             setAnimationState ('Stop')
 
             for (const mech of mechStatesRef.current) {
+                console.log('remove mech:', mech)
                 document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.remove(`mech_${mech.status}`);
             }
 
             for (const atom of atomStatesRef.current) {
-                document.querySelector(`#cell-${atom.index.x}-${atom.index.x}`).classList.remove('atom');
+                console.log('remove atom:', atom)
+                document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.remove(`atom_${atom.status}`);
             }
 
             reset_scene ()
@@ -75,7 +77,6 @@ export default function Home() {
             mechStatesRef.current[0].index.y = y;
 
             for (const mech of mechStatesRef.current) {
-                console.log(mech.index.x, mech.index.y)
                 document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
             }
         }
@@ -100,7 +101,7 @@ export default function Home() {
 
         // draw to scene
         for (const atom of atomStatesRef.current) {
-            document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.add('atom');
+            document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.add(`atom_${atom.status}`);
         }
         for (const mech of mechStatesRef.current) {
             document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
@@ -140,7 +141,7 @@ export default function Home() {
 
     function clearVisual (){
         for (const atom of atomStatesRef.current) {
-            document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.remove('atom');
+            document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.remove(`atom_${atom.status}`);
         }
         for (const mech of mechStatesRef.current) {
             document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.remove(`mech_${mech.status}`);
@@ -149,7 +150,7 @@ export default function Home() {
 
     function setVisual (){
         for (const atom of atomStatesRef.current) {
-            document.querySelector(`#cell-${atomStatesRef.current[0].index.x}-${atomStatesRef.current[0].index.y}`).classList.add('atom');
+            document.querySelector(`#cell-${atomStatesRef.current[0].index.x}-${atomStatesRef.current[0].index.y}`).classList.add(`atom_${atom.status}`);
         }
         for (const mech of mechStatesRef.current) {
             document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.add(`mech_${mechStatesRef.current[0].status}`);
@@ -162,33 +163,43 @@ export default function Home() {
         const inst = instructions[animationIndexRef.current]
         if (inst == '_') return;
 
-        // Compute new mech
-        const mech = mechStatesRef.current[0]
-        const atom = atomStatesRef.current[0]
-        if (inst == 'XP' && mech.index.x < DIM) { // X += 1
-            mechStatesRef.current[0] = {index:{x:mech.index.x+1, y:mech.index.y}, status:mech.status}
+        // Iterate over all mechs and compute their new state
+        // TODO: support multiple mech types each with their instruction set
+        // TODO: refactor mech instruction decode and effect out of this file
+        for (const mech of mechStatesRef.current) {
+            const atom = atomStatesRef.current[0]
 
-            if (atom.status == 'possessed') {
-                atomStatesRef.current[0] = {index:mechStatesRef.current[0].index, status:atom.status}
-            }
-        }
-        else if (inst == 'XN' && mech.index.x > 0) { // X -= 1
-            mechStatesRef.current[0] = {index:{x:mech.index.x-1, y:mech.index.y}, status:mech.status}
+            if (inst == 'XP' && mech.index.x < DIM) { // X += 1
+                mechStatesRef.current[0] = {index:{x:mech.index.x+1, y:mech.index.y}, status:mech.status}
 
-            if (atom.status == 'possessed') {
-                atomStatesRef.current[0] = {index:mechStatesRef.current[0].index, status:atom.status}
+                // see if this mech possesses any atom, if so move it along
+                if (atom.status == 'possessed') {
+                    atomStatesRef.current[0] = {index:mechStatesRef.current[0].index, status:atom.status}
+                }
             }
-        }
-        else if (inst == 'GET' && mech.status == 'open') { // pick up atom if available in grid
-            mechStatesRef.current[0] = {index:mech.index, status:'close'}
-            if (isIdenticalIndex(mech.index, atom.index)) {
-                atomStatesRef.current[0] = {index:atom.index, status:'possessed'}
+            else if (inst == 'XN' && mech.index.x > 0) { // X -= 1
+                mechStatesRef.current[0] = {index:{x:mech.index.x-1, y:mech.index.y}, status:mech.status}
+
+                // see if this mech possesses any atom, if so move it along
+                if (atom.status == 'possessed') {
+                    atomStatesRef.current[0] = {index:mechStatesRef.current[0].index, status:atom.status}
+                }
             }
-        }
-        else if (inst == 'PUT' && mech.status == 'close') { // drop atom if currently possessing
-            mechStatesRef.current[0] = {index:mech.index, status:'open'}
-            if (isIdenticalIndex(mech.index, atom.index)) {
-                atomStatesRef.current[0] = {index:atom.index, status:'free'}
+            else if (inst == 'GET' && mech.status == 'open') { // pick up atom if available in grid
+                mechStatesRef.current[0] = {index:mech.index, status:'close'}
+
+                // see if this grid has free atom, if so possess it with this mech
+                if (isIdenticalIndex(mech.index, atom.index)) {
+                    atomStatesRef.current[0] = {index:atom.index, status:'possessed'}
+                }
+            }
+            else if (inst == 'PUT' && mech.status == 'close') { // drop atom if currently possessing
+                mechStatesRef.current[0] = {index:mech.index, status:'open'}
+
+                // see if both "this mech possesses atom" and "underlying grid is empty", if so free the atom
+                if (isIdenticalIndex(mech.index, atom.index)) {
+                    atomStatesRef.current[0] = {index:atom.index, status:'free'}
+                }
             }
         }
 
