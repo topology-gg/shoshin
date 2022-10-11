@@ -18,7 +18,7 @@ export default function Home() {
     const [program, setProgram] = useState(INIT_PROGRAM);
     const [instructions, setInstructions] = useState([]);
     const [animationState, setAnimationState] = useState ('Stop');
-    const [loop, setLoop] = useState();
+    const [loop, setLoop] = useState<NodeJS.Timer>();
 
     // React reference
     const animationIndexRef = useRef<number>();
@@ -83,7 +83,7 @@ export default function Home() {
 
         if (!x_str) return;
         const x = parseInt(x_str)
-        if (x < DIM & x >= 0) {
+        if (x < DIM && x >= 0) {
 
             mechInitStatesRef.current[0].index.x = x;
 
@@ -99,7 +99,7 @@ export default function Home() {
 
         if (!y_str) return;
         const y = parseInt(y_str)
-        if (y < DIM & y >= 0) {
+        if (y < DIM && y >= 0) {
 
             mechInitStatesRef.current[0].index.y = y;
 
@@ -236,13 +236,8 @@ export default function Home() {
                             <div key={`row-${i}`} className={styles.grid_row}>
                                 {
                                     Array.from({length:DIM}).map ((_,j) => (
-                                        (i==3) && (j==3) ?
-                                        <div id={`cell-${j}-${i}`} key={`cell-${j}-${i}`} className={styles.card} onClick={() => handleClick(i,j)}>
-                                            {/* {i},{j} */}·
-                                        </div>
-                                        :
-                                        <div id={`cell-${j}-${i}`} key={`cell-${j}-${i}`} className={styles.card} onClick={() => handleClick(i,j)}>
-                                            {/* {i},{j} */}·
+                                        <div id={`cell-${j}-${i}`} key={`cell-${j}-${i}`} className={styles.card} onClick={() => handleClick()}>
+                                            ·
                                         </div>
                                     ))
                                 }
