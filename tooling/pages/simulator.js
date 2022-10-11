@@ -7,10 +7,7 @@ export default function simulator(
     mechs,
     atoms,
     instructions,
-    constants,
-    // operators
-    // atom faucet
-    // atom sink
+    constants, // including atom faucet, operator, atom sink - these don't change in frames
 ) {
 
     //
@@ -19,16 +16,17 @@ export default function simulator(
     var grid_populated_bools = {}
     for (var i=0; i<constants.DIM; i++){
         for (var j=0; j<constants.DIM; j++){
-            grid_populated_bools[`x${i}y${j}`] = false
+            grid_populated_bools[JSON.stringify({x:i,y:j})] = false
         }
     }
     for (const atom of atoms) {
-        grid_populated_bools[`x${atom.index.x}y${atom.index.y}`] = true
+        grid_populated_bools[JSON.stringify(atom.index)] = true
     }
     const frame_init = {
         mechs: mechs,
         atoms: atoms,
-        grid_populated_bools: grid_populated_bools
+        grid_populated_bools: grid_populated_bools,
+        delivered_accumulated: []
     };
 
     //
@@ -77,12 +75,28 @@ function _simulate_one_cycle (
     const grid_populated_bools = frame_curr.grid_populated_bools // mapping 'x..y..' => true/false
 
     //
-    // Iterate through each mechs
+    // Prepare mutable variable for this cycle pass
     //
     var mechs_new = []
     var atoms_new = JSON.parse(JSON.stringify(atoms_curr)) // object cloning
     var grid_populated_bools_new = JSON.parse(JSON.stringify(grid_populated_bools)) // object cloning
 
+    //
+    // Iterate through atom faucets
+    //
+    for (const atom_faucet of constants.atom_faucets) {
+        if (grid_populated_bools_new[JSON.stringify(atom_faucet.index)] == false){
+            const atom_new = {
+                id: `atom${atoms_new.length}`, typ: atom_faucet.typ, status: 'free', index: atom_faucet.index, possessed_by: null
+            }
+            atoms_new.push (atom_new)
+            grid_populated_bools_new[JSON.stringify(atom_faucet.index)] = true
+        }
+    }
+
+    //
+    // Iterate through mechs
+    //
     for (const mech of mechs_curr) {
         const instruction = instruction_per_mech[mech.id]
 
@@ -132,10 +146,10 @@ function _simulate_one_cycle (
         else if (instruction == 'GET'){
             if (
                     (mech.status == 'open') &&
-                    (grid_populated_bools[`x${mech.index.x}y${mech.index.y}`] == true) // atom available for grab here
+                    (grid_populated_bools[JSON.stringify(mech.index)] == true) // atom available for grab here
             ) {
                 mech_new.status = 'close'
-                grid_populated_bools_new[`x${mech.index.x}y${mech.index.y}`] = false
+                grid_populated_bools_new[JSON.stringify(mech.index)] = false
 
                 atoms_new.forEach(function (atom, i, theArray) {
                     if ( isIdenticalObj(atom.index, mech.index) ){
@@ -150,10 +164,10 @@ function _simulate_one_cycle (
         else if (instruction == 'PUT'){
             if (
                     (mech.status=='close') &&
-                    (grid_populated_bools[`x${mech.index.x}y${mech.index.y}`] == false) // can drop atom here
+                    (grid_populated_bools[JSON.stringify(mech.index)] == false) // can drop atom here
             ) {
                 mech_new.status = 'open'
-                grid_populated_bools_new[`x${mech.index.x}y${mech.index.y}`] = true
+                grid_populated_bools_new[JSON.stringify(mech.index)] = true
 
                 atoms_new.forEach(function (atom, i, theArray) {
                     if (atom.possessed_by == mech.id){
@@ -166,7 +180,27 @@ function _simulate_one_cycle (
             }
         }
 
+        console.log('atoms_new:', JSON.stringify(atoms_new))
+
         mechs_new.push (mech_new)
+    }
+
+    //
+    // Iterate through atom sinks
+    //
+    var delivered_accumulated_new = JSON.parse(JSON.stringify(frame_curr.delivered_accumulated))
+    for (const atom_sink of constants.atom_sinks) {
+        // iterate through atoms, see if a 'free' one is lying at this sink
+        atoms_new.forEach(function (atom, i, theArray) {
+            if ( isIdenticalObj(atom.index, atom_sink.index) && atom.status=='free' ){
+                var atom_new = theArray[i]
+                atom_new.status = 'delivered'
+                atom_new.possessed_by = null
+                theArray[i] = atom_new
+
+                delivered_accumulated_new.push (atom_new.typ)
+            }
+        });
     }
 
     //
@@ -175,7 +209,8 @@ function _simulate_one_cycle (
     const frame_new = {
         mechs: mechs_new,
         atoms: atoms_new,
-        grid_populated_bools: grid_populated_bools_new
+        grid_populated_bools: grid_populated_bools_new,
+        delivered_accumulated: delivered_accumulated_new
     }
     return frame_new
 }

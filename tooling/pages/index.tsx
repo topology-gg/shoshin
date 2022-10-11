@@ -9,10 +9,10 @@ export default function Home() {
 
     // Constants
     const INIT_PROGRAM = 'XP,XP,GET,XN,XN,PUT'
-    const MECH_INIT_X = 3
-    const MECH_INIT_Y = 3
-    const ATOM_INIT_XY = [{x:6, y:3}]
-    const DIM = 20
+    const MECH_INIT_X = 2
+    const MECH_INIT_Y = 2
+    const ATOM_INIT_XY = [{x:5, y:3}]
+    const DIM = 8
 
     // React states
     const [program, setProgram] = useState(INIT_PROGRAM);
@@ -39,7 +39,11 @@ export default function Home() {
             setInstructions (instructions)
 
             // Prepare input
-            const constants = {DIM:DIM}
+            const constants = {
+                DIM:DIM,
+                atom_faucets: [{id:'atom_faucet0', typ:'vanilla', index:{x:0,y:0}}],
+                atom_sinks: [{id:'atom_faucet0', typ:'vanilla', index:{x:DIM-1,y:DIM-1}}]
+            }
 
             // Run simulation to get all frames and set to reference
             const frames = simulator (
@@ -50,6 +54,8 @@ export default function Home() {
                 constants,
             )
             framesRef.current = frames
+
+            console.log('delivered_accumulated at the last frame:', frames[frames.length-1].delivered_accumulated)
 
             // Begin animation
             setAnimationState ('Run')
