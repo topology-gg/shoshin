@@ -38,10 +38,10 @@ export default function Home() {
 
             // Prepare input
             const mechs = mechStatesRef.current
-            const atoms = atomStatesRef.current
+            const atoms = [{status:'free', index:{x:ATOM_INIT_X, y:ATOM_INIT_Y}, id:'atom0', typ:'vanilla', possessed_by:null}]
             const constants = {DIM:DIM}
             console.log("mechs input:", mechs)
-            console.log("atoms input:", atoms)
+            console.log("atoms input:", atoms) // why does this line not print index:{x:ATOM_INIT_X, y:ATOM_INIT_Y} as assigned on L41??
 
             // Run simulation to get all frames and set to reference
             const frames = simulator (
