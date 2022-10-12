@@ -1,7 +1,6 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useRef, useCallback} from 'react';
 import simulator from "./simulator"
 import MechState, { MechStatus } from '../src/types/MechState';
 import AtomState, { AtomStatus } from '../src/types/AtomState';
@@ -11,6 +10,7 @@ import BoardConfig from '../src/types/BoardConfig';
 import Frame from '../src/types/Frame';
 import Unit from './unit';
 import UnitState, {BgStatus, BorderStatus} from '../src/types/UnitState';
+import Grid from '../src/types/Grid';
 
 export default function Home() {
 
@@ -34,16 +34,24 @@ export default function Home() {
     const [program, setProgram] = useState(INIT_PROGRAM);
     const [instructions, setInstructions] = useState([]);
     const [animationState, setAnimationState] = useState ('Stop');
+    const [animationFrame, setAnimationFrame] = useState<number> (0)
+    const [mechInitPos, setMechInitPos] = useState<Grid> ({ x: MECH_INIT_X, y: MECH_INIT_Y })
+    const [frames, setFrames] = useState<Frame[]>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
-    const [unitStates, setUnitStates] = useState<UnitState[][]>(unitStatesInit); // UnitState[x][y]
 
-    // React reference
-    const animationIndexRef = useRef<number>();
-    const atomInitStatesRef = useRef<AtomState[]>();
-    const mechInitStatesRef = useRef<MechState[]>();
-    const atomStatesRef = useRef<AtomState[]>();
-    const mechStatesRef = useRef<MechState[]>();
-    const framesRef = useRef([]);
+    let mechInitStates = [
+        { status: MechStatus.OPEN, index: mechInitPos, id: 'mech0', typ: 'singleton' }
+    ] as MechState[]
+    let atomInitStates = ATOM_INIT_XY.map(
+        function (xy,i) {
+            return {status:AtomStatus.FREE, index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null} as AtomState
+        }
+    )
+
+    const frame = frames?.[animationFrame]
+
+    const atomStates = frame?.atoms || atomInitStates
+    const mechStates = frame?.mechs || mechInitStates
 
     // Set mech visual
     function setMechVisualForStates (mech: MechState, states: UnitState[][]){
@@ -87,26 +95,26 @@ export default function Home() {
             } as BoardConfig
 
             // Run simulation to get all frames and set to reference
-            const frames = simulator (
+            const simulatedFrames = simulator (
                 20, // n_cycles,
-                mechInitStatesRef.current,
-                atomInitStatesRef.current,
+                mechInitStates,
+                atomInitStates,
                 instructions, // instructions
                 boardConfig,
             )
-            framesRef.current = frames
+            setFrames (simulatedFrames)
 
-            frames.forEach((f:Frame,i:number) => {
+            simulatedFrames.forEach((f:Frame,i:number) => {
                 const s = f.mechs.map(function(v){return JSON.stringify(v)}).join('\n')
                 console.log(i, s)
             })
-            console.log('delivered_accumulated at the last frame:', frames[frames.length-1].delivered_accumulated)
+            console.log('delivered_accumulated at the last frame:', simulatedFrames[simulatedFrames.length-1].delivered_accumulated)
 
             // Begin animation
             setAnimationState ('Run')
             setLoop(
                 setInterval(() => {
-                    simulationLoop()
+                    simulationLoop(simulatedFrames)
                 }, ANIM_FRAME_LATENCY)
             );
             // console.log('Running with instruction:', instructions)
@@ -116,169 +124,53 @@ export default function Home() {
         else {
             setAnimationState ('Stop')
             clearInterval (loop);
-
-            // set react states
-            setUnitStates ((prevStates) => {
-                // cache react states
-                let newUnitStates = JSON.parse(JSON.stringify(prevStates)) // duplicate
-
-                // clear visual
-                newUnitStates = clearVisualForStates (newUnitStates)
-
-                // reset scene to initial state
-                newUnitStates = resetSceneForStates (newUnitStates)
-                return newUnitStates
-            })
         }
     }
 
     function setMechInitX (x_str: string){
 
-        // clear visual first
-        // document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
-        setUnitStates((prevStates) => {
-            let newUnitStates: UnitState[][] = JSON.parse(JSON.stringify(prevStates)) // duplicate
-            newUnitStates[mechStatesRef.current[0].index.x][mechStatesRef.current[0].index.y].border_status = BorderStatus.EMPTY
-            return newUnitStates
-        })
-
         if (!x_str) return;
         const x = parseInt(x_str)
         if (x < DIM && x >= 0) {
-
-            mechInitStatesRef.current[0].index.x = x;
-
-            setUnitStates ((prevStates) => {
-                let newUnitStates = JSON.parse(JSON.stringify(prevStates)) // duplicate
-                for (const mech of mechInitStatesRef.current) {
-                    newUnitStates = setMechVisualForStates (mech, newUnitStates)
-                }
-                return newUnitStates
-            })
+            setMechInitPos((prev) => ({ ...prev, x }))
         }
     }
     function setMechInitY (y_str: string){
 
-        // clear visual first
-        // document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
-        setUnitStates((prevStates) => {
-            let newUnitStates: UnitState[][] = JSON.parse(JSON.stringify(prevStates)) // duplicate
-            newUnitStates[mechStatesRef.current[0].index.x][mechStatesRef.current[0].index.y].border_status = BorderStatus.EMPTY
-            return newUnitStates
-        })
-
         if (!y_str) return;
         const y = parseInt(y_str)
         if (y < DIM && y >= 0) {
-
-            mechInitStatesRef.current[0].index.y = y;
-
-            setUnitStates ((prevStates) => {
-                let newUnitStates = JSON.parse(JSON.stringify(prevStates)) // duplicate
-                for (const mech of mechInitStatesRef.current) {
-                    newUnitStates = setMechVisualForStates (mech, newUnitStates)
-                }
-                return newUnitStates
-            })
+            setMechInitPos((prev) => ({ ...prev, y }))
         }
     }
 
-    // Initialize scene
-    useEffect(() => {
-        setUnitStates ((prevStates) => {
-            let newUnitStates = JSON.parse(JSON.stringify(prevStates)) // duplicate
-            newUnitStates = resetSceneForStates (newUnitStates)
-            return newUnitStates
-        })
-    }, [])
-
-    function resetSceneForStates (states: UnitState[][]){
-        // set reference values
-        animationIndexRef.current = 0
-        atomInitStatesRef.current = ATOM_INIT_XY.map(
-            function (xy,i) {
-                return {status:AtomStatus.FREE, index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null} as AtomState
+    const simulationLoop = (frames) => {
+        setAnimationFrame((prev) => {
+            if (prev >= frames.length - 1) {
+                return 0
             }
-        )
-        mechInitStatesRef.current = [
-            {status:MechStatus.OPEN, index:{x:MECH_INIT_X, y:MECH_INIT_Y}, id:'mech0', typ:'singleton'}
-        ] as MechState[]
-        atomStatesRef.current = atomInitStatesRef.current;
-        mechStatesRef.current = mechInitStatesRef.current;
-        (document.getElementById("input-mech-init-x") as HTMLInputElement).value = MECH_INIT_X.toString();
-        (document.getElementById("input-mech-init-y") as HTMLInputElement).value = MECH_INIT_Y.toString();
-
-        // draw to scene
-        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
-        newStates = setVisualForStates (newStates)
-
-        return newStates
-    }
-
-    function simulationLoop (){
-        // update react states
-        setUnitStates ((prevStates) => {
-            // cache current react states as mutable variable for this frame pass
-            let newUnitStates = JSON.parse(JSON.stringify(prevStates))
-
-            // clear current visual
-            newUnitStates = clearVisualForStates (newUnitStates)
-
-            // update refs from a new frame
-            updateRefs ()
-
-            // set new visual
-            newUnitStates = setVisualForStates (newUnitStates)
-
-            // housekeeping 
-            // FIXME: I think this gets called at the wrong time
-            updateAnimationIndex ()
-
-            return newUnitStates
+            else {
+                return prev + 1
+            }
         })
     }
 
-    function updateRefs (){
-        const frame = framesRef.current [animationIndexRef.current]
-
-        atomStatesRef.current = frame.atoms
-        mechStatesRef.current = frame.mechs
-    }
-
-    function clearVisualForStates (states: UnitState[][]){
+    function setVisualForStates (atomStates: AtomState[], mechStates: MechState[], states: UnitState[][]){
         let newStates = JSON.parse(JSON.stringify(states)) // duplicate
 
-        for (const mech of mechStatesRef.current) {
-            newStates[mech.index.x][mech.index.y].border_status = BorderStatus.EMPTY
-        }
-        for (const atom of atomStatesRef.current) {
-            newStates[atom.index.x][atom.index.y].bg_status = BgStatus.EMPTY
-        }
-
-        return newStates
-    }
-
-    function setVisualForStates (states: UnitState[][]){
-        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
-
-        for (const atom of atomStatesRef.current) {
+        for (const atom of atomStates) {
             newStates = setAtomVisualForStates (atom, newStates)
         }
-        for (const mech of mechStatesRef.current) {
+        for (const mech of mechStates) {
             newStates = setMechVisualForStates (mech, newStates)
         }
 
         return newStates
     }
 
-    function updateAnimationIndex (){
-        if (animationIndexRef.current == framesRef.current.length - 1) {
-            animationIndexRef.current = 0
-        }
-        else {
-            animationIndexRef.current += 1
-        }
-    }
+    let unitStates: UnitState[][]
+
+    unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit)
 
     // Render
     return (
