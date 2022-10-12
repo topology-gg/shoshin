@@ -1,7 +1,7 @@
 import {useState, useEffect, useRef, CSSProperties} from 'react';
 import UnitState, {BgStatus, BorderStatus} from '../src/types/UnitState';
 
-export default function Unit({ state }) {
+export default function Unit({ state }: { state: UnitState }) {
 
     // Constants
     const gridStyle = {
@@ -30,10 +30,10 @@ export default function Unit({ state }) {
         style = {...style, backgroundColor: '#FF6347'}
     }
 
-    if (state.border_status === BorderStatus.SINGLETON_OPEN) {
-        style = {...style, border: '1px solid #FFFFFF'}
+    if (state.border_status == BorderStatus.SINGLETON_OPEN) {
+        style = {...style, border: '1px solid #DDDDDD'}
     }
-    else if (state.border_status === BorderStatus.SINGLETON_CLOSE) {
+    else if (state.border_status == BorderStatus.SINGLETON_CLOSE) {
         style = {...style, border: '1px solid #FF7A00'}
     }
 
