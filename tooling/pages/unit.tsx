@@ -23,17 +23,17 @@ export default function Unit({ state }) {
 
     // Compute style based on props (from parent's React state)
     var style = gridStyle;
-    if (state.bg_status == BgStatus.ATOM_VANILLA_FREE) {
+    if (state.bg_status === BgStatus.ATOM_VANILLA_FREE) {
         style = {...style, backgroundColor: '#DA2C43'}
     }
-    else if (state.bg_status == BgStatus.ATOM_VANILLA_POSSESSED) {
+    else if (state.bg_status === BgStatus.ATOM_VANILLA_POSSESSED) {
         style = {...style, backgroundColor: '#FF6347'}
     }
 
-    if (state.bg_status == BorderStatus.SINGLETON_OPEN) {
+    if (state.border_status === BorderStatus.SINGLETON_OPEN) {
         style = {...style, border: '1px solid #FFFFFF'}
     }
-    else if (state.bg_status == BorderStatus.SINGLETON_CLOSE) {
+    else if (state.border_status === BorderStatus.SINGLETON_CLOSE) {
         style = {...style, border: '1px solid #FF7A00'}
     }
 

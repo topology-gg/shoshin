@@ -15,7 +15,8 @@ import UnitState, {BgStatus, BorderStatus} from '../src/types/UnitState';
 export default function Home() {
 
     // Constants
-    const INIT_PROGRAM = 'D,D,Z,A,A,X'
+    const ANIM_FRAME_LATENCY = 300
+    const INIT_PROGRAM = 'D,D,A,A'
     const MECH_INIT_X = 2
     const MECH_INIT_Y = 2
     const ATOM_INIT_XY = [{x:5, y:3}]
@@ -45,31 +46,27 @@ export default function Home() {
     const framesRef = useRef([]);
 
     // Set mech visual
-    function setMechVisual (mech: MechState){
+    function setMechVisualForStates (mech: MechState, states: UnitState[][]){
+        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
         if (mech.status == MechStatus.OPEN){
-            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
-            newUnitStates[mech.index.x][mech.index.y].border_status = BorderStatus.SINGLETON_OPEN
-            setUnitStates (newUnitStates)
+            newStates[mech.index.x][mech.index.y].border_status = BorderStatus.SINGLETON_OPEN
         }
         else {
-            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
-            newUnitStates[mech.index.x][mech.index.y].border_status = BorderStatus.SINGLETON_CLOSE
-            setUnitStates (newUnitStates)
+            newStates[mech.index.x][mech.index.y].border_status = BorderStatus.SINGLETON_CLOSE
         }
+        return newStates
     }
 
     // Set atom visual
-    function setAtomVisual (atom: AtomState){
+    function setAtomVisualForStates (atom: AtomState, states: UnitState[][]){
+        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
         if (atom.status == AtomStatus.FREE){
-            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
-            newUnitStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_FREE
-            setUnitStates (newUnitStates)
+            newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_FREE
         }
         else {
-            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
-            newUnitStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_POSSESSED
-            setUnitStates (newUnitStates)
+            newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_POSSESSED
         }
+        return newStates
     }
 
     // Handle click event
@@ -100,7 +97,7 @@ export default function Home() {
             framesRef.current = frames
 
             frames.forEach((f:Frame,i:number) => {
-                const s = f.atoms.map(function(v){return JSON.stringify(v)}).join('\n')
+                const s = f.mechs.map(function(v){return JSON.stringify(v)}).join('\n')
                 console.log(i, s)
             })
             console.log('delivered_accumulated at the last frame:', frames[frames.length-1].delivered_accumulated)
@@ -108,7 +105,9 @@ export default function Home() {
             // Begin animation
             setAnimationState ('Run')
             setLoop(
-                setInterval(() => {simulationLoop()}, 300)
+                setInterval(() => {
+                    simulationLoop()
+                }, ANIM_FRAME_LATENCY)
             );
             // console.log('Running with instruction:', instructions)
         }
@@ -118,11 +117,17 @@ export default function Home() {
             setAnimationState ('Stop')
             clearInterval (loop);
 
+            // cache react states
+            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
+
             // clear visual
-            clearVisual ()
+            newUnitStates = clearVisualForStates (newUnitStates)
 
             // reset scene to initial state
-            reset_scene ()
+            newUnitStates = resetSceneForStates (newUnitStates)
+
+            // set react states
+            setUnitStates (newUnitStates)
         }
     }
 
@@ -138,9 +143,11 @@ export default function Home() {
 
             mechInitStatesRef.current[0].index.x = x;
 
+            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
             for (const mech of mechInitStatesRef.current) {
-                setMechVisual (mech)
+                newUnitStates = setMechVisualForStates (mech, newUnitStates)
             }
+            setUnitStates (newUnitStates)
         }
     }
     function setMechInitY (y_str: string){
@@ -155,27 +162,31 @@ export default function Home() {
 
             mechInitStatesRef.current[0].index.y = y;
 
+            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
             for (const mech of mechInitStatesRef.current) {
-                setMechVisual (mech)
+                newUnitStates = setMechVisualForStates (mech, newUnitStates)
             }
+            setUnitStates (newUnitStates)
         }
     }
 
     // Initialize scene
     useEffect(() => {
-        reset_scene ()
+        let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
+        newUnitStates = resetSceneForStates (newUnitStates)
+        setUnitStates (newUnitStates)
     }, [])
 
-    function reset_scene (){
+    function resetSceneForStates (states: UnitState[][]){
         // set reference values
         animationIndexRef.current = 0
         atomInitStatesRef.current = ATOM_INIT_XY.map(
             function (xy,i) {
-                return {status:'free', index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null} as AtomState
+                return {status:AtomStatus.FREE, index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null} as AtomState
             }
         )
         mechInitStatesRef.current = [
-            {status:'open', index:{x:MECH_INIT_X, y:MECH_INIT_Y}, id:'mech0', typ:'singleton'}
+            {status:MechStatus.OPEN, index:{x:MECH_INIT_X, y:MECH_INIT_Y}, id:'mech0', typ:'singleton'}
         ] as MechState[]
         atomStatesRef.current = atomInitStatesRef.current;
         mechStatesRef.current = mechInitStatesRef.current;
@@ -183,27 +194,30 @@ export default function Home() {
         (document.getElementById("input-mech-init-y") as HTMLInputElement).value = MECH_INIT_Y.toString();
 
         // draw to scene
-        for (const atom of atomStatesRef.current) {
-            setAtomVisual (atom)
-        }
-        for (const mech of mechStatesRef.current) {
-            setMechVisual (mech)
-        }
-        console.log('reset_scene() completed')
+        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
+        newStates = setVisualForStates (newStates)
+
+        return newStates
     }
 
     function simulationLoop (){
+        // cache current react states as mutable variable for this frame pass
+        let newUnitStates = JSON.parse(JSON.stringify(unitStates))
+
         // clear current visual
-        clearVisual ()
+        newUnitStates = clearVisualForStates (newUnitStates)
 
         // update refs from a new frame
         updateRefs ()
 
         // set new visual
-        setVisual ()
+        newUnitStates = setVisualForStates (newUnitStates)
 
         // housekeeping
         updateAnimationIndex ()
+
+        // update react states
+        setUnitStates (newUnitStates)
     }
 
     function updateRefs (){
@@ -213,26 +227,30 @@ export default function Home() {
         mechStatesRef.current = frame.mechs
     }
 
-    function clearVisual (){
+    function clearVisualForStates (states: UnitState[][]){
+        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
+
         for (const mech of mechStatesRef.current) {
-            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
-            newUnitStates[mech.index.x][mech.index.y].border_status = BorderStatus.EMPTY
-            setUnitStates (newUnitStates)
+            newStates[mech.index.x][mech.index.y].border_status = BorderStatus.EMPTY
         }
         for (const atom of atomStatesRef.current) {
-            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
-            newUnitStates[atom.index.x][atom.index.y].bg_status = BgStatus.EMPTY
-            setUnitStates (newUnitStates)
+            newStates[atom.index.x][atom.index.y].bg_status = BgStatus.EMPTY
         }
+
+        return newStates
     }
 
-    function setVisual (){
+    function setVisualForStates (states: UnitState[][]){
+        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
+
         for (const atom of atomStatesRef.current) {
-            setAtomVisual (atom)
+            newStates = setAtomVisualForStates (atom, newStates)
         }
         for (const mech of mechStatesRef.current) {
-            setMechVisual (mech)
+            newStates = setMechVisualForStates (mech, newStates)
         }
+
+        return newStates
     }
 
     function updateAnimationIndex (){
