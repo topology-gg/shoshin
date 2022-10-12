@@ -11,6 +11,23 @@ a {
   text-decoration: none;
 }
 
+.grid {
+    display: flex;
+    font-size: 0.2em;
+    margin: 0.2rem;
+    padding: 0rem;
+    width: 1rem;
+    height:1rem;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: color 0.15s ease, border-color 0.15s ease;
+    max-width: 300px;
+}
+
 .machine {
     background-color: #0070f3;
 }

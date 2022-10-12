@@ -3,12 +3,14 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import {useState, useEffect, useRef} from 'react';
 import simulator from "./simulator"
-import MechState from '../src/types/MechState';
-import AtomState from '../src/types/AtomState';
+import MechState, { MechStatus } from '../src/types/MechState';
+import AtomState, { AtomStatus } from '../src/types/AtomState';
 import AtomFaucetState from '../src/types/AtomFaucetState';
 import AtomSinkState from '../src/types/AtomSinkState';
 import BoardConfig from '../src/types/BoardConfig';
 import Frame from '../src/types/Frame';
+import Unit from './unit';
+import UnitState, {BgStatus, BorderStatus} from '../src/types/UnitState';
 
 export default function Home() {
 
@@ -18,12 +20,21 @@ export default function Home() {
     const MECH_INIT_Y = 2
     const ATOM_INIT_XY = [{x:5, y:3}]
     const DIM = 8
+    const UNIT_STATE_INIT = {
+        bg_status: BgStatus.EMPTY,
+        border_status: BorderStatus.EMPTY
+    } as UnitState
+    var unitStatesInit = []
+    for (var i=0; i<DIM; i++){
+        unitStatesInit.push(Array(DIM).fill(UNIT_STATE_INIT))
+    }
 
     // React states
     const [program, setProgram] = useState(INIT_PROGRAM);
     const [instructions, setInstructions] = useState([]);
     const [animationState, setAnimationState] = useState ('Stop');
     const [loop, setLoop] = useState<NodeJS.Timer>();
+    const [unitStates, setUnitStates] = useState<UnitState[][]>(unitStatesInit); // UnitState[x][y]
 
     // React reference
     const animationIndexRef = useRef<number>();
@@ -32,6 +43,34 @@ export default function Home() {
     const atomStatesRef = useRef<AtomState[]>();
     const mechStatesRef = useRef<MechState[]>();
     const framesRef = useRef([]);
+
+    // Set mech visual
+    function setMechVisual (mech: MechState){
+        if (mech.status == MechStatus.OPEN){
+            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
+            newUnitStates[mech.index.x][mech.index.y].border_status = BorderStatus.SINGLETON_OPEN
+            setUnitStates (newUnitStates)
+        }
+        else {
+            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
+            newUnitStates[mech.index.x][mech.index.y].border_status = BorderStatus.SINGLETON_CLOSE
+            setUnitStates (newUnitStates)
+        }
+    }
+
+    // Set atom visual
+    function setAtomVisual (atom: AtomState){
+        if (atom.status == AtomStatus.FREE){
+            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
+            newUnitStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_FREE
+            setUnitStates (newUnitStates)
+        }
+        else {
+            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
+            newUnitStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_POSSESSED
+            setUnitStates (newUnitStates)
+        }
+    }
 
     // Handle click event
     function handleClick (){
@@ -79,22 +118,19 @@ export default function Home() {
             setAnimationState ('Stop')
             clearInterval (loop);
 
-            for (const mech of mechStatesRef.current) {
-                document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.remove(`mech_${mech.status}`);
-            }
+            // clear visual
+            clearVisual ()
 
-            for (const atom of atomStatesRef.current) {
-                document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.remove(`atom_${atom.status}`);
-            }
-
+            // reset scene to initial state
             reset_scene ()
         }
     }
 
-    function setMechInitX (x_str){
+    function setMechInitX (x_str: string){
 
         // clear visual first
-        document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
+        // document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
+        unitStates[mechStatesRef.current[0].index.x][mechStatesRef.current[0].index.y].border_status = BorderStatus.EMPTY
 
         if (!x_str) return;
         const x = parseInt(x_str)
@@ -102,15 +138,16 @@ export default function Home() {
 
             mechInitStatesRef.current[0].index.x = x;
 
-            for (const mech of mechStatesRef.current) {
-                document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
+            for (const mech of mechInitStatesRef.current) {
+                setMechVisual (mech)
             }
         }
     }
-    function setMechInitY (y_str){
+    function setMechInitY (y_str: string){
 
         // clear visual first
-        document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
+        // document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
+        unitStates[mechStatesRef.current[0].index.x][mechStatesRef.current[0].index.y].border_status = BorderStatus.EMPTY
 
         if (!y_str) return;
         const y = parseInt(y_str)
@@ -118,8 +155,8 @@ export default function Home() {
 
             mechInitStatesRef.current[0].index.y = y;
 
-            for (const mech of mechStatesRef.current) {
-                document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
+            for (const mech of mechInitStatesRef.current) {
+                setMechVisual (mech)
             }
         }
     }
@@ -147,11 +184,12 @@ export default function Home() {
 
         // draw to scene
         for (const atom of atomStatesRef.current) {
-            document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.add(`atom_${atom.status}`);
+            setAtomVisual (atom)
         }
         for (const mech of mechStatesRef.current) {
-            document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
+            setMechVisual (mech)
         }
+        console.log('reset_scene() completed')
     }
 
     function simulationLoop (){
@@ -176,20 +214,24 @@ export default function Home() {
     }
 
     function clearVisual (){
-        for (const atom of atomStatesRef.current) {
-            document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.remove(`atom_${atom.status}`);
-        }
         for (const mech of mechStatesRef.current) {
-            document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.remove(`mech_${mech.status}`);
+            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
+            newUnitStates[mech.index.x][mech.index.y].border_status = BorderStatus.EMPTY
+            setUnitStates (newUnitStates)
+        }
+        for (const atom of atomStatesRef.current) {
+            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
+            newUnitStates[atom.index.x][atom.index.y].bg_status = BgStatus.EMPTY
+            setUnitStates (newUnitStates)
         }
     }
 
     function setVisual (){
         for (const atom of atomStatesRef.current) {
-            document.querySelector(`#cell-${atomStatesRef.current[0].index.x}-${atomStatesRef.current[0].index.y}`).classList.add(`atom_${atom.status}`);
+            setAtomVisual (atom)
         }
         for (const mech of mechStatesRef.current) {
-            document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.add(`mech_${mechStatesRef.current[0].status}`);
+            setMechVisual (mech)
         }
     }
 
@@ -247,13 +289,14 @@ export default function Home() {
 
                 <div className={styles.grid_parent}>
                     {
-                        Array.from({length:DIM}).map ((_,i) => (
+                        Array.from({length:DIM}).map ((_,i) => ( // i is y
                             <div key={`row-${i}`} className={styles.grid_row}>
                                 {
-                                    Array.from({length:DIM}).map ((_,j) => (
-                                        <div id={`cell-${j}-${i}`} key={`cell-${j}-${i}`} className={styles.card} onClick={() => handleClick()}>
-                                            ·
-                                        </div>
+                                    Array.from({length:DIM}).map ((_,j) => ( // j is x
+                                        // <div id={`cell-${j}-${i}`} key={`cell-${j}-${i}`} className={styles.card}>
+                                        //     ·
+                                        // </div>
+                                        <Unit key={`unit-${j}-${i}`} state={unitStates[j][i]}/>
                                     ))
                                 }
                             </div>
