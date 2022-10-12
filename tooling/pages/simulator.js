@@ -99,9 +99,9 @@ function _simulate_one_cycle (
     //
     for (const mech of mechs_curr) {
         const instruction = instruction_per_mech[mech.id]
-
         var mech_new = {id:mech.id, typ:mech.typ, index:mech.index, status:mech.status}
-        if (instruction == 'XP'){
+
+        if (instruction == 'D'){ // x-positive
             if (mech.index.x < constants.DIM) {
                 // move mech
                 mech_new.index = {x:mech.index.x+1, y:mech.index.y}
@@ -116,7 +116,7 @@ function _simulate_one_cycle (
                 });
             }
         }
-        else if (instruction == 'XN'){
+        else if (instruction == 'A'){ // x-negative
             if (mech.index.x > 0) {
                 // move mech
                 mech_new.index = {x:mech.index.x-1, y:mech.index.y}
@@ -131,19 +131,19 @@ function _simulate_one_cycle (
                 });
             }
         }
-        else if (instruction == 'YP'){
+        else if (instruction == 'S'){ // y-positive
             if (mech.index.y < DIM) {
                 mech_new.index = {x:mech.index.x, y:mech.index.y+1}
                 // TODO: move atom if possessed
             }
         }
-        else if (instruction == 'YN'){
+        else if (instruction == 'W'){ // y-negative
             if (mech.index.y > 0) {
                 mech_new.index = {x:mech.index.x, y:mech.index.y-1}
                 // TODO: move atom if possessed
             }
         }
-        else if (instruction == 'GET'){
+        else if (instruction == 'Z'){ // GET
             if (
                     (mech.status == 'open') &&
                     (grid_populated_bools[JSON.stringify(mech.index)] == true) // atom available for grab here
@@ -161,7 +161,7 @@ function _simulate_one_cycle (
                 });
             }
         }
-        else if (instruction == 'PUT'){
+        else if (instruction == 'X'){ // PUT
             if (
                     (mech.status=='close') &&
                     (grid_populated_bools[JSON.stringify(mech.index)] == false) // can drop atom here

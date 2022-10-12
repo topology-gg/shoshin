@@ -8,7 +8,7 @@ import MechState from '../src/types/MechState';
 export default function Home() {
 
     // Constants
-    const INIT_PROGRAM = 'XP,XP,GET,XN,XN,PUT'
+    const INIT_PROGRAM = 'D,D,Z,A,A,X'
     const MECH_INIT_X = 2
     const MECH_INIT_Y = 2
     const ATOM_INIT_XY = [{x:5, y:3}]
