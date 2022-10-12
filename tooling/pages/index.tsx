@@ -64,7 +64,6 @@ export default function Home() {
                 const s = f.atoms.map(function(v){return JSON.stringify(v)}).join('\n')
                 console.log(i, s)
             })
-
             console.log('delivered_accumulated at the last frame:', frames[frames.length-1].delivered_accumulated)
 
             // Begin animation
@@ -139,12 +138,12 @@ export default function Home() {
             }
         )
         mechInitStatesRef.current = [
-            {status:'open', index:{x:MECH_INIT_X, y:MECH_INIT_Y}, id:'mech0', typ:'singleton'} as MechState
-        ]
-        atomStatesRef.current = atomInitStatesRef.current
-        mechStatesRef.current = mechInitStatesRef.current
-        document.getElementById("input-mech-init-x").value = MECH_INIT_X
-        document.getElementById("input-mech-init-y").value = MECH_INIT_Y
+            {status:'open', index:{x:MECH_INIT_X, y:MECH_INIT_Y}, id:'mech0', typ:'singleton'}
+        ] as MechState[]
+        atomStatesRef.current = atomInitStatesRef.current;
+        mechStatesRef.current = mechInitStatesRef.current;
+        (document.getElementById("input-mech-init-x") as HTMLInputElement).value = MECH_INIT_X.toString();
+        (document.getElementById("input-mech-init-y") as HTMLInputElement).value = MECH_INIT_Y.toString();
 
         // draw to scene
         for (const atom of atomStatesRef.current) {
