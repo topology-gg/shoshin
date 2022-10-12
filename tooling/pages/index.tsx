@@ -117,17 +117,18 @@ export default function Home() {
             setAnimationState ('Stop')
             clearInterval (loop);
 
-            // cache react states
-            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
-
-            // clear visual
-            newUnitStates = clearVisualForStates (newUnitStates)
-
-            // reset scene to initial state
-            newUnitStates = resetSceneForStates (newUnitStates)
-
             // set react states
-            setUnitStates (newUnitStates)
+            setUnitStates ((prevStates) => {
+                // cache react states
+                let newUnitStates = JSON.parse(JSON.stringify(prevStates)) // duplicate
+
+                // clear visual
+                newUnitStates = clearVisualForStates (newUnitStates)
+
+                // reset scene to initial state
+                newUnitStates = resetSceneForStates (newUnitStates)
+                return newUnitStates
+            })
         }
     }
 
@@ -135,7 +136,11 @@ export default function Home() {
 
         // clear visual first
         // document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
-        unitStates[mechStatesRef.current[0].index.x][mechStatesRef.current[0].index.y].border_status = BorderStatus.EMPTY
+        setUnitStates((prevStates) => {
+            let newUnitStates: UnitState[][] = JSON.parse(JSON.stringify(prevStates)) // duplicate
+            newUnitStates[mechStatesRef.current[0].index.x][mechStatesRef.current[0].index.y].border_status = BorderStatus.EMPTY
+            return newUnitStates
+        })
 
         if (!x_str) return;
         const x = parseInt(x_str)
@@ -143,18 +148,24 @@ export default function Home() {
 
             mechInitStatesRef.current[0].index.x = x;
 
-            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
-            for (const mech of mechInitStatesRef.current) {
-                newUnitStates = setMechVisualForStates (mech, newUnitStates)
-            }
-            setUnitStates (newUnitStates)
+            setUnitStates ((prevStates) => {
+                let newUnitStates = JSON.parse(JSON.stringify(prevStates)) // duplicate
+                for (const mech of mechInitStatesRef.current) {
+                    newUnitStates = setMechVisualForStates (mech, newUnitStates)
+                }
+                return newUnitStates
+            })
         }
     }
     function setMechInitY (y_str: string){
 
         // clear visual first
         // document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
-        unitStates[mechStatesRef.current[0].index.x][mechStatesRef.current[0].index.y].border_status = BorderStatus.EMPTY
+        setUnitStates((prevStates) => {
+            let newUnitStates: UnitState[][] = JSON.parse(JSON.stringify(prevStates)) // duplicate
+            newUnitStates[mechStatesRef.current[0].index.x][mechStatesRef.current[0].index.y].border_status = BorderStatus.EMPTY
+            return newUnitStates
+        })
 
         if (!y_str) return;
         const y = parseInt(y_str)
@@ -162,19 +173,23 @@ export default function Home() {
 
             mechInitStatesRef.current[0].index.y = y;
 
-            let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
-            for (const mech of mechInitStatesRef.current) {
-                newUnitStates = setMechVisualForStates (mech, newUnitStates)
-            }
-            setUnitStates (newUnitStates)
+            setUnitStates ((prevStates) => {
+                let newUnitStates = JSON.parse(JSON.stringify(prevStates)) // duplicate
+                for (const mech of mechInitStatesRef.current) {
+                    newUnitStates = setMechVisualForStates (mech, newUnitStates)
+                }
+                return newUnitStates
+            })
         }
     }
 
     // Initialize scene
     useEffect(() => {
-        let newUnitStates = JSON.parse(JSON.stringify(unitStates)) // duplicate
-        newUnitStates = resetSceneForStates (newUnitStates)
-        setUnitStates (newUnitStates)
+        setUnitStates ((prevStates) => {
+            let newUnitStates = JSON.parse(JSON.stringify(prevStates)) // duplicate
+            newUnitStates = resetSceneForStates (newUnitStates)
+            return newUnitStates
+        })
     }, [])
 
     function resetSceneForStates (states: UnitState[][]){
@@ -201,23 +216,26 @@ export default function Home() {
     }
 
     function simulationLoop (){
-        // cache current react states as mutable variable for this frame pass
-        let newUnitStates = JSON.parse(JSON.stringify(unitStates))
-
-        // clear current visual
-        newUnitStates = clearVisualForStates (newUnitStates)
-
-        // update refs from a new frame
-        updateRefs ()
-
-        // set new visual
-        newUnitStates = setVisualForStates (newUnitStates)
-
-        // housekeeping
-        updateAnimationIndex ()
-
         // update react states
-        setUnitStates (newUnitStates)
+        setUnitStates ((prevStates) => {
+            // cache current react states as mutable variable for this frame pass
+            let newUnitStates = JSON.parse(JSON.stringify(prevStates))
+
+            // clear current visual
+            newUnitStates = clearVisualForStates (newUnitStates)
+
+            // update refs from a new frame
+            updateRefs ()
+
+            // set new visual
+            newUnitStates = setVisualForStates (newUnitStates)
+
+            // housekeeping 
+            // FIXME: I think this gets called at the wrong time
+            updateAnimationIndex ()
+
+            return newUnitStates
+        })
     }
 
     function updateRefs (){
