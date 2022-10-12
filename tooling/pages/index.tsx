@@ -4,6 +4,11 @@ import styles from '../styles/Home.module.css'
 import {useState, useEffect, useRef} from 'react';
 import simulator from "./simulator"
 import MechState from '../src/types/MechState';
+import AtomState from '../src/types/AtomState';
+import AtomFaucetState from '../src/types/AtomFaucetState';
+import AtomSinkState from '../src/types/AtomSinkState';
+import BoardConfig from '../src/types/BoardConfig';
+import Frame from '../src/types/Frame';
 
 export default function Home() {
 
@@ -22,10 +27,10 @@ export default function Home() {
 
     // React reference
     const animationIndexRef = useRef<number>();
-    const atomInitStatesRef = useRef([]); // contain index and status; atom status = {'free', 'possessed'}
-    const mechInitStatesRef = useRef([]); // contain index and status; mech status = {'open', 'closed'}
-    const atomStatesRef = useRef([]); // contain index and status; atom status = {'free', 'possessed'}
-    const mechStatesRef = useRef<MechState[]>([]); // contain index and status; mech status = {'open', 'closed'}
+    const atomInitStatesRef = useRef<AtomState[]>();
+    const mechInitStatesRef = useRef<MechState[]>();
+    const atomStatesRef = useRef<AtomState[]>();
+    const mechStatesRef = useRef<MechState[]>();
     const framesRef = useRef([]);
 
     // Handle click event
@@ -34,16 +39,16 @@ export default function Home() {
         if (animationState == 'Stop') {
 
             // Parse program into array of instructions and store to react state
-            const instructions = program.split(',')
+            const instructions = program.split(',') as string[]
             if (instructions.length == 0) {return;}
             setInstructions (instructions)
 
             // Prepare input
-            const constants = {
-                DIM:DIM,
-                atom_faucets: [{id:'atom_faucet0', typ:'vanilla', index:{x:0,y:0}}],
-                atom_sinks: [{id:'atom_faucet0', typ:'vanilla', index:{x:DIM-1,y:DIM-1}}]
-            }
+            const boardConfig = {
+                dimension: DIM as number,
+                atom_faucets: [{id:'atom_faucet0', typ:'vanilla', index:{x:0,y:0}} as AtomFaucetState],
+                atom_sinks: [{id:'atom_faucet0', typ:'vanilla', index:{x:DIM-1,y:DIM-1}} as AtomSinkState]
+            } as BoardConfig
 
             // Run simulation to get all frames and set to reference
             const frames = simulator (
@@ -51,9 +56,14 @@ export default function Home() {
                 mechInitStatesRef.current,
                 atomInitStatesRef.current,
                 instructions, // instructions
-                constants,
+                boardConfig,
             )
             framesRef.current = frames
+
+            frames.forEach((f:Frame,i:number) => {
+                const s = f.atoms.map(function(v){return JSON.stringify(v)}).join('\n')
+                console.log(i, s)
+            })
 
             console.log('delivered_accumulated at the last frame:', frames[frames.length-1].delivered_accumulated)
 
@@ -125,11 +135,11 @@ export default function Home() {
         animationIndexRef.current = 0
         atomInitStatesRef.current = ATOM_INIT_XY.map(
             function (xy,i) {
-                return {status:'free', index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null}
+                return {status:'free', index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null} as AtomState
             }
         )
         mechInitStatesRef.current = [
-            {status:'open', index:{x:MECH_INIT_X, y:MECH_INIT_Y}, id:'mech0', typ:'singleton'}
+            {status:'open', index:{x:MECH_INIT_X, y:MECH_INIT_Y}, id:'mech0', typ:'singleton'} as MechState
         ]
         atomStatesRef.current = atomInitStatesRef.current
         mechStatesRef.current = mechInitStatesRef.current
