@@ -13,7 +13,7 @@ export default function simulator(
     atoms : AtomState[],
     instructions : string[],
     boardConfig: BoardConfig, // including atom faucet, operator, atom sink - these don't change in frames
-) {
+): Frame[] {
 
     //
     // Prepare the first frame

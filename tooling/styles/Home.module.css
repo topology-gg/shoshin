@@ -66,6 +66,11 @@
     flex-direction: row;
 }
 
+.program {
+  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+    Bitstream Vera Sans Mono, Courier New, monospace;
+}
+
 .code {
   background: #fafafa;
   border-radius: 5px;
@@ -78,7 +83,7 @@
 .grid_parent {
   display: flex;
   flex-direction: column;
-  border: 1px solid #111111;
+  border: 1px solid #333333;
   border-radius: 10px;
   padding: 1rem;
   /* align-items: center; */
@@ -95,6 +100,17 @@
     /* justify-content: center; */
     /* flex-wrap: wrap; */
     max-width: 800px;
+}
+
+.delivered_atoms {
+  margin-top: 2rem;
+  border: 1px solid #333333;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 0.75rem;
 }
 
 .card {

@@ -66,6 +66,7 @@ export default function Home() {
 
     let unitStates: UnitState[][]
     unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit)
+    const delivered = frame?.delivered_accumulated
 
     //
     // Definition of setting DOM state
@@ -311,6 +312,14 @@ export default function Home() {
                             </div>
                         ))
                     }
+                </div>
+
+                <div className={styles.delivered_atoms}>
+                    Delivered: {delivered?.length || 0} x
+                    <Unit 
+                        state={{bg_status: BgStatus.ATOM_VANILLA_FREE, border_status: null}} 
+                        typ='regular'
+                    />
                 </div>
             </main>
 
