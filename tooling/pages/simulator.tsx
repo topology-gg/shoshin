@@ -167,7 +167,7 @@ function _simulate_one_cycle (
         else if (instruction == 'Z'){ // GET
             if (
                     (mech.status == MechStatus.OPEN) &&
-                    (grid_populated_bools[JSON.stringify(mech.index)] == true) // atom available for grab here
+                    (grid_populated_bools_new[JSON.stringify(mech.index)] == true) // atom available for grab here
             ) {
                 mech_new.status = MechStatus.CLOSE
                 grid_populated_bools_new[JSON.stringify(mech.index)] = false
@@ -185,7 +185,7 @@ function _simulate_one_cycle (
         else if (instruction == 'X'){ // PUT
             if (
                     (mech.status == MechStatus.CLOSE) &&
-                    (grid_populated_bools[JSON.stringify(mech.index)] == false) // can drop atom here
+                    (grid_populated_bools_new[JSON.stringify(mech.index)] == false) // can drop atom here
             ) {
                 mech_new.status = MechStatus.OPEN
                 grid_populated_bools_new[JSON.stringify(mech.index)] = true
