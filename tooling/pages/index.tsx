@@ -15,12 +15,13 @@ import Grid from '../src/types/Grid';
 export default function Home() {
 
     // Constants
+    const N_CYCLES = 100
     const ANIM_FRAME_LATENCY = 300
-    const INIT_PROGRAM = 'D,D,A,A'
-    const MECH_INIT_X = 2
-    const MECH_INIT_Y = 2
-    const ATOM_INIT_XY = [{x:5, y:3}]
-    const DIM = 8
+    const INIT_PROGRAM = 'Z,S,D,X,W,A'
+    const MECH_INIT_X = 0
+    const MECH_INIT_Y = 0
+    const ATOM_INIT_XY = [] // [{x:5, y:3}]
+    const DIM = 2
     const UNIT_STATE_INIT = {
         bg_status: BgStatus.EMPTY,
         border_status: BorderStatus.EMPTY
@@ -71,60 +72,74 @@ export default function Home() {
         if (atom.status == AtomStatus.FREE){
             newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_FREE
         }
-        else {
+        else if (atom.status == AtomStatus.POSSESSED){
             newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_POSSESSED
         }
         return newStates
     }
 
     // Handle click event
-    function handleClick (){
+    function handleClick (mode: string){
         // Run simulation
-        if (animationState == 'Stop') {
+        if (mode == 'ToggleRun') {
 
-            // Parse program into array of instructions and store to react state
-            const instructions = program.split(',') as string[]
-            if (instructions.length == 0) {return;}
-            setInstructions (instructions)
+            // Pause
+            if (animationState == 'Run') {
+                clearInterval (loop); // kill the timer
+                setAnimationState ('Pause')
+            }
+            else {
+                // Parse program into array of instructions and store to react state
+                const instructions = program.split(',') as string[]
+                if (instructions.length == 0) {return;}
+                setInstructions (instructions)
 
-            // Prepare input
-            const boardConfig = {
-                dimension: DIM as number,
-                atom_faucets: [{id:'atom_faucet0', typ:'vanilla', index:{x:0,y:0}} as AtomFaucetState],
-                atom_sinks: [{id:'atom_faucet0', typ:'vanilla', index:{x:DIM-1,y:DIM-1}} as AtomSinkState]
-            } as BoardConfig
+                // Prepare input
+                const boardConfig = {
+                    dimension: DIM as number,
+                    atom_faucets: [{id:'atom_faucet0', typ:'vanilla', index:{x:0,y:0}} as AtomFaucetState],
+                    atom_sinks: [{id:'atom_faucet0', typ:'vanilla', index:{x:DIM-1,y:DIM-1}} as AtomSinkState]
+                } as BoardConfig
 
-            // Run simulation to get all frames and set to reference
-            const simulatedFrames = simulator (
-                20, // n_cycles,
-                mechInitStates,
-                atomInitStates,
-                instructions, // instructions
-                boardConfig,
-            )
-            setFrames (simulatedFrames)
+                // Run simulation to get all frames and set to reference
+                const simulatedFrames = simulator (
+                    N_CYCLES, // n_cycles,
+                    mechInitStates,
+                    atomInitStates,
+                    instructions, // instructions
+                    boardConfig,
+                ) as Frame[]
+                setFrames (simulatedFrames)
 
-            simulatedFrames.forEach((f:Frame,i:number) => {
-                const s = f.mechs.map(function(v){return JSON.stringify(v)}).join('\n')
-                console.log(i, s)
-            })
-            console.log('delivered_accumulated at the last frame:', simulatedFrames[simulatedFrames.length-1].delivered_accumulated)
+                simulatedFrames.forEach((f:Frame,i:number) => {
+                    const s = f.delivered_accumulated.map(function(v){return JSON.stringify(v)}).join('\n')
+                    console.log(i, s)
+                })
+                const final_delivery = simulatedFrames[simulatedFrames.length-1].delivered_accumulated
+                var n_vanilla = 0
+                for (const delivered of final_delivery){
+                    if (delivered == 'vanilla') {n_vanilla += 1}
+                }
+                console.log (`> delivered ${n_vanilla} vanilla atom(s)`)
+                // console.log('delivered_accumulated at the last frame:', )
 
-            // Begin animation
-            setAnimationState ('Run')
-            setLoop(
-                setInterval(() => {
-                    simulationLoop(simulatedFrames)
-                }, ANIM_FRAME_LATENCY)
-            );
-            // console.log('Running with instruction:', instructions)
+                // Begin animation
+                setAnimationState ('Run')
+                setLoop(
+                    setInterval(() => {
+                        simulationLoop(simulatedFrames)
+                    }, ANIM_FRAME_LATENCY)
+                );
+                // console.log('Running with instruction:', instructions)
+            }
+
         }
-
-        // Stop and reset simulation
-        else {
+        else { // Stop
+            clearInterval (loop); // kill the timer
             setAnimationState ('Stop')
-            clearInterval (loop);
+            setAnimationFrame(() => {return 0})
         }
+
     }
 
     function setMechInitX (x_str: string){
@@ -186,7 +201,12 @@ export default function Home() {
                     MovyMovy
                 </h2>
 
-                <button onClick={handleClick}>{animationState == 'Stop' ? 'Run' : 'Stop'}</button>
+                <div style={{display:'flex', flexDirection:'row', height:'20px'}}>
+                    <button style={{fontSize:'0.75rem', marginRight:'3px'}} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? 'Run' : 'Pause'} </button>
+                    <button style={{fontSize:'0.75rem', marginRight:'3px'}} onClick={() => handleClick('Stop')}> {'Stop'} </button>
+                    <p style={{padding:'0', textAlign:'center', verticalAlign:'middle', margin:'0', height:'20px', lineHeight:'20px', fontSize:'0.75rem'}}>Frame #{animationFrame}</p>
+                </div>
+
 
                 <p className={styles.description}>
 
