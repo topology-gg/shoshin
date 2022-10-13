@@ -1,205 +1,242 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useRef, useCallback} from 'react';
 import simulator from "./simulator"
-import MechState from '../src/types/MechState';
-import AtomState from '../src/types/AtomState';
+import MechState, { MechStatus } from '../src/types/MechState';
+import AtomState, { AtomStatus } from '../src/types/AtomState';
 import AtomFaucetState from '../src/types/AtomFaucetState';
 import AtomSinkState from '../src/types/AtomSinkState';
 import BoardConfig from '../src/types/BoardConfig';
 import Frame from '../src/types/Frame';
+import Unit from './unit';
+import UnitState, {BgStatus, BorderStatus} from '../src/types/UnitState';
+import Grid from '../src/types/Grid';
 
 export default function Home() {
 
     // Constants
-    const INIT_PROGRAM = 'D,D,Z,A,A,X'
-    const MECH_INIT_X = 2
-    const MECH_INIT_Y = 2
-    const ATOM_INIT_XY = [{x:5, y:3}]
-    const DIM = 8
+    const N_CYCLES = 100
+    const ANIM_FRAME_LATENCY = 300
+    const INIT_PROGRAM = 'Z,S,S,D,D,X,W,W,A,A'
+    const DIM = 3
+    const MECH_INIT_X = 0
+    const MECH_INIT_Y = 0
+    const ATOM_INIT_XY = [] // [{x:5, y:3}]
+    const UNIT_STATE_INIT = {
+        bg_status: BgStatus.EMPTY,
+        border_status: BorderStatus.EMPTY
+    } as UnitState
+    var unitStatesInit = []
+    for (var i=0; i<DIM; i++){
+        unitStatesInit.push(Array(DIM).fill(UNIT_STATE_INIT))
+    }
+    const FAUCET_X = 0
+    const FAUCET_Y = 0
+    const SINK_X = DIM-1
+    const SINK_Y = DIM-1
+    const MAX_NUM_MECHS = 3
+    const MIN_NUM_MECHS = 1
 
     // React states
     const [program, setProgram] = useState(INIT_PROGRAM);
     const [instructions, setInstructions] = useState([]);
     const [animationState, setAnimationState] = useState ('Stop');
+    const [animationFrame, setAnimationFrame] = useState<number> (0)
+    const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([{ x: MECH_INIT_X, y: MECH_INIT_Y }])
+    const [frames, setFrames] = useState<Frame[]>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
+    const [numMechs, setNumMechs] = useState(1)
 
-    // React reference
-    const animationIndexRef = useRef<number>();
-    const atomInitStatesRef = useRef<AtomState[]>();
-    const mechInitStatesRef = useRef<MechState[]>();
-    const atomStatesRef = useRef<AtomState[]>();
-    const mechStatesRef = useRef<MechState[]>();
-    const framesRef = useRef([]);
+    //
+    // React state updates
+    //
+    const mechInitStates = mechInitPositions.map(
+        (p,_) => { return {status: MechStatus.OPEN, index: p, id: 'mech0', typ: 'singleton'} }
+    ) as MechState[]
 
-    // Handle click event
-    function handleClick (){
-        // Run simulation
-        if (animationState == 'Stop') {
+    const atomInitStates = ATOM_INIT_XY.map(
+        function (xy,i) {
+            return {status:AtomStatus.FREE, index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null} as AtomState
+        }
+    )
 
-            // Parse program into array of instructions and store to react state
-            const instructions = program.split(',') as string[]
-            if (instructions.length == 0) {return;}
-            setInstructions (instructions)
+    const frame = frames?.[animationFrame]
+    const atomStates = frame?.atoms || atomInitStates
+    const mechStates = frame?.mechs || mechInitStates
 
-            // Prepare input
-            const boardConfig = {
-                dimension: DIM as number,
-                atom_faucets: [{id:'atom_faucet0', typ:'vanilla', index:{x:0,y:0}} as AtomFaucetState],
-                atom_sinks: [{id:'atom_faucet0', typ:'vanilla', index:{x:DIM-1,y:DIM-1}} as AtomSinkState]
-            } as BoardConfig
+    let unitStates: UnitState[][]
+    unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit)
 
-            // Run simulation to get all frames and set to reference
-            const frames = simulator (
-                20, // n_cycles,
-                mechInitStatesRef.current,
-                atomInitStatesRef.current,
-                instructions, // instructions
-                boardConfig,
-            )
-            framesRef.current = frames
+    //
+    // Definition of setting DOM state
+    //
+    function setVisualForStates (atomStates: AtomState[], mechStates: MechState[], states: UnitState[][]){
+        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
 
-            frames.forEach((f:Frame,i:number) => {
-                const s = f.atoms.map(function(v){return JSON.stringify(v)}).join('\n')
-                console.log(i, s)
-            })
-            console.log('delivered_accumulated at the last frame:', frames[frames.length-1].delivered_accumulated)
-
-            // Begin animation
-            setAnimationState ('Run')
-            setLoop(
-                setInterval(() => {simulationLoop()}, 300)
-            );
-            // console.log('Running with instruction:', instructions)
+        for (const atom of atomStates) {
+            newStates = setAtomVisualForStates (atom, newStates)
+        }
+        for (const mech of mechStates) {
+            newStates = setMechVisualForStates (mech, newStates)
         }
 
-        // Stop and reset simulation
+        return newStates
+    }
+
+    //
+    // Definition of setting mech's visual to DOM state
+    //
+    function setMechVisualForStates (mech: MechState, states: UnitState[][]){
+        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
+        if (mech.status == MechStatus.OPEN){
+            newStates[mech.index.x][mech.index.y].border_status = BorderStatus.SINGLETON_OPEN
+        }
         else {
-            setAnimationState ('Stop')
-            clearInterval (loop);
+            newStates[mech.index.x][mech.index.y].border_status = BorderStatus.SINGLETON_CLOSE
+        }
+        return newStates
+    }
 
-            for (const mech of mechStatesRef.current) {
-                document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.remove(`mech_${mech.status}`);
-            }
+    //
+    // Definition of setting atom's visual to DOM state
+    //
+    function setAtomVisualForStates (atom: AtomState, states: UnitState[][]){
+        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
+        if (atom.status == AtomStatus.FREE){
+            newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_FREE
+        }
+        else if (atom.status == AtomStatus.POSSESSED){
+            newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_POSSESSED
+        }
+        return newStates
+    }
 
-            for (const atom of atomStatesRef.current) {
-                document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.remove(`atom_${atom.status}`);
-            }
-
-            reset_scene ()
+    // Handle click event for adding/removing mechs
+    function handleMechClick (mode: string){
+        if (mode === '+' && numMechs < MAX_NUM_MECHS) {
+            setNumMechs (prev => prev+1)
+            setMechInitPositions(
+                Array.from({length:numMechs+1}).fill({ x: MECH_INIT_X, y: MECH_INIT_Y }) as Grid[]
+            )
+        }
+        else if (mode === '-' && numMechs > MIN_NUM_MECHS) {
+            setNumMechs (prev => prev-1)
+            setMechInitPositions(
+                Array.from({length:numMechs-1}).fill({ x: MECH_INIT_X, y: MECH_INIT_Y }) as Grid[]
+            )
         }
     }
 
-    function setMechInitX (x_str){
+    // Handle click event for animation control
+    function handleClick (mode: string){
+        // Run simulation
+        if (mode == 'ToggleRun') {
 
-        // clear visual first
-        document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
+            // Pause
+            if (animationState == 'Run') {
+                clearInterval (loop); // kill the timer
+                setAnimationState ('Pause')
+            }
+            else {
+                // Parse program into array of instructions and store to react state
+                const instructions = program.split(',') as string[]
+                if (instructions.length == 0) {return;}
+                setInstructions (instructions)
+
+                // Prepare input
+                const boardConfig = {
+                    dimension: DIM as number,
+                    atom_faucets: [{id:'atom_faucet0', typ:'vanilla', index:{x:FAUCET_X,y:FAUCET_Y}} as AtomFaucetState],
+                    atom_sinks: [{id:'atom_faucet0', typ:'vanilla', index:{x:SINK_X,y:SINK_Y}} as AtomSinkState]
+                } as BoardConfig
+
+                // Run simulation to get all frames and set to reference
+                const simulatedFrames = simulator (
+                    N_CYCLES, // n_cycles,
+                    mechInitStates,
+                    atomInitStates,
+                    instructions, // instructions
+                    boardConfig,
+                ) as Frame[]
+                setFrames (simulatedFrames)
+
+                simulatedFrames.forEach((f:Frame,i:number) => {
+                    const s = f.delivered_accumulated.map(function(v){return JSON.stringify(v)}).join('\n')
+                    console.log(i, s)
+                })
+                const final_delivery = simulatedFrames[simulatedFrames.length-1].delivered_accumulated
+                var n_vanilla = 0
+                for (const delivered of final_delivery){
+                    if (delivered == 'vanilla') {n_vanilla += 1}
+                }
+                console.log (`> delivered ${n_vanilla} vanilla atom(s)`)
+                // console.log('delivered_accumulated at the last frame:', )
+
+                // Begin animation
+                setAnimationState ('Run')
+                setLoop(
+                    setInterval(() => {
+                        simulationLoop(simulatedFrames)
+                    }, ANIM_FRAME_LATENCY)
+                );
+                // console.log('Running with instruction:', instructions)
+            }
+
+        }
+        else { // Stop
+            clearInterval (loop); // kill the timer
+            setAnimationState ('Stop')
+            setAnimationFrame(() => {return 0})
+        }
+
+    }
+
+    function setMechInitX (mech_i: number, x_str: string){
 
         if (!x_str) return;
         const x = parseInt(x_str)
         if (x < DIM && x >= 0) {
-
-            mechInitStatesRef.current[0].index.x = x;
-
-            for (const mech of mechStatesRef.current) {
-                document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
-            }
+            // setMechInitPos((prev) => ({ ...prev, x }))
+            setMechInitPositions(
+                (prev) => {
+                    let prev_copy = JSON.parse(JSON.stringify(prev))
+                    prev_copy[mech_i] = { ...prev_copy[mech_i], x }
+                    return prev_copy
+                }
+            )
         }
     }
-    function setMechInitY (y_str){
-
-        // clear visual first
-        document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.remove(`mech_${mechStatesRef.current[0].status}`);
+    function setMechInitY (mech_i: number, y_str: string){
 
         if (!y_str) return;
         const y = parseInt(y_str)
         if (y < DIM && y >= 0) {
+            // setMechInitPos((prev) => ({ ...prev, y }))
+            setMechInitPositions(
+                (prev) => {
+                    let prev_copy = JSON.parse(JSON.stringify(prev))
+                    prev_copy[mech_i] = { ...prev_copy[mech_i], y }
+                    return prev_copy
+                }
+            )
+        }
+    }
 
-            mechInitStatesRef.current[0].index.y = y;
-
-            for (const mech of mechStatesRef.current) {
-                document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
+    const simulationLoop = (frames) => {
+        setAnimationFrame((prev) => {
+            if (prev >= frames.length - 1) {
+                return 0
             }
-        }
-    }
-
-    // Initialize scene
-    useEffect(() => {
-        reset_scene ()
-    }, [])
-
-    function reset_scene (){
-        // set reference values
-        animationIndexRef.current = 0
-        atomInitStatesRef.current = ATOM_INIT_XY.map(
-            function (xy,i) {
-                return {status:'free', index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null} as AtomState
+            else {
+                return prev + 1
             }
-        )
-        mechInitStatesRef.current = [
-            {status:'open', index:{x:MECH_INIT_X, y:MECH_INIT_Y}, id:'mech0', typ:'singleton'}
-        ] as MechState[]
-        atomStatesRef.current = atomInitStatesRef.current;
-        mechStatesRef.current = mechInitStatesRef.current;
-        (document.getElementById("input-mech-init-x") as HTMLInputElement).value = MECH_INIT_X.toString();
-        (document.getElementById("input-mech-init-y") as HTMLInputElement).value = MECH_INIT_Y.toString();
-
-        // draw to scene
-        for (const atom of atomStatesRef.current) {
-            document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.add(`atom_${atom.status}`);
-        }
-        for (const mech of mechStatesRef.current) {
-            document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.add(`mech_${mech.status}`);
-        }
+        })
     }
 
-    function simulationLoop (){
-        // clear current visual
-        clearVisual ()
-
-        // update refs from a new frame
-        updateRefs ()
-
-        // set new visual
-        setVisual ()
-
-        // housekeeping
-        updateAnimationIndex ()
-    }
-
-    function updateRefs (){
-        const frame = framesRef.current [animationIndexRef.current]
-
-        atomStatesRef.current = frame.atoms
-        mechStatesRef.current = frame.mechs
-    }
-
-    function clearVisual (){
-        for (const atom of atomStatesRef.current) {
-            document.querySelector(`#cell-${atom.index.x}-${atom.index.y}`).classList.remove(`atom_${atom.status}`);
-        }
-        for (const mech of mechStatesRef.current) {
-            document.querySelector(`#cell-${mech.index.x}-${mech.index.y}`).classList.remove(`mech_${mech.status}`);
-        }
-    }
-
-    function setVisual (){
-        for (const atom of atomStatesRef.current) {
-            document.querySelector(`#cell-${atomStatesRef.current[0].index.x}-${atomStatesRef.current[0].index.y}`).classList.add(`atom_${atom.status}`);
-        }
-        for (const mech of mechStatesRef.current) {
-            document.querySelector(`#cell-${mechStatesRef.current[0].index.x}-${mechStatesRef.current[0].index.y}`).classList.add(`mech_${mechStatesRef.current[0].status}`);
-        }
-    }
-
-    function updateAnimationIndex (){
-        if (animationIndexRef.current == framesRef.current.length - 1) {
-            animationIndexRef.current = 0
-        }
-        else {
-            animationIndexRef.current += 1
-        }
+    function computeUnitTyp (x:number, y:number){
+        if (x == FAUCET_X && y == FAUCET_Y) return 'faucet'
+        else if (x == SINK_X && y == SINK_Y) return 'sink'
+        else return 'regular'
     }
 
     // Render
@@ -216,44 +253,59 @@ export default function Home() {
                     MovyMovy
                 </h2>
 
-                <button onClick={handleClick}>{animationState == 'Stop' ? 'Run' : 'Stop'}</button>
+                <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'10px'}}>
+                    <button style={{fontSize:'0.75rem', marginRight:'3px'}} onClick={() => handleMechClick('+')}> {'+'} </button>
+                    <button style={{fontSize:'0.75rem', marginRight:'3px'}} onClick={() => handleMechClick('-')}> {'-'} </button>
+                    <button style={{fontSize:'0.75rem', marginRight:'3px'}} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? 'Run' : 'Pause'} </button>
+                    <button style={{fontSize:'0.75rem', marginRight:'3px'}} onClick={() => handleClick('Stop')}> {'Stop'} </button>
+                    <p style={{padding:'0', textAlign:'center', verticalAlign:'middle', margin:'0', height:'20px', lineHeight:'20px', fontSize:'0.75rem'}}>Frame# {animationFrame}</p>
+                </div>
 
-                <p className={styles.description}>
+                <div className={styles.inputs}>
 
-                    <input
-                        className={styles.program}
-                        onChange={event => {setMechInitX(event.target.value)}}
-                        defaultValue={MECH_INIT_X}
-                        style={{width:'30px', textAlign:'center'}}
-                        id={'input-mech-init-x'}
-                    ></input>
+                    {
+                        Array.from({length:numMechs}).map ((_,mech_i) => (
+                            <div key={`input-row-${mech_i}`} className={styles.input_row}>
+                                <p style={{margin:'0 10px 0 0', verticalAlign:'middle', height:'20px', lineHeight:'20px'}}>{`mech${mech_i}`}</p>
+                                <input
+                                    className={styles.program}
+                                    onChange={event => {setMechInitX(mech_i, event.target.value)}}
+                                    defaultValue={MECH_INIT_X}
+                                    style={{width:'30px', textAlign:'center'}}
+                                    id={'input-mech-init-x'}
+                                ></input>
 
-                    <input
-                        className={styles.program}
-                        onChange={event => {setMechInitY(event.target.value)}}
-                        defaultValue={MECH_INIT_Y}
-                        style={{width:'30px', textAlign:'center'}}
-                        id={'input-mech-init-y'}
-                    ></input>
+                                <input
+                                    className={styles.program}
+                                    onChange={event => {setMechInitY(mech_i, event.target.value)}}
+                                    defaultValue={MECH_INIT_Y}
+                                    style={{width:'30px', textAlign:'center'}}
+                                    id={'input-mech-init-y'}
+                                ></input>
 
-                    <input
-                        className={styles.program}
-                        onChange={event => {setProgram(event.target.value)}}
-                        defaultValue={INIT_PROGRAM}
-                        style={{width:'300px'}}
-                    ></input>
+                                <input
+                                    className={styles.program}
+                                    onChange={event => {setProgram(event.target.value)}}
+                                    defaultValue={INIT_PROGRAM}
+                                    style={{width:'300px'}}
+                                ></input>
+                            </div>
+                        ))
+                    }
 
-                </p>
+                </div>
 
                 <div className={styles.grid_parent}>
                     {
-                        Array.from({length:DIM}).map ((_,i) => (
+                        Array.from({length:DIM}).map ((_,i) => ( // i is y
                             <div key={`row-${i}`} className={styles.grid_row}>
                                 {
-                                    Array.from({length:DIM}).map ((_,j) => (
-                                        <div id={`cell-${j}-${i}`} key={`cell-${j}-${i}`} className={styles.card} onClick={() => handleClick()}>
-                                            ·
-                                        </div>
+                                    Array.from({length:DIM}).map ((_,j) => ( // j is x
+                                        <Unit
+                                            key={`unit-${j}-${i}`}
+                                            state={unitStates[j][i]}
+                                            typ={computeUnitTyp(j,i)}
+                                        />
                                     ))
                                 }
                             </div>

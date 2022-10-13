@@ -45,7 +45,7 @@
 .title {
   margin-bottom: 2rem;
   line-height: 1.15;
-  font-size: 3rem;
+  font-size: 2rem;
 }
 
 .title,
@@ -53,10 +53,17 @@
   text-align: center;
 }
 
-.description {
+.inputs {
   margin: 0rem 0;
   line-height: 1.5;
   font-size: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.input_row {
+    display: flex;
+    flex-direction: row;
 }
 
 .code {
@@ -71,6 +78,9 @@
 .grid_parent {
   display: flex;
   flex-direction: column;
+  border: 1px solid #111111;
+  border-radius: 10px;
+  padding: 1rem;
   /* align-items: center; */
   /* justify-content: center; */
   /* flex-wrap: wrap; */

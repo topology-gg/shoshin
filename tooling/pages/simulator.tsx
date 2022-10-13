@@ -139,13 +139,29 @@ function _simulate_one_cycle (
         else if (instruction == 'S'){ // y-positive
             if (mech.index.y < boardConfig.dimension) {
                 mech_new.index = {x:mech.index.x, y:mech.index.y+1}
-                // TODO: move atom if possessed
+
+                // move atom if possessed by this mech
+                atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
+                    if (atom.status == 'possessed' && atom.possessed_by == mech.id){
+                        var atom_new = theArray[i]
+                        atom_new.index.y += 1
+                        theArray[i] = atom_new
+                    }
+                });
             }
         }
         else if (instruction == 'W'){ // y-negative
             if (mech.index.y > 0) {
                 mech_new.index = {x:mech.index.x, y:mech.index.y-1}
-                // TODO: move atom if possessed
+
+                // move atom if possessed by this mech
+                atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
+                    if (atom.status == 'possessed' && atom.possessed_by == mech.id){
+                        var atom_new = theArray[i]
+                        atom_new.index.y -= 1
+                        theArray[i] = atom_new
+                    }
+                });
             }
         }
         else if (instruction == 'Z'){ // GET
@@ -202,6 +218,9 @@ function _simulate_one_cycle (
                 theArray[i] = atom_new
 
                 delivered_accumulated_new.push (atom_new.typ)
+
+                // mark the grid not-populated
+                grid_populated_bools_new[JSON.stringify(atom_sink.index)] = false
             }
         });
     }
