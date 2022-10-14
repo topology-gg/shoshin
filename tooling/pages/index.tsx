@@ -38,8 +38,8 @@ export default function Home() {
     const MIN_NUM_MECHS = 1
 
     // React states
-    const [program, setProgram] = useState(INIT_PROGRAM);
-    const [instructions, setInstructions] = useState([]);
+    const [programs, setPrograms] = useState<string[]>([INIT_PROGRAM]);
+    const [instructionSets, setInstructionSets] = useState<string[][]>();
     const [animationState, setAnimationState] = useState ('Stop');
     const [animationFrame, setAnimationFrame] = useState<number> (0)
     const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([{ x: MECH_INIT_X, y: MECH_INIT_Y }])
@@ -50,22 +50,17 @@ export default function Home() {
     //
     // React state updates
     //
+
     const mechInitStates = mechInitPositions.map(
-        (p,_) => { return {status: MechStatus.OPEN, index: p, id: 'mech0', typ: 'singleton'} }
+        (pos, mech_i) => { return {status: MechStatus.OPEN, index: pos, id: `mech${mech_i}`, typ: 'singleton'} }
     ) as MechState[]
-
     const atomInitStates = ATOM_INIT_XY.map(
-        function (xy,i) {
-            return {status:AtomStatus.FREE, index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null} as AtomState
-        }
-    )
-
+        function (xy,i) { return {status:AtomStatus.FREE, index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null} }
+    ) as AtomState[]
     const frame = frames?.[animationFrame]
     const atomStates = frame?.atoms || atomInitStates
     const mechStates = frame?.mechs || mechInitStates
-
-    let unitStates: UnitState[][]
-    unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit)
+    const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
 
     //
     // Definition of setting DOM state
@@ -118,16 +113,32 @@ export default function Home() {
             setMechInitPositions(
                 Array.from({length:numMechs+1}).fill({ x: MECH_INIT_X, y: MECH_INIT_Y }) as Grid[]
             )
+            setPrograms(
+                prev => {
+                    let prev_copy = JSON.parse(JSON.stringify(prev))
+                    prev_copy.push(INIT_PROGRAM);
+                    return prev_copy
+                }
+            )
         }
         else if (mode === '-' && numMechs > MIN_NUM_MECHS) {
             setNumMechs (prev => prev-1)
             setMechInitPositions(
                 Array.from({length:numMechs-1}).fill({ x: MECH_INIT_X, y: MECH_INIT_Y }) as Grid[]
             )
+            setPrograms(
+                prev => {
+                    let prev_copy = JSON.parse(JSON.stringify(prev))
+                    prev_copy.pop();
+                    return prev_copy
+                }
+            )
         }
     }
 
+    //
     // Handle click event for animation control
+    //
     function handleClick (mode: string){
         // Run simulation
         if (mode == 'ToggleRun') {
@@ -139,9 +150,13 @@ export default function Home() {
             }
             else {
                 // Parse program into array of instructions and store to react state
-                const instructions = program.split(',') as string[]
-                if (instructions.length == 0) {return;}
-                setInstructions (instructions)
+                let instructionSets = []
+                programs.forEach((program: string, mech_i:number) => {
+                    const instructions = program.split(',') as string[]
+                    instructionSets.push (instructions)
+                })
+                setInstructionSets (instructionSets)
+                console.log('running instructionSets', instructionSets)
 
                 // Prepare input
                 const boardConfig = {
@@ -155,13 +170,13 @@ export default function Home() {
                     N_CYCLES, // n_cycles,
                     mechInitStates,
                     atomInitStates,
-                    instructions, // instructions
+                    instructionSets, // instructions
                     boardConfig,
                 ) as Frame[]
                 setFrames (simulatedFrames)
 
                 simulatedFrames.forEach((f:Frame,i:number) => {
-                    const s = f.delivered_accumulated.map(function(v){return JSON.stringify(v)}).join('\n')
+                    const s = f.mechs.map(function(v){return JSON.stringify(v)}).join('\n')
                     console.log(i, s)
                 })
                 const final_delivery = simulatedFrames[simulatedFrames.length-1].delivered_accumulated
@@ -285,7 +300,13 @@ export default function Home() {
 
                                 <input
                                     className={styles.program}
-                                    onChange={event => {setProgram(event.target.value)}}
+                                    onChange={event => {setPrograms(
+                                        (prev) => {
+                                            let prev_copy = JSON.parse(JSON.stringify(prev))
+                                            prev_copy[mech_i] = event.target.value
+                                            return prev_copy
+                                        }
+                                    )}}
                                     defaultValue={INIT_PROGRAM}
                                     style={{width:'300px'}}
                                 ></input>

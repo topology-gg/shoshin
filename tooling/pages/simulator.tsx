@@ -11,14 +11,14 @@ export default function simulator(
     n_cycles : number,
     mechs : MechState[],
     atoms : AtomState[],
-    instructions : string[],
+    instructionSets : string[][],
     boardConfig: BoardConfig, // including atom faucet, operator, atom sink - these don't change in frames
 ) {
 
     //
     // Prepare the first frame
     //
-    var grid_populated_bools = {}
+    var grid_populated_bools : { [key: string] : boolean } = {}
     for (var i=0; i<boardConfig.dimension; i++){
         for (var j=0; j<boardConfig.dimension; j++){
             grid_populated_bools[JSON.stringify({x:i,y:j})] = false
@@ -27,12 +27,12 @@ export default function simulator(
     for (const atom of atoms) {
         grid_populated_bools[JSON.stringify(atom.index)] = true
     }
-    const frame_init = {
+    const frame_init : Frame= {
         mechs: mechs,
         atoms: atoms,
         grid_populated_bools: grid_populated_bools,
         delivered_accumulated: []
-    } as Frame;
+    }
 
     //
     // Forward system by n_cycles, recording frames emitted; a frame carries all objects with their states i.e. frame == state screenshot
@@ -42,11 +42,13 @@ export default function simulator(
         //
         // Prepare instruction for each mech
         //
-        const instr = instructions[i % instructions.length];
-        var instruction_per_mech = {}
-        for (const mech of mechs){
-            instruction_per_mech[mech.id] = instr // TODO diff mechs would have diff instructions
-        }
+        var instruction_per_mech = []
+        mechs.forEach((mech:MechState, mech_i:number) => {
+            const instructionSet = instructionSets[mech_i]
+            const instruction = instructionSet[i % instructionSet.length]
+            instruction_per_mech.push (instruction)
+        })
+        console.log(`cycle ${i}, instruction_per_mech ${JSON.stringify(instruction_per_mech)}`)
 
         // Run simulate_one_cycle()
         const last_frame = frame_s[frame_s.length-1]
@@ -68,7 +70,7 @@ export default function simulator(
 // a pure function that runs simulation for one cycle, according to instruction input
 //
 function _simulate_one_cycle (
-    instruction_per_mech, // mapping 'mech..' => '..' (instruction string)
+    instruction_per_mech: string[],
     frame_curr: Frame, // {mechs, atoms, grid_populated_bools}
     boardConfig: BoardConfig
 ) {
@@ -102,8 +104,9 @@ function _simulate_one_cycle (
     //
     // Iterate through mechs
     //
-    for (const mech of mechs_curr) {
-        const instruction = instruction_per_mech[mech.id]
+    // for (const mech of mechs_curr) {
+    mechs_curr.map((mech: MechState, mech_i: number) => {
+        const instruction = instruction_per_mech[mech_i]
         var mech_new = {id:mech.id, typ:mech.typ, index:mech.index, status:mech.status}
 
         if (instruction == 'D'){ // x-positive
@@ -202,7 +205,7 @@ function _simulate_one_cycle (
         }
 
         mechs_new.push (mech_new)
-    }
+    })
 
     //
     // Iterate through atom sinks
