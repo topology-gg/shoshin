@@ -13,7 +13,7 @@ export default function simulator(
     atoms : AtomState[],
     instructionSets : string[][],
     boardConfig: BoardConfig, // including atom faucet, operator, atom sink - these don't change in frames
-) {
+): Frame[] {
 
     //
     // Prepare the first frame
@@ -37,7 +37,7 @@ export default function simulator(
     //
     // Forward system by n_cycles, recording frames emitted; a frame carries all objects with their states i.e. frame == state screenshot
     //
-    var frame_s = [frame_init]
+    var frame_s: Frame[] = [frame_init]
     for (var i=0; i<n_cycles; i++) {
         //
         // Prepare instruction for each mech
@@ -48,7 +48,7 @@ export default function simulator(
             const instruction = instructionSet[i % instructionSet.length]
             instruction_per_mech.push (instruction)
         })
-        console.log(`cycle ${i}, instruction_per_mech ${JSON.stringify(instruction_per_mech)}`)
+        // console.log(`cycle ${i}, instruction_per_mech ${JSON.stringify(instruction_per_mech)}`)
 
         // Run simulate_one_cycle()
         const last_frame = frame_s[frame_s.length-1]
@@ -108,6 +108,8 @@ function _simulate_one_cycle (
     mechs_curr.map((mech: MechState, mech_i: number) => {
         const instruction = instruction_per_mech[mech_i]
         var mech_new = {id:mech.id, typ:mech.typ, index:mech.index, status:mech.status}
+
+        console.log (`mech${mech_i} running ${instruction}`)
 
         if (instruction == 'D'){ // x-positive
             if (mech.index.x < boardConfig.dimension) {
@@ -231,7 +233,7 @@ function _simulate_one_cycle (
     //
     // Pack a new frame and return
     //
-    const frame_new = {
+    const frame_new: Frame = {
         mechs: mechs_new,
         atoms: atoms_new,
         grid_populated_bools: grid_populated_bools_new,

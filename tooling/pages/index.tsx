@@ -50,7 +50,6 @@ export default function Home() {
     //
     // React state updates
     //
-
     const mechInitStates = mechInitPositions.map(
         (pos, mech_i) => { return {status: MechStatus.OPEN, index: pos, id: `mech${mech_i}`, typ: 'singleton'} }
     ) as MechState[]
@@ -111,12 +110,17 @@ export default function Home() {
         if (mode === '+' && numMechs < MAX_NUM_MECHS) {
             setNumMechs (prev => prev+1)
             setMechInitPositions(
-                Array.from({length:numMechs+1}).fill({ x: MECH_INIT_X, y: MECH_INIT_Y }) as Grid[]
+                // Array.from({length:numMechs+1}).fill({ x: MECH_INIT_X, y: MECH_INIT_Y }) as Grid[]
+                prev => {
+                    let prev_copy: Grid[] = JSON.parse(JSON.stringify(prev))
+                    prev_copy.push ({ x: MECH_INIT_X, y: MECH_INIT_Y })
+                    return prev_copy
+                }
             )
             setPrograms(
                 prev => {
                     let prev_copy = JSON.parse(JSON.stringify(prev))
-                    prev_copy.push(INIT_PROGRAM);
+                    prev_copy.push(INIT_PROGRAM)
                     return prev_copy
                 }
             )
@@ -124,12 +128,17 @@ export default function Home() {
         else if (mode === '-' && numMechs > MIN_NUM_MECHS) {
             setNumMechs (prev => prev-1)
             setMechInitPositions(
-                Array.from({length:numMechs-1}).fill({ x: MECH_INIT_X, y: MECH_INIT_Y }) as Grid[]
+                // Array.from({length:numMechs-1}).fill({ x: MECH_INIT_X, y: MECH_INIT_Y }) as Grid[]
+                prev => {
+                    let prev_copy: Grid[] = JSON.parse(JSON.stringify(prev))
+                    prev_copy.pop()
+                    return prev_copy
+                }
             )
             setPrograms(
                 prev => {
                     let prev_copy = JSON.parse(JSON.stringify(prev))
-                    prev_copy.pop();
+                    prev_copy.pop()
                     return prev_copy
                 }
             )
@@ -150,7 +159,7 @@ export default function Home() {
             }
             else {
                 // Parse program into array of instructions and store to react state
-                let instructionSets = []
+                let instructionSets:string[][] = []
                 programs.forEach((program: string, mech_i:number) => {
                     const instructions = program.split(',') as string[]
                     instructionSets.push (instructions)
@@ -159,20 +168,20 @@ export default function Home() {
                 console.log('running instructionSets', instructionSets)
 
                 // Prepare input
-                const boardConfig = {
+                const boardConfig: BoardConfig = {
                     dimension: DIM as number,
                     atom_faucets: [{id:'atom_faucet0', typ:'vanilla', index:{x:FAUCET_X,y:FAUCET_Y}} as AtomFaucetState],
                     atom_sinks: [{id:'atom_faucet0', typ:'vanilla', index:{x:SINK_X,y:SINK_Y}} as AtomSinkState]
-                } as BoardConfig
+                }
 
                 // Run simulation to get all frames and set to reference
-                const simulatedFrames = simulator (
+                const simulatedFrames: Frame[] = simulator (
                     N_CYCLES, // n_cycles,
                     mechInitStates,
                     atomInitStates,
                     instructionSets, // instructions
                     boardConfig,
-                ) as Frame[]
+                )
                 setFrames (simulatedFrames)
 
                 simulatedFrames.forEach((f:Frame,i:number) => {
@@ -285,17 +294,15 @@ export default function Home() {
                                 <input
                                     className={styles.program}
                                     onChange={event => {setMechInitX(mech_i, event.target.value)}}
-                                    defaultValue={MECH_INIT_X}
+                                    defaultValue={mechInitPositions[mech_i].x}
                                     style={{width:'30px', textAlign:'center'}}
-                                    id={'input-mech-init-x'}
                                 ></input>
 
                                 <input
                                     className={styles.program}
                                     onChange={event => {setMechInitY(mech_i, event.target.value)}}
-                                    defaultValue={MECH_INIT_Y}
+                                    defaultValue={mechInitPositions[mech_i].y}
                                     style={{width:'30px', textAlign:'center'}}
-                                    id={'input-mech-init-y'}
                                 ></input>
 
                                 <input
