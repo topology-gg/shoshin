@@ -175,13 +175,13 @@ export default function Home() {
                 }
 
                 // Run simulation to get all frames and set to reference
-                const simulatedFrames: Frame[] = simulator (
+                const simulatedFrames = simulator (
                     N_CYCLES, // n_cycles,
                     mechInitStates,
                     atomInitStates,
                     instructionSets, // instructions
                     boardConfig,
-                )
+                ) as Frame[]
                 setFrames (simulatedFrames)
 
                 simulatedFrames.forEach((f:Frame,i:number) => {

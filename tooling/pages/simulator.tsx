@@ -52,7 +52,7 @@ export default function simulator(
 
         // Run simulate_one_cycle()
         const last_frame = frame_s[frame_s.length-1]
-        const new_frame = _simulate_one_cycle (
+        const new_frame: Frame = _simulate_one_cycle (
             instruction_per_mech,
             last_frame,
             boardConfig
@@ -73,7 +73,7 @@ function _simulate_one_cycle (
     instruction_per_mech: string[],
     frame_curr: Frame, // {mechs, atoms, grid_populated_bools}
     boardConfig: BoardConfig
-) {
+): Frame {
     //
     // Unpack frame
     //
@@ -84,8 +84,8 @@ function _simulate_one_cycle (
     //
     // Prepare mutable variable for this cycle pass
     //
-    var mechs_new = []
-    var atoms_new = JSON.parse(JSON.stringify(atoms_curr)) // object cloning
+    var mechs_new: MechState[] = []
+    var atoms_new: AtomState[] = JSON.parse(JSON.stringify(atoms_curr)) // object cloning
     var grid_populated_bools_new = JSON.parse(JSON.stringify(grid_populated_bools)) // object cloning
 
     //
@@ -94,7 +94,7 @@ function _simulate_one_cycle (
     for (const atom_faucet of boardConfig.atom_faucets) {
         if (grid_populated_bools_new[JSON.stringify(atom_faucet.index)] == false){
             const atom_new = {
-                id: `atom${atoms_new.length}`, typ: atom_faucet.typ, status: 'free', index: atom_faucet.index, possessed_by: null
+                id: `atom${atoms_new.length}`, typ: atom_faucet.typ, status: AtomStatus.FREE, index: atom_faucet.index, possessed_by: null
             }
             atoms_new.push (atom_new)
             grid_populated_bools_new[JSON.stringify(atom_faucet.index)] = true
@@ -118,7 +118,7 @@ function _simulate_one_cycle (
 
                 // move atom if possessed by this mech
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
-                    if (atom.status == 'possessed' && atom.possessed_by == mech.id){
+                    if (atom.status == AtomStatus.POSSESSED && atom.possessed_by == mech.id){
                         var atom_new = theArray[i]
                         atom_new.index.x += 1
                         theArray[i] = atom_new
@@ -133,7 +133,7 @@ function _simulate_one_cycle (
 
                 // move atom if possessed by this mech
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
-                    if (atom.status == 'possessed' && atom.possessed_by == mech.id){
+                    if (atom.status == AtomStatus.POSSESSED && atom.possessed_by == mech.id){
                         var atom_new = theArray[i]
                         atom_new.index.x -= 1
                         theArray[i] = atom_new
@@ -147,7 +147,7 @@ function _simulate_one_cycle (
 
                 // move atom if possessed by this mech
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
-                    if (atom.status == 'possessed' && atom.possessed_by == mech.id){
+                    if (atom.status == AtomStatus.POSSESSED && atom.possessed_by == mech.id){
                         var atom_new = theArray[i]
                         atom_new.index.y += 1
                         theArray[i] = atom_new
@@ -161,7 +161,7 @@ function _simulate_one_cycle (
 
                 // move atom if possessed by this mech
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
-                    if (atom.status == 'possessed' && atom.possessed_by == mech.id){
+                    if (atom.status == AtomStatus.POSSESSED && atom.possessed_by == mech.id){
                         var atom_new = theArray[i]
                         atom_new.index.y -= 1
                         theArray[i] = atom_new
