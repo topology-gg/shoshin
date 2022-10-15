@@ -18,7 +18,7 @@ export default function Home() {
     const N_CYCLES = 100
     const ANIM_FRAME_LATENCY = 300
     const INIT_PROGRAM = 'Z,S,S,D,D,X,W,W,A,A'
-    const DIM = 3
+    const DIM = 8
     const MECH_INIT_X = 0
     const MECH_INIT_Y = 0
     const ATOM_INIT_XY = [] // [{x:5, y:3}]
@@ -34,38 +34,33 @@ export default function Home() {
     const FAUCET_Y = 0
     const SINK_X = DIM-1
     const SINK_Y = DIM-1
-    const MAX_NUM_MECHS = 3
+    const MAX_NUM_MECHS = 5
     const MIN_NUM_MECHS = 1
 
     // React states
-    const [program, setProgram] = useState(INIT_PROGRAM);
-    const [instructions, setInstructions] = useState([]);
+    const [programs, setPrograms] = useState<string[]>([INIT_PROGRAM]);
+    const [instructionSets, setInstructionSets] = useState<string[][]>();
     const [animationState, setAnimationState] = useState ('Stop');
     const [animationFrame, setAnimationFrame] = useState<number> (0)
     const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([{ x: MECH_INIT_X, y: MECH_INIT_Y }])
     const [frames, setFrames] = useState<Frame[]>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
     const [numMechs, setNumMechs] = useState(1)
+    const [deliveryLastRun, setDeliveryLastRun] = useState<{[key: string] : number}>();
 
     //
     // React state updates
     //
     const mechInitStates = mechInitPositions.map(
-        (p,_) => { return {status: MechStatus.OPEN, index: p, id: 'mech0', typ: 'singleton'} }
+        (pos, mech_i) => { return {status: MechStatus.OPEN, index: pos, id: `mech${mech_i}`, typ: 'singleton'} }
     ) as MechState[]
-
     const atomInitStates = ATOM_INIT_XY.map(
-        function (xy,i) {
-            return {status:AtomStatus.FREE, index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null} as AtomState
-        }
-    )
-
+        function (xy,i) { return {status:AtomStatus.FREE, index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null} }
+    ) as AtomState[]
     const frame = frames?.[animationFrame]
     const atomStates = frame?.atoms || atomInitStates
     const mechStates = frame?.mechs || mechInitStates
-
-    let unitStates: UnitState[][]
-    unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit)
+    const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
     const delivered = frame?.delivered_accumulated
 
     //
@@ -117,18 +112,44 @@ export default function Home() {
         if (mode === '+' && numMechs < MAX_NUM_MECHS) {
             setNumMechs (prev => prev+1)
             setMechInitPositions(
-                Array.from({length:numMechs+1}).fill({ x: MECH_INIT_X, y: MECH_INIT_Y }) as Grid[]
+                // Array.from({length:numMechs+1}).fill({ x: MECH_INIT_X, y: MECH_INIT_Y }) as Grid[]
+                prev => {
+                    let prev_copy: Grid[] = JSON.parse(JSON.stringify(prev))
+                    prev_copy.push ({ x: MECH_INIT_X, y: MECH_INIT_Y })
+                    return prev_copy
+                }
+            )
+            setPrograms(
+                prev => {
+                    let prev_copy = JSON.parse(JSON.stringify(prev))
+                    prev_copy.push(INIT_PROGRAM)
+                    return prev_copy
+                }
             )
         }
         else if (mode === '-' && numMechs > MIN_NUM_MECHS) {
             setNumMechs (prev => prev-1)
             setMechInitPositions(
-                Array.from({length:numMechs-1}).fill({ x: MECH_INIT_X, y: MECH_INIT_Y }) as Grid[]
+                // Array.from({length:numMechs-1}).fill({ x: MECH_INIT_X, y: MECH_INIT_Y }) as Grid[]
+                prev => {
+                    let prev_copy: Grid[] = JSON.parse(JSON.stringify(prev))
+                    prev_copy.pop()
+                    return prev_copy
+                }
+            )
+            setPrograms(
+                prev => {
+                    let prev_copy = JSON.parse(JSON.stringify(prev))
+                    prev_copy.pop()
+                    return prev_copy
+                }
             )
         }
     }
 
+    //
     // Handle click event for animation control
+    //
     function handleClick (mode: string){
         // Run simulation
         if (mode == 'ToggleRun') {
@@ -140,29 +161,33 @@ export default function Home() {
             }
             else {
                 // Parse program into array of instructions and store to react state
-                const instructions = program.split(',') as string[]
-                if (instructions.length == 0) {return;}
-                setInstructions (instructions)
+                let instructionSets:string[][] = []
+                programs.forEach((program: string, mech_i:number) => {
+                    const instructions = program.split(',') as string[]
+                    instructionSets.push (instructions)
+                })
+                setInstructionSets (instructionSets)
+                console.log('running instructionSets', instructionSets)
 
                 // Prepare input
-                const boardConfig = {
+                const boardConfig: BoardConfig = {
                     dimension: DIM as number,
                     atom_faucets: [{id:'atom_faucet0', typ:'vanilla', index:{x:FAUCET_X,y:FAUCET_Y}} as AtomFaucetState],
                     atom_sinks: [{id:'atom_faucet0', typ:'vanilla', index:{x:SINK_X,y:SINK_Y}} as AtomSinkState]
-                } as BoardConfig
+                }
 
                 // Run simulation to get all frames and set to reference
                 const simulatedFrames = simulator (
                     N_CYCLES, // n_cycles,
                     mechInitStates,
                     atomInitStates,
-                    instructions, // instructions
+                    instructionSets, // instructions
                     boardConfig,
                 ) as Frame[]
                 setFrames (simulatedFrames)
 
                 simulatedFrames.forEach((f:Frame,i:number) => {
-                    const s = f.delivered_accumulated.map(function(v){return JSON.stringify(v)}).join('\n')
+                    const s = f.mechs.map(function(v){return JSON.stringify(v)}).join('\n')
                     console.log(i, s)
                 })
                 const final_delivery = simulatedFrames[simulatedFrames.length-1].delivered_accumulated
@@ -171,7 +196,7 @@ export default function Home() {
                     if (delivered == 'vanilla') {n_vanilla += 1}
                 }
                 console.log (`> delivered ${n_vanilla} vanilla atom(s)`)
-                // console.log('delivered_accumulated at the last frame:', )
+                setDeliveryLastRun ({'vanilla':n_vanilla})
 
                 // Begin animation
                 setAnimationState ('Run')
@@ -240,6 +265,15 @@ export default function Home() {
         else return 'regular'
     }
 
+    function formatdeliveryLastRun (delivery: {[key: string] : number}){
+        var s: string = '';
+        for (const key in delivery){
+            s += `${key} x ${delivery[key].toString()}, `
+        }
+        s = s.slice(0,-2)
+        return `Delivered in last run: ${s}`
+    }
+
     // Render
     return (
         <div className={styles.container}>
@@ -253,6 +287,8 @@ export default function Home() {
                 <h2 className={styles.title}>
                     MovyMovy
                 </h2>
+
+                <p>{deliveryLastRun == null ? '' : formatdeliveryLastRun(deliveryLastRun)}</p>
 
                 <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'10px'}}>
                     <button style={{fontSize:'0.75rem', marginRight:'3px'}} onClick={() => handleMechClick('+')}> {'+'} </button>
@@ -271,22 +307,26 @@ export default function Home() {
                                 <input
                                     className={styles.program}
                                     onChange={event => {setMechInitX(mech_i, event.target.value)}}
-                                    defaultValue={MECH_INIT_X}
+                                    defaultValue={mechInitPositions[mech_i].x}
                                     style={{width:'30px', textAlign:'center'}}
-                                    id={'input-mech-init-x'}
                                 ></input>
 
                                 <input
                                     className={styles.program}
                                     onChange={event => {setMechInitY(mech_i, event.target.value)}}
-                                    defaultValue={MECH_INIT_Y}
+                                    defaultValue={mechInitPositions[mech_i].y}
                                     style={{width:'30px', textAlign:'center'}}
-                                    id={'input-mech-init-y'}
                                 ></input>
 
                                 <input
                                     className={styles.program}
-                                    onChange={event => {setProgram(event.target.value)}}
+                                    onChange={event => {setPrograms(
+                                        (prev) => {
+                                            let prev_copy = JSON.parse(JSON.stringify(prev))
+                                            prev_copy[mech_i] = event.target.value
+                                            return prev_copy
+                                        }
+                                    )}}
                                     defaultValue={INIT_PROGRAM}
                                     style={{width:'300px'}}
                                 ></input>
