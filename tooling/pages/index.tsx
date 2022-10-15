@@ -26,7 +26,8 @@ export default function Home() {
     const UNIT_STATE_INIT: UnitState = {
         bg_status: BgStatus.EMPTY,
         border_status: BorderStatus.EMPTY,
-        unit_text: UnitText.GRID
+        unit_text: UnitText.GRID,
+        unit_id: null,
     }
     var unitStatesInit = []
     for (var i=0; i<DIM; i++){
@@ -111,7 +112,8 @@ export default function Home() {
     // Definition of setting mech's visual to DOM state
     //
     function setMechVisualForStates (mech: MechState, states: UnitState[][]){
-        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
+        let newStates: UnitState[][] = JSON.parse(JSON.stringify(states)) // duplicate
+        newStates[mech.index.x][mech.index.y].unit_id = mech.id
         if (mech.status == MechStatus.OPEN){
             newStates[mech.index.x][mech.index.y].border_status = BorderStatus.SINGLETON_OPEN
         }
@@ -125,7 +127,8 @@ export default function Home() {
     // Definition of setting atom's visual to DOM state
     //
     function setAtomVisualForStates (atom: AtomState, states: UnitState[][]){
-        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
+        let newStates: UnitState[][] = JSON.parse(JSON.stringify(states)) // duplicate
+        newStates[atom.index.x][atom.index.y].unit_id = atom.id
         if (atom.status == AtomStatus.FREE){
             newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_FREE
         }
