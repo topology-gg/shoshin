@@ -1,23 +1,27 @@
 .unit {
   display: flex;
-  font-size: 0.6em;
+  font-size: 0.8em;
   margin: 0.2rem;
   padding: 0rem;
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.6rem;
+  height: 1.6rem;
   text-align: center;
   justify-content: center;
   align-items: center;
   color: inherit;
   text-decoration: none;
   border: 1px solid transparent;
-  border-radius: 0.6rem;
+  border-radius: 0.8rem;
   transition: color 0.05s ease, border-color 0.05s ease;
   max-width: 300px;
 }
 
-.atomVanillaFree, .atomVanillaPossessed {
+.atomVanillaFree {
   background-color: #FF355E;
+}
+
+.atomVanillaPossessed {
+    background-color: #FF355E;
 }
 
 .mechSingletonOpen {
@@ -25,5 +29,5 @@
 }
 
 .mechSingletonClose {
-  border-color: #111111;
+  border-color: #FF7A00;
 }

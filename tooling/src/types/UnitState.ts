@@ -12,7 +12,8 @@ export enum BorderStatus {
 }
 
 export enum UnitText {
-    EMPTY = '·',
+    EMPTY = '',
+    GRID = '·',
     FAUCET = 'F',
     SINK = 'S',
     OPERAND_ADD = '+',

@@ -33,7 +33,7 @@ export default function Home() {
     const UNIT_STATE_INIT: UnitState = {
         bg_status: BgStatus.EMPTY,
         border_status: BorderStatus.EMPTY,
-        unit_text: UnitText.EMPTY
+        unit_text: UnitText.GRID
     }
     var unitStatesInit = []
     for (var i=0; i<DIM; i++){

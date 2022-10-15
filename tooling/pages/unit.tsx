@@ -7,17 +7,17 @@ export default function Unit({ state }) {
     // Compute style based on props (from parent's React state)
     let className: string = '';
     if (state.bg_status === BgStatus.ATOM_VANILLA_FREE) {
-        className = styles.atomVanillaFree;
+        className += styles.atomVanillaFree + ' ';
     }
     else if (state.bg_status === BgStatus.ATOM_VANILLA_POSSESSED) {
-        className = styles.atomVanillaPossessed;
+        className += styles.atomVanillaPossessed + ' ';
     }
 
     if (state.border_status == BorderStatus.SINGLETON_OPEN) {
-        className = styles.mechSingletonOpen;
+        className += styles.mechSingletonOpen + ' ';
     }
     else if (state.border_status == BorderStatus.SINGLETON_CLOSE) {
-        className = styles.mechSingletonClose;
+        className += styles.mechSingletonClose + ' ';
     }
 
     // Render
