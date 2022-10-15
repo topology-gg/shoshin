@@ -19,6 +19,12 @@ input {
     font-family: menlo;
 }
 
+button {
+    font-family: menlo;
+    font-size: 0.75rem;
+    margin-right: 3px;
+}
+
 .grid {
     display: flex;
     font-size: 0.2em;
