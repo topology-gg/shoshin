@@ -11,7 +11,16 @@ export enum BorderStatus {
     SINGLETON_CLOSE = 'singleton_close',
 }
 
+export enum UnitText {
+    EMPTY = '·',
+    FAUCET = 'F',
+    SINK = 'S',
+    OPERAND_ADD = '+',
+    OUTPUT = '=',
+}
+
 export default interface UnitState {
     bg_status: BgStatus,
     border_status: BorderStatus,
+    unit_text: UnitText
 }

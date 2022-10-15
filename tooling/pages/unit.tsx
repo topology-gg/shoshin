@@ -1,22 +1,22 @@
 import {useState, useEffect, useRef, CSSProperties} from 'react';
 import UnitState, {BgStatus, BorderStatus} from '../src/types/UnitState';
 
-export default function Unit({state, typ}: {state: UnitState, typ: string}) {
+export default function Unit({ state }) {
 
     // Constants
     const gridStyle = {
         display: 'flex',
-        fontSize: '0.6em',
+        fontSize: '0.8em',
         margin: '0.2rem',
         padding: '0rem',
-        width: '1.2rem',
-        height: '1.2rem',
+        width: '1.6rem',
+        height: '1.6rem',
         textAlign: 'center',
         justifyContent: 'center',
         alignItems: 'center',
         color: 'inherit',
         textDecoration: 'none',
-        borderRadius: '0.6rem',
+        borderRadius: '0.8rem',
         transition: 'color 0.05s ease, border-color 0.05s ease',
         maxWidth: '300px'
     } as CSSProperties;
@@ -40,19 +40,8 @@ export default function Unit({state, typ}: {state: UnitState, typ: string}) {
         style = {...style, border: '1px solid #FFFFFF'}
     }
 
-    var text: string;
-    if (typ == 'faucet') {
-        text = 'F'
-    }
-    else if (typ == 'sink') {
-        text = 'S'
-    }
-    else {
-        text = '·'
-    }
-
     // Render
     return (
-        <div style={style} className={'grid'}>{text}</div>
+        <div style={style} className={'grid'}>{state.unit_text}</div>
     )
 }

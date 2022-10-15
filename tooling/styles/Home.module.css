@@ -55,6 +55,8 @@
 
 .inputs {
   margin: 0rem 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
   line-height: 1.5;
   font-size: 1.5rem;
   display: flex;
@@ -64,6 +66,13 @@
 .input_row {
     display: flex;
     flex-direction: row;
+}
+
+.input_text {
+    margin: 0 1rem 0 1rem;
+    vertical-align: middle;
+    height: 20px;
+    line-height: 20px;
 }
 
 .program {

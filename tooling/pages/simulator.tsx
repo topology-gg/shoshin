@@ -4,6 +4,13 @@ import Grid from '../src/types/Grid'
 import BoardConfig from '../src/types/BoardConfig';
 import Frame from '../src/types/Frame';
 
+export function isIdenticalGrid (
+    grid1 : Grid,
+    grid2 : Grid
+): boolean {
+    return JSON.stringify(grid1) == JSON.stringify(grid2)
+}
+
 //
 // a pure function that runs simulation for fixed cycles
 //
@@ -240,10 +247,6 @@ function _simulate_one_cycle (
         delivered_accumulated: delivered_accumulated_new
     }
     return frame_new
-}
-
-function isIdenticalGrid (grid1 : Grid, grid2 : Grid){
-    return JSON.stringify(grid1) == JSON.stringify(grid2)
 }
 
 // Note:
