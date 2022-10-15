@@ -12,6 +12,12 @@ export default function Unit({ state }) {
     else if (state.bg_status === BgStatus.ATOM_VANILLA_POSSESSED) {
         className += styles.atomVanillaPossessed + ' ';
     }
+    else if (state.bg_status === BgStatus.ATOM_HAZELNUT_FREE) {
+        className += styles.atomHazelnutFree + ' ';
+    }
+    else if (state.bg_status === BgStatus.ATOM_HAZELNUT_POSSESSED) {
+        className += styles.atomHazelnutPossessed + ' ';
+    }
 
     if (state.border_status == BorderStatus.SINGLETON_OPEN) {
         className += styles.mechSingletonOpen + ' ';
