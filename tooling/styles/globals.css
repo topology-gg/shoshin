@@ -15,6 +15,10 @@ p {
     font-size: 0.75rem;
 }
 
+input {
+    font-family: menlo;
+}
+
 .grid {
     display: flex;
     font-size: 0.2em;

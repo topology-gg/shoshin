@@ -18,7 +18,7 @@ export default function Home() {
     const N_CYCLES = 100
     const ANIM_FRAME_LATENCY = 300
     const INIT_PROGRAM = 'Z,S,S,D,D,X,W,W,A,A'
-    const DIM = 3
+    const DIM = 8
     const MECH_INIT_X = 0
     const MECH_INIT_Y = 0
     const ATOM_INIT_XY = [] // [{x:5, y:3}]
@@ -34,7 +34,7 @@ export default function Home() {
     const FAUCET_Y = 0
     const SINK_X = DIM-1
     const SINK_Y = DIM-1
-    const MAX_NUM_MECHS = 3
+    const MAX_NUM_MECHS = 5
     const MIN_NUM_MECHS = 1
 
     // React states
