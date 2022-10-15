@@ -86,7 +86,7 @@ function _simulate_one_cycle (
     //
     var mechs_new: MechState[] = []
     var atoms_new: AtomState[] = JSON.parse(JSON.stringify(atoms_curr)) // object cloning
-    var grid_populated_bools_new = JSON.parse(JSON.stringify(grid_populated_bools)) // object cloning
+    var grid_populated_bools_new: { [key: string] : boolean } = JSON.parse(JSON.stringify(grid_populated_bools)) // object cloning
 
     //
     // Iterate through atom faucets
