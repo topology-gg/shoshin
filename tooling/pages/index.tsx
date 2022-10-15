@@ -13,13 +13,6 @@ import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitStat
 import Grid from '../src/types/Grid';
 import BinaryOperator from '../src/types/BinaryOperator';
 
-function isIdenticalGrid ( // somehow this is not exportable from simulator.tsx, so making a duplicate here
-    grid1 : Grid,
-    grid2 : Grid
-): boolean {
-    return JSON.stringify(grid1) == JSON.stringify(grid2)
-}
-
 export default function Home() {
 
     // Constants
@@ -72,6 +65,29 @@ export default function Home() {
     const mechStates = frame?.mechs || mechInitStates
     const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
     const delivered = frame?.delivered_accumulated
+
+    function isIdenticalGrid ( // somehow this is not exportable from simulator.tsx, so making a duplicate here
+        grid1: Grid,
+        grid2: Grid
+    ): boolean {
+        return JSON.stringify(grid1) == JSON.stringify(grid2)
+    }
+
+    function isGridOOB (grid: Grid): boolean {
+        if (grid.x < 0 || grid.x > DIM-1 || grid.y < 0 || grid.y > DIM-1) return true;
+        return false;
+    }
+
+    function areGridsNeighbors (
+        grid1: Grid,
+        grid2: Grid
+    ): boolean {
+        if (
+            (grid1.x == grid2.x && Math.abs(grid1.y - grid2.y)==1) ||
+            (grid1.y == grid2.y && Math.abs(grid1.x - grid2.x)==1)
+        ) return true;
+        return false;
+    }
 
     //
     // Definition of setting DOM state
@@ -133,14 +149,7 @@ export default function Home() {
         if (adderPositions){
             for (const adder of adderPositions){
                 console.log("encountered an adder!", JSON.stringify(adder))
-                if (
-                    isIdenticalGrid(adder.a, FAUCET_POS) ||
-                    isIdenticalGrid(adder.b, FAUCET_POS) ||
-                    isIdenticalGrid(adder.z, FAUCET_POS) ||
-                    isIdenticalGrid(adder.a, SINK_POS) ||
-                    isIdenticalGrid(adder.b, SINK_POS) ||
-                    isIdenticalGrid(adder.z, SINK_POS)
-                ) continue;
+                if (isOperatorPositionInvalid(adder)) continue;
                 newStates[adder.a.x][adder.a.y].unit_text = UnitText.OPERAND_ADD
                 newStates[adder.b.x][adder.b.y].unit_text = UnitText.OPERAND_ADD
                 newStates[adder.z.x][adder.z.y].unit_text = UnitText.OUTPUT
@@ -148,6 +157,29 @@ export default function Home() {
         }
 
         return newStates
+    }
+
+    function isOperatorPositionInvalid (adder: BinaryOperator): boolean {
+        if (
+            isIdenticalGrid(adder.a, FAUCET_POS) ||
+            isIdenticalGrid(adder.b, FAUCET_POS) ||
+            isIdenticalGrid(adder.z, FAUCET_POS) ||
+            isIdenticalGrid(adder.a, SINK_POS) ||
+            isIdenticalGrid(adder.b, SINK_POS) ||
+            isIdenticalGrid(adder.z, SINK_POS) ||
+            isIdenticalGrid(adder.a, adder.b) ||
+            isIdenticalGrid(adder.a, adder.z) ||
+            isIdenticalGrid(adder.b, adder.z)
+        ) return true;
+
+        if (isGridOOB(adder.a) || isGridOOB(adder.b) || isGridOOB(adder.z)) return true;
+
+        const isABNeighbors = areGridsNeighbors(adder.a, adder.b)
+        const isBZNeighbors = areGridsNeighbors(adder.b, adder.z)
+
+        if (!isABNeighbors || !isBZNeighbors) return true;
+
+        return false;
     }
 
     // Handle click event for adding/removing mechs

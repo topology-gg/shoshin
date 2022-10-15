@@ -22,6 +22,9 @@ export default function simulator(
     boardConfig: BoardConfig, // including atom faucet, operator, atom sink - these don't change in frames
 ): Frame[] {
 
+    // Note: when implementing this function in smart contract,
+    // must implement config verification, particularly - verify the validity of operator placement
+
     //
     // Prepare the first frame
     //
