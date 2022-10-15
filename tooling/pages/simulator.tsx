@@ -11,14 +11,14 @@ export default function simulator(
     n_cycles : number,
     mechs : MechState[],
     atoms : AtomState[],
-    instructions : string[],
+    instructionSets : string[][],
     boardConfig: BoardConfig, // including atom faucet, operator, atom sink - these don't change in frames
-) {
+): Frame[] {
 
     //
     // Prepare the first frame
     //
-    var grid_populated_bools = {}
+    var grid_populated_bools : { [key: string] : boolean } = {}
     for (var i=0; i<boardConfig.dimension; i++){
         for (var j=0; j<boardConfig.dimension; j++){
             grid_populated_bools[JSON.stringify({x:i,y:j})] = false
@@ -27,30 +27,32 @@ export default function simulator(
     for (const atom of atoms) {
         grid_populated_bools[JSON.stringify(atom.index)] = true
     }
-    const frame_init = {
+    const frame_init : Frame= {
         mechs: mechs,
         atoms: atoms,
         grid_populated_bools: grid_populated_bools,
         delivered_accumulated: []
-    } as Frame;
+    }
 
     //
     // Forward system by n_cycles, recording frames emitted; a frame carries all objects with their states i.e. frame == state screenshot
     //
-    var frame_s = [frame_init]
+    var frame_s: Frame[] = [frame_init]
     for (var i=0; i<n_cycles; i++) {
         //
         // Prepare instruction for each mech
         //
-        const instr = instructions[i % instructions.length];
-        var instruction_per_mech = {}
-        for (const mech of mechs){
-            instruction_per_mech[mech.id] = instr // TODO diff mechs would have diff instructions
-        }
+        var instruction_per_mech = []
+        mechs.forEach((mech:MechState, mech_i:number) => {
+            const instructionSet = instructionSets[mech_i]
+            const instruction = instructionSet[i % instructionSet.length]
+            instruction_per_mech.push (instruction)
+        })
+        // console.log(`cycle ${i}, instruction_per_mech ${JSON.stringify(instruction_per_mech)}`)
 
         // Run simulate_one_cycle()
         const last_frame = frame_s[frame_s.length-1]
-        const new_frame = _simulate_one_cycle (
+        const new_frame: Frame = _simulate_one_cycle (
             instruction_per_mech,
             last_frame,
             boardConfig
@@ -68,10 +70,10 @@ export default function simulator(
 // a pure function that runs simulation for one cycle, according to instruction input
 //
 function _simulate_one_cycle (
-    instruction_per_mech, // mapping 'mech..' => '..' (instruction string)
+    instruction_per_mech: string[],
     frame_curr: Frame, // {mechs, atoms, grid_populated_bools}
     boardConfig: BoardConfig
-) {
+): Frame {
     //
     // Unpack frame
     //
@@ -82,8 +84,8 @@ function _simulate_one_cycle (
     //
     // Prepare mutable variable for this cycle pass
     //
-    var mechs_new = []
-    var atoms_new = JSON.parse(JSON.stringify(atoms_curr)) // object cloning
+    var mechs_new: MechState[] = []
+    var atoms_new: AtomState[] = JSON.parse(JSON.stringify(atoms_curr)) // object cloning
     var grid_populated_bools_new = JSON.parse(JSON.stringify(grid_populated_bools)) // object cloning
 
     //
@@ -92,7 +94,7 @@ function _simulate_one_cycle (
     for (const atom_faucet of boardConfig.atom_faucets) {
         if (grid_populated_bools_new[JSON.stringify(atom_faucet.index)] == false){
             const atom_new = {
-                id: `atom${atoms_new.length}`, typ: atom_faucet.typ, status: 'free', index: atom_faucet.index, possessed_by: null
+                id: `atom${atoms_new.length}`, typ: atom_faucet.typ, status: AtomStatus.FREE, index: atom_faucet.index, possessed_by: null
             }
             atoms_new.push (atom_new)
             grid_populated_bools_new[JSON.stringify(atom_faucet.index)] = true
@@ -102,18 +104,21 @@ function _simulate_one_cycle (
     //
     // Iterate through mechs
     //
-    for (const mech of mechs_curr) {
-        const instruction = instruction_per_mech[mech.id]
+    // for (const mech of mechs_curr) {
+    mechs_curr.map((mech: MechState, mech_i: number) => {
+        const instruction = instruction_per_mech[mech_i]
         var mech_new = {id:mech.id, typ:mech.typ, index:mech.index, status:mech.status}
 
+        console.log (`mech${mech_i} running ${instruction}`)
+
         if (instruction == 'D'){ // x-positive
-            if (mech.index.x < boardConfig.dimension) {
+            if (mech.index.x < boardConfig.dimension-1) {
                 // move mech
                 mech_new.index = {x:mech.index.x+1, y:mech.index.y}
 
                 // move atom if possessed by this mech
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
-                    if (atom.status == 'possessed' && atom.possessed_by == mech.id){
+                    if (atom.status == AtomStatus.POSSESSED && atom.possessed_by == mech.id){
                         var atom_new = theArray[i]
                         atom_new.index.x += 1
                         theArray[i] = atom_new
@@ -128,7 +133,7 @@ function _simulate_one_cycle (
 
                 // move atom if possessed by this mech
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
-                    if (atom.status == 'possessed' && atom.possessed_by == mech.id){
+                    if (atom.status == AtomStatus.POSSESSED && atom.possessed_by == mech.id){
                         var atom_new = theArray[i]
                         atom_new.index.x -= 1
                         theArray[i] = atom_new
@@ -137,12 +142,12 @@ function _simulate_one_cycle (
             }
         }
         else if (instruction == 'S'){ // y-positive
-            if (mech.index.y < boardConfig.dimension) {
+            if (mech.index.y < boardConfig.dimension-1) {
                 mech_new.index = {x:mech.index.x, y:mech.index.y+1}
 
                 // move atom if possessed by this mech
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
-                    if (atom.status == 'possessed' && atom.possessed_by == mech.id){
+                    if (atom.status == AtomStatus.POSSESSED && atom.possessed_by == mech.id){
                         var atom_new = theArray[i]
                         atom_new.index.y += 1
                         theArray[i] = atom_new
@@ -156,7 +161,7 @@ function _simulate_one_cycle (
 
                 // move atom if possessed by this mech
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
-                    if (atom.status == 'possessed' && atom.possessed_by == mech.id){
+                    if (atom.status == AtomStatus.POSSESSED && atom.possessed_by == mech.id){
                         var atom_new = theArray[i]
                         atom_new.index.y -= 1
                         theArray[i] = atom_new
@@ -202,7 +207,7 @@ function _simulate_one_cycle (
         }
 
         mechs_new.push (mech_new)
-    }
+    })
 
     //
     // Iterate through atom sinks
@@ -228,7 +233,7 @@ function _simulate_one_cycle (
     //
     // Pack a new frame and return
     //
-    const frame_new = {
+    const frame_new: Frame = {
         mechs: mechs_new,
         atoms: atoms_new,
         grid_populated_bools: grid_populated_bools_new,
