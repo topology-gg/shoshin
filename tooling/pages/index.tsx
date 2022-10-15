@@ -46,7 +46,6 @@ export default function Home() {
     const [frames, setFrames] = useState<Frame[]>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
     const [numMechs, setNumMechs] = useState(1)
-    const [deliveryLastRun, setDeliveryLastRun] = useState<{[key: string] : number}>();
 
     //
     // React state updates
@@ -61,6 +60,7 @@ export default function Home() {
     const atomStates = frame?.atoms || atomInitStates
     const mechStates = frame?.mechs || mechInitStates
     const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
+    const delivered = frame?.delivered_accumulated
 
     //
     // Definition of setting DOM state
@@ -195,7 +195,6 @@ export default function Home() {
                     if (delivered == 'vanilla') {n_vanilla += 1}
                 }
                 console.log (`> delivered ${n_vanilla} vanilla atom(s)`)
-                setDeliveryLastRun ({'vanilla':n_vanilla})
 
                 // Begin animation
                 setAnimationState ('Run')
@@ -264,15 +263,6 @@ export default function Home() {
         else return 'regular'
     }
 
-    function formatdeliveryLastRun (delivery: {[key: string] : number}){
-        var s: string = '';
-        for (const key in delivery){
-            s += `${key} x ${delivery[key].toString()}, `
-        }
-        s = s.slice(0,-2)
-        return `Delivered in last run: ${s}`
-    }
-
     // Render
     return (
         <div className={styles.container}>
@@ -286,8 +276,6 @@ export default function Home() {
                 <h2 className={styles.title}>
                     MovyMovy
                 </h2>
-
-                <p>{deliveryLastRun == null ? '' : formatdeliveryLastRun(deliveryLastRun)}</p>
 
                 <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'10px'}}>
                     <button style={{fontSize:'0.75rem', marginRight:'3px'}} onClick={() => handleMechClick('+')}> {'+'} </button>
@@ -351,6 +339,14 @@ export default function Home() {
                             </div>
                         ))
                     }
+                </div>
+
+                <div className={styles.delivered_atoms}>
+                    Delivered: {delivered?.length || 0} x
+                    <Unit 
+                        state={{bg_status: BgStatus.ATOM_VANILLA_FREE, border_status: null}} 
+                        typ='regular'
+                    />
                 </div>
             </main>
 

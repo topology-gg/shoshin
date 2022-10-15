@@ -1,7 +1,7 @@
 import {useState, useEffect, useRef, CSSProperties} from 'react';
 import UnitState, {BgStatus, BorderStatus} from '../src/types/UnitState';
 
-export default function Unit({state, typ}) {
+export default function Unit({state, typ}: {state: UnitState, typ: string}) {
 
     // Constants
     const gridStyle = {
