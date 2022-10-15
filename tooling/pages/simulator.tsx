@@ -112,7 +112,7 @@ function _simulate_one_cycle (
         console.log (`mech${mech_i} running ${instruction}`)
 
         if (instruction == 'D'){ // x-positive
-            if (mech.index.x < boardConfig.dimension) {
+            if (mech.index.x < boardConfig.dimension-1) {
                 // move mech
                 mech_new.index = {x:mech.index.x+1, y:mech.index.y}
 
@@ -142,7 +142,7 @@ function _simulate_one_cycle (
             }
         }
         else if (instruction == 'S'){ // y-positive
-            if (mech.index.y < boardConfig.dimension) {
+            if (mech.index.y < boardConfig.dimension-1) {
                 mech_new.index = {x:mech.index.x, y:mech.index.y+1}
 
                 // move atom if possessed by this mech
