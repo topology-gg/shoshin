@@ -71,6 +71,16 @@ button {
     color-scheme: light;
   }
   body {
+    color: black;
+    background: white;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+  body {
     color: white;
     background: black;
   }
