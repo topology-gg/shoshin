@@ -83,7 +83,7 @@
 .grid_parent {
   display: flex;
   flex-direction: column;
-  border: 1px solid #333333;
+  border: 1px solid #7e7e7e;
   border-radius: 10px;
   padding: 1rem;
   /* align-items: center; */
@@ -104,7 +104,7 @@
 
 .delivered_atoms {
   margin-top: 2rem;
-  border: 1px solid #333333;
+  border: 1px solid #7e7e7e;
   border-radius: 10px;
   padding: 1rem;
   display: flex;
