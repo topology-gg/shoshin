@@ -26,7 +26,8 @@ export default function Home() {
     const UNIT_STATE_INIT: UnitState = {
         bg_status: BgStatus.EMPTY,
         border_status: BorderStatus.EMPTY,
-        unit_text: UnitText.GRID
+        unit_text: UnitText.GRID,
+        unit_id: null,
     }
     var unitStatesInit = []
     for (var i=0; i<DIM; i++){
@@ -95,14 +96,14 @@ export default function Home() {
     function setVisualForStates (atomStates: AtomState[], mechStates: MechState[], states: UnitState[][]){
         let newStates = JSON.parse(JSON.stringify(states)) // duplicate
 
-        newStates = setConfigVisualForStates (newStates)
-
         for (const atom of atomStates) {
             newStates = setAtomVisualForStates (atom, newStates)
         }
         for (const mech of mechStates) {
             newStates = setMechVisualForStates (mech, newStates)
         }
+
+        newStates = setConfigVisualForStates (newStates)
 
         return newStates
     }
@@ -111,7 +112,8 @@ export default function Home() {
     // Definition of setting mech's visual to DOM state
     //
     function setMechVisualForStates (mech: MechState, states: UnitState[][]){
-        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
+        let newStates: UnitState[][] = JSON.parse(JSON.stringify(states)) // duplicate
+        newStates[mech.index.x][mech.index.y].unit_id = mech.id
         if (mech.status == MechStatus.OPEN){
             newStates[mech.index.x][mech.index.y].border_status = BorderStatus.SINGLETON_OPEN
         }
@@ -125,7 +127,9 @@ export default function Home() {
     // Definition of setting atom's visual to DOM state
     //
     function setAtomVisualForStates (atom: AtomState, states: UnitState[][]){
-        let newStates = JSON.parse(JSON.stringify(states)) // duplicate
+        let newStates: UnitState[][] = JSON.parse(JSON.stringify(states)) // duplicate
+        newStates[atom.index.x][atom.index.y].unit_id = atom.id
+        newStates[atom.index.x][atom.index.y].unit_text = UnitText.EMPTY
         if (atom.status == AtomStatus.FREE){
             if (atom.typ == AtomType.VANILLA) {
                 newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_FREE
@@ -544,7 +548,12 @@ export default function Home() {
                 <div className={styles.delivered_atoms}>
                     Delivered: {delivered?.length || 0} x
                     <Unit
-                        state={{bg_status: BgStatus.ATOM_VANILLA_FREE, border_status: null, unit_text: UnitText.EMPTY}}
+                        state={{
+                            bg_status: BgStatus.ATOM_VANILLA_FREE,
+                            border_status: null,
+                            unit_text: UnitText.EMPTY,
+                            unit_id: null
+                        }}
                     />
                 </div>
             </main>

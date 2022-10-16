@@ -5,6 +5,7 @@
   padding: 0rem;
   width: 1.6rem;
   height: 1.6rem;
+  position: relative;
   text-align: center;
   justify-content: center;
   align-items: center;
@@ -17,7 +18,10 @@
 }
 
 .atomVanillaFree, .atomVanillaPossessed {
-  background-color: #FFE4B5;
+    /* Trying out new color: vanilla yellow */
+    /* background-color: #F3E5AB; */
+    background-color: #FF355E;
+    color: white;
 }
 
 .atomHazelnutFree, .atomHazelnutPossessed {
@@ -30,4 +34,45 @@
 
 .mechSingletonClose {
   border-color: #FF7A00;
+}
+
+.atomChocolateFree, .atomChocolatePossessed {
+  background-color: #361c15;
+}
+
+.atomStrawberryFree, .atomStrawberryPossessed {
+  background-color: #e73da6;
+}
+
+.nucleus {
+  content: ' ';
+  position: absolute;
+  border-radius: 50px;
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+.twoNuclei .nucleus:nth-child(1) {
+  transform: translateX(-55%);
+}
+.twoNuclei .nucleus:nth-child(2) {
+  transform: translateX(55%);
+}
+
+.threeNuclei .nucleus:nth-child(1) {
+  transform: translateX(-57%) translateY(-36%);
+}
+.threeNuclei .nucleus:nth-child(2) {
+  transform: translateX(57%) translateY(-36%);
+}
+.threeNuclei .nucleus:nth-child(3) {
+  transform: translateY(56%);
+}
+
+.unitId {
+  position: absolute;
+  top: 0.1rem;
+  left: 0.2rem;
+  font-size: 0.5rem;
 }
