@@ -268,7 +268,7 @@ function _simulate_one_cycle (
     //
     // Iterate through atom sinks
     //
-    var delivered_accumulated_new = JSON.parse(JSON.stringify(frame_curr.delivered_accumulated))
+    var delivered_accumulated_new: AtomType[] = JSON.parse(JSON.stringify(frame_curr.delivered_accumulated))
     for (const atom_sink of boardConfig.atom_sinks) {
         // iterate through atoms, see if a 'free' one is lying at this sink
         atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {

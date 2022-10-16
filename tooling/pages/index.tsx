@@ -12,6 +12,7 @@ import Unit from './unit';
 import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitState';
 import Grid from '../src/types/Grid';
 import BinaryOperator, {BinaryOperatorType} from '../src/types/BinaryOperator';
+import Delivery from './delivery'
 
 export default function Home() {
 
@@ -75,7 +76,8 @@ export default function Home() {
     const atomStates = frame?.atoms || atomInitStates
     const mechStates = frame?.mechs || mechInitStates
     const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
-    const delivered = frame?.delivered_accumulated
+    const delivered: AtomType[] = frame?.delivered_accumulated
+    console.log('index.tsx delivered:', delivered)
 
     function isIdenticalGrid ( // somehow this is not exportable from simulator.tsx, so making a duplicate here
         grid1: Grid,
@@ -172,7 +174,6 @@ export default function Home() {
         // Operators
         if (adderStates){
             for (const adder of adderStates){
-                console.log("encountered an adder!", JSON.stringify(adder))
                 if (isOperatorPositionInvalid(adder)) continue;
                 newStates[adder.a.x][adder.a.y].unit_text = UnitText.OPERAND_ADD
                 newStates[adder.b.x][adder.b.y].unit_text = UnitText.OPERAND_ADD
@@ -315,11 +316,11 @@ export default function Home() {
                     console.log(i, s)
                 })
                 const final_delivery = simulatedFrames[simulatedFrames.length-1].delivered_accumulated
-                var n_vanilla = 0
-                for (const delivered of final_delivery){
-                    if (delivered == 'vanilla') {n_vanilla += 1}
-                }
-                console.log (`> delivered ${n_vanilla} vanilla atom(s)`)
+                // var n_vanilla = 0
+                // for (const delivered of final_delivery){
+                //     if (delivered == 'vanilla') {n_vanilla += 1}
+                // }
+                // console.log (`> delivered ${n_vanilla} vanilla atom(s)`)
 
                 // Begin animation
                 setAnimationState ('Run')
@@ -556,7 +557,7 @@ export default function Home() {
                 </div>
 
                 <div className={styles.delivered_atoms}>
-                    Delivered: {delivered?.length || 0} x
+                    {/* Delivered: {delivered?.length || 0} x
                     <Unit
                         state={{
                             bg_status: BgStatus.ATOM_VANILLA_FREE,
@@ -564,7 +565,8 @@ export default function Home() {
                             unit_text: UnitText.EMPTY,
                             unit_id: null
                         }}
-                    />
+                    /> */}
+                    <Delivery delivered={delivered} />
                 </div>
             </main>
 
