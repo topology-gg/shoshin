@@ -41,16 +41,26 @@ export default function Home() {
     const MIN_NUM_ADDERS = 0
 
     // React states
-    const [programs, setPrograms] = useState<string[]>([INIT_PROGRAM]);
+    const [programs, setPrograms] = useState<string[]>([
+        'Z,S,S,D,D,X,W,W,A,A',
+        '_,_,_,_,_,_,Z,S,X,W',
+        'Z,S,S,S,D,D,D,D,D,X,A,A,A,A,A,W,W,W'
+    ]);
     const [instructionSets, setInstructionSets] = useState<string[][]>();
+    const [numMechs, setNumMechs] = useState(3)
+    const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([
+        { x:0, y:0 },
+        { x:2, y:2 },
+        { x:2, y:4 }
+    ])
+    const [numAdders, setNumAdders] = useState(1)
+    const [adderStates, setAdderStates] = useState<BinaryOperator[]> ([
+        { a:{x:2,y:2}, b:{x:2,y:3}, z:{x:2,y:4}, typ:BinaryOperatorType.ADDER }
+    ])
     const [animationState, setAnimationState] = useState ('Stop');
     const [animationFrame, setAnimationFrame] = useState<number> (0)
-    const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([{ x: MECH_INIT_X, y: MECH_INIT_Y }])
     const [frames, setFrames] = useState<Frame[]>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
-    const [numMechs, setNumMechs] = useState(MIN_NUM_MECHS)
-    const [numAdders, setNumAdders] = useState(MIN_NUM_ADDERS)
-    const [adderStates, setAdderStates] = useState<BinaryOperator[]> ([])
 
     //
     // React state updates
@@ -437,7 +447,7 @@ export default function Home() {
                                                 return prev_copy
                                             }
                                         )}}
-                                        defaultValue={INIT_PROGRAM}
+                                        defaultValue={programs[mech_i]}
                                         style={{width:'300px'}}
                                     ></input>
                                 </div>

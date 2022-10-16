@@ -66,6 +66,15 @@ button {
   box-sizing: border-box;
 }
 
+html {
+    color-scheme: light;
+}
+body {
+    color: black;
+    background: white;
+}
+
+/*
 @media (prefers-color-scheme: light) {
   html {
     color-scheme: light;
@@ -84,4 +93,4 @@ button {
     color: white;
     background: black;
   }
-}
+} */
