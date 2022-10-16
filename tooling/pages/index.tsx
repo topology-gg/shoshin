@@ -407,6 +407,14 @@ export default function Home() {
                     MovyMovy
                 </h2>
 
+                <p style={{fontSize:'0.9rem',marginTop:'0',marginBottom:'0'}}>Makeshift tutorial</p>
+                <ol style={{width:'30rem', marginTop:'0.5rem', marginBottom:'2rem'}}>
+                    <li>Only Singleton mechanism ("mech") is available, whose instruction set is [W,A,S,D] for movement, Z for pick-up, X for put-down.</li>
+                    <li>_ as instruction means no-operation.</li>
+                    <li>During simulation, each mech cycles through its own program on repeat.</li>
+                    <li>Currently only one formula is available: try adding two red atoms by placing them at Adder's input operand grids.</li>
+                </ol>
+
                 <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'10px'}}>
                     <button onClick={() => handleMechClick('+')}> {'+mech'} </button>
                     <button onClick={() => handleMechClick('-')}> {'-mech'} </button>

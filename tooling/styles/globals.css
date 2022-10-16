@@ -74,6 +74,10 @@ body {
     background: white;
 }
 
+li {
+    font-size: 0.75rem;
+}
+
 /*
 @media (prefers-color-scheme: light) {
   html {
