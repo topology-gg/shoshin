@@ -44,7 +44,8 @@ export default function simulator(
         mechs: mechs,
         atoms: atoms,
         grid_populated_bools: grid_populated_bools,
-        delivered_accumulated: []
+        delivered_accumulated: [],
+        notes: ''
     }
 
     //
@@ -100,6 +101,7 @@ function _simulate_one_cycle (
     var mechs_new: MechState[] = []
     var atoms_new: AtomState[] = JSON.parse(JSON.stringify(atoms_curr)) // object cloning
     var grid_populated_bools_new: { [key: string] : boolean } = JSON.parse(JSON.stringify(grid_populated_bools)) // object cloning
+    var notes = ''
 
     //
     // Iterate through atom faucets
@@ -191,7 +193,7 @@ function _simulate_one_cycle (
                 grid_populated_bools_new[JSON.stringify(mech.index)] = false
 
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
-                    if ( isIdenticalGrid(atom.index, mech.index) ){
+                    if ( isIdenticalGrid(atom.index, mech.index) && atom.status==AtomStatus.FREE ){
                         var atom_new = theArray[i]
                         atom_new.status = AtomStatus.POSSESSED
                         atom_new.possessed_by = mech.id
@@ -250,6 +252,7 @@ function _simulate_one_cycle (
 
             // check for formula match
             if (atom_type_a == AtomType.VANILLA && atom_type_b == AtomType.VANILLA){
+                notes += 'adding vanilla + vanilla'
                 // consume two vanilla atoms to produce one hazelnut atom
                 grid_populated_bools_new[JSON.stringify(binary_operator.a)] = false
                 grid_populated_bools_new[JSON.stringify(binary_operator.b)] = false
@@ -296,7 +299,8 @@ function _simulate_one_cycle (
         mechs: mechs_new,
         atoms: atoms_new,
         grid_populated_bools: grid_populated_bools_new,
-        delivered_accumulated: delivered_accumulated_new
+        delivered_accumulated: delivered_accumulated_new,
+        notes: notes
     }
     return frame_new
 }

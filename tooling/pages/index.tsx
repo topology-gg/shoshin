@@ -18,7 +18,7 @@ export default function Home() {
 
     // Constants
     const N_CYCLES = 100
-    const ANIM_FRAME_LATENCY = 300
+    const ANIM_FRAME_LATENCY = 500
     const INIT_PROGRAM = 'Z,S,S,D,D,X,W,W,A,A'
     const DIM = 8
     const MECH_INIT_X = 0
@@ -311,9 +311,10 @@ export default function Home() {
                 ) as Frame[]
                 setFrames (simulatedFrames)
 
-                simulatedFrames.forEach((f:Frame,i:number) => {
-                    const s = f.mechs.map(function(v){return JSON.stringify(v)}).join('\n')
-                    console.log(i, s)
+                simulatedFrames.forEach((f:Frame,frame_i:number) => {
+                    // const s = f.atoms.map(function(v){return JSON.stringify(v)}).join('\n')
+                    console.log(frame_i, f.atoms)
+                    // console.log(frame_i, f.notes)
                 })
                 const final_delivery = simulatedFrames[simulatedFrames.length-1].delivered_accumulated
                 // var n_vanilla = 0

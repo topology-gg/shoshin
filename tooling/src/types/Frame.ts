@@ -6,4 +6,5 @@ export default interface Frame {
     atoms: AtomState[]
     grid_populated_bools: { [key: string] : boolean }
     delivered_accumulated: AtomType[]
+    notes: string
 }

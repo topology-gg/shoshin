@@ -4,23 +4,18 @@ import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitStat
 
 export default function Delivery({ delivered }) {
 
-    // const delivered: AtomType[] = props.delivered
-    // console.log('delivered:', delivered)
     if (!delivered || delivered.length == 0) {
         return <></>
     }
 
     let counts: { [key: string] : number } = {}
     for (let typ in AtomType){
-        console.log('visiting', typ as string)
         const count = delivered.filter(t => t == typ).length;
         if (count == 0) {
-            console.log('counted 0 for', typ)
             continue;
         }
         counts[typ as string] = count
     }
-    console.log('counts:', JSON.stringify(counts))
 
     return (
         <>
