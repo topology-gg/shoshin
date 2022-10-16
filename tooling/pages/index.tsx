@@ -3,7 +3,7 @@ import styles from '../styles/Home.module.css'
 import {useState, useEffect, useRef, useCallback} from 'react';
 import simulator from "./simulator";
 import MechState, { MechStatus } from '../src/types/MechState';
-import AtomState, { AtomStatus } from '../src/types/AtomState';
+import AtomState, { AtomStatus, AtomType } from '../src/types/AtomState';
 import AtomFaucetState from '../src/types/AtomFaucetState';
 import AtomSinkState from '../src/types/AtomSinkState';
 import BoardConfig from '../src/types/BoardConfig';
@@ -11,7 +11,8 @@ import Frame from '../src/types/Frame';
 import Unit from './unit';
 import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitState';
 import Grid from '../src/types/Grid';
-import BinaryOperator from '../src/types/BinaryOperator';
+import BinaryOperator, {BinaryOperatorType} from '../src/types/BinaryOperator';
+import Delivery from './delivery'
 
 export default function Home() {
 
@@ -41,16 +42,26 @@ export default function Home() {
     const MIN_NUM_ADDERS = 0
 
     // React states
-    const [programs, setPrograms] = useState<string[]>([INIT_PROGRAM]);
+    const [programs, setPrograms] = useState<string[]>([
+        'Z,S,S,D,D,X,W,W,A,A',
+        '_,_,_,_,_,_,Z,S,X,W',
+        'Z,S,S,S,D,D,D,D,D,X,A,A,A,A,A,W,W,W'
+    ]);
     const [instructionSets, setInstructionSets] = useState<string[][]>();
+    const [numMechs, setNumMechs] = useState(3)
+    const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([
+        { x:0, y:0 },
+        { x:2, y:2 },
+        { x:2, y:4 }
+    ])
+    const [numAdders, setNumAdders] = useState(1)
+    const [adderStates, setAdderStates] = useState<BinaryOperator[]> ([
+        { a:{x:2,y:2}, b:{x:2,y:3}, z:{x:2,y:4}, typ:BinaryOperatorType.ADDER }
+    ])
     const [animationState, setAnimationState] = useState ('Stop');
     const [animationFrame, setAnimationFrame] = useState<number> (0)
-    const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([{ x: MECH_INIT_X, y: MECH_INIT_Y }])
     const [frames, setFrames] = useState<Frame[]>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
-    const [numMechs, setNumMechs] = useState(MIN_NUM_MECHS)
-    const [numAdders, setNumAdders] = useState(MIN_NUM_ADDERS)
-    const [adderPositions, setAdderPositions] = useState<BinaryOperator[]> ([])
 
     //
     // React state updates
@@ -59,13 +70,14 @@ export default function Home() {
         (pos, mech_i) => { return {status: MechStatus.OPEN, index: pos, id: `mech${mech_i}`, typ: 'singleton'} }
     )
     const atomInitStates: AtomState[] = ATOM_INIT_XY.map(
-        function (xy,i) { return {status:AtomStatus.FREE, index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:'vanilla', possessed_by:null} }
+        function (xy,i) { return {status:AtomStatus.FREE, index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:AtomType.VANILLA, possessed_by:null} }
     )
     const frame = frames?.[animationFrame]
     const atomStates = frame?.atoms || atomInitStates
     const mechStates = frame?.mechs || mechInitStates
     const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
-    const delivered = frame?.delivered_accumulated
+    const delivered: AtomType[] = frame?.delivered_accumulated
+    console.log('index.tsx delivered:', delivered)
 
     function isIdenticalGrid ( // somehow this is not exportable from simulator.tsx, so making a duplicate here
         grid1: Grid,
@@ -96,14 +108,14 @@ export default function Home() {
     function setVisualForStates (atomStates: AtomState[], mechStates: MechState[], states: UnitState[][]){
         let newStates = JSON.parse(JSON.stringify(states)) // duplicate
 
-        newStates = setConfigVisualForStates (newStates)
-
         for (const atom of atomStates) {
             newStates = setAtomVisualForStates (atom, newStates)
         }
         for (const mech of mechStates) {
             newStates = setMechVisualForStates (mech, newStates)
         }
+
+        newStates = setConfigVisualForStates (newStates)
 
         return newStates
     }
@@ -129,11 +141,22 @@ export default function Home() {
     function setAtomVisualForStates (atom: AtomState, states: UnitState[][]){
         let newStates: UnitState[][] = JSON.parse(JSON.stringify(states)) // duplicate
         newStates[atom.index.x][atom.index.y].unit_id = atom.id
+        newStates[atom.index.x][atom.index.y].unit_text = UnitText.EMPTY
         if (atom.status == AtomStatus.FREE){
-            newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_FREE
+            if (atom.typ == AtomType.VANILLA) {
+                newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_FREE
+            }
+            else if (atom.typ == AtomType.HAZELNUT) {
+                newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_HAZELNUT_FREE
+            }
         }
         else if (atom.status == AtomStatus.POSSESSED){
-            newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_POSSESSED
+            if (atom.typ == AtomType.VANILLA) {
+                newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_VANILLA_POSSESSED
+            }
+            else if (atom.typ == AtomType.HAZELNUT) {
+                newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_HAZELNUT_POSSESSED
+            }
         }
         return newStates
     }
@@ -149,9 +172,8 @@ export default function Home() {
         newStates[SINK_POS.x][SINK_POS.y].unit_text = UnitText.SINK
 
         // Operators
-        if (adderPositions){
-            for (const adder of adderPositions){
-                console.log("encountered an adder!", JSON.stringify(adder))
+        if (adderStates){
+            for (const adder of adderStates){
                 if (isOperatorPositionInvalid(adder)) continue;
                 newStates[adder.a.x][adder.a.y].unit_text = UnitText.OPERAND_ADD
                 newStates[adder.b.x][adder.b.y].unit_text = UnitText.OPERAND_ADD
@@ -229,17 +251,17 @@ export default function Home() {
     function handleAdderClick (mode: string){
         if (mode === '+' && numAdders < MAX_NUM_ADDERS) {
             setNumAdders (prev => prev+1)
-            setAdderPositions(
+            setAdderStates(
                 prev => {
                     let prev_copy: BinaryOperator[] = JSON.parse(JSON.stringify(prev))
-                    prev_copy.push ({ a:{x:0,y:0}, b:{x:0,y:0}, z:{x:0,y:0} })
+                    prev_copy.push ({ a:{x:0,y:0}, b:{x:0,y:0}, z:{x:0,y:0}, typ:BinaryOperatorType.ADDER })
                     return prev_copy
                 }
             )
         }
         else if (mode === '-' && numAdders > MIN_NUM_ADDERS) {
             setNumAdders (prev => prev-1)
-            setAdderPositions(
+            setAdderStates(
                 prev => {
                     let prev_copy: BinaryOperator[] = JSON.parse(JSON.stringify(prev))
                     prev_copy.pop ()
@@ -274,8 +296,9 @@ export default function Home() {
                 // Prepare input
                 const boardConfig: BoardConfig = {
                     dimension: DIM,
-                    atom_faucets: [{id:'atom_faucet0', typ:'vanilla', index:{x:FAUCET_POS.x, y:FAUCET_POS.y}} as AtomFaucetState],
-                    atom_sinks: [{id:'atom_faucet0', typ:'vanilla', index:{x:SINK_POS.x, y:SINK_POS.y}} as AtomSinkState]
+                    atom_faucets: [{id:'atom_faucet0', typ:AtomType.VANILLA, index:{x:FAUCET_POS.x, y:FAUCET_POS.y}} as AtomFaucetState],
+                    atom_sinks: [{id:'atom_sink0', index:{x:SINK_POS.x, y:SINK_POS.y}} as AtomSinkState],
+                    binary_operators: adderStates
                 }
 
                 // Run simulation to get all frames and set to reference
@@ -293,11 +316,11 @@ export default function Home() {
                     console.log(i, s)
                 })
                 const final_delivery = simulatedFrames[simulatedFrames.length-1].delivered_accumulated
-                var n_vanilla = 0
-                for (const delivered of final_delivery){
-                    if (delivered == 'vanilla') {n_vanilla += 1}
-                }
-                console.log (`> delivered ${n_vanilla} vanilla atom(s)`)
+                // var n_vanilla = 0
+                // for (const delivered of final_delivery){
+                //     if (delivered == 'vanilla') {n_vanilla += 1}
+                // }
+                // console.log (`> delivered ${n_vanilla} vanilla atom(s)`)
 
                 // Begin animation
                 setAnimationState ('Run')
@@ -349,17 +372,17 @@ export default function Home() {
         }
     }
 
-    function setAdderPos (adder_i: number, new_pos: BinaryOperator){
-        setAdderPositions(
+    function setAdder (adder_i: number, new_adder: BinaryOperator){
+        setAdderStates(
             (prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev))
-                prev_copy[adder_i] = new_pos
+                prev_copy[adder_i] = new_adder
                 return prev_copy
             }
         )
     }
 
-    const simulationLoop = (frames) => {
+    const simulationLoop = (frames: Frame[]) => {
         setAnimationFrame((prev) => {
             if (prev >= frames.length - 1) {
                 return 0
@@ -425,7 +448,7 @@ export default function Home() {
                                                 return prev_copy
                                             }
                                         )}}
-                                        defaultValue={INIT_PROGRAM}
+                                        defaultValue={programs[mech_i]}
                                         style={{width:'300px'}}
                                     ></input>
                                 </div>
@@ -442,22 +465,22 @@ export default function Home() {
                                         className={styles.program}
                                         onChange={event => {
                                             if (event.target.value.length == 0) return;
-                                            let newAdderPos = JSON.parse(JSON.stringify(adderPositions[adder_i]))
-                                            newAdderPos.a.x = parseInt(event.target.value)
-                                            setAdderPos(adder_i, newAdderPos)}
+                                            let newAdder = JSON.parse(JSON.stringify(adderStates[adder_i]))
+                                            newAdder.a.x = parseInt(event.target.value)
+                                            setAdder(adder_i, newAdder)}
                                         }
-                                        defaultValue={adderPositions[adder_i].a.x}
+                                        defaultValue={adderStates[adder_i].a.x}
                                         style={{width:'30px', textAlign:'center'}}
                                     ></input>
                                     <input
                                         className={styles.program}
                                         onChange={event => {
                                             if (event.target.value.length == 0) return;
-                                            let newAdderPos = JSON.parse(JSON.stringify(adderPositions[adder_i]))
-                                            newAdderPos.a.y = parseInt(event.target.value)
-                                            setAdderPos(adder_i, newAdderPos)}
+                                            let newAdder = JSON.parse(JSON.stringify(adderStates[adder_i]))
+                                            newAdder.a.y = parseInt(event.target.value)
+                                            setAdder(adder_i, newAdder)}
                                         }
-                                        defaultValue={adderPositions[adder_i].a.y}
+                                        defaultValue={adderStates[adder_i].a.y}
                                         style={{width:'30px', textAlign:'center'}}
                                     ></input>
                                     <p className={styles.input_text}>{`+`}</p>
@@ -466,22 +489,22 @@ export default function Home() {
                                         className={styles.program}
                                         onChange={event => {
                                             if (event.target.value.length == 0) return;
-                                            let newAdderPos = JSON.parse(JSON.stringify(adderPositions[adder_i]))
-                                            newAdderPos.b.x = parseInt(event.target.value)
-                                            setAdderPos(adder_i, newAdderPos)}
+                                            let newAdder = JSON.parse(JSON.stringify(adderStates[adder_i]))
+                                            newAdder.b.x = parseInt(event.target.value)
+                                            setAdder(adder_i, newAdder)}
                                         }
-                                        defaultValue={adderPositions[adder_i].b.x}
+                                        defaultValue={adderStates[adder_i].b.x}
                                         style={{width:'30px', textAlign:'center'}}
                                     ></input>
                                     <input
                                         className={styles.program}
                                         onChange={event => {
                                             if (event.target.value.length == 0) return;
-                                            let newAdderPos = JSON.parse(JSON.stringify(adderPositions[adder_i]))
-                                            newAdderPos.b.y = parseInt(event.target.value)
-                                            setAdderPos(adder_i, newAdderPos)}
+                                            let newAdder = JSON.parse(JSON.stringify(adderStates[adder_i]))
+                                            newAdder.b.y = parseInt(event.target.value)
+                                            setAdder(adder_i, newAdder)}
                                         }
-                                        defaultValue={adderPositions[adder_i].b.y}
+                                        defaultValue={adderStates[adder_i].b.y}
                                         style={{width:'30px', textAlign:'center'}}
                                     ></input>
                                     <p className={styles.input_text}>{`=`}</p>
@@ -490,22 +513,22 @@ export default function Home() {
                                         className={styles.program}
                                         onChange={event => {
                                             if (event.target.value.length == 0) return;
-                                            let newAdderPos = JSON.parse(JSON.stringify(adderPositions[adder_i]))
-                                            newAdderPos.z.x = parseInt(event.target.value)
-                                            setAdderPos(adder_i, newAdderPos)}
+                                            let newAdder = JSON.parse(JSON.stringify(adderStates[adder_i]))
+                                            newAdder.z.x = parseInt(event.target.value)
+                                            setAdder(adder_i, newAdder)}
                                         }
-                                        defaultValue={adderPositions[adder_i].z.x}
+                                        defaultValue={adderStates[adder_i].z.x}
                                         style={{width:'30px', textAlign:'center'}}
                                     ></input>
                                     <input
                                         className={styles.program}
                                         onChange={event => {
                                             if (event.target.value.length == 0) return;
-                                            let newAdderPos = JSON.parse(JSON.stringify(adderPositions[adder_i]))
-                                            newAdderPos.z.y = parseInt(event.target.value)
-                                            setAdderPos(adder_i, newAdderPos)}
+                                            let newAdder = JSON.parse(JSON.stringify(adderStates[adder_i]))
+                                            newAdder.z.y = parseInt(event.target.value)
+                                            setAdder(adder_i, newAdder)}
                                         }
-                                        defaultValue={adderPositions[adder_i].z.y}
+                                        defaultValue={adderStates[adder_i].z.y}
                                         style={{width:'30px', textAlign:'center'}}
                                     ></input>
 
@@ -534,10 +557,16 @@ export default function Home() {
                 </div>
 
                 <div className={styles.delivered_atoms}>
-                    Delivered: {delivered?.length || 0} x
+                    {/* Delivered: {delivered?.length || 0} x
                     <Unit
-                        state={{bg_status: BgStatus.ATOM_VANILLA_FREE, border_status: null, unit_text: UnitText.EMPTY}}
-                    />
+                        state={{
+                            bg_status: BgStatus.ATOM_VANILLA_FREE,
+                            border_status: null,
+                            unit_text: UnitText.EMPTY,
+                            unit_id: null
+                        }}
+                    /> */}
+                    <Delivery delivered={delivered} />
                 </div>
             </main>
 

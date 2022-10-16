@@ -1,7 +1,8 @@
 import Grid from './Grid'
+import { AtomType } from './AtomState'
 
 export default interface AtomFaucetState {
   id: string
-  typ: string
+  typ: AtomType
   index: Grid
 }

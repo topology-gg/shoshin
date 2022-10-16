@@ -1,5 +1,5 @@
 import MechState, {MechStatus} from '../src/types/MechState';
-import AtomState, {AtomStatus} from '../src/types/AtomState';
+import AtomState, {AtomStatus, AtomType} from '../src/types/AtomState';
 import Grid from '../src/types/Grid'
 import BoardConfig from '../src/types/BoardConfig';
 import Frame from '../src/types/Frame';
@@ -103,7 +103,7 @@ function _simulate_one_cycle (
     //
     for (const atom_faucet of boardConfig.atom_faucets) {
         if (grid_populated_bools_new[JSON.stringify(atom_faucet.index)] == false){
-            const atom_new = {
+            const atom_new: AtomState= {
                 id: `atom${atoms_new.length}`, typ: atom_faucet.typ, status: AtomStatus.FREE, index: atom_faucet.index, possessed_by: null
             }
             atoms_new.push (atom_new)
@@ -220,13 +220,59 @@ function _simulate_one_cycle (
     })
 
     //
+    // Iterate through operators
+    //
+    for (const binary_operator of boardConfig.binary_operators){
+        if ( // both a and b are occupied with atoms, and z is empty
+            grid_populated_bools_new[JSON.stringify(binary_operator.a)] &&
+            grid_populated_bools_new[JSON.stringify(binary_operator.b)] &&
+            !grid_populated_bools_new[JSON.stringify(binary_operator.z)]
+        ){
+            // TODO create abstraction for representing formula
+            // find the type of atoms occupying the operand grids - TODO improve implementation
+            var atom_type_a: AtomType
+            var atom_type_b: AtomType
+            var atom_i_a: number
+            var atom_i_b: number
+            atoms_new.forEach((atom: AtomState, atom_i: number) => {
+                if (isIdenticalGrid(atom.index, binary_operator.a)) {
+                    atom_type_a = atom.typ
+                    atom_i_a = atom_i
+                }
+                else if (isIdenticalGrid(atom.index, binary_operator.b)) {
+                    atom_type_b = atom.typ
+                    atom_i_b = atom_i
+                }
+            })
+
+            // check for formula match
+            if (atom_type_a == AtomType.VANILLA && atom_type_b == AtomType.VANILLA){
+                // consume two vanilla atoms to produce one hazelnut atom
+                grid_populated_bools_new[JSON.stringify(binary_operator.a)] = false
+                grid_populated_bools_new[JSON.stringify(binary_operator.b)] = false
+                atoms_new[atom_i_a].status = AtomStatus.CONSUMED
+                atoms_new[atom_i_b].status = AtomStatus.CONSUMED
+                grid_populated_bools_new[JSON.stringify(binary_operator.z)] = true
+                let atom_new_hazelnut: AtomState = {
+                    id: `atom${atoms_new.length}`,
+                    typ: AtomType.HAZELNUT,
+                    status: AtomStatus.FREE,
+                    index: binary_operator.z,
+                    possessed_by: null
+                }
+                atoms_new.push(atom_new_hazelnut)
+            }
+        }
+    }
+
+    //
     // Iterate through atom sinks
     //
-    var delivered_accumulated_new = JSON.parse(JSON.stringify(frame_curr.delivered_accumulated))
+    var delivered_accumulated_new: AtomType[] = JSON.parse(JSON.stringify(frame_curr.delivered_accumulated))
     for (const atom_sink of boardConfig.atom_sinks) {
         // iterate through atoms, see if a 'free' one is lying at this sink
         atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
-            if ( isIdenticalGrid(atom.index, atom_sink.index) && atom.status=='free' ){
+            if ( isIdenticalGrid(atom.index, atom_sink.index) && atom.status==AtomStatus.FREE ){
                 var atom_new = theArray[i]
                 atom_new.status = AtomStatus.DELIVERED
                 atom_new.possessed_by = null

@@ -14,6 +14,16 @@ export default function Unit({ state }: { state: UnitState }) {
         className += styles.atomVanillaPossessed + ' ';
         nuclei = 1;
     }
+
+    else if (state.bg_status === BgStatus.ATOM_HAZELNUT_FREE) {
+        className += styles.atomHazelnutFree + ' ';
+        nuclei = 2;
+    }
+    else if (state.bg_status === BgStatus.ATOM_HAZELNUT_POSSESSED) {
+        className += styles.atomHazelnutPossessed + ' ';
+        nuclei = 2;
+    }
+
     // if (state.bg_status === BgStatus.ATOM_CHOCOLATE_FREE) {
     //     className += styles.atomChocolateFree + ' ' + styles.twoNuclei;
     //     nuclei = 2;
@@ -43,7 +53,7 @@ export default function Unit({ state }: { state: UnitState }) {
     // Render
     return (
         <div className={`grid ${styles.unit} ${className}`}>
-            {Array.from({length: nuclei}).map((_, i) => 
+            {Array.from({length: nuclei}).map((_, i) =>
                 <div key={`nucleus${i}`} className={`${styles.nucleus}`} />
             )}
             {state.unit_text}

@@ -3,6 +3,8 @@ export enum BgStatus {
     EMPTY = 'empty',
     ATOM_VANILLA_FREE = 'vanilla_free',
     ATOM_VANILLA_POSSESSED = 'vanilla_possessed',
+    ATOM_HAZELNUT_FREE = 'hazelnut_free',
+    ATOM_HAZELNUT_POSSESSED = 'hazelnut_possessed',
 }
 
 export enum BorderStatus {

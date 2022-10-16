@@ -18,10 +18,14 @@
 }
 
 .atomVanillaFree, .atomVanillaPossessed {
-  /* Trying out new color: vanilla yellow */
-  /* background-color: #F3E5AB; */
-  background-color: #FF355E;
-  color: white;
+    /* Trying out new color: vanilla yellow */
+    /* background-color: #F3E5AB; */
+    background-color: #FF355E;
+    color: white;
+}
+
+.atomHazelnutFree, .atomHazelnutPossessed {
+    background-color: #FFB200;
 }
 
 .mechSingletonOpen {
