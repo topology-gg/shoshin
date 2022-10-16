@@ -36,7 +36,7 @@ export default function Home() {
     }
     const FAUCET_POS: Grid = {x:0, y:0}
     const SINK_POS: Grid = {x:DIM-1, y:DIM-1}
-    const MAX_NUM_MECHS = 5
+    const MAX_NUM_MECHS = 8
     const MIN_NUM_MECHS = 1
     const MAX_NUM_ADDERS = 5
     const MIN_NUM_ADDERS = 0
@@ -45,18 +45,25 @@ export default function Home() {
     const [programs, setPrograms] = useState<string[]>([
         'Z,S,S,D,D,X,W,W,A,A',
         '_,_,_,_,_,_,Z,S,X,W',
-        'Z,S,S,S,D,D,D,D,D,X,A,A,A,A,A,W,W,W'
+        'Z,S,S,S,D,D,D,D,D,X,A,A,A,A,A,W,W,W',
+        '_,Z,D,D,D,S,S,X,W,W,A,A,A',
+        'Z,D,X,A,_,_',
+        'Z,S,S,S,S,S,D,D,X,W,W,W,W,W,A,A'
     ]);
     const [instructionSets, setInstructionSets] = useState<string[][]>();
-    const [numMechs, setNumMechs] = useState(3)
+    const [numMechs, setNumMechs] = useState(6)
     const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([
         { x:0, y:0 },
         { x:2, y:2 },
-        { x:2, y:4 }
+        { x:2, y:4 },
+        { x:0, y:0 },
+        { x:3, y:2 },
+        { x:5, y:2 }
     ])
-    const [numAdders, setNumAdders] = useState(1)
+    const [numAdders, setNumAdders] = useState(2)
     const [adderStates, setAdderStates] = useState<BinaryOperator[]> ([
-        { a:{x:2,y:2}, b:{x:2,y:3}, z:{x:2,y:4}, typ:BinaryOperatorType.ADDER }
+        { a:{x:2,y:2}, b:{x:2,y:3}, z:{x:2,y:4}, typ:BinaryOperatorType.ADDER },
+        { a:{x:3,y:2}, b:{x:4,y:2}, z:{x:5,y:2}, typ:BinaryOperatorType.ADDER }
     ])
     const [animationState, setAnimationState] = useState ('Stop');
     const [animationFrame, setAnimationFrame] = useState<number> (0)
@@ -172,7 +179,7 @@ export default function Home() {
         newStates[SINK_POS.x][SINK_POS.y].unit_text = UnitText.SINK
 
         // Operators
-        if (adderStates){
+        if (adderStates && !isAnyOperatorPositionInvalid(adderStates)){
             for (const adder of adderStates){
                 if (isOperatorPositionInvalid(adder)) continue;
                 newStates[adder.a.x][adder.a.y].unit_text = UnitText.OPERAND_ADD
@@ -184,21 +191,44 @@ export default function Home() {
         return newStates
     }
 
+    function isAnyOperatorPositionInvalid (adders: BinaryOperator[]): boolean{
+        // Check that the current adder's a,b,z + faucet's loc + sink's loc + all other operators' locs are all unique values,
+        // otherwise, return true (adder position invalid)
+        // note: Set() works for primitive types, hence stringify index object into string
+        var adder_indices_in_str = []
+        adderStates.forEach(function (adder: BinaryOperator) {
+            adder_indices_in_str = [...adder_indices_in_str, JSON.stringify(adder.a), JSON.stringify(adder.b), JSON.stringify(adder.z)]
+        })
+        const faucet_sink_indices_in_str = [JSON.stringify(FAUCET_POS), JSON.stringify(SINK_POS)]
+        const all_indices = adder_indices_in_str.concat (faucet_sink_indices_in_str)
+        const unique_indices = all_indices.filter(onlyUnique)
+
+        // if unique operation reduces array length, we have duplicate indices
+        if (all_indices.length != unique_indices.length) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+    }
+
     function isOperatorPositionInvalid (adder: BinaryOperator): boolean {
-        if (
-            isIdenticalGrid(adder.a, FAUCET_POS) ||
-            isIdenticalGrid(adder.b, FAUCET_POS) ||
-            isIdenticalGrid(adder.z, FAUCET_POS) ||
-            isIdenticalGrid(adder.a, SINK_POS) ||
-            isIdenticalGrid(adder.b, SINK_POS) ||
-            isIdenticalGrid(adder.z, SINK_POS) ||
-            isIdenticalGrid(adder.a, adder.b) ||
-            isIdenticalGrid(adder.a, adder.z) ||
-            isIdenticalGrid(adder.b, adder.z)
-        ) return true;
+        // if (
+        //     isIdenticalGrid(adder.a, FAUCET_POS) ||
+        //     isIdenticalGrid(adder.b, FAUCET_POS) ||
+        //     isIdenticalGrid(adder.z, FAUCET_POS) ||
+        //     isIdenticalGrid(adder.a, SINK_POS) ||
+        //     isIdenticalGrid(adder.b, SINK_POS) ||
+        //     isIdenticalGrid(adder.z, SINK_POS) ||
+        //     isIdenticalGrid(adder.a, adder.b) ||
+        //     isIdenticalGrid(adder.a, adder.z) ||
+        //     isIdenticalGrid(adder.b, adder.z)
+        // ) return true;
 
         if (isGridOOB(adder.a) || isGridOOB(adder.b) || isGridOOB(adder.z)) return true;
-
         const isABNeighbors = areGridsNeighbors(adder.a, adder.b)
         const isBZNeighbors = areGridsNeighbors(adder.b, adder.z)
 
