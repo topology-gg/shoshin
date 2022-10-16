@@ -414,6 +414,7 @@ export default function Home() {
                     <li>_ as instruction means no-operation.</li>
                     <li>During simulation, each mech cycles through its own program on repeat.</li>
                     <li>Currently only one formula is available: try adding two red atoms by placing them at Adder's input operand grids.</li>
+                    <li>On operator placement: operands and product must be contiguous grids i.e. for a+b=c, a&b and b&c must both be neighbors. When the contiguity rule is violated, operator symbols are not rendered.</li>
                 </ol>
 
                 <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'10px'}}>
