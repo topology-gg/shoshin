@@ -2,10 +2,10 @@ import AtomState, { AtomStatus, AtomType } from '../src/types/AtomState';
 import Unit from './unit';
 import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitState';
 
-export default function Delivery(props) {
+export default function Delivery({ delivered }) {
 
-    const delivered: AtomType[] = props.delivered
-    console.log('delivered:', delivered)
+    // const delivered: AtomType[] = props.delivered
+    // console.log('delivered:', delivered)
     if (!delivered || delivered.length == 0) {
         return <></>
     }

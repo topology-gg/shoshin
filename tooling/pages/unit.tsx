@@ -1,7 +1,10 @@
 import UnitState, {BgStatus, BorderStatus} from '../src/types/UnitState';
 import styles from '../styles/Unit.module.css';
 
-export default function Unit({ state }: { state: UnitState }) {
+export default function Unit({ state }) {
+
+    // guardrail
+    if (!state) {return <></>}
 
     // Compute style based on props (from parent's React state)
     let className: string = '';

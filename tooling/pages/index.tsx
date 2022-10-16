@@ -76,8 +76,8 @@ export default function Home() {
     const atomStates = frame?.atoms || atomInitStates
     const mechStates = frame?.mechs || mechInitStates
     const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
-    const delivered: AtomType[] = frame?.delivered_accumulated
-    console.log('index.tsx delivered:', delivered)
+    const delivered = frame?.delivered_accumulated
+    // console.log('index.tsx delivered:', delivered)
 
     function isIdenticalGrid ( // somehow this is not exportable from simulator.tsx, so making a duplicate here
         grid1: Grid,
