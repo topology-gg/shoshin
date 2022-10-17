@@ -19,39 +19,22 @@ export default function Unit({ state }) {
     }
 
     else if (state.bg_status === BgStatus.ATOM_HAZELNUT_FREE) {
-        className += styles.atomHazelnutFree + ' ';
+        className += styles.atomHazelnutFree + ' ' + styles.twoNuclei;
         nuclei = 2;
     }
     else if (state.bg_status === BgStatus.ATOM_HAZELNUT_POSSESSED) {
-        className += styles.atomHazelnutPossessed + ' ';
+        className += styles.atomHazelnutPossessed + ' ' + styles.twoNuclei;
         nuclei = 2;
     }
 
     else if (state.bg_status === BgStatus.ATOM_CHOCOLATE_FREE) {
-        className += styles.atomChocolateFree + ' ';
+        className += styles.atomChocolateFree + ' ' + styles.threeNuclei;
         nuclei = 3;
     }
     else if (state.bg_status === BgStatus.ATOM_CHOCOLATE_POSSESSED) {
-        className += styles.atomChocolatePossessed + ' ';
+        className += styles.atomChocolatePossessed + ' ' + styles.threeNuclei;
         nuclei = 3;
     }
-
-    // if (state.bg_status === BgStatus.ATOM_CHOCOLATE_FREE) {
-    //     className += styles.atomChocolateFree + ' ' + styles.twoNuclei;
-    //     nuclei = 2;
-    // }
-    // else if (state.bg_status === BgStatus.ATOM_CHOCOLATE_POSSESSED) {
-    //     className += styles.atomChocolatePossessed + ' ' + styles.twoNuclei;
-    //     nuclei = 2;
-    // }
-    // if (state.bg_status === BgStatus.ATOM_STRAWBERRY_FREE) {
-    //     className += styles.atomStrawberryFree + ' ' + styles.threeNuclei;
-    //     nuclei = 3;
-    // }
-    // else if (state.bg_status === BgStatus.ATOM_STRAWBERRY_POSSESSED) {
-    //     className += styles.atomStrawberryPossessed + ' ' + styles.threeNuclei;
-    //     nuclei = 3;
-    // }
 
     if (state.border_status == BorderStatus.SINGLETON_OPEN) {
         className += styles.mechSingletonOpen + ' ';
