@@ -19,20 +19,20 @@ export default function Unit({ state }) {
     }
 
     else if (state.bg_status === BgStatus.ATOM_HAZELNUT_FREE) {
-        className += styles.atomHazelnutFree + ' ' + styles.twoNuclei;
+        className += styles.atomHazelnutFree + ' ' + styles.twoNuclei + ' ';
         nuclei = 2;
     }
     else if (state.bg_status === BgStatus.ATOM_HAZELNUT_POSSESSED) {
-        className += styles.atomHazelnutPossessed + ' ' + styles.twoNuclei;
+        className += styles.atomHazelnutPossessed + ' ' + styles.twoNuclei + ' ';
         nuclei = 2;
     }
 
     else if (state.bg_status === BgStatus.ATOM_CHOCOLATE_FREE) {
-        className += styles.atomChocolateFree + ' ' + styles.threeNuclei;
+        className += styles.atomChocolateFree + ' ' + styles.threeNuclei + ' ';
         nuclei = 3;
     }
     else if (state.bg_status === BgStatus.ATOM_CHOCOLATE_POSSESSED) {
-        className += styles.atomChocolatePossessed + ' ' + styles.threeNuclei;
+        className += styles.atomChocolatePossessed + ' ' + styles.threeNuclei + ' ';
         nuclei = 3;
     }
 
