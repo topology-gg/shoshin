@@ -591,15 +591,6 @@ export default function Home() {
                 </div>
 
                 <div className={styles.delivered_atoms}>
-                    {/* Delivered: {delivered?.length || 0} x
-                    <Unit
-                        state={{
-                            bg_status: BgStatus.ATOM_VANILLA_FREE,
-                            border_status: null,
-                            unit_text: UnitText.EMPTY,
-                            unit_id: null
-                        }}
-                    /> */}
                     <Delivery delivered={delivered} />
                 </div>
             </main>
