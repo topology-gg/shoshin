@@ -14,6 +14,7 @@ import Grid from '../src/types/Grid';
 import BinaryOperator, {BinaryOperatorType} from '../src/types/BinaryOperator';
 import Delivery from './delivery'
 import Tutorial from './tutorial';
+import MechInput from '../src/components/MechInput';
 
 export default function Home() {
 
@@ -373,35 +374,12 @@ export default function Home() {
 
     }
 
-    function setMechInitX (mech_i: number, x_str: string){
-
-        if (!x_str) return;
-        const x = parseInt(x_str)
-        if (x < DIM && x >= 0) {
-            // setMechInitPos((prev) => ({ ...prev, x }))
+    function setMechInitPosition (mech_i: number, position: Grid){
+        if (position.x < DIM && position.x >= 0 && position.y < DIM && position.y >= 0) {
             setMechInitPositions(
-                (prev) => {
-                    let prev_copy = JSON.parse(JSON.stringify(prev))
-                    prev_copy[mech_i] = { ...prev_copy[mech_i], x }
-                    return prev_copy
-                }
+                (prev) => ({ ...prev, [mech_i]: position })
             )
-        }
-    }
-    function setMechInitY (mech_i: number, y_str: string){
-
-        if (!y_str) return;
-        const y = parseInt(y_str)
-        if (y < DIM && y >= 0) {
-            // setMechInitPos((prev) => ({ ...prev, y }))
-            setMechInitPositions(
-                (prev) => {
-                    let prev_copy = JSON.parse(JSON.stringify(prev))
-                    prev_copy[mech_i] = { ...prev_copy[mech_i], y }
-                    return prev_copy
-                }
-            )
-        }
+        } 
     }
 
     function setAdder (adder_i: number, new_adder: BinaryOperator){
@@ -457,35 +435,17 @@ export default function Home() {
                     <div className={styles.inputs} style={{borderRight:'1px solid #333333'}}>
                         {
                             Array.from({length:numMechs}).map ((_,mech_i) => (
-                                <div key={`input-row-${mech_i}`} className={styles.input_row}>
-                                    <p style={{margin:'0 10px 0 0', verticalAlign:'middle', height:'20px', lineHeight:'20px'}}>{`mech${mech_i}`}</p>
-                                    <input
-                                        className={styles.program}
-                                        onChange={event => {setMechInitX(mech_i, event.target.value)}}
-                                        defaultValue={mechInitPositions[mech_i].x}
-                                        style={{width:'30px', textAlign:'center'}}
-                                    ></input>
-
-                                    <input
-                                        className={styles.program}
-                                        onChange={event => {setMechInitY(mech_i, event.target.value)}}
-                                        defaultValue={mechInitPositions[mech_i].y}
-                                        style={{width:'30px', textAlign:'center'}}
-                                    ></input>
-
-                                    <input
-                                        className={styles.program}
-                                        onChange={event => {setPrograms(
-                                            (prev) => {
-                                                let prev_copy = JSON.parse(JSON.stringify(prev))
-                                                prev_copy[mech_i] = event.target.value
-                                                return prev_copy
-                                            }
-                                        )}}
-                                        defaultValue={programs[mech_i]}
-                                        style={{width:'300px'}}
-                                    ></input>
-                                </div>
+                                <MechInput
+                                    key={`mech-input-${mech_i}`}
+                                    mechIndex={mech_i} 
+                                    position={mechInitPositions[mech_i]} 
+                                    program={programs[mech_i]}
+                                    animationFrame={animationFrame}
+                                    onPositionChange={(index, position) => setMechInitPosition(index, position)}
+                                    onProgramChange={(index, program) => 
+                                        setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
+                                    }
+                                />
                             ))
                         }
                     </div>
