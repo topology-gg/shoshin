@@ -13,6 +13,7 @@ import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitStat
 import Grid from '../src/types/Grid';
 import BinaryOperator, {BinaryOperatorType} from '../src/types/BinaryOperator';
 import Delivery from './delivery'
+import Tutorial from './tutorial';
 
 export default function Home() {
 
@@ -438,14 +439,7 @@ export default function Home() {
                     MovyMovy
                 </h2>
 
-                <p style={{fontSize:'0.9rem',marginTop:'0',marginBottom:'0'}}>Makeshift tutorial</p>
-                <ol style={{width:'30rem', marginTop:'0.5rem', marginBottom:'2rem'}}>
-                    <li>Only Singleton mechanism ("mech") is available, whose instruction set is [W,A,S,D] for movement, Z for pick-up, X for put-down.</li>
-                    <li>_ as instruction means no-operation.</li>
-                    <li>During simulation, each mech cycles through its own program on repeat.</li>
-                    <li>Currently only one formula is available: try adding two red atoms by placing them at Adder's input operand grids.</li>
-                    <li>On operator placement: operands and product must be contiguous grids i.e. for a+b=c, a&b and b&c must both be neighbors. When the contiguity rule is violated, operator symbols are not rendered.</li>
-                </ol>
+                <Tutorial />
 
                 <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'10px'}}>
                     <button onClick={() => handleMechClick('+')}> {'+mech'} </button>
