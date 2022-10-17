@@ -3,6 +3,7 @@ import AtomState, {AtomStatus, AtomType} from '../src/types/AtomState';
 import Grid from '../src/types/Grid'
 import BoardConfig from '../src/types/BoardConfig';
 import Frame from '../src/types/Frame';
+import { FormulaTwoToOne } from './formulas'
 
 export function isIdenticalGrid (
     grid1 : Grid,
@@ -250,24 +251,27 @@ function _simulate_one_cycle (
                 }
             })
 
-            // check for formula match
-            if (atom_type_a == AtomType.VANILLA && atom_type_b == AtomType.VANILLA){
-                notes += 'adding vanilla + vanilla'
-                // consume two vanilla atoms to produce one hazelnut atom
-                grid_populated_bools_new[JSON.stringify(binary_operator.a)] = false
-                grid_populated_bools_new[JSON.stringify(binary_operator.b)] = false
-                atoms_new[atom_i_a].status = AtomStatus.CONSUMED
-                atoms_new[atom_i_b].status = AtomStatus.CONSUMED
-                grid_populated_bools_new[JSON.stringify(binary_operator.z)] = true
-                let atom_new_hazelnut: AtomState = {
-                    id: `atom${atoms_new.length}`,
-                    typ: AtomType.HAZELNUT,
-                    status: AtomStatus.FREE,
-                    index: binary_operator.z,
-                    possessed_by: null
+            // check for two-to-one formula match
+            for (const formula of FormulaTwoToOne){
+                if (atom_type_a == formula.type_a && atom_type_b == formula.type_b){
+                    notes += formula.description + ';'
+
+                    grid_populated_bools_new[JSON.stringify(binary_operator.a)] = false
+                    grid_populated_bools_new[JSON.stringify(binary_operator.b)] = false
+                    atoms_new[atom_i_a].status = AtomStatus.CONSUMED
+                    atoms_new[atom_i_b].status = AtomStatus.CONSUMED
+                    grid_populated_bools_new[JSON.stringify(binary_operator.z)] = true
+                    const atom_new: AtomState = {
+                        id: `atom${atoms_new.length}`,
+                        typ: formula.type_z,
+                        status: AtomStatus.FREE,
+                        index: binary_operator.z,
+                        possessed_by: null
+                    }
+                    atoms_new.push(atom_new)
                 }
-                atoms_new.push(atom_new_hazelnut)
             }
+
         }
     }
 

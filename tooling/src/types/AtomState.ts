@@ -10,6 +10,7 @@ export enum AtomStatus {
 export enum AtomType {
     VANILLA = 'VANILLA',
     HAZELNUT = 'HAZELNUT',
+    CHOCOLATE = 'CHOCOLATE'
 }
 
 export default interface AtomState {

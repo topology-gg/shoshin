@@ -19,13 +19,17 @@
 
 .atomVanillaFree, .atomVanillaPossessed {
     /* Trying out new color: vanilla yellow */
-    /* background-color: #F3E5AB; */
-    background-color: #FF355E;
-    color: white;
+    background-color: #F3E5AB;
+    /* background-color: #FF355E; */
+    /* color: white; */
 }
 
 .atomHazelnutFree, .atomHazelnutPossessed {
     background-color: #FFB200;
+}
+
+.atomChocolateFree, .atomChocolatePossessed {
+    background-color: #C95A49;
 }
 
 .mechSingletonOpen {
@@ -36,9 +40,9 @@
   border-color: #111111;
 }
 
-.atomChocolateFree, .atomChocolatePossessed {
+/* .atomChocolateFree, .atomChocolatePossessed {
   background-color: #361c15;
-}
+} */
 
 .atomStrawberryFree, .atomStrawberryPossessed {
   background-color: #e73da6;
@@ -50,7 +54,7 @@
   border-radius: 50px;
   width: 0.5rem;
   height: 0.5rem;
-  border: 1px solid rgba(255,255,255,0.5);
+  border: 1px solid #77777777;
 }
 
 .twoNuclei .nucleus:nth-child(1) {
