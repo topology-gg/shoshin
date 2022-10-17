@@ -1,11 +1,12 @@
 import AtomState, { AtomStatus, AtomType } from '../src/types/AtomState';
 import Unit from './unit';
 import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitState';
+import styles from '../styles/Delivery.module.css'
 
 export default function Delivery({ delivered }) {
 
     if (!delivered || delivered.length == 0) {
-        return <></>
+        return <>Delivered: 0</>
     }
 
     let counts: { [key: string] : number } = {}
@@ -40,7 +41,7 @@ export default function Delivery({ delivered }) {
                     return (
                         <div
                             key={`delivery-${key}`}
-                            style={{display:'flex', flexDirection:'row', marginLeft:'1rem', marginRight:'1rem'}}
+                            className={styles.deliveryUnit}
                         >
                             <p>{counts[key]} x</p>
                             <Unit

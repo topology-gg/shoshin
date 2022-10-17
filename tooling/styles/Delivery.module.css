@@ -1,0 +1,11 @@
+.deliveryUnit {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.deliveryUnit:last-child {
+  margin-right: 0rem;
+}
