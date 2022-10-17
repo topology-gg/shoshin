@@ -22,7 +22,21 @@ export default function Delivery({ delivered }) {
             Delivered:
             {
                 Object.keys(counts).map(function(key: string,i: number){
-                    const bg_status = key == AtomType.HAZELNUT ? BgStatus.ATOM_HAZELNUT_FREE : BgStatus.ATOM_VANILLA_FREE
+                    // const bg_status = key == AtomType.HAZELNUT ? BgStatus.ATOM_HAZELNUT_FREE : BgStatus.ATOM_VANILLA_FREE
+                    let bg_status: BgStatus
+                    switch(key) {
+                        case AtomType.VANILLA:
+                            bg_status = BgStatus.ATOM_VANILLA_FREE
+                            break;
+                        case AtomType.HAZELNUT:
+                            bg_status = BgStatus.ATOM_HAZELNUT_FREE
+                            break;
+                        case AtomType.CHOCOLATE:
+                            bg_status = BgStatus.ATOM_CHOCOLATE_FREE
+                            break;
+                        default:
+                            throw `invalid atom type encountered: ${key}`
+                    }
                     return (
                         <div
                             key={`delivery-${key}`}

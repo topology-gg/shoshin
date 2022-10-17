@@ -27,6 +27,15 @@ export default function Unit({ state }) {
         nuclei = 2;
     }
 
+    else if (state.bg_status === BgStatus.ATOM_CHOCOLATE_FREE) {
+        className += styles.atomChocolateFree + ' ';
+        nuclei = 3;
+    }
+    else if (state.bg_status === BgStatus.ATOM_CHOCOLATE_POSSESSED) {
+        className += styles.atomChocolatePossessed + ' ';
+        nuclei = 3;
+    }
+
     // if (state.bg_status === BgStatus.ATOM_CHOCOLATE_FREE) {
     //     className += styles.atomChocolateFree + ' ' + styles.twoNuclei;
     //     nuclei = 2;
