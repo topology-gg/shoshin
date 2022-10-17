@@ -1,6 +1,7 @@
-import AtomState, {AtomType} from "../src/types/AtomState"
+import AtomState, {AtomType} from "../types/AtomState"
 
-export const FormulaTwoToOne = [
+// lower case f because this is not a react component
+export const FORMULA_TWO_TO_ONE = [
     {
         description: 'vanilla + vanilla = hazelnut',
         type_a: AtomType.VANILLA,

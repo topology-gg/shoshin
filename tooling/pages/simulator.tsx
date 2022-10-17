@@ -3,7 +3,7 @@ import AtomState, {AtomStatus, AtomType} from '../src/types/AtomState';
 import Grid from '../src/types/Grid'
 import BoardConfig from '../src/types/BoardConfig';
 import Frame from '../src/types/Frame';
-import { FormulaTwoToOne } from './formulas'
+import { FORMULA_TWO_TO_ONE } from '../src/constants/formulas'
 
 export function isIdenticalGrid (
     grid1 : Grid,
@@ -252,7 +252,7 @@ function _simulate_one_cycle (
             })
 
             // check for two-to-one formula match
-            for (const formula of FormulaTwoToOne){
+            for (const formula of FORMULA_TWO_TO_ONE){
                 if (atom_type_a == formula.type_a && atom_type_b == formula.type_b){
                     notes += formula.description + ';'
 
