@@ -15,6 +15,8 @@ import Operator, { OperatorType } from '../src/types/Operator';
 import Delivery from './delivery'
 import Tutorial from './tutorial';
 import MechInput from '../src/components/MechInput';
+// import
+import { isIdenticalGrid, isGridOOB, areGridsNeighbors } from '../src/helpers/gridHelpers';
 
 export default function Home() {
 
@@ -90,29 +92,6 @@ export default function Home() {
     const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
     const delivered = frame?.delivered_accumulated
     // console.log('index.tsx delivered:', delivered)
-
-    function isIdenticalGrid ( // somehow this is not exportable from simulator.tsx, so making a duplicate here
-        grid1: Grid,
-        grid2: Grid
-    ): boolean {
-        return JSON.stringify(grid1) == JSON.stringify(grid2)
-    }
-
-    function isGridOOB (grid: Grid): boolean {
-        if (grid.x < 0 || grid.x > DIM-1 || grid.y < 0 || grid.y > DIM-1) return true;
-        return false;
-    }
-
-    function areGridsNeighbors (
-        grid1: Grid,
-        grid2: Grid
-    ): boolean {
-        if (
-            (grid1.x == grid2.x && Math.abs(grid1.y - grid2.y)==1) ||
-            (grid1.y == grid2.y && Math.abs(grid1.x - grid2.x)==1)
-        ) return true;
-        return false;
-    }
 
     //
     // Definition of setting DOM state
@@ -241,7 +220,7 @@ export default function Home() {
 
         const grid_array = operator.input.concat (operator.output)
         for (const grid of grid_array){
-            if (isGridOOB(grid)) return true;
+            if (isGridOOB(grid, DIM)) return true;
         }
 
         Array.from({length: grid_array.length - 1}).forEach((_,i) => {
