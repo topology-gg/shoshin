@@ -79,16 +79,16 @@
 }
 
 .fourNuclei .nucleus:nth-child(1) {
-    transform: translateX(-57%) translateY(-36%);
+    transform: translateX(-57%) translateY(-57%);
 }
 .fourNuclei .nucleus:nth-child(2) {
-    transform: translateX(57%) translateY(-36%);
+    transform: translateX(57%) translateY(-57%);
 }
 .fourNuclei .nucleus:nth-child(3) {
-    transform: translateX(-57%) translateY(36%);
+    transform: translateX(-57%) translateY(57%);
 }
 .fourNuclei .nucleus:nth-child(4) {
-    transform: translateX(57%) translateY(36%);
+    transform: translateX(57%) translateY(57%);
 }
 
 .unitId {

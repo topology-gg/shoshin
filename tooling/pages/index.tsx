@@ -24,7 +24,7 @@ export default function Home() {
     const N_CYCLES = 100
     const ANIM_FRAME_LATENCY = 250
     const INIT_PROGRAM = '_'
-    const DIM = 10
+    const DIM = 7
     const MECH_INIT_X = 0
     const MECH_INIT_Y = 0
     const ATOM_INIT_XY = [] // [{x:5, y:3}]
@@ -46,7 +46,7 @@ export default function Home() {
     const MIN_NUM_ADDERS = 0
 
     // React states for mechs & programs
-    const [numMechs, setNumMechs] = useState(8)
+    const [numMechs, setNumMechs] = useState(9)
     const [programs, setPrograms] = useState<string[]>([
         'Z,D,X,A,_,_,_,_,_,_,_',
         '_,Z,D,D,X,A,A,_,_,_,_',
@@ -56,6 +56,7 @@ export default function Home() {
         'Z,D,X,A',
         'Z,S,X,W,Z,S,D,X,A,W',
         'Z,S,S,A,X,D,W,W',
+        'Z,S,S,D,X,A,W,W',
     ]);
     const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([
         { x:0, y:0 },
@@ -66,6 +67,7 @@ export default function Home() {
         { x:3, y:1 },
         { x:4, y:2 },
         { x:4, y:1 },
+        { x:5, y:4 }
     ])
     const [instructionSets, setInstructionSets] = useState<string[][]>();
 

@@ -35,6 +35,9 @@ export default function Delivery({ delivered }) {
                         case AtomType.CHOCOLATE:
                             bg_status = BgStatus.ATOM_CHOCOLATE_FREE
                             break;
+                        case AtomType.TRUFFLE:
+                            bg_status = BgStatus.ATOM_TRUFFLE_FREE
+                            break;
                         default:
                             throw `invalid atom type encountered: ${key}`
                     }
