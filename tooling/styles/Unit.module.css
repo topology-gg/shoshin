@@ -32,6 +32,10 @@
     background-color: #C95A49;
 }
 
+.atomTruffleFree, .atomTrufflePossessed {
+    background-color: #5946B2;
+}
+
 .mechSingletonOpen {
   border-color: #BBBBBB;
 }
@@ -72,6 +76,19 @@
 }
 .threeNuclei .nucleus:nth-child(3) {
   transform: translateY(56%);
+}
+
+.fourNuclei .nucleus:nth-child(1) {
+    transform: translateX(-57%) translateY(-36%);
+}
+.fourNuclei .nucleus:nth-child(2) {
+    transform: translateX(57%) translateY(-36%);
+}
+.fourNuclei .nucleus:nth-child(3) {
+    transform: translateX(-57%) translateY(36%);
+}
+.fourNuclei .nucleus:nth-child(4) {
+    transform: translateX(57%) translateY(36%);
 }
 
 .unitId {

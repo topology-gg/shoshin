@@ -11,7 +11,7 @@ import Frame from '../src/types/Frame';
 import Unit from './unit';
 import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitState';
 import Grid from '../src/types/Grid';
-import Operator, { OperatorType } from '../src/types/Operator';
+import Operator, { OperatorType, OPERATOR_TYPES } from '../src/types/Operator';
 import Delivery from './delivery'
 import Tutorial from './tutorial';
 import MechInput from '../src/components/MechInput';
@@ -23,8 +23,8 @@ export default function Home() {
     // Constants
     const N_CYCLES = 100
     const ANIM_FRAME_LATENCY = 250
-    const INIT_PROGRAM = 'Z,S,S,D,D,X,W,W,A,A'
-    const DIM = 8
+    const INIT_PROGRAM = '_'
+    const DIM = 10
     const MECH_INIT_X = 0
     const MECH_INIT_Y = 0
     const ATOM_INIT_XY = [] // [{x:5, y:3}]
@@ -40,38 +40,45 @@ export default function Home() {
     }
     const FAUCET_POS: Grid = {x:0, y:0}
     const SINK_POS: Grid = {x:DIM-1, y:DIM-1}
-    const MAX_NUM_MECHS = 8
+    const MAX_NUM_MECHS = 10
     const MIN_NUM_MECHS = 1
     const MAX_NUM_ADDERS = 5
     const MIN_NUM_ADDERS = 0
 
-    // React states
+    // React states for mechs & programs
+    const [numMechs, setNumMechs] = useState(8)
     const [programs, setPrograms] = useState<string[]>([
-        'Z,S,S,D,D,X,W,W,A,A',
-        '_,_,_,_,_,_,Z,S,X,W',
-        'Z,D,D,X,A,A',
-        '_,Z,D,D,D,S,S,X,W,W,A,A,A',
-        'Z,D,X,A,_,_',
-        'Z,S,S,X,W,W',
-        'Z,S,S,D,D,X,W,W,A,A',
+        'Z,D,X,A,_,_,_,_,_,_,_',
+        '_,Z,D,D,X,A,A,_,_,_,_',
+        '_,_,Z,S,D,X,A,W,_,_,_',
+        '_,_,_,Z,S,D,D,X,A,A,W',
+        'Z,D,X,A',
+        'Z,D,X,A',
+        'Z,S,X,W,Z,S,D,X,A,W',
+        'Z,S,S,A,X,D,W,W',
     ]);
-    const [instructionSets, setInstructionSets] = useState<string[][]>();
-    const [numMechs, setNumMechs] = useState(7)
     const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([
         { x:0, y:0 },
-        { x:2, y:2 },
-        { x:2, y:4 },
         { x:0, y:0 },
-        { x:3, y:2 },
-        { x:5, y:2 },
-        { x:5, y:5 }
+        { x:0, y:0 },
+        { x:0, y:0 },
+        { x:3, y:0 },
+        { x:3, y:1 },
+        { x:4, y:2 },
+        { x:4, y:1 },
     ])
-    const [numAdders, setNumAdders] = useState(3)
+    const [instructionSets, setInstructionSets] = useState<string[][]>();
+
+    // React states for operators
+    const [numAdders, setNumAdders] = useState(4)
     const [operatorStates, setOperatorStates] = useState<Operator[]> ([
-        { input:[{x:2,y:2}, {x:2,y:3}], output:[{x:2,y:4}], typ:OperatorType.ADDER },
-        { input:[{x:3,y:2}, {x:4,y:2}], output:[{x:5,y:2}], typ:OperatorType.ADDER },
-        { input:[{x:4,y:4}, {x:5,y:4}], output:[{x:5,y:5}], typ:OperatorType.ADDER },
+        { input:[{x:1,y:0}, {x:2,y:0}], output:[{x:3,y:0}], typ:OPERATOR_TYPES.STIR},
+        { input:[{x:1,y:1}, {x:2,y:1}], output:[{x:3,y:1}], typ:OPERATOR_TYPES.STIR},
+        { input:[{x:4,y:0}, {x:4,y:1}], output:[{x:4,y:2}], typ:OPERATOR_TYPES.SHAKE},
+        { input:[{x:3,y:3}, {x:4,y:3}, {x:5,y:3}], output:[{x:5,y:4},{x:6,y:4}], typ:OPERATOR_TYPES.STEAM},
     ])
+
+    // React states for animation control
     const [animationState, setAnimationState] = useState ('Stop');
     const [animationFrame, setAnimationFrame] = useState<number> (0)
     const [frames, setFrames] = useState<Frame[]>();
@@ -145,6 +152,9 @@ export default function Home() {
             else if (atom.typ == AtomType.CHOCOLATE) {
                 newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_CHOCOLATE_FREE
             }
+            else if (atom.typ == AtomType.TRUFFLE) {
+                newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_TRUFFLE_FREE
+            }
         }
         else if (atom.status == AtomStatus.POSSESSED){
             if (atom.typ == AtomType.VANILLA) {
@@ -155,6 +165,9 @@ export default function Home() {
             }
             else if (atom.typ == AtomType.CHOCOLATE) {
                 newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_CHOCOLATE_POSSESSED
+            }
+            else if (atom.typ == AtomType.TRUFFLE) {
+                newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_TRUFFLE_POSSESSED
             }
         }
         return newStates
@@ -172,13 +185,13 @@ export default function Home() {
 
         // Operators
         if (operatorStates && !isAnyOperatorPositionInvalid(operatorStates)){
-            for (const adder of operatorStates){
-                if (isOperatorPositionInvalid(adder)) continue;
+            for (const operator of operatorStates){
+                if (isOperatorPositionInvalid(operator)) continue;
 
-                for (const grid of adder.input){
-                    newStates[grid.x][grid.y].unit_text = UnitText.OPERAND_ADD
+                for (const grid of operator.input){
+                    newStates[grid.x][grid.y].unit_text = operator.typ.symbol
                 }
-                for (const grid of adder.output){
+                for (const grid of operator.output){
                     newStates[grid.x][grid.y].unit_text = UnitText.OUTPUT
                 }
             }
@@ -277,7 +290,7 @@ export default function Home() {
             setOperatorStates(
                 prev => {
                     let prev_copy: Operator[] = JSON.parse(JSON.stringify(prev))
-                    prev_copy.push ({ input:[{x:0,y:0}, {x:0,y:0}], output:[{x:0,y:0}], typ:OperatorType.ADDER })
+                    prev_copy.push ({ input:[{x:0,y:0}, {x:0,y:0}], output:[{x:0,y:0}], typ:OPERATOR_TYPES.STIR})
                     return prev_copy
                 }
             )
@@ -321,7 +334,7 @@ export default function Home() {
                     dimension: DIM,
                     atom_faucets: [{id:'atom_faucet0', typ:AtomType.VANILLA, index:{x:FAUCET_POS.x, y:FAUCET_POS.y}} as AtomFaucetState],
                     atom_sinks: [{id:'atom_sink0', index:{x:SINK_POS.x, y:SINK_POS.y}} as AtomSinkState],
-                    binary_operators: operatorStates
+                    operators: operatorStates
                 }
 
                 // Run simulation to get all frames and set to reference
@@ -368,7 +381,12 @@ export default function Home() {
     function setMechInitPosition (mech_i: number, position: Grid){
         if (position.x < DIM && position.x >= 0 && position.y < DIM && position.y >= 0) {
             setMechInitPositions(
-                (prev) => ({ ...prev, [mech_i]: position })
+                // (prev) => ({ ...prev, [mech_i]: position })
+                (prev) => {
+                    let prev_copy = JSON.parse(JSON.stringify(mechInitPositions))
+                    prev_copy[mech_i] = position
+                    return prev_copy
+                }
             )
         }
     }
@@ -414,8 +432,8 @@ export default function Home() {
                     <button onClick={() => handleMechClick('+')}> {'+mech'} </button>
                     <button onClick={() => handleMechClick('-')}> {'-mech'} </button>
 
-                    <button onClick={() => handleAdderClick('+')}> {'+Adder'} </button>
-                    <button onClick={() => handleAdderClick('-')}> {'-Adder'} </button>
+                    <button onClick={() => handleAdderClick('+')}> {'+&'} </button>
+                    <button onClick={() => handleAdderClick('-')}> {'-&'} </button>
 
                     <button onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? 'Run' : 'Pause'} </button>
                     <button onClick={() => handleClick('Stop')}> {'Stop'} </button>
@@ -476,7 +494,7 @@ export default function Home() {
                                                     input_i == operatorStates[operator_i].input.length-1 ? (
                                                         <p className={styles.input_text}>{`=`}</p>
                                                     ) : (
-                                                        <p className={styles.input_text}>{`+`}</p>
+                                                        <p className={styles.input_text}>{operatorStates[operator_i].typ.symbol}</p>
                                                     )
 
                                                 }
@@ -516,77 +534,6 @@ export default function Home() {
                                             </div>
                                         ))
                                     }
-
-                                    {/* <input
-                                        className={styles.program}
-                                        onChange={event => {
-                                            if (event.target.value.length == 0) return;
-                                            let newAdder = JSON.parse(JSON.stringify(operatorStates[operator_i]))
-                                            newAdder.a.x = parseInt(event.target.value)
-                                            setAdder(operator_i, newAdder)}
-                                        }
-                                        defaultValue={operatorStates[operator_i].a.x}
-                                        style={{width:'30px', textAlign:'center'}}
-                                    ></input>
-                                    <input
-                                        className={styles.program}
-                                        onChange={event => {
-                                            if (event.target.value.length == 0) return;
-                                            let newAdder = JSON.parse(JSON.stringify(operatorStates[adder_i]))
-                                            newAdder.a.y = parseInt(event.target.value)
-                                            setAdder(adder_i, newAdder)}
-                                        }
-                                        defaultValue={operatorStates[adder_i].a.y}
-                                        style={{width:'30px', textAlign:'center'}}
-                                    ></input>
-                                    <p className={styles.input_text}>{`+`}</p>
-
-                                    <input
-                                        className={styles.program}
-                                        onChange={event => {
-                                            if (event.target.value.length == 0) return;
-                                            let newAdder = JSON.parse(JSON.stringify(operatorStates[adder_i]))
-                                            newAdder.b.x = parseInt(event.target.value)
-                                            setAdder(adder_i, newAdder)}
-                                        }
-                                        defaultValue={operatorStates[adder_i].b.x}
-                                        style={{width:'30px', textAlign:'center'}}
-                                    ></input>
-                                    <input
-                                        className={styles.program}
-                                        onChange={event => {
-                                            if (event.target.value.length == 0) return;
-                                            let newAdder = JSON.parse(JSON.stringify(operatorStates[adder_i]))
-                                            newAdder.b.y = parseInt(event.target.value)
-                                            setAdder(adder_i, newAdder)}
-                                        }
-                                        defaultValue={operatorStates[adder_i].b.y}
-                                        style={{width:'30px', textAlign:'center'}}
-                                    ></input>
-                                    <p className={styles.input_text}>{`=`}</p>
-
-                                    <input
-                                        className={styles.program}
-                                        onChange={event => {
-                                            if (event.target.value.length == 0) return;
-                                            let newAdder = JSON.parse(JSON.stringify(operatorStates[adder_i]))
-                                            newAdder.z.x = parseInt(event.target.value)
-                                            setAdder(adder_i, newAdder)}
-                                        }
-                                        defaultValue={operatorStates[adder_i].z.x}
-                                        style={{width:'30px', textAlign:'center'}}
-                                    ></input>
-                                    <input
-                                        className={styles.program}
-                                        onChange={event => {
-                                            if (event.target.value.length == 0) return;
-                                            let newAdder = JSON.parse(JSON.stringify(operatorStates[adder_i]))
-                                            newAdder.z.y = parseInt(event.target.value)
-                                            setAdder(adder_i, newAdder)}
-                                        }
-                                        defaultValue={operatorStates[adder_i].z.y}
-                                        style={{width:'30px', textAlign:'center'}}
-                                    ></input> */}
 
                                 </div>
                             ))
