@@ -1,6 +1,6 @@
 import AtomFaucetState from './AtomFaucetState'
 import AtomSinkState from './AtomSinkState'
-import BinaryOperator from './BinaryOperator'
+import BinaryOperator from './Operator'
 
 export default interface BoardConfig {
     dimension: number

@@ -11,7 +11,7 @@ import Frame from '../src/types/Frame';
 import Unit from './unit';
 import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitState';
 import Grid from '../src/types/Grid';
-import BinaryOperator, {BinaryOperatorType} from '../src/types/BinaryOperator';
+import Operator, { OperatorType } from '../src/types/Operator';
 import Delivery from './delivery'
 import Tutorial from './tutorial';
 import MechInput from '../src/components/MechInput';
@@ -65,10 +65,10 @@ export default function Home() {
         { x:5, y:5 }
     ])
     const [numAdders, setNumAdders] = useState(3)
-    const [adderStates, setAdderStates] = useState<BinaryOperator[]> ([
-        { a:{x:2,y:2}, b:{x:2,y:3}, z:{x:2,y:4}, typ:BinaryOperatorType.ADDER },
-        { a:{x:3,y:2}, b:{x:4,y:2}, z:{x:5,y:2}, typ:BinaryOperatorType.ADDER },
-        { a:{x:4,y:4}, b:{x:5,y:4}, z:{x:5,y:5}, typ:BinaryOperatorType.ADDER },
+    const [operatorStates, setOperatorStates] = useState<Operator[]> ([
+        { input:[{x:2,y:2}, {x:2,y:3}], output:[{x:2,y:4}], typ:OperatorType.ADDER },
+        { input:[{x:3,y:2}, {x:4,y:2}], output:[{x:5,y:2}], typ:OperatorType.ADDER },
+        { input:[{x:4,y:4}, {x:5,y:4}], output:[{x:5,y:5}], typ:OperatorType.ADDER },
     ])
     const [animationState, setAnimationState] = useState ('Stop');
     const [animationFrame, setAnimationFrame] = useState<number> (0)
@@ -192,25 +192,34 @@ export default function Home() {
         newStates[SINK_POS.x][SINK_POS.y].unit_text = UnitText.SINK
 
         // Operators
-        if (adderStates && !isAnyOperatorPositionInvalid(adderStates)){
-            for (const adder of adderStates){
+        if (operatorStates && !isAnyOperatorPositionInvalid(operatorStates)){
+            for (const adder of operatorStates){
                 if (isOperatorPositionInvalid(adder)) continue;
-                newStates[adder.a.x][adder.a.y].unit_text = UnitText.OPERAND_ADD
-                newStates[adder.b.x][adder.b.y].unit_text = UnitText.OPERAND_ADD
-                newStates[adder.z.x][adder.z.y].unit_text = UnitText.OUTPUT
+
+                for (const grid of adder.input){
+                    newStates[grid.x][grid.y].unit_text = UnitText.OPERAND_ADD
+                }
+                for (const grid of adder.output){
+                    newStates[grid.x][grid.y].unit_text = UnitText.OUTPUT
+                }
             }
         }
 
         return newStates
     }
 
-    function isAnyOperatorPositionInvalid (adders: BinaryOperator[]): boolean{
+    function isAnyOperatorPositionInvalid (operators: Operator[]): boolean{
         // Check that the current adder's a,b,z + faucet's loc + sink's loc + all other operators' locs are all unique values,
         // otherwise, return true (adder position invalid)
         // note: Set() works for primitive types, hence stringify index object into string
         var adder_indices_in_str = []
-        adderStates.forEach(function (adder: BinaryOperator) {
-            adder_indices_in_str = [...adder_indices_in_str, JSON.stringify(adder.a), JSON.stringify(adder.b), JSON.stringify(adder.z)]
+        operators.forEach(function (operator: Operator) {
+            for (const grid of operator.input){
+                adder_indices_in_str = [...adder_indices_in_str, JSON.stringify(grid)]
+            }
+            for (const grid of operator.output){
+                adder_indices_in_str = [...adder_indices_in_str, JSON.stringify(grid)]
+            }
         })
         const faucet_sink_indices_in_str = [JSON.stringify(FAUCET_POS), JSON.stringify(SINK_POS)]
         const all_indices = adder_indices_in_str.concat (faucet_sink_indices_in_str)
@@ -228,13 +237,16 @@ export default function Home() {
         return self.indexOf(value) === index;
     }
 
-    function isOperatorPositionInvalid (adder: BinaryOperator): boolean {
+    function isOperatorPositionInvalid (operator: Operator): boolean {
 
-        if (isGridOOB(adder.a) || isGridOOB(adder.b) || isGridOOB(adder.z)) return true;
-        const isABNeighbors = areGridsNeighbors(adder.a, adder.b)
-        const isBZNeighbors = areGridsNeighbors(adder.b, adder.z)
+        const grid_array = operator.input.concat (operator.output)
+        for (const grid of grid_array){
+            if (isGridOOB(grid)) return true;
+        }
 
-        if (!isABNeighbors || !isBZNeighbors) return true;
+        Array.from({length: grid_array.length - 1}).forEach((_,i) => {
+            if (areGridsNeighbors(grid_array[i], grid_array[i+1])) return true;
+        })
 
         return false;
     }
@@ -283,19 +295,19 @@ export default function Home() {
     function handleAdderClick (mode: string){
         if (mode === '+' && numAdders < MAX_NUM_ADDERS) {
             setNumAdders (prev => prev+1)
-            setAdderStates(
+            setOperatorStates(
                 prev => {
-                    let prev_copy: BinaryOperator[] = JSON.parse(JSON.stringify(prev))
-                    prev_copy.push ({ a:{x:0,y:0}, b:{x:0,y:0}, z:{x:0,y:0}, typ:BinaryOperatorType.ADDER })
+                    let prev_copy: Operator[] = JSON.parse(JSON.stringify(prev))
+                    prev_copy.push ({ input:[{x:0,y:0}, {x:0,y:0}], output:[{x:0,y:0}], typ:OperatorType.ADDER })
                     return prev_copy
                 }
             )
         }
         else if (mode === '-' && numAdders > MIN_NUM_ADDERS) {
             setNumAdders (prev => prev-1)
-            setAdderStates(
+            setOperatorStates(
                 prev => {
-                    let prev_copy: BinaryOperator[] = JSON.parse(JSON.stringify(prev))
+                    let prev_copy: Operator[] = JSON.parse(JSON.stringify(prev))
                     prev_copy.pop ()
                     return prev_copy
                 }
@@ -330,7 +342,7 @@ export default function Home() {
                     dimension: DIM,
                     atom_faucets: [{id:'atom_faucet0', typ:AtomType.VANILLA, index:{x:FAUCET_POS.x, y:FAUCET_POS.y}} as AtomFaucetState],
                     atom_sinks: [{id:'atom_sink0', index:{x:SINK_POS.x, y:SINK_POS.y}} as AtomSinkState],
-                    binary_operators: adderStates
+                    binary_operators: operatorStates
                 }
 
                 // Run simulation to get all frames and set to reference
@@ -379,14 +391,14 @@ export default function Home() {
             setMechInitPositions(
                 (prev) => ({ ...prev, [mech_i]: position })
             )
-        } 
+        }
     }
 
-    function setAdder (adder_i: number, new_adder: BinaryOperator){
-        setAdderStates(
+    function setOperator (operator_i: number, new_operator: Operator){
+        setOperatorStates(
             (prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev))
-                prev_copy[adder_i] = new_adder
+                prev_copy[operator_i] = new_operator
                 return prev_copy
             }
         )
@@ -437,12 +449,12 @@ export default function Home() {
                             Array.from({length:numMechs}).map ((_,mech_i) => (
                                 <MechInput
                                     key={`mech-input-${mech_i}`}
-                                    mechIndex={mech_i} 
-                                    position={mechInitPositions[mech_i]} 
+                                    mechIndex={mech_i}
+                                    position={mechInitPositions[mech_i]}
                                     program={programs[mech_i]}
                                     animationFrame={animationFrame}
                                     onPositionChange={(index, position) => setMechInitPosition(index, position)}
-                                    onProgramChange={(index, program) => 
+                                    onProgramChange={(index, program) =>
                                         setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
                                     }
                                 />
@@ -452,29 +464,100 @@ export default function Home() {
 
                     <div className={styles.inputs}>
                     {
-                            Array.from({length:numAdders}).map ((_,adder_i) => (
-                                <div key={`input-row-${adder_i}`} className={styles.input_row}>
-                                    <p className={styles.input_text}>{`adder${adder_i}`}</p>
-                                    <input
+                            Array.from({length:numAdders}).map ((_,operator_i) => (
+                                <div key={`input-row-${operator_i}`} className={styles.input_row}>
+                                    <p className={styles.input_text}>{`adder${operator_i}`}</p>
+
+                                    {
+                                        Array.from({length:operatorStates[operator_i].input.length}).map((_,input_i) => (
+                                            <div className={styles.input_grid}>
+                                                <input
+                                                    className={styles.program}
+                                                    onChange={event => {
+                                                        if (event.target.value.length == 0) return;
+                                                        let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
+                                                        newOperator.input[input_i].x = parseInt(event.target.value)
+                                                        setOperator(operator_i, newOperator)}
+                                                    }
+                                                    defaultValue={operatorStates[operator_i].input[input_i].x}
+                                                    style={{width:'30px', textAlign:'center'}}
+                                                ></input>
+                                                <input
+                                                    className={styles.program}
+                                                    onChange={event => {
+                                                        if (event.target.value.length == 0) return;
+                                                        let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
+                                                        newOperator.input[input_i].y = parseInt(event.target.value)
+                                                        setOperator(operator_i, newOperator)}
+                                                    }
+                                                    defaultValue={operatorStates[operator_i].input[input_i].y}
+                                                    style={{width:'30px', textAlign:'center'}}
+                                                ></input>
+                                                {
+                                                    input_i == operatorStates[operator_i].input.length-1 ? (
+                                                        <p className={styles.input_text}>{`=`}</p>
+                                                    ) : (
+                                                        <p className={styles.input_text}>{`+`}</p>
+                                                    )
+
+                                                }
+                                            </div>
+                                        ))
+                                    }
+
+                                    {
+                                        Array.from({length:operatorStates[operator_i].output.length}).map((_,output_i) => (
+                                            <div className={styles.input_grid}>
+                                                <input
+                                                    className={styles.program}
+                                                    onChange={event => {
+                                                        if (event.target.value.length == 0) return;
+                                                        let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
+                                                        newOperator.output[output_i].x = parseInt(event.target.value)
+                                                        setOperator(operator_i, newOperator)}
+                                                    }
+                                                    defaultValue={operatorStates[operator_i].output[output_i].x}
+                                                    style={{width:'30px', textAlign:'center'}}
+                                                ></input>
+                                                <input
+                                                    className={styles.program}
+                                                    onChange={event => {
+                                                        if (event.target.value.length == 0) return;
+                                                        let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
+                                                        newOperator.output[output_i].y = parseInt(event.target.value)
+                                                        setOperator(operator_i, newOperator)}
+                                                    }
+                                                    defaultValue={operatorStates[operator_i].output[output_i].y}
+                                                    style={{width:'30px', textAlign:'center'}}
+                                                ></input>
+                                                {
+                                                    (output_i != operatorStates[operator_i].output.length-1) &&
+                                                    <p className={styles.input_text}>{`,`}</p>
+                                                }
+                                            </div>
+                                        ))
+                                    }
+
+                                    {/* <input
                                         className={styles.program}
                                         onChange={event => {
                                             if (event.target.value.length == 0) return;
-                                            let newAdder = JSON.parse(JSON.stringify(adderStates[adder_i]))
+                                            let newAdder = JSON.parse(JSON.stringify(operatorStates[operator_i]))
                                             newAdder.a.x = parseInt(event.target.value)
-                                            setAdder(adder_i, newAdder)}
+                                            setAdder(operator_i, newAdder)}
                                         }
-                                        defaultValue={adderStates[adder_i].a.x}
+                                        defaultValue={operatorStates[operator_i].a.x}
                                         style={{width:'30px', textAlign:'center'}}
                                     ></input>
                                     <input
                                         className={styles.program}
                                         onChange={event => {
                                             if (event.target.value.length == 0) return;
-                                            let newAdder = JSON.parse(JSON.stringify(adderStates[adder_i]))
+                                            let newAdder = JSON.parse(JSON.stringify(operatorStates[adder_i]))
                                             newAdder.a.y = parseInt(event.target.value)
                                             setAdder(adder_i, newAdder)}
                                         }
-                                        defaultValue={adderStates[adder_i].a.y}
+                                        defaultValue={operatorStates[adder_i].a.y}
                                         style={{width:'30px', textAlign:'center'}}
                                     ></input>
                                     <p className={styles.input_text}>{`+`}</p>
@@ -483,22 +566,22 @@ export default function Home() {
                                         className={styles.program}
                                         onChange={event => {
                                             if (event.target.value.length == 0) return;
-                                            let newAdder = JSON.parse(JSON.stringify(adderStates[adder_i]))
+                                            let newAdder = JSON.parse(JSON.stringify(operatorStates[adder_i]))
                                             newAdder.b.x = parseInt(event.target.value)
                                             setAdder(adder_i, newAdder)}
                                         }
-                                        defaultValue={adderStates[adder_i].b.x}
+                                        defaultValue={operatorStates[adder_i].b.x}
                                         style={{width:'30px', textAlign:'center'}}
                                     ></input>
                                     <input
                                         className={styles.program}
                                         onChange={event => {
                                             if (event.target.value.length == 0) return;
-                                            let newAdder = JSON.parse(JSON.stringify(adderStates[adder_i]))
+                                            let newAdder = JSON.parse(JSON.stringify(operatorStates[adder_i]))
                                             newAdder.b.y = parseInt(event.target.value)
                                             setAdder(adder_i, newAdder)}
                                         }
-                                        defaultValue={adderStates[adder_i].b.y}
+                                        defaultValue={operatorStates[adder_i].b.y}
                                         style={{width:'30px', textAlign:'center'}}
                                     ></input>
                                     <p className={styles.input_text}>{`=`}</p>
@@ -507,24 +590,24 @@ export default function Home() {
                                         className={styles.program}
                                         onChange={event => {
                                             if (event.target.value.length == 0) return;
-                                            let newAdder = JSON.parse(JSON.stringify(adderStates[adder_i]))
+                                            let newAdder = JSON.parse(JSON.stringify(operatorStates[adder_i]))
                                             newAdder.z.x = parseInt(event.target.value)
                                             setAdder(adder_i, newAdder)}
                                         }
-                                        defaultValue={adderStates[adder_i].z.x}
+                                        defaultValue={operatorStates[adder_i].z.x}
                                         style={{width:'30px', textAlign:'center'}}
                                     ></input>
                                     <input
                                         className={styles.program}
                                         onChange={event => {
                                             if (event.target.value.length == 0) return;
-                                            let newAdder = JSON.parse(JSON.stringify(adderStates[adder_i]))
+                                            let newAdder = JSON.parse(JSON.stringify(operatorStates[adder_i]))
                                             newAdder.z.y = parseInt(event.target.value)
                                             setAdder(adder_i, newAdder)}
                                         }
-                                        defaultValue={adderStates[adder_i].z.y}
+                                        defaultValue={operatorStates[adder_i].z.y}
                                         style={{width:'30px', textAlign:'center'}}
-                                    ></input>
+                                    ></input> */}
 
                                 </div>
                             ))

@@ -230,9 +230,9 @@ function _simulate_one_cycle (
     //
     for (const binary_operator of boardConfig.binary_operators){
         if ( // both a and b are occupied with atoms, and z is empty
-            grid_populated_bools_new[JSON.stringify(binary_operator.a)] &&
-            grid_populated_bools_new[JSON.stringify(binary_operator.b)] &&
-            !grid_populated_bools_new[JSON.stringify(binary_operator.z)]
+            grid_populated_bools_new[JSON.stringify(binary_operator.input[0])] &&
+            grid_populated_bools_new[JSON.stringify(binary_operator.input[1])] &&
+            !grid_populated_bools_new[JSON.stringify(binary_operator.output[0])]
         ){
             // TODO create abstraction for representing formula
             // find the type of atoms occupying the operand grids - TODO improve implementation
@@ -241,11 +241,11 @@ function _simulate_one_cycle (
             var atom_i_a: number
             var atom_i_b: number
             atoms_new.forEach((atom: AtomState, atom_i: number) => {
-                if (isIdenticalGrid(atom.index, binary_operator.a)) {
+                if (isIdenticalGrid(atom.index, binary_operator.input[0])) {
                     atom_type_a = atom.typ
                     atom_i_a = atom_i
                 }
-                else if (isIdenticalGrid(atom.index, binary_operator.b)) {
+                else if (isIdenticalGrid(atom.index, binary_operator.input[1])) {
                     atom_type_b = atom.typ
                     atom_i_b = atom_i
                 }
@@ -256,16 +256,16 @@ function _simulate_one_cycle (
                 if (atom_type_a == formula.type_a && atom_type_b == formula.type_b){
                     notes += formula.description + ';'
 
-                    grid_populated_bools_new[JSON.stringify(binary_operator.a)] = false
-                    grid_populated_bools_new[JSON.stringify(binary_operator.b)] = false
+                    grid_populated_bools_new[JSON.stringify(binary_operator.input[0])] = false
+                    grid_populated_bools_new[JSON.stringify(binary_operator.input[1])] = false
                     atoms_new[atom_i_a].status = AtomStatus.CONSUMED
                     atoms_new[atom_i_b].status = AtomStatus.CONSUMED
-                    grid_populated_bools_new[JSON.stringify(binary_operator.z)] = true
+                    grid_populated_bools_new[JSON.stringify(binary_operator.output[0])] = true
                     const atom_new: AtomState = {
                         id: `atom${atoms_new.length}`,
                         typ: formula.type_z,
                         status: AtomStatus.FREE,
-                        index: binary_operator.z,
+                        index: binary_operator.output[0],
                         possessed_by: null
                     }
                     atoms_new.push(atom_new)
