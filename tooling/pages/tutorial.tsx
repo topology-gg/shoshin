@@ -95,7 +95,7 @@ export default function Tutorial() {
                                     unit_id: null,
                                 }}
                             />{" "}
-                            +
+                            &
                             <Unit
                                 state={{
                                     bg_status: BgStatus.ATOM_VANILLA_FREE,
@@ -114,6 +114,7 @@ export default function Tutorial() {
                                 }}
                             />
                         </li>
+
                         <li style={FORMULA_LI_STYLE}>
                             <Unit
                                 state={{
@@ -123,7 +124,7 @@ export default function Tutorial() {
                                     unit_id: null,
                                 }}
                             />{" "}
-                            +
+                            %
                             <Unit
                                 state={{
                                     bg_status: BgStatus.ATOM_HAZELNUT_FREE,
@@ -141,6 +142,55 @@ export default function Tutorial() {
                                     unit_id: null,
                                 }}
                             />
+                        </li>
+
+                        <li style={FORMULA_LI_STYLE}>
+                            <Unit
+                                state={{
+                                    bg_status: BgStatus.ATOM_HAZELNUT_FREE,
+                                    border_status: null,
+                                    unit_text: UnitText.EMPTY,
+                                    unit_id: null,
+                                }}
+                            />{" "}
+                            ~
+                            <Unit
+                                state={{
+                                    bg_status: BgStatus.ATOM_CHOCOLATE_FREE,
+                                    border_status: null,
+                                    unit_text: UnitText.EMPTY,
+                                    unit_id: null,
+                                }}
+                            />{" "}
+                            ~
+                            <Unit
+                                state={{
+                                    bg_status: BgStatus.ATOM_CHOCOLATE_FREE,
+                                    border_status: null,
+                                    unit_text: UnitText.EMPTY,
+                                    unit_id: null,
+                                }}
+                            />
+                            {" "}
+                            =
+                            <Unit
+                                state={{
+                                    bg_status: BgStatus.ATOM_TRUFFLE_FREE,
+                                    border_status: null,
+                                    unit_text: UnitText.EMPTY,
+                                    unit_id: null,
+                                }}
+                            />{" "}
+                            ,
+                            <Unit
+                                state={{
+                                    bg_status: BgStatus.ATOM_VANILLA_FREE,
+                                    border_status: null,
+                                    unit_text: UnitText.EMPTY,
+                                    unit_id: null,
+                                }}
+                            />
+
                         </li>
                     </ol>
                 </Box>

@@ -3,7 +3,7 @@ import AtomState, {AtomStatus, AtomType} from '../src/types/AtomState';
 import Grid from '../src/types/Grid'
 import BoardConfig from '../src/types/BoardConfig';
 import Frame from '../src/types/Frame';
-import { FORMULA_TWO_TO_ONE } from '../src/constants/formulas'
+import { OperatorType, OPERATOR_TYPES } from '../src/types/Operator';
 
 export function isIdenticalGrid (
     grid1 : Grid,
@@ -228,48 +228,65 @@ function _simulate_one_cycle (
     //
     // Iterate through operators
     //
-    for (const binary_operator of boardConfig.binary_operators){
-        if ( // both a and b are occupied with atoms, and z is empty
-            grid_populated_bools_new[JSON.stringify(binary_operator.a)] &&
-            grid_populated_bools_new[JSON.stringify(binary_operator.b)] &&
-            !grid_populated_bools_new[JSON.stringify(binary_operator.z)]
-        ){
-            // TODO create abstraction for representing formula
-            // find the type of atoms occupying the operand grids - TODO improve implementation
-            var atom_type_a: AtomType
-            var atom_type_b: AtomType
-            var atom_i_a: number
-            var atom_i_b: number
+    for (const operator of boardConfig.operators){
+
+        // check if input grids are occupied with atoms, and output grids are empty (no partial reaction allowed)
+        let operator_grid_condition_met = true
+        for (const grid of operator.input){
+            operator_grid_condition_met = operator_grid_condition_met && grid_populated_bools_new[JSON.stringify(grid)]
+        }
+        for (const grid of operator.output){
+            operator_grid_condition_met = operator_grid_condition_met && !grid_populated_bools_new[JSON.stringify(grid)]
+        }
+
+        if (operator_grid_condition_met){
+
+            console.log(`>> operator ${operator.typ.name}  grid condition met`)
+
+            // Find the sequence of atom types for input grids
+            // TODO improve implementation
+            let atom_type_for_each_input: AtomType[] = Array.from({length:operator.input.length}).fill(AtomType.VANILLA) as Array<AtomType>
+            let atom_index_for_each_input: number[] = Array.from({length:operator.input.length}).fill(0) as Array<number>
             atoms_new.forEach((atom: AtomState, atom_i: number) => {
-                if (isIdenticalGrid(atom.index, binary_operator.a)) {
-                    atom_type_a = atom.typ
-                    atom_i_a = atom_i
-                }
-                else if (isIdenticalGrid(atom.index, binary_operator.b)) {
-                    atom_type_b = atom.typ
-                    atom_i_b = atom_i
-                }
+
+                operator.input.forEach((input_grid, input_i) => {
+                    if (isIdenticalGrid(atom.index, input_grid)) {
+                        atom_type_for_each_input[input_i] = atom.typ
+                        atom_index_for_each_input[input_i] = atom_i
+                    }
+                })
+
             })
 
-            // check for two-to-one formula match
-            for (const formula of FORMULA_TWO_TO_ONE){
-                if (atom_type_a == formula.type_a && atom_type_b == formula.type_b){
-                    notes += formula.description + ';'
+            // check if atoms occupying the input grids meet formula condition
+            let match = true
+            operator.typ.input_atom_types.forEach((supposed_input_type, i) => {
+                match = match && (supposed_input_type == atom_type_for_each_input[i])
+            })
+            if (match){
+                notes += operator.typ.description + ';'
 
-                    grid_populated_bools_new[JSON.stringify(binary_operator.a)] = false
-                    grid_populated_bools_new[JSON.stringify(binary_operator.b)] = false
-                    atoms_new[atom_i_a].status = AtomStatus.CONSUMED
-                    atoms_new[atom_i_b].status = AtomStatus.CONSUMED
-                    grid_populated_bools_new[JSON.stringify(binary_operator.z)] = true
+                // updates for input
+                for (const grid of operator.input){
+                    grid_populated_bools_new[JSON.stringify(grid)] = false
+                }
+                for (const atom_i of atom_index_for_each_input){
+                    atoms_new[atom_i].status = AtomStatus.CONSUMED
+                }
+
+                // updates for output
+                operator.output.forEach((output_grid, output_i) => {
+                    grid_populated_bools_new[JSON.stringify(output_grid)] = true
                     const atom_new: AtomState = {
                         id: `atom${atoms_new.length}`,
-                        typ: formula.type_z,
+                        typ: operator.typ.output_atom_types[output_i],
                         status: AtomStatus.FREE,
-                        index: binary_operator.z,
+                        index: output_grid,
                         possessed_by: null
                     }
                     atoms_new.push(atom_new)
-                }
+                })
+
             }
 
         }

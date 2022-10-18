@@ -68,6 +68,11 @@
     flex-direction: row;
 }
 
+.input_grid {
+    display: flex;
+    flex-direction: row;
+}
+
 .input_text {
     margin: 0 1rem 0 1rem;
     vertical-align: middle;
@@ -76,13 +81,14 @@
 }
 
 .programWrapper {
-  position: relative;
-  display: flex;
+    position: relative;
+    display: flex;
 }
 
 .program {
-  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+    font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
     Bitstream Vera Sans Mono, Courier New, monospace;
+    padding: 0
 }
 
 .instructionBox {

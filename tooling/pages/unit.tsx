@@ -36,6 +36,15 @@ export default function Unit({ state }) {
         nuclei = 3;
     }
 
+    else if (state.bg_status === BgStatus.ATOM_TRUFFLE_FREE) {
+        className += styles.atomTruffleFree + ' ' + styles.fourNuclei + ' ';
+        nuclei = 4;
+    }
+    else if (state.bg_status === BgStatus.ATOM_TRUFFLE_POSSESSED) {
+        className += styles.atomTrufflePossessed + ' ' + styles.fourNuclei + ' ';
+        nuclei = 4;
+    }
+
     if (state.border_status == BorderStatus.SINGLETON_OPEN) {
         className += styles.mechSingletonOpen + ' ';
     }

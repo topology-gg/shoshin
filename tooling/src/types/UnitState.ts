@@ -7,6 +7,8 @@ export enum BgStatus {
     ATOM_HAZELNUT_POSSESSED = 'hazelnut_possessed',
     ATOM_CHOCOLATE_FREE = 'chocolate_free',
     ATOM_CHOCOLATE_POSSESSED = 'chocolate_possessed',
+    ATOM_TRUFFLE_FREE = 'truffle_free',
+    ATOM_TRUFFLE_POSSESSED = 'truffle_possessed',
 }
 
 export enum BorderStatus {
@@ -20,7 +22,8 @@ export enum UnitText {
     GRID = '·',
     FAUCET = 'F',
     SINK = 'S',
-    OPERAND_ADD = '+',
+    OPERAND_STIR = '&',
+    OPERAND_SHAKE = '%',
     OUTPUT = '=',
 }
 
