@@ -1,9 +1,11 @@
-import MechState, {MechStatus} from '../src/types/MechState';
+import MechState, {MechStatus, MechType} from '../src/types/MechState';
 import AtomState, {AtomStatus, AtomType} from '../src/types/AtomState';
 import Grid from '../src/types/Grid'
 import BoardConfig from '../src/types/BoardConfig';
 import Frame from '../src/types/Frame';
 import { OperatorType, OPERATOR_TYPES } from '../src/types/Operator';
+import { STATIC_COSTS, DYNAMIC_COSTS } from '../src/types/Cost';
+import { ECDH } from 'crypto';
 
 export function isIdenticalGrid (
     grid1 : Grid,
@@ -30,6 +32,19 @@ export default function simulator(
     // must implement config verification, particularly - verify the validity of operator placement
 
     //
+    // Calculate base cost based on number of operators and number of mechs used
+    //
+    let base_cost = 0
+    mechs.forEach((mech) => {
+        if (mech.typ == MechType.SINGLETON) base_cost += STATIC_COSTS.SINGLETON
+    })
+    boardConfig.operators.forEach((operator) => {
+        if (operator.typ.name == 'Stir') base_cost += STATIC_COSTS.STIR
+        else if (operator.typ.name == 'Shake') base_cost += STATIC_COSTS.SHAKE
+        else if (operator.typ.name == 'Steam') base_cost += STATIC_COSTS.STEAM
+    })
+
+    //
     // Prepare the first frame
     //
     var grid_populated_bools : { [key: string] : boolean } = {}
@@ -46,7 +61,8 @@ export default function simulator(
         atoms: atoms,
         grid_populated_bools: grid_populated_bools,
         delivered_accumulated: [],
-        notes: ''
+        cost_accumulated: base_cost,
+        notes: '',
     }
 
     //
@@ -102,6 +118,7 @@ function _simulate_one_cycle (
     var mechs_new: MechState[] = []
     var atoms_new: AtomState[] = JSON.parse(JSON.stringify(atoms_curr)) // object cloning
     var grid_populated_bools_new: { [key: string] : boolean } = JSON.parse(JSON.stringify(grid_populated_bools)) // object cloning
+    var cost_accumulated_new = frame_curr.cost_accumulated // a primitive type variable (number) can be cloned by '='
     var notes = ''
 
     //
@@ -133,13 +150,19 @@ function _simulate_one_cycle (
                 mech_new.index = {x:mech.index.x+1, y:mech.index.y}
 
                 // move atom if possessed by this mech
+                let has_moved_atom = false
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
                     if (atom.status == AtomStatus.POSSESSED && atom.possessed_by == mech.id){
                         var atom_new = theArray[i]
                         atom_new.index.x += 1
                         theArray[i] = atom_new
+                        has_moved_atom = true
                     }
                 });
+
+                // update cost
+                if (has_moved_atom) cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_CARRY
+                else cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_EMPTY
             }
         }
         else if (instruction == 'A'){ // x-negative
@@ -148,6 +171,7 @@ function _simulate_one_cycle (
                 mech_new.index = {x:mech.index.x-1, y:mech.index.y}
 
                 // move atom if possessed by this mech
+                let has_moved_atom = false
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
                     if (atom.status == AtomStatus.POSSESSED && atom.possessed_by == mech.id){
                         var atom_new = theArray[i]
@@ -155,6 +179,10 @@ function _simulate_one_cycle (
                         theArray[i] = atom_new
                     }
                 });
+
+                // update cost
+                if (has_moved_atom) cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_CARRY
+                else cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_EMPTY
             }
         }
         else if (instruction == 'S'){ // y-positive
@@ -162,6 +190,7 @@ function _simulate_one_cycle (
                 mech_new.index = {x:mech.index.x, y:mech.index.y+1}
 
                 // move atom if possessed by this mech
+                let has_moved_atom = false
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
                     if (atom.status == AtomStatus.POSSESSED && atom.possessed_by == mech.id){
                         var atom_new = theArray[i]
@@ -169,6 +198,10 @@ function _simulate_one_cycle (
                         theArray[i] = atom_new
                     }
                 });
+
+                // update cost
+                if (has_moved_atom) cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_CARRY
+                else cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_EMPTY
             }
         }
         else if (instruction == 'W'){ // y-negative
@@ -176,6 +209,7 @@ function _simulate_one_cycle (
                 mech_new.index = {x:mech.index.x, y:mech.index.y-1}
 
                 // move atom if possessed by this mech
+                let has_moved_atom = false
                 atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
                     if (atom.status == AtomStatus.POSSESSED && atom.possessed_by == mech.id){
                         var atom_new = theArray[i]
@@ -183,6 +217,10 @@ function _simulate_one_cycle (
                         theArray[i] = atom_new
                     }
                 });
+
+                // update cost
+                if (has_moved_atom) cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_CARRY
+                else cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_EMPTY
             }
         }
         else if (instruction == 'Z'){ // GET
@@ -201,6 +239,9 @@ function _simulate_one_cycle (
                         theArray[i] = atom_new
                     }
                 });
+
+                // update cost
+                cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_GET
             }
         }
         else if (instruction == 'X'){ // PUT
@@ -219,6 +260,9 @@ function _simulate_one_cycle (
                         theArray[i] = atom_new
                     }
                 });
+
+                // update cost
+                cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_PUT
             }
         }
 
@@ -321,6 +365,7 @@ function _simulate_one_cycle (
         atoms: atoms_new,
         grid_populated_bools: grid_populated_bools_new,
         delivered_accumulated: delivered_accumulated_new,
+        cost_accumulated: cost_accumulated_new,
         notes: notes
     }
     return frame_new
