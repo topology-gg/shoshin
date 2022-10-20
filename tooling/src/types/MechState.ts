@@ -1,13 +1,17 @@
 import Grid from './Grid'
 
 export enum MechStatus {
-  CLOSE = 'close',
-  OPEN = 'open',
+    CLOSE = 'close',
+    OPEN = 'open',
+}
+
+export enum MechType {
+    SINGLETON = 'SINGLETON',
 }
 
 export default interface MechState {
-  id: string
-  typ: string
-  status: MechStatus
-  index: Grid
+    id: string
+    typ: MechType
+    status: MechStatus
+    index: Grid
 }

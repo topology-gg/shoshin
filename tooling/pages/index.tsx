@@ -2,7 +2,7 @@ import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import {useState, useEffect, useRef, useCallback} from 'react';
 import simulator from "./simulator";
-import MechState, { MechStatus } from '../src/types/MechState';
+import MechState, { MechStatus, MechType } from '../src/types/MechState';
 import AtomState, { AtomStatus, AtomType } from '../src/types/AtomState';
 import AtomFaucetState from '../src/types/AtomFaucetState';
 import AtomSinkState from '../src/types/AtomSinkState';
@@ -90,7 +90,7 @@ export default function Home() {
     // React state updates
     //
     const mechInitStates: MechState[] = mechInitPositions.map(
-        (pos, mech_i) => { return {status: MechStatus.OPEN, index: pos, id: `mech${mech_i}`, typ: 'singleton'} }
+        (pos, mech_i) => { return {status: MechStatus.OPEN, index: pos, id: `mech${mech_i}`, typ: MechType.SINGLETON} }
     )
     const atomInitStates: AtomState[] = ATOM_INIT_XY.map(
         function (xy,i) { return {status:AtomStatus.FREE, index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:AtomType.VANILLA, possessed_by:null} }
@@ -100,7 +100,7 @@ export default function Home() {
     const mechStates = frame?.mechs || mechInitStates
     const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
     const delivered = frame?.delivered_accumulated
-    // console.log('index.tsx delivered:', delivered)
+    const cost_accumulated = frame?.cost_accumulated
 
     //
     // Definition of setting DOM state
@@ -562,8 +562,9 @@ export default function Home() {
                 </div>
 
                 <div className={styles.delivered_atoms}>
-                    <Delivery delivered={delivered} />
+                    <Delivery delivered={delivered} cost_accumulated={cost_accumulated}/>
                 </div>
+
             </main>
 
         </div>

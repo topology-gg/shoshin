@@ -3,10 +3,10 @@ import Unit from './unit';
 import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitState';
 import styles from '../styles/Delivery.module.css'
 
-export default function Delivery({ delivered }) {
+export default function Delivery({ delivered, cost_accumulated }) {
 
     if (!delivered || delivered.length == 0) {
-        return <>Delivered: 0</>
+        return <>Accumulated cost: {cost_accumulated}; Delivered: 0</>
     }
 
     let counts: { [key: string] : number } = {}
@@ -20,7 +20,7 @@ export default function Delivery({ delivered }) {
 
     return (
         <>
-            Delivered:
+            Accumulated cost: {cost_accumulated}; Delivered
             {
                 Object.keys(counts).map(function(key: string,i: number){
                     // const bg_status = key == AtomType.HAZELNUT ? BgStatus.ATOM_HAZELNUT_FREE : BgStatus.ATOM_VANILLA_FREE
