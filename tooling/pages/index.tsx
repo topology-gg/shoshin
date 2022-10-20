@@ -316,12 +316,27 @@ export default function Home() {
         // Run simulation
         if (mode == 'ToggleRun') {
 
-            // Pause
+
+
+            // If in Run => go to Pause
             if (animationState == 'Run') {
                 clearInterval (loop); // kill the timer
                 setAnimationState ('Pause')
             }
-            else {
+
+            // If in Pause => resume Run without simulation
+            else if (animationState == 'Pause') {
+                // Begin animation
+                setAnimationState ('Run')
+                setLoop(
+                    setInterval(() => {
+                        simulationLoop(frames)
+                    }, ANIM_FRAME_LATENCY)
+                );
+            }
+
+            // If in Stop => perform simulation then go to Run
+            else if (animationState == 'Stop') {
                 // Parse program into array of instructions and store to react state
                 let instructionSets:string[][] = []
                 programs.forEach((program: string, mech_i:number) => {
@@ -355,11 +370,6 @@ export default function Home() {
                     console.log(frame_i, f.notes)
                 })
                 const final_delivery = simulatedFrames[simulatedFrames.length-1].delivered_accumulated
-                // var n_vanilla = 0
-                // for (const delivered of final_delivery){
-                //     if (delivered == 'vanilla') {n_vanilla += 1}
-                // }
-                // console.log (`> delivered ${n_vanilla} vanilla atom(s)`)
 
                 // Begin animation
                 setAnimationState ('Run')
@@ -414,6 +424,13 @@ export default function Home() {
         })
     }
 
+    function handleSlideChange (evt) {
+        if (animationState=='Run') return;
+
+        const slide_val: number = parseInt(evt.target.value)
+        setAnimationFrame (slide_val)
+    }
+
     // Render
     return (
         <div className={styles.container}>
@@ -430,6 +447,23 @@ export default function Home() {
 
                 <Tutorial />
 
+                <div style={{marginBottom:'1rem'}}>
+                    <p style={{
+                        padding:'0', textAlign:'center', verticalAlign:'middle',
+                        margin:'0', height:'20px', lineHeight:'20px', fontSize:'0.9rem'}}
+                    > Frame# {animationFrame} </p>
+
+                    <input
+                        id="typeinp"
+                        type="range"
+                        min="0" max={N_CYCLES}
+                        value={animationFrame}
+                        onChange={handleSlideChange}
+                        step="1"
+                        style={{width:'20rem'}}
+                    />
+                </div>
+
                 <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'10px'}}>
                     <button onClick={() => handleMechClick('+')}> {'+mech'} </button>
                     <button onClick={() => handleMechClick('-')}> {'-mech'} </button>
@@ -439,7 +473,6 @@ export default function Home() {
 
                     <button onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? 'Run' : 'Pause'} </button>
                     <button onClick={() => handleClick('Stop')}> {'Stop'} </button>
-                    <p style={{padding:'0', textAlign:'center', verticalAlign:'middle', margin:'0', height:'20px', lineHeight:'20px', fontSize:'0.75rem'}}>Frame# {animationFrame}</p>
                 </div>
 
                 <div style={{display:'flex', flexDirection:'row'}}>
