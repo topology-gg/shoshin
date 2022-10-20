@@ -5,8 +5,11 @@ import styles from '../styles/Delivery.module.css'
 
 export default function Delivery({ delivered, cost_accumulated }) {
 
-    if (!delivered || delivered.length == 0) {
-        return <>Accumulated cost: {cost_accumulated}; Delivered: 0</>
+    if (!delivered) {
+        return <>Accumulated cost: 0 / Delivered: 0</>
+    }
+    else if (delivered.length == 0) {
+        return <>Accumulated cost: {cost_accumulated} / Delivered: 0</>
     }
 
     let counts: { [key: string] : number } = {}
@@ -20,7 +23,7 @@ export default function Delivery({ delivered, cost_accumulated }) {
 
     return (
         <>
-            Accumulated cost: {cost_accumulated}; Delivered
+            Accumulated cost: {cost_accumulated} / Delivered
             {
                 Object.keys(counts).map(function(key: string,i: number){
                     // const bg_status = key == AtomType.HAZELNUT ? BgStatus.ATOM_HAZELNUT_FREE : BgStatus.ATOM_VANILLA_FREE

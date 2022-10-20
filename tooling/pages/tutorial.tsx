@@ -8,6 +8,7 @@ import { CSSProperties, useState } from "react";
 import Modal from "../src/components/Modal";
 import Button from "@mui/material/Button";
 import { Box } from "@mui/material";
+import styles from '../styles/Home.module.css'
 
 export default function Tutorial() {
     const FORMULA_LI_STYLE: CSSProperties = {
@@ -87,6 +88,7 @@ export default function Tutorial() {
                         }}
                     >
                         <li style={FORMULA_LI_STYLE}>
+                            <p className={styles.input_name}>{'Stir'}</p>
                             <Unit
                                 state={{
                                     bg_status: BgStatus.ATOM_VANILLA_FREE,
@@ -116,6 +118,7 @@ export default function Tutorial() {
                         </li>
 
                         <li style={FORMULA_LI_STYLE}>
+                            <p className={styles.input_name}>{'Shake'}</p>
                             <Unit
                                 state={{
                                     bg_status: BgStatus.ATOM_HAZELNUT_FREE,
@@ -145,6 +148,7 @@ export default function Tutorial() {
                         </li>
 
                         <li style={FORMULA_LI_STYLE}>
+                            <p className={styles.input_name}>{'Steam'}</p>
                             <Unit
                                 state={{
                                     bg_status: BgStatus.ATOM_HAZELNUT_FREE,

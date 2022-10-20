@@ -100,7 +100,7 @@ export default function Home() {
     const mechStates = frame?.mechs || mechInitStates
     const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
     const delivered = frame?.delivered_accumulated
-    const cost_accumulated = frame?.cost_accumulated
+    const cost_accumulated = animationState=='Stop' ? 0 :frame?.cost_accumulated
 
     //
     // Definition of setting DOM state
@@ -465,7 +465,7 @@ export default function Home() {
                     {
                             Array.from({length:numAdders}).map ((_,operator_i) => (
                                 <div key={`input-row-${operator_i}`} className={styles.input_row}>
-                                    <p className={styles.input_text}>{`adder${operator_i}`}</p>
+                                    <p className={styles.input_name}>{operatorStates[operator_i].typ.name}</p>
 
                                     {
                                         Array.from({length:operatorStates[operator_i].input.length}).map((_,input_i) => (

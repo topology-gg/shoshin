@@ -73,6 +73,14 @@
     flex-direction: row;
 }
 
+.input_name {
+    margin: 0 1rem 0 1rem;
+    vertical-align: middle;
+    height: 20px;
+    width: 2rem;
+    line-height: 20px;
+}
+
 .input_text {
     margin: 0 1rem 0 1rem;
     vertical-align: middle;
