@@ -13,6 +13,7 @@ import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitStat
 import Grid from '../src/types/Grid';
 import Operator, { OperatorType, OPERATOR_TYPES } from '../src/types/Operator';
 import Delivery from './delivery'
+import Summary from './summary';
 import Tutorial from './tutorial';
 import MechInput from '../src/components/MechInput';
 // import
@@ -596,6 +597,10 @@ export default function Home() {
 
                 <div className={styles.delivered_atoms}>
                     <Delivery delivered={delivered} cost_accumulated={cost_accumulated}/>
+                </div>
+
+                <div className={styles.summary}>
+                    <Summary frames={frames} n_cycles={N_CYCLES}/>
                 </div>
 
             </main>
