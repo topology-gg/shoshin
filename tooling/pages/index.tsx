@@ -22,10 +22,10 @@ import { isIdenticalGrid, isGridOOB, areGridsNeighbors } from '../src/helpers/gr
 export default function Home() {
 
     // Constants
-    const N_CYCLES = 100
+    const N_CYCLES = 200
     const ANIM_FRAME_LATENCY = 250
     const INIT_PROGRAM = '_'
-    const DIM = 7
+    const DIM = 10
     const MECH_INIT_X = 0
     const MECH_INIT_Y = 0
     const ATOM_INIT_XY = [] // [{x:5, y:3}]
@@ -41,9 +41,9 @@ export default function Home() {
     }
     const FAUCET_POS: Grid = {x:0, y:0}
     const SINK_POS: Grid = {x:DIM-1, y:DIM-1}
-    const MAX_NUM_MECHS = 10
+    const MAX_NUM_MECHS = 20
     const MIN_NUM_MECHS = 1
-    const MAX_NUM_OPERATORS = 10
+    const MAX_NUM_OPERATORS = 20
     const MIN_NUM_OPERATORS = 0
 
     // React states for mechs & programs
@@ -158,6 +158,9 @@ export default function Home() {
             else if (atom.typ == AtomType.TRUFFLE) {
                 newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_TRUFFLE_FREE
             }
+            else if (atom.typ == AtomType.SAFFRON) {
+                newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_SAFFRON_FREE
+            }
         }
         else if (atom.status == AtomStatus.POSSESSED){
             if (atom.typ == AtomType.VANILLA) {
@@ -171,6 +174,9 @@ export default function Home() {
             }
             else if (atom.typ == AtomType.TRUFFLE) {
                 newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_TRUFFLE_POSSESSED
+            }
+            else if (atom.typ == AtomType.SAFFRON) {
+                newStates[atom.index.x][atom.index.y].bg_status = BgStatus.ATOM_SAFFRON_POSSESSED
             }
         }
         return newStates
@@ -296,10 +302,18 @@ export default function Home() {
                     switch(typ){
                         case 'STIR':
                             prev_copy.push ({ input:[{x:0,y:0}, {x:0,y:0}], output:[{x:0,y:0}], typ:OPERATOR_TYPES.STIR})
+                            break;
                         case 'SHAKE':
                             prev_copy.push ({ input:[{x:0,y:0}, {x:0,y:0}], output:[{x:0,y:0}], typ:OPERATOR_TYPES.SHAKE})
+                            break;
                         case 'STEAM':
                             prev_copy.push ({ input:[{x:0,y:0}, {x:0,y:0}, {x:0,y:0}], output:[{x:0,y:0}, {x:0,y:0}], typ:OPERATOR_TYPES.STEAM})
+                            break;
+                        case 'SMASH':
+                            prev_copy.push ({ input:[{x:0,y:0}], output:[{x:0,y:0}, {x:0,y:0}, {x:0,y:0}, {x:0,y:0}, {x:0,y:0}], typ:OPERATOR_TYPES.SMASH})
+                            break;
+                        default:
+                            throw `invalid operator type encountered: ${typ}`
 
                     }
                     return prev_copy
@@ -487,6 +501,8 @@ export default function Home() {
 
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}> {'new ~'} </button>
 
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SMASH')}> {'new #'} </button>
+
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('-', '')}> {'remove op'} </button>
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
@@ -523,6 +539,11 @@ export default function Home() {
                                     {
                                         Array.from({length:operatorStates[operator_i].input.length}).map((_,input_i) => (
                                             <div className={styles.input_grid}>
+                                                {
+                                                    input_i == 0 ? (
+                                                        <p style={{textAlign:'right'}} className={styles.input_text}>{operatorStates[operator_i].typ.symbol}(</p>
+                                                    ) : (<></>)
+                                                }
                                                 <input
                                                     className={styles.program}
                                                     onChange={event => {
@@ -547,11 +568,10 @@ export default function Home() {
                                                 ></input>
                                                 {
                                                     input_i == operatorStates[operator_i].input.length-1 ? (
-                                                        <p className={styles.input_text}>{`=`}</p>
+                                                        <p className={styles.input_text}>{`)=`}</p>
                                                     ) : (
-                                                        <p className={styles.input_text}>{operatorStates[operator_i].typ.symbol}</p>
+                                                        <p className={styles.input_text}>{', '}</p>
                                                     )
-
                                                 }
                                             </div>
                                         ))

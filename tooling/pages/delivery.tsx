@@ -41,6 +41,9 @@ export default function Delivery({ delivered, cost_accumulated }) {
                         case AtomType.TRUFFLE:
                             bg_status = BgStatus.ATOM_TRUFFLE_FREE
                             break;
+                        case AtomType.SAFFRON:
+                            bg_status = BgStatus.ATOM_SAFFRON_FREE
+                            break;
                         default:
                             throw `invalid atom type encountered: ${key}`
                     }

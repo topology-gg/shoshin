@@ -11,10 +11,12 @@ export default function Summary ({ frames, n_cycles }) {
         return <>Summary of last run: n/a</>
     }
 
+    const target_type: AtomType = AtomType.SAFFRON
+    const target_bg: BgStatus = BgStatus.ATOM_SAFFRON_FREE
     const last_frame: Frame = frames[frames.length-1]
 
     // Get total delivery
-    const total_delivery = last_frame.delivered_accumulated.filter(t => t == AtomType.TRUFFLE).length;
+    const total_delivery = last_frame.delivered_accumulated.filter(t => t == target_type).length;
 
     // Get static cost
     const static_cost = frames[0].cost_accumulated
@@ -30,8 +32,8 @@ export default function Summary ({ frames, n_cycles }) {
     for (const [frame_i, frame] of frames.entries()) {
         // find if there's a delivery of truffle atom at this frame - 1 or 0, given there's only one sink for now
         if (frame_i == 0) continue;
-        const prev_count = frames[frame_i-1].delivered_accumulated.filter(t => t == AtomType.TRUFFLE).length;
-        const curr_count = frames[frame_i  ].delivered_accumulated.filter(t => t == AtomType.TRUFFLE).length;
+        const prev_count = frames[frame_i-1].delivered_accumulated.filter(t => t == target_type).length;
+        const curr_count = frames[frame_i  ].delivered_accumulated.filter(t => t == target_type).length;
         if (curr_count > prev_count) {
             if (!have_found_first) { // is first delivery
                 // record sum of dynamic cost up to this delivery
@@ -76,7 +78,7 @@ export default function Summary ({ frames, n_cycles }) {
                 <p>Total deliveries of</p>
                 <Unit
                     state={{
-                        bg_status: BgStatus.ATOM_TRUFFLE_FREE,
+                        bg_status: target_bg,
                         border_status: null,
                         unit_text: UnitText.EMPTY,
                         unit_id: null,
@@ -89,7 +91,7 @@ export default function Summary ({ frames, n_cycles }) {
                 <p>Average latency per</p>
                 <Unit
                     state={{
-                        bg_status: BgStatus.ATOM_TRUFFLE_FREE,
+                        bg_status: target_bg,
                         border_status: null,
                         unit_text: UnitText.EMPTY,
                         unit_id: null,
@@ -102,7 +104,7 @@ export default function Summary ({ frames, n_cycles }) {
                 <p>Average dynamic cost per</p>
                 <Unit
                     state={{
-                        bg_status: BgStatus.ATOM_TRUFFLE_FREE,
+                        bg_status: target_bg,
                         border_status: null,
                         unit_text: UnitText.EMPTY,
                         unit_id: null,

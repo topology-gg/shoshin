@@ -36,20 +36,16 @@
     background-color: #5946B2;
 }
 
+.atomSaffronFree, .atomSaffronPossessed {
+    background-color: #DA70D6;
+}
+
 .mechSingletonOpen {
   border-color: #BBBBBB;
 }
 
 .mechSingletonClose {
   border-color: #111111;
-}
-
-/* .atomChocolateFree, .atomChocolatePossessed {
-  background-color: #361c15;
-} */
-
-.atomStrawberryFree, .atomStrawberryPossessed {
-  background-color: #e73da6;
 }
 
 .nucleus {

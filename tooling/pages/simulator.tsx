@@ -285,8 +285,6 @@ function _simulate_one_cycle (
 
         if (operator_grid_condition_met){
 
-            console.log(`>> operator ${operator.typ.name}  grid condition met`)
-
             // Find the sequence of atom types for input grids
             // TODO improve implementation
             let atom_type_for_each_input: AtomType[] = Array.from({length:operator.input.length}).fill(AtomType.VANILLA) as Array<AtomType>

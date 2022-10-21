@@ -29,6 +29,7 @@ const MechInput = ({
                     verticalAlign: "middle",
                     height: "20px",
                     lineHeight: "20px",
+                    width: '2.5rem'
                 }}
             >{`mech${mechIndex}`}</p>
             <input
@@ -52,8 +53,9 @@ const MechInput = ({
                     });
                 }}
                 defaultValue={position.y}
-                style={{ width: "30px", textAlign: "center" }}
+                style={{ width: "30px", textAlign: "center", marginRight: '0.8rem' }}
             ></input>
+
             <div className={styles.programWrapper}>
                 <div
                     className={styles.instructionBox}

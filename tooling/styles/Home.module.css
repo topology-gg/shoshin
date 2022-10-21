@@ -66,6 +66,7 @@
 .input_row {
     display: flex;
     flex-direction: row;
+    /* margin: 0.2em 0 0 0; */
 }
 
 .input_grid {
@@ -82,10 +83,11 @@
 }
 
 .input_text {
-    margin: 0 1rem 0 1rem;
+    margin: 0 0.5rem 0 0.5rem;
     vertical-align: middle;
     height: 20px;
     line-height: 20px;
+    width: 1rem;
 }
 
 .programWrapper {

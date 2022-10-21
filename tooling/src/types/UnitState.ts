@@ -9,6 +9,8 @@ export enum BgStatus {
     ATOM_CHOCOLATE_POSSESSED = 'chocolate_possessed',
     ATOM_TRUFFLE_FREE = 'truffle_free',
     ATOM_TRUFFLE_POSSESSED = 'truffle_possessed',
+    ATOM_SAFFRON_FREE = 'saffron_free',
+    ATOM_SAFFRON_POSSESSED = 'saffron_possessed',
 }
 
 export enum BorderStatus {

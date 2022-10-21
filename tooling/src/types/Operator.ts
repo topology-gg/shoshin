@@ -33,9 +33,16 @@ export const OPERATOR_TYPES: {[key:string] : OperatorType} = {
     },
     STEAM: {
         description: 'hazelnut ~ chocolate ~ chocolate  = truffle, vanilla',
-        symbol: '~',
+        symbol: '^',
         name: 'Steam',
         input_atom_types: [AtomType.HAZELNUT, AtomType.CHOCOLATE, AtomType.CHOCOLATE],
         output_atom_types: [AtomType.TRUFFLE, AtomType.VANILLA]
+    },
+    SMASH: {
+        description: 'truffle = vanilla, vanilla, vanilla, vanilla, saffron',
+        symbol: '#',
+        name: 'Smash',
+        input_atom_types: [AtomType.TRUFFLE],
+        output_atom_types: [AtomType.VANILLA, AtomType.VANILLA, AtomType.VANILLA, AtomType.VANILLA, AtomType.SAFFRON]
     }
 }
