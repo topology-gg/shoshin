@@ -37,6 +37,30 @@ export default function Tutorial() {
             </Button>
             <Modal open={open} onClose={handleClose}>
                 <Box sx={{ p: 2, fontFamily: "var(--font-family-secondary)" }}>
+                <p
+                        style={{
+                            fontSize: "0.9rem",
+                            marginTop: "0",
+                            marginBottom: "0",
+                        }}
+                    >
+                        Thesis & Theme
+                    </p>
+                    <ol
+                        style={{
+                            width: "30rem",
+                            marginTop: "0.5rem",
+                            marginBottom: "2rem",
+                        }}
+                    >
+                        <li>
+                            Layer 1 blockchains assert identity by capital contribution - pay to mint. Layer 2 blockchains, with new affordance in compute capacity, would assert identity by skill verification - solve to mint.
+                        </li>
+                        <li>
+                            MovyMovy is a puzzle about visual & parallel assembly programming. Place & program the little robots ("mechs"), and place the operators that execute formulas, to transport & transmute flavorful atoms from Faucet to Sink. Solutions are ranked by throughput and cost.
+                        </li>
+                    </ol>
+
                     <p
                         style={{
                             fontSize: "0.9rem",
@@ -44,7 +68,7 @@ export default function Tutorial() {
                             marginBottom: "0",
                         }}
                     >
-                        Makeshift tutorial
+                        Instructions
                     </p>
                     <ol
                         style={{
