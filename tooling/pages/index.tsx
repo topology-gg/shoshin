@@ -43,8 +43,8 @@ export default function Home() {
     const SINK_POS: Grid = {x:DIM-1, y:DIM-1}
     const MAX_NUM_MECHS = 10
     const MIN_NUM_MECHS = 1
-    const MAX_NUM_ADDERS = 5
-    const MIN_NUM_ADDERS = 0
+    const MAX_NUM_OPERATORS = 10
+    const MIN_NUM_OPERATORS = 0
 
     // React states for mechs & programs
     const [numMechs, setNumMechs] = useState(9)
@@ -73,7 +73,7 @@ export default function Home() {
     const [instructionSets, setInstructionSets] = useState<string[][]>();
 
     // React states for operators
-    const [numAdders, setNumAdders] = useState(4)
+    const [numOperators, setNumOperators] = useState(4)
     const [operatorStates, setOperatorStates] = useState<Operator[]> ([
         { input:[{x:1,y:0}, {x:2,y:0}], output:[{x:3,y:0}], typ:OPERATOR_TYPES.STIR},
         { input:[{x:1,y:1}, {x:2,y:1}], output:[{x:3,y:1}], typ:OPERATOR_TYPES.STIR},
@@ -287,19 +287,27 @@ export default function Home() {
     }
 
     // Handle click even for addming/removing Adder (operator)
-    function handleAdderClick (mode: string){
-        if (mode === '+' && numAdders < MAX_NUM_ADDERS) {
-            setNumAdders (prev => prev+1)
+    function handleOperatorClick (mode: string, typ: string){
+        if (mode === '+' && numOperators < MAX_NUM_OPERATORS) {
+            setNumOperators (prev => prev+1)
             setOperatorStates(
                 prev => {
                     let prev_copy: Operator[] = JSON.parse(JSON.stringify(prev))
-                    prev_copy.push ({ input:[{x:0,y:0}, {x:0,y:0}], output:[{x:0,y:0}], typ:OPERATOR_TYPES.STIR})
+                    switch(typ){
+                        case 'STIR':
+                            prev_copy.push ({ input:[{x:0,y:0}, {x:0,y:0}], output:[{x:0,y:0}], typ:OPERATOR_TYPES.STIR})
+                        case 'SHAKE':
+                            prev_copy.push ({ input:[{x:0,y:0}, {x:0,y:0}], output:[{x:0,y:0}], typ:OPERATOR_TYPES.SHAKE})
+                        case 'STEAM':
+                            prev_copy.push ({ input:[{x:0,y:0}, {x:0,y:0}, {x:0,y:0}], output:[{x:0,y:0}, {x:0,y:0}], typ:OPERATOR_TYPES.STEAM})
+
+                    }
                     return prev_copy
                 }
             )
         }
-        else if (mode === '-' && numAdders > MIN_NUM_ADDERS) {
-            setNumAdders (prev => prev-1)
+        else if (mode === '-' && numOperators > MIN_NUM_OPERATORS) {
+            setNumOperators (prev => prev-1)
             setOperatorStates(
                 prev => {
                     let prev_copy: Operator[] = JSON.parse(JSON.stringify(prev))
@@ -432,6 +440,8 @@ export default function Home() {
         setAnimationFrame (slide_val)
     }
 
+    const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem'}
+
     // Render
     return (
         <div className={styles.container}>
@@ -465,15 +475,24 @@ export default function Home() {
                     />
                 </div>
 
-                <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'10px'}}>
-                    <button onClick={() => handleMechClick('+')}> {'+mech'} </button>
-                    <button onClick={() => handleMechClick('-')}> {'-mech'} </button>
+                <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'1rem'}}>
+                    <button style={makeshift_button_style} onClick={() => handleMechClick('+')}> {'new mech'} </button>
+                    <button style={makeshift_button_style} onClick={() => handleMechClick('-')}> {'remove mech'} </button>
 
-                    <button onClick={() => handleAdderClick('+')}> {'+&'} </button>
-                    <button onClick={() => handleAdderClick('-')}> {'-&'} </button>
+                    <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                    <button onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? 'Run' : 'Pause'} </button>
-                    <button onClick={() => handleClick('Stop')}> {'Stop'} </button>
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STIR')}> {'new &'} </button>
+
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SHAKE')}> {'new %'} </button>
+
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}> {'new ~'} </button>
+
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('-', '')}> {'remove op'} </button>
+
+                    <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
+
+                    <button style={makeshift_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? 'Run' : 'Pause'} </button>
+                    <button style={makeshift_button_style} onClick={() => handleClick('Stop')}> {'Stop'} </button>
                 </div>
 
                 <div style={{display:'flex', flexDirection:'row'}}>
@@ -497,7 +516,7 @@ export default function Home() {
 
                     <div className={styles.inputs}>
                     {
-                            Array.from({length:numAdders}).map ((_,operator_i) => (
+                            Array.from({length:numOperators}).map ((_,operator_i) => (
                                 <div key={`input-row-${operator_i}`} className={styles.input_row}>
                                     <p className={styles.input_name}>{operatorStates[operator_i].typ.name}</p>
 
