@@ -6,7 +6,7 @@ export default function Unit({ state }) {
     // guardrail
     if (!state) {return <></>}
 
-    // Compute style based on props (from parent's React state)
+    // Compute atom styles
     let className: string = '';
     let nuclei: number = 0;
     if (state.bg_status === BgStatus.ATOM_VANILLA_FREE) {
@@ -45,6 +45,18 @@ export default function Unit({ state }) {
         nuclei = 4;
     }
 
+    else if (state.bg_status === BgStatus.ATOM_SAFFRON_FREE) {
+        className += styles.atomSaffronFree + ' ';
+        nuclei = 1;
+    }
+    else if (state.bg_status === BgStatus.ATOM_SAFFRON_POSSESSED) {
+        className += styles.atomSaffronPossessed + ' ';
+        nuclei = 1;
+    }
+
+    //
+    // Compute mech styles
+    //
     if (state.border_status == BorderStatus.SINGLETON_OPEN) {
         className += styles.mechSingletonOpen + ' ';
     }
