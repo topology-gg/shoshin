@@ -118,6 +118,7 @@
 }
 
 .grid_parent {
+  position: relative;
   display: flex;
   flex-direction: column;
   border: 1px solid #7e7e7e;

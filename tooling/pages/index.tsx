@@ -18,6 +18,8 @@ import Tutorial from './tutorial';
 import MechInput from '../src/components/MechInput';
 // import
 import { isIdenticalGrid, isGridOOB, areGridsNeighbors } from '../src/helpers/gridHelpers';
+import OperatorGridBg from '../src/components/OperatorGridBg';
+import { DIM } from '../src/constants/constants';
 
 export default function Home() {
 
@@ -25,7 +27,6 @@ export default function Home() {
     const N_CYCLES = 200
     const ANIM_FRAME_LATENCY = 250
     const INIT_PROGRAM = '_'
-    const DIM = 10
     const MECH_INIT_X = 0
     const MECH_INIT_Y = 0
     const ATOM_INIT_XY = [] // [{x:5, y:3}]
@@ -617,6 +618,7 @@ export default function Home() {
 
 
                 <div className={styles.grid_parent}>
+                    <OperatorGridBg operators={operatorStates} />
                     {
                         Array.from({length:DIM}).map ((_,i) => ( // i is y
                             <div key={`row-${i}`} className={styles.grid_row}>
