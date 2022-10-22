@@ -245,11 +245,10 @@ export default function Home() {
             if (isGridOOB(grid, DIM)) return true;
         }
 
-        Array.from({length: grid_array.length - 1}).forEach((_,i) => {
-            if (areGridsNeighbors(grid_array[i], grid_array[i+1])) return true;
+        // Each operator grid needs to be neighbor with the next grid
+        return Array.from({length: grid_array.length - 1}).some((_,i) => {
+            return !areGridsNeighbors(grid_array[i], grid_array[i+1]);
         })
-
-        return false;
     }
 
     // Handle click event for adding/removing mechs
