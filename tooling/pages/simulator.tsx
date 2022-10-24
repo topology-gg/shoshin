@@ -144,6 +144,9 @@ function _simulate_one_cycle (
 
         console.log (`mech${mech_i} running ${instruction}`)
 
+        // add note
+        notes += `intended ${instruction}/`
+
         if (instruction == 'D'){ // x-positive
             if (mech.index.x < boardConfig.dimension-1) {
                 // move mech
@@ -163,6 +166,13 @@ function _simulate_one_cycle (
                 // update cost
                 if (has_moved_atom) cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_CARRY
                 else cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_EMPTY
+
+                // add note
+                notes += 'success/'
+            }
+            else {
+                // add note
+                notes += 'fail/'
             }
         }
         else if (instruction == 'A'){ // x-negative
@@ -183,6 +193,13 @@ function _simulate_one_cycle (
                 // update cost
                 if (has_moved_atom) cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_CARRY
                 else cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_EMPTY
+
+                // add note
+                notes += 'success/'
+            }
+            else {
+                // add note
+                notes += 'fail/'
             }
         }
         else if (instruction == 'S'){ // y-positive
@@ -202,6 +219,13 @@ function _simulate_one_cycle (
                 // update cost
                 if (has_moved_atom) cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_CARRY
                 else cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_EMPTY
+
+                // add note
+                notes += 'success/'
+            }
+            else {
+                // add note
+                notes += 'fail/'
             }
         }
         else if (instruction == 'W'){ // y-negative
@@ -221,6 +245,13 @@ function _simulate_one_cycle (
                 // update cost
                 if (has_moved_atom) cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_CARRY
                 else cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_MOVE_EMPTY
+
+                // add note
+                notes += 'success/'
+            }
+            else {
+                // add note
+                notes += 'fail/'
             }
         }
         else if (instruction == 'Z'){ // GET
@@ -242,6 +273,13 @@ function _simulate_one_cycle (
 
                 // update cost
                 cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_GET
+
+                // add note
+                notes += 'success/'
+            }
+            else {
+                // add note
+                notes += 'fail/'
             }
         }
         else if (instruction == 'X'){ // PUT
@@ -263,10 +301,21 @@ function _simulate_one_cycle (
 
                 // update cost
                 cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_PUT
+
+                // add note
+                notes += 'success/'
+            }
+            else {
+                // add note
+                notes += 'fail/'
             }
         }
 
+        // record the new mech
         mechs_new.push (mech_new)
+
+        // add note
+        notes += JSON.stringify(mech) + ' => ' + JSON.stringify(mech_new) + ';'
     })
 
     //
@@ -292,7 +341,7 @@ function _simulate_one_cycle (
             atoms_new.forEach((atom: AtomState, atom_i: number) => {
 
                 operator.input.forEach((input_grid, input_i) => {
-                    if (isIdenticalGrid(atom.index, input_grid)) {
+                    if (isIdenticalGrid(atom.index, input_grid) && atom.status==AtomStatus.FREE) {
                         atom_type_for_each_input[input_i] = atom.typ
                         atom_index_for_each_input[input_i] = atom_i
                     }
