@@ -66,17 +66,25 @@ export default function simulator(
     }
 
     //
-    // Forward system by n_cycles, recording frames emitted; a frame carries all objects with their states i.e. frame == state screenshot
+    // Forward system by n_cycles;
+    // Record frames emitted;
+    // each frame carries all objects with their states i.e. frame == state screenshot
     //
     var frame_s: Frame[] = [frame_init]
-    for (var i=0; i<n_cycles; i++) {
+    for (var cycle_i=0; cycle_i<n_cycles; cycle_i++) {
         //
-        // Prepare instruction for each mech
+        // Prepare instruction for each mech;
+        // if mech is blocked, it stays at its current instruction, otherwise advances to next instruction
         //
         var instruction_per_mech = []
-        mechs.forEach((mech:MechState, mech_i:number) => {
+        frame_s[frame_s.length-1].mechs.forEach((mech:MechState, mech_i:number) => {
+            // get mech's sequence of instructions
             const instructionSet = instructionSets[mech_i]
-            const instruction = instructionSet[i % instructionSet.length]
+
+            // pick instruction at pc_next
+            const instruction = instructionSet [mech.pc_next % instructionSet.length]
+
+            // record instruction to be executed for this mech in this frame
             instruction_per_mech.push (instruction)
         })
         // console.log(`cycle ${i}, instruction_per_mech ${JSON.stringify(instruction_per_mech)}`)
@@ -140,7 +148,7 @@ function _simulate_one_cycle (
     // for (const mech of mechs_curr) {
     mechs_curr.map((mech: MechState, mech_i: number) => {
         const instruction = instruction_per_mech[mech_i]
-        var mech_new = {id:mech.id, typ:mech.typ, index:mech.index, status:mech.status}
+        var mech_new = {id:mech.id, typ:mech.typ, index:mech.index, status:mech.status, pc_next:mech.pc_next}
 
         console.log (`mech${mech_i} running ${instruction}`)
 
@@ -148,6 +156,10 @@ function _simulate_one_cycle (
         notes += `intended ${instruction}/`
 
         if (instruction == 'D'){ // x-positive
+
+            // non-blocking
+            mech_new.pc_next += 1
+
             if (mech.index.x < boardConfig.dimension-1) {
                 // move mech
                 mech_new.index = {x:mech.index.x+1, y:mech.index.y}
@@ -176,6 +188,10 @@ function _simulate_one_cycle (
             }
         }
         else if (instruction == 'A'){ // x-negative
+
+            // non-blocking
+            mech_new.pc_next += 1
+
             if (mech.index.x > 0) {
                 // move mech
                 mech_new.index = {x:mech.index.x-1, y:mech.index.y}
@@ -203,6 +219,10 @@ function _simulate_one_cycle (
             }
         }
         else if (instruction == 'S'){ // y-positive
+
+            // non-blocking
+            mech_new.pc_next += 1
+
             if (mech.index.y < boardConfig.dimension-1) {
                 mech_new.index = {x:mech.index.x, y:mech.index.y+1}
 
@@ -229,6 +249,10 @@ function _simulate_one_cycle (
             }
         }
         else if (instruction == 'W'){ // y-negative
+
+            // non-blocking
+            mech_new.pc_next += 1
+
             if (mech.index.y > 0) {
                 mech_new.index = {x:mech.index.x, y:mech.index.y-1}
 
@@ -255,6 +279,10 @@ function _simulate_one_cycle (
             }
         }
         else if (instruction == 'Z'){ // GET
+
+            // non-blocking
+            mech_new.pc_next += 1
+
             if (
                     (mech.status == MechStatus.OPEN) &&
                     (grid_populated_bools_new[JSON.stringify(mech.index)] == true) // atom available for grab here
@@ -283,6 +311,10 @@ function _simulate_one_cycle (
             }
         }
         else if (instruction == 'X'){ // PUT
+
+            // non-blocking
+            mech_new.pc_next += 1
+
             if (
                     (mech.status == MechStatus.CLOSE) &&
                     (grid_populated_bools_new[JSON.stringify(mech.index)] == false) // can drop atom here
@@ -308,6 +340,98 @@ function _simulate_one_cycle (
             else {
                 // add note
                 notes += 'fail/'
+            }
+        }
+        else if (instruction == 'G'){ // block-until-pickup
+            // Note: the mech will wait at this instruction until its location has a free atom to be picked up;
+            // it then picks up the free atom in the same frame, and proceed to its next instruction in the next frame;
+            // if the mech is closed when encountering this instruction (i.e. not able to pick up), this instruction is treated as no-op.
+
+            if (mech.status == MechStatus.CLOSE) { // treated as no-op; does not incur cost
+                mech_new.pc_next += 1
+
+                // add note
+                notes += 'no-op/'
+            }
+            else if (grid_populated_bools_new[JSON.stringify(mech.index)] == false) { // no atom for pick-up
+                mech_new.pc_next = mech_new.pc_next // blocked
+
+                // update cost
+                cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_BLOCKED
+
+                // add note
+                notes += 'blocked/'
+            }
+            else {
+                mech_new.pc_next += 1
+
+                // pick up the atom
+                // TODO: refactor the following code which is copied from the if statement for GET
+                mech_new.status = MechStatus.CLOSE
+                grid_populated_bools_new[JSON.stringify(mech.index)] = false
+
+                atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
+                    if ( isIdenticalGrid(atom.index, mech.index) && atom.status==AtomStatus.FREE ){
+                        var atom_new = theArray[i]
+                        atom_new.status = AtomStatus.POSSESSED
+                        atom_new.possessed_by = mech.id
+                        theArray[i] = atom_new
+                    }
+                });
+
+                // update cost
+                cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_GET
+
+                // add note
+                notes += 'success/'
+            }
+
+        }
+        else if (instruction == 'H'){ // block-until-drop
+            // the mech will wait at this instruction until its location is empty for drop-off;
+            // it then drops off the atom in possession in the same frame, and proceed to its next instruction in the next frame;
+            // if the mech is open when encountering this instruction
+            // (i.e. not possessing an atom for drop-off), this instruction is treated as no-op.
+
+
+            if (mech.status == MechStatus.OPEN) { // treated as no-op; does not incur cost
+                mech_new.pc_next += 1
+
+                // add note
+                notes += 'no-op/'
+            }
+            else if (grid_populated_bools_new[JSON.stringify(mech.index)] == true) { // can't drop because grid populated
+                mech_new.pc_next = mech_new.pc_next // blocked
+
+                // update cost
+                cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_BLOCKED
+
+                // add note
+                notes += 'blocked/'
+            }
+            else {
+                mech_new.pc_next += 1
+
+                // drop the atom
+                // TODO: refactor the following code which is copied from the if statement for PUT
+
+                mech_new.status = MechStatus.OPEN
+                grid_populated_bools_new[JSON.stringify(mech.index)] = true
+
+                atoms_new.forEach(function (atom: AtomState, i: number, theArray: AtomState[]) {
+                    if (atom.possessed_by == mech.id){
+                        var atom_new = theArray[i]
+                        atom_new.status = AtomStatus.FREE
+                        atom_new.possessed_by = null
+                        theArray[i] = atom_new
+                    }
+                });
+
+                // update cost
+                cost_accumulated_new += DYNAMIC_COSTS.SINGLETON_PUT
+
+                // add note
+                notes += 'success/'
             }
         }
 

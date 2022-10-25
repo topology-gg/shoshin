@@ -24,7 +24,7 @@ import { DIM } from '../src/constants/constants';
 export default function Home() {
 
     // Constants
-    const N_CYCLES = 200
+    const N_CYCLES = 50
     const ANIM_FRAME_LATENCY = 250
     const INIT_PROGRAM = '_'
     const MECH_INIT_X = 0
@@ -48,29 +48,16 @@ export default function Home() {
     const MIN_NUM_OPERATORS = 0
 
     // React states for mechs & programs
-    const [numMechs, setNumMechs] = useState(9)
+    const [numMechs, setNumMechs] = useState(2)
     const [programs, setPrograms] = useState<string[]>([
-        'Z,D,X,A,_,_,_,_,_,_,_',
-        '_,Z,D,D,X,A,A,_,_,_,_',
-        '_,_,Z,S,D,X,A,W,_,_,_',
-        '_,_,_,Z,S,D,D,X,A,A,W',
-        'Z,D,X,A',
-        'Z,D,X,A',
-        'Z,S,X,W,Z,S,D,X,A,W',
-        'Z,S,S,A,X,D,W,W',
-        'Z,S,S,D,X,A,W,W',
+        'Z,D,D,D,X,A,A,A',
+        'G,S,S,S,X,W,W,W',
     ]);
     const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([
         { x:0, y:0 },
-        { x:0, y:0 },
-        { x:0, y:0 },
-        { x:0, y:0 },
         { x:3, y:0 },
-        { x:3, y:1 },
-        { x:4, y:2 },
-        { x:4, y:1 },
-        { x:5, y:4 }
     ])
+
     const [instructionSets, setInstructionSets] = useState<string[][]>();
 
     // React states for operators
@@ -92,7 +79,7 @@ export default function Home() {
     // React state updates
     //
     const mechInitStates: MechState[] = mechInitPositions.map(
-        (pos, mech_i) => { return {status: MechStatus.OPEN, index: pos, id: `mech${mech_i}`, typ: MechType.SINGLETON} }
+        (pos, mech_i) => { return {status: MechStatus.OPEN, index: pos, id: `mech${mech_i}`, typ: MechType.SINGLETON, pc_next: 0} }
     )
     const atomInitStates: AtomState[] = ATOM_INIT_XY.map(
         function (xy,i) { return {status:AtomStatus.FREE, index:{x:xy.x, y:xy.y}, id:`atom${i}`, typ:AtomType.VANILLA, possessed_by:null} }
