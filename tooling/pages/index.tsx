@@ -20,6 +20,9 @@ import MechInput from '../src/components/MechInput';
 import { isIdenticalGrid, isGridOOB, areGridsNeighbors } from '../src/helpers/gridHelpers';
 import OperatorGridBg from '../src/components/OperatorGridBg';
 import { DIM } from '../src/constants/constants';
+import { useTranslation } from 'react-i18next';
+import "../config/i18n"
+import i18next from 'i18next';
 
 export default function Home() {
 
@@ -46,6 +49,8 @@ export default function Home() {
     const MIN_NUM_MECHS = 1
     const MAX_NUM_OPERATORS = 20
     const MIN_NUM_OPERATORS = 0
+
+    const { t } = useTranslation();
 
     // React states for mechs & programs
     const [numMechs, setNumMechs] = useState(2)
@@ -480,13 +485,16 @@ export default function Home() {
                     MovyMovy
                 </h2>
 
+                <button onClick={() => i18next.changeLanguage("en")}>🇬🇧 EN</button>
+                <button onClick={() => i18next.changeLanguage("cn")}>🇨🇳 CN</button>
+
                 <Tutorial />
 
                 <div style={{marginBottom:'1rem'}}>
                     <p style={{
                         padding:'0', textAlign:'center', verticalAlign:'middle',
                         margin:'0', height:'20px', lineHeight:'20px', fontSize:'0.9rem'}}
-                    > Frame# {animationFrame} </p>
+                    > {t("Frame")} # {animationFrame} </p>
 
                     <input
                         id="typeinp"
