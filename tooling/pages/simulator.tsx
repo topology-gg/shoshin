@@ -42,6 +42,7 @@ export default function simulator(
         if (operator.typ.name == 'Stir') base_cost += STATIC_COSTS.STIR
         else if (operator.typ.name == 'Shake') base_cost += STATIC_COSTS.SHAKE
         else if (operator.typ.name == 'Steam') base_cost += STATIC_COSTS.STEAM
+        else if (operator.typ.name == 'Smash') base_cost += STATIC_COSTS.SMASH
     })
 
     //
