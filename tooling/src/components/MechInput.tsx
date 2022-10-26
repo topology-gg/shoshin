@@ -6,7 +6,7 @@ interface MechInputProps {
     mechIndex: number;
     position: Grid;
     program: string;
-    animationFrame: number;
+    pc: number;
     onPositionChange: (mechIndex: number, position: Grid) => void;
     onProgramChange: (mechIndex: number, program: string) => void;
 }
@@ -15,12 +15,12 @@ const MechInput = ({
     mechIndex,
     position,
     program,
-    animationFrame,
+    pc,
     onPositionChange,
     onProgramChange,
 }: MechInputProps) => {
     const programLength = program.split(",").length;
-    const currentInstructionIndex = animationFrame % programLength;
+    const currentInstructionIndex = pc % programLength;
     return (
         <div key={`input-row-${mechIndex}`} className={styles.input_row}>
             <p

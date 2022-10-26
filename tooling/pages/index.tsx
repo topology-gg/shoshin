@@ -507,7 +507,7 @@ export default function Home() {
                                     mechIndex={mech_i}
                                     position={mechInitPositions[mech_i]}
                                     program={programs[mech_i]}
-                                    animationFrame={animationFrame}
+                                    pc={mechStates[mech_i].pc_next}
                                     onPositionChange={(index, position) => setMechInitPosition(index, position)}
                                     onProgramChange={(index, program) =>
                                         setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
