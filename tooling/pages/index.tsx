@@ -48,7 +48,7 @@ export default function Home() {
     const MIN_NUM_OPERATORS = 0
 
     // React states for mechs & programs
-    const [numMechs, setNumMechs] = useState(9)
+    const [numMechs, setNumMechs] = useState(10)
     const [programs, setPrograms] = useState<string[]>([
         'Z,D,X,A,_,_,_,_,_,_,_',
         '_,Z,D,D,X,A,A,_,_,_,_',
@@ -58,7 +58,8 @@ export default function Home() {
         'Z,D,X,A',
         'Z,S,X,W,Z,S,D,X,A,W',
         'Z,S,S,A,X,D,W,W',
-        'Z,S,S,D,X,A,W,W',
+        'Z,A,A,A,A,S,X,W,D,D,D,D',
+        '_,_,_,_,_,_,_,_,Z,S,X,W'
     ]);
     const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([
         { x:0, y:0 },
@@ -69,17 +70,19 @@ export default function Home() {
         { x:3, y:1 },
         { x:4, y:2 },
         { x:4, y:1 },
-        { x:5, y:4 }
+        { x:5, y:4 },
+        { x:6, y:5 }
     ])
     const [instructionSets, setInstructionSets] = useState<string[][]>();
 
     // React states for operators
-    const [numOperators, setNumOperators] = useState(4)
+    const [numOperators, setNumOperators] = useState(5)
     const [operatorStates, setOperatorStates] = useState<Operator[]> ([
         { input:[{x:1,y:0}, {x:2,y:0}], output:[{x:3,y:0}], typ:OPERATOR_TYPES.STIR},
         { input:[{x:1,y:1}, {x:2,y:1}], output:[{x:3,y:1}], typ:OPERATOR_TYPES.STIR},
         { input:[{x:4,y:0}, {x:4,y:1}], output:[{x:4,y:2}], typ:OPERATOR_TYPES.SHAKE},
         { input:[{x:3,y:3}, {x:4,y:3}, {x:5,y:3}], output:[{x:5,y:4},{x:6,y:4}], typ:OPERATOR_TYPES.STEAM},
+        { input:[{x:1,y:5}], output:[{x:2,y:5}, {x:3,y:5},{x:4,y:5},{x:5,y:5},{x:6,y:5}], typ:OPERATOR_TYPES.SMASH},
     ])
 
     // React states for animation control

@@ -1,1 +1,1 @@
-export const DIM = 10;
+export const DIM = 7;
