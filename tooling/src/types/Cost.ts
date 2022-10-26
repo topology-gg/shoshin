@@ -3,6 +3,7 @@ export const STATIC_COSTS:  {[key:string] : number} = {
     STIR:  250,
     SHAKE: 500,
     STEAM: 750,
+    SMASH: 1000,
     SINGLETON: 150
 }
 

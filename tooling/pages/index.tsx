@@ -61,12 +61,13 @@ export default function Home() {
     const [instructionSets, setInstructionSets] = useState<string[][]>();
 
     // React states for operators
-    const [numOperators, setNumOperators] = useState(4)
+    const [numOperators, setNumOperators] = useState(5)
     const [operatorStates, setOperatorStates] = useState<Operator[]> ([
         { input:[{x:1,y:0}, {x:2,y:0}], output:[{x:3,y:0}], typ:OPERATOR_TYPES.STIR},
         { input:[{x:1,y:1}, {x:2,y:1}], output:[{x:3,y:1}], typ:OPERATOR_TYPES.STIR},
         { input:[{x:4,y:0}, {x:4,y:1}], output:[{x:4,y:2}], typ:OPERATOR_TYPES.SHAKE},
         { input:[{x:3,y:3}, {x:4,y:3}, {x:5,y:3}], output:[{x:5,y:4},{x:6,y:4}], typ:OPERATOR_TYPES.STEAM},
+        { input:[{x:1,y:5}], output:[{x:2,y:5}, {x:3,y:5},{x:4,y:5},{x:5,y:5},{x:6,y:5}], typ:OPERATOR_TYPES.SMASH},
     ])
 
     // React states for animation control
