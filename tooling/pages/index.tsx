@@ -508,8 +508,8 @@ export default function Home() {
                 </div>
 
                 <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'1rem'}}>
-                    <button style={makeshift_button_style} onClick={() => handleMechClick('+')}> {'new mech'} </button>
-                    <button style={makeshift_button_style} onClick={() => handleMechClick('-')}> {'remove mech'} </button>
+                    <button style={makeshift_button_style} onClick={() => handleMechClick('+')}>{t('new mech')}</button>
+                    <button style={makeshift_button_style} onClick={() => handleMechClick('-')}>{t('remove mech')} </button>
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 

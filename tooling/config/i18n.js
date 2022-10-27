@@ -11,6 +11,7 @@ const resources = {
     cn: {
         translation: {
             Frame: "框架",
+            "new mech": "新苔蘚",
         },
     },
 };
