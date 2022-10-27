@@ -22,7 +22,7 @@ import OperatorGridBg from '../src/components/OperatorGridBg';
 import { DIM } from '../src/constants/constants';
 import { useTranslation } from 'react-i18next';
 import "../config/i18n"
-import i18next from 'i18next';
+import LanguageSelector from '../src/components/LanguageSelector';
 
 export default function Home() {
 
@@ -485,8 +485,7 @@ export default function Home() {
                     MovyMovy
                 </h2>
 
-                <button onClick={() => i18next.changeLanguage("en")}>🇬🇧 EN</button>
-                <button onClick={() => i18next.changeLanguage("cn")}>🇨🇳 CN</button>
+                <LanguageSelector />
 
                 <Tutorial />
 
@@ -513,15 +512,21 @@ export default function Home() {
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STIR')}> {'new &'} </button>
-
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SHAKE')}> {'new %'} </button>
-
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}> {'new ~'} </button>
-
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SMASH')}> {'new #'} </button>
-
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('-', '')}> {'remove op'} </button>
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STIR')}>
+                      {t('new operation', {operation: '&'})}
+                    </button>
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SHAKE')}>
+                      {t('new operation', {operation: '%'})}
+                    </button>
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}> 
+                      {t('new operation', {operation: '~'})}
+                    </button>
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SMASH')}>
+                      {t('new operation', {operation: '#'})}
+                    </button>
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('-', '')}>
+                      {t('remove op')}
+                    </button>
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
