@@ -10,6 +10,7 @@ import Button from "@mui/material/Button";
 import { Box } from "@mui/material";
 import styles from '../styles/Home.module.css'
 import { OPERATOR_TYPES } from "../src/types/Operator"
+import { useTranslation } from "react-i18next";
 
 export default function Tutorial() {
     const FORMULA_LI_STYLE: CSSProperties = {
@@ -21,6 +22,8 @@ export default function Tutorial() {
     const CONTENT_LI_STYLE: CSSProperties = {
         marginTop: "0.5rem",
     };
+
+    const { t } = useTranslation();
 
     const [open, setOpen] = useState<boolean>(false);
 
@@ -62,10 +65,10 @@ export default function Tutorial() {
                         }}
                     >
                         <li style={CONTENT_LI_STYLE}>
-                            Layer 1 blockchains assert identity by capital contribution - pay to mint. Layer 2 blockchains, with new affordance in compute capacity, would assert identity by skill verification - solve to mint.
+                            {t("tutorial.thesisLine1")}
                         </li>
                         <li style={CONTENT_LI_STYLE}>
-                            MovyMovy is a puzzle about visual & parallel assembly programming. Place & program the little robots ("mechs"), and place the operators that execute formulas, to transport & transmute flavorful atoms from Faucet to Sink. Solutions are ranked by throughput and cost.
+                            {t("tutorial.thesisLine2")}
                         </li>
                     </ol>
 
