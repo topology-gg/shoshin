@@ -1,7 +1,7 @@
 import UnitState, {BgStatus, BorderStatus} from '../src/types/UnitState';
 import styles from '../styles/Unit.module.css';
 
-export default function Unit({ state }) {
+export default function Unit({ state, handleMouseOver, handleMouseOut }) {
 
     // guardrail
     if (!state) {return <></>}
@@ -68,7 +68,10 @@ export default function Unit({ state }) {
 
     // Render
     return (
-        <div className={`grid ${styles.unit} ${className}`}>
+        <div
+            className={`grid ${styles.unit} ${className}`}
+            onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}
+        >
             {Array.from({length: nuclei}).map((_, i) =>
                 <div key={`nucleus${i}`} className={`${styles.nucleus}`} />
             )}

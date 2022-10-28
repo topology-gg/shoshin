@@ -103,7 +103,10 @@ export default function Summary ({ frames, n_cycles }) {
                         border_status: null,
                         unit_text: UnitText.EMPTY,
                         unit_id: null,
-                }}/>
+                    }}
+                    handleMouseOut={() => {}}
+                    handleMouseOver={() => {}}
+                />
                 <p>in {n_cycles} frames:</p>
                 <p style={makeshift_number_style}>{total_delivery}</p>
             </div>
@@ -116,7 +119,10 @@ export default function Summary ({ frames, n_cycles }) {
                         border_status: null,
                         unit_text: UnitText.EMPTY,
                         unit_id: null,
-                }}/>
+                    }}
+                    handleMouseOut={() => {}}
+                    handleMouseOver={() => {}}
+                />
                 <p>delivery:</p>
                 <p style={makeshift_number_style}>{average_latency_str}</p>
             </div>
@@ -129,7 +135,10 @@ export default function Summary ({ frames, n_cycles }) {
                         border_status: null,
                         unit_text: UnitText.EMPTY,
                         unit_id: null,
-                }}/>
+                    }}
+                    handleMouseOut={() => {}}
+                    handleMouseOver={() => {}}
+                />
                 <p>delivery:</p>
                 <p style={makeshift_number_style}>{average_dynamic_cost_str}</p>
             </div>

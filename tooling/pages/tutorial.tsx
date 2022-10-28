@@ -140,6 +140,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                             ,
                             <Unit
@@ -149,6 +151,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                             )
                             <p style={{marginLeft:'0.5rem', marginRight:'0.5rem'}}>=</p>
@@ -159,6 +163,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                         </li>
 
@@ -172,6 +178,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                             ,
                             <Unit
@@ -181,6 +189,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                             )
                             <p style={{marginLeft:'0.5rem', marginRight:'0.5rem'}}>=</p>
@@ -191,6 +201,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                         </li>
 
@@ -204,6 +216,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                             ,
                             <Unit
@@ -213,6 +227,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                             ,
                             <Unit
@@ -222,6 +238,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                             )
                             <p style={{marginLeft:'0.5rem', marginRight:'0.5rem'}}>=</p>
@@ -232,6 +250,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />{" "}
                             ,
                             <Unit
@@ -241,6 +261,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
 
                         </li>
@@ -255,6 +277,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                             )
                             <p style={{marginLeft:'0.5rem', marginRight:'0.5rem'}}>=</p>
@@ -265,6 +289,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />{" "}
                             ,
                             <Unit
@@ -274,6 +300,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                             {" "}
                             ,
@@ -284,6 +312,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />{" "}
                             ,
                             <Unit
@@ -293,6 +323,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                             ,
                             <Unit
@@ -302,6 +334,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
 
                         </li>
@@ -333,6 +367,8 @@ export default function Tutorial() {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null,
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                             to Sink.
                         </li>
