@@ -76,6 +76,9 @@ export default function Home() {
     const [frames, setFrames] = useState<Frame[]>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
 
+    // React states for UI
+    const [gridHovering, setGridHovering] = useState<[string, string]>(['-','-'])
+
     //
     // React state updates
     //
@@ -444,6 +447,15 @@ export default function Home() {
 
     const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem'}
 
+    function handleMouseOver (i: number,j: number) {
+        const gridString: [string, string] = [i.toString(), j.toString()]
+        setGridHovering (gridString)
+    }
+
+    function handleMouseOut () {
+        setGridHovering (['-', '-'])
+    }
+
     // Render
     return (
         <div className={styles.container}>
@@ -497,6 +509,10 @@ export default function Home() {
 
                     <button style={makeshift_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? 'Run' : 'Pause'} </button>
                     <button style={makeshift_button_style} onClick={() => handleClick('Stop')}> {'Stop'} </button>
+
+                    <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
+
+                    <div style={{fontSize:'0.8rem'}}>hovering:({gridHovering[0]},{gridHovering[1]})</div>
                 </div>
 
                 <div style={{display:'flex', flexDirection:'row'}}>
@@ -615,6 +631,8 @@ export default function Home() {
                                         <Unit
                                             key={`unit-${j}-${i}`}
                                             state={unitStates[j][i]}
+                                            handleMouseOver={() => handleMouseOver(i,j)}
+                                            handleMouseOut={() => handleMouseOut()}
                                         />
                                     ))
                                 }
