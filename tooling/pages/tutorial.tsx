@@ -87,8 +87,17 @@ export default function Tutorial() {
                     >
                         <li style={CONTENT_LI_STYLE}>
                             Only Singleton mechanism ("mech") is available,
-                            whose instruction set is [W,A,S,D] for movement, Z
-                            for pick-up, X for put-down.
+                            whose instruction set is [<strong>W</strong>,<strong>A</strong>,<strong>S</strong>,<strong>D</strong>] for movement, <strong>Z</strong> for pick-up, <strong>X</strong> for drop, <strong>G</strong> for block-until-pick-up, and <strong>H</strong> for block-until-drop
+                        </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            More on <strong>G</strong>: the mech will wait at this instruction until its location has a free atom to be picked up.
+                            It then picks up the free atom in the same frame, and proceed to its next instruction in the next frame.
+                            If the mech is closed when encountering this instruction (i.e. not able to pick up), this instruction is treated as no-op.
+                        </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            More on <strong>H</strong>: the mech will wait at this instruction until its location is empty for drop-off.
+                            It then drops off the atom in possession in the same frame, and proceed to its next instruction in the next frame.
+                            If the mech is open when encountering this instruction (i.e. not possessing an atom for drop-off), this instruction is treated as no-op.
                         </li>
                         <li style={CONTENT_LI_STYLE}>
                             _ as instruction means no-operation.

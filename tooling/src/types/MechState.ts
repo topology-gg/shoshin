@@ -7,6 +7,7 @@ export enum MechStatus {
 
 export enum MechType {
     SINGLETON = 'SINGLETON',
+    DUO = 'DUO', // preparing for the next mech type
 }
 
 export default interface MechState {
@@ -14,4 +15,5 @@ export default interface MechState {
     typ: MechType
     status: MechStatus
     index: Grid
+    pc_next: number
 }
