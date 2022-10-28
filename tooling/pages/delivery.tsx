@@ -60,6 +60,8 @@ export default function Delivery({ delivered, cost_accumulated }) {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                         </div>
                     )
