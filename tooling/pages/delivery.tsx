@@ -2,14 +2,17 @@ import AtomState, { AtomStatus, AtomType } from '../src/types/AtomState';
 import Unit from './unit';
 import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitState';
 import styles from '../styles/Delivery.module.css'
+import { useTranslation } from 'react-i18next';
 
 export default function Delivery({ delivered, cost_accumulated }) {
 
+    const { t } = useTranslation();
+
     if (!delivered) {
-        return <>Accumulated cost: n/a | Delivered: n/a</>
+        return <>{t('delivery.accumulatedCost')}: n/a | {t('delivery.delivered')}: n/a</>
     }
     else if (delivered.length == 0) {
-        return <>Accumulated cost: {cost_accumulated} / Delivered: 0</>
+        return <>{t('delivery.accumulatedCost')}: {cost_accumulated} / {t('delivery.delivered')}: 0</>
     }
 
     let counts: { [key: string] : number } = {}
@@ -23,7 +26,7 @@ export default function Delivery({ delivered, cost_accumulated }) {
 
     return (
         <>
-            Accumulated cost: {cost_accumulated} | Delivered
+            {t('delivery.accumulatedCost')}: {cost_accumulated} | {t('delivery.delivered')}
             {
                 Object.keys(counts).map(function(key: string,i: number){
                     // const bg_status = key == AtomType.HAZELNUT ? BgStatus.ATOM_HAZELNUT_FREE : BgStatus.ATOM_VANILLA_FREE
@@ -60,6 +63,8 @@ export default function Delivery({ delivered, cost_accumulated }) {
                                     unit_text: UnitText.EMPTY,
                                     unit_id: null
                                 }}
+                                handleMouseOut={() => {}}
+                                handleMouseOver={() => {}}
                             />
                         </div>
                     )
