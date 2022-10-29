@@ -493,7 +493,7 @@ export default function Home() {
                     <p style={{
                         padding:'0', textAlign:'center', verticalAlign:'middle',
                         margin:'0', height:'20px', lineHeight:'20px', fontSize:'0.9rem'}}
-                    > {t("Frame")} # {animationFrame} </p>
+                    > {t("frame")} # {animationFrame} </p>
 
                     <input
                         id="typeinp"
@@ -507,37 +507,37 @@ export default function Home() {
                 </div>
 
                 <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'1rem'}}>
-                    <button style={makeshift_button_style} onClick={() => handleMechClick('+')}>{t('new mech')}</button>
-                    <button style={makeshift_button_style} onClick={() => handleMechClick('-')}>{t('remove mech')} </button>
+                    <button style={makeshift_button_style} onClick={() => handleMechClick('+')}>{t('newMech')}</button>
+                    <button style={makeshift_button_style} onClick={() => handleMechClick('-')}>{t('removeMech')} </button>
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STIR')}>
-                      {t('new operation', {operation: '&'})}
+                      {t('newOperation', {operation: '&'})}
                     </button>
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SHAKE')}>
-                      {t('new operation', {operation: '%'})}
+                      {t('newOperation', {operation: '%'})}
                     </button>
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}> 
-                      {t('new operation', {operation: '~'})}
+                      {t('newOperation', {operation: '~'})}
                     </button>
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SMASH')}>
-                      {t('new operation', {operation: '#'})}
+                      {t('newOperation', {operation: '#'})}
                     </button>
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('-', '')}>
-                      {t('remove op')}
+                      {t('removeOp')}
                     </button>
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                    <button style={makeshift_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? 'Run' : 'Pause'} </button>
-                    <button style={makeshift_button_style} onClick={() => handleClick('Stop')}> {'Stop'} </button>
-                    <button style={makeshift_button_style} onClick={() => handleClick('PrevFrame')}> {'-1 frame'} </button>
-                    <button style={makeshift_button_style} onClick={() => handleClick('NextFrame')}> {'+1 frame'} </button>
+                    <button style={makeshift_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? t('run') : t('pause')} </button>
+                    <button style={makeshift_button_style} onClick={() => handleClick('Stop')}> {t('stop')} </button>
+                    <button style={makeshift_button_style} onClick={() => handleClick('PrevFrame')}> {t('decrementFrame')} </button>
+                    <button style={makeshift_button_style} onClick={() => handleClick('NextFrame')}> {t('incrementFrame')} </button>
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                    <div style={{fontSize:'0.8rem'}}>hovering:({gridHovering[0]},{gridHovering[1]})</div>
+                    <div style={{fontSize:'0.8rem'}}>{t('hovering')}:({gridHovering[0]},{gridHovering[1]})</div>
                 </div>
 
                 <div style={{display:'flex', flexDirection:'row'}}>
