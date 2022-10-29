@@ -435,6 +435,10 @@ function _simulate_one_cycle (
                 notes += 'success/'
             }
         }
+        else if (instruction == '_'){
+            // non-blocking
+            mech_new.pc_next += 1
+        }
 
         // record the new mech
         mechs_new.push (mech_new)
