@@ -329,9 +329,11 @@ export default function Home() {
     function handleClick (mode: string){
 
         if (mode == 'NextFrame' && animationState != 'Run') {
+            if (!frames) return;
             setAnimationFrame (prev => prev < N_CYCLES ? prev + 1 : prev)
         }
         else if (mode == 'PrevFrame' && animationState != 'Run') {
+            if (!frames) return;
             setAnimationFrame (prev => prev > 0 ? prev - 1 : prev)
         }
 
@@ -517,8 +519,8 @@ export default function Home() {
 
                     <button style={makeshift_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? 'Run' : 'Pause'} </button>
                     <button style={makeshift_button_style} onClick={() => handleClick('Stop')}> {'Stop'} </button>
-                    <button style={makeshift_button_style} onClick={() => handleClick('NextFrame')}> {'+1 frame'} </button>
                     <button style={makeshift_button_style} onClick={() => handleClick('PrevFrame')}> {'-1 frame'} </button>
+                    <button style={makeshift_button_style} onClick={() => handleClick('NextFrame')}> {'+1 frame'} </button>
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
