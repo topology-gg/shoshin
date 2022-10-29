@@ -1,6 +1,7 @@
 import React from "react";
 import Grid from "../types/Grid";
 import styles from "../../styles/Home.module.css";
+import { useTranslation } from "react-i18next";
 
 interface MechInputProps {
     mechIndex: number;
@@ -19,6 +20,9 @@ const MechInput = ({
     onPositionChange,
     onProgramChange,
 }: MechInputProps) => {
+
+    const { t } = useTranslation();
+
     const programLength = program.split(",").length;
     const currentInstructionIndex = animationFrame % programLength;
     return (
@@ -31,7 +35,7 @@ const MechInput = ({
                     lineHeight: "20px",
                     width: '2.5rem'
                 }}
-            >{`mech${mechIndex}`}</p>
+            >{t("mech")}{mechIndex}</p>
             <input
                 className={styles.program}
                 onChange={(event) => {

@@ -44,7 +44,7 @@ export default function Tutorial() {
             }}
         >
             <Button variant="outlined" onClick={handleOpen}>
-                How to play
+                {t("How to play")}
             </Button>
             <Modal open={open} onClose={handleClose}>
                 <Box sx={{ p: 2, fontFamily: "var(--font-family-secondary)" }}>
@@ -55,7 +55,7 @@ export default function Tutorial() {
                             marginBottom: "0",
                         }}
                     >
-                        Thesis & Theme
+                        {t("tutorial.thesis-theme")}
                     </p>
                     <ol
                         style={{
@@ -79,7 +79,7 @@ export default function Tutorial() {
                             marginBottom: "0",
                         }}
                     >
-                        Instructions
+                        {t("tutorial.instructions")}
                     </p>
                     <ol
                         style={{

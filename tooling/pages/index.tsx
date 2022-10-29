@@ -459,7 +459,7 @@ export default function Home() {
         setAnimationFrame (slide_val)
     }
 
-    const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem'}
+    const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem', height:'1.5rem'}
 
     // Render
     return (
@@ -472,7 +472,7 @@ export default function Home() {
 
             <main className={styles.main}>
                 <h2 className={styles.title}>
-                    MovyMovy
+                    {t("MovyMovy")}
                 </h2>
 
                 <LanguageSelector />
@@ -503,16 +503,16 @@ export default function Home() {
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STIR')}>
-                      {t('new operation', {operation: '&'})}
+                      {t('new op &', {operation: '&'})}
                     </button>
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SHAKE')}>
-                      {t('new operation', {operation: '%'})}
+                      {t('new op %', {operation: '%'})}
                     </button>
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}> 
-                      {t('new operation', {operation: '~'})}
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}>
+                      {t('new op ~', {operation: '~'})}
                     </button>
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SMASH')}>
-                      {t('new operation', {operation: '#'})}
+                      {t('new op #', {operation: '#'})}
                     </button>
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('-', '')}>
                       {t('remove op')}
@@ -520,8 +520,8 @@ export default function Home() {
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                    <button style={makeshift_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? 'Run' : 'Pause'} </button>
-                    <button style={makeshift_button_style} onClick={() => handleClick('Stop')}> {'Stop'} </button>
+                    <button style={makeshift_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? t('Run') : t('Pause')} </button>
+                    <button style={makeshift_button_style} onClick={() => handleClick('Stop')}> {t('Stop')} </button>
                 </div>
 
                 <div style={{display:'flex', flexDirection:'row'}}>
@@ -547,7 +547,7 @@ export default function Home() {
                     {
                             Array.from({length:numOperators}).map ((_,operator_i) => (
                                 <div key={`input-row-${operator_i}`} className={styles.input_row}>
-                                    <p className={styles.input_name}>{operatorStates[operator_i].typ.name}</p>
+                                    <p className={styles.input_name}>{t(operatorStates[operator_i].typ.name)}</p>
 
                                     {
                                         Array.from({length:operatorStates[operator_i].input.length}).map((_,input_i) => (
