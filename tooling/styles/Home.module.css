@@ -43,9 +43,13 @@
 }
 
 .title {
-  margin-bottom: 2rem;
-  line-height: 1.15;
-  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.title h2{
+    line-height: 1.15;
+    font-size: 2rem;
+    margin-bottom: 0;
 }
 
 .title,

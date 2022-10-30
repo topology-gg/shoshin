@@ -481,9 +481,11 @@ export default function Home() {
             </Head>
 
             <main className={styles.main}>
-                <h2 className={styles.title}>
-                    {t("MovyMovy")}
-                </h2>
+                <div className={styles.title}>
+                    <h2>{t("MovyMovy")}</h2>
+                    <p>{t("Subtitle")}</p>
+                </div>
+
 
                 <LanguageSelector />
 
