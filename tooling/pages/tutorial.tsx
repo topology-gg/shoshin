@@ -116,6 +116,9 @@ export default function Tutorial() {
                         <li style={CONTENT_LI_STYLE}>
                             {t('tutorial.instructionsLine6')}
                         </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.instructionsLine7')}
+                        </li>
                     </ol>
 
                     <p
@@ -363,8 +366,24 @@ export default function Tutorial() {
                         }}
                     >
                         <li style={FORMULA_LI_STYLE}>
+                            <Trans t={t} i18nKey="tutorial.goalAffordance">
+                                With Faucet replenishing
+                                <Unit
+                                    state={{
+                                        bg_status: BgStatus.ATOM_VANILLA_FREE,
+                                        border_status: null,
+                                        unit_text: UnitText.EMPTY,
+                                        unit_id: null,
+                                    }}
+                                    handleMouseOut={() => {}}
+                                    handleMouseOver={() => {}}
+                                />
+                                at 1 unit per frame,
+                            </Trans>
+                        </li>
+                        <li style={FORMULA_LI_STYLE}>
                             <Trans t={t} i18nKey="tutorial.goalDeliver">
-                                Deliver
+                                Produce and deliver
                                 <Unit
                                     state={{
                                         bg_status: BgStatus.ATOM_SAFFRON_FREE,

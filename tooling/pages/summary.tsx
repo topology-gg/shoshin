@@ -96,10 +96,10 @@ export default function Summary ({ frames, n_cycles }) {
 
     return (
         <>
-            <p style={{textDecoration: 'underline'}}>{t('summary.title')}</p>
+            <p>{t('summary.title')}</p>
 
             <div style={{display:'flex',flexDirection:'row'}}>
-                <p>{t('summary.total')}</p>
+                <p>{t('summary.totalPre', { frames: n_cycles })}</p>
                 <Unit
                     state={{
                         bg_status: target_bg,
@@ -112,10 +112,11 @@ export default function Summary ({ frames, n_cycles }) {
                 />
                 <p>{t('summary.inFrames', { frames: n_cycles })}:</p>
                 <p style={makeshift_number_style}>{total_delivery}</p>
+                <p style={{marginLeft:'0.3rem'}}>{t('summary.totalPost')}</p>
             </div>
 
             <div style={{display:'flex',flexDirection:'row'}}>
-                <p>{t('summary.averageLatency')}</p>
+                <p>{t('summary.averageLatencyPre')}</p>
                 <Unit
                     state={{
                         bg_status: target_bg,
@@ -126,12 +127,12 @@ export default function Summary ({ frames, n_cycles }) {
                     handleMouseOut={() => {}}
                     handleMouseOver={() => {}}
                 />
-                <p>{t('summary.delivery')}:</p>
+                <p>{t('summary.averageLatencyPost')}:</p>
                 <p style={makeshift_number_style}>{average_latency_str}</p>
             </div>
 
             <div style={{display:'flex',flexDirection:'row'}}>
-                <p>{t('summary.averageDynamicCost')}</p>
+                <p>{t('summary.averageDynamicCostPre')}</p>
                 <Unit
                     state={{
                         bg_status: target_bg,
@@ -142,7 +143,7 @@ export default function Summary ({ frames, n_cycles }) {
                     handleMouseOut={() => {}}
                     handleMouseOver={() => {}}
                 />
-                <p>{t('summary.delivery')}:</p>
+                <p>{t('summary.averageDynamicCostPost')}:</p>
                 <p style={makeshift_number_style}>{average_dynamic_cost_str}</p>
             </div>
 
