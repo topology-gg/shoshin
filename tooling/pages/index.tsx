@@ -27,7 +27,7 @@ import LanguageSelector from '../src/components/LanguageSelector';
 export default function Home() {
 
     // Constants
-    const N_CYCLES = 200
+    const N_CYCLES = 150
     const ANIM_FRAME_LATENCY = 250
     const INIT_PROGRAM = '_'
     const MECH_INIT_X = 0
@@ -53,14 +53,28 @@ export default function Home() {
     const { t } = useTranslation();
 
     // React states for mechs & programs
-    const [numMechs, setNumMechs] = useState(2)
+    const [numMechs, setNumMechs] = useState(9)
     const [programs, setPrograms] = useState<string[]>([
-        'Z,D,D,D,X,A,A,A',
+        'Z,D,X,A,Z,D,D,X,A,A',
+        '_,Z,S,D,H,A,W,G,S,D,D,H,A,A,W',
+        'G,D,H,A,S,G,D,H,A,W',
+        'G,S,X,W,G,S,D,X,A,W',
         'G,S,S,S,X,W,W,W',
+        'G,A,A,A,A,S,X,W,D,D,D,D',
+        'G,S,X,W',
+        'G,S,S,H,W,W',
+        'G,S,D,D,D,D,X,A,A,A,W,Z,S,D,D,D,X,A,A,W,Z,S,D,D,X,A,W,Z,S,D,X,A,A,A,A,W',
     ]);
     const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([
         { x:0, y:0 },
+        { x:0, y:0 },
         { x:3, y:0 },
+        { x:4, y:2 },
+        { x:3, y:0 },
+        { x:5, y:4 },
+        { x:6, y:5 },
+        { x:6, y:4 },
+        { x:2, y:5 },
     ])
 
     const [instructionSets, setInstructionSets] = useState<string[][]>();
@@ -250,6 +264,7 @@ export default function Home() {
 
     // Handle click event for adding/removing mechs
     function handleMechClick (mode: string){
+        if (animationState != 'Stop') return; // only when in Stop mode can player add/remove mechs
         if (mode === '+' && numMechs < MAX_NUM_MECHS) {
             setNumMechs (prev => prev+1)
             setMechInitPositions(
@@ -545,19 +560,34 @@ export default function Home() {
                 <div style={{display:'flex', flexDirection:'row'}}>
                     <div className={styles.inputs} style={{borderRight:'1px solid #333333'}}>
                         {
-                            Array.from({length:numMechs}).map ((_,mech_i) => (
-                                <MechInput
-                                    key={`mech-input-${mech_i}`}
-                                    mechIndex={mech_i}
-                                    position={mechInitPositions[mech_i]}
-                                    program={programs[mech_i]}
-                                    pc={mechStates[mech_i].pc_next}
-                                    onPositionChange={(index, position) => setMechInitPosition(index, position)}
-                                    onProgramChange={(index, program) =>
-                                        setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
-                                    }
-                                />
-                            ))
+                            (animationState=='Stop') ?
+                                Array.from({length:numMechs}).map ((_,mech_i) => (
+                                    <MechInput
+                                        key={`mech-input-${mech_i}`}
+                                        mechIndex={mech_i}
+                                        position={mechInitPositions[mech_i]}
+                                        program={programs[mech_i]}
+                                        pc={0}
+                                        onPositionChange={(index, position) => setMechInitPosition(index, position)}
+                                        onProgramChange={(index, program) =>
+                                            setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
+                                        }
+                                    />
+                                ))
+                            :
+                                Array.from({length:numMechs}).map ((_,mech_i) => (
+                                    <MechInput
+                                        key={`mech-input-${mech_i}`}
+                                        mechIndex={mech_i}
+                                        position={mechInitPositions[mech_i]}
+                                        program={programs[mech_i]}
+                                        pc={mechStates[mech_i].pc_next}
+                                        onPositionChange={(index, position) => setMechInitPosition(index, position)}
+                                        onProgramChange={(index, program) =>
+                                            setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
+                                        }
+                                    />
+                                ))
                         }
                     </div>
 
@@ -658,7 +688,7 @@ export default function Home() {
                                         <Unit
                                             key={`unit-${j}-${i}`}
                                             state={unitStates[j][i]}
-                                            handleMouseOver={() => handleMouseOver(i,j)}
+                                            handleMouseOver={() => handleMouseOver(j,i)}
                                             handleMouseOut={() => handleMouseOut()}
                                         />
                                     ))
