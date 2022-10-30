@@ -138,7 +138,7 @@ export default function Tutorial() {
                         }}
                     >
                         <li style={FORMULA_LI_STYLE}>
-                            <p className={styles.input_name}>{'Stir'}</p>
+                            <p className={styles.input_name}>{t('Stir ')}</p>
                             {OPERATOR_TYPES.STIR.symbol}(
                             <Unit
                                 state={{
@@ -176,7 +176,7 @@ export default function Tutorial() {
                         </li>
 
                         <li style={FORMULA_LI_STYLE}>
-                            <p className={styles.input_name}>{'Shake'}</p>
+                            <p className={styles.input_name}>{t('Shake')}</p>
                             {OPERATOR_TYPES.SHAKE.symbol}(
                             <Unit
                                 state={{
@@ -214,7 +214,7 @@ export default function Tutorial() {
                         </li>
 
                         <li style={FORMULA_LI_STYLE}>
-                            <p className={styles.input_name}>{'Steam'}</p>
+                            <p className={styles.input_name}>{t('Steam')}</p>
                             {OPERATOR_TYPES.STEAM.symbol}(
                             <Unit
                                 state={{
@@ -275,7 +275,7 @@ export default function Tutorial() {
                         </li>
 
                         <li style={FORMULA_LI_STYLE}>
-                            <p className={styles.input_name}>{'Smash'}</p>
+                            <p className={styles.input_name}>{t('Smash')}</p>
                             {OPERATOR_TYPES.SMASH.symbol}(
                             <Unit
                                 state={{

@@ -93,12 +93,12 @@ const resources = {
                     "<挪挪>是一種結合組合語言和並行處理的多維度優化謎題。擺放和編程小機器們，然後擺放配方，將水龍頭 (Faucet) 產出的原料風味原子轉換成目標風味原子，投遞於水槽 (Sink)。玩家提交的解決方案將以吞吐量和成本進行排名。",
                 instructions: "玩法",
                 instructionsLine1:
-                    'Only Singleton mechanism ("mech") is available, whose instruction set is [<1>W</1>,<3>A</3>,<5>S</5>,<5>D</5>] for movement, <7>Z</7> for pick-up, <9>X</9> for drop, <11>G</11> for block-until-pick-up, and <13>H</13> for block-until-drop',
+                    '目前只有單例機械 (Singleton) 可用，其指令集：[<1>W</1>,<3>A</3>,<5>S</5>,<5>D</5>] 為移動 (每幀移動一格)、<7>Z</7> 為撿起原子、<9>X</9> 為放下原子、<11>G</11> 為阻塞程序直到能夠撿起原子，還有 <13>H</13> 為阻塞程序直到能夠放下原子。',
                 instructionsLine2:
-                    "More on <1>G</1>: the mech will wait at this instruction until its location has a free atom to be picked up. It then picks up the free atom in the same frame, and proceed to its next instruction in the next frame. If the mech is closed when encountering this instruction (i.e. not able to pick up), this instruction is treated as no-op.",
+                    "補充說明 <1>G</1> 指令: 機械程序將阻塞於此指令，直到機械位置的板上有能夠被撿起的原子。當條件滿足，機械將於同幀撿起原子，並取消阻塞。如果執行此指令時機械處於關閉狀態（即不可能再撿起更多原子），此指令將形同無操作，不會阻塞。",
                 instructionsLine3:
-                    "More on <1>H</1>: the mech will wait at this instruction until its location is empty for drop-off. It then drops off the atom in possession in the same frame, and proceed to its next instruction in the next frame. If the mech is open when encountering this instruction (i.e. not possessing an atom for drop-off), this instruction is treated as no-op.",
-                instructionsLine4: "_ 為無操作 (no operation)。",
+                    "補充說明 <1>H</1> 指令: 機械程序將阻塞於此指令，直到機械位置的板上產生空缺能夠容納原子。當條件滿足，機械將於同幀放下原子，並取消阻塞。如果執行此指令時機械處於開放狀態（即無原子可放），此指令將形同無操作，不會阻塞。",
+                instructionsLine4: "_ 指令為無操作 (no operation)。",
                 instructionsLine5:
                     "在運行過程中，每個機械將循環執行其自身程序（指令序列）。",
                 instructionsLine6:
