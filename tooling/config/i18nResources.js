@@ -109,7 +109,7 @@ const resources = {
                     "水龍頭在板上以 \"F\" 標示；水槽則以 \"S\" 標示。",
                 formulaList: "配方列表",
                 goal: "目標",
-                goalAffordance: "利用水龍頭以每幀一單位添補 <1 /> 的特性，",
+                goalAffordance: "利用水龍頭以每幀添補一單位 <1 /> 的特性，",
                 goalDeliver: "製造 <1 /> 並遞送至水槽。",
                 goalLine2: "優化解決方案的延遲和成本。",
             },
