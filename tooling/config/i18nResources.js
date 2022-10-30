@@ -24,7 +24,7 @@ const resources = {
                 thesisLine1:
                     "Layer 1 blockchains assert identity by capital contribution - pay to mint. Layer 2 blockchains, with new affordance in compute capacity, would assert identity by skill verification - solve to mint.",
                 thesisLine2:
-                    'MovyMovy is a puzzle about visual & parallel assembly programming. Place & program the little robots ("mechs"), and place the operators that execute formulas, to transport & transmute flavorful atoms from Faucet to Sink. Solutions are ranked by throughput and cost.',
+                    'MovyMovy is a puzzle about visual & parallel assembly programming. Place & program the little robots ("mechs") on the board, and place the operators that execute formulas, to transport & transmute flavorful atoms from Faucet to Sink. Solutions are ranked by throughput and cost.',
                 instructions: "Instructions",
                 instructionsLine1:
                     'Only Singleton mechanism ("mech") is available, whose instruction set is [<1>W</1>,<3>A</3>,<5>S</5>,<5>D</5>] for movement, <7>Z</7> for pick-up, <9>X</9> for drop, <11>G</11> for block-until-pick-up, and <13>H</13> for block-until-drop',
@@ -90,7 +90,7 @@ const resources = {
                 thesisLine1:
                     "在第1層區塊鏈上，人們透過貢獻資本來鑄造身份。第2層區塊鏈具備擴展的運算容量，人們可以通過驗證技能來鑄造身份。",
                 thesisLine2:
-                    "<挪挪>是一種結合組合語言和並行處理的多維度優化謎題。擺放和編程小機器們，然後擺放配方，將水龍頭 (Faucet) 產出的原料風味原子轉換成目標風味原子，投遞於水槽 (Sink)。玩家提交的解決方案將以吞吐量和成本進行排名。",
+                    "<挪挪>是一種結合組合語言和並行處理的多維度優化謎題。在板上擺放小機械們，透過編程描述他們的行為，然後擺放配方，將水龍頭 (Faucet) 產出的原料風味原子轉換成目標風味原子，投遞於水槽 (Sink)。玩家提交的解決方案將以吞吐量和成本進行排名。",
                 instructions: "玩法",
                 instructionsLine1:
                     '目前只有單例機械 (Singleton) 可用，其指令集：[<1>W</1>,<3>A</3>,<5>S</5>,<5>D</5>] 為移動 (每幀移動一格)、<7>Z</7> 為撿起原子、<9>X</9> 為放下原子、<11>G</11> 為阻塞程序直到能夠撿起原子，還有 <13>H</13> 為阻塞程序直到能夠放下原子。',
