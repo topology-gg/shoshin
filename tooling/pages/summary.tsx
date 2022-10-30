@@ -4,11 +4,14 @@ import { UnitText } from '../src/types/UnitState';
 import { BgStatus } from '../src/types/UnitState';
 import Frame from '../src/types/Frame';
 import styles from '../styles/Home.module.css'
+import { useTranslation } from 'react-i18next';
 
 export default function Summary ({ frames, n_cycles }) {
 
+    const { t } = useTranslation();
+
     if (!frames) {
-        return <>Summary of last run: n/a</>
+        return <>{t('summary.title')}: n/a</>
     }
 
     const target_type: AtomType = AtomType.SAFFRON
@@ -93,10 +96,10 @@ export default function Summary ({ frames, n_cycles }) {
 
     return (
         <>
-            <p style={{textDecoration: 'underline'}}>Summary of last run</p>
+            <p>{t('summary.title')}</p>
 
             <div style={{display:'flex',flexDirection:'row'}}>
-                <p>Total deliveries of</p>
+                <p>{t('summary.totalPre', { frames: n_cycles })}</p>
                 <Unit
                     state={{
                         bg_status: target_bg,
@@ -107,12 +110,13 @@ export default function Summary ({ frames, n_cycles }) {
                     handleMouseOut={() => {}}
                     handleMouseOver={() => {}}
                 />
-                <p>in {n_cycles} frames:</p>
+                <p>{t('summary.inFrames', { frames: n_cycles })}:</p>
                 <p style={makeshift_number_style}>{total_delivery}</p>
+                <p style={{marginLeft:'0.3rem'}}>{t('summary.totalPost')}</p>
             </div>
 
             <div style={{display:'flex',flexDirection:'row'}}>
-                <p>Average latency per</p>
+                <p>{t('summary.averageLatencyPre')}</p>
                 <Unit
                     state={{
                         bg_status: target_bg,
@@ -123,12 +127,12 @@ export default function Summary ({ frames, n_cycles }) {
                     handleMouseOut={() => {}}
                     handleMouseOver={() => {}}
                 />
-                <p>delivery:</p>
+                <p>{t('summary.averageLatencyPost')}:</p>
                 <p style={makeshift_number_style}>{average_latency_str}</p>
             </div>
 
             <div style={{display:'flex',flexDirection:'row'}}>
-                <p>Average dynamic cost per</p>
+                <p>{t('summary.averageDynamicCostPre')}</p>
                 <Unit
                     state={{
                         bg_status: target_bg,
@@ -139,12 +143,12 @@ export default function Summary ({ frames, n_cycles }) {
                     handleMouseOut={() => {}}
                     handleMouseOver={() => {}}
                 />
-                <p>delivery:</p>
+                <p>{t('summary.averageDynamicCostPost')}:</p>
                 <p style={makeshift_number_style}>{average_dynamic_cost_str}</p>
             </div>
 
             <div style={{display:'flex',flexDirection:'row'}}>
-                <p>Static cost:</p>
+                <p>{t('summary.staticCost')}:</p>
                 <p style={makeshift_number_style}>{static_cost}</p>
             </div>
         </>

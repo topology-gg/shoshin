@@ -20,6 +20,9 @@ import MechInput from '../src/components/MechInput';
 import { isIdenticalGrid, isGridOOB, areGridsNeighbors } from '../src/helpers/gridHelpers';
 import OperatorGridBg from '../src/components/OperatorGridBg';
 import { DIM } from '../src/constants/constants';
+import { useTranslation } from 'react-i18next';
+import "../config/i18n"
+import LanguageSelector from '../src/components/LanguageSelector';
 
 export default function Home() {
 
@@ -46,6 +49,8 @@ export default function Home() {
     const MIN_NUM_MECHS = 1
     const MAX_NUM_OPERATORS = 20
     const MIN_NUM_OPERATORS = 0
+
+    const { t } = useTranslation();
 
     // React states for mechs & programs
     const [numMechs, setNumMechs] = useState(2)
@@ -455,7 +460,7 @@ export default function Home() {
         setAnimationFrame (slide_val)
     }
 
-    const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem'}
+    const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem', height:'1.5rem'}
 
     function handleMouseOver (i: number,j: number) {
         const gridString: [string, string] = [i.toString(), j.toString()]
@@ -477,8 +482,10 @@ export default function Home() {
 
             <main className={styles.main}>
                 <h2 className={styles.title}>
-                    MovyMovy
+                    {t("MovyMovy")}
                 </h2>
+
+                <LanguageSelector />
 
                 <Tutorial />
 
@@ -486,7 +493,7 @@ export default function Home() {
                     <p style={{
                         padding:'0', textAlign:'center', verticalAlign:'middle',
                         margin:'0', height:'20px', lineHeight:'20px', fontSize:'0.9rem'}}
-                    > Frame# {animationFrame} </p>
+                    > {t("frame")} # {animationFrame} </p>
 
                     <input
                         id="typeinp"
@@ -500,31 +507,37 @@ export default function Home() {
                 </div>
 
                 <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'1rem'}}>
-                    <button style={makeshift_button_style} onClick={() => handleMechClick('+')}> {'new mech'} </button>
-                    <button style={makeshift_button_style} onClick={() => handleMechClick('-')}> {'remove mech'} </button>
+                    <button style={makeshift_button_style} onClick={() => handleMechClick('+')}>{t('newMech')}</button>
+                    <button style={makeshift_button_style} onClick={() => handleMechClick('-')}>{t('removeMech')} </button>
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STIR')}> {'new &'} </button>
-
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SHAKE')}> {'new %'} </button>
-
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}> {'new ~'} </button>
-
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SMASH')}> {'new #'} </button>
-
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('-', '')}> {'remove op'} </button>
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STIR')}>
+                      {t('newOperation', {operation: '&'})}
+                    </button>
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SHAKE')}>
+                      {t('newOperation', {operation: '%'})}
+                    </button>
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}>
+                      {t('newOperation', {operation: '~'})}
+                    </button>
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SMASH')}>
+                      {t('newOperation', {operation: '#'})}
+                    </button>
+                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('-', '')}>
+                      {t('removeOp')}
+                    </button>
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                    <button style={makeshift_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? 'Run' : 'Pause'} </button>
-                    <button style={makeshift_button_style} onClick={() => handleClick('Stop')}> {'Stop'} </button>
-                    <button style={makeshift_button_style} onClick={() => handleClick('PrevFrame')}> {'-1 frame'} </button>
-                    <button style={makeshift_button_style} onClick={() => handleClick('NextFrame')}> {'+1 frame'} </button>
+                    <button style={makeshift_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? t('run') : t('pause')} </button>
+                    <button style={makeshift_button_style} onClick={() => handleClick('Stop')}> {t('stop')} </button>
+                    <button style={makeshift_button_style} onClick={() => handleClick('PrevFrame')}> {t('decrementFrame')} </button>
+                    <button style={makeshift_button_style} onClick={() => handleClick('NextFrame')}> {t('incrementFrame')} </button>
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                    <div style={{fontSize:'0.8rem'}}>hovering:({gridHovering[0]},{gridHovering[1]})</div>
+                    <div style={{fontSize:'0.8rem'}}>{t('hovering')}:({gridHovering[0]},{gridHovering[1]})</div>
                 </div>
 
                 <div style={{display:'flex', flexDirection:'row'}}>
@@ -550,7 +563,7 @@ export default function Home() {
                     {
                             Array.from({length:numOperators}).map ((_,operator_i) => (
                                 <div key={`input-row-${operator_i}`} className={styles.input_row}>
-                                    <p className={styles.input_name}>{operatorStates[operator_i].typ.name}</p>
+                                    <p className={styles.input_name}>{t(operatorStates[operator_i].typ.name)}</p>
 
                                     {
                                         Array.from({length:operatorStates[operator_i].input.length}).map((_,input_i) => (

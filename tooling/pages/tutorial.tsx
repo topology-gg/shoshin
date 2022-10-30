@@ -10,6 +10,7 @@ import Button from "@mui/material/Button";
 import { Box } from "@mui/material";
 import styles from '../styles/Home.module.css'
 import { OPERATOR_TYPES } from "../src/types/Operator"
+import { Trans, useTranslation } from "react-i18next";
 
 export default function Tutorial() {
     const FORMULA_LI_STYLE: CSSProperties = {
@@ -21,6 +22,8 @@ export default function Tutorial() {
     const CONTENT_LI_STYLE: CSSProperties = {
         marginTop: "0.5rem",
     };
+
+    const { t } = useTranslation();
 
     const [open, setOpen] = useState<boolean>(false);
 
@@ -41,7 +44,7 @@ export default function Tutorial() {
             }}
         >
             <Button variant="outlined" onClick={handleOpen}>
-                How to play
+                {t("tutorial.title")}
             </Button>
             <Modal open={open} onClose={handleClose}>
                 <Box sx={{ p: 2, fontFamily: "var(--font-family-secondary)" }}>
@@ -52,7 +55,7 @@ export default function Tutorial() {
                             marginBottom: "0",
                         }}
                     >
-                        Thesis & Theme
+                        {t('tutorial.thesisTheme')}
                     </p>
                     <ol
                         style={{
@@ -62,10 +65,10 @@ export default function Tutorial() {
                         }}
                     >
                         <li style={CONTENT_LI_STYLE}>
-                            Layer 1 blockchains assert identity by capital contribution - pay to mint. Layer 2 blockchains, with new affordance in compute capacity, would assert identity by skill verification - solve to mint.
+                            {t("tutorial.thesisLine1")}
                         </li>
                         <li style={CONTENT_LI_STYLE}>
-                            MovyMovy is a puzzle about visual & parallel assembly programming. Place & program the little robots ("mechs"), and place the operators that execute formulas, to transport & transmute flavorful atoms from Faucet to Sink. Solutions are ranked by throughput and cost.
+                            {t("tutorial.thesisLine2")}
                         </li>
                     </ol>
 
@@ -76,7 +79,7 @@ export default function Tutorial() {
                             marginBottom: "0",
                         }}
                     >
-                        Instructions
+                        {t('tutorial.instructions')}
                     </p>
                     <ol
                         style={{
@@ -86,31 +89,35 @@ export default function Tutorial() {
                         }}
                     >
                         <li style={CONTENT_LI_STYLE}>
-                            Only Singleton mechanism ("mech") is available,
-                            whose instruction set is [<strong>W</strong>,<strong>A</strong>,<strong>S</strong>,<strong>D</strong>] for movement, <strong>Z</strong> for pick-up, <strong>X</strong> for drop, <strong>G</strong> for block-until-pick-up, and <strong>H</strong> for block-until-drop
+                            <Trans t={t} i18nKey={"tutorial.instructionsLine1"}>
+                                Only Singleton mechanism ("mech") is available, whose instruction set is [<strong>W</strong>,<strong>A</strong>,<strong>S</strong>,<strong>D</strong>] for movement, <strong>Z</strong> for pick-up, <strong>X</strong> for drop, <strong>G</strong> for block-until-pick-up, and <strong>H</strong> for block-until-drop
+                            </Trans>
                         </li>
                         <li style={CONTENT_LI_STYLE}>
-                            More on <strong>G</strong>: the mech will wait at this instruction until its location has a free atom to be picked up.
-                            It then picks up the free atom in the same frame, and proceed to its next instruction in the next frame.
-                            If the mech is closed when encountering this instruction (i.e. not able to pick up), this instruction is treated as no-op.
+                            <Trans t={t} i18nKey="tutorial.instructionsLine2">
+                                More on <strong>G</strong>: the mech will wait at this instruction until its location has a free atom to be picked up.
+                                It then picks up the free atom in the same frame, and proceed to its next instruction in the next frame.
+                                If the mech is closed when encountering this instruction (i.e. not able to pick up), this instruction is treated as no-op.
+                            </Trans>
                         </li>
                         <li style={CONTENT_LI_STYLE}>
-                            More on <strong>H</strong>: the mech will wait at this instruction until its location is empty for drop-off.
-                            It then drops off the atom in possession in the same frame, and proceed to its next instruction in the next frame.
-                            If the mech is open when encountering this instruction (i.e. not possessing an atom for drop-off), this instruction is treated as no-op.
+                            <Trans t={t} i18nKey="tutorial.instructionsLine3">
+                                More on <strong>H</strong>: the mech will wait at this instruction until its location is empty for drop-off.
+                                It then drops off the atom in possession in the same frame, and proceed to its next instruction in the next frame.
+                                If the mech is open when encountering this instruction (i.e. not possessing an atom for drop-off), this instruction is treated as no-op.
+                            </Trans>
                         </li>
                         <li style={CONTENT_LI_STYLE}>
-                            _ as instruction means no-operation.
+                            {t('tutorial.instructionsLine4')}
                         </li>
                         <li style={CONTENT_LI_STYLE}>
-                            During simulation, each mech cycles through its own
-                            program (sequence of instructions) on repeat.
+                            {t('tutorial.instructionsLine5')}
                         </li>
                         <li style={CONTENT_LI_STYLE}>
-                            On operator placement: operands and product must be
-                            contiguous grids i.e. for a+b=c, a&b and b&c must
-                            both be neighbors. When the contiguity rule is
-                            violated, operator symbols are not rendered.
+                            {t('tutorial.instructionsLine6')}
+                        </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.instructionsLine7')}
                         </li>
                     </ol>
 
@@ -121,7 +128,7 @@ export default function Tutorial() {
                             marginBottom: "0",
                         }}
                     >
-                        Formula list
+                        {t('tutorial.formulaList')}
                     </p>
                     <ol
                         style={{
@@ -131,7 +138,7 @@ export default function Tutorial() {
                         }}
                     >
                         <li style={FORMULA_LI_STYLE}>
-                            <p className={styles.input_name}>{'Stir'}</p>
+                            <p className={styles.input_name}>{t('Stir ')}</p>
                             {OPERATOR_TYPES.STIR.symbol}(
                             <Unit
                                 state={{
@@ -169,7 +176,7 @@ export default function Tutorial() {
                         </li>
 
                         <li style={FORMULA_LI_STYLE}>
-                            <p className={styles.input_name}>{'Shake'}</p>
+                            <p className={styles.input_name}>{t('Shake')}</p>
                             {OPERATOR_TYPES.SHAKE.symbol}(
                             <Unit
                                 state={{
@@ -207,7 +214,7 @@ export default function Tutorial() {
                         </li>
 
                         <li style={FORMULA_LI_STYLE}>
-                            <p className={styles.input_name}>{'Steam'}</p>
+                            <p className={styles.input_name}>{t('Steam')}</p>
                             {OPERATOR_TYPES.STEAM.symbol}(
                             <Unit
                                 state={{
@@ -268,7 +275,7 @@ export default function Tutorial() {
                         </li>
 
                         <li style={FORMULA_LI_STYLE}>
-                            <p className={styles.input_name}>{'Smash'}</p>
+                            <p className={styles.input_name}>{t('Smash')}</p>
                             {OPERATOR_TYPES.SMASH.symbol}(
                             <Unit
                                 state={{
@@ -349,7 +356,7 @@ export default function Tutorial() {
                             marginBottom: "0",
                         }}
                     >
-                        Goal
+                        {t('tutorial.goal')}
                     </p>
                     <ol
                         style={{
@@ -359,21 +366,39 @@ export default function Tutorial() {
                         }}
                     >
                         <li style={FORMULA_LI_STYLE}>
-                            Deliver
-                            <Unit
-                                state={{
-                                    bg_status: BgStatus.ATOM_SAFFRON_FREE,
-                                    border_status: null,
-                                    unit_text: UnitText.EMPTY,
-                                    unit_id: null,
-                                }}
-                                handleMouseOut={() => {}}
-                                handleMouseOver={() => {}}
-                            />
-                            to Sink.
+                            <Trans t={t} i18nKey="tutorial.goalAffordance">
+                                With Faucet replenishing
+                                <Unit
+                                    state={{
+                                        bg_status: BgStatus.ATOM_VANILLA_FREE,
+                                        border_status: null,
+                                        unit_text: UnitText.EMPTY,
+                                        unit_id: null,
+                                    }}
+                                    handleMouseOut={() => {}}
+                                    handleMouseOver={() => {}}
+                                />
+                                at 1 unit per frame,
+                            </Trans>
                         </li>
                         <li style={FORMULA_LI_STYLE}>
-                            Minimize the latency and cost of your solution.
+                            <Trans t={t} i18nKey="tutorial.goalDeliver">
+                                Produce and deliver
+                                <Unit
+                                    state={{
+                                        bg_status: BgStatus.ATOM_SAFFRON_FREE,
+                                        border_status: null,
+                                        unit_text: UnitText.EMPTY,
+                                        unit_id: null,
+                                    }}
+                                    handleMouseOut={() => {}}
+                                    handleMouseOver={() => {}}
+                                />
+                                to Sink.
+                            </Trans>
+                        </li>
+                        <li style={FORMULA_LI_STYLE}>
+                            {t("tutorial.goalLine2")}
                         </li>
                     </ol>
                 </Box>
