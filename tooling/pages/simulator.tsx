@@ -39,10 +39,10 @@ export default function simulator(
         if (mech.typ == MechType.SINGLETON) base_cost += STATIC_COSTS.SINGLETON
     })
     boardConfig.operators.forEach((operator) => {
-        if (operator.typ.name == 'Stir') base_cost += STATIC_COSTS.STIR
-        else if (operator.typ.name == 'Shake') base_cost += STATIC_COSTS.SHAKE
-        else if (operator.typ.name == 'Steam') base_cost += STATIC_COSTS.STEAM
-        else if (operator.typ.name == 'Smash') base_cost += STATIC_COSTS.SMASH
+        if (operator.typ.symbol == '&') base_cost += STATIC_COSTS.STIR
+        else if (operator.typ.symbol == '%') base_cost += STATIC_COSTS.SHAKE
+        else if (operator.typ.symbol == '^') base_cost += STATIC_COSTS.STEAM
+        else if (operator.typ.symbol == '#') base_cost += STATIC_COSTS.SMASH
     })
 
     //
@@ -204,6 +204,7 @@ function _simulate_one_cycle (
                         var atom_new = theArray[i]
                         atom_new.index.x -= 1
                         theArray[i] = atom_new
+                        has_moved_atom = true
                     }
                 });
 
@@ -234,6 +235,7 @@ function _simulate_one_cycle (
                         var atom_new = theArray[i]
                         atom_new.index.y += 1
                         theArray[i] = atom_new
+                        has_moved_atom = true
                     }
                 });
 
@@ -264,6 +266,7 @@ function _simulate_one_cycle (
                         var atom_new = theArray[i]
                         atom_new.index.y -= 1
                         theArray[i] = atom_new
+                        has_moved_atom = true
                     }
                 });
 

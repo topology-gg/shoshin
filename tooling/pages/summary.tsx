@@ -42,7 +42,7 @@ export default function Summary ({ frames, n_cycles }) {
         frame_indices_at_delivery[n_deliveries-1] / n_deliveries
     ).toString();
     const average_dynamic_cost_str = n_deliveries == 0 ? `n/a` : (
-        costs_accumulated_at_delivery[n_deliveries-1] / n_deliveries
+        (costs_accumulated_at_delivery[n_deliveries-1] - static_cost) / n_deliveries
     ).toString();
 
     // Calculate average latency & average dynamic cost per delivery
