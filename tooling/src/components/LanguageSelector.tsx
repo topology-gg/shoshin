@@ -1,15 +1,40 @@
 import i18next from "i18next";
-import React from "react";
+import React, {useState} from "react";
 import styles from "../../styles/LanguageSelector.module.css";
 
 const LanguageSelector = () => {
 
-    const button_style = {height:'1.5rem'}
+    const [currLang, setCurrLang] = useState<string>('en')
+
+    function buttonStyle (lang) {
+        // impurity by dependency: currLang
+
+        let button_style = {
+            height:'1.5rem',
+            border: '1px solid #333333'
+        }
+
+        if (lang == currLang) {
+            return {...button_style, backgroundColor:'#FFFE71'}
+        }
+        else {
+            return button_style
+        }
+    }
 
     return (
         <div className={styles.wrapper}>
-            <button style={button_style} onClick={() => i18next.changeLanguage("en")}>English</button>
-            <button style={button_style} onClick={() => i18next.changeLanguage("cn")}>中文</button>
+
+            <button style={buttonStyle('en')} onClick={() => {
+                i18next.changeLanguage("en");
+                setCurrLang ('en');
+            }}>English</button>
+
+            <button style={buttonStyle('cn')} onClick={() => {
+                i18next.changeLanguage("cn");
+                setCurrLang ('cn');
+            }}>中文</button>
+
         </div>
     );
 };

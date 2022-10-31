@@ -194,6 +194,23 @@ export default function Home() {
     }
 
     //
+    // Function to check operator placement validity
+    // Note: surfaced by Dham playtesting in Lisbon prior to the MovyMovy talk
+    //
+    function isOperatorPlacementLegal () {
+        // impurity by dependencies: operatorStates, constants such as faucet and sink positions
+
+        if (!operatorStates) return false;
+        if (isAnyOperatorPositionInvalid(operatorStates)) return false;
+
+        for (const operator of operatorStates){
+            if (isOperatorPositionInvalid(operator)) return false;
+        }
+
+        return true;
+    }
+
+    //
     // Definition of setting config's visual to DOM state (operators, faucets, sinks)
     //
     function setConfigVisualForStates (states: UnitState[][]){
@@ -360,8 +377,6 @@ export default function Home() {
         // Run simulation
         else if (mode == 'ToggleRun') {
 
-
-
             // If in Run => go to Pause
             if (animationState == 'Run') {
                 clearInterval (loop); // kill the timer
@@ -380,7 +395,8 @@ export default function Home() {
             }
 
             // If in Stop => perform simulation then go to Run
-            else if (animationState == 'Stop') {
+            else if (animationState == 'Stop' && isOperatorPlacementLegal()) {
+
                 // Parse program into array of instructions and store to react state
                 let instructionSets:string[][] = []
                 programs.forEach((program: string, mech_i:number) => {
