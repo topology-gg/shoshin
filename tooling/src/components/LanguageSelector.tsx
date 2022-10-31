@@ -11,7 +11,8 @@ const LanguageSelector = () => {
 
         let button_style = {
             height:'1.5rem',
-            border: '1px solid #333333'
+            border: '1px solid #333333',
+            borderRadius: '3px'
         }
 
         if (lang == currLang) {

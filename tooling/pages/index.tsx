@@ -94,6 +94,7 @@ export default function Home() {
     const [animationFrame, setAnimationFrame] = useState<number> (0)
     const [frames, setFrames] = useState<Frame[]>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
+    // const [runnable, setRunnable] = useState<boolean>(true);
 
     // React states for UI
     const [gridHovering, setGridHovering] = useState<[string, string]>(['-','-'])
@@ -101,6 +102,7 @@ export default function Home() {
     //
     // React state updates
     //
+    const runnable = isRunnable()
     const mechInitStates: MechState[] = mechInitPositions.map(
         (pos, mech_i) => { return {status: MechStatus.OPEN, index: pos, id: `mech${mech_i}`, typ: MechType.SINGLETON, pc_next: 0} }
     )
@@ -109,10 +111,27 @@ export default function Home() {
     )
     const frame = frames?.[animationFrame]
     const atomStates = frame?.atoms || atomInitStates
-    const mechStates = frame?.mechs || mechInitStates
+    // const mechStates = frame?.mechs || mechInitStates
+    const mechStates = (frame && (animationState!='Stop')) ? frame.mechs : mechInitStates
     const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
     const delivered = frame?.delivered_accumulated
     const cost_accumulated = animationState=='Stop' ? 0 :frame?.cost_accumulated
+
+    //
+    // Style the Run button based on solution legality == operator placement legality && mech initial placement legality
+    //
+    function isRunnable () {
+        // impurity by dependencies: operatorStates, mechInitPosition
+        if (!isOperatorPlacementLegal()) {
+            console.log ("> simulation not runnable because of operator placement illegality")
+            return false;
+        }
+        if (!isMechInitialPlacementLegal()) {
+            console.log ("> simulation not runnable because of mech initial placement illegality")
+            return false;
+        }
+        return true;
+    }
 
     //
     // Definition of setting DOM state
@@ -136,7 +155,15 @@ export default function Home() {
     // Definition of setting mech's visual to DOM state
     //
     function setMechVisualForStates (mech: MechState, states: UnitState[][]){
-        let newStates: UnitState[][] = JSON.parse(JSON.stringify(states)) // duplicate
+
+        // duplicate
+        let newStates: UnitState[][] = JSON.parse(JSON.stringify(states))
+
+        // if this mech is positioned illegally, don't render it
+        if (isGridOOB(mech.index, DIM)) {
+            return newStates
+        }
+
         newStates[mech.index.x][mech.index.y].unit_id = mech.id
         if (mech.status == MechStatus.OPEN){
             newStates[mech.index.x][mech.index.y].border_status = BorderStatus.SINGLETON_OPEN
@@ -207,6 +234,16 @@ export default function Home() {
             if (isOperatorPositionInvalid(operator)) return false;
         }
 
+        return true;
+    }
+
+    //
+    // Function to check mech initial placement validity
+    //
+    function isMechInitialPlacementLegal () {
+        for (const pos of mechInitPositions) {
+            if (isGridOOB(pos, DIM)) return false;
+        }
         return true;
     }
 
@@ -395,7 +432,7 @@ export default function Home() {
             }
 
             // If in Stop => perform simulation then go to Run
-            else if (animationState == 'Stop' && isOperatorPlacementLegal()) {
+            else if (animationState == 'Stop' && runnable) {
 
                 // Parse program into array of instructions and store to react state
                 let instructionSets:string[][] = []
@@ -451,16 +488,16 @@ export default function Home() {
     }
 
     function setMechInitPosition (mech_i: number, position: Grid){
-        if (position.x < DIM && position.x >= 0 && position.y < DIM && position.y >= 0) {
-            setMechInitPositions(
-                // (prev) => ({ ...prev, [mech_i]: position })
-                (prev) => {
-                    let prev_copy = JSON.parse(JSON.stringify(mechInitPositions))
-                    prev_copy[mech_i] = position
-                    return prev_copy
-                }
-            )
-        }
+        // if (position.x < DIM && position.x >= 0 && position.y < DIM && position.y >= 0) {
+        setMechInitPositions(
+            // (prev) => ({ ...prev, [mech_i]: position })
+            (prev) => {
+                let prev_copy = JSON.parse(JSON.stringify(mechInitPositions))
+                prev_copy[mech_i] = position
+                return prev_copy
+            }
+        )
+        // }
     }
 
     function setOperator (operator_i: number, new_operator: Operator){
@@ -491,8 +528,6 @@ export default function Home() {
         setAnimationFrame (slide_val)
     }
 
-    const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem', height:'1.5rem'}
-
     function handleMouseOver (i: number,j: number) {
         const gridString: [string, string] = [i.toString(), j.toString()]
         setGridHovering (gridString)
@@ -501,6 +536,10 @@ export default function Home() {
     function handleMouseOut () {
         setGridHovering (['-', '-'])
     }
+
+    // Lazy style objects
+    const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem', height:'1.5rem'}
+    const makeshift_run_button_style = runnable ? makeshift_button_style : {...makeshift_button_style, color: '#CCCCCC'}
 
     // Render
     return (
@@ -563,7 +602,7 @@ export default function Home() {
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                    <button style={makeshift_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? t('run') : t('pause')} </button>
+                    <button style={makeshift_run_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? t('run') : t('pause')} </button>
                     <button style={makeshift_button_style} onClick={() => handleClick('Stop')}> {t('stop')} </button>
                     <button style={makeshift_button_style} onClick={() => handleClick('PrevFrame')}> {t('decrementFrame')} </button>
                     <button style={makeshift_button_style} onClick={() => handleClick('NextFrame')}> {t('incrementFrame')} </button>
@@ -584,7 +623,9 @@ export default function Home() {
                                         position={mechInitPositions[mech_i]}
                                         program={programs[mech_i]}
                                         pc={0}
-                                        onPositionChange={(index, position) => setMechInitPosition(index, position)}
+                                        onPositionChange={(index, position) => {
+                                            setMechInitPosition(index, position);
+                                        }}
                                         onProgramChange={(index, program) =>
                                             setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
                                         }
@@ -598,10 +639,8 @@ export default function Home() {
                                         position={mechInitPositions[mech_i]}
                                         program={programs[mech_i]}
                                         pc={mechStates[mech_i].pc_next}
-                                        onPositionChange={(index, position) => setMechInitPosition(index, position)}
-                                        onProgramChange={(index, program) =>
-                                            setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
-                                        }
+                                        onPositionChange={(index, position) => {}}
+                                        onProgramChange={(index, program) => {}}
                                     />
                                 ))
                         }
@@ -624,7 +663,8 @@ export default function Home() {
                                                 <input
                                                     className={styles.program}
                                                     onChange={event => {
-                                                        if (event.target.value.length == 0) return;
+                                                        // if (event.target.value.length == 0) return;
+                                                        if (isNaN(parseInt(event.target.value))) return;
                                                         let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
                                                         newOperator.input[input_i].x = parseInt(event.target.value)
                                                         setOperator(operator_i, newOperator)}
@@ -635,7 +675,8 @@ export default function Home() {
                                                 <input
                                                     className={styles.program}
                                                     onChange={event => {
-                                                        if (event.target.value.length == 0) return;
+                                                        // if (event.target.value.length == 0) return;
+                                                        if (isNaN(parseInt(event.target.value))) return;
                                                         let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
                                                         newOperator.input[input_i].y = parseInt(event.target.value)
                                                         setOperator(operator_i, newOperator)}

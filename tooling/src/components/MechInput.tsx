@@ -1,5 +1,6 @@
 import React from "react";
 import Grid from "../types/Grid";
+import { isGridOOB } from '../helpers/gridHelpers';
 import styles from "../../styles/Home.module.css";
 import { useTranslation } from "react-i18next";
 
@@ -39,6 +40,7 @@ const MechInput = ({
             <input
                 className={styles.program}
                 onChange={(event) => {
+                    if (isNaN(parseInt(event.target.value))) return;
                     onPositionChange(mechIndex, {
                         ...position,
                         x: parseInt(event.target.value),
@@ -51,6 +53,7 @@ const MechInput = ({
             <input
                 className={styles.program}
                 onChange={(event) => {
+                    if (isNaN(parseInt(event.target.value))) return;
                     onPositionChange(mechIndex, {
                         ...position,
                         y: parseInt(event.target.value),
