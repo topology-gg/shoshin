@@ -111,7 +111,8 @@ export default function Home() {
     )
     const frame = frames?.[animationFrame]
     const atomStates = frame?.atoms || atomInitStates
-    const mechStates = frame?.mechs || mechInitStates
+    // const mechStates = frame?.mechs || mechInitStates
+    const mechStates = (frame && (animationState!='Stop')) ? frame.mechs : mechInitStates
     const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
     const delivered = frame?.delivered_accumulated
     const cost_accumulated = animationState=='Stop' ? 0 :frame?.cost_accumulated
@@ -131,13 +132,6 @@ export default function Home() {
         }
         return true;
     }
-    // useEffect(() => {
-    //     setRunnable (prev => isRunnable())
-    // }, [operatorStates, mechInitPositions])
-
-    // function forceRunnableUpdate (){
-    //     setRunnable (prev => isRunnable())
-    // }
 
     //
     // Definition of setting DOM state
