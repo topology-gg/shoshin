@@ -27,7 +27,7 @@ import LanguageSelector from '../src/components/LanguageSelector';
 export default function Home() {
 
     // Constants
-    const N_CYCLES = 150
+    const N_CYCLES = 100
     const ANIM_FRAME_LATENCY = 250
     const INIT_PROGRAM = '_'
     const MECH_INIT_X = 0
