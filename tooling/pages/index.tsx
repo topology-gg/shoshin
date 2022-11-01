@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import {useState, useEffect, useRef, useCallback} from 'react';
+import {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import simulator from "./simulator";
 import MechState, { MechStatus, MechType } from '../src/types/MechState';
 import AtomState, { AtomStatus, AtomType } from '../src/types/AtomState';
@@ -16,13 +16,16 @@ import Delivery from './delivery'
 import Summary from './summary';
 import Tutorial from './tutorial';
 import MechInput from '../src/components/MechInput';
-// import
 import { isIdenticalGrid, isGridOOB, areGridsNeighbors } from '../src/helpers/gridHelpers';
 import OperatorGridBg from '../src/components/OperatorGridBg';
 import { DIM } from '../src/constants/constants';
 import { useTranslation } from 'react-i18next';
 import "../config/i18n"
 import LanguageSelector from '../src/components/LanguageSelector';
+import ConnectWallet from '../src/components/ConnectWallet'
+import { useAccount, useStarknetExecute } from '@starknet-react/core'
+import packSolution, { programsToInstructionSets } from '../src/helpers/packSolution';
+import { SIMULATOR_ADDR } from '../src/components/SimulatorContract';
 
 export default function Home() {
 
@@ -89,6 +92,22 @@ export default function Home() {
         { input:[{x:1,y:5}], output:[{x:2,y:5}, {x:3,y:5},{x:4,y:5},{x:5,y:5},{x:6,y:5}], typ:OPERATOR_TYPES.SMASH},
     ])
 
+    // React useMemo
+    const calls = useMemo (() => {
+
+        let instructionSets = programsToInstructionSets (programs)
+        const args = packSolution (instructionSets, mechInitPositions, operatorStates)
+        console.log ('> useMemo: args =', args)
+
+        const tx = {
+            contractAddress: SIMULATOR_ADDR,
+            entrypoint: 'simulator',
+            calldata: args
+        }
+        return [tx]
+
+    }, [instructionSets, mechInitPositions, operatorStates])
+
     // React states for animation control
     const [animationState, setAnimationState] = useState ('Stop');
     const [animationFrame, setAnimationFrame] = useState<number> (0)
@@ -116,6 +135,12 @@ export default function Home() {
     const unitStates = setVisualForStates (atomStates, mechStates, unitStatesInit) as UnitState[][]
     const delivered = frame?.delivered_accumulated
     const cost_accumulated = animationState=='Stop' ? 0 :frame?.cost_accumulated
+
+    // Starknet
+    const { account, address, status } = useAccount ()
+    const { execute } = useStarknetExecute ({ calls })
+
+    ////////////////////
 
     //
     // Style the Run button based on solution legality == operator placement legality && mech initial placement legality
@@ -398,6 +423,23 @@ export default function Home() {
     }
 
     //
+    // Handle click event for submitting solution to StarkNet
+    //
+    function handleClickSubmit () {
+        if (!account) {
+            console.log ("> wallet not connected yet")
+        }
+
+        console.log ('> connected address:', String(address))
+
+        // submit tx
+        console.log ('> submitting args to simulator() on StarkNet:', calls)
+        execute()
+
+        return;
+    }
+
+    //
     // Handle click event for animation control
     //
     function handleClick (mode: string){
@@ -435,13 +477,9 @@ export default function Home() {
             else if (animationState == 'Stop' && runnable) {
 
                 // Parse program into array of instructions and store to react state
-                let instructionSets:string[][] = []
-                programs.forEach((program: string, mech_i:number) => {
-                    const instructions = program.split(',') as string[]
-                    instructionSets.push (instructions)
-                })
+                let instructionSets = programsToInstructionSets (programs)
                 setInstructionSets (instructionSets)
-                console.log('running instructionSets', instructionSets)
+                // console.log('running instructionSets', instructionSets)
 
                 // Prepare input
                 const boardConfig: BoardConfig = {
@@ -556,6 +594,7 @@ export default function Home() {
                     <p>{t("Subtitle")}</p>
                 </div>
 
+                <ConnectWallet />
 
                 <LanguageSelector />
 
@@ -585,19 +624,19 @@ export default function Home() {
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STIR')}>
-                      {t('newOperation', {operation: '&'})}
+                    {t('newOperation', {operation: '&'})}
                     </button>
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SHAKE')}>
-                      {t('newOperation', {operation: '%'})}
+                    {t('newOperation', {operation: '%'})}
                     </button>
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}>
-                      {t('newOperation', {operation: '~'})}
+                    {t('newOperation', {operation: '~'})}
                     </button>
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SMASH')}>
-                      {t('newOperation', {operation: '#'})}
+                    {t('newOperation', {operation: '#'})}
                     </button>
                     <button style={makeshift_button_style} onClick={() => handleOperatorClick('-', '')}>
-                      {t('removeOp')}
+                    {t('removeOp')}
                     </button>
 
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
@@ -610,6 +649,10 @@ export default function Home() {
                     <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
                     <div style={{fontSize:'0.8rem'}}>{t('hovering')}:({gridHovering[0]},{gridHovering[1]})</div>
+
+                    <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
+
+                    <button id={'submit-button'} onClick={() => handleClickSubmit()}> {t('Submit to')} </button>
                 </div>
 
                 <div style={{display:'flex', flexDirection:'row'}}>
