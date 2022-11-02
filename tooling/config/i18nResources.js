@@ -131,6 +131,8 @@ const resources = {
             },
         },
     },
+
+    // TODO: add french translation of all terms
 };
 
 export default resources;
