@@ -1,7 +1,7 @@
 const resources = {
     en: {
         translation: {
-            MovyMovy: "MovyMovy",
+            MuMu: "MuMu",
             Subtitle: "An experiment by Topology",
             frame: "Frame",
             mech: "mech",
@@ -68,7 +68,7 @@ const resources = {
     },
     cn: {
         translation: {
-            MovyMovy: "挪挪",
+            MuMu: "挪挪",
             Subtitle: "Topology 的一項實驗",
             frame: "幀",
             mech: "機械",
