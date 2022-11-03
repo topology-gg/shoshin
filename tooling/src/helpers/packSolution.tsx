@@ -3,6 +3,13 @@ import { toBN } from 'starknet/dist/utils/number'
 import Grid from "../types/Grid";
 import Operator, { OperatorType, OPERATOR_TYPES } from '../types/Operator';
 
+interface Mech {
+    id: number
+    type: number
+    status: number
+    index: Grid
+}
+
 export function programsToInstructionSets (programs) {
 
     let instructionSets:string[][] = []
@@ -26,50 +33,48 @@ export default function packSolution (instructionSets: string[][], mechInitPosit
     let program_length_array = []
     let program_serialized_array = []
     for (const instructionSet of instructionSets) {
-        program_length_array.push (pack(instructionSet.length))
+        program_length_array.push (instructionSet.length)
 
         const encoded_program = encodeInstructionSet (instructionSet)
         program_serialized_array = program_serialized_array.concat (encoded_program)
     }
 
     // Prepare input arg on solution's mech states
-    let mech_array = []
+    let mech_array: Mech[] = []
     mechInitPositions.forEach((grid: Grid, index: number) => {
         mech_array.push({
-            id: pack(index),
-            type: pack(0),
-            status: pack(0), // open
-            index: packGrid(grid),
+            id: index,
+            type: 0,
+            status: 0, // open
+            index: grid,
         })
     });
 
     // Prepare input arg on solution's operators
     let operator_type_array = []
-    let operator_input_serialized_array = []
-    let operator_output_serialized_array = []
+    let operator_input_serialized_array: Grid[] = []
+    let operator_output_serialized_array: Grid[] = []
     for (const operator of operatorStates) {
 
-        const packed_input = operator.input.map (value => packGrid(value))
-        const packed_output = operator.output.map (value => packGrid(value))
-
-        operator_input_serialized_array = operator_input_serialized_array.concat (packed_input)
-        operator_output_serialized_array = operator_input_serialized_array.concat (packed_output)
+        operator_input_serialized_array = operator_input_serialized_array.concat (operator.input)
+        operator_output_serialized_array = operator_output_serialized_array.concat (operator.output)
 
         if (operator.typ == OPERATOR_TYPES.STIR){
-            operator_type_array.push (pack(0))
+            operator_type_array.push (0)
         }
         else if (operator.typ == OPERATOR_TYPES.SHAKE){
-            operator_type_array.push (pack(1))
+            operator_type_array.push (1)
         }
         else if (operator.typ == OPERATOR_TYPES.STEAM){
-            operator_type_array.push (pack(2))
+            operator_type_array.push (2)
         }
         else if (operator.typ == OPERATOR_TYPES.SMASH){
-            operator_type_array.push (pack(3))
+            operator_type_array.push (3)
         }
 
     }
 
+    // Manually serialize everything into one array
     // Note: simulator() function signature
     // mechs_len: felt,
     // mechs: MechState*,
@@ -83,15 +88,76 @@ export default function packSolution (instructionSets: string[][], mechInitPosit
     // operators_outputs: Grid*,
     // operators_type_len: felt,
     // operators_type: felt*,
+    let args = []
 
-    return compileCalldata({
-        mechs: mech_array,
-        instructions_sets: program_length_array,
-        instructions: program_serialized_array,
-        operators_inputs: operator_input_serialized_array,
-        operators_outputs: operator_output_serialized_array,
-        operators_type: operator_type_array
-    })
+    args.push (mech_array.length)
+    for (const mech of mech_array) {
+        args = args.concat(serialize_mech(mech))
+    }
+
+    args.push (program_length_array.length)
+    args = args.concat(program_length_array)
+
+    args.push (program_serialized_array.length)
+    args = args.concat(program_serialized_array)
+
+    args.push (operator_input_serialized_array.length)
+    for (const grid of operator_input_serialized_array){
+        args = args.concat(serialize_grid(grid))
+    }
+    console.log ('operator_input_serialized_array:', operator_input_serialized_array)
+
+    args.push (operator_output_serialized_array.length)
+    for (const grid of operator_output_serialized_array){
+        args = args.concat(serialize_grid(grid))
+    }
+    console.log ('operator_output_serialized_array:', operator_output_serialized_array)
+
+    args.push (operator_type_array.length)
+    args = args.concat(operator_type_array)
+
+    return args
+
+    // return compileCalldata({
+
+    //     mechs_len: pack(mech_array.length),
+    //     mechs: mech_array,
+
+    //     // instructions_sets_len: pack(program_length_array.length),
+    //     // instructions_sets: program_length_array,
+
+    //     // instructions_len: pack(program_serialized_array.length),
+    //     // instructions: program_serialized_array,
+
+    //     // operators_inputs_len: pack(operator_input_serialized_array.length),
+    //     // operators_inputs: operator_input_serialized_array,
+
+    //     // operators_outputs_len: pack(operator_output_serialized_array.length),
+    //     // operators_outputs: operator_output_serialized_array,
+
+    //     // operators_type_len: pack(operator_type_array.length),
+    //     // operators_type: operator_type_array
+
+    // })
+}
+
+function serialize_mech (mech: Mech) {
+
+    // interface Mech {
+    //     id: number
+    //     type: number
+    //     status: number
+    //     index: Grid
+    // }
+
+    let arr = [mech.id, mech.type, mech.status]
+    arr = arr.concat(serialize_grid(mech.index))
+
+    return arr
+}
+
+function serialize_grid (grid: Grid) {
+    return [grid.x, grid.y]
 }
 
 // pack for starknet.js requirement for compileCalldata()
