@@ -61,6 +61,8 @@
   margin: 0rem 0;
   padding-left: 1rem;
   padding-right: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   line-height: 1.5;
   font-size: 1.5rem;
   display: flex;

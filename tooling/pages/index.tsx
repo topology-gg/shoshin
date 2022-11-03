@@ -19,7 +19,7 @@ import MechInput from '../src/components/MechInput';
 // import
 import { isIdenticalGrid, isGridOOB, areGridsNeighbors } from '../src/helpers/gridHelpers';
 import OperatorGridBg from '../src/components/OperatorGridBg';
-import { DIM } from '../src/constants/constants';
+import { DIM, PROGRAM_SIZE_MAX } from '../src/constants/constants';
 import { useTranslation } from 'react-i18next';
 import "../config/i18n"
 import LanguageSelector from '../src/components/LanguageSelector';
@@ -121,7 +121,7 @@ export default function Home() {
     // Style the Run button based on solution legality == operator placement legality && mech initial placement legality
     //
     function isRunnable () {
-        // impurity by dependencies: operatorStates, mechInitPosition
+        // impurity by dependencies: operatorStates, mechInitPosition, programs
         if (!isOperatorPlacementLegal()) {
             console.log ("> simulation not runnable because of operator placement illegality")
             return false;
@@ -130,6 +130,12 @@ export default function Home() {
             console.log ("> simulation not runnable because of mech initial placement illegality")
             return false;
         }
+
+        for (const program of programs) {
+            const instructions = program.split(',') as string[]
+            if (instructions.length > PROGRAM_SIZE_MAX) return false;
+        }
+
         return true;
     }
 
@@ -612,39 +618,7 @@ export default function Home() {
                     <div style={{fontSize:'0.8rem'}}>{t('hovering')}:({gridHovering[0]},{gridHovering[1]})</div>
                 </div>
 
-                <div style={{display:'flex', flexDirection:'row'}}>
-                    <div className={styles.inputs} style={{borderRight:'1px solid #333333'}}>
-                        {
-                            (animationState=='Stop') ?
-                                Array.from({length:numMechs}).map ((_,mech_i) => (
-                                    <MechInput
-                                        key={`mech-input-${mech_i}`}
-                                        mechIndex={mech_i}
-                                        position={mechInitPositions[mech_i]}
-                                        program={programs[mech_i]}
-                                        pc={0}
-                                        onPositionChange={(index, position) => {
-                                            setMechInitPosition(index, position);
-                                        }}
-                                        onProgramChange={(index, program) =>
-                                            setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
-                                        }
-                                    />
-                                ))
-                            :
-                                Array.from({length:numMechs}).map ((_,mech_i) => (
-                                    <MechInput
-                                        key={`mech-input-${mech_i}`}
-                                        mechIndex={mech_i}
-                                        position={mechInitPositions[mech_i]}
-                                        program={programs[mech_i]}
-                                        pc={mechStates[mech_i].pc_next}
-                                        onPositionChange={(index, position) => {}}
-                                        onProgramChange={(index, program) => {}}
-                                    />
-                                ))
-                        }
-                    </div>
+                {/* <div style={{display:'flex', flexDirection:'row'}}> */}
 
                     <div className={styles.inputs}>
                     {
@@ -732,7 +706,40 @@ export default function Home() {
                             ))
                         }
                     </div>
-                </div>
+
+                    <div className={styles.inputs} style={{padding: '2rem',borderBottom:'1px solid #333333'}}>
+                        {
+                            (animationState=='Stop') ?
+                                Array.from({length:numMechs}).map ((_,mech_i) => (
+                                    <MechInput
+                                        key={`mech-input-${mech_i}`}
+                                        mechIndex={mech_i}
+                                        position={mechInitPositions[mech_i]}
+                                        program={programs[mech_i]}
+                                        pc={0}
+                                        onPositionChange={(index, position) => {
+                                            setMechInitPosition(index, position);
+                                        }}
+                                        onProgramChange={(index, program) =>
+                                            setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
+                                        }
+                                    />
+                                ))
+                            :
+                                Array.from({length:numMechs}).map ((_,mech_i) => (
+                                    <MechInput
+                                        key={`mech-input-${mech_i}`}
+                                        mechIndex={mech_i}
+                                        position={mechInitPositions[mech_i]}
+                                        program={programs[mech_i]}
+                                        pc={mechStates[mech_i].pc_next}
+                                        onPositionChange={(index, position) => {}}
+                                        onProgramChange={(index, program) => {}}
+                                    />
+                                ))
+                        }
+                    </div>
+                {/* </div> */}
 
 
                 <div className={styles.grid_parent}>
