@@ -41,7 +41,7 @@ const resources = {
                 instructionsLine7:
                     "Faucet is marked as \"F\" on the board, while Sink is marked as \"S\" on the board.",
                 instructionsLine8:
-                    "Faucet is able to replenish <1 /> at 1 unit per frame.",
+                    "Program size shall not exceed 40 instructions.",
                 formulaList: "Formula list",
                 goal: "Goal",
                 goalAffordance: "With Faucet replenishing <1 /> at one unit per frame,",
@@ -107,6 +107,8 @@ const resources = {
                     "配方擺法的連續性規則：輸入和輸出必須位於連續的網格。以 &(A, B) = C 為例，A 和 B 以及 B 和 C 都必須是鄰居關係。違反連續性規則時，版面上不會渲染配方符號。",
                 instructionsLine7:
                     "水龍頭在板上以 \"F\" 標示；水槽則以 \"S\" 標示。",
+                instructionsLine8:
+                    "任一機械的程序長度上限為 40 個指令。",
                 formulaList: "配方列表",
                 goal: "目標",
                 goalAffordance: "利用水龍頭以每幀添補一單位 <1 /> 的特性，",

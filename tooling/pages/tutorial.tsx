@@ -119,6 +119,9 @@ export default function Tutorial() {
                         <li style={CONTENT_LI_STYLE}>
                             {t('tutorial.instructionsLine7')}
                         </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.instructionsLine8')}
+                        </li>
                     </ol>
 
                     <p
