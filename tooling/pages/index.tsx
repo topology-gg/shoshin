@@ -18,7 +18,7 @@ import Tutorial from './tutorial';
 import MechInput from '../src/components/MechInput';
 import { isIdenticalGrid, isGridOOB, areGridsNeighbors } from '../src/helpers/gridHelpers';
 import OperatorGridBg from '../src/components/OperatorGridBg';
-import { DIM, PROGRAM_SIZE_MAX } from '../src/constants/constants';
+import { DIM, PROGRAM_SIZE_MAX, DEMO_SOLUTIONS } from '../src/constants/constants';
 import { useTranslation } from 'react-i18next';
 import "../config/i18n"
 import LanguageSelector from '../src/components/LanguageSelector';
@@ -26,6 +26,7 @@ import ConnectWalletStardisc from '../src/components/ConnectWalletStardisc'
 import { useAccount, useStarknetExecute } from '@starknet-react/core'
 import packSolution, { programsToInstructionSets } from '../src/helpers/packSolution';
 import { SIMULATOR_ADDR } from '../src/components/SimulatorContract';
+import Solution from '../src/types/Solution';
 
 export default function Home() {
 
@@ -49,48 +50,21 @@ export default function Home() {
     const FAUCET_POS: Grid = {x:0, y:0}
     const SINK_POS: Grid = {x:DIM-1, y:DIM-1}
     const MAX_NUM_MECHS = 20
-    const MIN_NUM_MECHS = 1
+    const MIN_NUM_MECHS = 0
     const MAX_NUM_OPERATORS = 20
     const MIN_NUM_OPERATORS = 0
 
     const { t } = useTranslation();
 
     // React states for mechs & programs
-    const [numMechs, setNumMechs] = useState(9)
-    const [programs, setPrograms] = useState<string[]>([
-        'Z,D,X,A,Z,D,D,X,A,A',
-        '_,Z,S,D,H,A,W,G,S,D,D,H,A,A,W',
-        'G,D,H,A,S,G,D,H,A,W',
-        'G,S,X,W,G,S,D,X,A,W',
-        'G,S,S,S,X,W,W,W',
-        'G,A,A,A,A,S,X,W,D,D,D,D',
-        'G,S,X,W',
-        'G,S,S,H,W,W',
-        'G,S,D,D,D,D,X,A,A,A,W,Z,S,D,D,D,X,A,A,W,Z,S,D,D,X,A,W,Z,S,D,X,A,A,A,A,W',
-    ]);
-    const [mechInitPositions, setMechInitPositions] = useState<Grid[]> ([
-        { x:0, y:0 },
-        { x:0, y:0 },
-        { x:3, y:0 },
-        { x:4, y:2 },
-        { x:3, y:0 },
-        { x:5, y:4 },
-        { x:6, y:5 },
-        { x:6, y:4 },
-        { x:2, y:5 },
-    ])
-
+    const [numMechs, setNumMechs] = useState(DEMO_SOLUTIONS[0].programs.length)
+    const [programs, setPrograms] = useState<string[]>(DEMO_SOLUTIONS[0].programs);
+    const [mechInitPositions, setMechInitPositions] = useState<Grid[]> (DEMO_SOLUTIONS[0].mechs.map(mech => mech.index))
     const [instructionSets, setInstructionSets] = useState<string[][]>();
 
     // React states for operators
-    const [numOperators, setNumOperators] = useState(5)
-    const [operatorStates, setOperatorStates] = useState<Operator[]> ([
-        { input:[{x:1,y:0}, {x:2,y:0}], output:[{x:3,y:0}], typ:OPERATOR_TYPES.STIR},
-        { input:[{x:1,y:1}, {x:2,y:1}], output:[{x:3,y:1}], typ:OPERATOR_TYPES.STIR},
-        { input:[{x:4,y:0}, {x:4,y:1}], output:[{x:4,y:2}], typ:OPERATOR_TYPES.SHAKE},
-        { input:[{x:3,y:3}, {x:4,y:3}, {x:5,y:3}], output:[{x:5,y:4},{x:6,y:4}], typ:OPERATOR_TYPES.STEAM},
-        { input:[{x:1,y:5}], output:[{x:2,y:5}, {x:3,y:5},{x:4,y:5},{x:5,y:5},{x:6,y:5}], typ:OPERATOR_TYPES.SMASH},
-    ])
+    const [numOperators, setNumOperators] = useState(DEMO_SOLUTIONS[0].operators.length)
+    const [operatorStates, setOperatorStates] = useState<Operator[]> (DEMO_SOLUTIONS[0].operators)
 
     // React useMemo
     const calls = useMemo (() => {
@@ -113,7 +87,7 @@ export default function Home() {
     const [animationFrame, setAnimationFrame] = useState<number> (0)
     const [frames, setFrames] = useState<Frame[]>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
-    // const [runnable, setRunnable] = useState<boolean>(true);
+    const [viewDemoSolution, setViewDemoSolution] = useState<Solution>(DEMO_SOLUTIONS[0]);
 
     // React states for UI
     const [gridHovering, setGridHovering] = useState<[string, string]>(['-','-'])
@@ -581,6 +555,19 @@ export default function Home() {
         setGridHovering (['-', '-'])
     }
 
+    function handleDemoClick (index: number) {
+
+        const viewSolution = DEMO_SOLUTIONS[index]
+        setViewDemoSolution (prev => viewSolution)
+
+        setNumMechs (prev => viewSolution.mechs.length)
+        setPrograms (prev => viewSolution.programs)
+        setMechInitPositions (prev => viewSolution.mechs.map(mech => mech.index))
+        setNumOperators (prev => viewSolution.operators.length)
+        setOperatorStates (prev => viewSolution.operators)
+
+    }
+
     // Lazy style objects
     const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem', height:'1.5rem'}
     const makeshift_run_button_style = runnable ? makeshift_button_style : {...makeshift_button_style, color: '#CCCCCC'}
@@ -661,7 +648,16 @@ export default function Home() {
                     <button id={'submit-button'} onClick={() => handleClickSubmit()}> {t('Submit to')} </button>
                 </div>
 
-                {/* <div style={{display:'flex', flexDirection:'row'}}> */}
+                <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'1rem'}}>
+                    {
+                        Array.from({length:DEMO_SOLUTIONS.length}).map((_,i) => (
+                            i == 0 ?
+                            <button onClick={() => handleDemoClick(0)}>Blank</button>
+                            :
+                            <button onClick={() => handleDemoClick(i)}>Demo{i-1}</button>
+                        ))
+                    }
+                </div>
 
                     <div className={styles.inputs}>
                     {
