@@ -105,13 +105,13 @@ export default function packSolution (instructionSets: string[][], mechInitPosit
     for (const grid of operator_input_serialized_array){
         args = args.concat(serialize_grid(grid))
     }
-    console.log ('operator_input_serialized_array:', operator_input_serialized_array)
+    // console.log ('operator_input_serialized_array:', operator_input_serialized_array)
 
     args.push (operator_output_serialized_array.length)
     for (const grid of operator_output_serialized_array){
         args = args.concat(serialize_grid(grid))
     }
-    console.log ('operator_output_serialized_array:', operator_output_serialized_array)
+    // console.log ('operator_output_serialized_array:', operator_output_serialized_array)
 
     args.push (operator_type_array.length)
     args = args.concat(operator_type_array)

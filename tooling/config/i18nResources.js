@@ -21,6 +21,7 @@ const resources = {
             "Shake": "Shake",
             "Steam": "Steam",
             "Smash": "Smash",
+            "Submit to": "Submit to",
             tutorial: {
                 title: "How to play",
                 thesisTheme: "Thesis & Theme",
@@ -90,6 +91,7 @@ const resources = {
             "Shake": "搖搖",
             "Steam": "蒸蒸",
             "Smash": "砸砸",
+            "Submit to": "提交至",
             tutorial: {
                 title: "怎麼玩",
                 thesisTheme: "主題",

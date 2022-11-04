@@ -26,7 +26,6 @@ import ConnectWalletStardisc from '../src/components/ConnectWalletStardisc'
 import { useAccount, useStarknetExecute } from '@starknet-react/core'
 import packSolution, { programsToInstructionSets } from '../src/helpers/packSolution';
 import { SIMULATOR_ADDR } from '../src/components/SimulatorContract';
-import { SnsPoll } from '../src/components/SnsPoll'
 
 export default function Home() {
 
@@ -698,7 +697,7 @@ export default function Home() {
 
                                     {
                                         Array.from({length:operatorStates[operator_i].input.length}).map((_,input_i) => (
-                                            <div className={styles.input_grid}>
+                                            <div key={`input-row-${operator_i}-input-${input_i}`} className={styles.input_grid}>
                                                 {
                                                     input_i == 0 ? (
                                                         <p style={{textAlign:'right'}} className={styles.input_text}>{operatorStates[operator_i].typ.symbol}(</p>
@@ -741,7 +740,7 @@ export default function Home() {
 
                                     {
                                         Array.from({length:operatorStates[operator_i].output.length}).map((_,output_i) => (
-                                            <div className={styles.input_grid}>
+                                            <div key={`input-row-${operator_i}-input-${output_i}`} className={styles.input_grid}>
                                                 <input
                                                     className={styles.program}
                                                     onChange={event => {
