@@ -27,6 +27,7 @@ import { useAccount, useStarknetExecute } from '@starknet-react/core'
 import packSolution, { programsToInstructionSets } from '../src/helpers/packSolution';
 import { SIMULATOR_ADDR } from '../src/components/SimulatorContract';
 import Solution from '../src/types/Solution';
+import Leaderboard from '../src/components/Leaderboard';
 
 export default function Home() {
 
@@ -807,6 +808,10 @@ export default function Home() {
 
                 <div className={styles.summary}>
                     <Summary frames={frames} n_cycles={N_CYCLES}/>
+                </div>
+
+                <div  className={styles.summary}>
+                    <Leaderboard />
                 </div>
 
             </main>
