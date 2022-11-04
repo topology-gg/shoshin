@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import Grid from "../types/Grid";
 import { isGridOOB } from '../helpers/gridHelpers';
 import styles from "../../styles/Home.module.css";
 import { useTranslation } from "react-i18next";
+import { PROGRAM_SIZE_MAX } from '../constants/constants';
 
 interface MechInputProps {
     mechIndex: number;
@@ -26,6 +27,11 @@ const MechInput = ({
 
     const programLength = program.split(",").length;
     const currentInstructionIndex = pc % programLength;
+
+    const NORMAL_STYLE = { width: "700px" }
+    const INVALID_STYLE = {...NORMAL_STYLE, backgroundColor:'#FFCBCB', color:'#999999'}
+    const [style, setStyle] = useState(NORMAL_STYLE);
+
     return (
         <div key={`input-row-${mechIndex}`} className={styles.input_row}>
             <p
@@ -71,10 +77,18 @@ const MechInput = ({
                 <input
                     className={styles.program}
                     onChange={(event) => {
-                        onProgramChange(mechIndex, event.target.value);
+                        const program = event.target.value
+                        onProgramChange(mechIndex, program);
+                        const instructions = program.split(',') as string[]
+                        if (instructions.length > PROGRAM_SIZE_MAX) {
+                            setStyle(prev => INVALID_STYLE)
+                        }
+                        else {
+                            setStyle(prev => NORMAL_STYLE)
+                        }
                     }}
                     defaultValue={program}
-                    style={{ width: "300px" }}
+                    style={style}
                 ></input>
             </div>
         </div>
