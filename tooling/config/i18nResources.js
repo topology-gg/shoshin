@@ -3,6 +3,8 @@ const resources = {
         translation: {
             MovyMovy: "MovyMovy",
             Subtitle: "An experiment by Topology",
+            "Connect": "Connect ",
+            "Connected": "You are: ",
             frame: "Frame",
             mech: "mech",
             newMech: "new mech",
@@ -70,6 +72,8 @@ const resources = {
         translation: {
             MovyMovy: "挪挪",
             Subtitle: "Topology 的一項實驗",
+            "Connect": "連接 ",
+            "Connected": "你是: ",
             frame: "幀",
             mech: "機械",
             newMech: "添加機械",

@@ -22,10 +22,11 @@ import { DIM } from '../src/constants/constants';
 import { useTranslation } from 'react-i18next';
 import "../config/i18n"
 import LanguageSelector from '../src/components/LanguageSelector';
-import ConnectWallet from '../src/components/ConnectWallet'
+import ConnectWalletStardisc from '../src/components/ConnectWalletStardisc'
 import { useAccount, useStarknetExecute } from '@starknet-react/core'
 import packSolution, { programsToInstructionSets } from '../src/helpers/packSolution';
 import { SIMULATOR_ADDR } from '../src/components/SimulatorContract';
+import { SnsPoll } from '../src/components/SnsPoll'
 
 export default function Home() {
 
@@ -97,7 +98,7 @@ export default function Home() {
 
         let instructionSets = programsToInstructionSets (programs)
         const args = packSolution (instructionSets, mechInitPositions, operatorStates)
-        console.log ('> useMemo: args =', args)
+        // console.log ('> useMemo: args =', args)
 
         const tx = {
             contractAddress: SIMULATOR_ADDR,
@@ -594,7 +595,7 @@ export default function Home() {
                     <p>{t("Subtitle")}</p>
                 </div>
 
-                <ConnectWallet />
+                <ConnectWalletStardisc />
 
                 <LanguageSelector />
 
