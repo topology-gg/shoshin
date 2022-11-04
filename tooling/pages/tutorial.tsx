@@ -131,6 +131,81 @@ export default function Tutorial() {
                             marginBottom: "0",
                         }}
                     >
+                        {t('tutorial.costTitle')}
+                    </p>
+                    <p
+                        style={{
+                            fontSize: "0.8rem",
+                            marginTop: "0.5rem",
+                            marginBottom: "0",
+                        }}
+                    >
+                        {t('tutorial.staticCostTitle')}
+                    </p>
+                    <ol
+                        style={{
+                            width: "30rem",
+                            marginTop: "0.5rem",
+                            marginBottom: "2rem",
+                        }}
+                    >
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.staticCostLine1')}
+                        </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.staticCostLine2')}
+                        </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.staticCostLine3')}
+                        </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.staticCostLine4')}
+                        </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.staticCostLine5')}
+                        </li>
+                    </ol>
+
+                    <p
+                        style={{
+                            fontSize: "0.8rem",
+                            marginTop: "0.5rem",
+                            marginBottom: "0",
+                        }}
+                    >
+                        {t('tutorial.dynamicCostTitle')}
+                    </p>
+                    <ol
+                        style={{
+                            width: "30rem",
+                            marginTop: "0.5rem",
+                            marginBottom: "2rem",
+                        }}
+                    >
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.dynamicCostLine1')}
+                        </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.dynamicCostLine2')}
+                        </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.dynamicCostLine3')}
+                        </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.dynamicCostLine4')}
+                        </li>
+                        <li style={CONTENT_LI_STYLE}>
+                            {t('tutorial.dynamicCostLine5')}
+                        </li>
+                    </ol>
+
+                    <p
+                        style={{
+                            fontSize: "0.9rem",
+                            marginTop: "0",
+                            marginBottom: "0",
+                        }}
+                    >
                         {t('tutorial.formulaList')}
                     </p>
                     <ol
