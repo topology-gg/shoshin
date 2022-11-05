@@ -7,15 +7,18 @@ export default function Unit({ state, handleMouseOver, handleMouseOut }) {
     if (!state) {return <></>}
 
     // Compute atom styles
+    let style
     let className: string = '';
     let nuclei: number = 0;
     if (state.bg_status === BgStatus.ATOM_VANILLA_FREE) {
-        className += styles.atomVanillaFree + ' ';
-        nuclei = 1;
+        // style = { backgroundImage:'../src/images/emoji_peach.pn' }
+        // className += styles.atomVanillaFree + ' ';
+        // nuclei = 1;
     }
     else if (state.bg_status === BgStatus.ATOM_VANILLA_POSSESSED) {
-        className += styles.atomVanillaPossessed + ' ';
-        nuclei = 1;
+        // style = { backgroundImage:'../src/images/emoji_peach.pn' }
+        // className += styles.atomVanillaPossessed + ' ';
+        // nuclei = 1;
     }
 
     else if (state.bg_status === BgStatus.ATOM_HAZELNUT_FREE) {
@@ -71,6 +74,7 @@ export default function Unit({ state, handleMouseOver, handleMouseOut }) {
         <div
             className={`grid ${styles.unit} ${className}`}
             onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}
+            style={style}
         >
             {Array.from({length: nuclei}).map((_, i) =>
                 <div key={`nucleus${i}`} className={`${styles.nucleus}`} />

@@ -151,7 +151,7 @@ function _simulate_one_cycle (
         const instruction = instruction_per_mech[mech_i]
         var mech_new = {id:mech.id, typ:mech.typ, index:mech.index, status:mech.status, pc_next:mech.pc_next}
 
-        console.log (`mech${mech_i} running ${instruction}`)
+        // console.log (`mech${mech_i} running ${instruction}`)
 
         // add note
         notes += `intended ${instruction}/`

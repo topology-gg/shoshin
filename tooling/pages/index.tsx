@@ -470,7 +470,7 @@ export default function Home() {
                 simulatedFrames.forEach((f:Frame,frame_i:number) => {
                     // const s = f.atoms.map(function(v){return JSON.stringify(v)}).join('\n')
                     // console.log(frame_i, f.atoms)
-                    console.log(frame_i, f.notes)
+                    // console.log(frame_i, f.notes)
                 })
                 const final_delivery = simulatedFrames[simulatedFrames.length-1].delivered_accumulated
 
