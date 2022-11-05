@@ -81,10 +81,11 @@
 }
 
 .input_name {
-    margin: 0 1rem 0 1rem;
+    margin: 0 0.5rem 0 0.5rem;
     vertical-align: middle;
+    text-align: right;
     height: 20px;
-    width: 2rem;
+    width: 5rem;
     line-height: 20px;
 }
 
