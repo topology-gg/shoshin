@@ -15,34 +15,32 @@
   border-radius: 1rem;
   transition: color 0.05s ease, border-color 0.05s ease;
   max-width: 300px;
+  color: #BBBBBB
 }
 
 .atomVanillaFree, .atomVanillaPossessed {
-    background: #EFEFEF url('../src/images/emoji_peach.png') no-repeat;
-    background-size: cover;
-    background-position: 50% 50%;
-    /* Trying out new color: vanilla yellow */
-    /* background-color: #F3E5AB; */
-    /* background-color: #FF355E; */
-    /* color: white; */
-    /* background-image: '../src/images/emoji_peach.png'; */
-    /* background-size: 10px; */
+    background: url('../src/images/emoji_peach.png') no-repeat;
+    background-size: contain;
 }
 
 .atomHazelnutFree, .atomHazelnutPossessed {
-    background-color: #FFB200;
+    background: url('../src/images/emoji_chick.png') no-repeat;
+    background-size: contain;
 }
 
 .atomChocolateFree, .atomChocolatePossessed {
-    background-color: #C95A49;
+    background: url('../src/images/emoji_chicken.png') no-repeat;
+    background-size: contain;
 }
 
 .atomTruffleFree, .atomTrufflePossessed {
-    background-color: #5946B2;
+    background: url('../src/images/emoji_unicorn.png') no-repeat;
+    background-size: contain;
 }
 
 .atomSaffronFree, .atomSaffronPossessed {
-    background-color: #DA70D6;
+    background: url('../src/images/emoji_bubbletea.png') no-repeat;
+    background-size: contain;
 }
 
 .mechSingletonOpen {
