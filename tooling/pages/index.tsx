@@ -653,9 +653,9 @@ export default function Home() {
                     {
                         Array.from({length:DEMO_SOLUTIONS.length}).map((_,i) => (
                             i == 0 ?
-                            <button onClick={() => handleDemoClick(0)}>Blank</button>
+                            <button key={`load-demo-${i}`} onClick={() => handleDemoClick(0)}>{t('demo-blank')}</button>
                             :
-                            <button onClick={() => handleDemoClick(i)}>Demo{i-1}</button>
+                            <button key={`load-demo-${i}`} onClick={() => handleDemoClick(i)}>{t(`demo`)}{i-1}</button>
                         ))
                     }
                 </div>

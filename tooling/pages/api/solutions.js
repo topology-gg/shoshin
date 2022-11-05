@@ -1,5 +1,5 @@
 
-import clientPromise from "../../../lib/mongodb"
+import clientPromise from "../../lib/mongodb"
 
 export default async function handler(req, res) {
 
@@ -9,7 +9,11 @@ export default async function handler(req, res) {
     const db = client.db('mumu_indexer')
     const solutions = await db
         .collection('events')
-        .find()
+        .find({
+            instructions: {
+                $not: { $size: 0 }
+            }
+        })
         .toArray()
 
     res.status(200).json({ 'solutions': solutions })

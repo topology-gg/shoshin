@@ -23,6 +23,12 @@ button {
     font-family: menlo;
     font-size: 0.75rem;
     margin-right: 3px;
+    height: 1.5rem;
+    border: 1px solid #333333;
+    border-radius: 3px;
+}
+button:hover {
+    background-color: #FFFE71;
 }
 
 .grid {

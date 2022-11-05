@@ -22,6 +22,8 @@ const resources = {
             "Steam": "Steam",
             "Smash": "Smash",
             "Submit to": "Submit to",
+            "demo-blank": "Blank",
+            "demo": "Demo",
             tutorial: {
                 title: "How to play",
                 thesisTheme: "Thesis & Theme",
@@ -105,6 +107,8 @@ const resources = {
             "Steam": "蒸蒸",
             "Smash": "砸砸",
             "Submit to": "提交至",
+            "demo-blank": "空白",
+            "demo": "範例",
             tutorial: {
                 title: "怎麼玩",
                 thesisTheme: "主題",
