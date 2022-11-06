@@ -28,6 +28,13 @@ import packSolution, { programsToInstructionSets } from '../src/helpers/packSolu
 import { SIMULATOR_ADDR } from '../src/components/SimulatorContract';
 import Solution from '../src/types/Solution';
 import Leaderboard from '../src/components/Leaderboard';
+import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
+
+const theme = createTheme({
+    typography: {
+        fontFamily: "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;"     
+    },
+});
 
 export default function Home() {
 
@@ -598,239 +605,242 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main className={styles.main}>
-                <div className={styles.title}>
-                    <h2>{t("MuMu")}</h2>
-                    <p>{t("Subtitle")}</p>
-                </div>
+            <ThemeProvider theme={theme}>
+                <main className={styles.main}>
+                    <div className={styles.title}>
+                        <h2>{t("MuMu")}</h2>
+                        <p>{t("Subtitle")}</p>
+                    </div>
 
-                <ConnectWalletStardisc />
+                    <ConnectWalletStardisc />
 
-                <LanguageSelector />
+                    <LanguageSelector />
 
-                <Tutorial />
+                    <Tutorial />
 
-                <div style={{marginBottom:'1rem'}}>
-                    <p style={{
-                        padding:'0', textAlign:'center', verticalAlign:'middle',
-                        margin:'0', height:'20px', lineHeight:'20px', fontSize:'0.9rem'}}
-                    > {t("frame")} # {animationFrame} </p>
+                    <div style={{marginBottom:'1rem'}}>
+                        <p style={{
+                            padding:'0', textAlign:'center', verticalAlign:'middle',
+                            margin:'0', height:'20px', lineHeight:'20px', fontSize:'0.9rem'}}
+                        > {t("frame")} # {animationFrame} </p>
 
-                    <input
-                        id="typeinp"
-                        type="range"
-                        min="0" max={N_CYCLES}
-                        value={animationFrame}
-                        onChange={handleSlideChange}
-                        step="1"
-                        style={{width:'20rem'}}
-                    />
-                </div>
+                        <input
+                            id="typeinp"
+                            type="range"
+                            min="0" max={N_CYCLES}
+                            value={animationFrame}
+                            onChange={handleSlideChange}
+                            step="1"
+                            style={{width:'20rem'}}
+                        />
+                    </div>
 
-                <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'1rem'}}>
-                    <button style={makeshift_button_style} onClick={() => handleMechClick('+')}>{t('newMech')}</button>
-                    <button style={makeshift_button_style} onClick={() => handleMechClick('-')}>{t('removeMech')} </button>
+                    <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'1rem'}}>
+                        <button style={makeshift_button_style} onClick={() => handleMechClick('+')}>{t('newMech')}</button>
+                        <button style={makeshift_button_style} onClick={() => handleMechClick('-')}>{t('removeMech')} </button>
 
-                    <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
+                        <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STIR')}>
-                    {t('newOperation', {operation: '&'})}
-                    </button>
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SHAKE')}>
-                    {t('newOperation', {operation: '%'})}
-                    </button>
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}>
-                    {t('newOperation', {operation: '~'})}
-                    </button>
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SMASH')}>
-                    {t('newOperation', {operation: '#'})}
-                    </button>
-                    <button style={makeshift_button_style} onClick={() => handleOperatorClick('-', '')}>
-                    {t('removeOp')}
-                    </button>
+                        <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STIR')}>
+                        {t('newOperation', {operation: '&'})}
+                        </button>
+                        <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SHAKE')}>
+                        {t('newOperation', {operation: '%'})}
+                        </button>
+                        <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}>
+                        {t('newOperation', {operation: '~'})}
+                        </button>
+                        <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SMASH')}>
+                        {t('newOperation', {operation: '#'})}
+                        </button>
+                        <button style={makeshift_button_style} onClick={() => handleOperatorClick('-', '')}>
+                        {t('removeOp')}
+                        </button>
 
-                    <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
+                        <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                    <button style={makeshift_run_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? t('run') : t('pause')} </button>
-                    <button style={makeshift_button_style} onClick={() => handleClick('Stop')}> {t('stop')} </button>
-                    <button style={makeshift_button_style} onClick={() => handleClick('PrevFrame')}> {t('decrementFrame')} </button>
-                    <button style={makeshift_button_style} onClick={() => handleClick('NextFrame')}> {t('incrementFrame')} </button>
+                        <button style={makeshift_run_button_style} onClick={() => handleClick('ToggleRun')}> {animationState != 'Run' ? t('run') : t('pause')} </button>
+                        <button style={makeshift_button_style} onClick={() => handleClick('Stop')}> {t('stop')} </button>
+                        <button style={makeshift_button_style} onClick={() => handleClick('PrevFrame')}> {t('decrementFrame')} </button>
+                        <button style={makeshift_button_style} onClick={() => handleClick('NextFrame')}> {t('incrementFrame')} </button>
 
-                    <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
+                        <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                    <div style={{fontSize:'0.8rem'}}>{t('hovering')}:({gridHovering[0]},{gridHovering[1]})</div>
+                        <button id={'submit-button'} onClick={() => handleClickSubmit()}> {t('Submit to')} </button>
+                    </div>
 
-                    <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
+                    <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'1rem'}}>
+                        {
+                            Array.from({length:DEMO_SOLUTIONS.length}).map((_,i) => (
+                                i == 0 ?
+                                <button key={`load-demo-${i}`} onClick={() => handleDemoClick(0)}>{t('demo-blank')}</button>
+                                :
+                                <button key={`load-demo-${i}`} onClick={() => handleDemoClick(i)}>{t(`demo`)}{i-1}</button>
+                            ))
+                        }
+                    </div>
 
-                    <button id={'submit-button'} onClick={() => handleClickSubmit()}> {t('Submit to')} </button>
-                </div>
+                        <div className={styles.inputs}>
+                        {
+                                Array.from({length:numOperators}).map ((_,operator_i) => (
+                                    <div key={`input-row-${operator_i}`} className={styles.input_row}>
+                                        <p className={styles.input_name}>{t(operatorStates[operator_i].typ.name)}</p>
 
-                <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'1rem'}}>
-                    {
-                        Array.from({length:DEMO_SOLUTIONS.length}).map((_,i) => (
-                            i == 0 ?
-                            <button key={`load-demo-${i}`} onClick={() => handleDemoClick(0)}>{t('demo-blank')}</button>
-                            :
-                            <button key={`load-demo-${i}`} onClick={() => handleDemoClick(i)}>{t(`demo`)}{i-1}</button>
-                        ))
-                    }
-                </div>
+                                        {
+                                            Array.from({length:operatorStates[operator_i].input.length}).map((_,input_i) => (
+                                                <div key={`input-row-${operator_i}-input-${input_i}`} className={styles.input_grid}>
+                                                    {
+                                                        input_i == 0 ? (
+                                                            <p style={{textAlign:'right'}} className={styles.input_text}>{operatorStates[operator_i].typ.symbol}(</p>
+                                                        ) : (<></>)
+                                                    }
+                                                    <input
+                                                        className={styles.program}
+                                                        onChange={event => {
+                                                            // if (event.target.value.length == 0) return;
+                                                            if (isNaN(parseInt(event.target.value))) return;
+                                                            let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
+                                                            newOperator.input[input_i].x = parseInt(event.target.value)
+                                                            setOperator(operator_i, newOperator)}
+                                                        }
+                                                        defaultValue={operatorStates[operator_i].input[input_i].x}
+                                                        style={{width:'30px', textAlign:'center'}}
+                                                    ></input>
+                                                    <input
+                                                        className={styles.program}
+                                                        onChange={event => {
+                                                            // if (event.target.value.length == 0) return;
+                                                            if (isNaN(parseInt(event.target.value))) return;
+                                                            let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
+                                                            newOperator.input[input_i].y = parseInt(event.target.value)
+                                                            setOperator(operator_i, newOperator)}
+                                                        }
+                                                        defaultValue={operatorStates[operator_i].input[input_i].y}
+                                                        style={{width:'30px', textAlign:'center'}}
+                                                    ></input>
+                                                    {
+                                                        input_i == operatorStates[operator_i].input.length-1 ? (
+                                                            <p className={styles.input_text}>{`)=`}</p>
+                                                        ) : (
+                                                            <p className={styles.input_text}>{', '}</p>
+                                                        )
+                                                    }
+                                                </div>
+                                            ))
+                                        }
 
-                    <div className={styles.inputs}>
-                    {
-                            Array.from({length:numOperators}).map ((_,operator_i) => (
-                                <div key={`input-row-${operator_i}`} className={styles.input_row}>
-                                    <p className={styles.input_name}>{t(operatorStates[operator_i].typ.name)}</p>
+                                        {
+                                            Array.from({length:operatorStates[operator_i].output.length}).map((_,output_i) => (
+                                                <div key={`input-row-${operator_i}-input-${output_i}`} className={styles.input_grid}>
+                                                    <input
+                                                        className={styles.program}
+                                                        onChange={event => {
+                                                            if (event.target.value.length == 0) return;
+                                                            let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
+                                                            newOperator.output[output_i].x = parseInt(event.target.value)
+                                                            setOperator(operator_i, newOperator)}
+                                                        }
+                                                        defaultValue={operatorStates[operator_i].output[output_i].x}
+                                                        style={{width:'30px', textAlign:'center'}}
+                                                    ></input>
+                                                    <input
+                                                        className={styles.program}
+                                                        onChange={event => {
+                                                            if (event.target.value.length == 0) return;
+                                                            let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
+                                                            newOperator.output[output_i].y = parseInt(event.target.value)
+                                                            setOperator(operator_i, newOperator)}
+                                                        }
+                                                        defaultValue={operatorStates[operator_i].output[output_i].y}
+                                                        style={{width:'30px', textAlign:'center'}}
+                                                    ></input>
+                                                    {
+                                                        (output_i != operatorStates[operator_i].output.length-1) &&
+                                                        <p className={styles.input_text}>{`,`}</p>
+                                                    }
+                                                </div>
+                                            ))
+                                        }
 
+                                    </div>
+                                ))
+                            }
+                        </div>
+
+                        <div className={styles.inputs} style={{padding: '2rem',borderBottom:'1px solid #333333'}}>
+                            {
+                                (animationState=='Stop') ?
+                                    Array.from({length:numMechs}).map ((_,mech_i) => (
+                                        <MechInput
+                                            key={`mech-input-${mech_i}`}
+                                            mechIndex={mech_i}
+                                            position={mechInitPositions[mech_i]}
+                                            program={programs[mech_i]}
+                                            pc={0}
+                                            onPositionChange={(index, position) => {
+                                                setMechInitPosition(index, position);
+                                            }}
+                                            onProgramChange={(index, program) =>
+                                                setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
+                                            }
+                                        />
+                                    ))
+                                :
+                                    Array.from({length:numMechs}).map ((_,mech_i) => (
+                                        <MechInput
+                                            key={`mech-input-${mech_i}`}
+                                            mechIndex={mech_i}
+                                            position={mechInitPositions[mech_i]}
+                                            program={programs[mech_i]}
+                                            pc={mechStates[mech_i].pc_next}
+                                            onPositionChange={(index, position) => {}}
+                                            onProgramChange={(index, program) => {}}
+                                        />
+                                    ))
+                            }
+                        </div>
+                    {/* </div> */}
+
+
+                    <div className={styles.grid_parent}>
+                        <OperatorGridBg operators={operatorStates} />
+                        {
+                            Array.from({length:DIM}).map ((_,i) => ( // i is y
+                                <div key={`row-${i}`} className={styles.grid_row}>
                                     {
-                                        Array.from({length:operatorStates[operator_i].input.length}).map((_,input_i) => (
-                                            <div key={`input-row-${operator_i}-input-${input_i}`} className={styles.input_grid}>
-                                                {
-                                                    input_i == 0 ? (
-                                                        <p style={{textAlign:'right'}} className={styles.input_text}>{operatorStates[operator_i].typ.symbol}(</p>
-                                                    ) : (<></>)
-                                                }
-                                                <input
-                                                    className={styles.program}
-                                                    onChange={event => {
-                                                        // if (event.target.value.length == 0) return;
-                                                        if (isNaN(parseInt(event.target.value))) return;
-                                                        let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
-                                                        newOperator.input[input_i].x = parseInt(event.target.value)
-                                                        setOperator(operator_i, newOperator)}
-                                                    }
-                                                    defaultValue={operatorStates[operator_i].input[input_i].x}
-                                                    style={{width:'30px', textAlign:'center'}}
-                                                ></input>
-                                                <input
-                                                    className={styles.program}
-                                                    onChange={event => {
-                                                        // if (event.target.value.length == 0) return;
-                                                        if (isNaN(parseInt(event.target.value))) return;
-                                                        let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
-                                                        newOperator.input[input_i].y = parseInt(event.target.value)
-                                                        setOperator(operator_i, newOperator)}
-                                                    }
-                                                    defaultValue={operatorStates[operator_i].input[input_i].y}
-                                                    style={{width:'30px', textAlign:'center'}}
-                                                ></input>
-                                                {
-                                                    input_i == operatorStates[operator_i].input.length-1 ? (
-                                                        <p className={styles.input_text}>{`)=`}</p>
-                                                    ) : (
-                                                        <p className={styles.input_text}>{', '}</p>
-                                                    )
-                                                }
-                                            </div>
+                                        Array.from({length:DIM}).map ((_,j) => ( // j is x
+                                            <Tooltip title={`${j},${i}`} disableInteractive arrow>
+                                                <div>
+                                                    <Unit
+                                                        key={`unit-${j}-${i}`}
+                                                        state={unitStates[j][i]}
+                                                        handleMouseOver={() => handleMouseOver(j,i)}
+                                                        handleMouseOut={() => handleMouseOut()}
+                                                    />
+                                                </div>
+                                            </Tooltip>
                                         ))
                                     }
-
-                                    {
-                                        Array.from({length:operatorStates[operator_i].output.length}).map((_,output_i) => (
-                                            <div key={`input-row-${operator_i}-input-${output_i}`} className={styles.input_grid}>
-                                                <input
-                                                    className={styles.program}
-                                                    onChange={event => {
-                                                        if (event.target.value.length == 0) return;
-                                                        let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
-                                                        newOperator.output[output_i].x = parseInt(event.target.value)
-                                                        setOperator(operator_i, newOperator)}
-                                                    }
-                                                    defaultValue={operatorStates[operator_i].output[output_i].x}
-                                                    style={{width:'30px', textAlign:'center'}}
-                                                ></input>
-                                                <input
-                                                    className={styles.program}
-                                                    onChange={event => {
-                                                        if (event.target.value.length == 0) return;
-                                                        let newOperator = JSON.parse(JSON.stringify(operatorStates[operator_i]))
-                                                        newOperator.output[output_i].y = parseInt(event.target.value)
-                                                        setOperator(operator_i, newOperator)}
-                                                    }
-                                                    defaultValue={operatorStates[operator_i].output[output_i].y}
-                                                    style={{width:'30px', textAlign:'center'}}
-                                                ></input>
-                                                {
-                                                    (output_i != operatorStates[operator_i].output.length-1) &&
-                                                    <p className={styles.input_text}>{`,`}</p>
-                                                }
-                                            </div>
-                                        ))
-                                    }
-
                                 </div>
                             ))
                         }
                     </div>
 
-                    <div className={styles.inputs} style={{padding: '2rem',borderBottom:'1px solid #333333'}}>
-                        {
-                            (animationState=='Stop') ?
-                                Array.from({length:numMechs}).map ((_,mech_i) => (
-                                    <MechInput
-                                        key={`mech-input-${mech_i}`}
-                                        mechIndex={mech_i}
-                                        position={mechInitPositions[mech_i]}
-                                        program={programs[mech_i]}
-                                        pc={0}
-                                        onPositionChange={(index, position) => {
-                                            setMechInitPosition(index, position);
-                                        }}
-                                        onProgramChange={(index, program) =>
-                                            setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
-                                        }
-                                    />
-                                ))
-                            :
-                                Array.from({length:numMechs}).map ((_,mech_i) => (
-                                    <MechInput
-                                        key={`mech-input-${mech_i}`}
-                                        mechIndex={mech_i}
-                                        position={mechInitPositions[mech_i]}
-                                        program={programs[mech_i]}
-                                        pc={mechStates[mech_i].pc_next}
-                                        onPositionChange={(index, position) => {}}
-                                        onProgramChange={(index, program) => {}}
-                                    />
-                                ))
-                        }
+                    <div className={styles.delivered_atoms}>
+                        <Delivery delivered={delivered} cost_accumulated={cost_accumulated}/>
                     </div>
-                {/* </div> */}
 
+                    <div className={styles.summary}>
+                        <Summary frames={frames} n_cycles={N_CYCLES}/>
+                    </div>
 
-                <div className={styles.grid_parent}>
-                    <OperatorGridBg operators={operatorStates} />
-                    {
-                        Array.from({length:DIM}).map ((_,i) => ( // i is y
-                            <div key={`row-${i}`} className={styles.grid_row}>
-                                {
-                                    Array.from({length:DIM}).map ((_,j) => ( // j is x
-                                        <Unit
-                                            key={`unit-${j}-${i}`}
-                                            state={unitStates[j][i]}
-                                            handleMouseOver={() => handleMouseOver(j,i)}
-                                            handleMouseOut={() => handleMouseOut()}
-                                        />
-                                    ))
-                                }
-                            </div>
-                        ))
-                    }
-                </div>
+                    <div  className={styles.summary}>
+                        <Leaderboard />
+                    </div>
 
-                <div className={styles.delivered_atoms}>
-                    <Delivery delivered={delivered} cost_accumulated={cost_accumulated}/>
-                </div>
-
-                <div className={styles.summary}>
-                    <Summary frames={frames} n_cycles={N_CYCLES}/>
-                </div>
-
-                <div  className={styles.summary}>
-                    <Leaderboard />
-                </div>
-
-            </main>
+                </main>
+            
+            </ThemeProvider>
 
         </div>
     )
