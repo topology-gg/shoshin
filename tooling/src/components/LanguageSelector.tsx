@@ -36,6 +36,11 @@ const LanguageSelector = () => {
                 setCurrLang ('cn');
             }}>中文</button>
 
+            <button style={buttonStyle('fr')} onClick={() => {
+                i18next.changeLanguage("fr");
+                setCurrLang ('fr');
+            }}>Français</button>
+
         </div>
     );
 };
