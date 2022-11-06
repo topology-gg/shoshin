@@ -42,10 +42,17 @@ button:hover {
     justify-content: center;
     align-items: center;
     color: inherit;
+    cursor: default;
     text-decoration: none;
     border-radius: 0.5rem;
     transition: color 0.15s ease, border-color 0.15s ease;
     max-width: 300px;
+}
+
+.grid:hover {
+    outline-width: 1px;
+    outline-style: dashed;
+    outline-color: #63e2ff88;
 }
 
 .machine {
