@@ -5,13 +5,10 @@ import {
 } from '../../lib/api'
 import LeaderboardRow from './LeaderboardRow'
 
-const Leaderboard = () => {
+const Leaderboard = ({ loadSolution }) => {
 
     const { data } = useSolutions ()
-
     const solutions: any[] = data?.solutions
-    console.log ('> queried solutions:', solutions)
-
 
     return (
         <>
@@ -31,12 +28,11 @@ const Leaderboard = () => {
                     {
                         solutions ? solutions.map(
                             (solution, index) => {
-                                console.log('> solution', solution)
-                                console.log('> index', index)
-                                return <LeaderboardRow solution={solution} index={index}/>;
+                                return <LeaderboardRow key={`leaderboard-row-${index}`} solution={solution} index={index} loadSolution={loadSolution}/>;
                             }
                         )
                         :
+                        // <>{'loading...'}</>
                         <></>
                     }
                 </tbody>

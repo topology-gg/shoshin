@@ -81,6 +81,11 @@ button:hover {
     vertical-align: middle;
 }
 
+.solution_row:hover {
+    background-color: #FFFE71;
+    cursor: pointer;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -95,6 +100,10 @@ body {
 
 li {
     font-size: 0.75rem;
+}
+
+table {
+    border-collapse:collapse;
 }
 
 #submit-button{

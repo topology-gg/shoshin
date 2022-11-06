@@ -12,6 +12,7 @@ interface MechInputProps {
     pc: number;
     onPositionChange: (mechIndex: number, position: Grid) => void;
     onProgramChange: (mechIndex: number, program: string) => void;
+    disabled: boolean
 }
 
 const MechInput = ({
@@ -21,6 +22,7 @@ const MechInput = ({
     pc,
     onPositionChange,
     onProgramChange,
+    disabled
 }: MechInputProps) => {
 
     const { t } = useTranslation();
@@ -53,7 +55,9 @@ const MechInput = ({
                     });
                 }}
                 defaultValue={position.x}
+                value={position.x}
                 style={{ width: "30px", textAlign: "center" }}
+                disabled = {disabled}
             ></input>
 
             <input
@@ -66,7 +70,9 @@ const MechInput = ({
                     });
                 }}
                 defaultValue={position.y}
+                value={position.y}
                 style={{ width: "30px", textAlign: "center", marginRight: '0.8rem' }}
+                disabled = {disabled}
             ></input>
 
             <div className={styles.programWrapper}>
@@ -88,7 +94,9 @@ const MechInput = ({
                         }
                     }}
                     defaultValue={program}
+                    value={program}
                     style={style}
+                    disabled = {disabled}
                 ></input>
             </div>
         </div>

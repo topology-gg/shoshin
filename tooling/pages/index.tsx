@@ -32,7 +32,7 @@ import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
 
 const theme = createTheme({
     typography: {
-        fontFamily: "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;"     
+        fontFamily: "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;"
     },
 });
 
@@ -99,7 +99,7 @@ export default function Home() {
     const [animationFrame, setAnimationFrame] = useState<number> (0)
     const [frames, setFrames] = useState<Frame[]>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
-    const [viewDemoSolution, setViewDemoSolution] = useState<Solution>(DEMO_SOLUTIONS[0]);
+    const [viewSolution, setViewSolution] = useState<Solution>(DEMO_SOLUTIONS[0]);
 
     // React states for UI
     const [gridHovering, setGridHovering] = useState<[string, string]>(['-','-'])
@@ -579,17 +579,16 @@ export default function Home() {
         setGridHovering (['-', '-'])
     }
 
-    function handleDemoClick (index: number) {
+    function handleLoadSolutionClick (viewSolution: Solution) {
+        console.log ('load solution:', viewSolution)
 
-        const viewSolution = DEMO_SOLUTIONS[index]
-        setViewDemoSolution (prev => viewSolution)
+        setViewSolution (prev => viewSolution)
 
         setNumMechs (prev => viewSolution.mechs.length)
         setPrograms (prev => viewSolution.programs)
         setMechInitPositions (prev => viewSolution.mechs.map(mech => mech.index))
         setNumOperators (prev => viewSolution.operators.length)
         setOperatorStates (prev => viewSolution.operators)
-
     }
 
     // Lazy style objects
@@ -673,9 +672,9 @@ export default function Home() {
                         {
                             Array.from({length:DEMO_SOLUTIONS.length}).map((_,i) => (
                                 i == 0 ?
-                                <button key={`load-demo-${i}`} onClick={() => handleDemoClick(0)}>{t('demo-blank')}</button>
+                                <button key={`load-demo-${i}`} onClick={() => handleLoadSolutionClick(DEMO_SOLUTIONS[0])}>{t('demo-blank')}</button>
                                 :
-                                <button key={`load-demo-${i}`} onClick={() => handleDemoClick(i)}>{t(`demo`)}{i-1}</button>
+                                <button key={`load-demo-${i}`} onClick={() => handleLoadSolutionClick(DEMO_SOLUTIONS[i])}>{t(`demo`)}{i-1}</button>
                             ))
                         }
                     </div>
@@ -705,6 +704,7 @@ export default function Home() {
                                                         }
                                                         defaultValue={operatorStates[operator_i].input[input_i].x}
                                                         style={{width:'30px', textAlign:'center'}}
+                                                        disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     <input
                                                         className={styles.program}
@@ -717,6 +717,7 @@ export default function Home() {
                                                         }
                                                         defaultValue={operatorStates[operator_i].input[input_i].y}
                                                         style={{width:'30px', textAlign:'center'}}
+                                                        disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     {
                                                         input_i == operatorStates[operator_i].input.length-1 ? (
@@ -742,6 +743,7 @@ export default function Home() {
                                                         }
                                                         defaultValue={operatorStates[operator_i].output[output_i].x}
                                                         style={{width:'30px', textAlign:'center'}}
+                                                        disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     <input
                                                         className={styles.program}
@@ -753,6 +755,7 @@ export default function Home() {
                                                         }
                                                         defaultValue={operatorStates[operator_i].output[output_i].y}
                                                         style={{width:'30px', textAlign:'center'}}
+                                                        disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     {
                                                         (output_i != operatorStates[operator_i].output.length-1) &&
@@ -783,6 +786,7 @@ export default function Home() {
                                             onProgramChange={(index, program) =>
                                                 setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
                                             }
+                                            disabled = {animationState == 'Stop' ? false : true}
                                         />
                                     ))
                                 :
@@ -795,6 +799,7 @@ export default function Home() {
                                             pc={mechStates[mech_i].pc_next}
                                             onPositionChange={(index, position) => {}}
                                             onProgramChange={(index, program) => {}}
+                                            disabled = {animationState == 'Stop' ? false : true}
                                         />
                                     ))
                             }
@@ -835,11 +840,11 @@ export default function Home() {
                     </div>
 
                     <div  className={styles.summary}>
-                        <Leaderboard />
+                        <Leaderboard loadSolution={handleLoadSolutionClick}/>
                     </div>
 
                 </main>
-            
+
             </ThemeProvider>
 
         </div>
