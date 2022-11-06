@@ -1,8 +1,10 @@
 const resources = {
     en: {
         translation: {
-            MuMu: "MuMu",
+            MuMu: "MuMu - season 0 prelaunch",
             Subtitle: "An experiment by Topology",
+            "Connect": "Connect ",
+            "Connected": "You are: ",
             frame: "Frame",
             mech: "mech",
             newMech: "new mech",
@@ -16,9 +18,12 @@ const resources = {
             decrementFrame: "-1 frame",
             hovering: "hovering",
             "Stir ": "Stir ",
-            Shake: "Shake",
-            Steam: "Steam",
-            Smash: "Smash",
+            "Shake": "Shake",
+            "Steam": "Steam",
+            "Smash": "Smash",
+            "Submit to": "Submit to",
+            "demo-blank": "Blank",
+            "demo": "Demo",
             tutorial: {
                 title: "How to play",
                 thesisTheme: "Thesis & Theme",
@@ -82,8 +87,10 @@ const resources = {
     },
     cn: {
         translation: {
-            MuMu: "挪挪",
+            MuMu: "挪挪 - 第0季發佈準備",
             Subtitle: "Topology 的一項實驗",
+            "Connect": "連接 ",
+            "Connected": "你是: ",
             frame: "幀",
             mech: "機械",
             newMech: "添加機械",
@@ -97,9 +104,12 @@ const resources = {
             decrementFrame: "-1幀",
             hovering: "鼠標位置",
             "Stir ": "攪攪",
-            Shake: "搖搖",
-            Steam: "蒸蒸",
-            Smash: "砸砸",
+            "Shake": "搖搖",
+            "Steam": "蒸蒸",
+            "Smash": "砸砸",
+            "Submit to": "提交至",
+            "demo-blank": "空白",
+            "demo": "範例",
             tutorial: {
                 title: "怎麼玩",
                 thesisTheme: "主題",
