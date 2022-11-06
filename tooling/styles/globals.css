@@ -97,6 +97,10 @@ li {
     font-size: 0.75rem;
 }
 
+table {
+    border-collapse:collapse;
+}
+
 #submit-button{
     background: #EFEFEF url('../public/rsz_1starknet_icon.png') no-repeat;
     background-position: 93% 50%;

@@ -99,7 +99,7 @@ export default function Home() {
     const [animationFrame, setAnimationFrame] = useState<number> (0)
     const [frames, setFrames] = useState<Frame[]>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
-    const [viewDemoSolution, setViewDemoSolution] = useState<Solution>(DEMO_SOLUTIONS[0]);
+    const [viewSolution, setViewSolution] = useState<Solution>(DEMO_SOLUTIONS[0]);
 
     // React states for UI
     const [gridHovering, setGridHovering] = useState<[string, string]>(['-','-'])
@@ -579,10 +579,9 @@ export default function Home() {
         setGridHovering (['-', '-'])
     }
 
-    function handleDemoClick (index: number) {
+    function handleLoadSolutionClick (viewSolution: Solution) {
 
-        const viewSolution = DEMO_SOLUTIONS[index]
-        setViewDemoSolution (prev => viewSolution)
+        setViewSolution (prev => viewSolution)
 
         setNumMechs (prev => viewSolution.mechs.length)
         setPrograms (prev => viewSolution.programs)
@@ -673,9 +672,9 @@ export default function Home() {
                         {
                             Array.from({length:DEMO_SOLUTIONS.length}).map((_,i) => (
                                 i == 0 ?
-                                <button key={`load-demo-${i}`} onClick={() => handleDemoClick(0)}>{t('demo-blank')}</button>
+                                <button key={`load-demo-${i}`} onClick={() => handleLoadSolutionClick(DEMO_SOLUTIONS[0])}>{t('demo-blank')}</button>
                                 :
-                                <button key={`load-demo-${i}`} onClick={() => handleDemoClick(i)}>{t(`demo`)}{i-1}</button>
+                                <button key={`load-demo-${i}`} onClick={() => handleLoadSolutionClick(DEMO_SOLUTIONS[i])}>{t(`demo`)}{i-1}</button>
                             ))
                         }
                     </div>
@@ -841,7 +840,7 @@ export default function Home() {
                     </div>
 
                     <div  className={styles.summary}>
-                        <Leaderboard />
+                        <Leaderboard loadSolution={handleLoadSolutionClick}/>
                     </div>
 
                 </main>
