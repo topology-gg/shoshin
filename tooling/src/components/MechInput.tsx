@@ -55,6 +55,7 @@ const MechInput = ({
                     });
                 }}
                 defaultValue={position.x}
+                value={position.x}
                 style={{ width: "30px", textAlign: "center" }}
                 disabled = {disabled}
             ></input>
@@ -69,6 +70,7 @@ const MechInput = ({
                     });
                 }}
                 defaultValue={position.y}
+                value={position.y}
                 style={{ width: "30px", textAlign: "center", marginRight: '0.8rem' }}
                 disabled = {disabled}
             ></input>
@@ -92,6 +94,7 @@ const MechInput = ({
                         }
                     }}
                     defaultValue={program}
+                    value={program}
                     style={style}
                     disabled = {disabled}
                 ></input>
