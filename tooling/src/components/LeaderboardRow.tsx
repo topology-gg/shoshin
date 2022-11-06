@@ -104,12 +104,13 @@ export default function LeaderboardRow ({ solution, index, loadSolution }) {
     // render table row
     return (
         <tr key={`sol-row-${index}`} className="solution_row" onClick={()=>handleOnClick()}>
-            <td className={'leaderboard_row'} key={`sol-rowidx-${index}`}>{index}</td>
+            <td className={'leaderboard_row'} key={`sol-rowidx-${index}`}>{index + 1}</td>
             <td className={'leaderboard_row'} key={`sol-account-${index}`}>{solver_name}</td>
             <td className={'leaderboard_row'} key={`sol-delivered-${index}`}>{solution.delivered}</td>
             <td className={'leaderboard_row'} key={`sol-static-cost-${index}`}>{solution.static_cost}</td>
             <td className={'leaderboard_row'} key={`sol-latency-${index}`}>{solution.latency / SCALE}</td>
             <td className={'leaderboard_row'} key={`sol-dynamic-cost-${index}`}>{solution.dynamic_cost / SCALE}</td>
+            <td className={'leaderboard_row'} key={`sol-rowidx-${index}`}>{solution._chain.valid_from}</td>
         </tr>
     )
 

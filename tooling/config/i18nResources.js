@@ -82,6 +82,16 @@ const resources = {
                 delivery: "delivery",
                 staticCost: "Static cost",
             },
+            leaderboard: {
+                title: "Top 20 Solutions",
+                rank: "Rank",
+                account: "Who",
+                delivered: "Delivered",
+                static_cost: "Static cost",
+                latency: "Average latency per delivery",
+                dynamic_cost: "Average dynamic cost per delivery",
+                block_number: "Block number"
+            }
         },
     },
     cn: {
@@ -166,6 +176,16 @@ const resources = {
                 delivery: "送貨",
                 staticCost: "靜態成本",
             },
+            leaderboard: {
+                title: "天下前 20 最優解",
+                rank: "排行",
+                account: "誰",
+                delivered: "總遞送",
+                static_cost: "靜態成本",
+                latency: "平均遞送延遲",
+                dynamic_cost: "平均遞送動態成本",
+                block_number: "區塊高度"
+            }
         },
     },
     fr: {
