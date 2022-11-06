@@ -32,7 +32,7 @@ import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
 
 const theme = createTheme({
     typography: {
-        fontFamily: "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;"     
+        fontFamily: "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;"
     },
 });
 
@@ -705,6 +705,7 @@ export default function Home() {
                                                         }
                                                         defaultValue={operatorStates[operator_i].input[input_i].x}
                                                         style={{width:'30px', textAlign:'center'}}
+                                                        disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     <input
                                                         className={styles.program}
@@ -717,6 +718,7 @@ export default function Home() {
                                                         }
                                                         defaultValue={operatorStates[operator_i].input[input_i].y}
                                                         style={{width:'30px', textAlign:'center'}}
+                                                        disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     {
                                                         input_i == operatorStates[operator_i].input.length-1 ? (
@@ -742,6 +744,7 @@ export default function Home() {
                                                         }
                                                         defaultValue={operatorStates[operator_i].output[output_i].x}
                                                         style={{width:'30px', textAlign:'center'}}
+                                                        disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     <input
                                                         className={styles.program}
@@ -753,6 +756,7 @@ export default function Home() {
                                                         }
                                                         defaultValue={operatorStates[operator_i].output[output_i].y}
                                                         style={{width:'30px', textAlign:'center'}}
+                                                        disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     {
                                                         (output_i != operatorStates[operator_i].output.length-1) &&
@@ -783,6 +787,7 @@ export default function Home() {
                                             onProgramChange={(index, program) =>
                                                 setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
                                             }
+                                            disabled = {animationState == 'Stop' ? false : true}
                                         />
                                     ))
                                 :
@@ -795,6 +800,7 @@ export default function Home() {
                                             pc={mechStates[mech_i].pc_next}
                                             onPositionChange={(index, position) => {}}
                                             onProgramChange={(index, program) => {}}
+                                            disabled = {animationState == 'Stop' ? false : true}
                                         />
                                     ))
                             }
@@ -839,7 +845,7 @@ export default function Home() {
                     </div>
 
                 </main>
-            
+
             </ThemeProvider>
 
         </div>

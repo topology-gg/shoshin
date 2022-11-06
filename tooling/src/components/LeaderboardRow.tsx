@@ -1,6 +1,7 @@
 import { CSSProperties } from '@mui/styled-engine'
 import React from 'react'
 import { toBN } from 'starknet/dist/utils/number'
+import Solution from '../types/Solution'
 import {
     useSolutions,
     useStardiscRegistryByAccount
@@ -25,9 +26,14 @@ export default function LeaderboardRow ( {solution, index} ) {
         solver_name = String(address).slice(0,5) + '...' + String(address).slice(-4)
     }
 
+    //
+    // extract solution in react-loadable type (type Solution)
+    //
 
+
+    // render table row
     return (
-        <tr key={`sol-row-${index}`} className="solution_row">
+        <tr key={`sol-row-${index}`} className="solution_row" onClick={()=>{}}>
             <td className={'leaderboard_row'} key={`sol-rowidx-${index}`}>{index}</td>
             <td className={'leaderboard_row'} key={`sol-account-${index}`}>{solver_name}</td>
             <td className={'leaderboard_row'} key={`sol-delivered-${index}`}>{solution.delivered}</td>
