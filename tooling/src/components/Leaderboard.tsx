@@ -1,7 +1,9 @@
 import React from 'react'
+import { toBN } from 'starknet/dist/utils/number'
 import {
-    useSolutions
+    useSolutions,
 } from '../../lib/api'
+import LeaderboardRow from './LeaderboardRow'
 
 const Leaderboard = () => {
 
@@ -9,6 +11,7 @@ const Leaderboard = () => {
 
     const solutions: any[] = data?.solutions
     console.log ('> queried solutions:', solutions)
+
 
     return (
         <>
@@ -26,17 +29,15 @@ const Leaderboard = () => {
                 </thead>
                 <tbody>
                     {
-                        solutions ?
-                        solutions.map((sol, sol_i) =>
-                            <tr key={`sol-row-${sol_i}`} className="solution_row">
-                                <td key={`sol-rowidx-${sol_i}`}>{sol_i}</td>
-                                <td key={`sol-account-${sol_i}`}>{sol.solver}</td>
-                                <td key={`sol-delivered-${sol_i}`}>{sol.delivered}</td>
-                                <td key={`sol-static-cost-${sol_i}`}>{sol.static_cost}</td>
-                                <td key={`sol-latency-${sol_i}`}>{sol.latency}</td>
-                                <td key={`sol-dynamic-cost-${sol_i}`}>{sol.dynamic_cost}</td>
-                            </tr>
-                        ) : <></>
+                        solutions ? solutions.map(
+                            (solution, index) => {
+                                console.log('> solution', solution)
+                                console.log('> index', index)
+                                return <LeaderboardRow solution={solution} index={index}/>;
+                            }
+                        )
+                        :
+                        <></>
                     }
                 </tbody>
             </table>

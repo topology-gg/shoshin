@@ -8,10 +8,13 @@ export default async function handler(req, res) {
 
     const db = client.db('mumu_indexer')
     const solutions = await db
-        .collection('events')
+        .collection('mumu-s0-events')
         .find({
             instructions: {
                 $not: { $size: 0 }
+            },
+            delivered: {
+                $ne: 0
             }
         })
         .toArray()
