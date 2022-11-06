@@ -44,12 +44,13 @@ const resources = {
                 instructionsLine6:
                     "On operator placement: operands and product must be contiguous grids i.e. for a+b=c, a&b and b&c must both be neighbors. When the contiguity rule is violated, operator symbols are not rendered.",
                 instructionsLine7:
-                    "Faucet is marked as \"F\" on the board, while Sink is marked as \"S\" on the board.",
+                    'Faucet is marked as "F" on the board, while Sink is marked as "S" on the board.',
                 instructionsLine8:
                     "Program size shall not exceed 40 instructions.",
                 formulaList: "Formula list",
                 goal: "Goal",
-                goalAffordance: "With Faucet replenishing <1 /> at one unit per frame,",
+                goalAffordance:
+                    "With Faucet replenishing <1 /> at one unit per frame,",
                 goalDeliver: "Produce and deliver <1 /> to Sink.",
                 goalLine2: "Minimize the latency and cost of your solution.",
                 costTitle: "Cost",
@@ -118,7 +119,7 @@ const resources = {
                     "<挪挪>是一種結合組合語言和並行處理的多維度優化謎題。在板上擺放小機械們，透過編程描述他們的行為，然後擺放配方，將水龍頭 (Faucet) 產出的原料風味原子轉換成目標風味原子，投遞於水槽 (Sink)。玩家提交的解決方案將以吞吐量和成本進行排名。",
                 instructions: "玩法",
                 instructionsLine1:
-                    '目前只有單例機械 (Singleton) 可用，其指令集：[<1>W</1>,<3>A</3>,<5>S</5>,<5>D</5>] 為移動 (每幀移動一格)、<7>Z</7> 為撿起原子、<9>X</9> 為放下原子、<11>G</11> 為阻塞程序直到能夠撿起原子，還有 <13>H</13> 為阻塞程序直到能夠放下原子。',
+                    "目前只有單例機械 (Singleton) 可用，其指令集：[<1>W</1>,<3>A</3>,<5>S</5>,<5>D</5>] 為移動 (每幀移動一格)、<7>Z</7> 為撿起原子、<9>X</9> 為放下原子、<11>G</11> 為阻塞程序直到能夠撿起原子，還有 <13>H</13> 為阻塞程序直到能夠放下原子。",
                 instructionsLine2:
                     "補充說明 <1>G</1> 指令: 機械程序將阻塞於此指令，直到機械位置的板上有能夠被撿起的原子。當條件滿足，機械將於同幀撿起原子，並取消阻塞。如果執行此指令時機械處於關閉狀態（即不可能再撿起更多原子），此指令將形同無操作，不會阻塞。",
                 instructionsLine3:
@@ -129,7 +130,7 @@ const resources = {
                 instructionsLine6:
                     "配方擺法的連續性規則：輸入和輸出必須位於連續的網格。以 &(A, B) = C 為例，A 和 B 以及 B 和 C 都必須是鄰居關係。違反連續性規則時，版面上不會渲染配方符號。",
                 instructionsLine7:
-                    "水龍頭在板上以 \"F\" 標示；水槽則以 \"S\" 標示。",
+                    '水龍頭在板上以 "F" 標示；水槽則以 "S" 標示。',
                 instructionsLine8:
                     "任一機械的程序長度上限為 40 個指令。",
                 formulaList: "配方列表",
@@ -166,6 +167,74 @@ const resources = {
                 averageDynamicCostPost: "遞送平均動態成本",
                 delivery: "送貨",
                 staticCost: "靜態成本",
+            },
+        },
+    },
+    fr: {
+        translation: {
+            MuMu: "BouBou",
+            Subtitle: "Une experience realisée par Topology",
+            frame: "Séquence",
+            mech: "mech",
+            newMech: "nouveau mech",
+            removeMech: "supprimer mech",
+            newOperation: "nouvelle {{operation}}",
+            removeOp: "supprimer op",
+            run: "Run",
+            pause: "Pause",
+            stop: "Stop",
+            incrementFrame: "+1 séquence",
+            decrementFrame: "-1 séquence",
+            hovering: "survoler",
+            "Stir ": "Remuer   ",
+            Shake: "Secouer  ",
+            Steam: "Vaporiser",
+            Smash: "Fracasser",
+            tutorial: {
+                title: "Comment jouer",
+                thesisTheme: "Thèse et Thème",
+                thesisLine1:
+                    "Les blockchains layer 1 distribuent une identité par contribution financière ou pay to mint. Les blockchains layer 2, avec leur capacité de calcul supérieure, permettraient de revendiquer une identité à travers la vérification de compétence ou solve to mint.",
+                thesisLine2:
+                    "BouBou est un puzzle qui combine la programmation visuelle et parallèle. Il s'agit de programmer et placer des petits robots (\"mechs\") sur le damier et de placer les opérateurs qui exécutent des formules pour transporter et transmuter différents types d'atomes depuis le Faucet jusqu'à l'évier",
+                instructions: "Instructions",
+                instructionsLine1:
+                    "Actuellement, il n’existe que les mécanismes (\"mech\") singletons, dont l'ensemble des instructions est [<1>W</1>,<3>A</3>,<5>S</5>,<5>D</5>] pour le déplacement, <7>Z</7> pour ramasser, <9>X</9> pour déposer, <11>G</11> pour attendre jusqu'à ce qu'un ramassage soit possible et <13>H</13> pour attendre jusqu'à ce qu'un dépôt soit possible,",
+                instructionsLine2:
+                    "Détails sur <1>G</1>: le mech restera bloqué sur cette instruction jusqu'à ce qu'un atome libre soit disponible à sa localisation sur le damier. Le mech ramasse alors l'atome dans la séquence actuelle et continuera l'exécution normale de ses instructions dans la séquence suivante. Si le mech est fermé quand il arrive à cette instruction (i.e. incapable de ramasser), l'instruction est passée.",
+                instructionsLine3:
+                    "Détails sur <1>G</1>: le mech restera bloqué sur cette instruction jusqu'à ce que sa localisation sur le damier soit libre. Le mech dépose alors l'atome dans la séquence actuelle et continuera l'exécution normale de ses instructions dans la séquence suivante. Si le mech est ouvert quand il arrive à cette instruction (i.e. incapable de déposer), l'instruction est passée.",
+                instructionsLine4: "le symbole _ répresente une non-opération",
+                instructionsLine5:
+                    "Pendant la simulation, chaque mech parcourt son programme (séquence d'instructions) en boucle.",
+                instructionsLine6:
+                    "Détails sur le placement des opérateurs: les opérandes et produits doivent être continues i.e. pour a+b=c, a&b et b&c doivent être voisins. Quand la règle de continuité est violée, les opérateurs ne sont pas affichés.",
+                instructionsLine7:
+                    'Le Faucet et le Sink sont représentés respectivement par un "F" et un "S" sur le damier.',
+                instructionsLine8:
+                    "Le Faucet peut produire <1 /> au rythme d'une unité par séquence.",
+                formulaList: "Liste des Formules",
+                goal: "Objectif",
+                goalAffordance:
+                    "En utilisant le Faucet qui produit <1 /> au rythme d'une unité par séquence,",
+                goalDeliver: "Produit et livre <1 /> au Sink.",
+                goalLine2: "Minimise la latence et le coût de la solution.",
+            },
+            delivery: {
+                accumulatedCost: "Coût accumulé",
+                delivered: "Livré",
+            },
+            summary: {
+                title: "Résumé de la dernière simulation",
+                totalPre: "Nombre total de livraisons en",
+                totalPost: " unité(s)",
+                inFrames: "en {{frames}} séquences",
+                averageLatencyPre: "Latence moyenne par",
+                averageLatencyPost: "unité livrée",
+                averageDynamicCostPre: "Coût dynamique moyen par",
+                averageDynamicCostPost: "unité livrée",
+                delivery: "Livré",
+                staticCost: "Coût statique",
             },
         },
     },
