@@ -3,7 +3,7 @@ import React from 'react'
 import { toBN } from 'starknet/dist/utils/number'
 import Solution from '../types/Solution'
 import MechState from '../types/MechState'
-import Operator from '../types/Operator'
+import Operator, { OPERATOR_TYPES } from '../types/Operator'
 import {
     useSolutions,
     useStardiscRegistryByAccount
@@ -32,45 +32,78 @@ export default function LeaderboardRow ({ solution, index, loadSolution }) {
     //
     // extract solution in react-loadable type (type Solution)
     //
+    let programs: string[] = []
+    let program_offset=0
+    for (const program_len of solution.instructions_sets){
+        const instruction_array = solution.instructions.slice(program_offset, program_offset+program_len)
+        const instruction_array_decoded = instruction_array.map (decode_instruction)
+        programs.push (instruction_array_decoded.join(','))
+        program_offset += program_len
+    }
+
+    let operators: Operator[] = []
+    let input_offset = 0
+    let output_offset = 0
+    for (const operator_type of solution.operators_type){
+        if (operator_type == 0) { // STIR
+            operators.push ({
+                input: [solution.operators_inputs[input_offset], solution.operators_inputs[input_offset+1]],
+                output: [solution.operators_outputs[output_offset]],
+                typ: OPERATOR_TYPES.STIR
+            })
+            input_offset += 2
+            output_offset += 1
+        }
+        else if (operator_type == 1) { // SHAKE
+            operators.push ({
+                input: [solution.operators_inputs[input_offset], solution.operators_inputs[input_offset+1]],
+                output: [solution.operators_outputs[output_offset]],
+                typ: OPERATOR_TYPES.SHAKE
+            })
+            input_offset += 2
+            output_offset += 1
+        }
+        else if (operator_type == 2) { // STEAM
+            operators.push ({
+                input: [solution.operators_inputs[input_offset], solution.operators_inputs[input_offset+1], solution.operators_inputs[input_offset+2]],
+                output: [solution.operators_outputs[output_offset], solution.operators_outputs[output_offset+1]],
+                typ: OPERATOR_TYPES.STEAM
+            })
+            input_offset += 3
+            output_offset += 2
+        }
+        else if (operator_type == 3) { // SMASH
+            operators.push ({
+                input: [solution.operators_inputs[input_offset]],
+                output: [
+                    solution.operators_outputs[output_offset],
+                    solution.operators_outputs[output_offset+1],
+                    solution.operators_outputs[output_offset+2],
+                    solution.operators_outputs[output_offset+3],
+                    solution.operators_outputs[output_offset+4]
+                ],
+                typ: OPERATOR_TYPES.SMASH
+            })
+            input_offset += 1
+            output_offset += 5
+        }
+    }
+
     let extractedSolution: Solution = {
         mechs: solution.mechs.map ((mech) => {
             return {id: mech.id.toString(), typ: MechType.SINGLETON, status: MechStatus.OPEN, index: {x:mech.index.x, y:mech.index.y} ,pc_next:0} as MechState
         }),
-        programs: [], // string[]
-        operators: [] // Operator[]
+        programs: programs, // string[]
+        operators: operators // Operator[]
     }
-
-
-    // export default interface Solution {
-    //     mechs: MechState[]
-    //     programs: string[]
-    //     operators: Operator[]
-    // }
-
-    // export default interface MechState {
-    //     id: string
-    //     typ: MechType
-    //     status: MechStatus
-    //     index: Grid
-    //     pc_next: number
-    // }
-
-    // // TODO: we want dependently-typed interface i.e. Operator.input would have array size determined by Operator.typ
-    // export default interface Operator {
-    //     input: Grid[];
-    //     output: Grid[];
-    //     typ: OperatorType; // STIR, SHAKE, STEAM, SMASH
-    // }
-
 
     function handleOnClick() {
-        if (!extractedSolution) return;
+        loadSolution (extractedSolution)
     }
-    const tr_style = !extractedSolution ? {backgroundColor: '#DDDDDD', color: '#999999'} : {backgroundColor: ''}
 
     // render table row
     return (
-        <tr key={`sol-row-${index}`} className="solution_row" onClick={()=>handleOnClick()} style={tr_style}>
+        <tr key={`sol-row-${index}`} className="solution_row" onClick={()=>handleOnClick()}>
             <td className={'leaderboard_row'} key={`sol-rowidx-${index}`}>{index}</td>
             <td className={'leaderboard_row'} key={`sol-account-${index}`}>{solver_name}</td>
             <td className={'leaderboard_row'} key={`sol-delivered-${index}`}>{solution.delivered}</td>
@@ -80,6 +113,25 @@ export default function LeaderboardRow ({ solution, index, loadSolution }) {
         </tr>
     )
 
+}
+
+// decode instruction from Cairo return (numbers) into characters
+function decode_instruction (x: number) {
+
+    // From Cairo:
+    // namespace ns_instructions {
+    //     const W = 0;  // up
+    //     const A = 1;  // left
+    //     const S = 2;  // down
+    //     const D = 3;  // right
+    //     const Z = 4;  // get
+    //     const X = 5;  // put
+    //     const G = 6;  // block-get
+    //     const H = 7;  // block-put
+    //     const SKIP = 8;  // skip
+    // }
+    const letters = ['W', 'A', 'S', 'D', 'Z', 'X', 'G', 'H', '_']
+    return letters[x]
 }
 
 // reference: https://stackoverflow.com/a/66228871

@@ -580,6 +580,7 @@ export default function Home() {
     }
 
     function handleLoadSolutionClick (viewSolution: Solution) {
+        console.log ('load solution:', viewSolution)
 
         setViewSolution (prev => viewSolution)
 
@@ -588,7 +589,6 @@ export default function Home() {
         setMechInitPositions (prev => viewSolution.mechs.map(mech => mech.index))
         setNumOperators (prev => viewSolution.operators.length)
         setOperatorStates (prev => viewSolution.operators)
-
     }
 
     // Lazy style objects

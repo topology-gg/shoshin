@@ -81,6 +81,11 @@ button:hover {
     vertical-align: middle;
 }
 
+.solution_row:hover {
+    background-color: #FFFE71;
+    cursor: pointer;
+}
+
 * {
   box-sizing: border-box;
 }

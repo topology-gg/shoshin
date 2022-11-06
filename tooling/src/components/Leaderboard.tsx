@@ -8,9 +8,7 @@ import LeaderboardRow from './LeaderboardRow'
 const Leaderboard = ({ loadSolution }) => {
 
     const { data } = useSolutions ()
-
     const solutions: any[] = data?.solutions
-    console.log ('> queried solutions:', solutions)
 
     return (
         <>
@@ -30,12 +28,11 @@ const Leaderboard = ({ loadSolution }) => {
                     {
                         solutions ? solutions.map(
                             (solution, index) => {
-                                console.log('> solution', solution)
-                                console.log('> index', index)
-                                return <LeaderboardRow solution={solution} index={index} loadSolution={loadSolution}/>;
+                                return <LeaderboardRow key={`leaderboard-row-${index}`} solution={solution} index={index} loadSolution={loadSolution}/>;
                             }
                         )
                         :
+                        // <>{'loading...'}</>
                         <></>
                     }
                 </tbody>
