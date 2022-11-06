@@ -23,6 +23,12 @@ button {
     font-family: menlo;
     font-size: 0.75rem;
     margin-right: 3px;
+    height: 1.5rem;
+    border: 1px solid #333333;
+    border-radius: 3px;
+}
+button:hover {
+    background-color: #FFFE71;
 }
 
 .grid {
@@ -62,6 +68,12 @@ button {
     background-color: #FF6347;
 }
 
+.leaderboard_row {
+    width: 8rem;
+    text-align: center;
+    vertical-align: middle;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -76,6 +88,17 @@ body {
 
 li {
     font-size: 0.75rem;
+}
+
+#submit-button{
+    background: #EFEFEF url('../public/rsz_1starknet_icon.png') no-repeat;
+    background-position: 93% 50%;
+    margin-left: 0.2rem;
+    margin-right: 0.2rem;
+    height: 1.5rem;
+    padding-right: 1.6rem;
+    border: 1px solid #333333;
+    border-radius: 3px;
 }
 
 /* source for styling range input below:
@@ -144,4 +167,33 @@ input[type="range"]::-ms-fill-upper {
 
 :root {
   --font-family-secondary: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+}
+
+/* ref: https://alvarotrigo.com/blog/css-highlight-text/ */
+strong {
+    position: relative;
+}
+strong::before {
+    /* Highlight color */
+    background-color: #FFFE71;
+
+    content: "";
+    position: absolute;
+    width: calc(100% + 4px);
+    height: 60%;
+    left: -2px;
+    bottom: 0;
+    z-index: -1;
+    transform: rotate(-5deg);
+}
+
+input::placeholder {
+    opacity: .5;
+}
+
+.result {
+    font-size: 12px;
+    margin-right: 0.5rem;
+    margin-top: 0;
+    margin-bottom: 0;
 }
