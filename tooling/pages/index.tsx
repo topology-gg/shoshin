@@ -49,7 +49,11 @@ export default function Home() {
         unitStatesInit.push(Array(DIM).fill(UNIT_STATE_INIT))
     }
     const FAUCET_POS: Grid = {x:0, y:0}
-    const SINK_POS: Grid = {x:DIM-1, y:DIM-1}
+    const SINK_POS_S: Grid[] = [
+        {x:0,     y:DIM-1},
+        {x:DIM-1, y:0},
+        {x:DIM-1, y:DIM-1},
+    ]
     const MAX_NUM_MECHS = 20
     const MIN_NUM_MECHS = 0
     const MAX_NUM_OPERATORS = 20
@@ -261,7 +265,10 @@ export default function Home() {
 
         // Faucet & Sink
         newStates[FAUCET_POS.x][FAUCET_POS.y].unit_text = UnitText.FAUCET
-        newStates[SINK_POS.x][SINK_POS.y].unit_text = UnitText.SINK
+
+        for (const sink_pos of SINK_POS_S) {
+            newStates[sink_pos.x][sink_pos.y].unit_text = UnitText.SINK
+        }
 
         // Operators
         if (operatorStates && !isAnyOperatorPositionInvalid(operatorStates)){
@@ -293,7 +300,10 @@ export default function Home() {
                 adder_indices_in_str = [...adder_indices_in_str, JSON.stringify(grid)]
             }
         })
-        const faucet_sink_indices_in_str = [JSON.stringify(FAUCET_POS), JSON.stringify(SINK_POS)]
+
+        let faucet_sink_indices_in_str = SINK_POS_S.map (sink_pos => JSON.stringify(sink_pos))
+        faucet_sink_indices_in_str.push (JSON.stringify(FAUCET_POS)) // there's only one faucet
+
         const all_indices = adder_indices_in_str.concat (faucet_sink_indices_in_str)
         const unique_indices = all_indices.filter(onlyUnique)
 
@@ -466,7 +476,13 @@ export default function Home() {
                 const boardConfig: BoardConfig = {
                     dimension: DIM,
                     atom_faucets: [{id:'atom_faucet0', typ:AtomType.VANILLA, index:{x:FAUCET_POS.x, y:FAUCET_POS.y}} as AtomFaucetState],
-                    atom_sinks: [{id:'atom_sink0', index:{x:SINK_POS.x, y:SINK_POS.y}} as AtomSinkState],
+                    // atom_sinks: [{id:'atom_sink0', index:{x:SINK_POS.x, y:SINK_POS.y}} as AtomSinkState],
+                    atom_sinks: SINK_POS_S.map ( (sink_pos, index) => {
+                        return {
+                            id: `atom_sink${index}`,
+                            index: {x: sink_pos.x, y: sink_pos.y}
+                        }
+                    }),
                     operators: operatorStates
                 }
 
