@@ -110,7 +110,7 @@ export default function LeaderboardRow ({ solution, index, loadSolution }) {
             <td className={'leaderboard_row'} key={`sol-static-cost-${index}`}>{solution.static_cost}</td>
             <td className={'leaderboard_row'} key={`sol-latency-${index}`}>{solution.latency / SCALE}</td>
             <td className={'leaderboard_row'} key={`sol-dynamic-cost-${index}`}>{solution.dynamic_cost / SCALE}</td>
-            <td className={'leaderboard_row'} key={`sol-rowidx-${index}`}>{solution._chain.valid_from}</td>
+            <td className={'leaderboard_row'} key={`sol-blocknumber-${index}`}>{solution._chain.valid_from}</td>
         </tr>
     )
 

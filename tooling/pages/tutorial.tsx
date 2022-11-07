@@ -478,6 +478,13 @@ export default function Tutorial() {
                         <li style={FORMULA_LI_STYLE}>
                             {t("tutorial.goalLine2")}
                         </li>
+                        <li style={FORMULA_LI_STYLE}>
+                            {t("tutorial.goalLine3_1")}
+                            <a href="https://stardisc.netlify.app/" target="_blank" rel="noopener noreferrer"
+                               className='stardisc'
+                            ><u><strong>StarDisc</strong></u></a>
+                            {t("tutorial.goalLine3_2")}
+                        </li>
                     </ol>
                 </Box>
             </Modal>
