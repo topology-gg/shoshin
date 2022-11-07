@@ -1,7 +1,7 @@
 const resources = {
     en: {
         translation: {
-            MuMu: "MuMu - season 0 prelaunch",
+            MuMu: "MuMu: Season 0",
             Subtitle: "An experiment by Topology",
             "Connect": "Connect ",
             "Connected": "You are: ",
@@ -98,7 +98,7 @@ const resources = {
     },
     cn: {
         translation: {
-            MuMu: "挪挪 - 第0季發佈準備",
+            MuMu: "挪挪: 第0季",
             Subtitle: "Topology 的一項實驗",
             "Connect": "連接 ",
             "Connected": "你是: ",
