@@ -31,10 +31,15 @@ const LanguageSelector = () => {
                 setCurrLang ('en');
             }}>English</button>
 
-            <button style={buttonStyle('cn')} onClick={() => {
-                i18next.changeLanguage("cn");
-                setCurrLang ('cn');
-            }}>中文</button>
+            <button style={buttonStyle('scn')} onClick={() => {
+                i18next.changeLanguage("scn");
+                setCurrLang ('scn');
+            }}>简中</button>
+
+            <button style={buttonStyle('tcn')} onClick={() => {
+                i18next.changeLanguage("tcn");
+                setCurrLang ('tcn');
+            }}>繁中</button>
 
             <button style={buttonStyle('fr')} onClick={() => {
                 i18next.changeLanguage("fr");
