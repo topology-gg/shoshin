@@ -580,8 +580,9 @@ export default function Home() {
     }
 
     function handleLoadSolutionClick (viewSolution: Solution) {
-        console.log ('load solution:', viewSolution)
+        if (animationState != 'Stop') return;
 
+        console.log ('load solution:', viewSolution)
         setViewSolution (prev => viewSolution)
 
         setNumMechs (prev => viewSolution.mechs.length)
