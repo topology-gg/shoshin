@@ -39,7 +39,7 @@ const theme = createTheme({
 export default function Home() {
 
     // Constants
-    const N_CYCLES = 100
+    const N_CYCLES = 80
     const ANIM_FRAME_LATENCY = 250
     const INIT_PROGRAM = '_'
     const MECH_INIT_X = 0
