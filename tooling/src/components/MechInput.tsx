@@ -43,11 +43,11 @@ const MechInput = ({
         <div key={`input-row-${mechIndex}`} className={styles.input_row}
             onMouseOver={() => {
                 console.log('yo')
-                setDivStyle(prev => { return {backgroundColor:'#FFFE71'} })
+                setDivStyle(prev => { return {backgroundColor:'#FFFE71', borderRadius:'10px 0 0 10px'} })
                 handleMouseOver()
             }}
             onMouseOut={() => {
-                setDivStyle(prev => { return {} })
+                setDivStyle(prev => { return {borderRadius:'10px 0 0 10px'} })
                 handleMouseOut()
             }}
             style={divStyle}
