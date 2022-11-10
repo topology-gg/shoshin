@@ -1,22 +1,21 @@
 import UnitState, {BgStatus, BorderStatus} from '../src/types/UnitState';
 import styles from '../styles/Unit.module.css';
 
-export default function Unit({ state, handleMouseOver, handleMouseOut }) {
+export default function Unit({ state, handleMouseOver, handleMouseOut, mechHighlight }) {
 
     // guardrail
     if (!state) {return <></>}
 
     // Compute atom styles
-    let style
+    const divStyle = mechHighlight ? {borderWidth:'3px'} : {borderWidth: '1px'}
+
     let className: string = '';
     let nuclei: number = 0;
     if (state.bg_status === BgStatus.ATOM_VANILLA_FREE) {
-        // style = { backgroundImage:'../src/images/emoji_peach.pn' }
         className += styles.atomVanillaFree + ' ';
         // nuclei = 1;
     }
     else if (state.bg_status === BgStatus.ATOM_VANILLA_POSSESSED) {
-        // style = { backgroundImage:'../src/images/emoji_peach.pn' }
         className += styles.atomVanillaPossessed + ' ';
         // nuclei = 1;
     }
@@ -74,7 +73,7 @@ export default function Unit({ state, handleMouseOver, handleMouseOut }) {
         <div
             className={`grid ${styles.unit} ${className}`}
             onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}
-            style={style}
+            style={divStyle}
         >
             {Array.from({length: nuclei}).map((_, i) =>
                 <div key={`nucleus${i}`} className={`${styles.nucleus}`} />

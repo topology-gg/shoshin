@@ -7,7 +7,15 @@ import { DIM } from "../constants/constants";
 // An arbitrary value - the svg is scaled to fit 100% its parent
 const GRID_SIZE = 32;
 
-const OperatorGridBg = ({ operators }: { operators: Operator[] }) => {
+const OperatorGridBg = ({ operators, highlighted }: { operators: Operator[], highlighted: boolean[] }) => {
+
+    let opacityValues
+    if (highlighted) {
+        opacityValues = highlighted.map((v,_) => {
+            return v ? 1.0 : 0.3
+        })
+    }
+
     return (
         <div className={styles.gridWrapper}>
             <svg
@@ -28,6 +36,7 @@ const OperatorGridBg = ({ operators }: { operators: Operator[] }) => {
                             .join(" ")}
                         fill="none"
                         stroke={operator.typ.color}
+                        opacity={highlighted && (highlighted.length>0) ? opacityValues[i] : 0.3}
                         strokeWidth={GRID_SIZE * 0.95}
                         strokeLinecap="round"
                         strokeLinejoin="round"

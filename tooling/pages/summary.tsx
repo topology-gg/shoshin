@@ -109,6 +109,7 @@ export default function Summary ({ frames, n_cycles }) {
                     }}
                     handleMouseOut={() => {}}
                     handleMouseOver={() => {}}
+                    mechHighlight = {false}
                 />
                 <p>{t('summary.inFrames', { frames: n_cycles })}:</p>
                 <p style={makeshift_number_style}>{total_delivery}</p>
@@ -126,6 +127,7 @@ export default function Summary ({ frames, n_cycles }) {
                     }}
                     handleMouseOut={() => {}}
                     handleMouseOver={() => {}}
+                    mechHighlight = {false}
                 />
                 <p>{t('summary.averageLatencyPost')}:</p>
                 <p style={makeshift_number_style}>{average_latency_str}</p>
@@ -142,6 +144,7 @@ export default function Summary ({ frames, n_cycles }) {
                     }}
                     handleMouseOut={() => {}}
                     handleMouseOver={() => {}}
+                    mechHighlight = {false}
                 />
                 <p>{t('summary.averageDynamicCostPost')}:</p>
                 <p style={makeshift_number_style}>{average_dynamic_cost_str}</p>

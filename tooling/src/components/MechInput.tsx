@@ -13,6 +13,8 @@ interface MechInputProps {
     onPositionChange: (mechIndex: number, position: Grid) => void;
     onProgramChange: (mechIndex: number, program: string) => void;
     disabled: boolean
+    handleMouseOver: () => void
+    handleMouseOut: () => void
 }
 
 const MechInput = ({
@@ -22,7 +24,9 @@ const MechInput = ({
     pc,
     onPositionChange,
     onProgramChange,
-    disabled
+    disabled,
+    handleMouseOver,
+    handleMouseOut
 }: MechInputProps) => {
 
     const { t } = useTranslation();
@@ -32,17 +36,29 @@ const MechInput = ({
 
     const NORMAL_STYLE = { width: "700px" }
     const INVALID_STYLE = {...NORMAL_STYLE, backgroundColor:'#FFCBCB', color:'#999999'}
-    const [style, setStyle] = useState(NORMAL_STYLE);
+    const [programStyle, setProgramStyle] = useState(NORMAL_STYLE);
+    const [divStyle, setDivStyle] = useState({})
 
     return (
-        <div key={`input-row-${mechIndex}`} className={styles.input_row}>
+        <div key={`input-row-${mechIndex}`} className={styles.input_row}
+            onMouseOver={() => {
+                console.log('yo')
+                setDivStyle(prev => { return {backgroundColor:'#FFFE71'} })
+                handleMouseOver()
+            }}
+            onMouseOut={() => {
+                setDivStyle(prev => { return {} })
+                handleMouseOut()
+            }}
+            style={divStyle}
+        >
             <p
                 style={{
-                    margin: "0 10px 0 0",
+                    margin: "0 1rem 0 3rem",
                     verticalAlign: "middle",
                     height: "20px",
                     lineHeight: "20px",
-                    width: '2.5rem'
+                    width: '2.5rem',
                 }}
             >{t("mech")}{mechIndex}</p>
             <input
@@ -56,7 +72,7 @@ const MechInput = ({
                 }}
                 defaultValue={position.x}
                 value={position.x}
-                style={{ width: "30px", textAlign: "center" }}
+                style={{ width: "30px", textAlign: "center"}}
                 disabled = {disabled}
             ></input>
 
@@ -87,15 +103,15 @@ const MechInput = ({
                         onProgramChange(mechIndex, program);
                         const instructions = program.split(',') as string[]
                         if (instructions.length > PROGRAM_SIZE_MAX) {
-                            setStyle(prev => INVALID_STYLE)
+                            setProgramStyle(prev => INVALID_STYLE)
                         }
                         else {
-                            setStyle(prev => NORMAL_STYLE)
+                            setProgramStyle(prev => NORMAL_STYLE)
                         }
                     }}
                     defaultValue={program}
                     value={program}
-                    style={style}
+                    style={programStyle}
                     disabled = {disabled}
                 ></input>
             </div>
