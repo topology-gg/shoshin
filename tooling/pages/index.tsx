@@ -103,6 +103,10 @@ export default function Home() {
 
     // React states for UI
     const [gridHovering, setGridHovering] = useState<[string, string]>(['-','-'])
+    let operatorInputHightlightInit: boolean[] = []
+    for (let i=0; i<numOperators; i++) {operatorInputHightlightInit.push(false)}
+    const [operatorInputHighlight, setOperatorInputHighlight] = useState<boolean[]>(operatorInputHightlightInit)
+    const [operatorStyles, setOperatorStyles] = useState<React.CSSProperties[]>([{}])
 
     //
     // React state updates
@@ -592,6 +596,45 @@ export default function Home() {
         setOperatorStates (prev => viewSolution.operators)
     }
 
+    function handleMouseOverOperatorInput (operator_i: number) {
+        let newHighlight = []
+        let newOperatorStyles: React.CSSProperties[] = []
+        for (let i=0; i<numOperators; i++){
+            if (i==operator_i){
+                newHighlight.push (true)
+                newOperatorStyles.push ({backgroundColor:'#FFFE71'})
+                console.log('yo')
+            }
+            else {
+                newHighlight.push (false)
+                newOperatorStyles.push ({})
+            }
+
+        }
+        setOperatorInputHighlight(prev => newHighlight)
+        setOperatorStyles(prev => newOperatorStyles)
+    }
+
+    function handleMouseOutOperatorInput (operator_i: number) {
+        let newHighlight = []
+        let newOperatorStyles: React.CSSProperties[] = []
+        for (let i=0; i<numOperators; i++){
+            newHighlight.push (false)
+            newOperatorStyles.push ({})
+        }
+        setOperatorInputHighlight(prev => newHighlight)
+        setOperatorStyles(prev => newOperatorStyles)
+    }
+
+    function handleMouseOverMechInput (mech_i: number) {
+
+    }
+
+    function handleMouseOutMechInput (mech_i: number) {
+
+    }
+
+
     // Lazy style objects
     const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem', height:'1.5rem'}
     const makeshift_run_button_style = runnable ? makeshift_button_style : {...makeshift_button_style, color: '#CCCCCC'}
@@ -683,7 +726,11 @@ export default function Home() {
                         <div className={styles.inputs}>
                         {
                                 Array.from({length:numOperators}).map ((_,operator_i) => (
-                                    <div key={`input-row-${operator_i}`} className={styles.input_row}>
+                                    <div key={`input-row-${operator_i}`} className={styles.input_row}
+                                        onMouseOver={() => handleMouseOverOperatorInput(operator_i)}
+                                        onMouseOut={() => handleMouseOutOperatorInput(operator_i)}
+                                        style={operatorStyles[operator_i]}
+                                    >
                                         <p className={styles.input_name}>{t(operatorStates[operator_i].typ.name)}</p>
 
                                         {
@@ -788,6 +835,8 @@ export default function Home() {
                                                 setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
                                             }
                                             disabled = {animationState == 'Stop' ? false : true}
+                                            handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
+                                            handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
                                         />
                                     ))
                                 :
@@ -801,6 +850,8 @@ export default function Home() {
                                             onPositionChange={(index, position) => {}}
                                             onProgramChange={(index, program) => {}}
                                             disabled = {animationState == 'Stop' ? false : true}
+                                            handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
+                                            handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
                                         />
                                     ))
                             }
@@ -809,7 +860,7 @@ export default function Home() {
 
 
                     <div className={styles.grid_parent}>
-                        <OperatorGridBg operators={operatorStates} />
+                        <OperatorGridBg operators={operatorStates} highlighted={operatorInputHighlight}/>
                         {
                             Array.from({length:DIM}).map ((_,i) => ( // i is y
                                 <div key={`row-${i}`} className={styles.grid_row}>

@@ -10,19 +10,19 @@ export interface OperatorType {
     output_atom_types: AtomType[];
 }
 
-// TODO: we want dependently-typed interface i.e. Operator.input would have array size determined by Operator.typ
 export default interface Operator {
     input: Grid[];
     output: Grid[];
     typ: OperatorType;
 }
 
+// ref to color palette: https://colorhunt.co/
 export const OPERATOR_TYPES: { [key: string]: OperatorType } = {
     STIR: {
         description: "vanilla & vanilla = hazelnut",
         symbol: "&",
         name: "Stir ",
-        color: "#dcf1d677",
+        color: "#A7D2CB",
         input_atom_types: [AtomType.VANILLA, AtomType.VANILLA],
         output_atom_types: [AtomType.HAZELNUT],
     },
@@ -30,7 +30,7 @@ export const OPERATOR_TYPES: { [key: string]: OperatorType } = {
         description: "hazelnut % hazelnut = chocolate",
         symbol: "%",
         name: "Shake",
-        color: "#e6eef699",
+        color: "#F2D388",
         input_atom_types: [AtomType.HAZELNUT, AtomType.HAZELNUT],
         output_atom_types: [AtomType.CHOCOLATE],
     },
@@ -38,7 +38,7 @@ export const OPERATOR_TYPES: { [key: string]: OperatorType } = {
         description: "hazelnut ~ chocolate ~ chocolate  = truffle, vanilla",
         symbol: "^",
         name: "Steam",
-        color: "#f4e8f477",
+        color: "#C98474",
         input_atom_types: [
             AtomType.HAZELNUT,
             AtomType.CHOCOLATE,
@@ -50,7 +50,7 @@ export const OPERATOR_TYPES: { [key: string]: OperatorType } = {
         description: "truffle = vanilla, vanilla, vanilla, vanilla, saffron",
         symbol: "#",
         name: "Smash",
-        color: "#e5e5e566",
+        color: "#874C62",
         input_atom_types: [AtomType.TRUFFLE],
         output_atom_types: [
             AtomType.VANILLA,

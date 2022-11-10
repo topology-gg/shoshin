@@ -13,6 +13,8 @@ interface MechInputProps {
     onPositionChange: (mechIndex: number, position: Grid) => void;
     onProgramChange: (mechIndex: number, program: string) => void;
     disabled: boolean
+    handleMouseOver: () => void
+    handleMouseOut: () => void
 }
 
 const MechInput = ({
@@ -22,7 +24,9 @@ const MechInput = ({
     pc,
     onPositionChange,
     onProgramChange,
-    disabled
+    disabled,
+    handleMouseOver,
+    handleMouseOut
 }: MechInputProps) => {
 
     const { t } = useTranslation();
@@ -35,7 +39,9 @@ const MechInput = ({
     const [style, setStyle] = useState(NORMAL_STYLE);
 
     return (
-        <div key={`input-row-${mechIndex}`} className={styles.input_row}>
+        <div key={`input-row-${mechIndex}`} className={styles.input_row}
+            onMouseOver={() => handleMouseOver} onMouseOut={() => handleMouseOut}
+        >
             <p
                 style={{
                     margin: "0 10px 0 0",
