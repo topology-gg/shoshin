@@ -32,7 +32,7 @@ import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
 import {
     saveWrappedSolutionToLocal,
     getWrappedSolutionFromLocal,
-    getAmountFromLocal,
+    getNamespaceFromLocal,
     removeWrappedSolutionFromLocal
 } from '../src/helpers/localStorage'
 
@@ -117,7 +117,7 @@ export default function Home() {
     const [mechIndexHighlighted, setMechIndexHighlighted] = useState<number>(-1)
 
     // Local storage
-    const savedSolutionsAmount = getAmountFromLocal();
+    const namespace: string[] = getNamespaceFromLocal();
 
     //
     // States derived from React states
