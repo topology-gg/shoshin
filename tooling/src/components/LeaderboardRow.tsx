@@ -26,7 +26,7 @@ export default function LeaderboardRow ({ solution, index, loadSolution }) {
         solver_name = name_string
     }
     else { // query failed; render address abbreviation
-        solver_name = String(address).slice(0,5) + '...' + String(address).slice(-4)
+        solver_name = '0x' + Number(address).toString(16).slice(0,4) + '...' + String(address).slice(-4)
     }
 
     //

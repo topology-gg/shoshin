@@ -47,7 +47,7 @@ export default function ConnectWalletStardisc() {
             rendered_account = <p className='result'>{t("Connected")} <strong>{name_string}</strong></p>
         }
         else { // query failed; render address abbreviation
-            rendered_account = <p  className='result'>{t("Connected")} {String(address).slice(0,5) + '...' + String(address).slice(-4)}t</p>
+            rendered_account = <p  className='result'>{t("Connected")} {String(address).slice(0,6) + '...' + String(address).slice(-4)}</p>
         }
 
         return (
