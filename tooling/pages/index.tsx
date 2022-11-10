@@ -103,10 +103,12 @@ export default function Home() {
 
     // React states for UI
     const [gridHovering, setGridHovering] = useState<[string, string]>(['-','-'])
-    let operatorInputHightlightInit: boolean[] = []
-    for (let i=0; i<numOperators; i++) {operatorInputHightlightInit.push(false)}
-    const [operatorInputHighlight, setOperatorInputHighlight] = useState<boolean[]>(operatorInputHightlightInit)
+
+    let operatorInputHighlightInit: boolean[] = Array(numOperators).fill(false)
+    const [operatorInputHighlight, setOperatorInputHighlight] = useState<boolean[]>(operatorInputHighlightInit)
     const [operatorStyles, setOperatorStyles] = useState<React.CSSProperties[]>([{}])
+
+    const [mechIndexHighlighted, setMechIndexHighlighted] = useState<number>(-1)
 
     //
     // React state updates
@@ -603,7 +605,6 @@ export default function Home() {
             if (i==operator_i){
                 newHighlight.push (true)
                 newOperatorStyles.push ({backgroundColor:'#FFFE71'})
-                console.log('yo')
             }
             else {
                 newHighlight.push (false)
@@ -627,11 +628,11 @@ export default function Home() {
     }
 
     function handleMouseOverMechInput (mech_i: number) {
-
+        setMechIndexHighlighted(prev => mech_i)
     }
 
     function handleMouseOutMechInput (mech_i: number) {
-
+        setMechIndexHighlighted(prev => -1)
     }
 
 
@@ -873,6 +874,10 @@ export default function Home() {
                                                         state={unitStates[j][i]}
                                                         handleMouseOver={() => handleMouseOver(j,i)}
                                                         handleMouseOut={() => handleMouseOut()}
+                                                        mechHighlight={
+                                                            (mechIndexHighlighted == -1) ? false :
+                                                            (j == mechStates[mechIndexHighlighted].index.x) && (i == mechStates[mechIndexHighlighted].index.y) ? true : false
+                                                        }
                                                     />
                                                 </div>
                                             </Tooltip>

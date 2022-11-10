@@ -15,7 +15,6 @@ const OperatorGridBg = ({ operators, highlighted }: { operators: Operator[], hig
             return v ? 1.0 : 0.3
         })
     }
-    console.log('opacityValues:', opacityValues)
 
     return (
         <div className={styles.gridWrapper}>
