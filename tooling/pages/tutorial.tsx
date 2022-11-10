@@ -227,6 +227,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
                             ,
                             <Unit
@@ -238,6 +239,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
                             )
                             <p style={{marginLeft:'0.5rem', marginRight:'0.5rem'}}>=</p>
@@ -250,6 +252,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
                         </li>
 
@@ -265,6 +268,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
                             ,
                             <Unit
@@ -276,6 +280,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
                             )
                             <p style={{marginLeft:'0.5rem', marginRight:'0.5rem'}}>=</p>
@@ -288,6 +293,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
                         </li>
 
@@ -303,6 +309,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
                             ,
                             <Unit
@@ -314,6 +321,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
                             ,
                             <Unit
@@ -325,6 +333,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
                             )
                             <p style={{marginLeft:'0.5rem', marginRight:'0.5rem'}}>=</p>
@@ -337,6 +346,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />{" "}
                             ,
                             <Unit
@@ -348,6 +358,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
 
                         </li>
@@ -364,6 +375,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
                             )
                             <p style={{marginLeft:'0.5rem', marginRight:'0.5rem'}}>=</p>
@@ -376,6 +388,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />{" "}
                             ,
                             <Unit
@@ -387,6 +400,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
                             {" "}
                             ,
@@ -399,6 +413,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />{" "}
                             ,
                             <Unit
@@ -410,6 +425,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
                             ,
                             <Unit
@@ -421,6 +437,7 @@ export default function Tutorial() {
                                 }}
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
+                                mechHighlight = {false}
                             />
 
                         </li>
@@ -455,6 +472,7 @@ export default function Tutorial() {
                                     }}
                                     handleMouseOut={() => {}}
                                     handleMouseOver={() => {}}
+                                    mechHighlight = {false}
                                 />
                                 at 1 unit per frame,
                             </Trans>
@@ -471,6 +489,7 @@ export default function Tutorial() {
                                     }}
                                     handleMouseOut={() => {}}
                                     handleMouseOver={() => {}}
+                                    mechHighlight = {false}
                                 />
                                 to Sink.
                             </Trans>
