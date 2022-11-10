@@ -29,6 +29,12 @@ import { SIMULATOR_ADDR } from '../src/components/SimulatorContract';
 import Solution from '../src/types/Solution';
 import Leaderboard from '../src/components/Leaderboard';
 import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
+import {
+    saveWrappedSolutionToLocal,
+    getWrappedSolutionFromLocal,
+    getAmountFromLocal,
+    removeWrappedSolutionFromLocal
+} from '../src/helpers/localStorage'
 
 const theme = createTheme({
     typography: {
@@ -110,8 +116,11 @@ export default function Home() {
 
     const [mechIndexHighlighted, setMechIndexHighlighted] = useState<number>(-1)
 
+    // Local storage
+    const savedSolutionsAmount = getAmountFromLocal();
+
     //
-    // React state updates
+    // States derived from React states
     //
     const runnable = isRunnable()
     const mechInitStates: MechState[] = mechInitPositions.map(
@@ -692,7 +701,7 @@ export default function Home() {
                         {t('newOperation', {operation: '%'})}
                         </button>
                         <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'STEAM')}>
-                        {t('newOperation', {operation: '~'})}
+                        {t('newOperation', {operation: '^'})}
                         </button>
                         <button style={makeshift_button_style} onClick={() => handleOperatorClick('+', 'SMASH')}>
                         {t('newOperation', {operation: '#'})}
@@ -722,6 +731,18 @@ export default function Home() {
                                 <button key={`load-demo-${i}`} onClick={() => handleLoadSolutionClick(DEMO_SOLUTIONS[i])}>{t(`demo`)}{i-1}</button>
                             ))
                         }
+                        <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
+
+                        <button onClick={() => {
+                            // saveToLocal(0, operatorStates)
+                        }}>Save</button>
+                        <button onClick={() => {
+                            // const load = getFromLocal(0)
+                            // console.log(load)
+                        }}>Load</button>
+                        <button onClick={() => {
+                            // removeFromLocal(0)
+                        }}>Clear</button>
                     </div>
 
                         <div className={styles.inputs}>
