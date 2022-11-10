@@ -13,12 +13,17 @@ import { OPERATOR_TYPES } from "../src/types/Operator"
 import { Trans, useTranslation } from "react-i18next";
 
 export default function Tutorial() {
-    const FORMULA_LI_STYLE: CSSProperties = {
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        marginTop: "1rem",
-    };
+    function compute_formula_li_style (backgroundColor: string): CSSProperties {
+        return {
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: "1rem",
+            borderRadius: '2rem',
+            backgroundColor: backgroundColor
+        }
+    }
+    const FORMULA_LI_OPACITY_STR = '66'
     const CONTENT_LI_STYLE: CSSProperties = {
         marginTop: "0.5rem",
     };
@@ -215,7 +220,7 @@ export default function Tutorial() {
                             marginBottom: "2rem",
                         }}
                     >
-                        <li style={FORMULA_LI_STYLE}>
+                        <li style={compute_formula_li_style(OPERATOR_TYPES.STIR.color + FORMULA_LI_OPACITY_STR)}>
                             <p className={styles.input_name}>{t('Stir ')}</p>
                             {OPERATOR_TYPES.STIR.symbol}(
                             <Unit
@@ -256,7 +261,7 @@ export default function Tutorial() {
                             />
                         </li>
 
-                        <li style={FORMULA_LI_STYLE}>
+                        <li style={compute_formula_li_style(OPERATOR_TYPES.SHAKE.color + FORMULA_LI_OPACITY_STR)}>
                             <p className={styles.input_name}>{t('Shake')}</p>
                             {OPERATOR_TYPES.SHAKE.symbol}(
                             <Unit
@@ -297,7 +302,7 @@ export default function Tutorial() {
                             />
                         </li>
 
-                        <li style={FORMULA_LI_STYLE}>
+                        <li style={compute_formula_li_style(OPERATOR_TYPES.STEAM.color + FORMULA_LI_OPACITY_STR)}>
                             <p className={styles.input_name}>{t('Steam')}</p>
                             {OPERATOR_TYPES.STEAM.symbol}(
                             <Unit
@@ -363,7 +368,7 @@ export default function Tutorial() {
 
                         </li>
 
-                        <li style={FORMULA_LI_STYLE}>
+                        <li style={compute_formula_li_style(OPERATOR_TYPES.SMASH.color + FORMULA_LI_OPACITY_STR)}>
                             <p className={styles.input_name}>{t('Smash')}</p>
                             {OPERATOR_TYPES.SMASH.symbol}(
                             <Unit
@@ -460,7 +465,7 @@ export default function Tutorial() {
                             marginBottom: "2rem",
                         }}
                     >
-                        <li style={FORMULA_LI_STYLE}>
+                        <li style={compute_formula_li_style('#FFFFFFFF')}>
                             <Trans t={t} i18nKey="tutorial.goalAffordance">
                                 With Faucet replenishing
                                 <Unit
@@ -477,7 +482,7 @@ export default function Tutorial() {
                                 at 1 unit per frame,
                             </Trans>
                         </li>
-                        <li style={FORMULA_LI_STYLE}>
+                        <li style={compute_formula_li_style('#FFFFFFFF')}>
                             <Trans t={t} i18nKey="tutorial.goalDeliver">
                                 Produce and deliver
                                 <Unit
@@ -494,10 +499,10 @@ export default function Tutorial() {
                                 to Sink.
                             </Trans>
                         </li>
-                        <li style={FORMULA_LI_STYLE}>
+                        <li style={compute_formula_li_style('#FFFFFFFF')}>
                             {t("tutorial.goalLine2")}
                         </li>
-                        <li style={FORMULA_LI_STYLE}>
+                        <li style={compute_formula_li_style('#FFFFFFFF')}>
                             {t("tutorial.goalLine3_1")}
                             <a href="https://stardisc.netlify.app/" target="_blank" rel="noopener noreferrer"
                                className='stardisc'
