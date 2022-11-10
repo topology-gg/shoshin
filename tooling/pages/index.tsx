@@ -878,6 +878,7 @@ export default function Home() {
                                                             (mechIndexHighlighted == -1) ? false :
                                                             (j == mechStates[mechIndexHighlighted].index.x) && (i == mechStates[mechIndexHighlighted].index.y) ? true : false
                                                         }
+                                                        isSmall={false}
                                                     />
                                                 </div>
                                             </Tooltip>

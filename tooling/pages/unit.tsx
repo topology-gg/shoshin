@@ -1,13 +1,14 @@
 import UnitState, {BgStatus, BorderStatus} from '../src/types/UnitState';
 import styles from '../styles/Unit.module.css';
 
-export default function Unit({ state, handleMouseOver, handleMouseOut, mechHighlight }) {
+export default function Unit({ state, handleMouseOver, handleMouseOut, mechHighlight, isSmall }) {
 
     // guardrail
     if (!state) {return <></>}
 
     // Compute atom styles
-    const divStyle = mechHighlight ? {borderWidth:'3px'} : {borderWidth: '1px'}
+    let divStyle: React.CSSProperties = mechHighlight ? {borderWidth:'3px'} : {borderWidth: '1px'}
+    if (isSmall) divStyle = {...divStyle, width:'1.6rem', height:'1.6rem'}
 
     let className: string = '';
     let nuclei: number = 0;

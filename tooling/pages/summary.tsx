@@ -45,49 +45,6 @@ export default function Summary ({ frames, n_cycles }) {
         (costs_accumulated_at_delivery[n_deliveries-1] - static_cost) / n_deliveries
     ).toString();
 
-    // Calculate average latency & average dynamic cost per delivery
-    // 1. find the duration from start to first delivery, if any
-    // 2. find the latency between all subsequent deliveries
-    // 3. compute average
-    // let have_found_first = false
-    // let frames_of_delivery = []
-    // let latencies = []
-    // let dynamic_costs = []
-    // for (const [frame_i, frame] of frames.entries()) {
-    //     // find if there's a delivery of truffle atom at this frame - 1 or 0, given there's only one sink for now
-    //     if (frame_i == 0) continue;
-    //     const prev_count = frames[frame_i-1].delivered_accumulated.filter(t => t == target_type).length;
-    //     const curr_count = frames[frame_i  ].delivered_accumulated.filter(t => t == target_type).length;
-    //     if (curr_count > prev_count) {
-    //         if (!have_found_first) { // is first delivery
-    //             // record sum of dynamic cost up to this delivery
-    //             dynamic_costs.push (frame.cost_accumulated - static_cost)
-
-    //             // record latency up to this delivery
-    //             latencies.push (frame_i)
-
-    //             // record this frame number
-    //             frames_of_delivery.push (frame_i)
-    //         }
-    //         else {
-    //             const frame_i_at_last_delivery = frames_of_delivery[frames_of_delivery.length-1]
-
-    //             // record sum of dynamic cost accrued between previous and this delivery
-    //             dynamic_costs.push (frame.cost_accumulated - frames[frame_i_at_last_delivery].cost_accumulated)
-
-    //             // record latency between previous and this delivery
-    //             latencies.push (frame_i - frame_i_at_last_delivery)
-
-    //             // record this frame number
-    //             frames_of_delivery.push (frame_i)
-    //         }
-    //     }
-    // }
-    // const sum_latencies = latencies.reduce((a, b) => a + b, 0);
-    // const sum_dynamic_costs = dynamic_costs.reduce((a, b) => a + b, 0);
-    // const average_latency_str = latencies.length == 0 ? `>${n_cycles}` : (sum_latencies / latencies.length).toString();
-    // const average_dynamic_cost_str = latencies.length == 0 ? `n/a` : (sum_dynamic_costs / dynamic_costs.length).toString();
-
     // Makeshift styling the reported numbers
     const makeshift_number_style = {
         textDecoration: 'underline',
@@ -110,6 +67,7 @@ export default function Summary ({ frames, n_cycles }) {
                     handleMouseOut={() => {}}
                     handleMouseOver={() => {}}
                     mechHighlight = {false}
+                    isSmall={true}
                 />
                 <p>{t('summary.inFrames', { frames: n_cycles })}:</p>
                 <p style={makeshift_number_style}>{total_delivery}</p>
@@ -128,6 +86,7 @@ export default function Summary ({ frames, n_cycles }) {
                     handleMouseOut={() => {}}
                     handleMouseOver={() => {}}
                     mechHighlight = {false}
+                    isSmall={true}
                 />
                 <p>{t('summary.averageLatencyPost')}:</p>
                 <p style={makeshift_number_style}>{average_latency_str}</p>
@@ -145,6 +104,7 @@ export default function Summary ({ frames, n_cycles }) {
                     handleMouseOut={() => {}}
                     handleMouseOver={() => {}}
                     mechHighlight = {false}
+                    isSmall={true}
                 />
                 <p>{t('summary.averageDynamicCostPost')}:</p>
                 <p style={makeshift_number_style}>{average_dynamic_cost_str}</p>

@@ -66,6 +66,7 @@ export default function Delivery({ delivered, cost_accumulated }) {
                                 handleMouseOut={() => {}}
                                 handleMouseOver={() => {}}
                                 mechHighlight = {false}
+                                isSmall={true}
                             />
                         </div>
                     )
