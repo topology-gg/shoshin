@@ -53,7 +53,7 @@ export default function Summary ({ frames, n_cycles }) {
 
     return (
         <>
-            <p>{t('summary.title')}</p>
+            <p style={{fontSize:'0.9rem'}}>{t('summary.title')}</p>
 
             <div style={{display:'flex',flexDirection:'row'}}>
                 <p>{t('summary.totalPre', { frames: n_cycles })}</p>
