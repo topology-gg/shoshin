@@ -126,6 +126,10 @@ table {
     border: 1px solid #333333;
     border-radius: 3px;
 }
+#submit-button:hover{
+    background-color: #FFFE71;
+    cursor: pointer;
+}
 
 /* source for styling range input below:
 https://stackoverflow.com/questions/18389224/how-to-style-html5-range-input-to-have-different-color-before-and-after-slider */

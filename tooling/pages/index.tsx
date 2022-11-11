@@ -126,7 +126,7 @@ export default function Home() {
     const [mechIndexHighlighted, setMechIndexHighlighted] = useState<number>(-1)
 
     // Local storage
-    const DEFAULT_SAVE_TO_NAME = 'saved0'
+    const DEFAULT_SAVE_TO_NAME = ''
     const [saveToName, setSaveToName] = useState<string>(DEFAULT_SAVE_TO_NAME)
     const saveButtonStyle = mounted ? computeSaveButtonStyle() : {}
 
@@ -717,10 +717,10 @@ export default function Home() {
     const onDragEnd = ({ destination, source }: DropResult) => {
         // dropped outside the list
         if (!destination) return;
-    
+
         const newPrograms = reorder(programs, source.index, destination.index);
         const newPositions = reorder(mechInitPositions, source.index, destination.index);
-    
+
         setPrograms(newPrograms);
         setMechInitPositions(newPositions);
     };
