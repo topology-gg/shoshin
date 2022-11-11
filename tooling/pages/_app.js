@@ -13,6 +13,7 @@ function MyApp({ Component, pageProps }) {
 
     return (
         <StarknetConfig connectors={connectors} defaultProvider={new SequencerProvider({baseUrl : testnet1})}>
+            <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
             <Component {...pageProps} />
         </StarknetConfig>
     )
