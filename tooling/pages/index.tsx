@@ -852,8 +852,9 @@ export default function Home() {
                         > Clear </button>
                     </div>
 
-                        <div className={styles.inputs}>
-                        {
+                        <div className={styles.programming_interface}>
+                            <p style={{fontSize:'0.9rem', marginTop:'0'}}>Formula placement</p>
+                            {
                                 Array.from({length:numOperators}).map ((_,operator_i) => (
                                     <div key={`input-row-${operator_i}`} className={styles.input_row}
                                         onMouseOver={() => handleMouseOverOperatorInput(operator_i)}
@@ -947,7 +948,8 @@ export default function Home() {
                             }
                         </div>
 
-                        <div className={styles.inputs} style={{padding: '2rem',borderBottom:'1px solid #333333'}}>
+                        <div className={styles.programming_interface} style={{padding: '2rem',borderBottom:'1px solid #333333'}}>
+                            <p style={{fontSize:'0.9rem', marginTop:'0'}}>Mech programming</p>
                             <DragDropContext onDragEnd={onDragEnd}>
                                 <Droppable droppableId='mech-input-list' isDropDisabled={animationState !== 'Stop'}>
                                     {(provided) => (
