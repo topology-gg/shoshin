@@ -151,6 +151,32 @@ export default function Home() {
     const delivered = frame?.delivered_accumulated
     const cost_accumulated = animationState=='Stop' ? 0 :frame?.cost_accumulated
 
+    let mech_carries: BgStatus[] = Array(mechInitPositions.length).fill(BgStatus.EMPTY)
+    atomStates.forEach((atom: AtomState, atom_i: number) => {
+        if (atom.status == AtomStatus.POSSESSED) {
+            const mech_index: number = Number(atom.possessed_by.replace('mech',''))
+
+            let bgStatus: BgStatus
+            if (atom.typ == AtomType.VANILLA){
+                bgStatus = BgStatus.ATOM_VANILLA_FREE
+            }
+            else if (atom.typ == AtomType.CHOCOLATE){
+                bgStatus = BgStatus.ATOM_CHOCOLATE_FREE
+            }
+            else if (atom.typ == AtomType.HAZELNUT){
+                bgStatus = BgStatus.ATOM_HAZELNUT_FREE
+            }
+            else if (atom.typ == AtomType.TRUFFLE){
+                bgStatus = BgStatus.ATOM_TRUFFLE_FREE
+            }
+            else if (atom.typ == AtomType.SAFFRON){
+                bgStatus = BgStatus.ATOM_SAFFRON_FREE
+            }
+
+            mech_carries[mech_index] = bgStatus
+        }
+    })
+
     // Starknet
     const { account, address, status } = useAccount ()
     const { execute } = useStarknetExecute ({ calls })
@@ -971,7 +997,7 @@ export default function Home() {
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                         handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
                                                         handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
-                                                        unitBgStatus={BgStatus.EMPTY}
+                                                        unitBgStatus={mech_carries[mech_i]}
                                                     />
                                                 ))
                                             :
@@ -987,7 +1013,7 @@ export default function Home() {
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                         handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
                                                         handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
-                                                        unitBgStatus={BgStatus.EMPTY}
+                                                        unitBgStatus={mech_carries[mech_i]}
                                                     />
                                                 ))
                                             }
