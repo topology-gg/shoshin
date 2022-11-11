@@ -878,7 +878,7 @@ export default function Home() {
                         > Clear </button>
                     </div>
 
-                        <div className={styles.programming_interface}>
+                        <div className={styles.programming_interface} style={{padding: '2rem',borderBottom:'1px solid #333333'}}>
                             <p style={{fontSize:'0.9rem', marginTop:'0'}}>Formula placement</p>
                             {
                                 Array.from({length:numOperators}).map ((_,operator_i) => (
