@@ -5,6 +5,12 @@ import styles from "../../styles/Home.module.css";
 import { useTranslation } from "react-i18next";
 import { PROGRAM_SIZE_MAX } from "../constants/constants";
 import { Draggable } from "react-beautiful-dnd";
+import Unit from "../../pages/unit"
+import UnitState, {
+    BgStatus,
+    BorderStatus,
+    UnitText,
+} from "../types/UnitState";
 
 interface MechInputProps {
     mechIndex: number;
@@ -58,18 +64,33 @@ const MechInput = ({
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                 >
-                    <p
-                        style={{
-                            margin: "0 1rem 0 3rem",
-                            verticalAlign: "middle",
-                            height: "20px",
-                            lineHeight: "20px",
-                            width: "2.5rem",
-                        }}
-                    >
-                        {t("mech")}
-                        {mechIndex}
-                    </p>
+                    <div style={{marginLeft:'1rem'}}>
+                        <Unit
+                            state={{
+                                bg_status: BgStatus.EMPTY,
+                                border_status: null,
+                                unit_text: UnitText.EMPTY,
+                                unit_id: null,
+                            }}
+                            handleMouseOut={() => {}}
+                            handleMouseOver={() => {}}
+                            mechHighlight = {false}
+                            isSmall={true}
+                        />
+                    </div>
+
+                    <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
+                        <p
+                            style={{
+                                margin: "0 1rem 0 1rem",
+                                width: "2.5rem",
+                            }}
+                        >
+                            {t("mech")}
+                            {mechIndex}
+                        </p>
+                    </div>
+
                     <input
                         className={styles.program}
                         onChange={(event) => {
