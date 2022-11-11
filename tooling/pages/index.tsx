@@ -971,6 +971,7 @@ export default function Home() {
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                         handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
                                                         handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
+                                                        unitBgStatus={BgStatus.EMPTY}
                                                     />
                                                 ))
                                             :
@@ -986,6 +987,7 @@ export default function Home() {
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                         handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
                                                         handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
+                                                        unitBgStatus={BgStatus.EMPTY}
                                                     />
                                                 ))
                                             }

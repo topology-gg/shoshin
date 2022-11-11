@@ -22,6 +22,7 @@ interface MechInputProps {
     disabled: boolean;
     handleMouseOver: () => void;
     handleMouseOut: () => void;
+    unitBgStatus: BgStatus
 }
 
 const MechInput = ({
@@ -34,6 +35,7 @@ const MechInput = ({
     disabled,
     handleMouseOver,
     handleMouseOut,
+    unitBgStatus
 }: MechInputProps) => {
     const { t } = useTranslation();
 
@@ -67,7 +69,7 @@ const MechInput = ({
                     <div style={{marginLeft:'1rem'}}>
                         <Unit
                             state={{
-                                bg_status: BgStatus.EMPTY,
+                                bg_status: unitBgStatus,
                                 border_status: null,
                                 unit_text: UnitText.EMPTY,
                                 unit_id: null,
