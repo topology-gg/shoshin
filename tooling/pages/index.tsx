@@ -695,7 +695,7 @@ export default function Home() {
 
     function handleSaveClick () {
         const solution: Solution = {
-            mechs: mechStates,
+            mechs: mechInitStates,
             programs: programs,
             operators: operatorStates
         }
