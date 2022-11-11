@@ -36,6 +36,8 @@ import {
     removeSolutionFromLocal,
 } from '../src/helpers/localStorage'
 import SavedSolutionElement from '../src/components/savedSolutionElement';
+import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
+import { reorder } from '../src/helpers/reorder';
 
 const theme = createTheme({
     typography: {
@@ -712,6 +714,17 @@ export default function Home() {
         setNamespace (prev => newNamespace) // trigger rerender
     }
 
+    const onDragEnd = ({ destination, source }: DropResult) => {
+        // dropped outside the list
+        if (!destination) return;
+    
+        const newPrograms = reorder(programs, source.index, destination.index);
+        const newPositions = reorder(mechInitPositions, source.index, destination.index);
+    
+        setPrograms(newPrograms);
+        setMechInitPositions(newPositions);
+    };
+
     // Lazy style objects
     const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem', height:'1.5rem'}
     const makeshift_run_button_style = runnable ? makeshift_button_style : {...makeshift_button_style, color: '#CCCCCC'}
@@ -926,42 +939,50 @@ export default function Home() {
                         </div>
 
                         <div className={styles.inputs} style={{padding: '2rem',borderBottom:'1px solid #333333'}}>
-                            {
-                                (animationState=='Stop') ?
-                                    Array.from({length:numMechs}).map ((_,mech_i) => (
-                                        <MechInput
-                                            key={`mech-input-${mech_i}`}
-                                            mechIndex={mech_i}
-                                            position={mechInitPositions[mech_i]}
-                                            program={programs[mech_i]}
-                                            pc={0}
-                                            onPositionChange={(index, position) => {
-                                                setMechInitPosition(index, position);
-                                            }}
-                                            onProgramChange={(index, program) =>
-                                                setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
+                            <DragDropContext onDragEnd={onDragEnd}>
+                                <Droppable droppableId='mech-input-list' isDropDisabled={animationState !== 'Stop'}>
+                                    {(provided) => (
+                                        <div ref={provided.innerRef} {...provided.droppableProps}>
+                                            {(animationState=='Stop') ?
+                                                Array.from({length:numMechs}).map ((_,mech_i) => (
+                                                    <MechInput
+                                                        key={`mech-input-${mech_i}`}
+                                                        mechIndex={mech_i}
+                                                        position={mechInitPositions[mech_i]}
+                                                        program={programs[mech_i]}
+                                                        pc={0}
+                                                        onPositionChange={(index, position) => {
+                                                            setMechInitPosition(index, position);
+                                                        }}
+                                                        onProgramChange={(index, program) =>
+                                                            setPrograms((prev) => (prev.map((p, i) => i === index ? program : p)))
+                                                        }
+                                                        disabled = {animationState == 'Stop' ? false : true}
+                                                        handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
+                                                        handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
+                                                    />
+                                                ))
+                                            :
+                                                Array.from({length:numMechs}).map ((_,mech_i) => (
+                                                    <MechInput
+                                                        key={`mech-input-${mech_i}`}
+                                                        mechIndex={mech_i}
+                                                        position={mechInitPositions[mech_i]}
+                                                        program={programs[mech_i]}
+                                                        pc={mechStates[mech_i].pc_next}
+                                                        onPositionChange={(index, position) => {}}
+                                                        onProgramChange={(index, program) => {}}
+                                                        disabled = {animationState == 'Stop' ? false : true}
+                                                        handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
+                                                        handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
+                                                    />
+                                                ))
                                             }
-                                            disabled = {animationState == 'Stop' ? false : true}
-                                            handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
-                                            handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
-                                        />
-                                    ))
-                                :
-                                    Array.from({length:numMechs}).map ((_,mech_i) => (
-                                        <MechInput
-                                            key={`mech-input-${mech_i}`}
-                                            mechIndex={mech_i}
-                                            position={mechInitPositions[mech_i]}
-                                            program={programs[mech_i]}
-                                            pc={mechStates[mech_i].pc_next}
-                                            onPositionChange={(index, position) => {}}
-                                            onProgramChange={(index, program) => {}}
-                                            disabled = {animationState == 'Stop' ? false : true}
-                                            handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
-                                            handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
-                                        />
-                                    ))
-                            }
+                                            {provided.placeholder}
+                                        </div>
+                                    )}
+                                </Droppable>
+                            </DragDropContext>
                         </div>
                     {/* </div> */}
 
