@@ -1,13 +1,9 @@
 import Solution from "../types/Solution";
 
-export interface WrappedSolution {
-    name: string
-    solution: Solution
-}
 
 // credit: https://stackoverflow.com/questions/70436175/how-to-save-json-in-localstorage-using-reactjs
 
-export const saveWrappedSolutionToLocal = (name: string, data: WrappedSolution) => {
+export const saveSolutionToLocal = (name: string, data: Solution) => {
     // rejecting amount
     if (name == 'namespace') {
         alert ("'namespace' is not a good name (shh)")
@@ -31,20 +27,21 @@ export const saveWrappedSolutionToLocal = (name: string, data: WrappedSolution) 
     }
 };
 
-export const getWrappedSolutionFromLocal = (name: string): WrappedSolution => {
+export const getSolutionFromLocal = (name: string): Solution => {
     // note: does not check if name exists; rely on external safeguarding
     const data = localStorage.getItem(name);
-    return JSON.parse(data) as WrappedSolution;
+    return JSON.parse(data) as Solution;
 };
 
 export const getNamespaceFromLocal = (): string[] => {
     if (typeof window == "undefined") return;
 
-    const namespace = localStorage.getItem('namespace')
-    return JSON.parse(namespace) as string[]
+    const namespaceStr = localStorage.getItem('namespace')
+    const namespace = JSON.parse(namespaceStr) as string[]
+    return namespace.filter(name => name!=='');
 }
 
-export const removeWrappedSolutionFromLocal = (name: string) => {
+export const removeSolutionFromLocal = (name: string) => {
     // note: does not check if name exists; rely on external safeguarding
     localStorage.removeItem(name);
 

@@ -58,7 +58,7 @@ export default function packSolution (instructionSets: string[][], mechInitPosit
 
         operator_input_serialized_array = operator_input_serialized_array.concat (operator.input)
         operator_output_serialized_array = operator_output_serialized_array.concat (operator.output)
-        
+
         const operator_type_str = JSON.stringify(operator.typ)
         if (operator_type_str == JSON.stringify(OPERATOR_TYPES.STIR)){
             operator_type_array.push (0)
@@ -116,7 +116,7 @@ export default function packSolution (instructionSets: string[][], mechInitPosit
 
     args.push (operator_type_array.length)
     args = args.concat(operator_type_array)
-    console.log("> Packed args", args)
+    // console.log("> Packed args", args)
     return args
 
     // return compileCalldata({

@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import {useState, useEffect, useRef, useCallback, useMemo} from 'react';
+import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import simulator from "./simulator";
 import MechState, { MechStatus, MechType } from '../src/types/MechState';
 import AtomState, { AtomStatus, AtomType } from '../src/types/AtomState';
@@ -30,11 +30,12 @@ import Solution from '../src/types/Solution';
 import Leaderboard from '../src/components/Leaderboard';
 import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
 import {
-    saveWrappedSolutionToLocal,
-    getWrappedSolutionFromLocal,
+    saveSolutionToLocal,
+    getSolutionFromLocal,
     getNamespaceFromLocal,
-    removeWrappedSolutionFromLocal
+    removeSolutionFromLocal,
 } from '../src/helpers/localStorage'
+import SavedSolutionElement from '../src/components/savedSolutionElement';
 
 const theme = createTheme({
     typography: {
@@ -73,6 +74,12 @@ export default function Home() {
     const MIN_NUM_OPERATORS = 0
 
     const { t } = useTranslation();
+
+    // React states for lifecycle
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, [])
 
     // React states for mechs & programs
     const [numMechs, setNumMechs] = useState(DEMO_SOLUTIONS[0].programs.length)
@@ -117,7 +124,12 @@ export default function Home() {
     const [mechIndexHighlighted, setMechIndexHighlighted] = useState<number>(-1)
 
     // Local storage
-    const namespace: string[] = getNamespaceFromLocal();
+    const DEFAULT_SAVE_TO_NAME = 'saved0'
+    const [saveToName, setSaveToName] = useState<string>(DEFAULT_SAVE_TO_NAME)
+    const saveButtonStyle = mounted ? computeSaveButtonStyle() : {}
+
+    const initNamespace: string[] = getNamespaceFromLocal();
+    const [namespace, setNamespace] = useState<string[]>(initNamespace);
 
     //
     // States derived from React states
@@ -644,6 +656,61 @@ export default function Home() {
         setMechIndexHighlighted(prev => -1)
     }
 
+    function computeSaveButtonStyle (): React.CSSProperties {
+
+        if (typeof window == "undefined") return;
+
+        let valid = true
+
+        // rejecting 'namespace'
+        if (saveToName == 'namespace') {
+            // console.log ('> rejecting namespace as name')
+            valid = false;
+        }
+
+        // rejecting empty string
+        else if (saveToName.length == 0) {
+            // console.log ('> rejecting empty string as name')
+            valid = false;
+        }
+
+        // check for collision
+        else {
+            const namespaceStr = localStorage.getItem('namespace')
+            if (namespaceStr) {
+                const namespace: string[] = JSON.parse(namespaceStr)
+                if (namespace.includes(saveToName)){
+                    // console.log (`> rejecting ${saveToName} because of collision`)
+                    valid = false;
+                }
+            }
+        }
+
+        // affect style
+        if (valid) return {}
+        else return {pointerEvents:'none', backgroundColor:'gray'}
+    }
+
+    function handleSaveClick () {
+        const solution: Solution = {
+            mechs: mechStates,
+            programs: programs,
+            operators: operatorStates
+        }
+        saveSolutionToLocal (saveToName, solution)
+        console.log('> saved solution:', solution)
+        const newNamespace: string[] = getNamespaceFromLocal()
+        setNamespace (prev => newNamespace) // trigger rerender
+    }
+    function handleClearClick () {
+        const namespace: string[] = getNamespaceFromLocal()
+        namespace.forEach((name,name_i) => {
+            removeSolutionFromLocal (name)
+            console.log ('remove saved solution:', name)
+        })
+        const newNamespace: string[] = getNamespaceFromLocal()
+        setNamespace (prev => newNamespace) // trigger rerender
+    }
 
     // Lazy style objects
     const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem', height:'1.5rem'}
@@ -731,18 +798,36 @@ export default function Home() {
                                 <button key={`load-demo-${i}`} onClick={() => handleLoadSolutionClick(DEMO_SOLUTIONS[i])}>{t(`demo`)}{i-1}</button>
                             ))
                         }
+                        {
+                            !mounted ? <div/> : namespace.length == 0 ? <div/> : <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
+                        }
+                        {
+                            mounted ?
+                            namespace.map((name: string,name_i: number) => {
+                                return (
+                                    <SavedSolutionElement key={`saved-solution-element-${name_i}`} name={name} onClick={() => {
+                                        const solution = getSolutionFromLocal (name)
+                                        handleLoadSolutionClick (solution)
+                                    }}/>
+                                )
+                            }):
+                            <div/>
+                        }
                         <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
-                        <button onClick={() => {
-                            // saveToLocal(0, operatorStates)
-                        }}>Save</button>
-                        <button onClick={() => {
-                            // const load = getFromLocal(0)
-                            // console.log(load)
-                        }}>Load</button>
-                        <button onClick={() => {
-                            // removeFromLocal(0)
-                        }}>Clear</button>
+                        <input
+                            onChange = {event => {setSaveToName(prev => event.target.value)}}
+                            defaultValue = {DEFAULT_SAVE_TO_NAME}
+                            style={{width:'7rem', margin:'0 3px 0 3px', height:'24px'}}
+                            placeholder={'save to name'}
+                        ></input>
+                        <button
+                            onClick={() => {handleSaveClick()}}
+                            style={saveButtonStyle}
+                        > Save </button>
+                        <button
+                            onClick={() => {handleClearClick()}}
+                        > Clear </button>
                     </div>
 
                         <div className={styles.inputs}>

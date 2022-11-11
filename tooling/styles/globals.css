@@ -29,6 +29,7 @@ button {
 }
 button:hover {
     background-color: #FFFE71;
+    cursor: pointer;
 }
 
 .grid {

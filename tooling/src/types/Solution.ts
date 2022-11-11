@@ -8,3 +8,7 @@ export default interface Solution {
     operators: Operator[]
 }
 
+export interface WrappedSolution {
+    name: string
+    solution: Solution
+}
