@@ -34,10 +34,11 @@ export const getSolutionFromLocal = (name: string): Solution => {
 };
 
 export const getNamespaceFromLocal = (): string[] => {
-    if (typeof window == "undefined") return;
+    if (typeof window == "undefined") return [];
 
     const namespaceStr = localStorage.getItem('namespace')
-    if (!namespaceStr) return;
+    if (!namespaceStr) return [];
+
     const namespace = JSON.parse(namespaceStr) as string[]
     return namespace.filter(name => name!=='');
 }
