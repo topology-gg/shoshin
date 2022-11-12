@@ -38,6 +38,7 @@ import {
 import SavedSolutionElement from '../src/components/savedSolutionElement';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import { reorder } from '../src/helpers/reorder';
+import SocialMedia from '../src/components/SocialMedia';
 
 const theme = createTheme({
     typography: {
@@ -769,6 +770,7 @@ export default function Home() {
                     <div className={styles.title}>
                         <h2>{t("MuMu")}</h2>
                         <p>{t("Subtitle")}</p>
+                        <SocialMedia />
                     </div>
 
                     <ConnectWalletStardisc />
