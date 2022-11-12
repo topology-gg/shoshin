@@ -18,7 +18,7 @@ import Tutorial from './tutorial';
 import MechInput from '../src/components/MechInput';
 import { isIdenticalGrid, isGridOOB, areGridsNeighbors } from '../src/helpers/gridHelpers';
 import OperatorGridBg from '../src/components/OperatorGridBg';
-import { DIM, PROGRAM_SIZE_MAX, DEMO_SOLUTIONS } from '../src/constants/constants';
+import { DIM, PROGRAM_SIZE_MAX, DEMO_SOLUTIONS, INSTRUCTION_ICON_MAP } from '../src/constants/constants';
 import { useTranslation } from 'react-i18next';
 import "../config/i18n"
 import LanguageSelector from '../src/components/LanguageSelector';
@@ -43,6 +43,26 @@ const theme = createTheme({
     typography: {
         fontFamily: "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;"
     },
+    palette: {
+        primary: {
+            main: "#FFFE71",
+        },
+        secondary: {
+            main: "#2d4249",
+        },
+        info: {
+            main: "#848f98",
+        }
+    },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                outlinedPrimary: {
+                    color: "black",
+                }
+            }
+        }
+    }
 });
 
 export default function Home() {
@@ -52,18 +72,6 @@ export default function Home() {
     const ANIM_FRAME_LATENCY = 250
     const INIT_PROGRAM = '.'
     const INSTRUCTION_KEYS = ['w','a','s','d','z','x','g','h','.']
-    const INSTRUCTION_ICON_MAP = {
-        'w' : 'expand_less',
-        'a' : 'chevron_left',
-        's' : 'expand_more',
-        'd' : 'chevron_right',
-        'z' : 'add',
-        'x' : 'close',
-        'g' : 'add_circle',
-        'h' : 'cancel',
-        '.' : 'minimize',
-        '_' : 'minimize'
-    }
     const MECH_INIT_X = 0
     const MECH_INIT_Y = 0
     const ATOM_INIT_XY = [] // [{x:5, y:3}]
