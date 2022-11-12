@@ -50,7 +50,20 @@ export default function Home() {
     // Constants
     const N_CYCLES = 80
     const ANIM_FRAME_LATENCY = 250
-    const INIT_PROGRAM = '_'
+    const INIT_PROGRAM = '.'
+    const INSTRUCTION_KEYS = ['w','a','s','d','z','x','g','h','.']
+    const INSTRUCTION_ICON_MAP = {
+        'w' : 'expand_less',
+        'a' : 'chevron_left',
+        's' : 'expand_more',
+        'd' : 'chevron_right',
+        'z' : 'add',
+        'x' : 'close',
+        'g' : 'add_circle',
+        'h' : 'cancel',
+        '.' : 'minimize',
+        '_' : 'minimize'
+    }
     const MECH_INIT_X = 0
     const MECH_INIT_Y = 0
     const ATOM_INIT_XY = [] // [{x:5, y:3}]
@@ -684,6 +697,62 @@ export default function Home() {
         setMechIndexHighlighted(prev => -1)
     }
 
+    function handleKeyMechInputProgram (event, typ: string) { // typ takes 'down' or 'up'
+
+        const key = event.key
+        if (INSTRUCTION_KEYS.includes(key)) {
+            // console.log(`> key ${typ} mech input program:`, event.key)
+            const bool = typ == 'down' ? true : false
+            setProgramKeyDown ( prev => {
+                let prev_copy = JSON.parse(JSON.stringify(prev))
+                prev_copy[key] = bool
+                return prev_copy;
+            })
+        }
+
+    }
+
+    // refactor this part to a child component
+    //////
+    let programKeyDownInit = {}
+    for (const key of INSTRUCTION_KEYS){
+        programKeyDownInit[key] = false
+    }
+    const [programKeyDown, setProgramKeyDown] = useState<{[key: string]: boolean}>(programKeyDownInit)
+
+    let colors: {[key: string]: string} = {}
+    INSTRUCTION_KEYS.map((key, key_i) => {
+        const isDown = programKeyDown[key]
+        if (isDown) {
+            colors[key] = '#FFFE71'
+        }
+        else {
+            colors[key] = '#FFFFFFFF'
+        }
+    })
+    const IconizedInstructionPanel = (
+        <div style={{
+            display:'flex', flexDirection:'row', margin:'1rem 0 2rem 0'
+        }}>
+            {
+                INSTRUCTION_KEYS.map((key,key_i) => {
+                    return (
+                        <div style={{
+                            display:'flex', flexDirection:'column', textAlign:'center', width:'3rem', marginRight:'3rem',
+                            padding: '0.5rem', border:'1px solid #555555', borderRadius:'0.8rem', backgroundColor: colors[key],
+                            transitionDuration: '50ms'
+                        }}>
+                            <i className="material-icons" style={{fontSize:'1.5rem'}}>{INSTRUCTION_ICON_MAP[key]}</i>
+                            <p style={{marginTop:'0.2rem', marginBottom:'0'}}>{key}</p>
+                        </div>
+                    )
+                })
+            }
+        </div>
+    )
+
+    //////
+
     function computeSaveButtonStyle (): React.CSSProperties {
 
         if (typeof window == "undefined") return;
@@ -976,6 +1045,7 @@ export default function Home() {
 
                         <div className={styles.programming_interface} style={{padding: '2rem',borderBottom:'1px solid #333333'}}>
                             <p style={{fontSize:'0.9rem', marginTop:'0'}}>Mech programming</p>
+                            { IconizedInstructionPanel }
                             <DragDropContext onDragEnd={onDragEnd}>
                                 <Droppable droppableId='mech-input-list' isDropDisabled={animationState !== 'Stop'}>
                                     {(provided) => (
@@ -997,6 +1067,8 @@ export default function Home() {
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                         handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
                                                         handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
+                                                        handleKeyDown={(event) => {handleKeyMechInputProgram(event, 'down')}}
+                                                        handleKeyUp={(event) => {handleKeyMechInputProgram(event, 'up')}}
                                                         unitBgStatus={mech_carries[mech_i]}
                                                     />
                                                 ))
@@ -1013,6 +1085,8 @@ export default function Home() {
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                         handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
                                                         handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
+                                                        handleKeyDown={() => {}}
+                                                        handleKeyUp={() => {}}
                                                         unitBgStatus={mech_carries[mech_i]}
                                                     />
                                                 ))

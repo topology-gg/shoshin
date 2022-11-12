@@ -22,6 +22,8 @@ interface MechInputProps {
     disabled: boolean;
     handleMouseOver: () => void;
     handleMouseOut: () => void;
+    handleKeyDown: (event) => void;
+    handleKeyUp: (event) => void;
     unitBgStatus: BgStatus
 }
 
@@ -35,6 +37,8 @@ const MechInput = ({
     disabled,
     handleMouseOver,
     handleMouseOut,
+    handleKeyDown,
+    handleKeyUp,
     unitBgStatus
 }: MechInputProps) => {
     const { t } = useTranslation();
@@ -146,6 +150,8 @@ const MechInput = ({
                                     setProgramStyle((prev) => NORMAL_STYLE);
                                 }
                             }}
+                            onKeyDown={handleKeyDown}
+                            onKeyUp={handleKeyUp}
                             defaultValue={program}
                             value={program}
                             style={programStyle}
