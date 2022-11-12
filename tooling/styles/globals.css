@@ -131,6 +131,21 @@ table {
     cursor: pointer;
 }
 
+#twitter {
+    background: #FFFFFFFF url('../src/images/twitter_icon.png') no-repeat;
+    background-size: 100%;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 1rem;
+}
+
+#discord {
+    background: #FFFFFFFF url('../src/images/discord_icon.jpeg') no-repeat;
+    background-size: 100%;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
 /* source for styling range input below:
 https://stackoverflow.com/questions/18389224/how-to-style-html5-range-input-to-have-different-color-before-and-after-slider */
 /*Chrome*/
