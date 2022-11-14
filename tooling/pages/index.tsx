@@ -38,6 +38,7 @@ import {
 import SavedSolutionElement from '../src/components/savedSolutionElement';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import { reorder } from '../src/helpers/reorder';
+import SocialMedia from '../src/components/SocialMedia';
 
 const theme = createTheme({
     typography: {
@@ -846,6 +847,7 @@ export default function Home() {
                     <div className={styles.title}>
                         <h2>{t("MuMu")}</h2>
                         <p>{t("Subtitle")}</p>
+                        <SocialMedia />
                     </div>
 
                     <ConnectWalletStardisc />
@@ -853,23 +855,6 @@ export default function Home() {
                     <LanguageSelector />
 
                     <Tutorial />
-
-                    <div style={{marginBottom:'1rem'}}>
-                        <p style={{
-                            padding:'0', textAlign:'center', verticalAlign:'middle',
-                            margin:'0', height:'20px', lineHeight:'20px', fontSize:'0.9rem'}}
-                        > {t("frame")} # {animationFrame} </p>
-
-                        <input
-                            id="typeinp"
-                            type="range"
-                            min="0" max={N_CYCLES}
-                            value={animationFrame}
-                            onChange={handleSlideChange}
-                            step="1"
-                            style={{width:'20rem'}}
-                        />
-                    </div>
 
                     <div style={{display:'flex', flexDirection:'row', height:'20px', marginBottom:'1rem'}}>
                         <button style={makeshift_button_style} onClick={() => handleMechClick('+')}>{t('newMech')}</button>
@@ -892,22 +877,6 @@ export default function Home() {
                         <button style={makeshift_button_style} onClick={() => handleOperatorClick('-', '')}>
                         {t('removeOp')}
                         </button>
-
-                        <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
-
-                        {/* ref: https://stackoverflow.com/questions/22885702/html-for-the-pause-symbol-in-audio-and-video-control */}
-                        <button style={makeshift_run_button_style} onClick={() => handleClick('ToggleRun')}> {
-                            animationState != 'Run' ? <i className="material-icons" style={{fontSize:'1.2rem'}}>play_arrow</i>
-                            :
-                            <i className="material-icons" style={{fontSize:'1.2rem'}}>pause</i>
-
-                        } </button>
-                        <button style={makeshift_button_style} onClick={() => handleClick('Stop')}>
-                            <i className="material-icons" style={{fontSize:'1.2rem'}}>stop</i>
-                        </button>
-
-                        <button style={makeshift_button_style} onClick={() => handleClick('PrevFrame')}> {t('decrementFrame')} </button>
-                        <button style={makeshift_button_style} onClick={() => handleClick('NextFrame')}> {t('incrementFrame')} </button>
 
                         <div style={{fontSize:'0.9rem', marginLeft:'0.4rem', marginRight:'0.4rem'}}>|</div>
 
@@ -1125,6 +1094,43 @@ export default function Home() {
                         </div>
                     {/* </div> */}
 
+
+                    <div  className={styles.summary}>
+
+                        <div style={{marginBottom:'1rem', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+                            <p style={{
+                                padding:'0', textAlign:'center', verticalAlign:'middle',
+                                margin:'0', height:'20px', lineHeight:'20px', fontSize:'0.8rem'}}
+                            > {t("frame")} # {animationFrame} </p>
+
+                            <input
+                                id="typeinp"
+                                type="range"
+                                min="0" max={N_CYCLES}
+                                value={animationFrame}
+                                onChange={handleSlideChange}
+                                step="1"
+                                style={{width:'20rem'}}
+                            />
+                        </div>
+
+                        <div style={{display:'flex', flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+                            {/* ref: https://stackoverflow.com/questions/22885702/html-for-the-pause-symbol-in-audio-and-video-control */}
+                            <button style={makeshift_run_button_style} onClick={() => handleClick('ToggleRun')}> {
+                                animationState != 'Run' ? <i className="material-icons" style={{fontSize:'1.2rem'}}>play_arrow</i>
+                                :
+                                <i className="material-icons" style={{fontSize:'1.2rem'}}>pause</i>
+
+                            } </button>
+                            <button style={makeshift_button_style} onClick={() => handleClick('Stop')}>
+                                <i className="material-icons" style={{fontSize:'1.2rem'}}>stop</i>
+                            </button>
+
+                            <button style={makeshift_button_style} onClick={() => handleClick('PrevFrame')}> {t('decrementFrame')} </button>
+                            <button style={makeshift_button_style} onClick={() => handleClick('NextFrame')}> {t('incrementFrame')} </button>
+                        </div>
+
+                    </div>
 
                     <div className={styles.grid_parent}>
                         <OperatorGridBg operators={operatorStates} highlighted={operatorInputHighlight}/>
