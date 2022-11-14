@@ -741,18 +741,18 @@ export default function Home() {
     })
     const IconizedInstructionPanel = (
         <div style={{
-            display:'flex', flexDirection:'row', margin:'1rem 0 2rem 0'
+            display:'flex', flexDirection:'row', margin:'0rem 0 2rem 0', justifyContent:'center'
         }}>
             {
                 INSTRUCTION_KEYS.map((key,key_i) => {
                     return (
                         <div style={{
-                            display:'flex', flexDirection:'column', textAlign:'center', width:'3rem', marginRight:'1rem',
-                            padding: '0.5rem', border:'1px solid #555555', borderRadius:'0.8rem', backgroundColor: colors[key],
+                            display:'flex', flexDirection:'column', textAlign:'center', width:'2.5rem', marginRight:'0.3rem',
+                            padding: '0.3rem', border:'1px solid #CCCCCC', borderRadius:'0.8rem', backgroundColor: colors[key],
                             transitionDuration: '50ms'
                         }}>
-                            <i className="material-icons" style={{fontSize:'1.5rem'}}>{INSTRUCTION_ICON_MAP[key]}</i>
-                            <p style={{marginTop:'0.2rem', marginBottom:'0'}}>{key}</p>
+                            <i className="material-icons" style={{fontSize:'1rem'}}>{INSTRUCTION_ICON_MAP[key]}</i>
+                            <p style={{marginTop:'0.1rem', marginBottom:'0'}}>{key}</p>
                         </div>
                     )
                 })
@@ -925,7 +925,7 @@ export default function Home() {
                     </div>
 
                         <div className={styles.programming_interface} style={{padding: '2rem',borderBottom:'1px solid #333333'}}>
-                            <p style={{fontSize:'0.9rem', marginTop:'0'}}>Formula placement</p>
+                            <p style={{fontSize:'0.9rem', marginTop:'0'}}>{t("Formula placement")}</p>
                             {
                                 Array.from({length:numOperators}).map ((_,operator_i) => (
                                     <div key={`input-row-${operator_i}`} className={styles.input_row}
@@ -1039,7 +1039,7 @@ export default function Home() {
                         </div>
 
                         <div className={styles.programming_interface} style={{padding: '2rem',borderBottom:'1px solid #333333'}}>
-                            <p style={{fontSize:'0.9rem', marginTop:'0'}}>Mech programming</p>
+                            <p style={{fontSize:'0.9rem', marginTop:'0'}}>{t("Mech programming")}</p>
                             { IconizedInstructionPanel }
                             <DragDropContext onDragEnd={onDragEnd}>
                                 <Droppable droppableId='mech-input-list' isDropDisabled={animationState !== 'Stop'}>
