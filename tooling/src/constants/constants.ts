@@ -72,4 +72,17 @@ export const DEMO_SOLUTIONS = [
     DEMO_SOLUTION_0,
     DEMO_SOLUTION_1,
     DEMO_SOLUTION_2
-]
+];
+
+export const INSTRUCTION_ICON_MAP = {
+    w: "expand_less",
+    a: "chevron_left",
+    s: "expand_more",
+    d: "chevron_right",
+    z: "add",
+    x: "close",
+    g: "add_circle",
+    h: "cancel",
+    ".": "minimize",
+    _: "minimize",
+};
