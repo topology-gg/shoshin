@@ -746,7 +746,7 @@ export default function Home() {
                 INSTRUCTION_KEYS.map((key,key_i) => {
                     return (
                         <div style={{
-                            display:'flex', flexDirection:'column', textAlign:'center', width:'3rem', marginRight:'3rem',
+                            display:'flex', flexDirection:'column', textAlign:'center', width:'3rem', marginRight:'1rem',
                             padding: '0.5rem', border:'1px solid #555555', borderRadius:'0.8rem', backgroundColor: colors[key],
                             transitionDuration: '50ms'
                         }}>
@@ -984,7 +984,11 @@ export default function Home() {
                                                             setOperator(operator_i, newOperator)}
                                                         }
                                                         defaultValue={operatorStates[operator_i].input[input_i].x}
-                                                        style={{width:'30px', textAlign:'center'}}
+                                                        style={{
+                                                            width:'30px', height:'25px',textAlign:'center',
+                                                            border:"1px solid #CCCCCC",
+                                                            borderRadius:'10px 0 0 10px'
+                                                        }}
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     <input
@@ -997,7 +1001,12 @@ export default function Home() {
                                                             setOperator(operator_i, newOperator)}
                                                         }
                                                         defaultValue={operatorStates[operator_i].input[input_i].y}
-                                                        style={{width:'30px', textAlign:'center'}}
+                                                        style={{
+                                                            width:'30px', height:'25px',textAlign:'center',
+                                                            border:"1px solid #CCCCCC",
+                                                            borderLeft:'0px',
+                                                            borderRadius:'0 10px 10px 0',
+                                                        }}
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     {
@@ -1023,7 +1032,11 @@ export default function Home() {
                                                             setOperator(operator_i, newOperator)}
                                                         }
                                                         defaultValue={operatorStates[operator_i].output[output_i].x}
-                                                        style={{width:'30px', textAlign:'center'}}
+                                                        style={{
+                                                            width:'30px', height:'25px',textAlign:'center',
+                                                            border:"1px solid #CCCCCC",
+                                                            borderRadius:'10px 0 0 10px'
+                                                        }}
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     <input
@@ -1035,7 +1048,12 @@ export default function Home() {
                                                             setOperator(operator_i, newOperator)}
                                                         }
                                                         defaultValue={operatorStates[operator_i].output[output_i].y}
-                                                        style={{width:'30px', textAlign:'center'}}
+                                                        style={{
+                                                            width:'30px', height:'25px',textAlign:'center',
+                                                            border:"1px solid #CCCCCC",
+                                                            borderLeft:'0px',
+                                                            borderRadius:'0 10px 10px 0',
+                                                        }}
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     {
