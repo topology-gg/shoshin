@@ -73,7 +73,7 @@
     display: flex;
     flex-direction: row;
     border-radius: 10px;
-    /* margin: 0.2em 0 0 0; */
+    margin-bottom: 0.2rem;
 }
 
 .input_row:hover {
@@ -105,6 +105,7 @@
 .programWrapper {
     position: relative;
     display: flex;
+    overflow-x: scroll;
 }
 
 .program {

@@ -18,7 +18,7 @@ import Tutorial from './tutorial';
 import MechInput from '../src/components/MechInput';
 import { isIdenticalGrid, isGridOOB, areGridsNeighbors } from '../src/helpers/gridHelpers';
 import OperatorGridBg from '../src/components/OperatorGridBg';
-import { DIM, PROGRAM_SIZE_MAX, DEMO_SOLUTIONS } from '../src/constants/constants';
+import { DIM, PROGRAM_SIZE_MAX, DEMO_SOLUTIONS, INSTRUCTION_ICON_MAP } from '../src/constants/constants';
 import { useTranslation } from 'react-i18next';
 import "../config/i18n"
 import LanguageSelector from '../src/components/LanguageSelector';
@@ -44,6 +44,26 @@ const theme = createTheme({
     typography: {
         fontFamily: "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;"
     },
+    palette: {
+        primary: {
+            main: "#FFFE71",
+        },
+        secondary: {
+            main: "#2d4249",
+        },
+        info: {
+            main: "#848f98",
+        }
+    },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                outlinedPrimary: {
+                    color: "black",
+                }
+            }
+        }
+    }
 });
 
 export default function Home() {
@@ -51,7 +71,8 @@ export default function Home() {
     // Constants
     const N_CYCLES = 80
     const ANIM_FRAME_LATENCY = 250
-    const INIT_PROGRAM = '_'
+    const INIT_PROGRAM = '.'
+    const INSTRUCTION_KEYS = ['w','a','s','d','z','x','g','h','.']
     const MECH_INIT_X = 0
     const MECH_INIT_Y = 0
     const ATOM_INIT_XY = [] // [{x:5, y:3}]
@@ -685,6 +706,62 @@ export default function Home() {
         setMechIndexHighlighted(prev => -1)
     }
 
+    function handleKeyMechInputProgram (event, typ: string) { // typ takes 'down' or 'up'
+
+        const key = event.key
+        if (INSTRUCTION_KEYS.includes(key)) {
+            // console.log(`> key ${typ} mech input program:`, event.key)
+            const bool = typ == 'down' ? true : false
+            setProgramKeyDown ( prev => {
+                let prev_copy = JSON.parse(JSON.stringify(prev))
+                prev_copy[key] = bool
+                return prev_copy;
+            })
+        }
+
+    }
+
+    // refactor this part to a child component
+    //////
+    let programKeyDownInit = {}
+    for (const key of INSTRUCTION_KEYS){
+        programKeyDownInit[key] = false
+    }
+    const [programKeyDown, setProgramKeyDown] = useState<{[key: string]: boolean}>(programKeyDownInit)
+
+    let colors: {[key: string]: string} = {}
+    INSTRUCTION_KEYS.map((key, key_i) => {
+        const isDown = programKeyDown[key]
+        if (isDown) {
+            colors[key] = '#FFFE71'
+        }
+        else {
+            colors[key] = '#FFFFFFFF'
+        }
+    })
+    const IconizedInstructionPanel = (
+        <div style={{
+            display:'flex', flexDirection:'row', margin:'0rem 0 2rem 0', justifyContent:'center'
+        }}>
+            {
+                INSTRUCTION_KEYS.map((key,key_i) => {
+                    return (
+                        <div style={{
+                            display:'flex', flexDirection:'column', textAlign:'center', width:'2.5rem', marginRight:'0.3rem',
+                            padding: '0.3rem', border:'1px solid #CCCCCC', borderRadius:'0.8rem', backgroundColor: colors[key],
+                            transitionDuration: '50ms'
+                        }}>
+                            <i className="material-icons" style={{fontSize:'1rem'}}>{INSTRUCTION_ICON_MAP[key]}</i>
+                            <p style={{marginTop:'0.1rem', marginBottom:'0'}}>{key}</p>
+                        </div>
+                    )
+                })
+            }
+        </div>
+    )
+
+    //////
+
     function computeSaveButtonStyle (): React.CSSProperties {
 
         if (typeof window == "undefined") return;
@@ -848,7 +925,7 @@ export default function Home() {
                     </div>
 
                         <div className={styles.programming_interface} style={{padding: '2rem',borderBottom:'1px solid #333333'}}>
-                            <p style={{fontSize:'0.9rem', marginTop:'0'}}>Formula placement</p>
+                            <p style={{fontSize:'0.9rem', marginTop:'0'}}>{t("Formula placement")}</p>
                             {
                                 Array.from({length:numOperators}).map ((_,operator_i) => (
                                     <div key={`input-row-${operator_i}`} className={styles.input_row}
@@ -876,7 +953,11 @@ export default function Home() {
                                                             setOperator(operator_i, newOperator)}
                                                         }
                                                         defaultValue={operatorStates[operator_i].input[input_i].x}
-                                                        style={{width:'30px', textAlign:'center'}}
+                                                        style={{
+                                                            width:'30px', height:'25px',textAlign:'center',
+                                                            border:"1px solid #CCCCCC",
+                                                            borderRadius:'10px 0 0 10px'
+                                                        }}
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     <input
@@ -889,7 +970,12 @@ export default function Home() {
                                                             setOperator(operator_i, newOperator)}
                                                         }
                                                         defaultValue={operatorStates[operator_i].input[input_i].y}
-                                                        style={{width:'30px', textAlign:'center'}}
+                                                        style={{
+                                                            width:'30px', height:'25px',textAlign:'center',
+                                                            border:"1px solid #CCCCCC",
+                                                            borderLeft:'0px',
+                                                            borderRadius:'0 10px 10px 0',
+                                                        }}
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     {
@@ -915,7 +1001,11 @@ export default function Home() {
                                                             setOperator(operator_i, newOperator)}
                                                         }
                                                         defaultValue={operatorStates[operator_i].output[output_i].x}
-                                                        style={{width:'30px', textAlign:'center'}}
+                                                        style={{
+                                                            width:'30px', height:'25px',textAlign:'center',
+                                                            border:"1px solid #CCCCCC",
+                                                            borderRadius:'10px 0 0 10px'
+                                                        }}
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     <input
@@ -927,7 +1017,12 @@ export default function Home() {
                                                             setOperator(operator_i, newOperator)}
                                                         }
                                                         defaultValue={operatorStates[operator_i].output[output_i].y}
-                                                        style={{width:'30px', textAlign:'center'}}
+                                                        style={{
+                                                            width:'30px', height:'25px',textAlign:'center',
+                                                            border:"1px solid #CCCCCC",
+                                                            borderLeft:'0px',
+                                                            borderRadius:'0 10px 10px 0',
+                                                        }}
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                     ></input>
                                                     {
@@ -944,7 +1039,8 @@ export default function Home() {
                         </div>
 
                         <div className={styles.programming_interface} style={{padding: '2rem',borderBottom:'1px solid #333333'}}>
-                            <p style={{fontSize:'0.9rem', marginTop:'0'}}>Mech programming</p>
+                            <p style={{fontSize:'0.9rem', marginTop:'0'}}>{t("Mech programming")}</p>
+                            { IconizedInstructionPanel }
                             <DragDropContext onDragEnd={onDragEnd}>
                                 <Droppable droppableId='mech-input-list' isDropDisabled={animationState !== 'Stop'}>
                                     {(provided) => (
@@ -966,6 +1062,8 @@ export default function Home() {
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                         handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
                                                         handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
+                                                        handleKeyDown={(event) => {handleKeyMechInputProgram(event, 'down')}}
+                                                        handleKeyUp={(event) => {handleKeyMechInputProgram(event, 'up')}}
                                                         unitBgStatus={mech_carries[mech_i]}
                                                     />
                                                 ))
@@ -982,6 +1080,8 @@ export default function Home() {
                                                         disabled = {animationState == 'Stop' ? false : true}
                                                         handleMouseOver={() => {handleMouseOverMechInput(mech_i)}}
                                                         handleMouseOut={() => {handleMouseOutMechInput(mech_i)}}
+                                                        handleKeyDown={() => {}}
+                                                        handleKeyUp={() => {}}
                                                         unitBgStatus={mech_carries[mech_i]}
                                                     />
                                                 ))
