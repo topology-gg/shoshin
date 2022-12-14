@@ -1,0 +1,91 @@
+{
+    "states": ["idle", "ib1", "block"],
+    "combos": [["focus", "focus", "focus", "focus", "release", "idle"]],
+    "perceptables": ["opponent_object_state"],
+    "state_machine": {
+        "inputs": ["opponent_object_state"],
+        "state_function": {
+            "stages": [
+                [
+                    "ADD",
+                    ["EQ", "opponent_object_state", "SLASH_STA0"],
+                    [
+                        "ADD",
+                        ["EQ", "opponent_object_state", "SLASH_STA1"],
+                        [
+                            "ADD",
+                            ["EQ", "opponent_object_state", "SLASH_ATK0"],
+                            [
+                                "ADD",
+                                ["EQ", "opponent_object_state", "SLASH_ATK1"],
+                                [
+                                    "ADD",
+                                    [
+                                        "EQ",
+                                        "opponent_object_state",
+                                        "SLASH_ATK2"
+                                    ],
+                                    [
+                                        "ADD",
+                                        [
+                                            "EQ",
+                                            "opponent_object_state",
+                                            "SLASH_ATK3"
+                                        ],
+                                        [
+                                            "ADD",
+                                            [
+                                                "EQ",
+                                                "opponent_object_state",
+                                                "SLASH_ATK4"
+                                            ],
+                                            [
+                                                "ADD",
+                                                [
+                                                    "EQ",
+                                                    "opponent_object_state",
+                                                    "SLASH_ATK5"
+                                                ],
+                                                [
+                                                    "ADD",
+                                                    [
+                                                        "EQ",
+                                                        "opponent_object_state",
+                                                        "UPSWING"
+                                                    ],
+                                                    [
+                                                        "EQ",
+                                                        "opponent_object_state",
+                                                        "SIDECUT"
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "ADD",
+                    [
+                        "MUL",
+                        [
+                            "ADD",
+                            ["EQ", "state", "idle"],
+                            ["EQ", "state", "ib1"]
+                        ],
+                        "ib1"
+                    ],
+                    ["MUL", "idle", ["EQ", "state", "block"]]
+                ],
+                [
+                    "ADD",
+                    ["MUL", ["SUB", ["MEM", "", "0"], "1"], ["MEM", "", "1"]],
+                    ["MUL", "block", ["MEM", "", "0"]]
+                ]
+            ]
+        }
+    }
+}
