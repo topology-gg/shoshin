@@ -1,8 +1,8 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
-from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import unsigned_div_rem
+from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.default_dict import default_dict_new, default_dict_finalize
 from contracts.constants import (
     ns_action,
@@ -23,6 +23,7 @@ from contracts.constants import (
     StateMachine,
 )
 from contracts.object import _object
+from contracts.combo import _combo
 from contracts.physics import _physicality, _test_rectangle_overlap
 from contracts.perceptibles import update_perceptibles
 from lib.bto_cairo_git.contracts.tree import Tree, BinaryOperatorTree
@@ -55,7 +56,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     let (arr_frames: FrameScene*) = alloc();
     let null_rect = Rectangle(Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM), Vec2(0, 0));
     let agent_0_origin = Vec2(-200, 0);
-    let agent_1_origin = Vec2(400, 0);
+    let agent_1_origin = Vec2(100, 0);
     let agent_0_body = Rectangle(
         agent_0_origin,
         Vec2(ns_character_dimension.BODY_HITBOX_W, ns_character_dimension.BODY_HITBOX_H),
@@ -172,29 +173,39 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         dict_accesses_start=dict_new, dict_accesses_end=dict_new, default_value=0
     );
 
-    let a_1 = ns_action.NULL;
+    let agent_action_1 = 65536 + ns_action.COMBO;
     let agent_stm_1 = last_frame.agent_1.agent_stm;
 
+    //
     // Combo Phase
+    //
     local a_0;
     local combos_0_new: ComboBuffer;
-    let (combo, action) = unsigned_div_rem(agent_action_0, ns_combos.ENCODING);
+    let (combo_0, action_0) = unsigned_div_rem(agent_action_0, ns_combos.ENCODING);
 
-    if (action == ns_action.COMBO) {
-        let offset = combos_0.combos_offset[combo - 1];
-        let l = combos_0.combos_offset[combo] - combos_0.combos_offset[combo - 1];
-        let (_, index) = unsigned_div_rem(combos_0.combo_counter, l + 1);
-        assert a_0 = combos_0.combos[offset + index];
-        if (combo == combos_0.current_combo) {
-            assert combos_0_new = ComboBuffer(combos_0.combos_offset_len, combos_0.combos_offset, combos_0.combos, combo, combos_0.combo_counter + 1);
-            tempvar range_check_ptr = range_check_ptr;
-        } else {
-            assert combos_0_new = ComboBuffer(combos_0.combos_offset_len, combos_0.combos_offset, combos_0.combos, combo, 1);
-            tempvar range_check_ptr = range_check_ptr;
-        }
+    if (action_0 == ns_action.COMBO) {
+        let (a, c) = _combo(combo_0, combos_0);
+        assert a_0 = a;
+        assert combos_0_new = c;
+        tempvar range_check_ptr = range_check_ptr;
     } else {
-        assert a_0 = action;
-        assert combos_0_new = ComboBuffer(combos_0.combos_offset_len, combos_0.combos_offset, combos_0.combos, combo, 0);
+        assert a_0 = action_0;
+        assert combos_0_new = ComboBuffer(combos_0.combos_offset_len, combos_0.combos_offset, combos_0.combos, 0, 0);
+        tempvar range_check_ptr = range_check_ptr;
+    }
+
+    local a_1;
+    local combos_1_new: ComboBuffer;
+    let (combo_1, action_1) = unsigned_div_rem(agent_action_1, ns_combos.ENCODING);
+
+    if (action_1 == ns_action.COMBO) {
+        let (a, c) = _combo(combo_1, combos_1);
+        assert a_1 = a;
+        assert combos_1_new = c;
+        tempvar range_check_ptr = range_check_ptr;
+    } else {
+        assert a_1 = action_1;
+        assert combos_1_new = ComboBuffer(combos_1.combos_offset_len, combos_1.combos_offset, combos_1.combos, 0, 0);
         tempvar range_check_ptr = range_check_ptr;
     }
 
@@ -263,7 +274,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // Tail recursion
     //
     tempvar arr_empty: felt* = new ();
-    _loop(idx + 1, len, arr_frames, combos_0_new, combos_1, state_machine_0, state_machine_1);
+    _loop(idx + 1, len, arr_frames, combos_0_new, combos_1_new, state_machine_0, state_machine_1);
     return ();
 }
 
