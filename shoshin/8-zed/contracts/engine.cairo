@@ -9,6 +9,7 @@ from contracts.constants import (
     ns_stimulus,
     ns_object_state,
     ns_character_dimension,
+    ns_combos,
     ns_scene,
     Vec2,
     CharacterState,
@@ -175,9 +176,10 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     let agent_stm_1 = last_frame.agent_1.agent_stm;
 
     // Combo Phase
-    tempvar a_0;
-    tempvar combos_0_new: ComboBuffer;
-    let (combo, action) = unsigned_div_rem(agent_action_0, 2 ** 32);
+    local a_0;
+    local combos_0_new: ComboBuffer;
+    let (combo, action) = unsigned_div_rem(agent_action_0, ns_combos.ENCODING);
+
     if (action == ns_action.COMBO) {
         let offset = combos_0.combos_offset[combo - 1];
         let l = combos_0.combos_offset[combo] - combos_0.combos_offset[combo - 1];

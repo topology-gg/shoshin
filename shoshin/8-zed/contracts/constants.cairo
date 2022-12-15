@@ -52,6 +52,10 @@ namespace ns_character_dimension {
     const BODY_KNOCKED_ADJUST_W = BODY_KNOCKED_LATE_HITBOX_W - BODY_HITBOX_W;
 }
 
+namespace ns_combos {
+    const ENCODING = 2 ** 16;
+}
+
 namespace ns_action {
     const NULL = 0;
     const SLASH = 1;
@@ -225,7 +229,6 @@ struct Perceptibles {
 struct Frame {
     agent_action: felt,
     agent_stm: Stm,
-
     object_state: felt,
     object_counter: felt,
     character_state: CharacterState,
