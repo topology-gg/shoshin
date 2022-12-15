@@ -1,10 +1,7 @@
 import pytest
-import os
 import json
 from starkware.starknet.testing.starknet import Starknet
-from starkware.starknet.business_logic.state.state import BlockInfo
 import asyncio
-from Signer import Signer
 from utils import import_json, StateMachine, parse_stages
 import logging
 
@@ -27,8 +24,16 @@ def adjust_from_felt(felt):
         return felt
 
 
-## Note to test logging:
-## `--log-cli-level=INFO` to show logs
+def parse_agent(path: str):
+    data = import_json(path)
+    (fsm, offsets) = parse_stages(StateMachine(**data["state_machine"]))
+    state_machine = [x.to_tuple() for x in fsm]
+    combos = data["combos"]
+    accumulator = 0
+    combos_offset = [0]
+    combos_offset.append(*[accumulator := len(x) + accumulator for x in combos])
+    return (combos_offset, combos, offsets, state_machine)
+
 
 ### Reference: https://github.com/perama-v/GoL2/blob/main/tests/test_GoL2_infinite.py
 @pytest.fixture(scope="module")
@@ -42,80 +47,30 @@ async def starknet():
     return starknet
 
 
-@pytest.fixture(scope="module")
-async def account_factory(starknet):
-    accounts = []
-    print(f"> Deploying {NUM_SIGNING_ACCOUNTS} accounts...")
-    for i in range(NUM_SIGNING_ACCOUNTS):
-        signer = Signer(DUMMY_PRIVATE + i)
-        account = await starknet.deploy(
-            "tests/Account.cairo", constructor_calldata=[signer.public_key]
-        )
-        await account.initialize(account.contract_address).invoke()
-        users.append({"signer": signer, "account": account})
-
-        print(f"  Account {i} is: {hex(account.contract_address)}")
-    print()
-
-    return accounts
-
-
-@pytest.fixture
-async def block_info_mock(starknet):
-    class Mock:
-        def __init__(self, current_block_info):
-            self.block_info = current_block_info
-
-        def update(self, block_number, block_timestamp):
-            starknet.state.state.block_info = BlockInfo(
-                block_number,
-                block_timestamp,
-                self.block_info.gas_price,
-                self.block_info.sequencer_address,
-            )
-
-        def reset(self):
-            starknet.state.state.block_info = self.block_info
-
-        def set_block_number(self, block_number):
-            starknet.state.state.block_info = BlockInfo(
-                block_number,
-                self.block_info.block_timestamp,
-                self.block_info.gas_price,
-                self.block_info.sequencer_address,
-            )
-
-        def set_block_timestamp(self, block_timestamp):
-            starknet.state.state.block_info = BlockInfo(
-                self.block_info.block_number,
-                block_timestamp,
-                self.block_info.gas_price,
-                self.block_info.sequencer_address,
-            )
-
-    return Mock(starknet.state.state.block_info)
-
-
 @pytest.mark.asyncio
-async def test(account_factory, starknet, block_info_mock):
+async def test(starknet):
 
     # Deploy contract
     contract = await starknet.deploy(source="contracts/engine.cairo")
     LOGGER.info(f"> Deployed engine.cairo.")
 
     # Parse state machine
-    data = import_json("./experiments/agent.json")
-    (fsm, offsets) = parse_stages(StateMachine(**data["state_machine"]))
-    state_machine = [x.to_tuple() for x in fsm]
-    combos = data["combos"]
-    accumulator = 0
-    combos_offset = [0]
-    combos_offset.append(*[accumulator := len(x) + accumulator for x in combos])
+    (combos_offset, combos, offsets, state_machine) = parse_agent(
+        "./experiments/agent.json"
+    )
 
     # Loop the baby
     N = 5 * 24  ## 5 seconds, 24 fps
     ret = await contract.loop(
-        N, combos_offset, *combos, [], [], offsets, state_machine, [], []
+        N,
+        combos_offset,
+        *combos,
+        [0, 7],
+        [1, 1, 1, 1, 1, 1, 1],
+        offsets,
+        state_machine,
+        [],
+        [],
     ).call()
 
     LOGGER.info(

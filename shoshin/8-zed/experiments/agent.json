@@ -1,6 +1,6 @@
 {
     "states": ["idle", "ib1", "block"],
-    "combos": [[2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0]],
+    "combos": [[0, 0]],
     "perceptables": ["opponent_object_state"],
     "state_machine": {
         "inputs": ["opponent_object_state"],

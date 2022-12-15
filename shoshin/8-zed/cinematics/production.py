@@ -7,8 +7,8 @@ from timeit import default_timer as timer
 PRIME = 3618502788666131213697322783095070105623107215331596699973092056135872020481
 PRIME_HALF = PRIME // 2
 
-# FRAME_PERIOD = 0.5
-FRAME_PERIOD = 0.07
+FRAME_PERIOD = 0.5
+# FRAME_PERIOD = 0.07
 
 
 def draw_background():
@@ -320,7 +320,7 @@ while True:
     #
     draw_background()
 
-    for agent_idx in [0]:
+    for agent_idx in [0, 1]:
         frames = record[f"agent_{agent_idx}"]
         frame = frames[idx]
 
