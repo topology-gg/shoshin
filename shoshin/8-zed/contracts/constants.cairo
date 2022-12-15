@@ -3,7 +3,7 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math_cmp import is_le
-from lib.bto_cairo_git.contracts.tree import Tree
+from lib.bto_cairo.lib.tree import Tree
 
 namespace ns_dynamics {
     const RANGE_CHECK_BOUND = 2 ** 120;

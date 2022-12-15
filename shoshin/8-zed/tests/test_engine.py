@@ -1,4 +1,5 @@
 import pytest
+import os
 import json
 from starkware.starknet.testing.starknet import Starknet
 import asyncio
@@ -50,8 +51,14 @@ async def starknet():
 @pytest.mark.asyncio
 async def test(starknet):
 
+    # Before running me, please install in 8-zed the binary tree operator library with `protostar install https://github.com/greged93/bto-cairo.git`
+    path = os.path.join(os.getcwd(), "lib/bto_cairo/")
+
     # Deploy contract
-    contract = await starknet.deploy(source="contracts/engine.cairo")
+    contract = await starknet.deploy(
+        source="contracts/engine.cairo",
+        cairo_path=[path],
+    )
     LOGGER.info(f"> Deployed engine.cairo.")
 
     # Parse state machine

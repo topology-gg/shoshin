@@ -26,7 +26,7 @@ from contracts.object import _object
 from contracts.combo import _combo
 from contracts.physics import _physicality, _test_rectangle_overlap
 from contracts.perceptibles import update_perceptibles
-from lib.bto_cairo_git.contracts.tree import Tree, BinaryOperatorTree
+from lib.bto_cairo.lib.tree import Tree, BinaryOperatorTree
 
 @view
 func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
