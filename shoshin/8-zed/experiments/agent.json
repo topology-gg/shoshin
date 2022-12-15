@@ -1,6 +1,6 @@
 {
     "states": ["idle", "ib1", "block"],
-    "combos": [["focus", "focus", "focus", "focus", "release", "idle"]],
+    "combos": [[2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0]],
     "perceptables": ["opponent_object_state"],
     "state_machine": {
         "inputs": ["opponent_object_state"],
@@ -8,57 +8,33 @@
             "stages": [
                 [
                     "ADD",
-                    ["EQ", "opponent_object_state", "SLASH_STA0"],
+                    ["EQ", ["DICT", "", "18"], "12"],
                     [
                         "ADD",
-                        ["EQ", "opponent_object_state", "SLASH_STA1"],
+                        ["EQ", ["DICT", "", "18"], "26"],
                         [
                             "ADD",
-                            ["EQ", "opponent_object_state", "SLASH_ATK0"],
+                            ["EQ", ["DICT", "", "18"], "27"],
                             [
                                 "ADD",
-                                ["EQ", "opponent_object_state", "SLASH_ATK1"],
+                                ["EQ", ["DICT", "", "18"], "28"],
                                 [
                                     "ADD",
-                                    [
-                                        "EQ",
-                                        "opponent_object_state",
-                                        "SLASH_ATK2"
-                                    ],
+                                    ["EQ", ["DICT", "", "18"], "29"],
                                     [
                                         "ADD",
-                                        [
-                                            "EQ",
-                                            "opponent_object_state",
-                                            "SLASH_ATK3"
-                                        ],
+                                        ["EQ", ["DICT", "", "18"], "30"],
                                         [
                                             "ADD",
-                                            [
-                                                "EQ",
-                                                "opponent_object_state",
-                                                "SLASH_ATK4"
-                                            ],
+                                            ["EQ", ["DICT", "", "18"], "31"],
                                             [
                                                 "ADD",
                                                 [
                                                     "EQ",
-                                                    "opponent_object_state",
-                                                    "SLASH_ATK5"
+                                                    ["DICT", "", "18"],
+                                                    "68"
                                                 ],
-                                                [
-                                                    "ADD",
-                                                    [
-                                                        "EQ",
-                                                        "opponent_object_state",
-                                                        "UPSWING"
-                                                    ],
-                                                    [
-                                                        "EQ",
-                                                        "opponent_object_state",
-                                                        "SIDECUT"
-                                                    ]
-                                                ]
+                                                ["EQ", ["DICT", "", "18"], "73"]
                                             ]
                                         ]
                                     ]
@@ -67,23 +43,11 @@
                         ]
                     ]
                 ],
+                ["MUL", ["SUB", "1", ["EQ", ["DICT", "", "9"], "44"]], "65546"],
                 [
                     "ADD",
-                    [
-                        "MUL",
-                        [
-                            "ADD",
-                            ["EQ", "state", "idle"],
-                            ["EQ", "state", "ib1"]
-                        ],
-                        "ib1"
-                    ],
-                    ["MUL", "idle", ["EQ", "state", "block"]]
-                ],
-                [
-                    "ADD",
-                    ["MUL", ["SUB", ["MEM", "", "0"], "1"], ["MEM", "", "1"]],
-                    ["MUL", "block", ["MEM", "", "0"]]
+                    ["MUL", ["SUB", "1", ["MEM", "", "0"]], ["MEM", "", "1"]],
+                    ["MUL", "3", ["MEM", "", "0"]]
                 ]
             ]
         }

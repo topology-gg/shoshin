@@ -35,8 +35,8 @@ class Node:
         self.left = left
         self.right = right
 
-    def to_array(self):
-        return [self.value, self.left, self.right]
+    def to_tuple(self):
+        return (self.value, self.left, self.right)
 
 
 @dataclass
@@ -59,7 +59,7 @@ class StateMachine:
 
 def parse_stages(state: StateMachine):
     output = []
-    offsets = [branch_size(s) for s in state.state_function.stages]
+    offsets = [branch_size(s) for s in state.state_function.stages[:-1]]
     offsets.append(0)
     for s in state.state_function.stages:
         output = output + parse_branch(s)
@@ -115,7 +115,7 @@ def import_json(path: str):
 
 
 def test():
-    data = import_json("./lib/bto_cairo_git/parser/src/test/input_test.json")
+    data = import_json("./experiments/agent.json")
     state_machine = StateMachine(**data["state_machine"])
 
     # test branch size
@@ -123,7 +123,7 @@ def test():
     size_1 = branch_size(state_machine.state_function.stages[1])
     size_2 = branch_size(state_machine.state_function.stages[2])
     assert size_0 == 44, f"branch size error"
-    assert size_1 == 18, f"branch size error"
+    assert size_1 == 8, f"branch size error"
     assert size_2 == 12, f"branch size error"
 
     # test parse simple
@@ -165,7 +165,7 @@ def test():
         Node(3, -1, -1),
     ]
     (output, offsets) = parse_stages(stm)
-    assert offsets == [18, 0], f"offsets error"
+    assert offsets == [0], f"offsets error"
     assert output == expected, f"output error"
 
     # test parse complete
@@ -215,32 +215,22 @@ def test():
         Node(14, -1, 1),
         Node(18, -1, -1),
         Node(73, -1, -1),
-        # second tr),
-        Node(1, 1, 12),
-        Node(3, 1, 10),
-        Node(1, 1, 5),
+        # second tree
+        Node(3, 1, 7),
+        Node(2, 1, 2),
+        Node(1, -1, -1),
         Node(12, 1, 3),
         Node(14, -1, 1),
         Node(9, -1, -1),
-        Node(0, -1, -1),
-        Node(12, 1, 3),
-        Node(14, -1, 1),
-        Node(9, -1, -1),
-        Node(10, -1, -1),
-        Node(10, -1, -1),
-        Node(3, 1, 2),
-        Node(0, -1, -1),
-        Node(12, 1, 3),
-        Node(14, -1, 1),
-        Node(9, -1, -1),
-        Node(3, -1, -1),
-        # third tr),
+        Node(44, -1, -1),
+        Node(65546, -1, -1),
+        # third tree
         Node(1, 1, 8),
         Node(3, 1, 5),
-        Node(2, 1, 3),
+        Node(2, 1, 2),
+        Node(1, -1, -1),
         Node(13, -1, 1),
         Node(0, -1, -1),
-        Node(1, -1, -1),
         Node(13, -1, 1),
         Node(1, -1, -1),
         Node(3, 1, 2),
@@ -249,5 +239,5 @@ def test():
         Node(0, -1, -1),
     ]
     (output, offsets) = parse_stages(state_machine)
-    assert offsets == [44, 18, 12, 0], f"offsets error"
+    assert offsets == [44, 8, 0], f"offsets error"
     assert output == expected, f"output error"
