@@ -3,7 +3,7 @@ import os
 import json
 from starkware.starknet.testing.starknet import Starknet
 import asyncio
-from utils import import_json, StateMachine, parse_stages
+from utils import import_json, parse_stages, parse_mental_to_action
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -27,13 +27,39 @@ def adjust_from_felt(felt):
 
 def parse_agent(path: str):
     data = import_json(path)
-    (fsm, offsets) = parse_stages(StateMachine(**data["state_machine"]))
-    state_machine = [x.to_tuple() for x in fsm]
+    # parse the mental state
+    mental_states_keys = data["mental_state_to_action"].keys()
+    mental_states = []
+    for k in mental_states_keys:
+        mental_states.append(data["mental_states"][k]["stages"])
+    [state_machine, state_machine_offsets] = parse_stages(
+        data["mapping"], mental_states
+    )
+    # parse the general functions
+    general_functions = data["general_purpose_functions"]
+    [functions, functions_offsets] = parse_stages(data["mapping"], general_functions)
+
+    # parse the state to actions
+    actions = parse_mental_to_action(
+        data["mapping"], data["mental_state_to_action"].values()
+    )
+
+    state_machine = [a.to_tuple() for a in state_machine]
+    functions = [a.to_tuple() for a in functions]
+    # parse the combos
     combos = data["combos"]
     accumulator = 0
     combos_offset = [0]
     combos_offset.append(*[accumulator := len(x) + accumulator for x in combos])
-    return (combos_offset, combos, offsets, state_machine)
+    return (
+        combos_offset,
+        combos,
+        state_machine_offsets,
+        state_machine,
+        functions_offsets,
+        functions,
+        actions,
+    )
 
 
 ### Reference: https://github.com/perama-v/GoL2/blob/main/tests/test_GoL2_infinite.py
@@ -62,9 +88,19 @@ async def test(starknet):
     LOGGER.info(f"> Deployed engine.cairo.")
 
     # Parse state machine
-    (combos_offset, combos, offsets, state_machine) = parse_agent(
-        "./experiments/agent.json"
-    )
+    # state_machine_offsets should be in the form
+    # [COUNT_TREES_STATE_0, LEN_TREE_0_STATE_0, LEN_TREE_1_STATE_0, ..., COUNT_TREES_STATE_1, LEN_TREE_0_STATE_1, LEN_TREE_1_STATE_1, ...]
+    # functions_offsets should be in the form
+    # [LEN_TREE_0, LEN_TREE_1, LEN_TREE_2, ...]
+    (
+        combos_offset,
+        combos,
+        state_machine_offsets,
+        state_machine,
+        functions_offsets,
+        functions,
+        actions,
+    ) = parse_agent("./experiments/agent.json")
 
     # Loop the baby
     N = 5 * 24  ## 5 seconds, 24 fps
@@ -74,10 +110,18 @@ async def test(starknet):
         *combos,
         [0, 7],
         [1, 1, 1, 1, 1, 1, 1],
-        offsets,
+        state_machine_offsets,
         state_machine,
+        0,
         [],
         [],
+        0,
+        functions_offsets,
+        functions,
+        [],
+        [],
+        actions,
+        [101],
     ).call()
 
     LOGGER.info(
