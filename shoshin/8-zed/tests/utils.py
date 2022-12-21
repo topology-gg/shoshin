@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Union, List
+from typing import Union, List, Dict
 import json
 import logging
 
@@ -21,6 +21,7 @@ OPCODES = {
     "EQ": 12,
     "MEM": 13,
     "DICT": 14,
+    "FUNC": 15,
 }
 
 
@@ -39,31 +40,32 @@ class Node:
         return (self.value, self.left, self.right)
 
 
-@dataclass
-class StateFunction:
-    stages: list
-
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
+def parse_mental_to_action(mapping: Dict, actions: List):
+    return [mapping.get(a) for a in actions]
 
 
-@dataclass
-class StateMachine:
-    inputs: List[str]
-    state_function: StateFunction
-
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
-        self.state_function = StateFunction(**self.state_function)
-
-
-def parse_stages(state: StateMachine):
+def parse_stages(mapping: Dict, state: List[List]):
     output = []
-    offsets = [branch_size(s) for s in state.state_function.stages[:-1]]
-    offsets.append(0)
-    for s in state.state_function.stages:
+    offsets = []
+    for s in state:
+        offsets.append(len(s))
+        offsets.append(branch_size(s))
+    unpacked = []
+    for s in state:
+        unpacked.append(*s)
+    for s in unpacked:
+        s = map_values(mapping, s)
         output = output + parse_branch(s)
     return (output, offsets)
+
+
+def map_values(mapping: Dict, state: Union[List, str]):
+    output = []
+    if type(state) is str:
+        return str(mapping.get(state, state))
+    for s in state:
+        output.append(map_values(mapping, s))
+    return output
 
 
 def parse_branch(branch: List):
@@ -104,7 +106,7 @@ def string_to_value(value: str):
 
 
 def is_single_branch(branch: str):
-    singles = ["ABS", "MEM", "DICT", "SQRT", "NOT", "IS_NN"]
+    singles = ["ABS", "MEM", "DICT", "SQRT", "NOT", "IS_NN", "FUNC"]
     return branch in singles
 
 
@@ -116,57 +118,58 @@ def import_json(path: str):
 
 def test():
     data = import_json("./experiments/agent.json")
-    state_machine = StateMachine(**data["state_machine"])
 
-    # test branch size
-    size_0 = branch_size(state_machine.state_function.stages[0])
-    size_1 = branch_size(state_machine.state_function.stages[1])
-    size_2 = branch_size(state_machine.state_function.stages[2])
-    assert size_0 == 44, f"branch size error"
-    assert size_1 == 8, f"branch size error"
-    assert size_2 == 12, f"branch size error"
+    #
+    # Mental state test
+    #
+    mental_states_keys = data["mental_state_to_action"].keys()
+    mental_states = []
+    for k in mental_states_keys:
+        mental_states.append(data["mental_states"][k]["stages"])
+    [output, offsets] = parse_stages(data["mapping"], mental_states)
 
-    # test parse simple
-    input = [
-        [
-            "ADD",
-            [
-                "MUL",
-                [
-                    "ADD",
-                    ["EQ", ["DICT", "", "9"], "0"],
-                    ["EQ", ["DICT", "", "9"], "10"],
-                ],
-                "10",
-            ],
-            ["MUL", "0", ["EQ", ["DICT", "", "9"], "3"]],
-        ],
-    ]
-    stm = StateMachine(**{"state_function": {"stages": []}})
-    stm.state_function.stages = input
+    # test parse complete
     expected = [
-        Node(1, 1, 12),
-        Node(3, 1, 10),
+        # first tree
         Node(1, 1, 5),
-        Node(12, 1, 3),
-        Node(14, -1, 1),
-        Node(9, -1, -1),
+        Node(3, 1, 3),
+        Node(15, -1, 1),
         Node(0, -1, -1),
-        Node(12, 1, 3),
-        Node(14, -1, 1),
-        Node(9, -1, -1),
-        Node(10, -1, -1),
-        Node(10, -1, -1),
-        Node(3, 1, 2),
+        Node(2, -1, -1),
+        Node(3, 1, 5),
+        Node(2, 1, 2),
+        Node(1, -1, -1),
+        Node(13, -1, 1),
         Node(0, -1, -1),
-        Node(12, 1, 3),
-        Node(14, -1, 1),
-        Node(9, -1, -1),
-        Node(3, -1, -1),
+        Node(1, -1, -1),
+        # second tree
+        Node(1, 1, 5),
+        Node(3, 1, 3),
+        Node(15, -1, 1),
+        Node(0, -1, -1),
+        Node(2, -1, -1),
+        Node(3, 1, 5),
+        Node(2, 1, 2),
+        Node(1, -1, -1),
+        Node(13, -1, 1),
+        Node(0, -1, -1),
+        Node(1, -1, -1),
+        # third tree
+        Node(1, 1, 5),
+        Node(3, 1, 3),
+        Node(15, -1, 1),
+        Node(0, -1, -1),
+        Node(2, -1, -1),
+        Node(0, -1, -1),
     ]
-    (output, offsets) = parse_stages(stm)
-    assert offsets == [0], f"offsets error"
+    assert offsets == [1, 11, 1, 11, 1, 6], f"offsets error"
     assert output == expected, f"output error"
+
+    #
+    # General purpose test
+    #
+    general_functions = data["general_purpose_functions"]
+    [output, offsets] = parse_stages(data["mapping"], general_functions)
 
     # test parse complete
     expected = [
@@ -176,68 +179,53 @@ def test():
         Node(14, -1, 1),
         Node(18, -1, -1),
         Node(12, -1, -1),
+        # eq tree
         Node(1, 1, 5),
         Node(12, 1, 3),
         Node(14, -1, 1),
         Node(18, -1, -1),
         Node(26, -1, -1),
+        # eq tree
         Node(1, 1, 5),
         Node(12, 1, 3),
         Node(14, -1, 1),
         Node(18, -1, -1),
         Node(27, -1, -1),
+        # eq tree
         Node(1, 1, 5),
         Node(12, 1, 3),
         Node(14, -1, 1),
         Node(18, -1, -1),
         Node(28, -1, -1),
+        # eq tree
         Node(1, 1, 5),
         Node(12, 1, 3),
         Node(14, -1, 1),
         Node(18, -1, -1),
         Node(29, -1, -1),
+        # eq tree
         Node(1, 1, 5),
         Node(12, 1, 3),
         Node(14, -1, 1),
         Node(18, -1, -1),
         Node(30, -1, -1),
+        # eq tree
         Node(1, 1, 5),
         Node(12, 1, 3),
         Node(14, -1, 1),
         Node(18, -1, -1),
         Node(31, -1, -1),
+        # eq tree
         Node(1, 1, 5),
         Node(12, 1, 3),
         Node(14, -1, 1),
         Node(18, -1, -1),
         Node(68, -1, -1),
+        # last tree
         Node(12, 1, 3),
         Node(14, -1, 1),
         Node(18, -1, -1),
         Node(73, -1, -1),
-        # second tree
-        Node(3, 1, 7),
-        Node(2, 1, 2),
-        Node(1, -1, -1),
-        Node(12, 1, 3),
-        Node(14, -1, 1),
-        Node(9, -1, -1),
-        Node(44, -1, -1),
-        Node(65546, -1, -1),
-        # third tree
-        Node(1, 1, 8),
-        Node(3, 1, 5),
-        Node(2, 1, 2),
-        Node(1, -1, -1),
-        Node(13, -1, 1),
-        Node(0, -1, -1),
-        Node(13, -1, 1),
-        Node(1, -1, -1),
-        Node(3, 1, 2),
-        Node(3, -1, -1),
-        Node(13, -1, 1),
-        Node(0, -1, -1),
     ]
-    (output, offsets) = parse_stages(state_machine)
-    assert offsets == [44, 8, 0], f"offsets error"
+    assert offsets == [1, 44], f"offsets error"
     assert output == expected, f"output error"
