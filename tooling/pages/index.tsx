@@ -1,43 +1,7 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
-import simulator from "./simulator";
-import MechState, { MechStatus, MechType } from '../src/types/MechState';
-import AtomState, { AtomStatus, AtomType } from '../src/types/AtomState';
-import AtomFaucetState from '../src/types/AtomFaucetState';
-import AtomSinkState from '../src/types/AtomSinkState';
-import BoardConfig from '../src/types/BoardConfig';
-import Frame from '../src/types/Frame';
-import Unit from './unit';
-import UnitState, {BgStatus, BorderStatus, UnitText} from '../src/types/UnitState';
-import Grid from '../src/types/Grid';
-import Operator, { OperatorType, OPERATOR_TYPES } from '../src/types/Operator';
-import Delivery from './delivery'
-import Summary from './summary';
-import Tutorial from './tutorial';
-import MechInput from '../src/components/MechInput';
-import { isIdenticalGrid, isGridOOB, areGridsNeighbors } from '../src/helpers/gridHelpers';
-import OperatorGridBg from '../src/components/OperatorGridBg';
-import { DIM, PROGRAM_SIZE_MAX, DEMO_SOLUTIONS, INSTRUCTION_ICON_MAP } from '../src/constants/constants';
-import { useTranslation } from 'react-i18next';
-import "../config/i18n"
-import LanguageSelector from '../src/components/LanguageSelector';
-import ConnectWalletStardisc from '../src/components/ConnectWalletStardisc'
-import { useAccount, useStarknetExecute } from '@starknet-react/core'
-import packSolution, { programsToInstructionSets } from '../src/helpers/packSolution';
-import { SIMULATOR_ADDR } from '../src/components/SimulatorContract';
-import Solution from '../src/types/Solution';
-import Leaderboard from '../src/components/Leaderboard';
 import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
-import {
-    saveSolutionToLocal,
-    getSolutionFromLocal,
-    getNamespaceFromLocal,
-    removeSolutionFromLocal,
-} from '../src/helpers/localStorage'
-import SavedSolutionElement from '../src/components/savedSolutionElement';
-import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
-import { reorder } from '../src/helpers/reorder';
 
 const theme = createTheme({
     typography: {
@@ -67,6 +31,19 @@ const theme = createTheme({
 
 export default function Home() {
 
+    // reference: https://stackoverflow.com/questions/23344776/how-to-access-data-of-uploaded-json-file
+    const [loadedJson, setLoadedJson] = useState<string>(null);
+    const onChangeFile = (event: any) => {
+        var reader = new FileReader();
+        reader.onload = onReaderLoad;
+        reader.readAsText(event.target.files[0]);
+    }
+    function onReaderLoad(event){
+        console.log('read:', event.target.result);
+        var obj = JSON.parse(event.target.result);
+        setLoadedJson((_) => obj);
+    }
+
     // Render
     return (
         <div className={styles.container}>
@@ -81,6 +58,22 @@ export default function Home() {
                     <div className={styles.title}>
                         <h2>Shoshin Tooling</h2>
                     </div>
+                    <fieldset style={{border:'1px groove #77777755'}}>
+
+                <legend>Open JSON</legend>
+                    <input
+                        className='button' type="file"
+                        style={{border:'none', marginTop:'5px', backgroundColor:'#ffffff00'}}
+                        accept=".json"
+                        onChange={(e) => onChangeFile(e)}
+                    />
+                </fieldset>
+
+            {
+                loadedJson ? (
+                    <p style={{fontSize:'1rem'}}>{JSON.stringify(loadedJson)}</p>
+                ) : <></>
+            }
                 </main>
             </ThemeProvider>
         </div>
