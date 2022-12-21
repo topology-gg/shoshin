@@ -1,0 +1,55 @@
+{
+    "states": ["idle", "ib1", "block"],
+    "combos": [[0, 0]],
+    "perceptables": ["opponent_object_state"],
+    "state_machine": {
+        "inputs": ["opponent_object_state"],
+        "state_function": {
+            "stages": [
+                [
+                    "ADD",
+                    ["EQ", ["DICT", "", "18"], "12"],
+                    [
+                        "ADD",
+                        ["EQ", ["DICT", "", "18"], "26"],
+                        [
+                            "ADD",
+                            ["EQ", ["DICT", "", "18"], "27"],
+                            [
+                                "ADD",
+                                ["EQ", ["DICT", "", "18"], "28"],
+                                [
+                                    "ADD",
+                                    ["EQ", ["DICT", "", "18"], "29"],
+                                    [
+                                        "ADD",
+                                        ["EQ", ["DICT", "", "18"], "30"],
+                                        [
+                                            "ADD",
+                                            ["EQ", ["DICT", "", "18"], "31"],
+                                            [
+                                                "ADD",
+                                                [
+                                                    "EQ",
+                                                    ["DICT", "", "18"],
+                                                    "68"
+                                                ],
+                                                ["EQ", ["DICT", "", "18"], "73"]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                ["MUL", ["SUB", "1", ["EQ", ["DICT", "", "9"], "44"]], "65546"],
+                [
+                    "ADD",
+                    ["MUL", ["SUB", "1", ["MEM", "", "0"]], ["MEM", "", "1"]],
+                    ["MUL", "3", ["MEM", "", "0"]]
+                ]
+            ]
+        }
+    }
+}

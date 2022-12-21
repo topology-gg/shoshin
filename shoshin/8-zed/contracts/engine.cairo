@@ -1,12 +1,15 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
+from starkware.cairo.common.math import unsigned_div_rem
 from starkware.cairo.common.alloc import alloc
+from starkware.cairo.common.default_dict import default_dict_new, default_dict_finalize
 from contracts.constants import (
     ns_action,
     ns_stimulus,
     ns_object_state,
     ns_character_dimension,
+    ns_combos,
     ns_scene,
     Vec2,
     CharacterState,
@@ -16,14 +19,35 @@ from contracts.constants import (
     Hitboxes,
     Stm,
     Perceptibles,
-    InputBuffer,
+    ComboBuffer,
+    StateMachine,
 )
 from contracts.object import _object
+from contracts.combo import _combo
 from contracts.physics import _physicality, _test_rectangle_overlap
-from contracts.agent_ib import _agent, ns_agent_state
+from contracts.perceptibles import update_perceptibles
+from lib.bto_cairo.lib.tree import Tree, BinaryOperatorTree
 
 @view
-func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(len: felt) -> () {
+func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    len: felt,
+    combos_offset_0_len: felt,
+    combos_offset_0: felt*,
+    combos_0_len: felt,
+    combos_0: felt*,
+    combos_offset_1_len: felt,
+    combos_offset_1: felt*,
+    combos_1_len: felt,
+    combos_1: felt*,
+    agent_0_state_machine_offset_len: felt,
+    agent_0_state_machine_offset: felt*,
+    agent_0_state_machine_len: felt,
+    agent_0_state_machine: Tree*,
+    agent_1_state_machine_offset_len: felt,
+    agent_1_state_machine_offset: felt*,
+    agent_1_state_machine_len: felt,
+    agent_1_state_machine: Tree*,
+) -> () {
     alloc_locals;
 
     //
@@ -32,7 +56,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(len: 
     let (arr_frames: FrameScene*) = alloc();
     let null_rect = Rectangle(Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM), Vec2(0, 0));
     let agent_0_origin = Vec2(-200, 0);
-    let agent_1_origin = Vec2(400, 0);
+    let agent_1_origin = Vec2(100, 0);
     let agent_0_body = Rectangle(
         agent_0_origin,
         Vec2(ns_character_dimension.BODY_HITBOX_W, ns_character_dimension.BODY_HITBOX_H),
@@ -50,7 +74,6 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(len: 
 
     assert arr_frames[0] = FrameScene(
         agent_0=Frame(
-            agent_state=ns_agent_state.DEMO,
             agent_action=ns_action.NULL,
             agent_stm=Stm(reg0=0),
             object_state=ns_object_state.IDLE,
@@ -63,7 +86,6 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(len: 
             stimulus=ns_stimulus.NULL
             ),
         agent_1=Frame(
-            agent_state=ns_agent_state.DEMO,
             agent_action=ns_action.NULL,
             agent_stm=Stm(reg0=0),
             object_state=ns_object_state.IDLE,
@@ -82,8 +104,10 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(len: 
         idx=1,
         len=len,
         arr_frames=arr_frames,
-        input_buffer_0=InputBuffer(0, arr_empty),
-        input_buffer_1=InputBuffer(0, arr_empty),
+        combos_0=ComboBuffer(combos_offset_0_len, combos_offset_0, combos_0, 0, 0),
+        combos_1=ComboBuffer(combos_offset_1_len, combos_offset_1, combos_1, 0, 0),
+        state_machine_0=StateMachine(agent_0_state_machine_offset_len, agent_0_state_machine_offset, agent_0_state_machine),
+        state_machine_1=StateMachine(agent_1_state_machine_offset_len, agent_1_state_machine_offset, agent_1_state_machine),
     );
 
     event_array.emit(len, arr_frames);
@@ -95,11 +119,12 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     idx: felt,
     len: felt,
     arr_frames: FrameScene*,
-    input_buffer_0: InputBuffer,
-    input_buffer_1: InputBuffer,
+    combos_0: ComboBuffer,
+    combos_1: ComboBuffer,
+    state_machine_0: StateMachine,
+    state_machine_1: StateMachine,
 ) -> () {
     alloc_locals;
-
     if (idx == len) {
         return ();
     }
@@ -113,39 +138,76 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // Perception Phase:
     // C_1, C_2 => P
     //
-    let perceptibles_0 = Perceptibles(
+    let p_0 = Perceptibles(
         self_character_state=last_frame.agent_0.character_state,
         self_object_state=last_frame.agent_0.object_state,
         opponent_character_state=last_frame.agent_1.character_state,
         opponent_object_state=last_frame.agent_1.object_state,
     );
-    let perceptibles_1 = Perceptibles(
+    let (perceptibles_0) = default_dict_new(default_value=0);
+    let (local perceptibles_0) = update_perceptibles(perceptibles_0, p_0);
+
+    let p_1 = Perceptibles(
         self_character_state=last_frame.agent_1.character_state,
         self_object_state=last_frame.agent_1.object_state,
         opponent_character_state=last_frame.agent_0.character_state,
         opponent_object_state=last_frame.agent_0.object_state,
     );
+    let (perceptibles_1) = default_dict_new(default_value=0);
+    let (local perceptibles_1) = update_perceptibles(perceptibles_1, p_1);
 
     //
     // Agency Phase:
     // A_i, P => A_i', a_i for i = [0,1]
     //
-    let (agent_state_0, agent_stm_0, agent_input_buffer_0_) = _agent(
-        last_frame.agent_0.agent_state, last_frame.agent_0.agent_stm, perceptibles_0, input_buffer_0
+    let (mem) = alloc();
+    let (agent_action_0, dict_new) = BinaryOperatorTree.execute_tree_chain(
+        state_machine_0.offsets_len,
+        state_machine_0.offsets,
+        state_machine_0.fsm,
+        0,
+        mem,
+        perceptibles_0,
     );
-    let a_0 = agent_input_buffer_0_.arr_actions[0];
-    let agent_input_buffer_0 = InputBuffer(
-        agent_input_buffer_0_.arr_actions_len - 1, &agent_input_buffer_0_.arr_actions[1]
+    default_dict_finalize(
+        dict_accesses_start=dict_new, dict_accesses_end=dict_new, default_value=0
     );
-    // let (agent_state_1, a_1, agent_stm_1) = _agent (last_frame.agent_1.agent_state, perceptibles_1, last_frame.agent_1.agent_stm)
 
-    // let agent_state_0 = last_frame.agent_0.agent_state
-    // let a_0 = ns_action.DASH_FORWARD
-    // let agent_stm_0 = last_frame.agent_0.agent_stm
-
-    let agent_state_1 = last_frame.agent_1.agent_state;
-    let a_1 = ns_action.NULL;
+    let agent_action_1 = 65536 + ns_action.COMBO;
     let agent_stm_1 = last_frame.agent_1.agent_stm;
+
+    //
+    // Combo Phase
+    //
+    local a_0;
+    local combos_0_new: ComboBuffer;
+    let (combo_0, action_0) = unsigned_div_rem(agent_action_0, ns_combos.ENCODING);
+
+    if (action_0 == ns_action.COMBO) {
+        let (a, c) = _combo(combo_0, combos_0);
+        assert a_0 = a;
+        assert combos_0_new = c;
+        tempvar range_check_ptr = range_check_ptr;
+    } else {
+        assert a_0 = action_0;
+        assert combos_0_new = ComboBuffer(combos_0.combos_offset_len, combos_0.combos_offset, combos_0.combos, 0, 0);
+        tempvar range_check_ptr = range_check_ptr;
+    }
+
+    local a_1;
+    local combos_1_new: ComboBuffer;
+    let (combo_1, action_1) = unsigned_div_rem(agent_action_1, ns_combos.ENCODING);
+
+    if (action_1 == ns_action.COMBO) {
+        let (a, c) = _combo(combo_1, combos_1);
+        assert a_1 = a;
+        assert combos_1_new = c;
+        tempvar range_check_ptr = range_check_ptr;
+    } else {
+        assert a_1 = action_1;
+        assert combos_1_new = ComboBuffer(combos_1.combos_offset_len, combos_1.combos_offset, combos_1.combos, 0, 0);
+        tempvar range_check_ptr = range_check_ptr;
+    }
 
     //
     // Object Phase:
@@ -189,9 +251,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     //
     assert arr_frames[idx] = FrameScene(
         agent_0=Frame(
-            agent_state=agent_state_0,
             agent_action=a_0,
-            agent_stm=agent_stm_0,
+            agent_stm=last_frame.agent_0.agent_stm,
             object_state=object_state_0,
             object_counter=object_counter_0,
             character_state=character_state_0,
@@ -199,9 +260,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             stimulus=stimulus_0
             ),
         agent_1=Frame(
-            agent_state=agent_state_1,
             agent_action=a_1,
-            agent_stm=agent_stm_1,
+            agent_stm=last_frame.agent_1.agent_stm,
             object_state=object_state_1,
             object_counter=object_counter_1,
             character_state=character_state_1,
@@ -214,7 +274,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // Tail recursion
     //
     tempvar arr_empty: felt* = new ();
-    _loop(idx + 1, len, arr_frames, agent_input_buffer_0, InputBuffer(0, arr_empty));
+    _loop(idx + 1, len, arr_frames, combos_0_new, combos_1_new, state_machine_0, state_machine_1);
     return ();
 }
 

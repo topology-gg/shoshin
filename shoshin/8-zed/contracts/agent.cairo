@@ -5,24 +5,6 @@ from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math_cmp import is_le
 from contracts.constants import ns_action, Stm, Perceptibles
 
-// Expressions:
-// - E_0 : perceptibles => bool
-// - E_1 : perceptibles => bool
-
-// Agent:
-// - IDLE => "increment counter in STM if counter <= 5; otherwise E_1 ? B_0 : IDLE"
-// - B_0 => E_0 ? IDLE : B_1
-// - B_1 => E_0 ? IDLE : B_2
-// - B_2 => E_0 ? IDLE : B_3
-// - B_3 => E_0 ? IDLE : B_4
-// - B_4 => E_0 ? IDLE : B_OFF_0
-// - B_OFF_0 => B_OFF_1
-// - B_OFF_1 => B_OFF_2
-// - B_OFF_2 => B_OFF_3
-// - B_OFF_3 => B_OFF_4
-// - B_OFF_4 => B_OFF_5
-// - B_OFF_5 => IDLE
-
 namespace ns_agent_state {
     const IDLE = 0;
     const B_0 = 1;
@@ -46,7 +28,7 @@ func _expression_1{}(perceptibles: Perceptibles) -> (bool: felt) {
     return (1,);
 }
 
-func _agent{range_check_ptr}(state: felt, perceptibles: Perceptibles, stm: Stm) -> (
+func agent{range_check_ptr}(state: felt, perceptibles: Perceptibles, stm: Stm) -> (
     state_nxt: felt, action: felt, stm_nxt: Stm
 ) {
     if (state == ns_agent_state.IDLE) {
