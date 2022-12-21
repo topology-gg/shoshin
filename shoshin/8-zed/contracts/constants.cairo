@@ -3,6 +3,7 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math_cmp import is_le
+from starkware.cairo.common.dict_access import DictAccess
 from lib.bto_cairo.lib.tree import Tree
 
 namespace ns_dynamics {
@@ -53,7 +54,7 @@ namespace ns_character_dimension {
 }
 
 namespace ns_combos {
-    const ENCODING = 2 ** 16;
+    const ENCODING = 100;
 }
 
 namespace ns_action {
@@ -186,12 +187,6 @@ struct ComboBuffer {
     combo_counter: felt,
 }
 
-struct StateMachine {
-    offsets_len: felt,
-    offsets: felt*,
-    fsm: Tree*,
-}
-
 struct Hitboxes {
     action: Rectangle,
     body: Rectangle,
@@ -228,6 +223,7 @@ struct Perceptibles {
 
 struct Frame {
     agent_action: felt,
+    agent_state: felt,
     agent_stm: Stm,
     object_state: felt,
     object_counter: felt,
