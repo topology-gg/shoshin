@@ -50,13 +50,15 @@ def parse_agent(path: str):
     combos = data["combos"]
     accumulator = 0
     combos_offset = [0]
-    combos_offset.append(*[accumulator := len(x) + accumulator for x in combos])
+    list(
+        map(combos_offset.append, [accumulator := len(x) + accumulator for x in combos])
+    )
     return (
         combos_offset,
-        combos,
+        [x for a in combos for x in a],
         state_machine_offsets,
         state_machine,
-        functions_offsets,
+        [x for (i, x) in enumerate(functions_offsets) if (i + 1) % 2 == 0],
         functions,
         actions,
     )
@@ -100,16 +102,16 @@ async def test(starknet):
         functions_offsets,
         functions,
         actions,
-    ) = parse_agent("./experiments/agent.json")
+    ) = parse_agent("./experiments/advanced_agent.json")
 
     # Loop the baby
     N = 5 * 24  ## 5 seconds, 24 fps
     ret = await contract.loop(
         N,
         combos_offset,
-        *combos,
-        [0, 7],
-        [1, 1, 1, 1, 1, 1, 1],
+        combos,
+        [0, 11],
+        [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
         state_machine_offsets,
         state_machine,
         0,
@@ -122,8 +124,8 @@ async def test(starknet):
         [],
         actions,
         [101],
-        0, # character type: Jessica
-        1, # character type: Antoc
+        0,  # character type: Jessica
+        1,  # character type: Antoc
     ).call()
 
     LOGGER.info(
