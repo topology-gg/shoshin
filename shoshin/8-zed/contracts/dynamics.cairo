@@ -5,18 +5,27 @@ from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import abs_value, unsigned_div_rem, signed_div_rem, sign
 from starkware.cairo.common.math_cmp import is_le, is_not_zero
 from contracts.constants.constants import (
-    ns_dynamics, ns_character_type,
-    Vec2, PhysicsState, BodyState,
+    ns_dynamics,
+    ns_character_type,
+    Vec2,
+    PhysicsState,
+    BodyState,
 )
 from contracts.constants.constants_jessica import (
-    ns_jessica_dynamics, ns_jessica_character_dimension, ns_jessica_action, ns_jessica_body_state
+    ns_jessica_dynamics,
+    ns_jessica_character_dimension,
+    ns_jessica_action,
+    ns_jessica_body_state,
 )
 from contracts.constants.constants_antoc import (
-    ns_antoc_dynamics, ns_antoc_character_dimension, ns_antoc_action, ns_antoc_body_state
+    ns_antoc_dynamics,
+    ns_antoc_character_dimension,
+    ns_antoc_action,
+    ns_antoc_body_state,
 )
 from contracts.numerics import mul_fp, div_fp_ul
 
-func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
+func _character_specific_constants{range_check_ptr}(character_type: felt) -> (
     MOVE_FORWARD: felt,
     MOVE_BACKWARD: felt,
     DASH_FORWARD: felt,
@@ -66,21 +75,17 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
     }
 }
 
-func _euler_forward_no_hitbox {range_check_ptr}(
-    character_type: felt,
-    physics_state: PhysicsState,
-    body_state: BodyState,
-) -> (
-    physics_state_fwd: PhysicsState
-) {
+func _euler_forward_no_hitbox{range_check_ptr}(
+    character_type: felt, physics_state: PhysicsState, body_state: BodyState
+) -> (physics_state_fwd: PhysicsState) {
     alloc_locals;
 
     local vel_fp_nxt: Vec2;
 
     // unpack
-    let state   = body_state.state;
+    let state = body_state.state;
     let counter = body_state.counter;
-    let dir     = body_state.dir;
+    let dir = body_state.dir;
 
     // get character-specific constants for dynamics
     let (
@@ -97,7 +102,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         DASH_ACC_FP: felt,
         DEACC_FP: felt,
         BODY_KNOCKED_ADJUST_W: felt,
-    ) = _character_specific_constants (character_type);
+    ) = _character_specific_constants(character_type);
 
     //
     // Set acceleration (fp) according to body state
@@ -148,17 +153,17 @@ func _euler_forward_no_hitbox {range_check_ptr}(
                 // # back off the difference between normal body sprite width and knocked sprite width
                 return (
                     PhysicsState(
-                        pos=Vec2(physics_state.pos.x - BODY_KNOCKED_ADJUST_W, physics_state.pos.y),
-                        vel_fp=Vec2(0, 0),
-                        acc_fp=Vec2(0, 0),
+                    pos=Vec2(physics_state.pos.x - BODY_KNOCKED_ADJUST_W, physics_state.pos.y),
+                    vel_fp=Vec2(0, 0),
+                    acc_fp=Vec2(0, 0),
                     ),
                 );
             } else {
                 return (
                     PhysicsState(
-                            pos=Vec2(physics_state.pos.x + 1, physics_state.pos.y),
-                            vel_fp=Vec2(0, 0),
-                            acc_fp=Vec2(0, 0),
+                    pos=Vec2(physics_state.pos.x + 1, physics_state.pos.y),
+                    vel_fp=Vec2(0, 0),
+                    acc_fp=Vec2(0, 0),
                     ),
                 );
             }
@@ -181,9 +186,9 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     // otherwise, set velocity to zero (instant stop)
     return (
         PhysicsState(
-            pos=Vec2(physics_state.pos.x, physics_state.pos.y),
-            vel_fp=Vec2(0, 0),
-            acc_fp=Vec2(0, 0),
+        pos=Vec2(physics_state.pos.x, physics_state.pos.y),
+        vel_fp=Vec2(0, 0),
+        acc_fp=Vec2(0, 0),
         ),
     );
 
@@ -192,20 +197,14 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     //
     update_vel_move:
     let (vel_fp_nxt_: Vec2) = _euler_forward_vel_no_hitbox(
-        physics_state.vel_fp,
-        Vec2(acc_fp_x, acc_fp_y),
-        MAX_VEL_MOVE_FP,
-        MIN_VEL_MOVE_FP,
+        physics_state.vel_fp, Vec2(acc_fp_x, acc_fp_y), MAX_VEL_MOVE_FP, MIN_VEL_MOVE_FP
     );
     assert vel_fp_nxt = vel_fp_nxt_;
     jmp update_pos;
 
     update_vel_dash:
     let (vel_fp_nxt_: Vec2) = _euler_forward_vel_no_hitbox(
-        physics_state.vel_fp,
-        Vec2(acc_fp_x, acc_fp_y),
-        MAX_VEL_DASH_FP,
-        MIN_VEL_DASH_FP,
+        physics_state.vel_fp, Vec2(acc_fp_x, acc_fp_y), MAX_VEL_DASH_FP, MIN_VEL_DASH_FP
     );
     assert vel_fp_nxt = vel_fp_nxt_;
 
@@ -216,9 +215,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     let (pos_nxt: Vec2) = _euler_forward_pos_no_hitbox(physics_state.pos, vel_fp_nxt);
 
     let physics_state_fwd: PhysicsState = PhysicsState(
-        pos=pos_nxt,
-        vel_fp=vel_fp_nxt,
-        acc_fp=Vec2(acc_fp_x, acc_fp_y),
+        pos=pos_nxt, vel_fp=vel_fp_nxt, acc_fp=Vec2(acc_fp_x, acc_fp_y)
     );
 
     return (physics_state_fwd,);
@@ -277,10 +274,7 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
     physics_state_1: PhysicsState,
     physics_state_cand_1: PhysicsState,
     bool_body_overlap: felt,
-) -> (
-    physics_state_fwd_0: PhysicsState,
-    physics_state_fwd_1: PhysicsState,
-) {
+) -> (physics_state_fwd_0: PhysicsState, physics_state_fwd_1: PhysicsState) {
     alloc_locals;
 
     if (bool_body_overlap == 1) {
@@ -335,14 +329,14 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
         // note: do nothing for now to Y component
 
         let physics_state_fwd_0: PhysicsState = PhysicsState(
-            pos = Vec2(x_0, physics_state_cand_0.pos.y),
-            vel_fp = Vec2(0, 0),
-            acc_fp = physics_state_cand_0.acc_fp,
+            pos=Vec2(x_0, physics_state_cand_0.pos.y),
+            vel_fp=Vec2(0, 0),
+            acc_fp=physics_state_cand_0.acc_fp,
         );
         let physics_state_fwd_1: PhysicsState = PhysicsState(
-            pos = Vec2(x_1, physics_state_cand_1.pos.y),
-            vel_fp = Vec2(0, 0),
-            acc_fp = physics_state_cand_1.acc_fp,
+            pos=Vec2(x_1, physics_state_cand_1.pos.y),
+            vel_fp=Vec2(0, 0),
+            acc_fp=physics_state_cand_1.acc_fp,
         );
 
         return (physics_state_fwd_0, physics_state_fwd_1);
