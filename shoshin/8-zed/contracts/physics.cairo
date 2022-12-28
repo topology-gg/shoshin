@@ -337,18 +337,18 @@ func _test_segment_overlap{range_check_ptr}(
     // Algorithm:
     // find the segment whose left point is the smaller than the left point of the other segment;
     // call it segment-left (SL), and the other one segment-right (SR);
-    // to overlap, the left point of SR should <= the right point of SL.
+    // to overlap, the left point of SR should < the right point of SL.
     //
 
     let x0_is_sl = is_le(x0_left, x1_left);
 
     if (x0_is_sl == 1) {
         // # x0 is SL
-        let bool = is_le(x1_left, x0_right);
+        let bool = is_le(x1_left + 1, x0_right);
         return (bool,);
     } else {
         // # x1 is SL
-        let bool = is_le(x0_left, x1_right);
+        let bool = is_le(x0_left + 1, x1_right);
         return (bool,);
     }
 }
