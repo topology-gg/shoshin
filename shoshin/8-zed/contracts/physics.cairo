@@ -15,10 +15,12 @@ from contracts.constants.constants import (
     Hitboxes,
 )
 from contracts.constants.constants_jessica import (
-    ns_jessica_character_dimension, ns_jessica_body_state_qualifiers
+    ns_jessica_character_dimension,
+    ns_jessica_body_state_qualifiers,
 )
 from contracts.constants.constants_antoc import (
-    ns_antoc_character_dimension, ns_antoc_body_state_qualifiers
+    ns_antoc_character_dimension,
+    ns_antoc_body_state_qualifiers,
 )
 from contracts.dynamics import _euler_forward_no_hitbox, _euler_forward_consider_hitbox
 
@@ -30,10 +32,8 @@ func _bool_or{range_check_ptr}(bool_0: felt, bool_1: felt) -> (bool: felt) {
     }
 }
 
-func is_in_various_states_given_character_type {range_check_ptr}(
-    character_type: felt,
-    state: felt,
-    counter: felt,
+func is_in_various_states_given_character_type{range_check_ptr}(
+    character_type: felt, state: felt, counter: felt
 ) -> (
     bool_body_in_atk_active: felt,
     bool_body_in_knocked_early: felt,
@@ -41,9 +41,9 @@ func is_in_various_states_given_character_type {range_check_ptr}(
     bool_body_in_block: felt,
 ) {
     if (character_type == ns_character_type.JESSICA) {
-        return ns_jessica_body_state_qualifiers.is_in_various_states (state, counter);
+        return ns_jessica_body_state_qualifiers.is_in_various_states(state, counter);
     } else {
-        return ns_antoc_body_state_qualifiers.is_in_various_states (state, counter);
+        return ns_antoc_body_state_qualifiers.is_in_various_states(state, counter);
     }
 }
 
@@ -89,13 +89,17 @@ func _physicality{range_check_ptr}(
         bool_body_in_knocked_early_0: felt,
         bool_body_in_knocked_late_0: felt,
         bool_body_in_block_0: felt,
-    ) = is_in_various_states_given_character_type (character_type_0, curr_body_state_0.state, curr_body_state_0.counter);
+    ) = is_in_various_states_given_character_type(
+        character_type_0, curr_body_state_0.state, curr_body_state_0.counter
+    );
     let (
         bool_body_in_atk_active_1: felt,
         bool_body_in_knocked_early_1: felt,
         bool_body_in_knocked_late_1: felt,
         bool_body_in_block_1: felt,
-    ) = is_in_various_states_given_character_type (character_type_1, curr_body_state_1.state, curr_body_state_1.counter);
+    ) = is_in_various_states_given_character_type(
+        character_type_1, curr_body_state_1.state, curr_body_state_1.counter
+    );
 
     local action_origin_0: Vec2;
     local action_dimension_0: Vec2;
@@ -110,18 +114,18 @@ func _physicality{range_check_ptr}(
             assert action_origin_0 = Vec2(
                 candidate_physics_state_0.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W,
                 candidate_physics_state_0.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
-            );
+                );
         } else {
             // # facing left
             assert action_origin_0 = Vec2(
                 candidate_physics_state_0.pos.x - ns_jessica_character_dimension.SLASH_HITBOX_W,
                 candidate_physics_state_0.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
-            );
+                );
         }
-        assert action_dimension_0 = Vec2 (ns_jessica_character_dimension.SLASH_HITBOX_W, ns_jessica_character_dimension.SLASH_HITBOX_H);
+        assert action_dimension_0 = Vec2(ns_jessica_character_dimension.SLASH_HITBOX_W, ns_jessica_character_dimension.SLASH_HITBOX_H);
     } else {
-        assert action_origin_0 = Vec2 (ns_scene.BIGNUM, ns_scene.BIGNUM);
-        assert action_dimension_0 = Vec2 (0, 0);
+        assert action_origin_0 = Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM);
+        assert action_dimension_0 = Vec2(0, 0);
     }
 
     if (bool_body_in_atk_active_1 == 1) {
@@ -130,18 +134,18 @@ func _physicality{range_check_ptr}(
             assert action_origin_1 = Vec2(
                 candidate_physics_state_1.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W,
                 candidate_physics_state_1.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
-            );
+                );
         } else {
             // # facing left
             assert action_origin_1 = Vec2(
                 candidate_physics_state_1.pos.x - ns_jessica_character_dimension.SLASH_HITBOX_W,
                 candidate_physics_state_1.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
-            );
+                );
         }
-        assert action_dimension_1 = Vec2 (ns_jessica_character_dimension.SLASH_HITBOX_W, ns_jessica_character_dimension.SLASH_HITBOX_H);
+        assert action_dimension_1 = Vec2(ns_jessica_character_dimension.SLASH_HITBOX_W, ns_jessica_character_dimension.SLASH_HITBOX_H);
     } else {
-        assert action_origin_1 = Vec2 (ns_scene.BIGNUM, ns_scene.BIGNUM);
-        assert action_dimension_1 = Vec2 (0, 0);
+        assert action_origin_1 = Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM);
+        assert action_dimension_1 = Vec2(0, 0);
     }
 
     // # determine body dimension (knocked state has a wider hitbox)
@@ -149,34 +153,34 @@ func _physicality{range_check_ptr}(
     local body_dim_1: Vec2;
 
     if (bool_body_in_knocked_early_0 == 1) {
-        assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
+        assert body_dim_0 = Vec2(ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
     } else {
         if (bool_body_in_knocked_late_0 == 1) {
-            assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
+            assert body_dim_0 = Vec2(ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
         } else {
-            assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H);
+            assert body_dim_0 = Vec2(ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H);
         }
     }
 
     if (bool_body_in_knocked_early_1 == 1) {
-        assert body_dim_1 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
+        assert body_dim_1 = Vec2(ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
     } else {
         if (bool_body_in_knocked_late_1 == 1) {
-            assert body_dim_1 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
+            assert body_dim_1 = Vec2(ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
         } else {
-            assert body_dim_1 = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H);
+            assert body_dim_1 = Vec2(ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H);
         }
     }
 
     local hitboxes_0: Hitboxes = Hitboxes(
-        action = Rectangle (action_origin_0, action_dimension_0),
-        body = Rectangle (candidate_physics_state_0.pos, body_dim_0)
-    );
+        action=Rectangle(action_origin_0, action_dimension_0),
+        body=Rectangle(candidate_physics_state_0.pos, body_dim_0)
+        );
 
     local hitboxes_1: Hitboxes = Hitboxes(
-        action = Rectangle (action_origin_1, action_dimension_1),
-        body = Rectangle (candidate_physics_state_1.pos, body_dim_1)
-    );
+        action=Rectangle(action_origin_1, action_dimension_1),
+        body=Rectangle(candidate_physics_state_1.pos, body_dim_1)
+        );
 
     //
     // 3. Test hitbox overlaps
@@ -197,7 +201,7 @@ func _physicality{range_check_ptr}(
     //
     // 4. Movement second pass, incorporating hitbox overlap (final positions) to produce final physics states
     //
-    let (curr_physics_state_0, curr_physics_state_1) = _euler_forward_consider_hitbox (
+    let (curr_physics_state_0, curr_physics_state_1) = _euler_forward_consider_hitbox(
         last_physics_state_0,
         candidate_physics_state_0,
         last_physics_state_1,
@@ -209,32 +213,32 @@ func _physicality{range_check_ptr}(
     // 5. Produce stimuli
     // (NULL / HURT / KNOCKED / CLASH)
     //
-    let curr_stimulus_0 = produce_stimulus_given_conditions (
-        bool_self_hit = bool_agent_0_hit,
-        bool_opp_hit = bool_agent_1_hit,
-        bool_body_overlap = bool_body_overlap,
-        bool_action_overlap = bool_action_overlap,
-        bool_self_atk_active = bool_body_in_atk_active_0,
-        bool_self_block_active = bool_body_in_block_0,
-        bool_opp_atk_active = bool_body_in_atk_active_1,
-        bool_opp_block_active = bool_body_in_block_1,
-        self_integrity = curr_body_state_0.integrity,
-        self_character_type = character_type_0,
-        opp_character_type = character_type_1,
+    let curr_stimulus_0 = produce_stimulus_given_conditions(
+        bool_self_hit=bool_agent_0_hit,
+        bool_opp_hit=bool_agent_1_hit,
+        bool_body_overlap=bool_body_overlap,
+        bool_action_overlap=bool_action_overlap,
+        bool_self_atk_active=bool_body_in_atk_active_0,
+        bool_self_block_active=bool_body_in_block_0,
+        bool_opp_atk_active=bool_body_in_atk_active_1,
+        bool_opp_block_active=bool_body_in_block_1,
+        self_integrity=curr_body_state_0.integrity,
+        self_character_type=character_type_0,
+        opp_character_type=character_type_1,
     );
 
-    let curr_stimulus_1 = produce_stimulus_given_conditions (
-        bool_self_hit = bool_agent_1_hit,
-        bool_opp_hit = bool_agent_0_hit,
-        bool_body_overlap = bool_body_overlap,
-        bool_action_overlap = bool_action_overlap,
-        bool_self_atk_active = bool_body_in_atk_active_1,
-        bool_self_block_active = bool_body_in_block_1,
-        bool_opp_atk_active = bool_body_in_atk_active_0,
-        bool_opp_block_active = bool_body_in_block_0,
-        self_integrity = curr_body_state_1.integrity,
-        self_character_type = character_type_1,
-        opp_character_type = character_type_0,
+    let curr_stimulus_1 = produce_stimulus_given_conditions(
+        bool_self_hit=bool_agent_1_hit,
+        bool_opp_hit=bool_agent_0_hit,
+        bool_body_overlap=bool_body_overlap,
+        bool_action_overlap=bool_action_overlap,
+        bool_self_atk_active=bool_body_in_atk_active_1,
+        bool_self_block_active=bool_body_in_block_1,
+        bool_opp_atk_active=bool_body_in_atk_active_0,
+        bool_opp_block_active=bool_body_in_block_0,
+        self_integrity=curr_body_state_1.integrity,
+        self_character_type=character_type_1,
+        opp_character_type=character_type_0,
     );
 
     return (
@@ -247,7 +251,7 @@ func _physicality{range_check_ptr}(
     );
 }
 
-func produce_stimulus_given_conditions {range_check_ptr} (
+func produce_stimulus_given_conditions{range_check_ptr}(
     bool_self_hit: felt,
     bool_opp_hit: felt,
     bool_body_overlap: felt,
@@ -262,7 +266,7 @@ func produce_stimulus_given_conditions {range_check_ptr} (
 ) -> felt {
     alloc_locals;
 
-    let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
+    let is_integrity_critical = is_le(self_integrity, ns_integrity.CRITICAL_INTEGRITY);
 
     // when hit, HURT if not in critical integrity, KNOCKED otherwise
     if (bool_self_hit == 1) {
@@ -275,7 +279,8 @@ func produce_stimulus_given_conditions {range_check_ptr} (
 
     // when blocked, antoc-blocking-jessica knocks jessica away; otherwise HURT
     if (bool_self_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
-        if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
+        if (self_character_type == ns_character_type.JESSICA and
+            opp_character_type == ns_character_type.ANTOC) {
             return ns_stimulus.KNOCKED;
         }
         return ns_stimulus.HURT;
@@ -308,7 +313,7 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     return ns_stimulus.NULL;
 }
 
-func _test_rectangle_overlap {range_check_ptr}(rect_0: Rectangle, rect_1: Rectangle) -> (
+func _test_rectangle_overlap{range_check_ptr}(rect_0: Rectangle, rect_1: Rectangle) -> (
     bool: felt
 ) {
     alloc_locals;
