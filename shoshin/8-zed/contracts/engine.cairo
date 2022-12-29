@@ -1,8 +1,10 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
-from starkware.cairo.common.math import unsigned_div_rem
+from starkware.cairo.common.math_cmp import is_le
 from starkware.cairo.common.alloc import alloc
+from starkware.cairo.common.dict_access import DictAccess
+from starkware.cairo.common.dict import dict_read
 from starkware.cairo.common.default_dict import default_dict_new, default_dict_finalize
 from contracts.constants import (
     ns_action,
@@ -20,13 +22,13 @@ from contracts.constants import (
     Stm,
     Perceptibles,
     ComboBuffer,
-    StateMachine,
 )
 from contracts.object import _object
 from contracts.combo import _combo
 from contracts.physics import _physicality, _test_rectangle_overlap
 from contracts.perceptibles import update_perceptibles
 from lib.bto_cairo.lib.tree import Tree, BinaryOperatorTree
+from contracts.utils import fill_dictionary_offsets, fill_dictionary
 
 @view
 func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
@@ -43,10 +45,24 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     agent_0_state_machine_offset: felt*,
     agent_0_state_machine_len: felt,
     agent_0_state_machine: Tree*,
+    agent_0_initial_state: felt,
     agent_1_state_machine_offset_len: felt,
     agent_1_state_machine_offset: felt*,
     agent_1_state_machine_len: felt,
     agent_1_state_machine: Tree*,
+    agent_1_initial_state: felt,
+    agent_0_functions_offset_len: felt,
+    agent_0_functions_offset: felt*,
+    agent_0_functions_len: felt,
+    agent_0_functions: Tree*,
+    agent_1_functions_offset_len: felt,
+    agent_1_functions_offset: felt*,
+    agent_1_functions_len: felt,
+    agent_1_functions: Tree*,
+    actions_0_len: felt,
+    actions_0: felt*,
+    actions_1_len: felt,
+    actions_1: felt*,
 ) -> () {
     alloc_locals;
 
@@ -75,6 +91,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     assert arr_frames[0] = FrameScene(
         agent_0=Frame(
             agent_action=ns_action.NULL,
+            agent_state=agent_0_initial_state,
             agent_stm=Stm(reg0=0),
             object_state=ns_object_state.IDLE,
             object_counter=0,
@@ -87,6 +104,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             ),
         agent_1=Frame(
             agent_action=ns_action.NULL,
+            agent_state=agent_1_initial_state,
             agent_stm=Stm(reg0=0),
             object_state=ns_object_state.IDLE,
             object_counter=0,
@@ -99,6 +117,47 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             )
         );
 
+    //
+    // Preparing dictionaries
+    //
+    let (mental_state_0) = default_dict_new(default_value=0);
+    let (mental_state_offsets_0) = default_dict_new(default_value=0);
+    let (mental_state_0_new, mental_state_offsets_0_new) = fill_dictionary_offsets(
+        tree_dict=mental_state_0,
+        offsets_dict=mental_state_offsets_0,
+        offsets_len=agent_0_state_machine_offset_len,
+        offsets=agent_0_state_machine_offset,
+        tree=agent_0_state_machine,
+        i=0,
+    );
+    let (mental_state_1) = default_dict_new(default_value=0);
+    let (mental_state_offsets_1) = default_dict_new(default_value=0);
+    let (mental_state_1_new, mental_state_offsets_1_new) = fill_dictionary_offsets(
+        tree_dict=mental_state_1,
+        offsets_dict=mental_state_offsets_1,
+        offsets_len=agent_1_state_machine_offset_len,
+        offsets=agent_1_state_machine_offset,
+        tree=agent_1_state_machine,
+        i=0,
+    );
+
+    let (functions_0) = default_dict_new(default_value=0);
+    let (functions_0_new) = fill_dictionary(
+        dict=functions_0,
+        offsets_len=agent_0_functions_offset_len,
+        offsets=agent_0_functions_offset,
+        tree=agent_0_functions,
+        i=0,
+    );
+    let (functions_1) = default_dict_new(default_value=0);
+    let (functions_1_new) = fill_dictionary(
+        dict=functions_1,
+        offsets_len=agent_1_functions_offset_len,
+        offsets=agent_1_functions_offset,
+        tree=agent_1_functions,
+        i=0,
+    );
+
     tempvar arr_empty: felt* = new ();
     _loop(
         idx=1,
@@ -106,8 +165,14 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         arr_frames=arr_frames,
         combos_0=ComboBuffer(combos_offset_0_len, combos_offset_0, combos_0, 0, 0),
         combos_1=ComboBuffer(combos_offset_1_len, combos_offset_1, combos_1, 0, 0),
-        state_machine_0=StateMachine(agent_0_state_machine_offset_len, agent_0_state_machine_offset, agent_0_state_machine),
-        state_machine_1=StateMachine(agent_1_state_machine_offset_len, agent_1_state_machine_offset, agent_1_state_machine),
+        mental_state_0=mental_state_0_new,
+        mental_state_offsets_0=mental_state_offsets_0_new,
+        functions_0=functions_0_new,
+        mental_state_1=mental_state_1_new,
+        mental_state_offsets_1=mental_state_offsets_1_new,
+        functions_1=functions_1_new,
+        actions_0=actions_0,
+        actions_1=actions_1,
     );
 
     event_array.emit(len, arr_frames);
@@ -121,8 +186,14 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     arr_frames: FrameScene*,
     combos_0: ComboBuffer,
     combos_1: ComboBuffer,
-    state_machine_0: StateMachine,
-    state_machine_1: StateMachine,
+    mental_state_0: DictAccess*,
+    mental_state_offsets_0: DictAccess*,
+    functions_0: DictAccess*,
+    mental_state_1: DictAccess*,
+    mental_state_offsets_1: DictAccess*,
+    functions_1: DictAccess*,
+    actions_0: felt*,
+    actions_1: felt*,
 ) -> () {
     alloc_locals;
     if (idx == len) {
@@ -161,50 +232,54 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // A_i, P => A_i', a_i for i = [0,1]
     //
     let (mem) = alloc();
-    let (agent_action_0, dict_new) = BinaryOperatorTree.execute_tree_chain(
-        state_machine_0.offsets_len,
-        state_machine_0.offsets,
-        state_machine_0.fsm,
-        0,
-        mem,
-        perceptibles_0,
+    let (ptr_tree) = dict_read{dict_ptr=mental_state_0}(key=last_frame.agent_0.agent_state);
+    tempvar tree = cast(ptr_tree, Tree*);
+    let (ptr_offsets) = dict_read{dict_ptr=mental_state_offsets_0}(
+        key=last_frame.agent_0.agent_state
+    );
+    tempvar offsets = cast(ptr_offsets, felt*);
+    let (agent_state_0, functions_0_new, dict_new) = BinaryOperatorTree.execute_tree_chain(
+        [offsets], offsets + 1, tree, 0, mem, functions_0, perceptibles_0
     );
     default_dict_finalize(
         dict_accesses_start=dict_new, dict_accesses_end=dict_new, default_value=0
     );
 
-    let agent_action_1 = 65536 + ns_action.COMBO;
+    let agent_state_1 = 0;
     let agent_stm_1 = last_frame.agent_1.agent_stm;
+
+    tempvar agent_action_0 = actions_0[agent_state_0];
+    tempvar agent_action_1 = actions_1[agent_state_1];
 
     //
     // Combo Phase
     //
     local a_0;
     local combos_0_new: ComboBuffer;
-    let (combo_0, action_0) = unsigned_div_rem(agent_action_0, ns_combos.ENCODING);
+    let is_combo = is_le(ns_combos.ENCODING, agent_action_0);
 
-    if (action_0 == ns_action.COMBO) {
-        let (a, c) = _combo(combo_0, combos_0);
+    if (is_combo == 1) {
+        let (a, c) = _combo(agent_action_0 - ns_combos.ENCODING, combos_0);
         assert a_0 = a;
         assert combos_0_new = c;
         tempvar range_check_ptr = range_check_ptr;
     } else {
-        assert a_0 = action_0;
+        assert a_0 = agent_action_0;
         assert combos_0_new = ComboBuffer(combos_0.combos_offset_len, combos_0.combos_offset, combos_0.combos, 0, 0);
         tempvar range_check_ptr = range_check_ptr;
     }
 
     local a_1;
     local combos_1_new: ComboBuffer;
-    let (combo_1, action_1) = unsigned_div_rem(agent_action_1, ns_combos.ENCODING);
+    let is_combo = is_le(ns_combos.ENCODING, agent_action_1);
 
-    if (action_1 == ns_action.COMBO) {
-        let (a, c) = _combo(combo_1, combos_1);
+    if (is_combo == 1) {
+        let (a, c) = _combo(agent_action_1 - ns_combos.ENCODING, combos_1);
         assert a_1 = a;
         assert combos_1_new = c;
         tempvar range_check_ptr = range_check_ptr;
     } else {
-        assert a_1 = action_1;
+        assert a_1 = agent_action_1;
         assert combos_1_new = ComboBuffer(combos_1.combos_offset_len, combos_1.combos_offset, combos_1.combos, 0, 0);
         tempvar range_check_ptr = range_check_ptr;
     }
@@ -252,6 +327,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     assert arr_frames[idx] = FrameScene(
         agent_0=Frame(
             agent_action=a_0,
+            agent_state=agent_state_0,
             agent_stm=last_frame.agent_0.agent_stm,
             object_state=object_state_0,
             object_counter=object_counter_0,
@@ -261,6 +337,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             ),
         agent_1=Frame(
             agent_action=a_1,
+            agent_state=agent_state_1,
             agent_stm=last_frame.agent_1.agent_stm,
             object_state=object_state_1,
             object_counter=object_counter_1,
@@ -274,7 +351,21 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // Tail recursion
     //
     tempvar arr_empty: felt* = new ();
-    _loop(idx + 1, len, arr_frames, combos_0_new, combos_1_new, state_machine_0, state_machine_1);
+    _loop(
+        idx + 1,
+        len,
+        arr_frames,
+        combos_0_new,
+        combos_1_new,
+        mental_state_0=mental_state_0,
+        mental_state_offsets_0=mental_state_offsets_0,
+        functions_0=functions_0_new,
+        mental_state_1=mental_state_1,
+        mental_state_offsets_1=mental_state_offsets_1,
+        functions_1=functions_1,
+        actions_0=actions_0,
+        actions_1=actions_1,
+    );
     return ();
 }
 
