@@ -44,38 +44,6 @@ namespace ns_stimulus {
     const BLOCKED = 4;
 }
 
-namespace ns_perceptibles {
-    const SELF_X_POS = 1;
-    const SELF_Y_POS = 2;
-
-    const SELF_VEL_X = 3;
-    const SELF_VEL_Y = 4;
-
-    const SELF_ACC_X = 5;
-    const SELF_ACC_Y = 6;
-
-    const SELF_DIR = 7;
-
-    const SELF_INT = 8;
-
-    const SELF_STATE = 9;
-
-    const OPPONENT_X_POS = 10;
-    const OPPONENT_Y_POS = 11;
-
-    const OPPONENT_VEL_X = 12;
-    const OPPONENT_VEL_Y = 13;
-
-    const OPPONENT_ACC_X = 14;
-    const OPPONENT_ACC_Y = 15;
-
-    const OPPONENT_DIR = 16;
-
-    const OPPONENT_INT = 17;
-
-    const OPPONENT_STATE = 18;
-}
-
 struct Vec2 {
     x: felt,
     y: felt,
@@ -122,12 +90,37 @@ struct PhysicsState {
 // Perceptibles
 //
 struct Perceptibles {
-    self_character_state: CharacterState,
+    self_physics_state: PhysicsState,
     self_body_state: BodyState,
-    opponent_character_state: CharacterState,
+    opponent_physics_state: PhysicsState,
     opponent_body_state: BodyState,
 }
 
+namespace ns_perceptibles {
+    const SELF_X_POS = 1;
+    const SELF_Y_POS = 2;
+    const SELF_VEL_X = 3;
+    const SELF_VEL_Y = 4;
+    const SELF_ACC_X = 5;
+    const SELF_ACC_Y = 6;
+    const SELF_DIR = 7;
+    const SELF_INT = 8;
+    const SELF_BODY_STATE = 9;
+
+    const OPPONENT_X_POS = 10;
+    const OPPONENT_Y_POS = 11;
+    const OPPONENT_VEL_X = 12;
+    const OPPONENT_VEL_Y = 13;
+    const OPPONENT_ACC_X = 14;
+    const OPPONENT_ACC_Y = 15;
+    const OPPONENT_DIR = 16;
+    const OPPONENT_INT = 17;
+    const OPPONENT_BODY_STATE = 18;
+}
+
+//
+// Frame
+//
 struct Frame {
     agent_action: felt,
     agent_state: felt,
