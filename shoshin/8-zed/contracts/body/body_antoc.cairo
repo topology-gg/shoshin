@@ -19,11 +19,11 @@ func _body_antoc {range_check_ptr}(
 ) {
 
     // Unpack
-    let state = body_state.state
-    let counter = body_state.counter
-    let integrity = body_state.integrity
-    let stamina = body_state.stamina
-    let dir = body_state.dir
+    let state = body_state.state;
+    let counter = body_state.counter;
+    let integrity = body_state.integrity;
+    let stamina = body_state.stamina;
+    let dir = body_state.dir;
 
     //
     // Idle
