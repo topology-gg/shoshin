@@ -9,7 +9,7 @@ from starkware.cairo.common.default_dict import default_dict_new, default_dict_f
 from contracts.constants import (
     ns_action,
     ns_stimulus,
-    ns_object_state,
+    ns_body_state,
     ns_character_dimension,
     ns_combos,
     ns_scene,
@@ -23,7 +23,7 @@ from contracts.constants import (
     Perceptibles,
     ComboBuffer,
 )
-from contracts.object import _object
+from contracts.body import _body
 from contracts.combo import _combo
 from contracts.physics import _physicality, _test_rectangle_overlap
 from contracts.perceptibles import update_perceptibles
@@ -93,8 +93,8 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             agent_action=ns_action.NULL,
             agent_state=agent_0_initial_state,
             agent_stm=Stm(reg0=0),
-            object_state=ns_object_state.IDLE,
-            object_counter=0,
+            body_state=ns_body_state.IDLE,
+            body_counter=0,
             character_state=character_state_0,
             hitboxes=Hitboxes(
                 action=null_rect,
@@ -106,8 +106,8 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             agent_action=ns_action.NULL,
             agent_state=agent_1_initial_state,
             agent_stm=Stm(reg0=0),
-            object_state=ns_object_state.IDLE,
-            object_counter=0,
+            body_state=ns_body_state.IDLE,
+            body_counter=0,
             character_state=character_state_1,
             hitboxes=Hitboxes(
                 action=null_rect,
@@ -211,18 +211,18 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     //
     let p_0 = Perceptibles(
         self_character_state=last_frame.agent_0.character_state,
-        self_object_state=last_frame.agent_0.object_state,
+        self_body_state=last_frame.agent_0.body_state,
         opponent_character_state=last_frame.agent_1.character_state,
-        opponent_object_state=last_frame.agent_1.object_state,
+        opponent_body_state=last_frame.agent_1.body_state,
     );
     let (perceptibles_0) = default_dict_new(default_value=0);
     let (local perceptibles_0) = update_perceptibles(perceptibles_0, p_0);
 
     let p_1 = Perceptibles(
         self_character_state=last_frame.agent_1.character_state,
-        self_object_state=last_frame.agent_1.object_state,
+        self_body_state=last_frame.agent_1.body_state,
         opponent_character_state=last_frame.agent_0.character_state,
-        opponent_object_state=last_frame.agent_0.object_state,
+        opponent_body_state=last_frame.agent_0.body_state,
     );
     let (perceptibles_1) = default_dict_new(default_value=0);
     let (local perceptibles_1) = update_perceptibles(perceptibles_1, p_1);
@@ -285,18 +285,17 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     }
 
     //
-    // Object Phase:
-    // O_i' = Object_i (s, ai, O_i), i = 0,1
+    // Body Phase:
     //
-    let (object_state_0, object_counter_0) = _object(
-        state=last_frame.agent_0.object_state,
-        counter=last_frame.agent_0.object_counter,
+    let (body_state_0, body_counter_0) = _body(
+        state=last_frame.agent_0.body_state,
+        counter=last_frame.agent_0.body_counter,
         stimulus=last_frame.agent_0.stimulus,
         agent_action=a_0,
     );
-    let (object_state_1, object_counter_1) = _object(
-        state=last_frame.agent_1.object_state,
-        counter=last_frame.agent_1.object_counter,
+    let (body_state_1, body_counter_1) = _body(
+        state=last_frame.agent_1.body_state,
+        counter=last_frame.agent_1.body_counter,
         stimulus=last_frame.agent_1.stimulus,
         agent_action=a_1,
     );
@@ -315,10 +314,10 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     ) = _physicality(
         last_character_state_0=last_frame.agent_0.character_state,
         last_character_state_1=last_frame.agent_1.character_state,
-        curr_object_state_0=object_state_0,
-        curr_object_counter_0=object_counter_0,
-        curr_object_state_1=object_state_1,
-        curr_object_counter_1=object_counter_1,
+        curr_body_state_0=body_state_0,
+        curr_body_counter_0=body_counter_0,
+        curr_body_state_1=body_state_1,
+        curr_body_counter_1=body_counter_1,
     );
 
     //
@@ -329,8 +328,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             agent_action=a_0,
             agent_state=agent_state_0,
             agent_stm=last_frame.agent_0.agent_stm,
-            object_state=object_state_0,
-            object_counter=object_counter_0,
+            body_state=body_state_0,
+            body_counter=body_counter_0,
             character_state=character_state_0,
             hitboxes=hitboxes_0,
             stimulus=stimulus_0
@@ -339,8 +338,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             agent_action=a_1,
             agent_state=agent_state_1,
             agent_stm=last_frame.agent_1.agent_stm,
-            object_state=object_state_1,
-            object_counter=object_counter_1,
+            body_state=body_state_1,
+            body_counter=body_counter_1,
             character_state=character_state_1,
             hitboxes=hitboxes_1,
             stimulus=stimulus_1
