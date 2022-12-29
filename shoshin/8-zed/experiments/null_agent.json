@@ -1,0 +1,18 @@
+{
+    "states": [],
+    "combos": [[0]],
+    "mapping": {
+        "MS IDLE": 0,
+        "AC IDLE": 0
+    },
+    "initial state": "MS IDLE",
+    "mental_state_to_action": {
+        "MS IDLE": "AC IDLE"
+    },
+    "mental_states": {
+        "MS IDLE": {
+            "stages": [["ADD", "MS IDLE", "MS IDLE"]]
+        }
+    },
+    "general_purpose_functions": []
+}
