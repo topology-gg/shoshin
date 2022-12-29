@@ -79,40 +79,68 @@ namespace ns_jessica_body_state {
 namespace ns_jessica_body_state_qualifiers {
 
     func is_in_slash_active {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
-        if (state != ns_jessica_body_state.SLASH) { return (0,); }
-        if (counter == 2) { return (1,); }
+        if (state != ns_jessica_body_state.SLASH) {
+            return (0,);
+        }
+        if (counter == 2) {
+            return (1,);
+        }
         return (0,);
     }
 
     func is_in_upswing_active {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
-        if (state != ns_jessica_body_state.UPSWING) { return (0,); }
-        if (counter == 2) { return (1,); }
+        if (state != ns_jessica_body_state.UPSWING) {
+            return (0,);
+        }
+        if (counter == 2) {
+            return (1,);
+        }
         return (0,);
     }
 
     func is_in_sidecut_active {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
-        if (state != ns_jessica_body_state.SIDECUT) { return (0,); }
-        if (counter == 2) { return (1,); }
+        if (state != ns_jessica_body_state.SIDECUT) {
+            return (0,);
+        }
+        if (counter == 2) {
+            return (1,);
+        }
         return (0,);
     }
 
     func is_in_block_active {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
-        if (state != ns_jessica_body_state.BLOCK) { return (0,); }
-        if (counter == 1) { return (1,); }
+        if (state != ns_jessica_body_state.BLOCK) {
+            return (0,);
+        }
+        if (counter == 1) {
+            return (1,);
+        }
         return (0,);
     }
 
     func is_in_knocked_early {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
-        if (state != ns_jessica_body_state.KNOCKED) { return (0,); }
-        let bool_counter_le_4 = is_le (counter, 4); // counter <= 4
-        if (bool_counter_le_4 == 1) { return (1,); }
+        if (state != ns_jessica_body_state.KNOCKED) {
+            return (0,);
+        }
+
+        // counter <= 4
+        let bool_counter_le_4 = is_le (counter, 4);
+        if (bool_counter_le_4 == 1) {
+            return (1,);
+        }
         return (0,);
     }
 
     func is_in_knocked_late {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
-        if (state != ns_jessica_body_state.KNOCKED) { return (0,); }
-        let bool_counter_ge_5 = is_le(5, counter); // counter >= 5
-        if (bool_counter_ge_5 == 1) { return (1,); }
+        if (state != ns_jessica_body_state.KNOCKED) {
+            return (0,);
+        }
+
+        // counter >= 5
+        let bool_counter_ge_5 = is_le(5, counter);
+        if (bool_counter_ge_5 == 1) {
+            return (1,);
+        }
         return (0,);
     }
 }

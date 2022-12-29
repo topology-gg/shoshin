@@ -14,10 +14,10 @@ func _body{range_check_ptr}(
         body_state_nxt: BodyState
 ) {
     if (character_type == ns_character_type.JESSICA) {
-        return _body_jessica (body_state, stimulus, intent)
+        return _body_jessica (body_state, stimulus, intent);
     }
     if (character_type == ns_character_type.ANTOC) {
-        return _body_antoc (body_state, stimulus, intent)
+        return _body_antoc (body_state, stimulus, intent);
     }
 
     with_attr error_message("Character type is not recognized.") {

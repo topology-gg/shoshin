@@ -5,7 +5,7 @@ from starkware.cairo.common.alloc import alloc
 from contracts.constants.constants import (
     BodyState, ns_stimulus
 )
-from contracts.constants.antoc import (
+from contracts.constants.constants_antoc import (
     ns_antoc_action, ns_antoc_body_state, ns_antoc_body_state_duration, ns_antoc_body_state_qualifiers
 )
 
@@ -73,7 +73,8 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.HORI) {
 
-        if ( ns_antoc_body_state_qualifiers.is_in_hori_active(state, counter) == 0 ) { // interruptable by being attacked
+        // interruptable by being attacked
+        if ( ns_antoc_body_state_qualifiers.is_in_hori_active(state, counter) == 0 ) {
             if (stimulus == ns_stimulus.HURT) {
                 return BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir);
             }
@@ -88,10 +89,11 @@ func _body_antoc {range_check_ptr}(
 
         // if intent remains SLASH
         if (intent == ns_antoc_action.HORI) {
-            if (counter == ns_antoc_body_state_duration.HORI) { // reset counter
+            if (counter == ns_antoc_body_state_duration.HORI) {
+                // reset counter
                 return BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir);
-            }
-            else { // increment counter
+            } else {
+                // increment counter
                 return BodyState(ns_antoc_body_state.HORI, counter + 1, integrity, stamina, dir);
             }
         }
@@ -105,7 +107,8 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.VERT) {
 
-        if ( ns_antoc_body_state_qualifiers.is_in_hori_active(state, counter) == 0 ) { // interruptable by being attacked
+        // interruptable by being attacked
+        if ( ns_antoc_body_state_qualifiers.is_in_hori_active(state, counter) == 0 ) {
             if (stimulus == ns_stimulus.HURT) {
                 return BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir);
             }
@@ -120,10 +123,11 @@ func _body_antoc {range_check_ptr}(
 
         // if intent remains VERT
         if (intent == ns_antoc_action.VERT) {
-            if (counter == ns_antoc_body_state_duration.VERT) { // reset counter
+            if (counter == ns_antoc_body_state_duration.VERT) {
+                // reset counter
                 return BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir);
-            }
-            else { // increment counter
+            } else {
+                // increment counter
                 return BodyState(ns_antoc_body_state.VERT, counter + 1, integrity, stamina, dir);
             }
         }
@@ -137,7 +141,8 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.BLOCK) {
 
-        if ( ns_antoc_body_state_qualifiers.is_in_block_active(state, counter) == 0 ) { // interruptable by being attacked
+        // interruptable by being attacked
+        if ( ns_antoc_body_state_qualifiers.is_in_block_active(state, counter) == 0 ) {
             if (stimulus == ns_stimulus.HURT) {
                 return BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir);
             }
@@ -148,10 +153,11 @@ func _body_antoc {range_check_ptr}(
 
         // if intent remains BLOCK
         if (intent == ns_antoc_action.BLOCK) {
-            if (counter == ns_antoc_body_state_duration.BLOCK) { // reset counter
+            if (counter == ns_antoc_body_state_duration.BLOCK) {
+                // reset counter
                 return BodyState(ns_antoc_body_state.BLOCK, 0, integrity, stamina, dir);
-            }
-            else { // increment counter
+            } else {
+                // increment counter
                 return BodyState(ns_antoc_body_state.BLOCK, counter + 1, integrity, stamina, dir);
             }
         }
@@ -166,10 +172,12 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.HURT) {
 
         // check for interruption
-        if (stimulus == ns_stimulus.HURT) { // hurt again while in hurt => stay in hurt but reset counter
+        if (stimulus == ns_stimulus.HURT) {
+            // hurt again while in hurt => stay in hurt but reset counter
             return BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir);
         }
-        if (stimulus == ns_stimulus.KNOCKED) { // knocked while in hurt => worsen into knocked
+        if (stimulus == ns_stimulus.KNOCKED) {
+            // knocked while in hurt => worsen into knocked
             return BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir);
         }
 
@@ -188,10 +196,12 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.KNOCKED) {
 
         // check for interruption
-        if (stimulus == ns_stimulus.HURT) { // hurt while in knocked => stay in knocked and reset counter
+        if (stimulus == ns_stimulus.HURT) {
+            // hurt while in knocked => stay in knocked and reset counter; TODO: reconsider counter reset
             return BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir);
         }
-        if (stimulus == ns_stimulus.KNOCKED) { // hurt while in knocked => stay in knocked and reset counter
+        if (stimulus == ns_stimulus.KNOCKED) {
+            // hurt while in knocked => stay in knocked and reset counter
             return BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir);
         }
 
@@ -306,10 +316,11 @@ func _body_antoc {range_check_ptr}(
 
         // if intent remains DASH_FORWARD
         if (intent == ns_antoc_action.DASH_FORWARD) {
-            if (counter == ns_antoc_body_state_duration.DASH_FORWARD) { // reset counter
+            if (counter == ns_antoc_body_state_duration.DASH_FORWARD) {
+                // reset counter
                 return BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, stamina, dir);
-            }
-            else { // increment counter
+            } else {
+                // increment counter
                 return BodyState(ns_antoc_body_state.DASH_FORWARD, counter + 1, integrity, stamina, dir);
             }
         }
@@ -328,10 +339,11 @@ func _body_antoc {range_check_ptr}(
 
         // if intent remains DASH_BACKWARD
         if (intent == ns_antoc_action.DASH_BACKWARD) {
-            if (counter == ns_antoc_body_state_duration.DASH_BACKWARD) { // reset counter
+            if (counter == ns_antoc_body_state_duration.DASH_BACKWARD) {
+                // reset counter
                 return BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, stamina, dir);
-            }
-            else { // increment counter
+            } else {
+                // increment counter
                 return BodyState(ns_antoc_body_state.DASH_BACKWARD, counter + 1, integrity, stamina, dir);
             }
         }

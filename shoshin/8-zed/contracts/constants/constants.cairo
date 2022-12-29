@@ -76,14 +76,14 @@ struct BodyState {
     state: felt,
     counter: felt,
     integrity: felt,
-    stamina: felt
-    dir: felt
+    stamina: felt,
+    dir: felt,
 }
 
 struct PhysicsState {
     pos: Vec2,
     vel_fp: Vec2,
-    acc_fp: Vec2
+    acc_fp: Vec2,
 }
 
 //
@@ -122,14 +122,12 @@ namespace ns_perceptibles {
 // Frame
 //
 struct Frame {
-    agent_action: felt,
-    agent_state: felt,
-    agent_stm: Stm,
-    object_state: felt,
-    object_counter: felt,
-    character_state: CharacterState,
-    hitboxes: Hitboxes,
+    mental_state: felt,
+    body_state: BodyState,
+    physics_state: PhysicsState,
+    action: felt,
     stimulus: felt,
+    hitboxes: Hitboxes,
 }
 
 struct FrameScene {

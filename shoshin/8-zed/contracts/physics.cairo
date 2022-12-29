@@ -11,7 +11,7 @@ from contracts.constants import (
     ns_env,
     Vec2,
     Rectangle,
-    CharacterState,
+    PhysicsState,
     Hitboxes,
 )
 from contracts.dynamics import _euler_forward_no_hitbox, _euler_forward_consider_hitbox
@@ -25,23 +25,21 @@ func _bool_or{range_check_ptr}(bool_0: felt, bool_1: felt) -> (bool: felt) {
 }
 
 func _physicality{range_check_ptr}(
-    last_character_state_0: CharacterState,
-    last_character_state_1: CharacterState,
-    curr_object_state_0: felt,
-    curr_object_counter_0: felt,
-    curr_object_state_1: felt,
-    curr_object_counter_1: felt,
+    character_type_0: felt,
+    character_type_1: felt,
+    last_physics_state_0: PhysicsState,
+    last_physics_state_1: PhysicsState,
+    curr_body_state_0: BodyState,
+    curr_body_state_1: BodyState,
 ) -> (
-    curr_character_state_0: CharacterState,
-    curr_character_state_1: CharacterState,
+    curr_physics_state_0: PhysicsState,
+    curr_physics_state_1: PhysicsState,
     curr_stimulus_0: felt,
     curr_stimulus_1: felt,
     hitboxes_0: Hitboxes,
     hitboxes_1: Hitboxes,
 ) {
     alloc_locals;
-
-    // # TODO: should also take locomotion action as input, for computing movement
 
     //
     // Algorithm:
@@ -57,11 +55,11 @@ func _physicality{range_check_ptr}(
     //
     // 1. Movement first pass (candidate positions)
     //
-    let (candidate_character_state_0) = _euler_forward_no_hitbox(
-        last_character_state_0, curr_object_state_0, curr_object_counter_0
+    let (candidate_physics_state_0) = _euler_forward_no_hitbox(
+        character_type_0, last_physics_state_0, curr_body_state_0
     );
-    let (candidate_character_state_1) = _euler_forward_no_hitbox(
-        last_character_state_1, curr_object_state_1, curr_object_counter_1
+    let (candidate_physics_state_1) = _euler_forward_no_hitbox(
+        character_type_1, last_physics_state_1, curr_body_state_1
     );
 
     //
@@ -73,12 +71,6 @@ func _physicality{range_check_ptr}(
         curr_object_state_0
     );
     let (bool_object_in_slash_atk_1) = ns_object_qualifiers.is_object_in_slash_atk(
-        curr_object_state_1
-    );
-    let (bool_object_in_power_atk_0) = ns_object_qualifiers.is_object_in_power_atk(
-        curr_object_state_0
-    );
-    let (bool_object_in_power_atk_1) = ns_object_qualifiers.is_object_in_power_atk(
         curr_object_state_1
     );
 
@@ -206,9 +198,9 @@ func _physicality{range_check_ptr}(
     // 4. Movement second pass, incorporating hitbox overlap (final positions)
     //
     let (curr_character_state_0_, curr_character_state_1_) = _euler_forward_consider_hitbox(
-        last_character_state_0,
+        last_physics_state_0,
         candidate_character_state_0,
-        last_character_state_1,
+        last_physics_state_1,
         candidate_character_state_1,
         bool_body_overlap,
     );
@@ -248,14 +240,14 @@ func _physicality{range_check_ptr}(
     //
     // 6. Produce charcater state
     //
-    let curr_character_state_0 = CharacterState(
+    let curr_character_state_0 = PhysicsState(
         pos=curr_character_state_0_.pos,
         vel_fp=curr_character_state_0_.vel_fp,
         acc_fp=curr_character_state_0_.acc_fp,
         dir=curr_character_state_0_.dir,
         int=int_0,
     );
-    let curr_character_state_1 = CharacterState(
+    let curr_character_state_1 = PhysicsState(
         pos=curr_character_state_1_.pos,
         vel_fp=curr_character_state_1_.vel_fp,
         acc_fp=curr_character_state_1_.acc_fp,
