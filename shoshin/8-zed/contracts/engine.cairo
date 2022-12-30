@@ -22,14 +22,12 @@ from contracts.constants.constants import (
     Perceptibles,
     ComboBuffer,
 )
-from contracts.constants.constants_jessica import (
-    ns_jessica_character_dimension
-)
+from contracts.constants.constants_jessica import ns_jessica_character_dimension
 from contracts.body.body import _body
 from contracts.combo import _combo
 from contracts.physics import _physicality, _test_rectangle_overlap
 from contracts.perceptibles import update_perceptibles
-from lib.bto_cairo.lib.tree import Tree, BinaryOperatorTree
+from lib.bto_cairo_git.lib.tree import Tree, BinaryOperatorTree
 from contracts.utils import fill_dictionary_offsets, fill_dictionary
 
 @view
@@ -76,7 +74,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     //
     let (arr_frames: FrameScene*) = alloc();
     let null_rect = Rectangle(Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM), Vec2(0, 0));
-    let agent_0_origin = Vec2(-200, 0);
+    let agent_0_origin = Vec2(-100, 0);
     let agent_1_origin = Vec2(100, 0);
     let agent_0_body = Rectangle(
         agent_0_origin,
@@ -101,10 +99,10 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             action        = 0, // NULL action is 0 for both Jessica and Antoc
             stimulus      = ns_stimulus.NULL,
             hitboxes      = Hitboxes(
-                action=null_rect,
-                body = agent_0_body
+                action = null_rect,
+                body   = agent_0_body
+                ),
             ),
-        ),
         agent_1 = Frame(
             mental_state  = agent_1_initial_state,
             body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0), // IDLE body state is 0 for both Jessica and Antoc, negative direction is 0
@@ -112,11 +110,11 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             action        = 0, // NULL action is 0 for both Jessica and Antoc
             stimulus      = ns_stimulus.NULL,
             hitboxes      = Hitboxes(
-                action=null_rect,
-                body = agent_1_body
+                action = null_rect,
+                body   = agent_1_body
+                ),
             ),
-        ),
-    );
+        );
 
     //
     // Preparing dictionaries
