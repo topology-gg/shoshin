@@ -2,32 +2,56 @@ import {useAccount, useConnectors} from '@starknet-react/core'
 import { useEffect, useState } from 'react'
 import styles from "../../styles/Character.module.css";
 import testJsonStr from '../json/test_engine.json';
+import { SIMULATOR_H, SIMULATOR_W } from '../constants/constants';
+import { TestJson, Frame } from '../types/Frame';
 
 interface CharacterProps {
     agentIndex: number;
-    frameIndex: number;
+    characterName: string;
+    animationFrame: number;
 }
 
-export default function Character( {agentIndex, frameIndex}: CharacterProps ) {
+export default function Character( {agentIndex, characterName, animationFrame}: CharacterProps ) {
 
-    const testJson = JSON.parse(testJsonStr)
-    if (!testJson) return <></>
-    console.log('testJson:', testJson)
+    const [recordJson, setRecordJson] = useState<TestJson>();
+    useEffect(() => {
+        const record = JSON.parse(testJsonStr);
+        setRecordJson ((_) => record);
+        console.log(agentIndex, 'recordJson:', record);
+    }, []);
+    if (!recordJson) return <></>
 
-    const agentFrames = testJson[`agent_${agentIndex}`]
-    console.log('agentFrames:', agentFrames)
-
-    const agentFrame = agentFrames[frameIndex]
-    const characterName = agentIndex == 0 ? 'jessica' : 'antoc'
+    const agentFrames = recordJson[`agent_${agentIndex}`]
+    const agentFrame = agentFrames[animationFrame]
+    console.log('agentFrame:', agentFrame)
 
     // Extract from frame
-    const bodyState = agentFrame.object_state
-    const bodyStateCounter = agentFrame.object_counter
+    const bodyState = agentFrame.body_state.state
+    const bodyStateCounter = agentFrame.body_state.counter
     const animIndex: number = bodyState + bodyStateCounter
+    const physicsState = agentFrame.physics_state
+    const pos = physicsState.pos
 
-    const CHAR_DIM = '300px'
+    // Calculate left and top for rendering
+    const CHAR_DIM = 300
+    const left = SIMULATOR_W/2 - 48 + pos.x
+    const top = SIMULATOR_H - pos.y - CHAR_DIM
+    console.log(agentIndex, `(left,top) = (${left},${top})`)
+
     return (
-        <div className={`unit ${characterName}-${animIndex}`} style={{width: CHAR_DIM, height: CHAR_DIM}} />
+        //<div style={{display:'flex', flexDirection:'column', marginRight:'20px'}}>
+            <div
+                className={`unit ${characterName}-${animIndex}`}
+                style={{
+                    width: CHAR_DIM, height: CHAR_DIM,
+                    // border: '1px solid #999999',
+                    border: 'none',
+                    position: 'absolute', left: left, top: top,
+                    zIndex: 0,
+                }}
+            />
+            //<p>animation index: {animIndex}</p>
+        //</div>
     )
 }
 

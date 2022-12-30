@@ -4,6 +4,8 @@ import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
 import Character from '../src/components/Character';
 import testJsonStr from '../src/json/test_engine.json';
+import MidScreenControl from '../src/components/MidScreenControl';
+import Simulator from '../src/components/Simulator';
 
 const theme = createTheme({
     typography: {
@@ -33,30 +35,90 @@ const theme = createTheme({
 
 export default function Home() {
 
-    // Each frame takes the following structure:
-    // - agent_action
-    // - agent_state (Mental)
-    // - character_state (Physics): pos [x,y], vel_fp [x,y], acc_fp [x,y], dir
-    // - hitboxes: action (origin [x,y], dimension [x,y]), body (origin [x,y], dimension [x,y])
-    // - object_counter
-    // - object_state (Body)
-    // - stimulus
-
     const testJson = JSON.parse(testJsonStr)
     if (!testJson) return <></>
+    const N_FRAMES = testJson.agent_0.length
+    const CHARACTER_TYPE_0 = 0
+    const CHARACTER_TYPE_1 = 1
+    const LATENCY = 150;
+    const runnable = true;
 
-    const frameCount = testJson.agent_0.length
+    // React states
     const [loop, setLoop] = useState<NodeJS.Timer>();
-    const [frameIndex, setFrameIndex] = useState<number>(0);
-    const latency = 200;
+    const [animationFrame, setAnimationFrame] = useState<number>(0);
+    const [animationState, setAnimationState] = useState<string>('Stop');
 
-    useEffect(() => {
-        setLoop(
-            setInterval(() => {
-                setFrameIndex((prev) => prev == frameCount ? 0 : prev + 1);
-            }, latency)
-        );
-    }, [])
+    // useEffect(() => {
+    //     setLoop(
+    //         setInterval(() => {
+    //             setAnimationFrame((prev) => prev == frameCount ? 0 : prev + 1);
+    //         }, latency)
+    //     );
+    // }, [])
+
+    function handleMidScreenControlClick (operation: string) {
+
+        if (operation == "NextFrame" && animationState != "Run") {
+
+            setAnimationFrame((prev) => (prev < N_FRAMES ? prev + 1 : prev));
+
+        } else if (operation == "PrevFrame" && animationState != "Run") {
+
+            setAnimationFrame((prev) => (prev > 0 ? prev - 1 : prev));
+
+        }
+
+        else if (operation == "ToggleRun") {
+
+            // If in Run => go to Pause
+            if (animationState == "Run") {
+                clearInterval(loop); // kill the timer
+                setAnimationState("Pause");
+            }
+
+            // If in Pause => resume Run without simulation
+            else if (animationState == "Pause") {
+                // Begin animation
+                setAnimationState("Run");
+                setLoop(
+                    setInterval(() => {
+                        animationStepForward();
+                    }, LATENCY)
+                );
+            }
+
+            // If in Stop => perform simulation then go to Run
+            else if (animationState == "Stop" && runnable) {
+
+                // Begin animation
+                setAnimationState("Run");
+
+                setLoop(
+                    setInterval(() => {
+                        animationStepForward();
+                    }, LATENCY)
+                );
+
+            }
+        } else {
+
+            // Stop
+            clearInterval(loop); // kill the timer
+            setAnimationState("Stop");
+            setAnimationFrame((_) => 0);
+
+        }
+    }
+
+    const animationStepForward = () => {
+        setAnimationFrame((prev) => {
+            if (prev == N_FRAMES-1) {
+                return 0;
+            } else {
+                return prev + 1;
+            }
+        });
+    };
 
     // Render
     return (
@@ -70,7 +132,22 @@ export default function Home() {
             <ThemeProvider theme={theme}>
                 <main className={styles.main}>
 
-                    <Character agentIndex={0} frameIndex={frameIndex} />
+                    <Simulator character_type_0={CHARACTER_TYPE_0} character_type_1={CHARACTER_TYPE_1} animationFrame={animationFrame} />
+
+                    <MidScreenControl
+                        runnable = {true}
+                        animationFrame = {animationFrame}
+                        n_cycles = {N_FRAMES}
+                        animationState = {animationState}
+                        handleClick = {handleMidScreenControlClick}
+                        handleSlideChange = {
+                            evt => {
+                                if (animationState == "Run") return;
+                                const slide_val: number = parseInt(evt.target.value);
+                                setAnimationFrame(slide_val);
+                            }
+                        }
+                    />
 
                 </main>
             </ThemeProvider>
