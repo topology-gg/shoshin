@@ -137,7 +137,7 @@ async def test(starknet):
     record = {
         "agent_0": [
             {
-                "agent_action": r.agent_0.action,
+                "action": r.agent_0.action,
                 "body_state": {
                     "state": r.agent_0.body_state.state,
                     "counter": r.agent_0.body_state.counter,
@@ -187,7 +187,7 @@ async def test(starknet):
         ],
         "agent_1": [
             {
-                "agent_action": r.agent_1.action,
+                "action": r.agent_1.action,
                 "body_state": {
                     "state": r.agent_1.body_state.state,
                     "counter": r.agent_1.body_state.counter,
