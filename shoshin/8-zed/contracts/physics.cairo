@@ -102,21 +102,23 @@ func _physicality{range_check_ptr}(
     local action_origin_1: Vec2;
     local action_dimension_1: Vec2;
 
+    // TODO: hitbox dimensions should be decoded from attack type per character type!!
+
     if (bool_body_in_atk_active_0 == 1) {
         if (curr_body_state_0.dir == 1) {
             // # facing right
             assert action_origin_0 = Vec2(
-                candidate_physics_state_0.pos.x + ns_character_dimension.BODY_HITBOX_W,
-                candidate_physics_state_0.pos.y + ns_character_dimension.SLASH_HITBOX_Y
+                candidate_physics_state_0.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W,
+                candidate_physics_state_0.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
             );
         } else {
             // # facing left
             assert action_origin_0 = Vec2(
-                candidate_physics_state_0.pos.x - ns_character_dimension.SLASH_HITBOX_W,
-                candidate_physics_state_0.pos.y + ns_character_dimension.SLASH_HITBOX_Y
+                candidate_physics_state_0.pos.x - ns_jessica_character_dimension.SLASH_HITBOX_W,
+                candidate_physics_state_0.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
             );
         }
-        assert action_dimension_0 = Vec2 (ns_character_dimension.SLASH_HITBOX_W, ns_character_dimension.SLASH_HITBOX_H);
+        assert action_dimension_0 = Vec2 (ns_jessica_character_dimension.SLASH_HITBOX_W, ns_jessica_character_dimension.SLASH_HITBOX_H);
     } else {
         assert action_origin_0 = Vec2 (ns_scene.BIGNUM, ns_scene.BIGNUM);
         assert action_dimension_0 = Vec2 (0, 0);
@@ -126,17 +128,17 @@ func _physicality{range_check_ptr}(
         if (curr_body_state_1.dir == 1) {
             // # facing right
             assert action_origin_1 = Vec2(
-                candidate_physics_state_1.pos.x + ns_character_dimension.BODY_HITBOX_W,
-                candidate_physics_state_1.pos.y + ns_character_dimension.SLASH_HITBOX_Y
+                candidate_physics_state_1.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W,
+                candidate_physics_state_1.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
             );
         } else {
             // # facing left
             assert action_origin_1 = Vec2(
-                candidate_physics_state_1.pos.x - ns_character_dimension.SLASH_HITBOX_W,
-                candidate_physics_state_1.pos.y + ns_character_dimension.SLASH_HITBOX_Y
+                candidate_physics_state_1.pos.x - ns_jessica_character_dimension.SLASH_HITBOX_W,
+                candidate_physics_state_1.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
             );
         }
-        assert action_dimension_1 = Vec2 (ns_character_dimension.SLASH_HITBOX_W, ns_character_dimension.SLASH_HITBOX_H);
+        assert action_dimension_1 = Vec2 (ns_jessica_character_dimension.SLASH_HITBOX_W, ns_jessica_character_dimension.SLASH_HITBOX_H);
     } else {
         assert action_origin_1 = Vec2 (ns_scene.BIGNUM, ns_scene.BIGNUM);
         assert action_dimension_1 = Vec2 (0, 0);
@@ -147,22 +149,22 @@ func _physicality{range_check_ptr}(
     local body_dim_1: Vec2;
 
     if (bool_body_in_knocked_early_0 == 1) {
-        assert body_dim_0 = Vec2 (ns_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
+        assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
     } else {
         if (bool_body_in_knocked_late_0 == 1) {
-            assert body_dim_0 = Vec2 (ns_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
+            assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
         } else {
-            assert body_dim_0 = Vec2 (ns_character_dimension.BODY_HITBOX_W, ns_character_dimension.BODY_HITBOX_H);
+            assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H);
         }
     }
 
     if (bool_body_in_knocked_early_1 == 1) {
-        assert body_dim_1 = Vec2 (ns_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
+        assert body_dim_1 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
     } else {
         if (bool_body_in_knocked_late_1 == 1) {
-            assert body_dim_1 = Vec2 (ns_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
+            assert body_dim_1 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
         } else {
-            assert body_dim_1 = Vec2 (ns_character_dimension.BODY_HITBOX_W, ns_character_dimension.BODY_HITBOX_H);
+            assert body_dim_1 = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H);
         }
     }
 
@@ -235,12 +237,9 @@ func _physicality{range_check_ptr}(
         opp_character_type = character_type_0,
     );
 
-    //
-    // return (candidate_character_state_0, candidate_character_state_1, curr_stimulus_0, curr_stimulus_1, hitboxes_0, hitboxes_1)
-    //
     return (
-        curr_character_state_0,
-        curr_character_state_1,
+        curr_physics_state_0,
+        curr_physics_state_1,
         curr_stimulus_0,
         curr_stimulus_1,
         hitboxes_0,
@@ -261,11 +260,12 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     self_character_type: felt,
     opp_character_type: felt,
 ) -> felt {
+    alloc_locals;
 
     let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
 
     // when hit, HURT if not in critical integrity, KNOCKED otherwise
-    if (bool_me_hit == 1) {
+    if (bool_self_hit == 1) {
         if (is_integrity_critical == 1) {
             return ns_stimulus.KNOCKED;
         } else {
@@ -274,7 +274,7 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     }
 
     // when blocked, antoc-blocking-jessica knocks jessica away; otherwise HURT
-    if (bool_me_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
+    if (bool_self_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             return ns_stimulus.KNOCKED;
         }
@@ -286,7 +286,7 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     // - antoc is clashed if clashing with jessica
     // - jessica is knocked if clashing with antoc
     // - jessica is clashed if clashing with jessica
-    if (bool_me_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
+    if (bool_self_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == ns_character_type.ANTOC) {
             // I am Antoc
             if (opp_character_type == ns_character_type.ANTOC) {

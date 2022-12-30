@@ -17,6 +17,7 @@ func _body_jessica {range_check_ptr}(
     ) -> (
         body_state_nxt: BodyState
 ) {
+    alloc_locals;
 
     // Unpack
     let state = body_state.state;
@@ -31,43 +32,43 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.IDLE) {
         // interrupt by stimulus - priority > agent action
         if (stimulus == ns_stimulus.HURT) {
-            return BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
-            return BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
         // interrupt by agent action; locomotive action has lowest priority
         if (intent == ns_jessica_action.SLASH) {
-            return BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.UPSWING) {
-            return BodyState(ns_jessica_body_state.UPSWING, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.SIDECUT) {
-            return BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.BLOCK) {
-            return BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.DASH_FORWARD) {
-            return BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.DASH_BACKWARD) {
-            return BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.MOVE_FORWARD) {
-            return BodyState(ns_jessica_body_state.MOVE_FORWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.MOVE_FORWARD, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.MOVE_BACKWARD) {
-            return BodyState(ns_jessica_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir) );
         }
 
         // otherwise stay in IDLE but increment counter modulo duration
         if (counter == ns_jessica_body_state_duration.IDLE) {
-            return BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
         } else {
-            return BodyState(ns_jessica_body_state.IDLE, counter + 1, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, counter + 1, integrity, stamina, dir) );
         }
     }
 
@@ -77,104 +78,107 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.SLASH) {
 
         // interruptable by being attacked
-        if ( ns_jessica_body_state_qualifiers.is_in_slash_active(state, counter) == 0 ) {
+        let is_in_slash_active = ns_jessica_body_state_qualifiers.is_in_slash_active(state, counter);
+        if (is_in_slash_active == 0) {
             if (stimulus == ns_stimulus.HURT) {
-                return BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
             }
             if (stimulus == ns_stimulus.KNOCKED) {
-                return BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
             }
         }
 
         // active, but clashing => go to HURT (eventually can have clash animation; now reusing hurt animation)
         if (stimulus == ns_stimulus.CLASH) {
-            return BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
         }
 
         // if intent remains SLASH
         if (intent == ns_jessica_action.SLASH) {
             if (counter == ns_jessica_body_state_duration.SLASH) {
                 // reset counter
-                return BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir) );
             } else {
                 // increment counter
-                return BodyState(ns_jessica_body_state.SLASH, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // otherwise return to IDLE
-        return BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
 
     //
     // Upswing
     //
-    if (state == ns_object_state.UPSWING) {
+    if (state == ns_jessica_body_state.UPSWING) {
 
         // interruptable by being attacked
-        if ( ns_jessica_body_state_qualifiers.is_in_upswing_active(state, counter) == 0 ) {
+        let is_in_upswing_active = ns_jessica_body_state_qualifiers.is_in_upswing_active(state, counter);
+        if (is_in_upswing_active == 0) {
             if (stimulus == ns_stimulus.HURT) {
-                return BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
             }
             if (stimulus == ns_stimulus.KNOCKED) {
-                return BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
             }
         }
 
         // active, but clashing => go to HURT (eventually can have clash animation; now reusing hurt animation)
         if (stimulus == ns_stimulus.CLASH) {
-            return BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
         }
 
         // if intent remains UPSWING
         if (intent == ns_jessica_action.UPSWING) {
             if (counter == ns_jessica_body_state_duration.UPSWING) {
                 // reset counter
-                return BodyState(ns_jessica_body_state.UPSWING, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 0, integrity, stamina, dir) );
             } else {
                 // increment counter
-                return BodyState(ns_jessica_body_state.UPSWING, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // otherwise return to IDLE
-        return BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
     // Sidecut
     //
-    if (state == ns_object_state.SIDECUT) {
+    if (state == ns_jessica_body_state.SIDECUT) {
 
         // interruptable by being attacked
-        if ( ns_jessica_body_state_qualifiers.is_in_sidecut_active(state, counter) == 0 ) {
+        let is_in_sidecut_active = ns_jessica_body_state_qualifiers.is_in_sidecut_active(state, counter);
+        if (is_in_sidecut_active == 0) {
             if (stimulus == ns_stimulus.HURT) {
-                return BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
             }
             if (stimulus == ns_stimulus.KNOCKED) {
-                return BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
             }
         }
 
         // active, but clashing => go to HURT (eventually can have clash animation; now reusing hurt animation)
         if (stimulus == ns_stimulus.CLASH) {
-            return BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
         }
 
         // if intent remains SIDECUT
         if (intent == ns_jessica_action.SIDECUT) {
             if (counter == ns_jessica_body_state_duration.SIDECUT) {
                 // reset counter
-                return BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir) );
             } else {
                 // increment counter
-                return BodyState(ns_jessica_body_state.SIDECUT, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // otherwise return to IDLE
-        return BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -183,12 +187,13 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.BLOCK) {
 
         // interruptable by being attacked
-        if ( ns_jessica_body_state_qualifiers.is_in_block_active(state, counter) == 0 ) {
+        let is_in_block_active = ns_jessica_body_state_qualifiers.is_in_block_active(state, counter);
+        if (is_in_block_active == 0) {
             if (stimulus == ns_stimulus.HURT) {
-                return BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
             }
             if (stimulus == ns_stimulus.KNOCKED) {
-                return BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
             }
         }
 
@@ -196,15 +201,15 @@ func _body_jessica {range_check_ptr}(
         if (intent == ns_jessica_action.BLOCK) {
             if (counter == ns_jessica_body_state_duration.BLOCK) {
                 // reset counter
-                return BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir) );
             } else {
                 // increment counter
-                return BodyState(ns_jessica_body_state.BLOCK, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // otherwise return to IDLE
-        return BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -215,20 +220,20 @@ func _body_jessica {range_check_ptr}(
         // check for interruption
         if (stimulus == ns_stimulus.HURT) {
             // hurt again while in hurt => stay in hurt but reset counter
-            return BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
             // knocked while in hurt => worsen into knocked
-            return BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
         // if counter is full => return to IDLE
         if (counter == ns_jessica_body_state_duration.HURT) {
-            return BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
         }
 
         // else stay in HURT and increment counter
-        return BodyState(ns_jessica_body_state.HURT, counter + 1, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, counter + 1, integrity, stamina, dir) );
     }
 
     //
@@ -239,20 +244,20 @@ func _body_jessica {range_check_ptr}(
         // check for interruption
         if (stimulus == ns_stimulus.HURT) {
             // hurt while in knocked => stay in knocked and reset counter
-            return BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
             // hurt while in knocked => stay in knocked and reset counter
-            return BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
         // if counter is full => return to Idle
         if (counter == ns_jessica_body_state_duration.KNOCKED) {
-            return BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
         }
 
         // else stay in KNOCKED and increment counter
-        return BodyState(ns_jessica_body_state.KNOCKED, counter + 1, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, counter + 1, integrity, stamina, dir) );
     }
 
     //
@@ -262,42 +267,42 @@ func _body_jessica {range_check_ptr}(
 
         // interruptible by stimulus
         if (stimulus == ns_stimulus.HURT) {
-            return BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
-            return BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
         if (intent == ns_jessica_action.SLASH) {
-            return BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.UPSWING) {
-            return BodyState(ns_jessica_body_state.UPSWING, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.SIDECUT) {
-            return BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.BLOCK) {
-            return BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir) );
         }
 
         // continue moving forward
         if (intent == ns_jessica_action.MOVE_FORWARD) {
             if (counter == ns_jessica_body_state_duration.MOVE_FORWARD) {
-                return BodyState(ns_jessica_body_state.MOVE_FORWARD, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.MOVE_FORWARD, 0, integrity, stamina, dir) );
             } else {
-                return BodyState(ns_jessica_body_state.MOVE_FORWARD, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.MOVE_FORWARD, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // able to reverse direction immediately
         if (intent == ns_jessica_action.MOVE_BACKWARD) {
-            return BodyState(ns_jessica_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir) );
         }
 
         // otherwise return to idle
-        return BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -307,42 +312,42 @@ func _body_jessica {range_check_ptr}(
 
         // interruptible by stimulus
         if (stimulus == ns_stimulus.HURT) {
-            return BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
-            return BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
         if (intent == ns_jessica_action.SLASH) {
-            return BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.UPSWING) {
-            return BodyState(ns_jessica_body_state.UPSWING, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.SIDECUT) {
-            return BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.BLOCK) {
-            return BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir) );
         }
 
         // continue moving forward
         if (intent == ns_jessica_action.MOVE_BACKWARD) {
             if (counter == ns_jessica_body_state_duration.MOVE_BACKWARD) {
-                return BodyState(ns_jessica_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir) );
             } else {
-                return BodyState(ns_jessica_body_state.MOVE_BACKWARD, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.MOVE_BACKWARD, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // able to reverse direction immediately
         if (intent == ns_jessica_action.MOVE_FORWARD) {
-            return BodyState(ns_jessica_body_state.MOVE_FORWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.MOVE_FORWARD, 0, integrity, stamina, dir) );
         }
 
         // otherwise return to idle
-        return BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -356,15 +361,15 @@ func _body_jessica {range_check_ptr}(
         // interruptible by offensive intent
         if (intent == ns_jessica_action.SLASH) {
             // go straight to SLASH's active frame
-            return BodyState(ns_jessica_body_state.SLASH, 2, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 2, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.UPSWING) {
             // go straight to UPSWING's active frame
-            return BodyState(ns_jessica_body_state.UPSWING, 2, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 2, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.SIDECUT) {
             // go straight to SIDECUT's active frame
-            return BodyState(ns_jessica_body_state.SIDECUT, 2, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 2, integrity, stamina, dir) );
         }
 
         // note: not able to reverse to the opposite dash immediately
@@ -373,15 +378,15 @@ func _body_jessica {range_check_ptr}(
         if (intent == ns_jessica_action.DASH_FORWARD) {
             if (counter == ns_jessica_body_state_duration.DASH_FORWARD) {
                 // reset counter
-                return BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, stamina, dir) );
             } else {
                 // increment counter
-                return BodyState(ns_jessica_body_state.DASH_FORWARD, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // otherwise return to IDLE
-        return BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -392,15 +397,15 @@ func _body_jessica {range_check_ptr}(
         // interruptible by offensive intent
         if (intent == ns_jessica_action.SLASH) {
             // go straight to SLASH's active frame
-            return BodyState(ns_jessica_body_state.SLASH, 2, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 2, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.UPSWING) {
             // go straight to UPSWING's active frame
-            return BodyState(ns_jessica_body_state.UPSWING, 2, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 2, integrity, stamina, dir) );
         }
         if (intent == ns_jessica_action.SIDECUT) {
             // go straight to SIDECUT's active frame
-            return BodyState(ns_jessica_body_state.SIDECUT, 2, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 2, integrity, stamina, dir) );
         }
 
         // note: not able to reverse to the opposite dash immediately
@@ -409,19 +414,19 @@ func _body_jessica {range_check_ptr}(
         if (intent == ns_jessica_action.DASH_BACKWARD) {
             if (counter == ns_jessica_body_state_duration.DASH_BACKWARD) {
                 // reset counter
-                return BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, stamina, dir) );
             } else {
                 // increment counter
-                return BodyState(ns_jessica_body_state.DASH_BACKWARD, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // otherwise return to IDLE
-        return BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     with_attr error_message("Input body state is not recognized.") {
         assert 0 = 1;
     }
-    return BodyState(0,0,0,0,0);
+    return ( body_state_nxt = BodyState(0,0,0,0,0) );
 }

@@ -40,12 +40,12 @@ func update_perceptibles{range_check_ptr}(perceptibles: DictAccess*, p: Percepti
 
     // Self integrity update
     dict_write{dict_ptr=perceptibles}(
-        key=ns_perceptibles.SELF_INT, new_value=p.self_body_state.int
+        key=ns_perceptibles.SELF_INT, new_value=p.self_body_state.integrity
     );
 
     // Self body state update
     dict_write{dict_ptr=perceptibles}(
-        key=ns_perceptibles.SELF_STATE, new_value=p.self_body_state.state
+        key=ns_perceptibles.SELF_BODY_STATE, new_value=p.self_body_state.state
     );
 
     // OPPONENT
@@ -80,12 +80,12 @@ func update_perceptibles{range_check_ptr}(perceptibles: DictAccess*, p: Percepti
 
     // Opponent integrity update
     dict_write{dict_ptr=perceptibles}(
-        key=ns_perceptibles.OPPONENT_INT, new_value=p.opponent_body_state.int
+        key=ns_perceptibles.OPPONENT_INT, new_value=p.opponent_body_state.integrity
     );
 
     // Opponent body state update
     dict_write{dict_ptr=perceptibles}(
-        key=ns_perceptibles.OPPONENT_STATE, new_value=p.opponent_body_state.state
+        key=ns_perceptibles.OPPONENT_BODY_STATE, new_value=p.opponent_body_state.state
     );
     return (perceptibles_new=perceptibles);
 }

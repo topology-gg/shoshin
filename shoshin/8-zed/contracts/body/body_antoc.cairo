@@ -17,6 +17,7 @@ func _body_antoc {range_check_ptr}(
     ) -> (
         body_state_nxt: BodyState
 ) {
+    alloc_locals;
 
     // Unpack
     let state = body_state.state;
@@ -31,40 +32,40 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.IDLE) {
         // interrupt by stimulus - priority > agent action
         if (stimulus == ns_stimulus.HURT) {
-            return BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
-            return BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
         // interrupt by agent action; locomotive action has lowest priority
         if (intent == ns_antoc_action.HORI) {
-            return BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.VERT) {
-            return BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.BLOCK) {
-            return BodyState(ns_antoc_body_state.BLOCK, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.DASH_FORWARD) {
-            return BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.DASH_BACKWARD) {
-            return BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.MOVE_FORWARD) {
-            return BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.MOVE_BACKWARD) {
-            return BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir) );
         }
 
         // otherwise stay in IDLE but increment counter modulo duration
         if (counter == ns_antoc_body_state_duration.IDLE) {
-            return BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
         } else {
-            return BodyState(ns_antoc_body_state.IDLE, counter + 1, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, counter + 1, integrity, stamina, dir) );
         }
     }
 
@@ -74,12 +75,13 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.HORI) {
 
         // interruptable by being attacked
-        if ( ns_antoc_body_state_qualifiers.is_in_hori_active(state, counter) == 0 ) {
+        let is_in_hori_active = ns_antoc_body_state_qualifiers.is_in_hori_active(state, counter);
+        if (is_in_hori_active == 0) {
             if (stimulus == ns_stimulus.HURT) {
-                return BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
             }
             if (stimulus == ns_stimulus.KNOCKED) {
-                return BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
             }
         }
 
@@ -91,15 +93,15 @@ func _body_antoc {range_check_ptr}(
         if (intent == ns_antoc_action.HORI) {
             if (counter == ns_antoc_body_state_duration.HORI) {
                 // reset counter
-                return BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir) );
             } else {
                 // increment counter
-                return BodyState(ns_antoc_body_state.HORI, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // otherwise return to IDLE
-        return BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -108,12 +110,13 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.VERT) {
 
         // interruptable by being attacked
-        if ( ns_antoc_body_state_qualifiers.is_in_hori_active(state, counter) == 0 ) {
+        let is_in_vert_active = ns_antoc_body_state_qualifiers.is_in_vert_active(state, counter);
+        if (is_in_vert_active == 0) {
             if (stimulus == ns_stimulus.HURT) {
-                return BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
             }
             if (stimulus == ns_stimulus.KNOCKED) {
-                return BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
             }
         }
 
@@ -125,15 +128,15 @@ func _body_antoc {range_check_ptr}(
         if (intent == ns_antoc_action.VERT) {
             if (counter == ns_antoc_body_state_duration.VERT) {
                 // reset counter
-                return BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir) );
             } else {
                 // increment counter
-                return BodyState(ns_antoc_body_state.VERT, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // otherwise return to IDLE
-        return BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -142,12 +145,13 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.BLOCK) {
 
         // interruptable by being attacked
-        if ( ns_antoc_body_state_qualifiers.is_in_block_active(state, counter) == 0 ) {
+        let is_in_block_active = ns_antoc_body_state_qualifiers.is_in_block_active(state, counter);
+        if (is_in_block_active == 0) {
             if (stimulus == ns_stimulus.HURT) {
-                return BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
             }
             if (stimulus == ns_stimulus.KNOCKED) {
-                return BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
             }
         }
 
@@ -155,15 +159,15 @@ func _body_antoc {range_check_ptr}(
         if (intent == ns_antoc_action.BLOCK) {
             if (counter == ns_antoc_body_state_duration.BLOCK) {
                 // reset counter
-                return BodyState(ns_antoc_body_state.BLOCK, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, stamina, dir) );
             } else {
                 // increment counter
-                return BodyState(ns_antoc_body_state.BLOCK, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // otherwise return to IDLE
-        return BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -174,20 +178,20 @@ func _body_antoc {range_check_ptr}(
         // check for interruption
         if (stimulus == ns_stimulus.HURT) {
             // hurt again while in hurt => stay in hurt but reset counter
-            return BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
             // knocked while in hurt => worsen into knocked
-            return BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
         // if counter is full => return to IDLE
         if (counter == ns_antoc_body_state_duration.HURT) {
-            return BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
         }
 
         // else stay in HURT and increment counter
-        return BodyState(ns_antoc_body_state.HURT, counter + 1, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, counter + 1, integrity, stamina, dir) );
     }
 
     //
@@ -198,20 +202,20 @@ func _body_antoc {range_check_ptr}(
         // check for interruption
         if (stimulus == ns_stimulus.HURT) {
             // hurt while in knocked => stay in knocked and reset counter; TODO: reconsider counter reset
-            return BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
             // hurt while in knocked => stay in knocked and reset counter
-            return BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
         // if counter is full => return to Idle
         if (counter == ns_antoc_body_state_duration.KNOCKED) {
-            return BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
         }
 
         // else stay in KNOCKED and increment counter
-        return BodyState(ns_antoc_body_state.KNOCKED, counter + 1, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, counter + 1, integrity, stamina, dir) );
     }
 
     //
@@ -221,45 +225,45 @@ func _body_antoc {range_check_ptr}(
 
         // interruptible by stimulus
         if (stimulus == ns_stimulus.HURT) {
-            return BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
-            return BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
         if (intent == ns_antoc_action.HORI) {
-            return BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.VERT) {
-            return BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.BLOCK) {
-            return BodyState(ns_antoc_body_state.BLOCK, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.DASH_FORWARD) {
-            return BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.DASH_BACKWARD) {
-            return BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, stamina, dir) );
         }
 
         // continue moving forward
         if (intent == ns_antoc_action.MOVE_FORWARD) {
             if (counter == ns_antoc_body_state_duration.MOVE_FORWARD) {
-                return BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, stamina, dir) );
             } else {
-                return BodyState(ns_antoc_body_state.MOVE_FORWARD, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // able to reverse direction immediately
         if (intent == ns_antoc_action.MOVE_BACKWARD) {
-            return BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir) );
         }
 
         // otherwise return to idle
-        return BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -269,45 +273,45 @@ func _body_antoc {range_check_ptr}(
 
         // interruptible by stimulus
         if (stimulus == ns_stimulus.HURT) {
-            return BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
-            return BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
         if (intent == ns_antoc_action.HORI) {
-            return BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.VERT) {
-            return BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.BLOCK) {
-            return BodyState(ns_antoc_body_state.BLOCK, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.DASH_FORWARD) {
-            return BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, stamina, dir) );
         }
         if (intent == ns_antoc_action.DASH_BACKWARD) {
-            return BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, stamina, dir) );
         }
 
         // continue moving forward
         if (intent == ns_antoc_action.MOVE_BACKWARD) {
             if (counter == ns_antoc_body_state_duration.MOVE_BACKWARD) {
-                return BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir) );
             } else {
-                return BodyState(ns_antoc_body_state.MOVE_BACKWARD, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // able to reverse direction immediately
         if (intent == ns_antoc_action.MOVE_FORWARD) {
-            return BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, stamina, dir);
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, stamina, dir) );
         }
 
         // otherwise return to idle
-        return BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -324,15 +328,15 @@ func _body_antoc {range_check_ptr}(
         if (intent == ns_antoc_action.DASH_FORWARD) {
             if (counter == ns_antoc_body_state_duration.DASH_FORWARD) {
                 // reset counter
-                return BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, stamina, dir) );
             } else {
                 // increment counter
-                return BodyState(ns_antoc_body_state.DASH_FORWARD, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // otherwise return to IDLE
-        return BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -347,19 +351,19 @@ func _body_antoc {range_check_ptr}(
         if (intent == ns_antoc_action.DASH_BACKWARD) {
             if (counter == ns_antoc_body_state_duration.DASH_BACKWARD) {
                 // reset counter
-                return BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, stamina, dir) );
             } else {
                 // increment counter
-                return BodyState(ns_antoc_body_state.DASH_BACKWARD, counter + 1, integrity, stamina, dir);
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, counter + 1, integrity, stamina, dir) );
             }
         }
 
         // otherwise return to IDLE
-        return BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir);
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     with_attr error_message("Input body state is not recognized.") {
         assert 0 = 1;
     }
-    return BodyState(0,0,0,0,0);
+    return ( body_state_nxt = BodyState(0,0,0,0,0) );
 }

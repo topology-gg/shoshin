@@ -122,6 +122,8 @@ async def test(starknet):
         [],
         actions,
         [101],
+        0, # character type: Jessica
+        1, # character type: Antoc
     ).call()
 
     LOGGER.info(
@@ -133,30 +135,33 @@ async def test(starknet):
     record = {
         "agent_0": [
             {
-                "agent_action": r.agent_0.agent_action,
-                "object_state": r.agent_0.object_state,
-                "object_counter": r.agent_0.object_counter,
-                "character_state": {
+                "agent_action": r.agent_0.action,
+                "body_state": {
+                    "state": r.agent_0.body_state.state,
+                    "counter": r.agent_0.body_state.counter,
+                    "integrity": r.agent_0.body_state.integrity,
+                    "stamina": r.agent_0.body_state.stamina,
+                    "dir": r.agent_0.body_state.dir,
+                },
+                "physics_state": {
                     "pos": [
-                        r.agent_0.character_state.pos.x,
-                        r.agent_0.character_state.pos.y,
+                        adjust_from_felt(r.agent_0.physics_state.pos.x),
+                        adjust_from_felt(r.agent_0.physics_state.pos.y),
                     ],
                     "vel_fp": [
-                        r.agent_0.character_state.vel_fp.x,
-                        r.agent_0.character_state.vel_fp.y,
+                        adjust_from_felt(r.agent_0.physics_state.vel_fp.x),
+                        adjust_from_felt(r.agent_0.physics_state.vel_fp.y),
                     ],
                     "acc_fp": [
-                        r.agent_0.character_state.acc_fp.x,
-                        r.agent_0.character_state.acc_fp.y,
+                        adjust_from_felt(r.agent_0.physics_state.acc_fp.x),
+                        adjust_from_felt(r.agent_0.physics_state.acc_fp.y),
                     ],
-                    "dir": r.agent_0.character_state.dir,
-                    "int": r.agent_0.character_state.int,
                 },
                 "hitboxes": {
                     "action": {
                         "origin": [
-                            r.agent_0.hitboxes.action.origin.x,
-                            r.agent_0.hitboxes.action.origin.y,
+                            adjust_from_felt(r.agent_0.hitboxes.action.origin.x),
+                            adjust_from_felt(r.agent_0.hitboxes.action.origin.y),
                         ],
                         "dimension": [
                             r.agent_0.hitboxes.action.dimension.x,
@@ -165,8 +170,8 @@ async def test(starknet):
                     },
                     "body": {
                         "origin": [
-                            r.agent_0.hitboxes.body.origin.x,
-                            r.agent_0.hitboxes.body.origin.y,
+                            adjust_from_felt(r.agent_0.hitboxes.body.origin.x),
+                            adjust_from_felt(r.agent_0.hitboxes.body.origin.y),
                         ],
                         "dimension": [
                             r.agent_0.hitboxes.body.dimension.x,
@@ -180,30 +185,33 @@ async def test(starknet):
         ],
         "agent_1": [
             {
-                "agent_action": r.agent_1.agent_action,
-                "object_state": r.agent_1.object_state,
-                "object_counter": r.agent_1.object_counter,
-                "character_state": {
+                "agent_action": r.agent_1.action,
+                "body_state": {
+                    "state": r.agent_1.body_state.state,
+                    "counter": r.agent_1.body_state.counter,
+                    "integrity": r.agent_1.body_state.integrity,
+                    "stamina": r.agent_1.body_state.stamina,
+                    "dir": r.agent_1.body_state.dir,
+                },
+                "physics_state": {
                     "pos": [
-                        r.agent_1.character_state.pos.x,
-                        r.agent_1.character_state.pos.y,
+                        adjust_from_felt(r.agent_1.physics_state.pos.x),
+                        adjust_from_felt(r.agent_1.physics_state.pos.y),
                     ],
                     "vel_fp": [
-                        adjust_from_felt(r.agent_1.character_state.vel_fp.x),
-                        adjust_from_felt(r.agent_1.character_state.vel_fp.y),
+                        adjust_from_felt(r.agent_1.physics_state.vel_fp.x),
+                        adjust_from_felt(r.agent_1.physics_state.vel_fp.y),
                     ],
                     "acc_fp": [
-                        adjust_from_felt(r.agent_1.character_state.acc_fp.x),
-                        adjust_from_felt(r.agent_1.character_state.acc_fp.y),
+                        adjust_from_felt(r.agent_1.physics_state.acc_fp.x),
+                        adjust_from_felt(r.agent_1.physics_state.acc_fp.y),
                     ],
-                    "dir": r.agent_1.character_state.dir,
-                    "int": r.agent_1.character_state.int,
                 },
                 "hitboxes": {
                     "action": {
                         "origin": [
-                            r.agent_1.hitboxes.action.origin.x,
-                            r.agent_1.hitboxes.action.origin.y,
+                            adjust_from_felt(r.agent_1.hitboxes.action.origin.x),
+                            adjust_from_felt(r.agent_1.hitboxes.action.origin.y),
                         ],
                         "dimension": [
                             r.agent_1.hitboxes.action.dimension.x,
@@ -212,8 +220,8 @@ async def test(starknet):
                     },
                     "body": {
                         "origin": [
-                            r.agent_1.hitboxes.body.origin.x,
-                            r.agent_1.hitboxes.body.origin.y,
+                            adjust_from_felt(r.agent_1.hitboxes.body.origin.x),
+                            adjust_from_felt(r.agent_1.hitboxes.body.origin.y),
                         ],
                         "dimension": [
                             r.agent_1.hitboxes.body.dimension.x,

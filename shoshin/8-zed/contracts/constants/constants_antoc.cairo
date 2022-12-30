@@ -81,69 +81,69 @@ namespace ns_antoc_body_state_qualifiers {
     func is_in_hori_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_antoc_body_state.HORI) {
             if (counter == 1) {
-                return (1,);
+                return 1;
             }
             if (counter == 2) {
-                return (1,);
+                return 1;
             }
         }
-        return (0,);
+        return 0;
     }
 
     func is_in_vert_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_antoc_body_state.VERT) {
             if (counter == 3) {
-                return (1,);
+                return 1;
             }
             if (counter == 4) {
-                return (1,);
+                return 1;
             }
         }
-        return (0,);
+        return 0;
     }
 
     func is_in_block_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state != ns_antoc_body_state.BLOCK) {
             if (counter == 1) {
-                return (1,);
+                return 1;
             }
             if (counter == 2) {
-                return (1,);
+                return 1;
             }
             if (counter == 3) {
-                return (1,);
+                return 1;
             }
             if (counter == 4) {
-                return (1,);
+                return 1;
             }
         }
-        return (0,);
+        return 0;
     }
 
     func is_in_knocked_early {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state != ns_antoc_body_state.KNOCKED) {
-            return (0,);
+            return 0;
         }
 
         // counter <= 4
         let bool_counter_le_4 = is_le (counter, 4);
         if (bool_counter_le_4 == 1) {
-            return (1,);
+            return 1;
         }
-        return (0,);
+        return 0;
     }
 
     func is_in_knocked_late {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state != ns_antoc_body_state.KNOCKED) {
-            return (0,);
+            return 0;
         }
 
         // counter >= 5
         let bool_counter_ge_5 = is_le(5, counter);
         if (bool_counter_ge_5 == 1) {
-            return (1,);
+            return 1;
         }
-        return (0,);
+        return 0;
     }
 
     func is_in_various_states {range_check_ptr}(state: felt, counter: felt) -> (
@@ -152,7 +152,11 @@ namespace ns_antoc_body_state_qualifiers {
         bool_body_in_knocked_late: felt,
         bool_body_in_block: felt,
     ) {
-        let bool_body_in_atk_active    = is_in_hori_active (state, counter) + is_in_vert_active (state, counter);
+        alloc_locals;
+
+        let bool_body_in_hori_active = is_in_hori_active (state, counter);
+        let bool_body_in_vert_active = is_in_vert_active (state, counter);
+        let bool_body_in_atk_active    = bool_body_in_hori_active + bool_body_in_vert_active;
         let bool_body_in_knocked_early = is_in_knocked_early (state, counter);
         let bool_body_in_knocked_late  = is_in_knocked_late (state, counter);
         let bool_body_in_block         = is_in_block_active (state, counter);

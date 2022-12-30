@@ -14,6 +14,7 @@ from contracts.constants.constants import (
     ns_integrity,
     Vec2,
     PhysicsState,
+    BodyState,
     Frame,
     FrameScene,
     Rectangle,
@@ -236,10 +237,10 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // (given perceptibles, produce agent action / "intent")
     //
     let (mem) = alloc();
-    let (ptr_tree) = dict_read{dict_ptr=mental_state_0}(key=last_frame.agent_0.agent_state);
+    let (ptr_tree) = dict_read{dict_ptr=mental_state_0}(key=last_frame.agent_0.mental_state);
     tempvar tree = cast(ptr_tree, Tree*);
     let (ptr_offsets) = dict_read{dict_ptr=mental_state_offsets_0}(
-        key=last_frame.agent_0.agent_state
+        key=last_frame.agent_0.mental_state
     );
     tempvar offsets = cast(ptr_offsets, felt*);
     let (agent_state_0, functions_0_new, dict_new) = BinaryOperatorTree.execute_tree_chain(

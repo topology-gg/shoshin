@@ -17,7 +17,7 @@ from contracts.constants.constants_antoc import (
 from contracts.numerics import mul_fp, div_fp_ul
 
 func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
-    MOVE_FOWARD: felt,
+    MOVE_FORWARD: felt,
     MOVE_BACKWARD: felt,
     DASH_FORWARD: felt,
     DASH_BACKWARD: felt,
@@ -84,7 +84,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
 
     // get character-specific constants for dynamics
     let (
-        MOVE_FOWARD: felt,
+        MOVE_FORWARD: felt,
         MOVE_BACKWARD: felt,
         DASH_FORWARD: felt,
         DASH_BACKWARD: felt,

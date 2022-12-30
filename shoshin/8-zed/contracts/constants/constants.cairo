@@ -106,7 +106,9 @@ namespace ns_perceptibles {
     const SELF_DIR = 7;
     const SELF_INT = 8;
     const SELF_BODY_STATE = 9;
+    // TODO: add SELF_STA for self stamina
 
+    // TODO: re-encode to have opponent perceptibles start from a much larger number, giving more space for new perceptibles
     const OPPONENT_X_POS = 10;
     const OPPONENT_Y_POS = 11;
     const OPPONENT_VEL_X = 12;
@@ -116,6 +118,7 @@ namespace ns_perceptibles {
     const OPPONENT_DIR = 16;
     const OPPONENT_INT = 17;
     const OPPONENT_BODY_STATE = 18;
+    // TODO: add OPPONENT_STA for opponent stamin
 }
 
 //
