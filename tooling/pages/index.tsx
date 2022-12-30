@@ -2,6 +2,8 @@ import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
+import Character from '../src/components/Character';
+import testJsonStr from '../src/json/test_engine.json';
 
 const theme = createTheme({
     typography: {
@@ -31,18 +33,30 @@ const theme = createTheme({
 
 export default function Home() {
 
-    // reference: https://stackoverflow.com/questions/23344776/how-to-access-data-of-uploaded-json-file
-    const [loadedJson, setLoadedJson] = useState<string>(null);
-    const onChangeFile = (event: any) => {
-        var reader = new FileReader();
-        reader.onload = onReaderLoad;
-        reader.readAsText(event.target.files[0]);
-    }
-    function onReaderLoad(event){
-        console.log('read:', event.target.result);
-        var obj = JSON.parse(event.target.result);
-        setLoadedJson((_) => obj);
-    }
+    // Each frame takes the following structure:
+    // - agent_action
+    // - agent_state (Mental)
+    // - character_state (Physics): pos [x,y], vel_fp [x,y], acc_fp [x,y], dir
+    // - hitboxes: action (origin [x,y], dimension [x,y]), body (origin [x,y], dimension [x,y])
+    // - object_counter
+    // - object_state (Body)
+    // - stimulus
+
+    const testJson = JSON.parse(testJsonStr)
+    if (!testJson) return <></>
+
+    const frameCount = testJson.agent_0.length
+    const [loop, setLoop] = useState<NodeJS.Timer>();
+    const [frameIndex, setFrameIndex] = useState<number>(0);
+    const latency = 200;
+
+    useEffect(() => {
+        setLoop(
+            setInterval(() => {
+                setFrameIndex((prev) => prev == frameCount ? 0 : prev + 1);
+            }, latency)
+        );
+    }, [])
 
     // Render
     return (
@@ -55,25 +69,9 @@ export default function Home() {
 
             <ThemeProvider theme={theme}>
                 <main className={styles.main}>
-                    <div className={styles.title}>
-                        <h2>Shoshin Tooling</h2>
-                    </div>
-                    <fieldset style={{border:'1px groove #77777755'}}>
 
-                <legend>Open JSON</legend>
-                    <input
-                        className='button' type="file"
-                        style={{border:'none', marginTop:'5px', backgroundColor:'#ffffff00'}}
-                        accept=".json"
-                        onChange={(e) => onChangeFile(e)}
-                    />
-                </fieldset>
+                    <Character agentIndex={0} frameIndex={frameIndex} />
 
-            {
-                loadedJson ? (
-                    <p style={{fontSize:'1rem'}}>{JSON.stringify(loadedJson)}</p>
-                ) : <></>
-            }
                 </main>
             </ThemeProvider>
         </div>

@@ -227,3 +227,97 @@ input::placeholder {
     margin-top: 0;
     margin-bottom: 0;
 }
+
+.unit {
+    display: flex;
+    font-size: 0.75em;
+    position: relative;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.05s ease, border-color 0.05s ease;
+    color: #BBBBBB;
+    /* z-index: 10; */
+
+    background-position: 0 0; background-size: 100%;
+  }
+
+/* idle */
+.jessica-0 { background: url('../src/images/jessica/idle/frame_0.png') no-repeat; }
+.jessica-1 { background: url('../src/images/jessica/idle/frame_1.png') no-repeat; }
+.jessica-2 { background: url('../src/images/jessica/idle/frame_2.png') no-repeat; }
+.jessica-3 { background: url('../src/images/jessica/idle/frame_3.png') no-repeat; }
+.jessica-4 { background: url('../src/images/jessica/idle/frame_4.png') no-repeat; }
+
+
+.jessica-10 { background: url('../src/images/jessica/slash/frame_0.png') no-repeat; }
+.jessica-11 { background: url('../src/images/jessica/slash/frame_1.png') no-repeat; }
+.jessica-12 { background: url('../src/images/jessica/slash/frame_2.png') no-repeat; }
+.jessica-13 { background: url('../src/images/jessica/slash/frame_3.png') no-repeat; }
+.jessica-14 { background: url('../src/images/jessica/slash/frame_4.png') no-repeat; }
+
+.jessica-17 { background: url('../src/images/jessica/slash/frame_4.png') no-repeat; }
+
+
+    17: pygame.image.load("../7-demo/cinematics/assets/kyo/hit/frame_0.png"),
+    18: pygame.image.load("../7-demo/cinematics/assets/kyo/hit/frame_1.png"),
+    19: pygame.image.load("../7-demo/cinematics/assets/kyo/hit/frame_2.png"),
+    20: pygame.image.load("../7-demo/cinematics/assets/kyo/hit/frame_3.png"),
+    21: pygame.image.load("../7-demo/cinematics/assets/kyo/jump/frame_0.png"),
+    22: pygame.image.load("../7-demo/cinematics/assets/kyo/idle/frame_5.png"),
+    23: pygame.image.load("../7-demo/cinematics/assets/kyo/jump/frame_0.png"),
+    24: pygame.image.load("../7-demo/cinematics/assets/kyo/idle/frame_5.png"),
+    25: pygame.image.load("../7-demo/cinematics/assets/kyo/jump/frame_0.png"),
+    26: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_5.png"),
+    27: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_3.png"),
+    28: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_5.png"),
+    29: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_3.png"),
+    30: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_5.png"),
+    31: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_3.png"),
+    32: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_0.png"),
+    33: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_1.png"),
+    34: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_2.png"),
+    35: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_3.png"),
+    36: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_4.png"),
+    37: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_5.png"),
+    38: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_6.png"),
+    39: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_7.png"),
+    40: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_8.png"),
+    41: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_9.png"),
+    42: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_10.png"),
+    43: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_11.png"),
+    44: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_2.png"),
+    45: pygame.image.load("../7-demo/cinematics/assets/kyo/move_forward/frame_0.png"),
+    46: pygame.image.load("../7-demo/cinematics/assets/kyo/move_forward/frame_1.png"),
+    47: pygame.image.load("../7-demo/cinematics/assets/kyo/move_forward/frame_2.png"),
+    48: pygame.image.load("../7-demo/cinematics/assets/kyo/move_forward/frame_3.png"),
+    49: pygame.image.load("../7-demo/cinematics/assets/kyo/move_forward/frame_4.png"),
+    50: pygame.image.load("../7-demo/cinematics/assets/kyo/move_forward/frame_5.png"),
+    51: pygame.image.load("../7-demo/cinematics/assets/kyo/move_backward/frame_0.png"),
+    52: pygame.image.load("../7-demo/cinematics/assets/kyo/move_backward/frame_1.png"),
+    53: pygame.image.load("../7-demo/cinematics/assets/kyo/move_backward/frame_2.png"),
+    54: pygame.image.load("../7-demo/cinematics/assets/kyo/move_backward/frame_3.png"),
+    55: pygame.image.load("../7-demo/cinematics/assets/kyo/move_backward/frame_4.png"),
+    56: pygame.image.load("../7-demo/cinematics/assets/kyo/move_backward/frame_5.png"),
+    57: pygame.image.load("../art/jessica/dash_forward/frame_0.png"),
+    58: pygame.image.load("../art/jessica/dash_forward/frame_1.png"),
+    59: pygame.image.load("../art/jessica/dash_forward/frame_2.png"),
+    60: pygame.image.load("../art/jessica/dash_forward/frame_3.png"),
+    61: pygame.image.load("../art/jessica/dash_forward/frame_4.png"),
+    62: pygame.image.load("../art/jessica/dash_backward/frame_0.png"),
+    63: pygame.image.load("../art/jessica/dash_backward/frame_1.png"),
+    64: pygame.image.load("../art/jessica/dash_backward/frame_2.png"),
+    65: pygame.image.load("../art/jessica/dash_backward/frame_3.png"),
+    66: pygame.image.load("../art/jessica/dash_backward/frame_4.png"),
+    68: pygame.image.load("../art/jessica/upswing/frame_0.png"),
+    69: pygame.image.load("../art/jessica/upswing/frame_1.png"),
+    70: pygame.image.load("../art/jessica/upswing/frame_2.png"),
+    71: pygame.image.load("../art/jessica/upswing/frame_3.png"),
+    72: pygame.image.load("../art/jessica/upswing/frame_4.png"),
+    73: pygame.image.load("../art/jessica/sidecut/frame_0.png"),
+    74: pygame.image.load("../art/jessica/sidecut/frame_1.png"),
+    75: pygame.image.load("../art/jessica/sidecut/frame_2.png"),
+    76: pygame.image.load("../art/jessica/sidecut/frame_3.png"),
+    77: pygame.image.load("../art/jessica/sidecut/frame_4.png"),

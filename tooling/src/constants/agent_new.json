@@ -1,0 +1,103 @@
+{
+    "states": ["MS IDLE", "MS COMBO", "MS BLOCK"],
+    "combos": [[0]],
+    "perceptables": ["self_object_state", "opponent_object_state"],
+    "state_mapping": {
+        "MS IDLE": 0,
+        "AC IDLE": 0,
+        "MS COMBO": 1,
+        "MS BLOCK": 2,
+        "AC BLOCK": 3,
+        "OS SLASH_ATK0": 12,
+        "OS POWER_ATK0": 26,
+        "OS POWER_ATK1": 27,
+        "OS POWER_ATK2": 28,
+        "OS POWER_ATK3": 29,
+        "OS POWER_ATK4": 30,
+        "OS POWER_ATK5": 31,
+        "OS BLOCK": 44,
+        "OS UPSWING": 68,
+        "OS SIDECUT": 73,
+        "COMBO 1": 101
+    },
+    "initial state": "MS IDLE",
+    "mental_state_to_action": {
+        "MS IDLE": "AC IDLE",
+        "MS COMBO": "COMBO 1",
+        "MS BLOCK": "AC BLOCK"
+    },
+    "mental_states": {
+        "MS IDLE": {
+            "state_function": {
+                "stages": [
+                    [
+                        "ADD",
+                        ["MUL", ["FUNC", "", "0"], "MS BLOCK"],
+                        ["MUL", ["SUB", "1", ["MEM", "", "0"]], "MS COMBO"]
+                    ]
+                ]
+            }
+        },
+        "MS COMBO": {
+            "state_function": {
+                "stages": [
+                    [
+                        "ADD",
+                        ["MUL", ["FUNC", "", "0"], "MS BLOCK"],
+                        ["MUL", ["SUB", "1", ["MEM", "", "0"]], "MS COMBO"]
+                    ]
+                ]
+            }
+        },
+        "MS BLOCK": {
+            "state_function": {
+                "stages": [
+                    [
+                        "ADD",
+                        ["MUL", ["FUNC", "", "0"], "MS BLOCK"],
+                        ["MUL", ["SUB", "1", ["MEM", "", "0"]], "MS IDLE"]
+                    ]
+                ]
+            }
+        }
+    },
+    "general_purpose_functions": [
+        [
+            "ADD",
+            ["EQ", ["DICT", "", "18"], "OS SLASH_ATK0"],
+            [
+                "ADD",
+                ["EQ", ["DICT", "", "18"], "OS POWER_ATK0"],
+                [
+                    "ADD",
+                    ["EQ", ["DICT", "", "18"], "OS POWER_ATK1"],
+                    [
+                        "ADD",
+                        ["EQ", ["DICT", "", "18"], "OS POWER_ATK2"],
+                        [
+                            "ADD",
+                            ["EQ", ["DICT", "", "18"], "OS POWER_ATK3"],
+                            [
+                                "ADD",
+                                ["EQ", ["DICT", "", "18"], "OS POWER_ATK4"],
+                                [
+                                    "ADD",
+                                    ["EQ", ["DICT", "", "18"], "OS POWER_ATK5"],
+                                    [
+                                        "ADD",
+                                        [
+                                            "EQ",
+                                            ["DICT", "", "18"],
+                                            "OS UPSWING"
+                                        ],
+                                        ["EQ", ["DICT", "", "18"], "OS SIDECUT"]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+}
