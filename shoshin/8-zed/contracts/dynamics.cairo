@@ -4,91 +4,166 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import abs_value, unsigned_div_rem, signed_div_rem, sign
 from starkware.cairo.common.math_cmp import is_le, is_not_zero
-from contracts.constants import (
-    ns_dynamics,
-    ns_object_state,
-    ns_character_dimension,
-    Vec2,
-    CharacterState,
+from contracts.constants.constants import (
+    ns_dynamics, ns_character_type,
+    Vec2, PhysicsState, BodyState,
+)
+from contracts.constants.constants_jessica import (
+    ns_jessica_dynamics, ns_jessica_character_dimension, ns_jessica_action, ns_jessica_body_state
+)
+from contracts.constants.constants_antoc import (
+    ns_antoc_dynamics, ns_antoc_character_dimension, ns_antoc_action, ns_antoc_body_state
 )
 from contracts.numerics import mul_fp, div_fp_ul
 
-func _euler_forward_no_hitbox{range_check_ptr}(
-    character_state: CharacterState, object_state: felt, object_count: felt
-) -> (character_state_fwd: CharacterState) {
+func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
+    MOVE_FORWARD: felt,
+    MOVE_BACKWARD: felt,
+    DASH_FORWARD: felt,
+    DASH_BACKWARD: felt,
+    KNOCKED: felt,
+    MAX_VEL_MOVE_FP: felt,
+    MIN_VEL_MOVE_FP: felt,
+    MAX_VEL_DASH_FP: felt,
+    MIN_VEL_DASH_FP: felt,
+    MOVE_ACC_FP: felt,
+    DASH_ACC_FP: felt,
+    DEACC_FP: felt,
+    BODY_KNOCKED_ADJUST_W: felt,
+) {
+    if (character_type == ns_character_type.JESSICA) {
+        return (
+            ns_jessica_body_state.MOVE_FORWARD,
+            ns_jessica_body_state.MOVE_BACKWARD,
+            ns_jessica_body_state.DASH_FORWARD,
+            ns_jessica_body_state.DASH_BACKWARD,
+            ns_jessica_body_state.KNOCKED,
+            ns_jessica_dynamics.MAX_VEL_MOVE_FP,
+            ns_jessica_dynamics.MIN_VEL_MOVE_FP,
+            ns_jessica_dynamics.MAX_VEL_DASH_FP,
+            ns_jessica_dynamics.MIN_VEL_DASH_FP,
+            ns_jessica_dynamics.MOVE_ACC_FP,
+            ns_jessica_dynamics.DASH_ACC_FP,
+            ns_jessica_dynamics.DEACC_FP,
+            ns_jessica_character_dimension.BODY_KNOCKED_ADJUST_W,
+        );
+    } else {
+        return (
+            ns_antoc_body_state.MOVE_FORWARD,
+            ns_antoc_body_state.MOVE_BACKWARD,
+            ns_antoc_body_state.DASH_FORWARD,
+            ns_antoc_body_state.DASH_BACKWARD,
+            ns_antoc_body_state.KNOCKED,
+            ns_antoc_dynamics.MAX_VEL_MOVE_FP,
+            ns_antoc_dynamics.MIN_VEL_MOVE_FP,
+            ns_antoc_dynamics.MAX_VEL_DASH_FP,
+            ns_antoc_dynamics.MIN_VEL_DASH_FP,
+            ns_antoc_dynamics.MOVE_ACC_FP,
+            ns_antoc_dynamics.DASH_ACC_FP,
+            ns_antoc_dynamics.DEACC_FP,
+            ns_antoc_character_dimension.BODY_KNOCKED_ADJUST_W,
+        );
+    }
+}
+
+func _euler_forward_no_hitbox {range_check_ptr}(
+    character_type: felt,
+    physics_state: PhysicsState,
+    body_state: BodyState,
+) -> (
+    physics_state_fwd: PhysicsState
+) {
     alloc_locals;
 
     local vel_fp_nxt: Vec2;
 
+    // unpack
+    let state   = body_state.state;
+    let counter = body_state.counter;
+    let dir     = body_state.dir;
+
+    // get character-specific constants for dynamics
+    let (
+        MOVE_FORWARD: felt,
+        MOVE_BACKWARD: felt,
+        DASH_FORWARD: felt,
+        DASH_BACKWARD: felt,
+        KNOCKED: felt,
+        MAX_VEL_MOVE_FP: felt,
+        MIN_VEL_MOVE_FP: felt,
+        MAX_VEL_DASH_FP: felt,
+        MIN_VEL_DASH_FP: felt,
+        MOVE_ACC_FP: felt,
+        DASH_ACC_FP: felt,
+        DEACC_FP: felt,
+        BODY_KNOCKED_ADJUST_W: felt,
+    ) = _character_specific_constants (character_type);
+
     //
-    // Set acceleration (fp) according to object state
+    // Set acceleration (fp) according to body state
     //
     local acc_fp_x;
     let acc_fp_y = 0;  // no jump for now!
-    let sign_vel_x = sign(character_state.vel_fp.x);
+    let sign_vel_x = sign(physics_state.vel_fp.x);
 
-    if (object_state == ns_object_state.MOVE_FORWARD) {
-        if (character_state.dir == 1) {
-            assert acc_fp_x = ns_dynamics.MOVE_ACC_FP;
+    if (state == MOVE_FORWARD) {
+        if (dir == 1) {
+            assert acc_fp_x = MOVE_ACC_FP;
         } else {
-            assert acc_fp_x = (-1) * ns_dynamics.MOVE_ACC_FP;
+            assert acc_fp_x = (-1) * MOVE_ACC_FP;
         }
         jmp update_vel_move;
     }
 
-    if (object_state == ns_object_state.MOVE_BACKWARD) {
-        if (character_state.dir == 1) {
-            assert acc_fp_x = (-1) * ns_dynamics.MOVE_ACC_FP;
+    if (state == MOVE_BACKWARD) {
+        if (dir == 1) {
+            assert acc_fp_x = (-1) * MOVE_ACC_FP;
         } else {
-            assert acc_fp_x = ns_dynamics.MOVE_ACC_FP;
+            assert acc_fp_x = MOVE_ACC_FP;
         }
         jmp update_vel_move;
     }
 
-    if (object_state == ns_object_state.DASH_FORWARD) {
-        if (character_state.dir == 1) {
-            assert acc_fp_x = ns_dynamics.DASH_ACC_FP;
+    if (state == DASH_FORWARD) {
+        if (dir == 1) {
+            assert acc_fp_x = DASH_ACC_FP;
         } else {
-            assert acc_fp_x = (-1) * ns_dynamics.DASH_ACC_FP;
+            assert acc_fp_x = (-1) * DASH_ACC_FP;
         }
         jmp update_vel_dash;
     }
 
-    if (object_state == ns_object_state.DASH_BACKWARD) {
-        if (character_state.dir == 1) {
-            assert acc_fp_x = (-1) * ns_dynamics.DASH_ACC_FP;
+    if (state == DASH_BACKWARD) {
+        if (dir == 1) {
+            assert acc_fp_x = (-1) * DASH_ACC_FP;
         } else {
-            assert acc_fp_x = ns_dynamics.DASH_ACC_FP;
+            assert acc_fp_x = DASH_ACC_FP;
         }
         jmp update_vel_dash;
     }
 
-    if (object_state == ns_object_state.KNOCKED) {
-        if (object_count == 0) {
-            if (character_state.dir == 1) {
+    if (state == KNOCKED) {
+        if (counter == 0) {
+            if (dir == 1) {
                 // # back off the difference between normal body sprite width and knocked sprite width
                 return (
-                    CharacterState(
-                    pos=Vec2(character_state.pos.x - ns_character_dimension.BODY_KNOCKED_ADJUST_W, character_state.pos.y),
-                    vel_fp=Vec2(0, 0),
-                    acc_fp=Vec2(0, 0),
-                    dir=character_state.dir,
-                    int=character_state.int
+                    PhysicsState(
+                        pos=Vec2(physics_state.pos.x - BODY_KNOCKED_ADJUST_W, physics_state.pos.y),
+                        vel_fp=Vec2(0, 0),
+                        acc_fp=Vec2(0, 0),
                     ),
                 );
             } else {
                 return (
-                    CharacterState(
-                    pos=Vec2(character_state.pos.x + 1, character_state.pos.y),
-                    vel_fp=Vec2(0, 0),
-                    acc_fp=Vec2(0, 0),
-                    dir=character_state.dir,
-                    int=character_state.int
+                    PhysicsState(
+                            pos=Vec2(physics_state.pos.x + 1, physics_state.pos.y),
+                            vel_fp=Vec2(0, 0),
+                            acc_fp=Vec2(0, 0),
                     ),
                 );
             }
         } else {
-            return (character_state,);
+            return (physics_state,);
         }
     }
 
@@ -105,12 +180,10 @@ func _euler_forward_no_hitbox{range_check_ptr}(
 
     // otherwise, set velocity to zero (instant stop)
     return (
-        CharacterState(
-        pos=Vec2(character_state.pos.x, character_state.pos.y),
-        vel_fp=Vec2(0, 0),
-        acc_fp=Vec2(0, 0),
-        dir=character_state.dir,
-        int=character_state.int
+        PhysicsState(
+            pos=Vec2(physics_state.pos.x, physics_state.pos.y),
+            vel_fp=Vec2(0, 0),
+            acc_fp=Vec2(0, 0),
         ),
     );
 
@@ -119,20 +192,20 @@ func _euler_forward_no_hitbox{range_check_ptr}(
     //
     update_vel_move:
     let (vel_fp_nxt_: Vec2) = _euler_forward_vel_no_hitbox(
-        character_state.vel_fp,
+        physics_state.vel_fp,
         Vec2(acc_fp_x, acc_fp_y),
-        ns_dynamics.MAX_VEL_MOVE_FP,
-        ns_dynamics.MIN_VEL_MOVE_FP,
+        MAX_VEL_MOVE_FP,
+        MIN_VEL_MOVE_FP,
     );
     assert vel_fp_nxt = vel_fp_nxt_;
     jmp update_pos;
 
     update_vel_dash:
     let (vel_fp_nxt_: Vec2) = _euler_forward_vel_no_hitbox(
-        character_state.vel_fp,
+        physics_state.vel_fp,
         Vec2(acc_fp_x, acc_fp_y),
-        ns_dynamics.MAX_VEL_DASH_FP,
-        ns_dynamics.MIN_VEL_DASH_FP,
+        MAX_VEL_DASH_FP,
+        MIN_VEL_DASH_FP,
     );
     assert vel_fp_nxt = vel_fp_nxt_;
 
@@ -140,17 +213,15 @@ func _euler_forward_no_hitbox{range_check_ptr}(
     // Update pos with vel_fp
     //
     update_pos:
-    let (pos_nxt: Vec2) = _euler_forward_pos_no_hitbox(character_state.pos, vel_fp_nxt);
+    let (pos_nxt: Vec2) = _euler_forward_pos_no_hitbox(physics_state.pos, vel_fp_nxt);
 
-    let character_state_fwd: CharacterState = CharacterState(
+    let physics_state_fwd: PhysicsState = PhysicsState(
         pos=pos_nxt,
         vel_fp=vel_fp_nxt,
         acc_fp=Vec2(acc_fp_x, acc_fp_y),
-        dir=character_state.dir,
-        int=character_state.int,
     );
 
-    return (character_state_fwd,);
+    return (physics_state_fwd,);
 }
 
 func _euler_forward_vel_no_hitbox{range_check_ptr}(
@@ -201,12 +272,15 @@ func _cap_fp{range_check_ptr}(x_fp: felt, max_fp: felt, min_fp: felt) -> (x_fp_c
 //##
 
 func _euler_forward_consider_hitbox{range_check_ptr}(
-    character_state_0: CharacterState,
-    character_state_cand_0: CharacterState,
-    character_state_1: CharacterState,
-    character_state_cand_1: CharacterState,
+    physics_state_0: PhysicsState,
+    physics_state_cand_0: PhysicsState,
+    physics_state_1: PhysicsState,
+    physics_state_cand_1: PhysicsState,
     bool_body_overlap: felt,
-) -> (character_state_fwd_0: CharacterState, character_state_fwd_1: CharacterState) {
+) -> (
+    physics_state_fwd_0: PhysicsState,
+    physics_state_fwd_1: PhysicsState,
+) {
     alloc_locals;
 
     if (bool_body_overlap == 1) {
@@ -214,20 +288,21 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
         // Back the character bodies off from candidate positions using reversed candidate velocities;
         // X component first
         //
-        let vx_fp_cand_reversed_0 = (-1) * character_state_cand_0.vel_fp.x;
-        let vx_fp_cand_reversed_1 = (-1) * character_state_cand_1.vel_fp.x;
+        let vx_fp_cand_reversed_0 = (-1) * physics_state_cand_0.vel_fp.x;
+        let vx_fp_cand_reversed_1 = (-1) * physics_state_cand_1.vel_fp.x;
+        let bool_1_to_the_right_of_0 = sign(physics_state_1.pos.x - physics_state_0.pos.x);
 
-        let bool_1_to_the_right_of_0 = sign(character_state_1.pos.x - character_state_0.pos.x);
+        // note: assuming Jessica and Antoc shares the same BODY_HITBOX_W !
         local abs_distance;
         if (bool_1_to_the_right_of_0 == 1) {
-            assert abs_distance = ns_character_dimension.BODY_HITBOX_W - (character_state_cand_1.pos.x - character_state_cand_0.pos.x);
+            assert abs_distance = ns_jessica_character_dimension.BODY_HITBOX_W - (physics_state_cand_1.pos.x - physics_state_cand_0.pos.x);
         } else {
-            assert abs_distance = ns_character_dimension.BODY_HITBOX_W - (character_state_cand_0.pos.x - character_state_cand_1.pos.x);
+            assert abs_distance = ns_jessica_character_dimension.BODY_HITBOX_W - (physics_state_cand_0.pos.x - physics_state_cand_1.pos.x);
         }
         let abs_distance_fp_fp = abs_distance * ns_dynamics.SCALE_FP * ns_dynamics.SCALE_FP;
 
         let abs_relative_vx_fp = abs_value(
-            character_state_cand_0.vel_fp.x - character_state_cand_1.vel_fp.x
+            physics_state_cand_0.vel_fp.x - physics_state_cand_1.vel_fp.x
         );
         let (time_required_to_separate_fp, _) = unsigned_div_rem(
             abs_distance_fp_fp, abs_relative_vx_fp
@@ -248,30 +323,24 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
 
         let sign_0 = sign(back_off_x_0);
         let sign_1 = sign(back_off_x_1);
-        let x_0 = character_state_cand_0.pos.x + back_off_x_0 + sign_0 * 2;  // # back off more to guarantee non-overlap
-        let x_1 = character_state_cand_1.pos.x + back_off_x_1 + sign_1 * 2;
+        let x_0 = physics_state_cand_0.pos.x + back_off_x_0 + sign_0 * 2;  // # back off more to guarantee non-overlap
+        let x_1 = physics_state_cand_1.pos.x + back_off_x_1 + sign_1 * 2;
 
-        //
-        // Y component - do nothing for now
-        //
+        // note: do nothing for now to Y component
 
-        let character_state_fwd_0: CharacterState = CharacterState(
-            pos=Vec2(x_0, character_state_cand_0.pos.y),
-            vel_fp=Vec2(0, 0),
-            acc_fp=character_state_cand_0.acc_fp,
-            dir=character_state_cand_0.dir,
-            int=character_state_cand_0.int,
+        let physics_state_fwd_0: PhysicsState = PhysicsState(
+            pos = Vec2(x_0, physics_state_cand_0.pos.y),
+            vel_fp = Vec2(0, 0),
+            acc_fp = physics_state_cand_0.acc_fp,
         );
-        let character_state_fwd_1: CharacterState = CharacterState(
-            pos=Vec2(x_1, character_state_cand_1.pos.y),
-            vel_fp=Vec2(0, 0),
-            acc_fp=character_state_cand_1.acc_fp,
-            dir=character_state_cand_1.dir,
-            int=character_state_cand_1.int,
+        let physics_state_fwd_1: PhysicsState = PhysicsState(
+            pos = Vec2(x_1, physics_state_cand_1.pos.y),
+            vel_fp = Vec2(0, 0),
+            acc_fp = physics_state_cand_1.acc_fp,
         );
 
-        return (character_state_fwd_0, character_state_fwd_1);
+        return (physics_state_fwd_0, physics_state_fwd_1);
     } else {
-        return (character_state_cand_0, character_state_cand_1);
+        return (physics_state_cand_0, physics_state_cand_1);
     }
 }

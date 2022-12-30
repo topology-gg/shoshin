@@ -1,6 +1,6 @@
 %lang starknet
 
-from contracts.constants import ComboBuffer
+from contracts.constants.constants import ComboBuffer
 from starkware.cairo.common.math import unsigned_div_rem
 
 func _combo{range_check_ptr}(combo_number: felt, combos: ComboBuffer) -> (

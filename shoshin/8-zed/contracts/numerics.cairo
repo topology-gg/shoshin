@@ -3,7 +3,7 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.math import signed_div_rem, sqrt
 from starkware.cairo.common.math_cmp import is_le
-from contracts.constants import ns_dynamics
+from contracts.constants.constants import ns_dynamics
 
 const SCALE_FP = ns_dynamics.SCALE_FP;
 const SCALE_FP_SQRT = ns_dynamics.SCALE_FP_SQRT;
