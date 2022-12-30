@@ -80,7 +80,7 @@ async def starknet():
 async def test(starknet):
 
     # Before running me, please install in 8-zed the binary tree operator library with `protostar install https://github.com/greged93/bto-cairo.git`
-    path = os.path.join(os.getcwd(), "lib/bto_cairo/")
+    path = os.path.join(os.getcwd(), "lib/bto_cairo_git/")
 
     # Deploy contract
     contract = await starknet.deploy(

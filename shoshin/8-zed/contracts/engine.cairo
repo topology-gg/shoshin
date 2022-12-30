@@ -22,14 +22,12 @@ from contracts.constants.constants import (
     Perceptibles,
     ComboBuffer,
 )
-from contracts.constants.constants_jessica import (
-    ns_jessica_character_dimension
-)
+from contracts.constants.constants_jessica import ns_jessica_character_dimension
 from contracts.body.body import _body
 from contracts.combo import _combo
 from contracts.physics import _physicality, _test_rectangle_overlap
 from contracts.perceptibles import update_perceptibles
-from lib.bto_cairo.lib.tree import Tree, BinaryOperatorTree
+from lib.bto_cairo_git.lib.tree import Tree, BinaryOperatorTree
 from contracts.utils import fill_dictionary_offsets, fill_dictionary
 
 @view
@@ -86,37 +84,33 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         agent_1_origin,
         Vec2(ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H),
     );
-    let physics_state_0 = PhysicsState(
-        pos=agent_0_origin, vel_fp=Vec2(0, 0), acc_fp=Vec2(0, 0)
-    );
-    let physics_state_1 = PhysicsState(
-        pos=agent_1_origin, vel_fp=Vec2(0, 0), acc_fp=Vec2(0, 0)
-    );
+    let physics_state_0 = PhysicsState(pos=agent_0_origin, vel_fp=Vec2(0, 0), acc_fp=Vec2(0, 0));
+    let physics_state_1 = PhysicsState(pos=agent_1_origin, vel_fp=Vec2(0, 0), acc_fp=Vec2(0, 0));
 
     assert arr_frames[0] = FrameScene(
-        agent_0 = Frame(
-            mental_state  = agent_0_initial_state,
-            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1), // IDLE body state is 0 for both Jessica and Antoc; positive direction is 1
-            physics_state = physics_state_0,
-            action        = 0, // NULL action is 0 for both Jessica and Antoc
-            stimulus      = ns_stimulus.NULL,
-            hitboxes      = Hitboxes(
+        agent_0=Frame(
+            mental_state=agent_0_initial_state,
+            body_state=BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1),  // IDLE body state is 0 for both Jessica and Antoc; positive direction is 1
+            physics_state=physics_state_0,
+            action=0,  // NULL action is 0 for both Jessica and Antoc
+            stimulus=ns_stimulus.NULL,
+            hitboxes=Hitboxes(
                 action=null_rect,
-                body = agent_0_body
+                body=agent_0_body
+                ),
             ),
-        ),
-        agent_1 = Frame(
-            mental_state  = agent_1_initial_state,
-            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0), // IDLE body state is 0 for both Jessica and Antoc, negative direction is 0
-            physics_state = physics_state_1,
-            action        = 0, // NULL action is 0 for both Jessica and Antoc
-            stimulus      = ns_stimulus.NULL,
-            hitboxes      = Hitboxes(
+        agent_1=Frame(
+            mental_state=agent_1_initial_state,
+            body_state=BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0),  // IDLE body state is 0 for both Jessica and Antoc, negative direction is 0
+            physics_state=physics_state_1,
+            action=0,  // NULL action is 0 for both Jessica and Antoc
+            stimulus=ns_stimulus.NULL,
+            hitboxes=Hitboxes(
                 action=null_rect,
-                body = agent_1_body
+                body=agent_1_body
+                ),
             ),
-        ),
-    );
+        );
 
     //
     // Preparing dictionaries
@@ -161,21 +155,21 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
     tempvar arr_empty: felt* = new ();
     _loop(
-        idx = 1,
-        len = len,
-        arr_frames = arr_frames,
-        combos_0 = ComboBuffer(combos_offset_0_len, combos_offset_0, combos_0, 0, 0),
-        combos_1 = ComboBuffer(combos_offset_1_len, combos_offset_1, combos_1, 0, 0),
-        mental_state_0 = mental_state_0_new,
-        mental_state_offsets_0 = mental_state_offsets_0_new,
-        functions_0 = functions_0_new,
-        mental_state_1 = mental_state_1_new,
-        mental_state_offsets_1 = mental_state_offsets_1_new,
-        functions_1 = functions_1_new,
-        actions_0 = actions_0,
-        actions_1 = actions_1,
-        character_type_0 = character_type_0,
-        character_type_1 = character_type_1,
+        idx=1,
+        len=len,
+        arr_frames=arr_frames,
+        combos_0=ComboBuffer(combos_offset_0_len, combos_offset_0, combos_0, 0, 0),
+        combos_1=ComboBuffer(combos_offset_1_len, combos_offset_1, combos_1, 0, 0),
+        mental_state_0=mental_state_0_new,
+        mental_state_offsets_0=mental_state_offsets_0_new,
+        functions_0=functions_0_new,
+        mental_state_1=mental_state_1_new,
+        mental_state_offsets_1=mental_state_offsets_1_new,
+        functions_1=functions_1_new,
+        actions_0=actions_0,
+        actions_1=actions_1,
+        character_type_0=character_type_0,
+        character_type_1=character_type_1,
     );
 
     event_array.emit(len, arr_frames);
@@ -215,19 +209,19 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // (given physics states and body states, produce perceptibles)
     //
     let p_0 = Perceptibles(
-        self_physics_state     = last_frame.agent_0.physics_state,
-        self_body_state        = last_frame.agent_0.body_state,
-        opponent_physics_state = last_frame.agent_1.physics_state,
-        opponent_body_state    = last_frame.agent_1.body_state,
+        self_physics_state=last_frame.agent_0.physics_state,
+        self_body_state=last_frame.agent_0.body_state,
+        opponent_physics_state=last_frame.agent_1.physics_state,
+        opponent_body_state=last_frame.agent_1.body_state,
     );
     let (perceptibles_0) = default_dict_new(default_value=0);
     let (local perceptibles_0) = update_perceptibles(perceptibles_0, p_0);
 
     let p_1 = Perceptibles(
-        self_physics_state     = last_frame.agent_1.physics_state,
-        self_body_state        = last_frame.agent_1.body_state,
-        opponent_physics_state = last_frame.agent_0.physics_state,
-        opponent_body_state    = last_frame.agent_0.body_state,
+        self_physics_state=last_frame.agent_1.physics_state,
+        self_body_state=last_frame.agent_1.body_state,
+        opponent_physics_state=last_frame.agent_0.physics_state,
+        opponent_body_state=last_frame.agent_0.body_state,
     );
     let (perceptibles_1) = default_dict_new(default_value=0);
     let (local perceptibles_1) = update_perceptibles(perceptibles_1, p_1);
@@ -252,8 +246,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
     let agent_state_1 = 0;
 
-    tempvar agent_action_0 = actions_0 [agent_state_0];
-    tempvar agent_action_1 = actions_1 [agent_state_1];
+    tempvar agent_action_0 = actions_0[agent_state_0];
+    tempvar agent_action_1 = actions_1[agent_state_1];
 
     //
     // Combo Phase
@@ -293,17 +287,17 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // Body Phase
     // (given agent intent, stimulus, and last frame's body state, produce this frame's body state)
     //
-    let (body_state_0 : BodyState) = _body (
-        character_type = character_type_0,
-        body_state     = last_frame.agent_0.body_state,
-        stimulus       = last_frame.agent_0.stimulus,
-        intent         = a_0,
+    let (body_state_0: BodyState) = _body(
+        character_type=character_type_0,
+        body_state=last_frame.agent_0.body_state,
+        stimulus=last_frame.agent_0.stimulus,
+        intent=a_0,
     );
-    let (body_state_1 : BodyState) = _body (
-        character_type = character_type_1,
-        body_state     = last_frame.agent_1.body_state,
-        stimulus       = last_frame.agent_1.stimulus,
-        intent         = a_1,
+    let (body_state_1: BodyState) = _body(
+        character_type=character_type_1,
+        body_state=last_frame.agent_1.body_state,
+        stimulus=last_frame.agent_1.stimulus,
+        intent=a_1,
     );
 
     //
@@ -318,56 +312,56 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         hitboxes_0: Hitboxes,
         hitboxes_1: Hitboxes,
     ) = _physicality(
-        character_type_0     = character_type_0,
-        character_type_1     = character_type_1,
-        last_physics_state_0 = last_frame.agent_0.physics_state,
-        last_physics_state_1 = last_frame.agent_1.physics_state,
-        curr_body_state_0    = body_state_0,
-        curr_body_state_1    = body_state_1,
+        character_type_0=character_type_0,
+        character_type_1=character_type_1,
+        last_physics_state_0=last_frame.agent_0.physics_state,
+        last_physics_state_1=last_frame.agent_1.physics_state,
+        curr_body_state_0=body_state_0,
+        curr_body_state_1=body_state_1,
     );
 
     //
     // Recording Phase:
     //
     assert arr_frames[idx] = FrameScene(
-        agent_0 = Frame (
-            mental_state  = agent_state_0,
-            body_state    = body_state_0,
-            physics_state = physics_state_0,
-            action        = a_0,
-            stimulus      = stimulus_0,
-            hitboxes      = hitboxes_0,
-        ),
-        agent_1 = Frame (
-            mental_state  = agent_state_1,
-            body_state    = body_state_1,
-            physics_state = physics_state_1,
-            action        = a_1,
-            stimulus      = stimulus_1,
-            hitboxes      = hitboxes_1,
-        )
-    );
+        agent_0=Frame(
+            mental_state=agent_state_0,
+            body_state=body_state_0,
+            physics_state=physics_state_0,
+            action=a_0,
+            stimulus=stimulus_0,
+            hitboxes=hitboxes_0,
+            ),
+        agent_1=Frame(
+            mental_state=agent_state_1,
+            body_state=body_state_1,
+            physics_state=physics_state_1,
+            action=a_1,
+            stimulus=stimulus_1,
+            hitboxes=hitboxes_1,
+            )
+        );
 
     //
     // Tail recursion
     //
     tempvar arr_empty: felt* = new ();
     _loop(
-        idx = idx + 1,
-        len = len,
-        arr_frames = arr_frames,
-        combos_0 = combos_0_new,
-        combos_1 = combos_1_new,
-        mental_state_0 = mental_state_0,
-        mental_state_offsets_0 = mental_state_offsets_0,
-        functions_0 = functions_0_new,
-        mental_state_1 = mental_state_1,
-        mental_state_offsets_1 = mental_state_offsets_1,
-        functions_1 = functions_1,
-        actions_0 = actions_0,
-        actions_1 = actions_1,
-        character_type_0 = character_type_0,
-        character_type_1 = character_type_1,
+        idx=idx + 1,
+        len=len,
+        arr_frames=arr_frames,
+        combos_0=combos_0_new,
+        combos_1=combos_1_new,
+        mental_state_0=mental_state_0,
+        mental_state_offsets_0=mental_state_offsets_0,
+        functions_0=functions_0_new,
+        mental_state_1=mental_state_1,
+        mental_state_offsets_1=mental_state_offsets_1,
+        functions_1=functions_1,
+        actions_0=actions_0,
+        actions_1=actions_1,
+        character_type_0=character_type_0,
+        character_type_1=character_type_1,
     );
     return ();
 }

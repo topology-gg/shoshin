@@ -4,8 +4,8 @@ from starkware.cairo.common.dict_access import DictAccess
 from starkware.cairo.common.dict import dict_write
 from starkware.cairo.common.memcpy import memcpy
 from starkware.cairo.common.alloc import alloc
-from lib.bto_cairo.lib.tree import Tree
-from lib.bto_cairo.lib.constants import ns_tree
+from lib.bto_cairo_git.lib.tree import Tree
+from lib.bto_cairo_git.lib.constants import ns_tree
 
 func fill_dictionary_offsets{range_check_ptr}(
     tree_dict: DictAccess*,
