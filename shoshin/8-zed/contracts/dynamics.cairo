@@ -304,15 +304,10 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
         let abs_relative_vx_fp = abs_value(
             physics_state_cand_0.vel_fp.x - physics_state_cand_1.vel_fp.x
         );
-        local time_required_to_separate_fp;
-        if (abs_relative_vx_fp == 0) {
-            assert time_required_to_separate_fp = abs_distance_fp_fp;
-            tempvar range_check_ptr = range_check_ptr;
-        } else {
-            let (t, _) = unsigned_div_rem(abs_distance_fp_fp, abs_relative_vx_fp);
-            assert time_required_to_separate_fp = t;
-            tempvar range_check_ptr = range_check_ptr;
-        }
+
+        let (time_required_to_separate_fp, _) = unsigned_div_rem(
+            abs_distance_fp_fp, abs_relative_vx_fp
+        );
 
         let back_off_x_0_scaled = vx_fp_cand_reversed_0 * time_required_to_separate_fp;
         let back_off_x_1_scaled = vx_fp_cand_reversed_1 * time_required_to_separate_fp;
