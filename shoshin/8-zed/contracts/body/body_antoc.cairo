@@ -30,7 +30,8 @@ func _body_antoc {range_check_ptr}(
     // Idle
     //
     if (state == ns_antoc_body_state.IDLE) {
-        // interrupt by stimulus - priority > agent action
+
+        // body responds to stimulus first
         if (stimulus == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
         }
@@ -38,7 +39,7 @@ func _body_antoc {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
-        // interrupt by agent action; locomotive action has lowest priority
+        // body responds to intent; locomotive action has lowest priority
         if (intent == ns_antoc_action.HORI) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir) );
         }
@@ -74,22 +75,19 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.HORI) {
 
-        // interruptable by being attacked
-        let is_in_hori_active = ns_antoc_body_state_qualifiers.is_in_hori_active(state, counter);
-        if (is_in_hori_active == 0) {
-            if (stimulus == ns_stimulus.HURT) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
-            }
-            if (stimulus == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
-            }
+        // body responds to stimulus first
+        if (stimulus == ns_stimulus.HURT) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
+        }
+        if (stimulus == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
         // note: clash does not interrupt Antoc's attack because of sword's heaviness;
         //       need to balance this carefully
         // if (stimulus == ns_stimulus.CLASH) {
 
-        // if intent remains HORI
+        // body responds to intent
         if (intent == ns_antoc_action.HORI) {
             if (counter == ns_antoc_body_state_duration.HORI) {
                 // reset counter
@@ -109,21 +107,25 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.VERT) {
 
-        // interruptable by being attacked
-        let is_in_vert_active = ns_antoc_body_state_qualifiers.is_in_vert_active(state, counter);
-        if (is_in_vert_active == 0) {
-            if (stimulus == ns_stimulus.HURT) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
-            }
-            if (stimulus == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
-            }
+        // body responds to stimulus first
+        if (stimulus == ns_stimulus.HURT) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
+        }
+        if (stimulus == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
         // note: clash does not interrupt Antoc's attack because of sword's heaviness;
         //       need to balance this carefully
         // if (stimulus == ns_stimulus.CLASH) {
 
+        // body responds to intent
+        // VERT=>HORI fast transition: able to go directly to HORI's first frame at VERT's frame 8, 9, or 10
+        if (intent == ns_antoc_action.HORI) {
+            if ( (counter-7) * (counter-8) * (counter-9) == 0 ) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir) );
+            }
+        }
         // if intent remains VERT
         if (intent == ns_antoc_action.VERT) {
             if (counter == ns_antoc_body_state_duration.VERT) {

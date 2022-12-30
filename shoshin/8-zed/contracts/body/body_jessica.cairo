@@ -30,7 +30,8 @@ func _body_jessica {range_check_ptr}(
     // Idle
     //
     if (state == ns_jessica_body_state.IDLE) {
-        // interrupt by stimulus - priority > agent action
+
+        // body responds to stimulus first
         if (stimulus == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
         }
@@ -38,7 +39,7 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
-        // interrupt by agent action; locomotive action has lowest priority
+        // body responds to intent; locomotive action has lowest priority
         if (intent == ns_jessica_action.SLASH) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir) );
         }
@@ -77,23 +78,18 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.SLASH) {
 
-        // interruptable by being attacked
-        let is_in_slash_active = ns_jessica_body_state_qualifiers.is_in_slash_active(state, counter);
-        if (is_in_slash_active == 0) {
-            if (stimulus == ns_stimulus.HURT) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
-            }
-            if (stimulus == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
-            }
-        }
-
-        // active, but clashing => go to HURT (eventually can have clash animation; now reusing hurt animation)
-        if (stimulus == ns_stimulus.CLASH) {
+        // body responds to stimulus first
+        if (stimulus == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
         }
+        if (stimulus == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
+        }
+        if (stimulus == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, integrity, stamina, dir) );
+        }
 
-        // if intent remains SLASH
+        // body responds to intent
         if (intent == ns_jessica_action.SLASH) {
             if (counter == ns_jessica_body_state_duration.SLASH) {
                 // reset counter
@@ -114,23 +110,18 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.UPSWING) {
 
-        // interruptable by being attacked
-        let is_in_upswing_active = ns_jessica_body_state_qualifiers.is_in_upswing_active(state, counter);
-        if (is_in_upswing_active == 0) {
-            if (stimulus == ns_stimulus.HURT) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
-            }
-            if (stimulus == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
-            }
-        }
-
-        // active, but clashing => go to HURT (eventually can have clash animation; now reusing hurt animation)
-        if (stimulus == ns_stimulus.CLASH) {
+        // body responds to stimulus first
+        if (stimulus == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
         }
+        if (stimulus == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
+        }
+        if (stimulus == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, integrity, stamina, dir) );
+        }
 
-        // if intent remains UPSWING
+        // body responds to intent
         if (intent == ns_jessica_action.UPSWING) {
             if (counter == ns_jessica_body_state_duration.UPSWING) {
                 // reset counter
@@ -150,23 +141,18 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.SIDECUT) {
 
-        // interruptable by being attacked
-        let is_in_sidecut_active = ns_jessica_body_state_qualifiers.is_in_sidecut_active(state, counter);
-        if (is_in_sidecut_active == 0) {
-            if (stimulus == ns_stimulus.HURT) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
-            }
-            if (stimulus == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
-            }
-        }
-
-        // active, but clashing => go to HURT (eventually can have clash animation; now reusing hurt animation)
-        if (stimulus == ns_stimulus.CLASH) {
+        // body responds to stimulus first
+        if (stimulus == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
         }
+        if (stimulus == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
+        }
+        if (stimulus == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, integrity, stamina, dir) );
+        }
 
-        // if intent remains SIDECUT
+        // body responds to intent
         if (intent == ns_jessica_action.SIDECUT) {
             if (counter == ns_jessica_body_state_duration.SIDECUT) {
                 // reset counter
@@ -186,18 +172,15 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.BLOCK) {
 
-        // interruptable by being attacked
-        let is_in_block_active = ns_jessica_body_state_qualifiers.is_in_block_active(state, counter);
-        if (is_in_block_active == 0) {
-            if (stimulus == ns_stimulus.HURT) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
-            }
-            if (stimulus == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
-            }
+        // body responds to stimulus first
+        if (stimulus == ns_stimulus.HURT) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
+        }
+        if (stimulus == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
         }
 
-        // if intent remains BLOCK
+        // body responds to intent
         if (intent == ns_jessica_action.BLOCK) {
             if (counter == ns_jessica_body_state_duration.BLOCK) {
                 // reset counter
@@ -210,6 +193,29 @@ func _body_jessica {range_check_ptr}(
 
         // otherwise return to IDLE
         return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
+    }
+
+    //
+    // Clash
+    //
+    if (state == ns_jessica_body_state.CLASH) {
+        // check for interruption
+        if (stimulus == ns_stimulus.HURT) {
+            // hurt again while in hurt => stay in hurt but reset counter
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, integrity, stamina, dir) );
+        }
+        if (stimulus == ns_stimulus.KNOCKED) {
+            // knocked while in hurt => worsen into knocked
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
+        }
+
+        // if counter is full => return to IDLE
+        if (counter == ns_jessica_body_state_duration.CLASH) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
+        }
+
+        // else stay in CLASH and increment counter
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, counter + 1, integrity, stamina, dir) );
     }
 
     //
