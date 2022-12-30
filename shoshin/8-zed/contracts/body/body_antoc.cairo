@@ -63,7 +63,7 @@ func _body_antoc {range_check_ptr}(
         }
 
         // otherwise stay in IDLE but increment counter modulo duration
-        if (counter == ns_antoc_body_state_duration.IDLE) {
+        if (counter == ns_antoc_body_state_duration.IDLE - 1) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
         } else {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, counter + 1, integrity, stamina, dir) );
@@ -89,7 +89,7 @@ func _body_antoc {range_check_ptr}(
 
         // body responds to intent
         if (intent == ns_antoc_action.HORI) {
-            if (counter == ns_antoc_body_state_duration.HORI) {
+            if (counter == ns_antoc_body_state_duration.HORI - 1) {
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir) );
             } else {
@@ -128,7 +128,7 @@ func _body_antoc {range_check_ptr}(
         }
         // if intent remains VERT
         if (intent == ns_antoc_action.VERT) {
-            if (counter == ns_antoc_body_state_duration.VERT) {
+            if (counter == ns_antoc_body_state_duration.VERT - 1) {
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir) );
             } else {
@@ -159,7 +159,7 @@ func _body_antoc {range_check_ptr}(
 
         // if intent remains BLOCK
         if (intent == ns_antoc_action.BLOCK) {
-            if (counter == ns_antoc_body_state_duration.BLOCK) {
+            if (counter == ns_antoc_body_state_duration.BLOCK - 1) {
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, stamina, dir) );
             } else {
@@ -188,7 +188,7 @@ func _body_antoc {range_check_ptr}(
         }
 
         // if counter is full => return to IDLE
-        if (counter == ns_antoc_body_state_duration.HURT) {
+        if (counter == ns_antoc_body_state_duration.HURT - 1) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
         }
 
@@ -212,7 +212,7 @@ func _body_antoc {range_check_ptr}(
         }
 
         // if counter is full => return to Idle
-        if (counter == ns_antoc_body_state_duration.KNOCKED) {
+        if (counter == ns_antoc_body_state_duration.KNOCKED - 1) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
         }
 
@@ -252,7 +252,7 @@ func _body_antoc {range_check_ptr}(
 
         // continue moving forward
         if (intent == ns_antoc_action.MOVE_FORWARD) {
-            if (counter == ns_antoc_body_state_duration.MOVE_FORWARD) {
+            if (counter == ns_antoc_body_state_duration.MOVE_FORWARD - 1) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, stamina, dir) );
             } else {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, counter + 1, integrity, stamina, dir) );
@@ -300,7 +300,7 @@ func _body_antoc {range_check_ptr}(
 
         // continue moving forward
         if (intent == ns_antoc_action.MOVE_BACKWARD) {
-            if (counter == ns_antoc_body_state_duration.MOVE_BACKWARD) {
+            if (counter == ns_antoc_body_state_duration.MOVE_BACKWARD - 1) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, stamina, dir) );
             } else {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, counter + 1, integrity, stamina, dir) );
@@ -328,7 +328,7 @@ func _body_antoc {range_check_ptr}(
 
         // if intent remains DASH_FORWARD
         if (intent == ns_antoc_action.DASH_FORWARD) {
-            if (counter == ns_antoc_body_state_duration.DASH_FORWARD) {
+            if (counter == ns_antoc_body_state_duration.DASH_FORWARD - 1) {
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, stamina, dir) );
             } else {
@@ -351,7 +351,7 @@ func _body_antoc {range_check_ptr}(
 
         // if intent remains DASH_BACKWARD
         if (intent == ns_antoc_action.DASH_BACKWARD) {
-            if (counter == ns_antoc_body_state_duration.DASH_BACKWARD) {
+            if (counter == ns_antoc_body_state_duration.DASH_BACKWARD - 1) {
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, stamina, dir) );
             } else {
