@@ -249,12 +249,12 @@ func _body_jessica {range_check_ptr}(
 
         // check for interruption
         if (stimulus == ns_stimulus.HURT) {
-            // hurt while in knocked => stay in knocked and reset counter
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
+            // hurt while in knocked => stay in knocked and reset counter to a small number
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 1, integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
-            // hurt while in knocked => stay in knocked and reset counter
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, integrity, stamina, dir) );
+            // hurt while in knocked => stay in knocked and reset counter to a small number
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 1, integrity, stamina, dir) );
         }
 
         // if counter is full => return to Idle
