@@ -149,7 +149,7 @@ func _physicality{range_check_ptr}(
     local body_dim_1: Vec2;
 
     if (bool_body_in_knocked_early_0 == 1) {
-        assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);  
+        assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
     } else {
         if (bool_body_in_knocked_late_0 == 1) {
             assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
@@ -275,7 +275,7 @@ func produce_stimulus_given_conditions {range_check_ptr} (
 
     // when blocked, antoc-blocking-jessica knocks jessica away; otherwise HURT
     if (bool_self_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
-       if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
+        if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             return ns_stimulus.KNOCKED;
         }
         return ns_stimulus.HURT;

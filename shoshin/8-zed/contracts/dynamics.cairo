@@ -5,27 +5,18 @@ from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import abs_value, unsigned_div_rem, signed_div_rem, sign
 from starkware.cairo.common.math_cmp import is_le, is_not_zero
 from contracts.constants.constants import (
-    ns_dynamics,
-    ns_character_type,
-    Vec2,
-    PhysicsState,
-    BodyState,
+    ns_dynamics, ns_character_type,
+    Vec2, PhysicsState, BodyState,
 )
 from contracts.constants.constants_jessica import (
-    ns_jessica_dynamics,
-    ns_jessica_character_dimension,
-    ns_jessica_action,
-    ns_jessica_body_state,
+    ns_jessica_dynamics, ns_jessica_character_dimension, ns_jessica_action, ns_jessica_body_state
 )
 from contracts.constants.constants_antoc import (
-    ns_antoc_dynamics,
-    ns_antoc_character_dimension,
-    ns_antoc_action,
-    ns_antoc_body_state,
+    ns_antoc_dynamics, ns_antoc_character_dimension, ns_antoc_action, ns_antoc_body_state
 )
 from contracts.numerics import mul_fp, div_fp_ul
 
-func _character_specific_constants{range_check_ptr}(character_type: felt) -> (
+func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
     MOVE_FORWARD: felt,
     MOVE_BACKWARD: felt,
     DASH_FORWARD: felt,
@@ -75,17 +66,21 @@ func _character_specific_constants{range_check_ptr}(character_type: felt) -> (
     }
 }
 
-func _euler_forward_no_hitbox{range_check_ptr}(
-    character_type: felt, physics_state: PhysicsState, body_state: BodyState
-) -> (physics_state_fwd: PhysicsState) {
+func _euler_forward_no_hitbox {range_check_ptr}(
+    character_type: felt,
+    physics_state: PhysicsState,
+    body_state: BodyState,
+) -> (
+    physics_state_fwd: PhysicsState
+) {
     alloc_locals;
 
     local vel_fp_nxt: Vec2;
 
     // unpack
-    let state = body_state.state;
+    let state   = body_state.state;
     let counter = body_state.counter;
-    let dir = body_state.dir;
+    let dir     = body_state.dir;
 
     // get character-specific constants for dynamics
     let (
@@ -102,7 +97,7 @@ func _euler_forward_no_hitbox{range_check_ptr}(
         DASH_ACC_FP: felt,
         DEACC_FP: felt,
         BODY_KNOCKED_ADJUST_W: felt,
-    ) = _character_specific_constants(character_type);
+    ) = _character_specific_constants (character_type);
 
     //
     // Set acceleration (fp) according to body state
