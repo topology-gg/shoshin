@@ -58,7 +58,7 @@ namespace ns_jessica_body_state_duration {
     const SIDECUT = 5;
     const BLOCK = 3;
     const CLASH = 4;
-    const HURT = 4;
+    const HURT = 3;
     const KNOCKED = 11;
     const MOVE_FORWARD = 8;
     const MOVE_BACKWARD = 6;
@@ -73,7 +73,7 @@ namespace ns_jessica_body_state {
     const SIDECUT = 30;  // 5 frames
     const BLOCK = 40; // 3 frames
     const CLASH = 50; // 4 frames;
-    const HURT = 60; // 4 frames
+    const HURT = 60; // 3 frames
     const KNOCKED = 70; // 11 frames
     const MOVE_FORWARD = 90;  // 8 frames
     const MOVE_BACKWARD = 100;  // 6 frames
