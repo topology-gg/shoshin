@@ -3,16 +3,22 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math_cmp import is_le, is_not_zero
-from contracts.constants import (
+from contracts.constants.constants import (
+    ns_character_type,
     ns_scene,
-    ns_character_dimension,
     ns_stimulus,
-    ns_object_qualifiers,
-    ns_env,
+    ns_integrity,
     Vec2,
     Rectangle,
     PhysicsState,
+    BodyState,
     Hitboxes,
+)
+from contracts.constants.constants_jessica import (
+    ns_jessica_character_dimension, ns_jessica_body_state_qualifiers
+)
+from contracts.constants.constants_antoc import (
+    ns_antoc_character_dimension, ns_antoc_body_state_qualifiers
 )
 from contracts.dynamics import _euler_forward_no_hitbox, _euler_forward_consider_hitbox
 
@@ -21,6 +27,23 @@ func _bool_or{range_check_ptr}(bool_0: felt, bool_1: felt) -> (bool: felt) {
         return (0,);
     } else {
         return (1,);
+    }
+}
+
+func is_in_various_states_given_character_type {range_check_ptr}(
+    character_type: felt,
+    state: felt,
+    counter: felt,
+) -> (
+    bool_body_in_atk_active: felt,
+    bool_body_in_knocked_early: felt,
+    bool_body_in_knocked_late: felt,
+    bool_body_in_block: felt,
+) {
+    if (character_type == ns_character_type.JESSICA) {
+        return ns_jessica_body_state_qualifiers.is_in_various_states (state, counter);
+    } else {
+        return ns_antoc_body_state_qualifiers.is_in_various_states (state, counter);
     }
 }
 
@@ -41,16 +64,12 @@ func _physicality{range_check_ptr}(
 ) {
     alloc_locals;
 
-    //
     // Algorithm:
     // 1. Movement first pass (candidate positions)
     // 2. Create hitboxes (body, action, environment)
     // 3. Test hitbox overlaps
-    // 4. Movement second pass, incorporating hitbox overlap (final positions)
-    // 5. Compute character integrity
-    // 6. Produce charcater state
-    // 7. Produce stimuli
-    //
+    // 4. Movement second pass, incorporating hitbox overlap (final positions) to produce charcater state
+    // 5. Produce stimuli
 
     //
     // 1. Movement first pass (candidate positions)
@@ -65,118 +84,97 @@ func _physicality{range_check_ptr}(
     //
     // 2. Create hitboxes
     //
-
-    // # TODO: aggregate these bools into one single function, perhaps specified in `constants.cairo`
-    let (bool_object_in_slash_atk_0) = ns_object_qualifiers.is_object_in_slash_atk(
-        curr_object_state_0
-    );
-    let (bool_object_in_slash_atk_1) = ns_object_qualifiers.is_object_in_slash_atk(
-        curr_object_state_1
-    );
-
-    let (bool_object_in_knocked_early_0) = ns_object_qualifiers.is_object_in_knocked_early(
-        curr_object_state_0, curr_object_counter_0
-    );
-    let (bool_object_in_knocked_early_1) = ns_object_qualifiers.is_object_in_knocked_early(
-        curr_object_state_1, curr_object_counter_1
-    );
-    let (bool_object_in_knocked_late_0) = ns_object_qualifiers.is_object_in_knocked_late(
-        curr_object_state_0, curr_object_counter_0
-    );
-    let (bool_object_in_knocked_late_1) = ns_object_qualifiers.is_object_in_knocked_late(
-        curr_object_state_1, curr_object_counter_1
-    );
-
-    let (bool_object_in_block_0) = ns_object_qualifiers.is_object_in_block(curr_object_state_0);
-    let (bool_object_in_block_1) = ns_object_qualifiers.is_object_in_block(curr_object_state_1);
-
-    let (bool_object_in_active_0_) = _bool_or(
-        bool_object_in_slash_atk_0, bool_object_in_power_atk_0
-    );
-    let (bool_object_in_active_0) = _bool_or(bool_object_in_active_0_, bool_object_in_block_0);
-    let (bool_object_in_active_1_) = _bool_or(
-        bool_object_in_slash_atk_1, bool_object_in_power_atk_1
-    );
-    let (bool_object_in_active_1) = _bool_or(bool_object_in_active_1_, bool_object_in_block_1);
+    let (
+        bool_body_in_atk_active_0: felt,
+        bool_body_in_knocked_early_0: felt,
+        bool_body_in_knocked_late_0: felt,
+        bool_body_in_block_0: felt,
+    ) = is_in_various_states_given_character_type (character_type_0, curr_body_state_0.state, curr_body_state_0.counter);
+    let (
+        bool_body_in_atk_active_1: felt,
+        bool_body_in_knocked_early_1: felt,
+        bool_body_in_knocked_late_1: felt,
+        bool_body_in_block_1: felt,
+    ) = is_in_various_states_given_character_type (character_type_1, curr_body_state_1.state, curr_body_state_1.counter);
 
     local action_origin_0: Vec2;
     local action_dimension_0: Vec2;
     local action_origin_1: Vec2;
     local action_dimension_1: Vec2;
 
-    if (bool_object_in_active_0 == 1) {
-        if (candidate_character_state_0.dir == 1) {
+    if (bool_body_in_atk_active_0 == 1) {
+        if (curr_body_state_0.dir == 1) {
             // # facing right
             assert action_origin_0 = Vec2(
-                candidate_character_state_0.pos.x + ns_character_dimension.BODY_HITBOX_W,
-                candidate_character_state_0.pos.y + ns_character_dimension.SLASH_HITBOX_Y
-                );
+                candidate_physics_state_0.pos.x + ns_character_dimension.BODY_HITBOX_W,
+                candidate_physics_state_0.pos.y + ns_character_dimension.SLASH_HITBOX_Y
+            );
         } else {
             // # facing left
             assert action_origin_0 = Vec2(
-                candidate_character_state_0.pos.x - ns_character_dimension.SLASH_HITBOX_W,
-                candidate_character_state_0.pos.y + ns_character_dimension.SLASH_HITBOX_Y
-                );
+                candidate_physics_state_0.pos.x - ns_character_dimension.SLASH_HITBOX_W,
+                candidate_physics_state_0.pos.y + ns_character_dimension.SLASH_HITBOX_Y
+            );
         }
-        assert action_dimension_0 = Vec2(ns_character_dimension.SLASH_HITBOX_W, ns_character_dimension.SLASH_HITBOX_H);
+        assert action_dimension_0 = Vec2 (ns_character_dimension.SLASH_HITBOX_W, ns_character_dimension.SLASH_HITBOX_H);
     } else {
-        assert action_origin_0 = Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM);
-        assert action_dimension_0 = Vec2(0, 0);
+        assert action_origin_0 = Vec2 (ns_scene.BIGNUM, ns_scene.BIGNUM);
+        assert action_dimension_0 = Vec2 (0, 0);
     }
 
-    if (bool_object_in_active_1 == 1) {
-        if (candidate_character_state_1.dir == 1) {
+    if (bool_body_in_atk_active_1 == 1) {
+        if (curr_body_state_1.dir == 1) {
             // # facing right
             assert action_origin_1 = Vec2(
-                candidate_character_state_1.pos.x + ns_character_dimension.BODY_HITBOX_W,
-                candidate_character_state_1.pos.y + ns_character_dimension.SLASH_HITBOX_Y
-                );
+                candidate_physics_state_1.pos.x + ns_character_dimension.BODY_HITBOX_W,
+                candidate_physics_state_1.pos.y + ns_character_dimension.SLASH_HITBOX_Y
+            );
         } else {
             // # facing left
             assert action_origin_1 = Vec2(
-                candidate_character_state_1.pos.x - ns_character_dimension.SLASH_HITBOX_W,
-                candidate_character_state_1.pos.y + ns_character_dimension.SLASH_HITBOX_Y
-                );
+                candidate_physics_state_1.pos.x - ns_character_dimension.SLASH_HITBOX_W,
+                candidate_physics_state_1.pos.y + ns_character_dimension.SLASH_HITBOX_Y
+            );
         }
-        assert action_dimension_1 = Vec2(ns_character_dimension.SLASH_HITBOX_W, ns_character_dimension.SLASH_HITBOX_H);
+        assert action_dimension_1 = Vec2 (ns_character_dimension.SLASH_HITBOX_W, ns_character_dimension.SLASH_HITBOX_H);
     } else {
-        assert action_origin_1 = Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM);
-        assert action_dimension_1 = Vec2(0, 0);
+        assert action_origin_1 = Vec2 (ns_scene.BIGNUM, ns_scene.BIGNUM);
+        assert action_dimension_1 = Vec2 (0, 0);
     }
 
     // # determine body dimension (knocked state has a wider hitbox)
     local body_dim_0: Vec2;
     local body_dim_1: Vec2;
 
-    if (bool_object_in_knocked_early_0 == 1) {
-        assert body_dim_0 = Vec2(ns_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
+    if (bool_body_in_knocked_early_0 == 1) {
+        assert body_dim_0 = Vec2 (ns_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
     } else {
-        if (bool_object_in_knocked_late_0 == 1) {
-            assert body_dim_0 = Vec2(ns_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
+        if (bool_body_in_knocked_late_0 == 1) {
+            assert body_dim_0 = Vec2 (ns_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
         } else {
-            assert body_dim_0 = Vec2(ns_character_dimension.BODY_HITBOX_W, ns_character_dimension.BODY_HITBOX_H);
+            assert body_dim_0 = Vec2 (ns_character_dimension.BODY_HITBOX_W, ns_character_dimension.BODY_HITBOX_H);
         }
     }
 
-    if (bool_object_in_knocked_early_1 == 1) {
-        assert body_dim_1 = Vec2(ns_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
+    if (bool_body_in_knocked_early_1 == 1) {
+        assert body_dim_1 = Vec2 (ns_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
     } else {
-        if (bool_object_in_knocked_late_1 == 1) {
-            assert body_dim_1 = Vec2(ns_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
+        if (bool_body_in_knocked_late_1 == 1) {
+            assert body_dim_1 = Vec2 (ns_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
         } else {
-            assert body_dim_1 = Vec2(ns_character_dimension.BODY_HITBOX_W, ns_character_dimension.BODY_HITBOX_H);
+            assert body_dim_1 = Vec2 (ns_character_dimension.BODY_HITBOX_W, ns_character_dimension.BODY_HITBOX_H);
         }
     }
 
     local hitboxes_0: Hitboxes = Hitboxes(
-        action=Rectangle(action_origin_0, action_dimension_0),
-        body=Rectangle(candidate_character_state_0.pos, body_dim_0)
-        );
+        action = Rectangle (action_origin_0, action_dimension_0),
+        body = Rectangle (candidate_physics_state_0.pos, body_dim_0)
+    );
 
     local hitboxes_1: Hitboxes = Hitboxes(
-        action=Rectangle(action_origin_1, action_dimension_1),
-        body=Rectangle(candidate_character_state_1.pos, body_dim_1)
-        );
+        action = Rectangle (action_origin_1, action_dimension_1),
+        body = Rectangle (candidate_physics_state_1.pos, body_dim_1)
+    );
 
     //
     // 3. Test hitbox overlaps
@@ -188,89 +186,58 @@ func _physicality{range_check_ptr}(
     // # Agent 0 hit:  action 1 against body 0
     let (bool_agent_0_hit) = _test_rectangle_overlap(hitboxes_1.action, hitboxes_0.body);
 
-    // # Action clash / block: action 0 against action 1 (not implemented in this milestone)
+    // # Action clash / block: action 0 against action 1
     let (bool_action_overlap) = _test_rectangle_overlap(hitboxes_0.action, hitboxes_1.action);
 
-    // # Body clash:   body 0 against body 1 (should stop movement; not implemented in this milestone)
+    // # Body clash:   body 0 against body 1
     let (bool_body_overlap) = _test_rectangle_overlap(hitboxes_0.body, hitboxes_1.body);
 
     //
-    // 4. Movement second pass, incorporating hitbox overlap (final positions)
+    // 4. Movement second pass, incorporating hitbox overlap (final positions) to produce final physics states
     //
-    let (curr_character_state_0_, curr_character_state_1_) = _euler_forward_consider_hitbox(
+    let (curr_physics_state_0, curr_physics_state_1) = _euler_forward_consider_hitbox (
         last_physics_state_0,
-        candidate_character_state_0,
+        candidate_physics_state_0,
         last_physics_state_1,
-        candidate_character_state_1,
+        candidate_physics_state_1,
         bool_body_overlap,
     );
-    // let pos_0 = candidate_character_state_0.pos
-    // let pos_1 = candidate_character_state_1.pos
-
-    // let vel_fp_0 = candidate_character_state_0.vel_fp
-    // let vel_fp_1 = candidate_character_state_1.vel_fp
-
-    // let acc_fp_0 = candidate_character_state_0.acc_fp
-    // let acc_fp_1 = candidate_character_state_1.acc_fp
 
     //
-    // 5. Compute character integrity, considering getting hit + storm circle
+    // 5. Produce stimuli
+    // (NULL / HURT / KNOCKED / CLASH)
     //
-    let bool_oob_left_0 = is_le(curr_character_state_0_.pos.x, ns_scene.X_MIN);
-    let bool_oob_left_1 = is_le(curr_character_state_1_.pos.x, ns_scene.X_MIN);
-    let bool_oob_right_0 = is_le(ns_scene.X_MAX, curr_character_state_0_.pos.x);
-    let bool_oob_right_1 = is_le(ns_scene.X_MAX, curr_character_state_1_.pos.x);
-
-    local int_0;
-    local int_1;
-    if (bool_oob_left_0 + bool_oob_right_0 != 0) {
-        assert int_0 = curr_character_state_0_.int - ns_env.STORM_PENALTY;
-    } else {
-        assert int_0 = curr_character_state_0_.int;
-    }
-    if (bool_oob_left_1 + bool_oob_right_1 != 0) {
-        assert int_1 = curr_character_state_1_.int - ns_env.STORM_PENALTY;
-    } else {
-        assert int_1 = curr_character_state_1_.int;
-    }
-
-    // let int_0 = candidate_character_state_0.int - bool_agent_0_hit
-    // let int_1 = candidate_character_state_1.int - bool_agent_1_hit
-
-    //
-    // 6. Produce charcater state
-    //
-    let curr_character_state_0 = PhysicsState(
-        pos=curr_character_state_0_.pos,
-        vel_fp=curr_character_state_0_.vel_fp,
-        acc_fp=curr_character_state_0_.acc_fp,
-        dir=curr_character_state_0_.dir,
-        int=int_0,
+    let curr_stimulus_0 = produce_stimulus_given_conditions (
+        bool_self_hit = bool_agent_0_hit,
+        bool_opp_hit = bool_agent_1_hit,
+        bool_body_overlap = bool_body_overlap,
+        bool_action_overlap = bool_action_overlap,
+        bool_self_atk_active = bool_body_in_atk_active_0,
+        bool_self_block_active = bool_body_in_block_0,
+        bool_opp_atk_active = bool_body_in_atk_active_1,
+        bool_opp_block_active = bool_body_in_block_1,
+        self_integrity = curr_body_state_0.integrity,
+        self_character_type = character_type_0,
+        opp_character_type = character_type_1,
     );
-    let curr_character_state_1 = PhysicsState(
-        pos=curr_character_state_1_.pos,
-        vel_fp=curr_character_state_1_.vel_fp,
-        acc_fp=curr_character_state_1_.acc_fp,
-        dir=curr_character_state_1_.dir,
-        int=int_1,
+
+    let curr_stimulus_1 = produce_stimulus_given_conditions (
+        bool_self_hit = bool_agent_1_hit,
+        bool_opp_hit = bool_agent_0_hit,
+        bool_body_overlap = bool_body_overlap,
+        bool_action_overlap = bool_action_overlap,
+        bool_self_atk_active = bool_body_in_atk_active_1,
+        bool_self_block_active = bool_body_in_block_1,
+        bool_opp_atk_active = bool_body_in_atk_active_0,
+        bool_opp_block_active = bool_body_in_block_0,
+        self_integrity = curr_body_state_1.integrity,
+        self_character_type = character_type_1,
+        opp_character_type = character_type_0,
     );
 
     //
-    // 7. Produce stimuli
-    //
-    let curr_stimulus_0_ = bool_agent_0_hit * (bool_object_in_slash_atk_1 * ns_stimulus.HIT_BY_SLASH + bool_object_in_power_atk_1 * ns_stimulus.HIT_BY_POWER);
-    let curr_stimulus_0 = curr_stimulus_0_ + bool_action_overlap * (
-        bool_object_in_slash_atk_0 * bool_object_in_slash_atk_1 * ns_stimulus.CLASH_BY_SLASH +
-        bool_object_in_power_atk_0 * bool_object_in_power_atk_1 * ns_stimulus.CLASH_BY_POWER +
-        bool_object_in_block_1 * bool_object_in_power_atk_0 * ns_stimulus.BLOCKED);
-
-    let curr_stimulus_1_ = bool_agent_1_hit * (bool_object_in_slash_atk_0 * ns_stimulus.HIT_BY_SLASH + bool_object_in_power_atk_0 * ns_stimulus.HIT_BY_POWER);
-    let curr_stimulus_1 = curr_stimulus_1_ + bool_action_overlap * (
-        bool_object_in_slash_atk_0 * bool_object_in_slash_atk_1 * ns_stimulus.CLASH_BY_SLASH +
-        bool_object_in_power_atk_0 * bool_object_in_power_atk_1 * ns_stimulus.CLASH_BY_POWER +
-        bool_object_in_block_0 * bool_object_in_power_atk_1 * ns_stimulus.BLOCKED);
-
     // return (candidate_character_state_0, candidate_character_state_1, curr_stimulus_0, curr_stimulus_1, hitboxes_0, hitboxes_1)
+    //
     return (
         curr_character_state_0,
         curr_character_state_1,
@@ -281,7 +248,67 @@ func _physicality{range_check_ptr}(
     );
 }
 
-func _test_rectangle_overlap{range_check_ptr}(rect_0: Rectangle, rect_1: Rectangle) -> (
+func produce_stimulus_given_conditions {range_check_ptr} (
+    bool_self_hit: felt,
+    bool_opp_hit: felt,
+    bool_body_overlap: felt,
+    bool_action_overlap: felt,
+    bool_self_atk_active: felt,
+    bool_self_block_active: felt,
+    bool_opp_atk_active: felt,
+    bool_opp_block_active: felt,
+    self_integrity: felt,
+    self_character_type: felt,
+    opp_character_type: felt,
+) -> felt {
+
+    let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
+
+    // when hit, HURT if not in critical integrity, KNOCKED otherwise
+    if (bool_me_hit == 1) {
+        if (is_integrity_critical == 1) {
+            return ns_stimulus.KNOCKED;
+        } else {
+            return ns_stimulus.HURT;
+        }
+    }
+
+    // when blocked, antoc-blocking-jessica knocks jessica away; otherwise HURT
+    if (bool_me_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
+        if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
+            return ns_stimulus.KNOCKED;
+        }
+        return ns_stimulus.HURT;
+    }
+
+    // when clashing:
+    // - antoc is hurt if clashing with antoc
+    // - antoc is clashed if clashing with jessica
+    // - jessica is knocked if clashing with antoc
+    // - jessica is clashed if clashing with jessica
+    if (bool_me_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
+        if (self_character_type == ns_character_type.ANTOC) {
+            // I am Antoc
+            if (opp_character_type == ns_character_type.ANTOC) {
+                return ns_stimulus.HURT;
+            } else {
+                return ns_stimulus.CLASH;
+            }
+        } else {
+            // I am Jessica
+            if (opp_character_type == ns_character_type.ANTOC) {
+                return ns_stimulus.KNOCKED;
+            } else {
+                return ns_stimulus.CLASH;
+            }
+        }
+    }
+
+    // null stimulus otherwise
+    return ns_stimulus.NULL;
+}
+
+func _test_rectangle_overlap {range_check_ptr}(rect_0: Rectangle, rect_1: Rectangle) -> (
     bool: felt
 ) {
     alloc_locals;

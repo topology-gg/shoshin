@@ -3,7 +3,7 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.dict import dict_write
 from starkware.cairo.common.dict_access import DictAccess
-from contracts.constants import Perceptibles, ns_perceptibles
+from contracts.constants.constants import Perceptibles, ns_perceptibles
 
 func update_perceptibles{range_check_ptr}(perceptibles: DictAccess*, p: Perceptibles) -> (
     perceptibles_new: DictAccess*

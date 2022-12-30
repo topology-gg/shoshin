@@ -6,7 +6,7 @@ from starkware.cairo.common.math import abs_value, unsigned_div_rem, signed_div_
 from starkware.cairo.common.math_cmp import is_le, is_not_zero
 from contracts.constants.constants import (
     ns_dynamics, ns_character_type,
-    Vec2, CharacterState,
+    Vec2, PhysicsState, BodyState,
 )
 from contracts.constants.constants_jessica import (
     ns_jessica_dynamics, ns_jessica_character_dimension, ns_jessica_action, ns_jessica_body_state
@@ -16,7 +16,57 @@ from contracts.constants.constants_antoc import (
 )
 from contracts.numerics import mul_fp, div_fp_ul
 
-func _euler_forward_no_hitbox{range_check_ptr}(
+func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
+    MOVE_FOWARD: felt,
+    MOVE_BACKWARD: felt,
+    DASH_FORWARD: felt,
+    DASH_BACKWARD: felt,
+    KNOCKED: felt,
+    MAX_VEL_MOVE_FP: felt,
+    MIN_VEL_MOVE_FP: felt,
+    MAX_VEL_DASH_FP: felt,
+    MIN_VEL_DASH_FP: felt,
+    MOVE_ACC_FP: felt,
+    DASH_ACC_FP: felt,
+    DEACC_FP: felt,
+    BODY_KNOCKED_ADJUST_W: felt,
+) {
+    if (character_type == ns_character_type.JESSICA) {
+        return (
+            ns_jessica_body_state.MOVE_FORWARD,
+            ns_jessica_body_state.MOVE_BACKWARD,
+            ns_jessica_body_state.DASH_FORWARD,
+            ns_jessica_body_state.DASH_BACKWARD,
+            ns_jessica_body_state.KNOCKED,
+            ns_jessica_dynamics.MAX_VEL_MOVE_FP,
+            ns_jessica_dynamics.MIN_VEL_MOVE_FP,
+            ns_jessica_dynamics.MAX_VEL_DASH_FP,
+            ns_jessica_dynamics.MIN_VEL_DASH_FP,
+            ns_jessica_dynamics.MOVE_ACC_FP,
+            ns_jessica_dynamics.DASH_ACC_FP,
+            ns_jessica_dynamics.DEACC_FP,
+            ns_jessica_character_dimension.BODY_KNOCKED_ADJUST_W,
+        );
+    } else {
+        return (
+            ns_antoc_body_state.MOVE_FORWARD,
+            ns_antoc_body_state.MOVE_BACKWARD,
+            ns_antoc_body_state.DASH_FORWARD,
+            ns_antoc_body_state.DASH_BACKWARD,
+            ns_antoc_body_state.KNOCKED,
+            ns_antoc_dynamics.MAX_VEL_MOVE_FP,
+            ns_antoc_dynamics.MIN_VEL_MOVE_FP,
+            ns_antoc_dynamics.MAX_VEL_DASH_FP,
+            ns_antoc_dynamics.MIN_VEL_DASH_FP,
+            ns_antoc_dynamics.MOVE_ACC_FP,
+            ns_antoc_dynamics.DASH_ACC_FP,
+            ns_antoc_dynamics.DEACC_FP,
+            ns_antoc_character_dimension.BODY_KNOCKED_ADJUST_W,
+        );
+    }
+}
+
+func _euler_forward_no_hitbox {range_check_ptr}(
     character_type: felt,
     physics_state: PhysicsState,
     body_state: BodyState,
@@ -33,19 +83,21 @@ func _euler_forward_no_hitbox{range_check_ptr}(
     let dir     = body_state.dir;
 
     // get character-specific constants for dynamics
-    let MOVE_FORWARD  = (character_type == ns_character_type.JESSICA) ? ns_jessica_body_state.MOVE_FORWARD  : ns_antoc_body_state.MOVE_FORWARD;
-    let MOVE_BACKWARD = (character_type == ns_character_type.JESSICA) ? ns_jessica_body_state.MOVE_BACKWARD : ns_antoc_body_state.MOVE_BACKWARD;
-    let DASH_FORWARD  = (character_type == ns_character_type.JESSICA) ? ns_jessica_body_state.DASH_FORWARD  : ns_antoc_body_state.DASH_FORWARD;
-    let DASH_BACKWARD = (character_type == ns_character_type.JESSICA) ? ns_jessica_body_state.DASH_BACKWARD : ns_antoc_body_state.DASH_BACKWARD;
-    let KNOCKED       = (character_type == ns_character_type.JESSICA) ? ns_jessica_body_state.KNOCKED : ns_antoc_body_state.KNOCKED;
-    let MAX_VEL_MOVE_FP  = (character_type == ns_character_type.JESSICA) ? ns_jessica_dynamics.MAX_VEL_MOVE_FP : ns_antoc_dynamics.MAX_VEL_MOVE_FP;
-    let MIN_VEL_MOVE_FP  = (character_type == ns_character_type.JESSICA) ? ns_jessica_dynamics.MIN_VEL_MOVE_FP : ns_antoc_dynamics.MIN_VEL_MOVE_FP;
-    let MAX_VEL_DASH_FP  = (character_type == ns_character_type.JESSICA) ? ns_jessica_dynamics.MAX_VEL_DASH_FP : ns_antoc_dynamics.MAX_VEL_DASH_FP;
-    let MIN_VEL_DASH_FP  = (character_type == ns_character_type.JESSICA) ? ns_jessica_dynamics.MIN_VEL_DASH_FP : ns_antoc_dynamics.MIN_VEL_DASH_FP;
-    let MOVE_ACC_FP      = (character_type == ns_character_type.JESSICA) ? ns_jessica_dynamics.MOVE_ACC_FP : ns_antoc_dynamics.MOVE_ACC_FP;
-    let DASH_ACC_FP      = (character_type == ns_character_type.JESSICA) ? ns_jessica_dynamics.DASH_ACC_FP : ns_antoc_dynamics.DASH_ACC_FP;
-    let DEACC_FP         = (character_type == ns_character_type.JESSICA) ? ns_jessica_dynamics.DEACC_FP : ns_antoc_dynamics.DEACC_FP;
-    let BODY_KNOCKED_ADJUST_W = (character_type == ns_character_type.JESSICA) ? ns_jessica_character_dimension.BODY_KNOCKED_ADJUST_W : ns_antoc_character_dimension.BODY_KNOCKED_ADJUST_W;
+    let (
+        MOVE_FOWARD: felt,
+        MOVE_BACKWARD: felt,
+        DASH_FORWARD: felt,
+        DASH_BACKWARD: felt,
+        KNOCKED: felt,
+        MAX_VEL_MOVE_FP: felt,
+        MIN_VEL_MOVE_FP: felt,
+        MAX_VEL_DASH_FP: felt,
+        MIN_VEL_DASH_FP: felt,
+        MOVE_ACC_FP: felt,
+        DASH_ACC_FP: felt,
+        DEACC_FP: felt,
+        BODY_KNOCKED_ADJUST_W: felt,
+    ) = _character_specific_constants (character_type);
 
     //
     // Set acceleration (fp) according to body state

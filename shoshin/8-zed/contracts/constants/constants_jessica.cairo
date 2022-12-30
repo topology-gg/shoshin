@@ -3,19 +3,22 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math_cmp import is_le
+from contracts.constants.constants import (
+    ns_dynamics
+)
 
 namespace ns_jessica_dynamics {
 
-    const MAX_VEL_MOVE_FP = 120 * SCALE_FP;
-    const MIN_VEL_MOVE_FP = (-120) * SCALE_FP;
+    const MAX_VEL_MOVE_FP = 120 * ns_dynamics.SCALE_FP;
+    const MIN_VEL_MOVE_FP = (-120) * ns_dynamics.SCALE_FP;
 
-    const MAX_VEL_DASH_FP = 600 * SCALE_FP;
-    const MIN_VEL_DASH_FP = (-600) * SCALE_FP;
+    const MAX_VEL_DASH_FP = 600 * ns_dynamics.SCALE_FP;
+    const MIN_VEL_DASH_FP = (-600) * ns_dynamics.SCALE_FP;
 
-    const MOVE_ACC_FP = 300 * SCALE_FP;
-    const DASH_ACC_FP = 3000 * SCALE_FP;
+    const MOVE_ACC_FP = 300 * ns_dynamics.SCALE_FP;
+    const DASH_ACC_FP = 3000 * ns_dynamics.SCALE_FP;
 
-    const DEACC_FP = 10000 * SCALE_FP;
+    const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_jessica_character_dimension {
@@ -78,7 +81,7 @@ namespace ns_jessica_body_state {
 
 namespace ns_jessica_body_state_qualifiers {
 
-    func is_in_slash_active {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
+    func is_in_slash_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state != ns_jessica_body_state.SLASH) {
             return (0,);
         }
@@ -88,7 +91,7 @@ namespace ns_jessica_body_state_qualifiers {
         return (0,);
     }
 
-    func is_in_upswing_active {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
+    func is_in_upswing_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state != ns_jessica_body_state.UPSWING) {
             return (0,);
         }
@@ -98,7 +101,7 @@ namespace ns_jessica_body_state_qualifiers {
         return (0,);
     }
 
-    func is_in_sidecut_active {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
+    func is_in_sidecut_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state != ns_jessica_body_state.SIDECUT) {
             return (0,);
         }
@@ -108,7 +111,7 @@ namespace ns_jessica_body_state_qualifiers {
         return (0,);
     }
 
-    func is_in_block_active {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
+    func is_in_block_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state != ns_jessica_body_state.BLOCK) {
             return (0,);
         }
@@ -118,7 +121,7 @@ namespace ns_jessica_body_state_qualifiers {
         return (0,);
     }
 
-    func is_in_knocked_early {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
+    func is_in_knocked_early {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state != ns_jessica_body_state.KNOCKED) {
             return (0,);
         }
@@ -131,7 +134,7 @@ namespace ns_jessica_body_state_qualifiers {
         return (0,);
     }
 
-    func is_in_knocked_late {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
+    func is_in_knocked_late {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state != ns_jessica_body_state.KNOCKED) {
             return (0,);
         }
@@ -142,6 +145,25 @@ namespace ns_jessica_body_state_qualifiers {
             return (1,);
         }
         return (0,);
+    }
+
+    func is_in_various_states {range_check_ptr}(state: felt, counter: felt) -> (
+        bool_body_in_atk_active: felt,
+        bool_body_in_knocked_early: felt,
+        bool_body_in_knocked_late: felt,
+        bool_body_in_block: felt,
+    ) {
+        let bool_body_in_atk_active    = is_in_slash_active (state, counter) + is_in_upswing_active (state, counter) + is_in_sidecut_active (state, counter);
+        let bool_body_in_knocked_early = is_in_knocked_early (state, counter);
+        let bool_body_in_knocked_late  = is_in_knocked_late (state, counter);
+        let bool_body_in_block         = is_in_block_active (state, counter);
+
+        return (
+            bool_body_in_atk_active,
+            bool_body_in_knocked_early,
+            bool_body_in_knocked_late,
+            bool_body_in_block,
+        );
     }
 }
 

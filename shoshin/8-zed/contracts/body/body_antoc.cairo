@@ -87,7 +87,7 @@ func _body_antoc {range_check_ptr}(
         //       need to balance this carefully
         // if (stimulus == ns_stimulus.CLASH) {
 
-        // if intent remains SLASH
+        // if intent remains HORI
         if (intent == ns_antoc_action.HORI) {
             if (counter == ns_antoc_body_state_duration.HORI) {
                 // reset counter
@@ -228,17 +228,20 @@ func _body_antoc {range_check_ptr}(
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
-        if (intent == ns_antoc_action.SLASH) {
-            return BodyState(ns_antoc_body_state.SLASH, 0, integrity, stamina, dir);
+        if (intent == ns_antoc_action.HORI) {
+            return BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir);
         }
-        if (intent == ns_antoc_action.UPSWING) {
-            return BodyState(ns_antoc_body_state.UPSWING, 0, integrity, stamina, dir);
-        }
-        if (intent == ns_antoc_action.SIDECUT) {
-            return BodyState(ns_antoc_body_state.SIDECUT, 0, integrity, stamina, dir);
+        if (intent == ns_antoc_action.VERT) {
+            return BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir);
         }
         if (intent == ns_antoc_action.BLOCK) {
             return BodyState(ns_antoc_body_state.BLOCK, 0, integrity, stamina, dir);
+        }
+        if (intent == ns_antoc_action.DASH_FORWARD) {
+            return BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, stamina, dir);
+        }
+        if (intent == ns_antoc_action.DASH_BACKWARD) {
+            return BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, stamina, dir);
         }
 
         // continue moving forward
@@ -273,17 +276,20 @@ func _body_antoc {range_check_ptr}(
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
-        if (intent == ns_antoc_action.SLASH) {
-            return BodyState(ns_antoc_body_state.SLASH, 0, integrity, stamina, dir);
+        if (intent == ns_antoc_action.HORI) {
+            return BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir);
         }
-        if (intent == ns_antoc_action.UPSWING) {
-            return BodyState(ns_antoc_body_state.UPSWING, 0, integrity, stamina, dir);
-        }
-        if (intent == ns_antoc_action.SIDECUT) {
-            return BodyState(ns_antoc_body_state.SIDECUT, 0, integrity, stamina, dir);
+        if (intent == ns_antoc_action.VERT) {
+            return BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir);
         }
         if (intent == ns_antoc_action.BLOCK) {
             return BodyState(ns_antoc_body_state.BLOCK, 0, integrity, stamina, dir);
+        }
+        if (intent == ns_antoc_action.DASH_FORWARD) {
+            return BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, stamina, dir);
+        }
+        if (intent == ns_antoc_action.DASH_BACKWARD) {
+            return BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, stamina, dir);
         }
 
         // continue moving forward

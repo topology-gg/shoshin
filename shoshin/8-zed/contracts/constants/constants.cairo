@@ -18,18 +18,19 @@ namespace ns_dynamics {
     const DT_FP = 10 ** 3;  // 0.1
 }
 
-struct Stm {
-    reg0: felt,
+namespace ns_stamina {
+    const INIT_STAMINA = 1000;
+}
+
+namespace ns_integrity {
+    const INIT_INTEGRITY = 1000;
+    const CRITICAL_INTEGRITY = 400;
 }
 
 namespace ns_scene {
     const X_MAX = 500;
     const X_MIN = -500;
     const BIGNUM = 2000;
-}
-
-namespace ns_env {
-    const STORM_PENALTY = 10;
 }
 
 namespace ns_combos {
@@ -41,7 +42,6 @@ namespace ns_stimulus {
     const HURT = 1;
     const KNOCKED = 2;
     const CLASH = 3;
-    const BLOCKED = 4;
 }
 
 struct Vec2 {

@@ -10,6 +10,8 @@ from contracts.constants.constants import (
     ns_stimulus,
     ns_combos,
     ns_scene,
+    ns_stamina,
+    ns_integrity,
     Vec2,
     PhysicsState,
     Frame,
@@ -93,7 +95,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     assert arr_frames[0] = FrameScene(
         agent_0 = Frame(
             mental_state  = agent_0_initial_state,
-            body_state    = BodyState(0, 0, 1000, 1000, 1), // IDLE body state is 0 for both Jessica and Antoc; positive direction is 1
+            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1), // IDLE body state is 0 for both Jessica and Antoc; positive direction is 1
             physics_state = physics_state_0,
             action        = 0, // NULL action is 0 for both Jessica and Antoc
             stimulus      = ns_stimulus.NULL,
@@ -104,7 +106,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         ),
         agent_1 = Frame(
             mental_state  = agent_1_initial_state,
-            body_state    = BodyState(0, 0, 1000, 1000, 0), // IDLE body state is 0 for both Jessica and Antoc, negative direction is 0
+            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0), // IDLE body state is 0 for both Jessica and Antoc, negative direction is 0
             physics_state = physics_state_1,
             action        = 0, // NULL action is 0 for both Jessica and Antoc
             stimulus      = ns_stimulus.NULL,

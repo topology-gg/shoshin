@@ -3,19 +3,22 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math_cmp import is_le
+from contracts.constants.constants import (
+    ns_dynamics
+)
 
 namespace ns_antoc_dynamics {
 
-    const MAX_VEL_MOVE_FP = 100 * SCALE_FP;
-    const MIN_VEL_MOVE_FP = (-100) * SCALE_FP;
+    const MAX_VEL_MOVE_FP = 100 * ns_dynamics.SCALE_FP;
+    const MIN_VEL_MOVE_FP = (-100) * ns_dynamics.SCALE_FP;
 
-    const MAX_VEL_DASH_FP = 450 * SCALE_FP;
-    const MIN_VEL_DASH_FP = (-450) * SCALE_FP;
+    const MAX_VEL_DASH_FP = 450 * ns_dynamics.SCALE_FP;
+    const MIN_VEL_DASH_FP = (-450) * ns_dynamics.SCALE_FP;
 
-    const MOVE_ACC_FP = 300 * SCALE_FP;
-    const DASH_ACC_FP = 3000 * SCALE_FP;
+    const MOVE_ACC_FP = 300 * ns_dynamics.SCALE_FP;
+    const DASH_ACC_FP = 3000 * ns_dynamics.SCALE_FP;
 
-    const DEACC_FP = 10000 * SCALE_FP;
+    const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_antoc_character_dimension {
@@ -25,9 +28,9 @@ namespace ns_antoc_character_dimension {
     const BODY_KNOCKED_LATE_HITBOX_W = 150;
     const BODY_KNOCKED_EARLY_HITBOX_H = 125;
     const BODY_KNOCKED_LATE_HITBOX_H = 50;
-    const SLASH_HITBOX_W = 90;
-    const SLASH_HITBOX_H = 90;
-    const SLASH_HITBOX_Y = BODY_HITBOX_H / 2;
+    const HORI_HITBOX_W = 90;
+    const HORI_HITBOX_H = 90;
+    const HORI_HITBOX_Y = BODY_HITBOX_H / 2;
 
     const BODY_KNOCKED_ADJUST_W = BODY_KNOCKED_LATE_HITBOX_W - BODY_HITBOX_W;
 }
@@ -63,7 +66,7 @@ namespace ns_antoc_body_state_duration {
 namespace ns_antoc_body_state {
     const IDLE = 0;      // 5 frames
     const HORI = 10;     // 7 frames
-    const UPSWING = 20;  // 10 frames
+    const VERT = 20;  // 10 frames
     const BLOCK = 40;    // 6 frames
     const HURT = 50;     // 3 frames
     const KNOCKED = 60;  // 20 frames
@@ -75,7 +78,7 @@ namespace ns_antoc_body_state {
 
 namespace ns_antoc_body_state_qualifiers {
 
-    func is_in_hori_active {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
+    func is_in_hori_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_antoc_body_state.HORI) {
             if (counter == 1) {
                 return (1,);
@@ -87,7 +90,7 @@ namespace ns_antoc_body_state_qualifiers {
         return (0,);
     }
 
-    func is_in_vert_active {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
+    func is_in_vert_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_antoc_body_state.VERT) {
             if (counter == 3) {
                 return (1,);
@@ -99,7 +102,7 @@ namespace ns_antoc_body_state_qualifiers {
         return (0,);
     }
 
-    func is_in_block_active {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
+    func is_in_block_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state != ns_antoc_body_state.BLOCK) {
             if (counter == 1) {
                 return (1,);
@@ -117,7 +120,7 @@ namespace ns_antoc_body_state_qualifiers {
         return (0,);
     }
 
-    func is_in_knocked_early {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
+    func is_in_knocked_early {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state != ns_antoc_body_state.KNOCKED) {
             return (0,);
         }
@@ -130,7 +133,7 @@ namespace ns_antoc_body_state_qualifiers {
         return (0,);
     }
 
-    func is_in_knocked_late {range_check_ptr}(state: felt, counter: felt) -> (bool: felt) {
+    func is_in_knocked_late {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state != ns_antoc_body_state.KNOCKED) {
             return (0,);
         }
@@ -141,6 +144,25 @@ namespace ns_antoc_body_state_qualifiers {
             return (1,);
         }
         return (0,);
+    }
+
+    func is_in_various_states {range_check_ptr}(state: felt, counter: felt) -> (
+        bool_body_in_atk_active: felt,
+        bool_body_in_knocked_early: felt,
+        bool_body_in_knocked_late: felt,
+        bool_body_in_block: felt,
+    ) {
+        let bool_body_in_atk_active    = is_in_hori_active (state, counter) + is_in_vert_active (state, counter);
+        let bool_body_in_knocked_early = is_in_knocked_early (state, counter);
+        let bool_body_in_knocked_late  = is_in_knocked_late (state, counter);
+        let bool_body_in_block         = is_in_block_active (state, counter);
+
+        return (
+            bool_body_in_atk_active,
+            bool_body_in_knocked_early,
+            bool_body_in_knocked_late,
+            bool_body_in_block,
+        );
     }
 }
 
