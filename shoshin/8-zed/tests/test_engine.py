@@ -125,7 +125,7 @@ async def test(starknet):
         actions,
         [101],
         0,  # character type: Jessica
-        1,  # character type: Antoc
+        0,  # character type: Jessica
     ).call()
 
     LOGGER.info(

@@ -111,13 +111,13 @@ record = json.loads(json_str)
 n_frames = len(record["agent_0"])
 
 for frame in record["agent_0"]:
-    print(frame["object_state"], frame["object_counter"])
+    print(frame["body_state"]["state"], frame["body_state"]["counter"])
 print()
 # for frame in record ['agent_1']:
 # 	print (frame['object_state'], end=' ')
 # print()
 
-SPRITES = {
+SPRITES_JESSICA = {
     0: pygame.image.load("../art/jessica/idle/frame_0.png"),
     1: pygame.image.load("../art/jessica/idle/frame_1.png"),
     2: pygame.image.load("../art/jessica/idle/frame_2.png"),
@@ -128,66 +128,62 @@ SPRITES = {
     12: pygame.image.load("../art/jessica/slash/frame_2.png"),
     13: pygame.image.load("../art/jessica/slash/frame_3.png"),
     14: pygame.image.load("../art/jessica/slash/frame_4.png"),
-    17: pygame.image.load("../7-demo/cinematics/assets/kyo/hit/frame_0.png"),
-    18: pygame.image.load("../7-demo/cinematics/assets/kyo/hit/frame_1.png"),
-    19: pygame.image.load("../7-demo/cinematics/assets/kyo/hit/frame_2.png"),
-    20: pygame.image.load("../7-demo/cinematics/assets/kyo/hit/frame_3.png"),
-    21: pygame.image.load("../7-demo/cinematics/assets/kyo/jump/frame_0.png"),
-    22: pygame.image.load("../7-demo/cinematics/assets/kyo/idle/frame_5.png"),
-    23: pygame.image.load("../7-demo/cinematics/assets/kyo/jump/frame_0.png"),
-    24: pygame.image.load("../7-demo/cinematics/assets/kyo/idle/frame_5.png"),
-    25: pygame.image.load("../7-demo/cinematics/assets/kyo/jump/frame_0.png"),
-    26: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_5.png"),
-    27: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_3.png"),
-    28: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_5.png"),
-    29: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_3.png"),
-    30: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_5.png"),
-    31: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_3.png"),
-    32: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_0.png"),
-    33: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_1.png"),
-    34: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_2.png"),
-    35: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_3.png"),
-    36: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_4.png"),
-    37: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_5.png"),
-    38: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_6.png"),
-    39: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_7.png"),
-    40: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_8.png"),
-    41: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_9.png"),
-    42: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_10.png"),
-    43: pygame.image.load("../7-demo/cinematics/assets/kyo/knocked/frame_11.png"),
-    44: pygame.image.load("../7-demo/cinematics/assets/kyo/punch/frame_2.png"),
-    45: pygame.image.load("../7-demo/cinematics/assets/kyo/move_forward/frame_0.png"),
-    46: pygame.image.load("../7-demo/cinematics/assets/kyo/move_forward/frame_1.png"),
-    47: pygame.image.load("../7-demo/cinematics/assets/kyo/move_forward/frame_2.png"),
-    48: pygame.image.load("../7-demo/cinematics/assets/kyo/move_forward/frame_3.png"),
-    49: pygame.image.load("../7-demo/cinematics/assets/kyo/move_forward/frame_4.png"),
-    50: pygame.image.load("../7-demo/cinematics/assets/kyo/move_forward/frame_5.png"),
-    51: pygame.image.load("../7-demo/cinematics/assets/kyo/move_backward/frame_0.png"),
-    52: pygame.image.load("../7-demo/cinematics/assets/kyo/move_backward/frame_1.png"),
-    53: pygame.image.load("../7-demo/cinematics/assets/kyo/move_backward/frame_2.png"),
-    54: pygame.image.load("../7-demo/cinematics/assets/kyo/move_backward/frame_3.png"),
-    55: pygame.image.load("../7-demo/cinematics/assets/kyo/move_backward/frame_4.png"),
-    56: pygame.image.load("../7-demo/cinematics/assets/kyo/move_backward/frame_5.png"),
-    57: pygame.image.load("../art/jessica/dash_forward/frame_0.png"),
-    58: pygame.image.load("../art/jessica/dash_forward/frame_1.png"),
-    59: pygame.image.load("../art/jessica/dash_forward/frame_2.png"),
-    60: pygame.image.load("../art/jessica/dash_forward/frame_3.png"),
-    61: pygame.image.load("../art/jessica/dash_forward/frame_4.png"),
-    62: pygame.image.load("../art/jessica/dash_backward/frame_0.png"),
-    63: pygame.image.load("../art/jessica/dash_backward/frame_1.png"),
-    64: pygame.image.load("../art/jessica/dash_backward/frame_2.png"),
-    65: pygame.image.load("../art/jessica/dash_backward/frame_3.png"),
-    66: pygame.image.load("../art/jessica/dash_backward/frame_4.png"),
-    68: pygame.image.load("../art/jessica/upswing/frame_0.png"),
-    69: pygame.image.load("../art/jessica/upswing/frame_1.png"),
-    70: pygame.image.load("../art/jessica/upswing/frame_2.png"),
-    71: pygame.image.load("../art/jessica/upswing/frame_3.png"),
-    72: pygame.image.load("../art/jessica/upswing/frame_4.png"),
-    73: pygame.image.load("../art/jessica/sidecut/frame_0.png"),
-    74: pygame.image.load("../art/jessica/sidecut/frame_1.png"),
-    75: pygame.image.load("../art/jessica/sidecut/frame_2.png"),
-    76: pygame.image.load("../art/jessica/sidecut/frame_3.png"),
-    77: pygame.image.load("../art/jessica/sidecut/frame_4.png"),
+    20: pygame.image.load("../art/jessica/upswing/frame_0.png"),
+    21: pygame.image.load("../art/jessica/upswing/frame_1.png"),
+    22: pygame.image.load("../art/jessica/upswing/frame_2.png"),
+    23: pygame.image.load("../art/jessica/upswing/frame_3.png"),
+    24: pygame.image.load("../art/jessica/upswing/frame_4.png"),
+    30: pygame.image.load("../art/jessica/sidecut/frame_0.png"),
+    31: pygame.image.load("../art/jessica/sidecut/frame_1.png"),
+    32: pygame.image.load("../art/jessica/sidecut/frame_2.png"),
+    33: pygame.image.load("../art/jessica/sidecut/frame_3.png"),
+    34: pygame.image.load("../art/jessica/sidecut/frame_4.png"),
+    40: pygame.image.load("../art/jessica/block/frame_0.png"),
+    41: pygame.image.load("../art/jessica/block/frame_1.png"),
+    42: pygame.image.load("../art/jessica/block/frame_2.png"),
+    50: pygame.image.load("../art/jessica/clash/frame_0.png"),
+    51: pygame.image.load("../art/jessica/clash/frame_1.png"),
+    52: pygame.image.load("../art/jessica/clash/frame_2.png"),
+    53: pygame.image.load("../art/jessica/clash/frame_3.png"),
+    60: pygame.image.load("../art/jessica/hurt/frame_0.png"),
+    61: pygame.image.load("../art/jessica/hurt/frame_1.png"),
+    62: pygame.image.load("../art/jessica/hurt/frame_2.png"),
+    70: pygame.image.load("../art/jessica/knocked/frame_0.png"),
+    71: pygame.image.load("../art/jessica/knocked/frame_1.png"),
+    72: pygame.image.load("../art/jessica/knocked/frame_2.png"),
+    73: pygame.image.load("../art/jessica/knocked/frame_3.png"),
+    74: pygame.image.load("../art/jessica/knocked/frame_4.png"),
+    75: pygame.image.load("../art/jessica/knocked/frame_5.png"),
+    76: pygame.image.load("../art/jessica/knocked/frame_6.png"),
+    77: pygame.image.load("../art/jessica/knocked/frame_7.png"),
+    78: pygame.image.load("../art/jessica/knocked/frame_8.png"),
+    79: pygame.image.load("../art/jessica/knocked/frame_9.png"),
+    80: pygame.image.load("../art/jessica/knocked/frame_10.png"),
+    81: pygame.image.load("../art/jessica/knocked/frame_11.png"),
+    90: pygame.image.load("../art/jessica/walk_forward/frame_0.png"),
+    91: pygame.image.load("../art/jessica/walk_forward/frame_1.png"),
+    92: pygame.image.load("../art/jessica/walk_forward/frame_2.png"),
+    93: pygame.image.load("../art/jessica/walk_forward/frame_3.png"),
+    94: pygame.image.load("../art/jessica/walk_forward/frame_4.png"),
+    95: pygame.image.load("../art/jessica/walk_forward/frame_5.png"),
+    96: pygame.image.load("../art/jessica/walk_forward/frame_6.png"),
+    97: pygame.image.load("../art/jessica/walk_forward/frame_7.png"),
+    100: pygame.image.load("../art/jessica/walk_backward/frame_0.png"),
+    101: pygame.image.load("../art/jessica/walk_backward/frame_1.png"),
+    102: pygame.image.load("../art/jessica/walk_backward/frame_2.png"),
+    103: pygame.image.load("../art/jessica/walk_backward/frame_3.png"),
+    104: pygame.image.load("../art/jessica/walk_backward/frame_4.png"),
+    105: pygame.image.load("../art/jessica/walk_backward/frame_5.png"),
+    110: pygame.image.load("../art/jessica/dash_forward/frame_0.png"),
+    111: pygame.image.load("../art/jessica/dash_forward/frame_1.png"),
+    112: pygame.image.load("../art/jessica/dash_forward/frame_2.png"),
+    113: pygame.image.load("../art/jessica/dash_forward/frame_3.png"),
+    114: pygame.image.load("../art/jessica/dash_forward/frame_4.png"),
+    120: pygame.image.load("../art/jessica/dash_backward/frame_0.png"),
+    121: pygame.image.load("../art/jessica/dash_backward/frame_1.png"),
+    122: pygame.image.load("../art/jessica/dash_backward/frame_2.png"),
+    123: pygame.image.load("../art/jessica/dash_backward/frame_3.png"),
+    124: pygame.image.load("../art/jessica/dash_backward/frame_4.png"),
 }
 
 STATES_HIT = [17, 18, 19, 20]
@@ -204,9 +200,9 @@ def draw_character(frame, flip):
     #
     # Extract info from frame
     #
-    state = frame["object_state"]
-    counter = frame["object_counter"]
-    [x, y] = frame["character_state"]["pos"]
+    state = frame["body_state"]["state"]
+    counter = frame["body_state"]["counter"]
+    [x, y] = frame["physics_state"]["pos"]
 
     #
     # Adjust from felt
@@ -216,7 +212,7 @@ def draw_character(frame, flip):
     #
     # Convert info into render-view info
     #
-    sprite = SPRITES[state + counter]
+    sprite = SPRITES_JESSICA[state + counter]
     char_x = x + 0.5 * SCREEN_WIDTH
     char_y = SCREEN_HEIGHT - y - sprite.get_height() - CHAR_OFFSET
 
@@ -258,12 +254,11 @@ def draw_debug(frame, flip):
     #
     # Extract info from frame
     #
-    state = frame["object_state"]
+    state = frame["body_state"]["state"]
     [action_x, action_y] = frame["hitboxes"]["action"]["origin"]
     [action_w, action_h] = frame["hitboxes"]["action"]["dimension"]
     [body_x, body_y] = frame["hitboxes"]["body"]["origin"]
     [body_w, body_h] = frame["hitboxes"]["body"]["dimension"]
-    integrity = frame["character_state"]["int"]
 
     #
     # Adjust from felt
@@ -338,8 +333,8 @@ while True:
 
     # int_0 = record['agent_0'][idx]['character_state']['int']
     # int_1 = record['agent_1'][idx]['character_state']['int']
-    obj_0 = record["agent_0"][idx]["object_state"]
-    obj_1 = record["agent_1"][idx]["object_state"]
+    obj_0 = record["agent_0"][idx]["body_state"]["state"]
+    obj_1 = record["agent_1"][idx]["body_state"]["state"]
     # update_stat_message(f'player 0 integrity : {int_0} / player 1 integrity : {int_1}')
     update_stat_message(
         f"player 0 object_state : {obj_0} / player 1 object_state : {obj_1}"
