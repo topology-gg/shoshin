@@ -239,11 +239,8 @@ input::placeholder {
     text-decoration: none;
     transition: color 0.05s ease, border-color 0.05s ease;
     color: #BBBBBB;
-    /* z-index: 10; */
+}
 
-    background-position: 0 100;
-    background-size: auto;
-  }
 
     /* from Cairo:
 
@@ -278,7 +275,7 @@ input::placeholder {
     */
 
 /* Antoc */
-.antoc-0 { background: url('../src/images/antoc/antoc-idle/1.png') no-repeat; background-size: auto; background-position: left bottom; }
+/* .antoc-0 { background: url('../src/images/antoc/antoc-idle/1.png') no-repeat; background-size: auto; background-position: left bottom; }
 .antoc-1 { background: url('../src/images/antoc/antoc-idle/2.png') no-repeat; background-size: auto; background-position: left bottom; }
 .antoc-2 { background: url('../src/images/antoc/antoc-idle/3.png') no-repeat; background-size: auto; background-position: left bottom; }
 .antoc-3 { background: url('../src/images/antoc/antoc-idle/4.png') no-repeat; background-size: auto; background-position: left bottom; }
@@ -368,83 +365,4 @@ input::placeholder {
 .antoc-125 { background: url('../src/images/antoc/antoc-backward-dash/back\ backward\ dash6.png') no-repeat; background-size: auto; background-position: left bottom; }
 .antoc-126 { background: url('../src/images/antoc/antoc-backward-dash/back\ backward\ dash7.png') no-repeat; background-size: auto; background-position: left bottom; }
 .antoc-127 { background: url('../src/images/antoc/antoc-backward-dash/back\ backward\ dash8.png') no-repeat; background-size: auto; background-position: left bottom; }
-.antoc-128 { background: url('../src/images/antoc/antoc-backward-dash/back\ backward\ dash9.png') no-repeat; background-size: auto; background-position: left bottom; }
-
-/* Jessica */
-.jessica-0 { background: url('../src/images/jessica/idle/frame_0.png') no-repeat; background-size: auto; background-position: left bottom;}
-.jessica-1 { background: url('../src/images/jessica/idle/frame_1.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-2 { background: url('../src/images/jessica/idle/frame_2.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-3 { background: url('../src/images/jessica/idle/frame_3.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-4 { background: url('../src/images/jessica/idle/frame_4.png') no-repeat; background-size: auto; background-position: left bottom; }
-
-.jessica-10 { background: url('../src/images/jessica/slash/frame_0.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-11 { background: url('../src/images/jessica/slash/frame_1.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-12 { background: url('../src/images/jessica/slash/frame_2.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-13 { background: url('../src/images/jessica/slash/frame_3.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-14 { background: url('../src/images/jessica/slash/frame_4.png') no-repeat; background-size: auto; background-position: left bottom; }
-
-.jessica-20 { background: url('../src/images/jessica/upswing/frame_0.png') no-repeat; background-size: auto; background-position: left bottom;}
-.jessica-21 { background: url('../src/images/jessica/upswing/frame_1.png') no-repeat; background-size: auto; background-position: left bottom;}
-.jessica-22 { background: url('../src/images/jessica/upswing/frame_2.png') no-repeat; background-size: auto; background-position: left bottom;}
-.jessica-23 { background: url('../src/images/jessica/upswing/frame_3.png') no-repeat; background-size: auto; background-position: left bottom;}
-.jessica-24 { background: url('../src/images/jessica/upswing/frame_4.png') no-repeat; background-size: auto; background-position: left bottom;}
-
-.jessica-30 { background: url('../src/images/jessica/sidecut/frame_0.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-31 { background: url('../src/images/jessica/sidecut/frame_1.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-32 { background: url('../src/images/jessica/sidecut/frame_2.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-33 { background: url('../src/images/jessica/sidecut/frame_3.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-34 { background: url('../src/images/jessica/sidecut/frame_4.png') no-repeat; background-size: auto; background-position: left bottom; }
-
-.jessica-40 { background: url('../src/images/jessica/block/block1.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-41 { background: url('../src/images/jessica/block/block2.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-42 { background: url('../src/images/jessica/block/block3.png') no-repeat; background-size: auto; background-position: left bottom; }
-
-.jessica-50 { background: url('../src/images/jessica/clash/coath\ girl\ clash1.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-51 { background: url('../src/images/jessica/clash/coath\ girl\ clash2.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-52 { background: url('../src/images/jessica/clash/coath\ girl\ clash3.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-53 { background: url('../src/images/jessica/clash/coath\ girl\ clash4.png') no-repeat; background-size: auto; background-position: left bottom; }
-
-.jessica-60 { background: url('../src/images/jessica/hurt/coat\ girl\ get\ hit1.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-61 { background: url('../src/images/jessica/hurt/coat\ girl\ get\ hit2.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-62 { background: url('../src/images/jessica/hurt/coat\ girl\ get\ hit3.png') no-repeat; background-size: auto; background-position: left bottom; }
-
-.jessica-70 { background: url('../src/images/jessica/knocked/bounce\ back\ \(3\)1.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-71 { background: url('../src/images/jessica/knocked/bounce\ back\ \(3\)2.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-72 { background: url('../src/images/jessica/knocked/bounce\ back\ \(3\)3.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-73 { background: url('../src/images/jessica/knocked/bounce\ back\ \(3\)4.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-74 { background: url('../src/images/jessica/knocked/bounce\ back\ \(3\)5.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-75 { background: url('../src/images/jessica/knocked/bounce\ back\ \(3\)6.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-76 { background: url('../src/images/jessica/knocked/bounce\ back\ \(3\)7.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-77 { background: url('../src/images/jessica/knocked/bounce\ back\ \(3\)8.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-78 { background: url('../src/images/jessica/knocked/bounce\ back\ \(3\)9.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-79 { background: url('../src/images/jessica/knocked/bounce\ back\ \(3\)10.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-80 { background: url('../src/images/jessica/knocked/bounce\ back\ \(3\)11.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-81 { background: url('../src/images/jessica/knocked/bounce\ back\ \(3\)12.png') no-repeat; background-size: auto; background-position: left bottom; }
-
-.jessica-90 { background: url('../src/images/jessica/walk_forward/Coat\ girl\ walk1.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-91 { background: url('../src/images/jessica/walk_forward/Coat\ girl\ walk2.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-92 { background: url('../src/images/jessica/walk_forward/Coat\ girl\ walk3.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-93 { background: url('../src/images/jessica/walk_forward/Coat\ girl\ walk4.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-94 { background: url('../src/images/jessica/walk_forward/Coat\ girl\ walk5.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-95 { background: url('../src/images/jessica/walk_forward/Coat\ girl\ walk6.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-96 { background: url('../src/images/jessica/walk_forward/Coat\ girl\ walk7.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-97 { background: url('../src/images/jessica/walk_forward/Coat\ girl\ walk8.png') no-repeat; background-size: auto; background-position: left bottom; }
-
-.jessica-100 { background: url('../src/images/jessica/walk_backward/coat\ girl\ backward1.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-101 { background: url('../src/images/jessica/walk_backward/coat\ girl\ backward2.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-102 { background: url('../src/images/jessica/walk_backward/coat\ girl\ backward3.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-103 { background: url('../src/images/jessica/walk_backward/coat\ girl\ backward4.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-104 { background: url('../src/images/jessica/walk_backward/coat\ girl\ backward5.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-105 { background: url('../src/images/jessica/walk_backward/coat\ girl\ backward6.png') no-repeat; background-size: auto; background-position: left bottom; }
-
-.jessica-110 { background: url('../src/images/jessica/dash_forward/frame_0.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-111 { background: url('../src/images/jessica/dash_forward/frame_1.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-112 { background: url('../src/images/jessica/dash_forward/frame_2.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-113 { background: url('../src/images/jessica/dash_forward/frame_3.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-114 { background: url('../src/images/jessica/dash_forward/frame_4.png') no-repeat; background-size: auto; background-position: left bottom; }
-
-.jessica-120 { background: url('../src/images/jessica/dash_backward/frame_0.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-120 { background: url('../src/images/jessica/dash_backward/frame_1.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-120 { background: url('../src/images/jessica/dash_backward/frame_2.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-120 { background: url('../src/images/jessica/dash_backward/frame_3.png') no-repeat; background-size: auto; background-position: left bottom; }
-.jessica-120 { background: url('../src/images/jessica/dash_backward/frame_4.png') no-repeat; background-size: auto; background-position: left bottom; }
+.antoc-128 { background: url('../src/images/antoc/antoc-backward-dash/back\ backward\ dash9.png') no-repeat; background-size: auto; background-position: left bottom; } */

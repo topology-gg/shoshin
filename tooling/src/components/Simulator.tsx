@@ -1,7 +1,10 @@
 import {useAccount, useConnectors} from '@starknet-react/core'
 import { useEffect, useState } from 'react'
 import Character from './Character';
+import Hitbox from './Hitbox';
 import { SIMULATOR_H, SIMULATOR_W } from '../constants/constants';
+import testJsonStr from '../json/test_engine.json';
+import { TestJson, Frame } from '../types/Frame';
 
 interface SimulatorProps {
     character_type_0: number;
@@ -11,15 +14,33 @@ interface SimulatorProps {
 
 export default function Simulator( {character_type_0, character_type_1, animationFrame}: SimulatorProps ) {
 
+    const [recordJson, setRecordJson] = useState<TestJson>();
+    useEffect(() => {
+        const record = JSON.parse(testJsonStr);
+        setRecordJson ((_) => record);
+        // console.log(agentIndex, 'recordJson:', record);
+    }, []);
+    if (!recordJson) return <></>
+
+    const agentFrame_0: Frame = recordJson [`agent_0`][animationFrame]
+    const agentFrame_1: Frame = recordJson [`agent_1`][animationFrame]
+
     return (
         <div style={{
             display:'flex', flexDirection:'row',
             width:SIMULATOR_W, height:SIMULATOR_H,
-            border:'2px solid #333333',
+            borderBottom:'1px solid #333333',
             position:'relative',
+            marginBottom: '20px',
         }}>
-            <Character agentIndex={0} characterName={'jessica'} animationFrame={animationFrame} />
-            <Character agentIndex={1} characterName={'antoc'} animationFrame={animationFrame} />
+            <Character agentIndex={0} characterName={'jessica'} agentFrame={agentFrame_0} />
+            <Character agentIndex={1} characterName={'antoc'} agentFrame={agentFrame_1} />
+
+            <Hitbox agentFrame={agentFrame_0} hitboxType={'body'} />
+            <Hitbox agentFrame={agentFrame_0} hitboxType={'action'} />
+
+            <Hitbox agentFrame={agentFrame_1} hitboxType={'body'} />
+            <Hitbox agentFrame={agentFrame_1} hitboxType={'action'} />
         </div>
     )
 }
