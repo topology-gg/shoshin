@@ -9,21 +9,22 @@ import { TestJson, Frame } from '../types/Frame';
 interface SimulatorProps {
     character_type_0: number;
     character_type_1: number;
-    animationFrame: number;
+    agentFrame_0: Frame;
+    agentFrame_1: Frame;
 }
 
-export default function Simulator( {character_type_0, character_type_1, animationFrame}: SimulatorProps ) {
+export default function Simulator( {
+    character_type_0, character_type_1,
+    agentFrame_0, agentFrame_1
+}: SimulatorProps ) {
 
-    const [recordJson, setRecordJson] = useState<TestJson>();
-    useEffect(() => {
-        const record = JSON.parse(testJsonStr);
-        setRecordJson ((_) => record);
-        // console.log(agentIndex, 'recordJson:', record);
-    }, []);
-    if (!recordJson) return <></>
-
-    const agentFrame_0: Frame = recordJson [`agent_0`][animationFrame]
-    const agentFrame_1: Frame = recordJson [`agent_1`][animationFrame]
+    // const [recordJson, setRecordJson] = useState<TestJson>();
+    // useEffect(() => {
+    //     const record = JSON.parse(testJsonStr);
+    //     setRecordJson ((_) => record);
+    //     // console.log(agentIndex, 'recordJson:', record);
+    // }, []);
+    // if (!recordJson) return <></>
 
     return (
         <div style={{

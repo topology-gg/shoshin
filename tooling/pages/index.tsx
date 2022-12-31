@@ -5,7 +5,9 @@ import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
 import Character from '../src/components/Character';
 import testJsonStr from '../src/json/test_engine.json';
 import MidScreenControl from '../src/components/MidScreenControl';
+import UploadTestJson from '../src/components/UploadTestJson';
 import Simulator from '../src/components/Simulator';
+import { TestJson, Frame } from '../src/types/Frame';
 
 const theme = createTheme({
     typography: {
@@ -35,9 +37,7 @@ const theme = createTheme({
 
 export default function Home() {
 
-    const testJson = JSON.parse(testJsonStr)
-    if (!testJson) return <></>
-    const N_FRAMES = testJson.agent_0.length
+    // Constants
     const CHARACTER_TYPE_0 = 0
     const CHARACTER_TYPE_1 = 1
     const LATENCY = 150;
@@ -47,14 +47,10 @@ export default function Home() {
     const [loop, setLoop] = useState<NodeJS.Timer>();
     const [animationFrame, setAnimationFrame] = useState<number>(0);
     const [animationState, setAnimationState] = useState<string>('Stop');
+    const [testJson, setTestJson] = useState<TestJson>(null);
 
-    // useEffect(() => {
-    //     setLoop(
-    //         setInterval(() => {
-    //             setAnimationFrame((prev) => prev == frameCount ? 0 : prev + 1);
-    //         }, latency)
-    //     );
-    // }, [])
+    // Decode from React states
+    const N_FRAMES = testJson == null ? 0 : testJson.agent_0.length
 
     function handleMidScreenControlClick (operation: string) {
 
@@ -120,6 +116,19 @@ export default function Home() {
         });
     };
 
+    function handleChangeTestJson (event) {
+        var reader = new FileReader();
+        reader.onload = onReaderLoad;
+        reader.readAsText(event.target.files[0]);
+    }
+
+    function onReaderLoad(event){
+        const loadedJsonString = JSON.parse(event.target.result);
+        const loadedJson = JSON.parse(loadedJsonString)
+        console.log('loadedJson:', loadedJson)
+        setTestJson ((_) => loadedJson);
+    }
+
     // Render
     return (
         <div className={styles.container}>
@@ -132,22 +141,33 @@ export default function Home() {
             <ThemeProvider theme={theme}>
                 <main className={styles.main}>
 
-                    <Simulator character_type_0={CHARACTER_TYPE_0} character_type_1={CHARACTER_TYPE_1} animationFrame={animationFrame} />
+                    {
+                        !testJson ? <></> :
+                        <>
+                            <Simulator
+                                character_type_0={CHARACTER_TYPE_0} character_type_1={CHARACTER_TYPE_1}
+                                agentFrame_0={testJson['agent_0'][animationFrame]}
+                                agentFrame_1={testJson['agent_1'][animationFrame]}
+                            />
 
-                    <MidScreenControl
-                        runnable = {true}
-                        animationFrame = {animationFrame}
-                        n_cycles = {N_FRAMES}
-                        animationState = {animationState}
-                        handleClick = {handleMidScreenControlClick}
-                        handleSlideChange = {
-                            evt => {
-                                if (animationState == "Run") return;
-                                const slide_val: number = parseInt(evt.target.value);
-                                setAnimationFrame(slide_val);
-                            }
-                        }
-                    />
+                            <MidScreenControl
+                                runnable = {true}
+                                animationFrame = {animationFrame}
+                                n_cycles = {N_FRAMES}
+                                animationState = {animationState}
+                                handleClick = {handleMidScreenControlClick}
+                                handleSlideChange = {
+                                    evt => {
+                                        if (animationState == "Run") return;
+                                        const slide_val: number = parseInt(evt.target.value);
+                                        setAnimationFrame(slide_val);
+                                    }
+                                }
+                            />
+                        </>
+                    }
+
+                    <UploadTestJson handleChangeTestJson={handleChangeTestJson} />
 
                 </main>
             </ThemeProvider>
