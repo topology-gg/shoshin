@@ -1,0 +1,108 @@
+{
+    "states": ["MS IDLE", "MS COMBO", "MS BLOCK"],
+    "combos": [
+        [1, 1, 1, 1, 1, 1, 1],
+        [4, 4, 4, 4, 4, 4, 4],
+        [1, 0, 0, 0, 0, 0]
+    ],
+    "mapping": {
+        "MS IDLE": 0,
+        "MS COMBO": 1,
+        "MS BLOCK": 2,
+        "MS CLOSER": 3,
+        "AC IDLE": 0,
+        "AC BLOCK": 3,
+        "BS HORI": 10,
+        "BS SLASH": 10,
+        "BS VERT": 20,
+        "BS UPSWING": 20,
+        "BS SIDECUT": 30,
+        "COMBO 1": 101,
+        "COMBO 2": 102
+    },
+    "initial state": "MS IDLE",
+    "mental_state_to_action": {
+        "MS IDLE": "AC IDLE",
+        "MS COMBO": "COMBO 1",
+        "MS BLOCK": "AC BLOCK",
+        "MS CLOSER": "COMBO 2"
+    },
+    "mental_states": {
+        "MS IDLE": {
+            "stages": [
+                [
+                    "ADD",
+                    ["MUL", ["FUNC", "", "0"], "MS BLOCK"],
+                    [
+                        "MUL",
+                        ["SUB", "1", ["MEM", "", "0"]],
+                        [
+                            "ADD",
+                            ["MUL", ["FUNC", "", "1"], "MS COMBO"],
+                            ["MUL", ["SUB", "1", ["MEM", "", "1"]], "MS CLOSER"]
+                        ]
+                    ]
+                ]
+            ]
+        },
+        "MS COMBO": {
+            "stages": [
+                [
+                    "ADD",
+                    ["MUL", ["FUNC", "", "0"], "MS BLOCK"],
+                    [
+                        "MUL",
+                        ["SUB", "1", ["MEM", "", "0"]],
+                        [
+                            "ADD",
+                            ["MUL", ["FUNC", "", "1"], "MS COMBO"],
+                            ["MUL", ["SUB", "1", ["MEM", "", "1"]], "MS CLOSER"]
+                        ]
+                    ]
+                ]
+            ]
+        },
+        "MS BLOCK": {
+            "stages": [
+                ["ADD", ["MUL", ["FUNC", "", "0"], "MS BLOCK"], "MS IDLE"]
+            ]
+        },
+        "MS CLOSER": {
+            "stages": [
+                [
+                    "ADD",
+                    ["MUL", ["FUNC", "", "0"], "MS BLOCK"],
+                    [
+                        "MUL",
+                        ["SUB", "1", ["MEM", "", "0"]],
+                        [
+                            "ADD",
+                            ["MUL", ["FUNC", "", "1"], "MS COMBO"],
+                            ["MUL", ["SUB", "1", ["MEM", "", "1"]], "MS CLOSER"]
+                        ]
+                    ]
+                ]
+            ]
+        }
+    },
+    "general_purpose_functions": [
+        [
+            [
+                "ADD",
+                ["EQ", ["DICT", "", "110"], "BS SLASH"],
+                [
+                    "ADD",
+                    ["EQ", ["DICT", "", "110"], "BS UPSWING"],
+                    ["EQ", ["DICT", "", "110"], "BS SIDECUT"]
+                ]
+            ]
+        ],
+        [
+            [
+                "IS_LE",
+                ["ABS", "", ["SUB", ["DICT", "", "1"], ["DICT", "", "101"]]],
+                "80"
+            ]
+        ]
+    ]
+}
