@@ -95,35 +95,45 @@ async def test(starknet):
     # functions_offsets should be in the form
     # [LEN_TREE_0, LEN_TREE_1, LEN_TREE_2, ...]
     (
-        combos_offset,
-        combos,
-        state_machine_offsets,
-        state_machine,
-        functions_offsets,
-        functions,
-        actions,
-    ) = parse_agent("./experiments/advanced_agent.json")
+        combos_offset_0,
+        combos_0,
+        state_machine_offsets_0,
+        state_machine_0,
+        functions_offsets_0,
+        functions_0,
+        actions_0,
+    ) = parse_agent("./experiments/agent_combo_jessica.json")
+
+    (
+        combos_offset_1,
+        combos_1,
+        state_machine_offsets_1,
+        state_machine_1,
+        functions_offsets_1,
+        functions_1,
+        actions_1,
+    ) = parse_agent("./experiments/agent_combo_antoc.json")
 
     # Loop the baby
     N = 5 * 24  ## 5 seconds, 24 fps
     ret = await contract.loop(
         N,
-        combos_offset,
-        combos,
-        [0, 11],
-        [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
-        state_machine_offsets,
-        state_machine,
+        combos_offset_0,
+        combos_0,
+        combos_offset_1,
+        combos_1,
+        state_machine_offsets_0,
+        state_machine_0,
         0,
-        [],
-        [],
+        state_machine_offsets_1,
+        state_machine_1,
         0,
-        functions_offsets,
-        functions,
-        [],
-        [],
-        actions,
-        [101],
+        functions_offsets_0,
+        functions_0,
+        functions_offsets_1,
+        functions_1,
+        actions_0,
+        actions_1,
         0,  # character type: Jessica
         1,  # character type: Antoc
     ).call()
@@ -133,108 +143,114 @@ async def test(starknet):
     )
 
     # Organize events into record dict
-    record = ret.main_call_events[0].arr
+    record = ret.main_call_events[1].arr
     record = {
-        "agent_0": [
-            {
-                "action": r.agent_0.action,
-                "body_state": {
-                    "state": r.agent_0.body_state.state,
-                    "counter": r.agent_0.body_state.counter,
-                    "integrity": r.agent_0.body_state.integrity,
-                    "stamina": r.agent_0.body_state.stamina,
-                    "dir": r.agent_0.body_state.dir,
-                },
-                "physics_state": {
-                    "pos": {
-                        "x": adjust_from_felt(r.agent_0.physics_state.pos.x),
-                        "y": adjust_from_felt(r.agent_0.physics_state.pos.y),
+        "agent_0": {
+            "type": ret.main_call_events[0].metadata[0],
+            "frames": [
+                {
+                    "agent_action": r.agent_0.action,
+                    "body_state": {
+                        "state": r.agent_0.body_state.state,
+                        "counter": r.agent_0.body_state.counter,
+                        "integrity": r.agent_0.body_state.integrity,
+                        "stamina": r.agent_0.body_state.stamina,
+                        "dir": r.agent_0.body_state.dir,
                     },
-                    "vel_fp": {
-                        "x": adjust_from_felt(r.agent_0.physics_state.vel_fp.x),
-                        "y": adjust_from_felt(r.agent_0.physics_state.vel_fp.y),
+                    "physics_state": {
+                        "pos": [
+                            adjust_from_felt(r.agent_0.physics_state.pos.x),
+                            adjust_from_felt(r.agent_0.physics_state.pos.y),
+                        ],
+                        "vel_fp": [
+                            adjust_from_felt(r.agent_0.physics_state.vel_fp.x),
+                            adjust_from_felt(r.agent_0.physics_state.vel_fp.y),
+                        ],
+                        "acc_fp": [
+                            adjust_from_felt(r.agent_0.physics_state.acc_fp.x),
+                            adjust_from_felt(r.agent_0.physics_state.acc_fp.y),
+                        ],
                     },
-                    "acc_fp": {
-                        "x": adjust_from_felt(r.agent_0.physics_state.acc_fp.x),
-                        "y": adjust_from_felt(r.agent_0.physics_state.acc_fp.y),
-                    },
-                },
-                "hitboxes": {
-                    "action": {
-                        "origin": {
-                            "x": adjust_from_felt(r.agent_0.hitboxes.action.origin.x),
-                            "y": adjust_from_felt(r.agent_0.hitboxes.action.origin.y),
+                    "hitboxes": {
+                        "action": {
+                            "origin": [
+                                adjust_from_felt(r.agent_0.hitboxes.action.origin.x),
+                                adjust_from_felt(r.agent_0.hitboxes.action.origin.y),
+                            ],
+                            "dimension": [
+                                r.agent_0.hitboxes.action.dimension.x,
+                                r.agent_0.hitboxes.action.dimension.y,
+                            ],
                         },
-                        "dimension": {
-                            "x": r.agent_0.hitboxes.action.dimension.x,
-                            "y": r.agent_0.hitboxes.action.dimension.y,
-                        },
-                    },
-                    "body": {
-                        "origin": {
-                            "x": adjust_from_felt(r.agent_0.hitboxes.body.origin.x),
-                            "y": adjust_from_felt(r.agent_0.hitboxes.body.origin.y),
-                        },
-                        "dimension": {
-                            "x": r.agent_0.hitboxes.body.dimension.x,
-                            "y": r.agent_0.hitboxes.body.dimension.y,
-                        },
-                    },
-                },
-                "stimiulus": r.agent_0.stimulus,
-            }
-            for r in record
-        ],
-        "agent_1": [
-            {
-                "action": r.agent_1.action,
-                "body_state": {
-                    "state": r.agent_1.body_state.state,
-                    "counter": r.agent_1.body_state.counter,
-                    "integrity": r.agent_1.body_state.integrity,
-                    "stamina": r.agent_1.body_state.stamina,
-                    "dir": r.agent_1.body_state.dir,
-                },
-                "physics_state": {
-                    "pos": {
-                        "x": adjust_from_felt(r.agent_1.physics_state.pos.x),
-                        "y": adjust_from_felt(r.agent_1.physics_state.pos.y),
-                    },
-                    "vel_fp": {
-                        "x": adjust_from_felt(r.agent_1.physics_state.vel_fp.x),
-                        "y": adjust_from_felt(r.agent_1.physics_state.vel_fp.y),
-                    },
-                    "acc_fp": {
-                        "x": adjust_from_felt(r.agent_1.physics_state.acc_fp.x),
-                        "y": adjust_from_felt(r.agent_1.physics_state.acc_fp.y),
-                    },
-                },
-                "hitboxes": {
-                    "action": {
-                        "origin": {
-                            "x": adjust_from_felt(r.agent_1.hitboxes.action.origin.x),
-                            "y": adjust_from_felt(r.agent_1.hitboxes.action.origin.y),
-                        },
-                        "dimension": {
-                            "x": r.agent_1.hitboxes.action.dimension.x,
-                            "y": r.agent_1.hitboxes.action.dimension.y,
+                        "body": {
+                            "origin": [
+                                adjust_from_felt(r.agent_0.hitboxes.body.origin.x),
+                                adjust_from_felt(r.agent_0.hitboxes.body.origin.y),
+                            ],
+                            "dimension": [
+                                r.agent_0.hitboxes.body.dimension.x,
+                                r.agent_0.hitboxes.body.dimension.y,
+                            ],
                         },
                     },
-                    "body": {
-                        "origin": {
-                            "x": adjust_from_felt(r.agent_1.hitboxes.body.origin.x),
-                            "y": adjust_from_felt(r.agent_1.hitboxes.body.origin.y),
+                    "stimiulus": r.agent_0.stimulus,
+                }
+                for r in record
+            ],
+        },
+        "agent_1": {
+            "type": ret.main_call_events[0].metadata[1],
+            "frames": [
+                {
+                    "agent_action": r.agent_1.action,
+                    "body_state": {
+                        "state": r.agent_1.body_state.state,
+                        "counter": r.agent_1.body_state.counter,
+                        "integrity": r.agent_1.body_state.integrity,
+                        "stamina": r.agent_1.body_state.stamina,
+                        "dir": r.agent_1.body_state.dir,
+                    },
+                    "physics_state": {
+                        "pos": [
+                            adjust_from_felt(r.agent_1.physics_state.pos.x),
+                            adjust_from_felt(r.agent_1.physics_state.pos.y),
+                        ],
+                        "vel_fp": [
+                            adjust_from_felt(r.agent_1.physics_state.vel_fp.x),
+                            adjust_from_felt(r.agent_1.physics_state.vel_fp.y),
+                        ],
+                        "acc_fp": [
+                            adjust_from_felt(r.agent_1.physics_state.acc_fp.x),
+                            adjust_from_felt(r.agent_1.physics_state.acc_fp.y),
+                        ],
+                    },
+                    "hitboxes": {
+                        "action": {
+                            "origin": [
+                                adjust_from_felt(r.agent_1.hitboxes.action.origin.x),
+                                adjust_from_felt(r.agent_1.hitboxes.action.origin.y),
+                            ],
+                            "dimension": [
+                                r.agent_1.hitboxes.action.dimension.x,
+                                r.agent_1.hitboxes.action.dimension.y,
+                            ],
                         },
-                        "dimension": {
-                            "x": r.agent_1.hitboxes.body.dimension.x,
-                            "y": r.agent_1.hitboxes.body.dimension.y,
+                        "body": {
+                            "origin": [
+                                adjust_from_felt(r.agent_1.hitboxes.body.origin.x),
+                                adjust_from_felt(r.agent_1.hitboxes.body.origin.y),
+                            ],
+                            "dimension": [
+                                r.agent_1.hitboxes.body.dimension.x,
+                                r.agent_1.hitboxes.body.dimension.y,
+                            ],
                         },
                     },
-                },
-                "stimiulus": r.agent_1.stimulus,
-            }
-            for r in record
-        ],
+                    "stimiulus": r.agent_1.stimulus,
+                }
+                for r in record
+            ],
+        },
     }
 
     #
@@ -242,7 +258,7 @@ async def test(starknet):
     #
     for i in [0, 1]:
         LOGGER.info(f"> Agent_{i} records:")
-        for r in record[f"agent_{i}"]:
+        for r in record[f"agent_{i}"]["frames"]:
             LOGGER.info(f"  .. {r}")
         LOGGER.info("")
 
