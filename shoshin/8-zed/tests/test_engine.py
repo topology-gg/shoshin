@@ -143,7 +143,8 @@ async def test(starknet):
     )
 
     # Organize events into record dict
-    record = ret.main_call_events[1].arr
+    LOGGER.info(f"main_call_events len: {len(ret.main_call_events)}")
+    record_array = ret.main_call_events[0].arr
     record = {
         "agent_0": {
             "type": ret.main_call_events[0].metadata[0],
@@ -158,44 +159,44 @@ async def test(starknet):
                         "dir": r.agent_0.body_state.dir,
                     },
                     "physics_state": {
-                        "pos": [
-                            adjust_from_felt(r.agent_0.physics_state.pos.x),
-                            adjust_from_felt(r.agent_0.physics_state.pos.y),
-                        ],
-                        "vel_fp": [
-                            adjust_from_felt(r.agent_0.physics_state.vel_fp.x),
-                            adjust_from_felt(r.agent_0.physics_state.vel_fp.y),
-                        ],
-                        "acc_fp": [
-                            adjust_from_felt(r.agent_0.physics_state.acc_fp.x),
-                            adjust_from_felt(r.agent_0.physics_state.acc_fp.y),
-                        ],
+                        "pos": {
+                            "x": adjust_from_felt(r.agent_0.physics_state.pos.x),
+                            "y": adjust_from_felt(r.agent_0.physics_state.pos.y),
+                        },
+                        "vel_fp": {
+                            "x": adjust_from_felt(r.agent_0.physics_state.vel_fp.x),
+                            "y": adjust_from_felt(r.agent_0.physics_state.vel_fp.y),
+                        },
+                        "acc_fp": {
+                            "x": adjust_from_felt(r.agent_0.physics_state.acc_fp.x),
+                            "y": adjust_from_felt(r.agent_0.physics_state.acc_fp.y),
+                        },
                     },
                     "hitboxes": {
                         "action": {
-                            "origin": [
-                                adjust_from_felt(r.agent_0.hitboxes.action.origin.x),
-                                adjust_from_felt(r.agent_0.hitboxes.action.origin.y),
-                            ],
-                            "dimension": [
-                                r.agent_0.hitboxes.action.dimension.x,
-                                r.agent_0.hitboxes.action.dimension.y,
-                            ],
+                            "origin": {
+                                "x": adjust_from_felt(r.agent_0.hitboxes.action.origin.x),
+                                "y": adjust_from_felt(r.agent_0.hitboxes.action.origin.y),
+                            },
+                            "dimension": {
+                                "x": r.agent_0.hitboxes.action.dimension.x,
+                                "y": r.agent_0.hitboxes.action.dimension.y,
+                            },
                         },
                         "body": {
-                            "origin": [
-                                adjust_from_felt(r.agent_0.hitboxes.body.origin.x),
-                                adjust_from_felt(r.agent_0.hitboxes.body.origin.y),
-                            ],
-                            "dimension": [
-                                r.agent_0.hitboxes.body.dimension.x,
-                                r.agent_0.hitboxes.body.dimension.y,
-                            ],
+                            "origin": {
+                                "x": adjust_from_felt(r.agent_0.hitboxes.body.origin.x),
+                                "y": adjust_from_felt(r.agent_0.hitboxes.body.origin.y),
+                            },
+                            "dimension": {
+                                "x": r.agent_0.hitboxes.body.dimension.x,
+                                "y": r.agent_0.hitboxes.body.dimension.y,
+                            },
                         },
                     },
                     "stimiulus": r.agent_0.stimulus,
                 }
-                for r in record
+                for r in record_array
             ],
         },
         "agent_1": {
@@ -211,44 +212,44 @@ async def test(starknet):
                         "dir": r.agent_1.body_state.dir,
                     },
                     "physics_state": {
-                        "pos": [
-                            adjust_from_felt(r.agent_1.physics_state.pos.x),
-                            adjust_from_felt(r.agent_1.physics_state.pos.y),
-                        ],
-                        "vel_fp": [
-                            adjust_from_felt(r.agent_1.physics_state.vel_fp.x),
-                            adjust_from_felt(r.agent_1.physics_state.vel_fp.y),
-                        ],
-                        "acc_fp": [
-                            adjust_from_felt(r.agent_1.physics_state.acc_fp.x),
-                            adjust_from_felt(r.agent_1.physics_state.acc_fp.y),
-                        ],
+                        "pos": {
+                            "x": adjust_from_felt(r.agent_1.physics_state.pos.x),
+                            "y": adjust_from_felt(r.agent_1.physics_state.pos.y),
+                        },
+                        "vel_fp": {
+                            "x": adjust_from_felt(r.agent_1.physics_state.vel_fp.x),
+                            "y": adjust_from_felt(r.agent_1.physics_state.vel_fp.y),
+                        },
+                        "acc_fp": {
+                            "x": adjust_from_felt(r.agent_1.physics_state.acc_fp.x),
+                            "y": adjust_from_felt(r.agent_1.physics_state.acc_fp.y),
+                        },
                     },
                     "hitboxes": {
                         "action": {
-                            "origin": [
-                                adjust_from_felt(r.agent_1.hitboxes.action.origin.x),
-                                adjust_from_felt(r.agent_1.hitboxes.action.origin.y),
-                            ],
-                            "dimension": [
-                                r.agent_1.hitboxes.action.dimension.x,
-                                r.agent_1.hitboxes.action.dimension.y,
-                            ],
+                            "origin": {
+                                "x": adjust_from_felt(r.agent_1.hitboxes.action.origin.x),
+                                "y": adjust_from_felt(r.agent_1.hitboxes.action.origin.y),
+                            },
+                            "dimension": {
+                                "x": r.agent_1.hitboxes.action.dimension.x,
+                                "y": r.agent_1.hitboxes.action.dimension.y,
+                            },
                         },
                         "body": {
-                            "origin": [
-                                adjust_from_felt(r.agent_1.hitboxes.body.origin.x),
-                                adjust_from_felt(r.agent_1.hitboxes.body.origin.y),
-                            ],
-                            "dimension": [
-                                r.agent_1.hitboxes.body.dimension.x,
-                                r.agent_1.hitboxes.body.dimension.y,
-                            ],
+                            "origin": {
+                                "x": adjust_from_felt(r.agent_1.hitboxes.body.origin.x),
+                                "y": adjust_from_felt(r.agent_1.hitboxes.body.origin.y),
+                            },
+                            "dimension": {
+                                "x": r.agent_1.hitboxes.body.dimension.x,
+                                "y": r.agent_1.hitboxes.body.dimension.y,
+                            },
                         },
                     },
                     "stimiulus": r.agent_1.stimulus,
                 }
-                for r in record
+                for r in record_array
             ],
         },
     }

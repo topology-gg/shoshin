@@ -287,7 +287,8 @@ def draw_character(frame, character_type, flip):
     #
     state = frame["body_state"]["state"]
     counter = frame["body_state"]["counter"]
-    [x, y] = frame["physics_state"]["pos"]
+    x = frame["physics_state"]["pos"]['x']
+    y = frame["physics_state"]["pos"]['y']
 
     #
     # Adjust from felt
@@ -341,10 +342,16 @@ def draw_debug(frame, flip):
     # Extract info from frame
     #
     state = frame["body_state"]["state"]
-    [action_x, action_y] = frame["hitboxes"]["action"]["origin"]
-    [action_w, action_h] = frame["hitboxes"]["action"]["dimension"]
-    [body_x, body_y] = frame["hitboxes"]["body"]["origin"]
-    [body_w, body_h] = frame["hitboxes"]["body"]["dimension"]
+
+    action_x = frame["hitboxes"]["action"]["origin"]["x"]
+    action_y = frame["hitboxes"]["action"]["origin"]["y"]
+    action_w = frame["hitboxes"]["action"]["dimension"]["x"]
+    action_h = frame["hitboxes"]["action"]["dimension"]["y"]
+
+    body_x = frame["hitboxes"]["body"]["origin"]["x"]
+    body_y = frame["hitboxes"]["body"]["origin"]["y"]
+    body_w = frame["hitboxes"]["body"]["dimension"]["x"]
+    body_h = frame["hitboxes"]["body"]["dimension"]["y"]
 
     #
     # Adjust from felt
