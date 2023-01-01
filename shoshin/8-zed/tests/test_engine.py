@@ -144,7 +144,7 @@ async def test(starknet):
 
     # Organize events into record dict
     LOGGER.info(f"main_call_events len: {len(ret.main_call_events)}")
-    record_array = ret.main_call_events[0].arr
+    record_array = ret.main_call_events[1].arr
     record = {
         "agent_0": {
             "type": ret.main_call_events[0].metadata[0],

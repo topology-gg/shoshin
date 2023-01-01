@@ -17,6 +17,7 @@ from contracts.constants.constants import (
     BodyState,
     Frame,
     FrameScene,
+    Metadata,
     Rectangle,
     Hitboxes,
     Perceptibles,
@@ -67,6 +68,11 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     character_type_1: felt,
 ) -> () {
     alloc_locals;
+
+    //
+    // Emit metadata
+    //
+    event_metadata.emit(Metadata(character_type_0, character_type_1));
 
     //
     // Preparing starting frame
@@ -384,4 +390,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 @event
 func event_array(arr_len: felt, arr: FrameScene*) {
+}
+
+@event
+func event_metadata(metadata: Metadata) {
 }
