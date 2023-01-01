@@ -1,0 +1,18 @@
+{
+    "states": ["MS COMBO"],
+    "combos": [[1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4]],
+    "mapping": {
+        "MS COMBO": 0,
+        "COMBO 1": 101
+    },
+    "initial state": "MS COMBO",
+    "mental_state_to_action": {
+        "MS COMBO": "COMBO 1"
+    },
+    "mental_states": {
+        "MS COMBO": {
+            "stages": [["ADD", "MS COMBO", "0"]]
+        }
+    },
+    "general_purpose_functions": []
+}

@@ -31,6 +31,9 @@ namespace ns_jessica_character_dimension {
     const SLASH_HITBOX_W = 90;
     const SLASH_HITBOX_H = 90;
     const SLASH_HITBOX_Y = BODY_HITBOX_H / 2;
+    const BLOCK_HITBOX_W = 20;
+    const BLOCK_HITBOX_H = 50;
+    const BLOCK_HITBOX_Y = BODY_HITBOX_H / 2;
 
     const BODY_KNOCKED_ADJUST_W = BODY_KNOCKED_LATE_HITBOX_W - BODY_HITBOX_W;
 }
@@ -142,6 +145,7 @@ namespace ns_jessica_body_state_qualifiers {
         bool_body_in_knocked_early: felt,
         bool_body_in_knocked_late: felt,
         bool_body_in_block: felt,
+        bool_body_in_active: felt,
     ) {
         alloc_locals;
 
@@ -152,12 +156,14 @@ namespace ns_jessica_body_state_qualifiers {
         let bool_body_in_knocked_early = is_in_knocked_early (state, counter);
         let bool_body_in_knocked_late  = is_in_knocked_late (state, counter);
         let bool_body_in_block         = is_in_block_active (state, counter);
+        let bool_body_in_active        = bool_body_in_atk_active + bool_body_in_block;
 
         return (
             bool_body_in_atk_active,
             bool_body_in_knocked_early,
             bool_body_in_knocked_late,
             bool_body_in_block,
+            bool_body_in_active,
         );
     }
 }

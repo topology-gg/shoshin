@@ -248,7 +248,19 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         dict_accesses_start=dict_new, dict_accesses_end=dict_new, default_value=0
     );
 
-    let agent_state_1 = 0;
+    let (mem) = alloc();
+    let (ptr_tree) = dict_read{dict_ptr=mental_state_1}(key=last_frame.agent_1.mental_state);
+    tempvar tree = cast(ptr_tree, Tree*);
+    let (ptr_offsets) = dict_read{dict_ptr=mental_state_offsets_1}(
+        key=last_frame.agent_1.mental_state
+    );
+    tempvar offsets = cast(ptr_offsets, felt*);
+    let (agent_state_1, functions_1_new, dict_new) = BinaryOperatorTree.execute_tree_chain(
+        [offsets], offsets + 1, tree, 0, mem, functions_1, perceptibles_1
+    );
+    default_dict_finalize(
+        dict_accesses_start=dict_new, dict_accesses_end=dict_new, default_value=0
+    );
 
     tempvar agent_action_0 = actions_0 [agent_state_0];
     tempvar agent_action_1 = actions_1 [agent_state_1];
@@ -361,7 +373,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         functions_0 = functions_0_new,
         mental_state_1 = mental_state_1,
         mental_state_offsets_1 = mental_state_offsets_1,
-        functions_1 = functions_1,
+        functions_1 = functions_1_new,
         actions_0 = actions_0,
         actions_1 = actions_1,
         character_type_0 = character_type_0,
