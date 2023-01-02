@@ -89,7 +89,7 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, integrity, stamina, dir) );
         }
 
-        // body responds to intent
+        // by default finishing the animation
         if (intent == ns_jessica_action.SLASH) {
             if (counter == ns_jessica_body_state_duration.SLASH - 1) {
                 // reset counter

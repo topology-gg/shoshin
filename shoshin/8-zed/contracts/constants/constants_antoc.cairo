@@ -106,7 +106,7 @@ namespace ns_antoc_body_state_qualifiers {
     }
 
     func is_in_block_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state != ns_antoc_body_state.BLOCK) {
+        if (state == ns_antoc_body_state.BLOCK) {
             if (counter == 1) {
                 return 1;
             }
