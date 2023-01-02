@@ -87,19 +87,20 @@ func _body_antoc {range_check_ptr}(
         //       need to balance this carefully
         // if (stimulus == ns_stimulus.CLASH) {
 
-        // body responds to intent
-        if (intent == ns_antoc_action.HORI) {
-            if (counter == ns_antoc_body_state_duration.HORI - 1) {
-                // reset counter
+        // by default finishing the animation; go to frame 1 if intent is HORI at last frame
+        if (counter == ns_antoc_body_state_duration.HORI - 1) {
+            if (intent == ns_antoc_action.HORI) {
+                // return to first frame
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir) );
             } else {
-                // increment counter
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, counter + 1, integrity, stamina, dir) );
+                // otherwise return to IDLE
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
             }
+        } else {
+            // increment counter
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, counter + 1, integrity, stamina, dir) );
         }
 
-        // otherwise return to IDLE
-        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -126,19 +127,21 @@ func _body_antoc {range_check_ptr}(
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, stamina, dir) );
             }
         }
-        // if intent remains VERT
-        if (intent == ns_antoc_action.VERT) {
-            if (counter == ns_antoc_body_state_duration.VERT - 1) {
-                // reset counter
+
+        // by default finishing the animation; go to frame 1 if intent is VERT at last frame
+        if (counter == ns_antoc_body_state_duration.VERT - 1) {
+            if (intent == ns_antoc_action.VERT) {
+                // return to first frame
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, stamina, dir) );
             } else {
-                // increment counter
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, counter + 1, integrity, stamina, dir) );
+                // otherwise return to IDLE
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
             }
+        } else {
+            // increment counter
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, counter + 1, integrity, stamina, dir) );
         }
 
-        // otherwise return to IDLE
-        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //

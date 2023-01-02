@@ -89,19 +89,20 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, integrity, stamina, dir) );
         }
 
-        // by default finishing the animation
-        if (intent == ns_jessica_action.SLASH) {
-            if (counter == ns_jessica_body_state_duration.SLASH - 1) {
-                // reset counter
+        // by default finishing the animation; go to frame 1 if intent is SLASH at last frame
+        if (counter == ns_jessica_body_state_duration.SLASH - 1) {
+            if (intent == ns_jessica_action.SLASH) {
+                // return to first frame
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir) );
             } else {
-                // increment counter
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, counter + 1, integrity, stamina, dir) );
+                // otherwise return to IDLE
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
             }
+        } else {
+            // increment counter
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, counter + 1, integrity, stamina, dir) );
         }
 
-        // otherwise return to IDLE
-        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
 
@@ -121,19 +122,20 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, integrity, stamina, dir) );
         }
 
-        // body responds to intent
-        if (intent == ns_jessica_action.UPSWING) {
-            if (counter == ns_jessica_body_state_duration.UPSWING - 1) {
-                // reset counter
+        // by default finishing the animation; go to frame 1 if intent is UPSWING at last frame
+        if (counter == ns_jessica_body_state_duration.UPSWING - 1) {
+            if (intent == ns_jessica_action.UPSWING) {
+                // return to first frame
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 0, integrity, stamina, dir) );
             } else {
-                // increment counter
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, counter + 1, integrity, stamina, dir) );
+                // otherwise return to IDLE
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
             }
+        } else {
+            // increment counter
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, counter + 1, integrity, stamina, dir) );
         }
 
-        // otherwise return to IDLE
-        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -152,19 +154,20 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, integrity, stamina, dir) );
         }
 
-        // body responds to intent
-        if (intent == ns_jessica_action.SIDECUT) {
-            if (counter == ns_jessica_body_state_duration.SIDECUT - 1) {
-                // reset counter
+        // by default finishing the animation; go to frame 1 if intent is SIDECUT at last frame
+        if (counter == ns_jessica_body_state_duration.SIDECUT - 1) {
+            if (intent == ns_jessica_action.SIDECUT) {
+                // return to first frame
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir) );
             } else {
-                // increment counter
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, counter + 1, integrity, stamina, dir) );
+                // otherwise return to IDLE
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
             }
+        } else {
+            // increment counter
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, counter + 1, integrity, stamina, dir) );
         }
 
-        // otherwise return to IDLE
-        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
