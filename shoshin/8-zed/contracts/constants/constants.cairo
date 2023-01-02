@@ -136,3 +136,11 @@ struct FrameScene {
     agent_0: Frame,
     agent_1: Frame,
 }
+
+//
+// Metadata
+//
+struct Metadata{
+    character_type_0 : felt,
+    character_type_1 : felt,
+}
