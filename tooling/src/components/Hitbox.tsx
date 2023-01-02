@@ -36,8 +36,9 @@ export default function Hitbox( {agentFrame, hitboxType}: HitboxProps ) {
                     left: left, top: top,
                     border: `7px solid ${borderColor}`,
                     zIndex: 0,
+                    color: '#333333',
                 }}
-            />
+            >({hitboxX},{hitboxY}) {hitboxW}x{hitboxH}</div>
     )
 }
 

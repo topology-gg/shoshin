@@ -26,6 +26,9 @@ export default function Simulator( {
     // }, []);
     // if (!recordJson) return <></>
 
+    const characterName0 = character_type_0 == 0 ? 'jessica' : 'antoc'
+    const characterName1 = character_type_1 == 0 ? 'jessica' : 'antoc'
+
     return (
         <div style={{
             display:'flex', flexDirection:'row',

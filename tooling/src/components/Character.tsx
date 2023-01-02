@@ -21,16 +21,20 @@ export default function Character( {agentIndex, characterName, agentFrame}: Char
     const bodyStateDir = agentFrame.body_state.dir
     const physicsState = agentFrame.physics_state
     const pos = physicsState.pos
+    console.log(characterName, 'pos:', pos)
 
     // Calculate path to the correct sprite
     const bodyStateName = bodyStateNumberToName [characterName][bodyState]
     const direction = (bodyStateDir == 1) ? 'right' : 'left'
+    console.log(characterName, 'direction', direction)
 
     // Calculate character's left and top for rendering
     const CHAR_DIM = 300
     const adjustment = adjustmentForCharacter (characterName, bodyStateName, direction)
+    console.log(characterName, 'adjustment', adjustment)
     const left = SIMULATOR_W/2 + pos.x + adjustment.left
     const top = SIMULATOR_H - pos.y - CHAR_DIM + adjustment.top
+    console.log(characterName, '(left,top):', `(${left},${top})`)
 
     return (
             <div

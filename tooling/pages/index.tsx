@@ -38,8 +38,6 @@ const theme = createTheme({
 export default function Home() {
 
     // Constants
-    const CHARACTER_TYPE_0 = 0
-    const CHARACTER_TYPE_1 = 1
     const LATENCY = 150;
     const runnable = true;
 
@@ -50,7 +48,9 @@ export default function Home() {
     const [testJson, setTestJson] = useState<TestJson>(null);
 
     // Decode from React states
-    const N_FRAMES = testJson == null ? 0 : testJson.agent_0.length
+    if (testJson !== null) { console.log('testJson:',testJson); }
+    const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length
+
 
     function handleMidScreenControlClick (operation: string) {
 
@@ -145,9 +145,14 @@ export default function Home() {
                         !testJson ? <></> :
                         <>
                             <Simulator
-                                character_type_0={CHARACTER_TYPE_0} character_type_1={CHARACTER_TYPE_1}
-                                agentFrame_0={testJson['agent_0'][animationFrame]}
-                                agentFrame_1={testJson['agent_1'][animationFrame]}
+                                // character_type_0={testJson['agent_0']['type']}
+                                // character_type_1={testJson['agent_1']['type']}
+                                // agentFrame_0={testJson['agent_0']['frames'][animationFrame]}
+                                // agentFrame_1={testJson['agent_1']['frames'][animationFrame]}
+                                character_type_0={0}
+                                character_type_1={1}
+                                agentFrame_0={testJson.agent_0.frames[animationFrame]}
+                                agentFrame_1={testJson.agent_1.frames[animationFrame]}
                             />
 
                             <MidScreenControl

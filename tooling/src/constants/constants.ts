@@ -71,11 +71,14 @@ export const adjustmentForCharacter = (characterName: string, bodyStateName: str
         if (bodyStateDir == 'left') {
             left = -25
 
-            if (bodyStateName == 'hurt') { left -= 20 }
-            else if (bodyStateName == 'sidecut') { left -= 25 }
+            if (bodyStateName == 'hurt') { left -= 20; }
+            else if (bodyStateName == 'sidecut') { left -= 25; }
         }
         else {
-            left = -29
+            // facing right
+            if (bodyStateName == 'sidecut') { left -= 55; }
+            else if (bodyStateName == 'upswing') { left -= 45; }
+            else { left = -29; }
         }
 
         return {'top': top, 'left':left};
@@ -87,7 +90,7 @@ export const adjustmentForCharacter = (characterName: string, bodyStateName: str
         var left = 0;
         if (bodyStateDir == 'left') {
             if (bodyStateName == 'idle'){ left -= 22; }
-            else if (bodyStateName == 'hori'){ left -= 180; }
+            else if ( ['hori', 'vert', 'block'].includes(bodyStateName) ){ left -= 180; }
         }
         return {'left':left, 'top':top}
     }

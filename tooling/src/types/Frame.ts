@@ -38,8 +38,14 @@ export interface Frame {
 }
 
 export interface TestJson {
-    agent_0: Frame[],
-    agent_1: Frame[],
+    agent_0: {
+        frames: Frame[],
+        type: number,
+    }
+    agent_1: {
+        frames: Frame[],
+        type: number,
+    }
 }
 
 // From Cairo:
