@@ -3,7 +3,7 @@ import styles from '../styles/Home.module.css'
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
 import Character from '../src/components/Character';
-import testJsonStr from '../src/json/test_engine.json';
+import testJsonStr from '../src/json/test_engine_combo.json';
 import MidScreenControl from '../src/components/MidScreenControl';
 import UploadTestJson from '../src/components/UploadTestJson';
 import Simulator from '../src/components/Simulator';
