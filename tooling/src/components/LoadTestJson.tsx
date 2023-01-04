@@ -37,7 +37,7 @@ const LoadTestJson = ({
         <Box
             sx={{
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
                 width: "27rem",
@@ -56,15 +56,16 @@ const LoadTestJson = ({
                     style={{fontSize:'12px', border:'none', marginTop:'5px', backgroundColor:'#ffffff00'}}
                     onChange={(e) => onChangeInputTestJson(e)}
                 />
-                <div style={{display:'flex', flexDirection:'row', marginTop:'20px', height:'25px'}}>
-                    <p style={{margin:'0', fontSize:'12px', lineHeight: '25px'}}>Preloaded: </p>
-                    {
-                        preloadedTestJsons.map( (testJson,i) => (
-                            <button onClick={() => onClickPreloadedTestJson(i)}>{i}</button>
-                        ))
-                    }
-                </div>
             </fieldset>
+
+            <div style={{display:'flex', flexDirection:'row', marginTop:'20px', height:'25px'}}>
+                <p style={{margin:'0', fontSize:'12px', lineHeight: '25px'}}>Preloaded: </p>
+                {
+                    preloadedTestJsons.map( (testJson,i) => (
+                        <button onClick={() => onClickPreloadedTestJson(i)}>{i}</button>
+                    ))
+                }
+            </div>
         </Box>
     );
 };

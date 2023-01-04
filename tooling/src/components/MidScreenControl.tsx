@@ -39,7 +39,7 @@ const MidScreenControl = ({
                     alignItems: "center",
                     width: "27rem",
                     backgroundColor: '#ffffff00',
-                    p: "1rem",
+                    p: "0.5rem",
                 }}
             >
                 <p
@@ -114,7 +114,7 @@ const MidScreenControl = ({
                     alignItems: "center",
                     width: "27rem",
                     backgroundColor: '#ffffff00',
-                    p: "1rem",
+                    p: "0.5rem",
                 }}
             >
                 <label style={{fontSize:'12px'}}>

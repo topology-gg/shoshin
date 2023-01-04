@@ -19,6 +19,7 @@ export default function Debug( {show=false, agentIndex, agentFrame, characterNam
     // Extract from frame
     const bodyHitbox: Rectangle = agentFrame.hitboxes.body
     const bodyStateStateString: string = bodyStateNumberToName [characterName][agentFrame.body_state.state]
+    const animationIndex: number = agentFrame.body_state.state + agentFrame.body_state.counter
 
     // Calculate position and dimension of the hitbox for rendering
     const hitboxW = bodyHitbox.dimension.x
@@ -35,13 +36,16 @@ export default function Debug( {show=false, agentIndex, agentFrame, characterNam
                 className={'unit'}
                 style={{
                     position: 'absolute',
+                    display: 'flex',
+                    flexDirection: 'column',
                     left: left, top: top,
                     border: 'none',
                     zIndex: 10,
                     color: '#333333',
                 }}
             >
-                Body state: {bodyStateStateString}
+                <p style={{margin:'0'}}>Body state: {bodyStateStateString}</p>
+                <p style={{margin:'0'}}>Anim index: {animationIndex}</p>
             </div>
     )
 }
