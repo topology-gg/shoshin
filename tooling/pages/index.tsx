@@ -3,9 +3,8 @@ import styles from '../styles/Home.module.css'
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
 import Character from '../src/components/Character';
-import testJsonStr from '../src/json/test_engine_combo.json';
 import MidScreenControl from '../src/components/MidScreenControl';
-import UploadTestJson from '../src/components/UploadTestJson';
+import LoadTestJson from '../src/components/LoadTestJson';
 import Simulator from '../src/components/Simulator';
 import { TestJson, Frame } from '../src/types/Frame';
 
@@ -116,7 +115,7 @@ export default function Home() {
         });
     };
 
-    function handleChangeTestJson (event) {
+    function handleLoadTestJson (event) {
         var reader = new FileReader();
         reader.onload = onReaderLoad;
         reader.readAsText(event.target.files[0]);
@@ -125,8 +124,14 @@ export default function Home() {
     function onReaderLoad(event){
         const loadedJsonString = JSON.parse(event.target.result);
         const loadedJson = JSON.parse(loadedJsonString)
-        console.log('loadedJson:', loadedJson)
+        console.log('loaded json:', loadedJson)
         setTestJson ((_) => loadedJson);
+    }
+
+    function handleClickPreloadedTestJson (testJson) {
+        const preloadedJson = JSON.parse(testJson)
+        console.log ('preloaded json:', preloadedJson)
+        setTestJson ((_) => preloadedJson);
     }
 
     // Render
@@ -172,7 +177,10 @@ export default function Home() {
                         </>
                     }
 
-                    <UploadTestJson handleChangeTestJson={handleChangeTestJson} />
+                    <LoadTestJson
+                        handleLoadTestJson={handleLoadTestJson}
+                        handleClickPreloadedTestJson={handleClickPreloadedTestJson}
+                    />
 
                 </main>
             </ThemeProvider>
