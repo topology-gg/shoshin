@@ -15,6 +15,7 @@ import testJsonStr10 from '../json/test_engine_demo10.json';
 import testJsonStr11 from '../json/test_engine_demo11.json';
 import testJsonStr12 from '../json/test_engine_demo12.json';
 import testJsonStr13 from '../json/test_engine_demo13.json';
+import testJsonStr14 from '../json/test_engine_demo14.json';
 
 const LoadTestJson = ({
     handleLoadTestJson,
@@ -36,6 +37,7 @@ const LoadTestJson = ({
         testJsonStr11,
         testJsonStr12,
         testJsonStr13,
+        testJsonStr14,
     ]
 
     const BLANK_COLOR = '#EFEFEF'
@@ -60,6 +62,7 @@ const LoadTestJson = ({
                 backgroundColor: BLANK_COLOR,
                 p: "1rem",
                 mt: "1rem",
+                height: '220px',
                 border: 1,
                 borderRadius: 4,
                 boxShadow: 3,
