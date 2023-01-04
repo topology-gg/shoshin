@@ -26,7 +26,7 @@ const LoadTestJson = ({
 
     const onChangeInputTestJson = (event: any) => {
         if (/.json$/.exec(event.target.value)) {
-            LoadTestJson (event);
+            handleLoadTestJson (event);
         }
     }
     const onClickPreloadedTestJson = (i: number) => {
