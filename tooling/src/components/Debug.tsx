@@ -5,30 +5,29 @@ import testJsonStr from '../json/test_engine.json';
 import { SIMULATOR_H, SIMULATOR_W, bodyStateNumberToName } from '../constants/constants';
 import { TestJson, Frame, Rectangle } from '../types/Frame';
 
-interface HitboxProps {
+interface DebugProps {
     show: boolean;
+    agentIndex: number;
     agentFrame: Frame;
-    hitboxType: string;
+    characterName: string;
 }
 
-export default function Hitbox( {show=false, agentFrame, hitboxType}: HitboxProps ) {
+export default function Debug( {show=false, agentIndex, agentFrame, characterName}: DebugProps ) {
 
     if (!show) { return <></>; }
 
     // Extract from frame
-    const hitbox: Rectangle = hitboxType == 'body' ? agentFrame.hitboxes.body : agentFrame.hitboxes.action
-    const bodyStateState: number = agentFrame.body_state.state
+    const bodyHitbox: Rectangle = agentFrame.hitboxes.body
+    const bodyStateStateString: string = bodyStateNumberToName [characterName][agentFrame.body_state.state]
 
     // Calculate position and dimension of the hitbox for rendering
-    const hitboxW = hitbox.dimension.x
-    const hitboxH = hitbox.dimension.y
-    const hitboxX = hitbox.origin.x
-    const hitboxY = hitbox.origin.y
-    const left = SIMULATOR_W/2 + hitboxX
-    const top = SIMULATOR_H - hitboxY - hitboxH
-
-    // Calculate hitbox render style
-    const borderColor = hitboxType == 'body' ? '#FCE20577' : '#CC333377';
+    const hitboxW = bodyHitbox.dimension.x
+    const hitboxH = bodyHitbox.dimension.y
+    const hitboxX = bodyHitbox.origin.x
+    const hitboxY = bodyHitbox.origin.y
+    const topOffset = agentIndex == 0 ? 0 : 25
+    const left = SIMULATOR_W/2 + hitboxX - 25
+    const top = SIMULATOR_H - hitboxY - hitboxH - 50 - topOffset
 
     return (
             <div
@@ -36,15 +35,13 @@ export default function Hitbox( {show=false, agentFrame, hitboxType}: HitboxProp
                 className={'unit'}
                 style={{
                     position: 'absolute',
-                    width: hitboxW, height: hitboxH,
                     left: left, top: top,
-                    border: `7px solid ${borderColor}`,
+                    border: 'none',
                     zIndex: 10,
-                    backgroundColor:'#33333399',
-                    color: '#EEEEEE',
+                    color: '#333333',
                 }}
             >
-                ({hitboxX},{hitboxY}) {hitboxW}x{hitboxH}
+                Body state: {bodyStateStateString}
             </div>
     )
 }

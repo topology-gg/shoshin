@@ -2,20 +2,23 @@ import {useAccount, useConnectors} from '@starknet-react/core'
 import { useEffect, useState } from 'react'
 import Character from './Character';
 import Hitbox from './Hitbox';
+import Debug from './Debug';
 import { SIMULATOR_H, SIMULATOR_W } from '../constants/constants';
 import testJsonStr from '../json/test_engine.json';
 import { TestJson, Frame } from '../types/Frame';
 
 interface SimulatorProps {
-    character_type_0: number;
-    character_type_1: number;
-    agentFrame_0: Frame;
-    agentFrame_1: Frame;
+    characterType0: number;
+    characterType1: number;
+    agentFrame0: Frame;
+    agentFrame1: Frame;
+    showDebug: boolean;
 }
 
 export default function Simulator( {
-    character_type_0, character_type_1,
-    agentFrame_0, agentFrame_1
+    characterType0, characterType1,
+    agentFrame0, agentFrame1,
+    showDebug = true,
 }: SimulatorProps ) {
 
     // const [recordJson, setRecordJson] = useState<TestJson>();
@@ -26,8 +29,8 @@ export default function Simulator( {
     // }, []);
     // if (!recordJson) return <></>
 
-    const characterName0 = character_type_0 == 0 ? 'jessica' : 'antoc'
-    const characterName1 = character_type_1 == 0 ? 'jessica' : 'antoc'
+    const characterName0 = characterType0 == 0 ? 'jessica' : 'antoc'
+    const characterName1 = characterType1 == 0 ? 'jessica' : 'antoc'
 
     return (
         <div style={{
@@ -37,14 +40,18 @@ export default function Simulator( {
             position:'relative',
             marginBottom: '20px',
         }}>
-            <Character agentIndex={0} characterName={'jessica'} agentFrame={agentFrame_0} />
-            <Character agentIndex={1} characterName={'antoc'} agentFrame={agentFrame_1} />
+            <Character agentIndex={0} characterName={characterName0} agentFrame={agentFrame0} />
+            <Character agentIndex={1} characterName={characterName1} agentFrame={agentFrame1} />
 
-            <Hitbox agentFrame={agentFrame_0} hitboxType={'body'} />
-            <Hitbox agentFrame={agentFrame_0} hitboxType={'action'} />
 
-            <Hitbox agentFrame={agentFrame_1} hitboxType={'body'} />
-            <Hitbox agentFrame={agentFrame_1} hitboxType={'action'} />
+            <Hitbox show={showDebug} agentFrame={agentFrame0} hitboxType={'body'} />
+            <Hitbox show={showDebug} agentFrame={agentFrame0} hitboxType={'action'} />
+
+            <Hitbox show={showDebug} agentFrame={agentFrame1} hitboxType={'body'} />
+            <Hitbox show={showDebug} agentFrame={agentFrame1} hitboxType={'action'} />
+
+            <Debug show={showDebug} agentIndex={0} agentFrame={agentFrame0} characterName={characterName0} />
+            <Debug show={showDebug} agentIndex={1} agentFrame={agentFrame1} characterName={characterName1} />
         </div>
     )
 }

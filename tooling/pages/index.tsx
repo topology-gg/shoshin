@@ -45,6 +45,7 @@ export default function Home() {
     const [animationFrame, setAnimationFrame] = useState<number>(0);
     const [animationState, setAnimationState] = useState<string>('Stop');
     const [testJson, setTestJson] = useState<TestJson>(null);
+    const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
 
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
@@ -150,14 +151,11 @@ export default function Home() {
                         !testJson ? <></> :
                         <>
                             <Simulator
-                                // character_type_0={testJson['agent_0']['type']}
-                                // character_type_1={testJson['agent_1']['type']}
-                                // agentFrame_0={testJson['agent_0']['frames'][animationFrame]}
-                                // agentFrame_1={testJson['agent_1']['frames'][animationFrame]}
-                                character_type_0={0}
-                                character_type_1={1}
-                                agentFrame_0={testJson.agent_0.frames[animationFrame]}
-                                agentFrame_1={testJson.agent_1.frames[animationFrame]}
+                                characterType0={testJson.agent_0.type}
+                                characterType1={testJson.agent_1.type}
+                                agentFrame0={testJson.agent_0.frames[animationFrame]}
+                                agentFrame1={testJson.agent_1.frames[animationFrame]}
+                                showDebug={checkedShowDebugInfo}
                             />
 
                             <MidScreenControl
@@ -173,6 +171,10 @@ export default function Home() {
                                         setAnimationFrame(slide_val);
                                     }
                                 }
+                                checkedShowDebugInfo = {checkedShowDebugInfo}
+                                handleChangeDebugInfo = {() => setCheckedShowDebugInfo(
+                                    (_) => !checkedShowDebugInfo
+                                )}
                             />
                         </>
                     }
