@@ -49,6 +49,7 @@ export default function Home() {
     const [testJson, setTestJson] = useState<TestJson>(null);
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
     const [workingTab, setWorkingTab] = useState<number>(0);
+    const [mentalStates, addMentalState] = useState<string[]>(["hey", "there"]);
 
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
@@ -138,8 +139,12 @@ export default function Home() {
         setTestJson ((_) => preloadedJson);
     }
 
-    function handleClickTab (value: number) {
-        setWorkingTab((_) => value);
+    function handleAddMentalState(new_state: string){
+        addMentalState((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy.push(new_state);
+            return prev_copy;
+        });
     }
 
     // Render
@@ -154,7 +159,7 @@ export default function Home() {
                 <ThemeProvider theme={theme}>
                     <Grid container spacing={1}>
                         {/* <Grid item xs={2}></Grid> */}
-                        <Grid item xs={9} className={styles.main}>
+                        <Grid item xs={8} className={styles.main}>
                             {
                                 !testJson ? <></> :
                                 <>
@@ -191,8 +196,13 @@ export default function Home() {
                                 handleClickPreloadedTestJson={handleClickPreloadedTestJson}
                             />
                         </Grid>
-                        <Grid item xs={3} className={styles.panel}>
-                            <SidePanel workingTab={workingTab} handleClickTab={handleClickTab}></SidePanel>
+                        <Grid item xs={4} className={styles.panel}>
+                            <SidePanel 
+                                workingTab={workingTab} 
+                                handleClickTab={setWorkingTab}
+                                mentalStates={mentalStates}
+                                handleAddMentalState={handleAddMentalState}
+                            />
                         </Grid>
                     </Grid>
                 </ThemeProvider>

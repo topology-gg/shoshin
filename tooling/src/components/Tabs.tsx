@@ -8,11 +8,11 @@ import FunctionsIcon from '@mui/icons-material/Functions';
 
 const Tabs = ({handleClickTab}) => {
   return (
-    <Grid container spacing={2} sx={{display:"flex", justifyContent:"center"}}>
-      <Grid xs={6} item>
+    <Grid container spacing={0} sx={{display:"flex", justifyContent:"center"}}>
+      <Grid display={"flex"} justifyContent={"space-around"} xs={6} item>
         <IconButton onClick={(_)=>handleClickTab(0)}><PsychologyIcon/></IconButton>
       </Grid>
-      <Grid xs={6} item>
+      <Grid display={"flex"} justifyContent={"space-around"} xs={6} item>
         <IconButton onClick={(_)=>handleClickTab(1)}><FunctionsIcon/></IconButton>
       </Grid>
     </Grid>
