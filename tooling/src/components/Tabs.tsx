@@ -7,7 +7,7 @@ import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import FunctionsIcon from '@mui/icons-material/Functions';
 
 
-const Tabs = (handleClickTab) => {
+const Tabs = ({handleClickTab}) => {
   return (
     <Grid container spacing={8} sx={{display:"flex", justifyContent:"center"}}>
       <Grid item>

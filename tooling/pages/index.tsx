@@ -192,7 +192,7 @@ export default function Home() {
                             />
                         </Grid>
                         <Grid item xs={3} className={styles.panel}>
-                            <SidePanel handleClickTab={handleClickTab}></SidePanel>
+                            <SidePanel workingTab={workingTab} handleClickTab={handleClickTab}></SidePanel>
                         </Grid>
                     </Grid>
                 </ThemeProvider>

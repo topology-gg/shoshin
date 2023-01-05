@@ -3,8 +3,7 @@ import { Box } from "@mui/material";
 import Tabs from './Tabs';
     
 
-const SidePanel = (handleClickTab) => {
-
+const SidePanel = ({workingTab, handleClickTab}) => {
     return (
         <Box
         sx={{
