@@ -138,6 +138,10 @@ export default function Home() {
         setTestJson ((_) => preloadedJson);
     }
 
+    function handleClickTab (value: number) {
+        setWorkingTab((_) => value);
+    }
+
     // Render
     return (
         <div className={styles.container}>
@@ -149,8 +153,8 @@ export default function Home() {
 
                 <ThemeProvider theme={theme}>
                     <Grid container spacing={1}>
-                        <Grid item sx={{width: "25rem"}}></Grid>
-                        <Grid item className={styles.main}>
+                        <Grid item xs={3}></Grid>
+                        <Grid item xs={6} className={styles.main}>
                             {
                                 !testJson ? <></> :
                                 <>
@@ -187,8 +191,8 @@ export default function Home() {
                                 handleClickPreloadedTestJson={handleClickPreloadedTestJson}
                             />
                         </Grid>
-                        <Grid item className={styles.panel}>
-                            <SidePanel></SidePanel>
+                        <Grid item xs={3} className={styles.panel}>
+                            <SidePanel handleClickTab={handleClickTab}></SidePanel>
                         </Grid>
                     </Grid>
                 </ThemeProvider>

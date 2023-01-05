@@ -1,8 +1,10 @@
-import * as React from 'react';
+import React from 'react';
 import { Box } from "@mui/material";
 import Tabs from './Tabs';
+    
 
-const SidePanel = () => {
+const SidePanel = (handleClickTab) => {
+
     return (
         <Box
         sx={{
@@ -10,10 +12,9 @@ const SidePanel = () => {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "left",
-            width: "25rem",
             p: "1rem",
         }}>
-            <Tabs></Tabs>
+            <Tabs handleClickTab={handleClickTab}></Tabs>
         </Box>
     )
 }
