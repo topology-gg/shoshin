@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
-import { createTheme, ThemeProvider, Tooltip } from '@mui/material';
+import { Box, createTheme, ThemeProvider, Tooltip } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import MidScreenControl from '../src/components/MidScreenControl';
 import LoadTestJson from '../src/components/LoadTestJson';
@@ -153,8 +153,8 @@ export default function Home() {
 
                 <ThemeProvider theme={theme}>
                     <Grid container spacing={1}>
-                        <Grid item xs={3}></Grid>
-                        <Grid item xs={6} className={styles.main}>
+                        {/* <Grid item xs={2}></Grid> */}
+                        <Grid item xs={9} className={styles.main}>
                             {
                                 !testJson ? <></> :
                                 <>

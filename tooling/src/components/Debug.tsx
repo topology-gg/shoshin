@@ -7,12 +7,13 @@ import { TestJson, Frame, Rectangle } from '../types/Frame';
 
 interface DebugProps {
     show: boolean;
+    viewWidth: number;
     agentIndex: number;
     agentFrame: Frame;
     characterName: string;
 }
 
-export default function Debug( {show=false, agentIndex, agentFrame, characterName}: DebugProps ) {
+export default function Debug( {show=false, viewWidth, agentIndex, agentFrame, characterName}: DebugProps ) {
 
     if (!show) { return <></>; }
 
@@ -27,7 +28,7 @@ export default function Debug( {show=false, agentIndex, agentFrame, characterNam
     const hitboxX = bodyHitbox.origin.x
     const hitboxY = bodyHitbox.origin.y
     const topOffset = agentIndex == 0 ? 0 : 25
-    const left = SIMULATOR_W/2 + hitboxX - 25
+    const left = viewWidth/2 + hitboxX - 25
     const top = SIMULATOR_H - hitboxY - hitboxH - 50 - topOffset
 
     return (

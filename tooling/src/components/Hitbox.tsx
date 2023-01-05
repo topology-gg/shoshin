@@ -7,11 +7,12 @@ import { TestJson, Frame, Rectangle } from '../types/Frame';
 
 interface HitboxProps {
     show: boolean;
+    viewWidth: number;
     agentFrame: Frame;
     hitboxType: string;
 }
 
-export default function Hitbox( {show=false, agentFrame, hitboxType}: HitboxProps ) {
+export default function Hitbox( {show=false, viewWidth, agentFrame, hitboxType}: HitboxProps ) {
 
     if (!show) { return <></>; }
 
@@ -24,7 +25,7 @@ export default function Hitbox( {show=false, agentFrame, hitboxType}: HitboxProp
     const hitboxH = hitbox.dimension.y
     const hitboxX = hitbox.origin.x
     const hitboxY = hitbox.origin.y
-    const left = SIMULATOR_W/2 + hitboxX
+    const left = viewWidth/2 + hitboxX
     const top = SIMULATOR_H - hitboxY - hitboxH
 
     // Calculate hitbox render style

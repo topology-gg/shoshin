@@ -60,9 +60,10 @@ const LoadTestJson = ({
                 alignItems: "center",
                 width: "27rem",
                 backgroundColor: BLANK_COLOR,
-                p: "1rem",
+                pt: "1rem",
+                pb: "3rem",
                 mt: "1rem",
-                height: '220px',
+                // height: '220px',
                 border: 1,
                 borderRadius: 4,
                 boxShadow: 3,
@@ -81,7 +82,13 @@ const LoadTestJson = ({
             <div style={{display:'flex', flexDirection:'row', flexWrap:'wrap', marginTop:'0', height:'25px'}}>
                 {
                     preloadedTestJsons.map( (testJson,i) => (
-                        <button onClick={() => onClickPreloadedTestJson(i)}>{i}</button>
+                        <button
+                            onClick={() => onClickPreloadedTestJson(i)}
+                            key={`preload-button-${i}`}
+                            style={{marginTop:'3px'}}
+                        >
+                            {i}
+                        </button>
                     ))
                 }
             </div>
