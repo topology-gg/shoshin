@@ -12,8 +12,7 @@ const onClickTree = (i) => {
 }
 let mentalState = "";
 
-const MentalStates = ({mentalStates, handleAddMentalState, handleRemoveMentalState}) => {
-    console.log(mentalStates);
+const MentalStates = ({mentalStates, handleAddMentalState, handleClickRemoveMentalState, handleClickTreeEditor}) => {
     return (
         <Box
         sx={{
@@ -49,8 +48,9 @@ const MentalStates = ({mentalStates, handleAddMentalState, handleRemoveMentalSta
             }}
             >
                 {
-                    mentalStates.map( (name,i) => (
+                    mentalStates.map( (name: string, i: number) => (
                         <Box
+                        key={`button-wrapper-${i}`}
                         sx={{
                             display:"flex",
                             alignItems:"center",
@@ -59,10 +59,10 @@ const MentalStates = ({mentalStates, handleAddMentalState, handleRemoveMentalSta
                             <button
                             style={{ ...button_style}}
                             key={`${i}`}
-                            onClick={() => onClickTree(i)}>
+                            onClick={() => handleClickTreeEditor(i+1)}>
                                 {`${name}`}
                             </button>
-                            <IconButton onClick={(_)=>handleRemoveMentalState(i)}><DeleteIcon sx={{fontSize:"small"}}/></IconButton>
+                            <IconButton onClick={(_)=>handleClickRemoveMentalState(i)}><DeleteIcon sx={{fontSize:"small"}}/></IconButton>
                         </Box>
                     ))
                 }

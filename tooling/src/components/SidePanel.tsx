@@ -2,18 +2,26 @@ import React from 'react';
 import { Box } from "@mui/material";
 import Tabs from './Tabs';
 import MentalStates from './MentalStates';
+import TreeEditor from './TreeEditor';
 import GeneralFunctions from './GeneralFunctions';
     
 
-const SidePanel = ({workingTab, handleClickTab, mentalStates, handleAddMentalState, handleRemoveMentalState}) => {
-    const content = (workingTab) => {
+const SidePanel = ({
+    workingTab, handleClickTab, mentalStates, handleAddMentalState, handleClickRemoveMentalState, 
+    treeEditor, handleClickTreeEditor
+}) => {
+    const content = (workingTab: number) => {
         switch (workingTab) {
             case 0: {
-                return <MentalStates 
+                return !treeEditor && <MentalStates 
                     mentalStates={mentalStates}
                     handleAddMentalState={handleAddMentalState} 
-                    handleRemoveMentalState={handleRemoveMentalState}
-                />;
+                    handleClickRemoveMentalState={handleClickRemoveMentalState}
+                    handleClickTreeEditor={handleClickTreeEditor} 
+                /> || !!treeEditor && <TreeEditor 
+                    tree={treeEditor} 
+                    handleClickTreeEditor={handleClickTreeEditor}
+                />
             }
             case 1: {
                 return <GeneralFunctions/>;

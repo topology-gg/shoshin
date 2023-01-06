@@ -49,7 +49,8 @@ export default function Home() {
     const [testJson, setTestJson] = useState<TestJson>(null);
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
     const [workingTab, setWorkingTab] = useState<number>(0);
-    const [mentalStates, addMentalState] = useState<string[]>(["hey", "there"]);
+    const [mentalStates, setMentalStates] = useState<string[]>(["hey", "there"]);
+    const [treeEditor, setTreeEditor] = useState<number>(0);
 
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
@@ -140,15 +141,15 @@ export default function Home() {
     }
 
     function handleAddMentalState(new_state: string){
-        addMentalState((prev) => {
+        setMentalStates((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
             prev_copy.push(new_state);
             return prev_copy;
         });
     }
 
-    function handleRemoveMentalState(index: number){
-        addMentalState((prev) => {
+    function handleClickRemoveMentalState(index: number){
+        setMentalStates((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
             prev_copy.splice(index, 1);
             return prev_copy;
@@ -210,7 +211,9 @@ export default function Home() {
                                 handleClickTab={setWorkingTab}
                                 mentalStates={mentalStates}
                                 handleAddMentalState={handleAddMentalState}
-                                handleRemoveMentalState={handleRemoveMentalState}
+                                handleClickRemoveMentalState={handleClickRemoveMentalState}
+                                treeEditor={treeEditor}
+                                handleClickTreeEditor={setTreeEditor}
                             />
                         </Grid>
                     </Grid>
