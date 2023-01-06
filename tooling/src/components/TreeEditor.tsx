@@ -6,16 +6,22 @@ import TextField from '@mui/material/TextField';
 import DecisionTree from './DecisionTree'
 
 const data = {
-    name: 'if F1',
-    children: [
-        { 
-            name: 'if F2',
-            children: [{name : 'MS DEFEND'}, {name: 'MS CHILL'}]
-        },
-        { 
-            name: 'if F3',
-            children: [{name : 'MS CLOSER'}, {name: 'MS AGGRO'}]
-        },
+    nodes: [
+        { data: { id: 'if F1' } },
+        { data: { id: 'MS DEFEND' } },
+        { data: { id: 'if F2' } },
+        { data: { id: 'MS CHILL' } },
+        { data: { id: 'if F3' } },
+        { data: { id: 'MS CLOSER' } },
+        { data: { id: 'MS AGGRO' } },
+    ],
+    edges: [
+        { data: { source: 'if F1', target: 'MS DEFEND' } },
+        { data: { source: 'if F1', target: 'if F2' } },
+        { data: { source: 'if F2', target: 'MS CHILL' } },
+        { data: { source: 'if F2', target: 'if F3' } },
+        { data: { source: 'if F3', target: 'MS CLOSER' } },
+        { data: { source: 'if F3', target: 'MS AGGRO' } },
     ]
   };
 
@@ -56,7 +62,7 @@ const TreeEditor = ({tree, mentalState, handleClickTreeEditor}) => {
                 flexDirection: "column",
                 minWidth: "30vw",
             }}>
-                <DecisionTree data={data} width={300} height={300} />
+                <DecisionTree data={data} height={300} width={593}></DecisionTree>
             </Box>
         </Box>
     )

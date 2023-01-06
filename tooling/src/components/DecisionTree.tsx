@@ -1,69 +1,89 @@
-import * as React from 'react';
-import * as d3 from 'd3';
+import React,{Component} from 'react';
+import cytoscape from 'cytoscape';
+import dagre from 'cytoscape-dagre';
+
+cytoscape.use( dagre );
 
 interface DecisionTreeProps {
-  data: any;
-  height: number,
-  width: number
-}
-
-interface DecisionTreeState {
-  svg: any;
-  tree: any;
-}
-
-export default class DecisionTree extends React.Component<DecisionTreeProps, DecisionTreeState> {
-  private treeContainer: any;
-
-  componentDidMount() {
-    this.state = {
-      svg: d3.select(this.treeContainer),
-      tree: d3.tree().size([this.props.height, this.props.width - 10])
-    };
-
-    const root = d3.hierarchy(this.props.data);
-    const nodes = this.state.tree(root);
-    const links = nodes.links();
-    const linkPathGenerator = d3.linkVertical().x(d => d.x).y(d => d.y);
-
-    this.state.svg.selectAll('.link')
-      .data(links)
-      .enter()
-      .append('path')
-      .attr('class', 'link')
-      .attr('d', linkPathGenerator);
-
-    this.state.svg.selectAll('.node')
-      .data(nodes.descendants())
-      .enter()
-      .append('g')
-      .attr('class', 'node')
-      .attr('transform', d => `translate(${d.x}, ${d.y})`);
-
-    this.state.svg.selectAll('.node')
-      .append('circle')
-      .attr('r', 5);
-
-    this.state.svg.selectAll('.node')
-      .append('text')
-      .attr('dy', '0.32em')
-      .attr('x', d => d.children ? -10 : 10)
-      .attr('text-anchor', d => d.children ? 'end' : 'start')
-      .text(d => d.data.name);
-
-    const treeHeight = nodes.descendants().map(d => d.y).sort((a, b) => b - a)[0];
-    const svgHeight = this.props.height;
-    const treeY = (svgHeight - treeHeight)/2 + 2;
-    
-    this.state.svg.selectAll('.node')
-      .attr('transform', d => `translate(${d.x}, ${d.y+ treeY})`);
-
+    data: any;
+    height: number,
+    width: number
   }
 
-  render() {
-    return (
-      <svg ref={el => this.treeContainer = el} width={this.props.width} height={this.props.height + 10}>
-      </svg>
-    );
-  }
+export default class DecisionTree extends React.Component<DecisionTreeProps, {}>{
+    private cy: any;
+
+    constructor(props){
+        super(props);
+        this.renderCytoscapeElement = this.renderCytoscapeElement.bind(this);
+    }
+
+    renderCytoscapeElement(){
+        console.log('* Cytoscape.js is rendering the graph..');
+
+        this.cy = cytoscape(
+        {
+            container: document.getElementById('cy'),
+
+            boxSelectionEnabled: false,
+            autounselectify: true,
+
+            style: cytoscape.stylesheet()
+                .selector('node')
+                .css({
+                    'height': 80,
+                    'width': 80,
+                    'background-fit': 'cover',
+                    'border-color': '#000',
+                    'background-color': '#CCCCCC',
+                    'border-width': 1,
+                    'border-opacity': 0.5,
+                    'content': 'data(id)',
+                    'text-valign': 'center',
+                })
+                .selector('edge')
+                .css({
+                    'width': 3,
+                    'target-arrow-shape': 'triangle',
+                    'line-color': 'black',
+                    'target-arrow-color': 'black',
+                    'curve-style': 'bezier'
+                })
+                // TODO modify the size of the node based 
+                // on length of the string id
+                // .selector('node[id.length > 10]')
+                // .css({
+                //     'height': 1000,
+                //     'width': 1000,
+                // })
+            ,
+            elements: {
+                nodes: this.props.data.nodes,
+                edges: this.props.data.edges
+            },
+            layout: {
+                name: 'breadthfirst',
+                directed: true,
+                padding: 10
+            }
+        }); 
+    }
+
+    componentDidMount(){
+        this.renderCytoscapeElement();
+    }
+
+    render(){
+        let cyStyle = {
+            height: this.props.height,
+            width: this.props.width,
+            margin: '20px 0px'
+          };
+        
+          return (
+            <div>
+              <div style={cyStyle} id="cy"/>
+            </div>
+          );
+    }
 }
