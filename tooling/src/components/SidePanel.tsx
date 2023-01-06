@@ -5,13 +5,14 @@ import MentalStates from './MentalStates';
 import GeneralFunctions from './GeneralFunctions';
     
 
-const SidePanel = ({workingTab, handleClickTab, mentalStates, handleAddMentalState}) => {
+const SidePanel = ({workingTab, handleClickTab, mentalStates, handleAddMentalState, handleRemoveMentalState}) => {
     const content = (workingTab) => {
         switch (workingTab) {
             case 0: {
                 return <MentalStates 
                     mentalStates={mentalStates}
                     handleAddMentalState={handleAddMentalState} 
+                    handleRemoveMentalState={handleRemoveMentalState}
                 />;
             }
             case 1: {

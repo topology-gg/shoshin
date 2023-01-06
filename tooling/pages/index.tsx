@@ -147,6 +147,14 @@ export default function Home() {
         });
     }
 
+    function handleRemoveMentalState(index: number){
+        addMentalState((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy.splice(index, 1);
+            return prev_copy;
+        });
+    }
+
     // Render
     return (
         <div className={styles.container}>
@@ -202,6 +210,7 @@ export default function Home() {
                                 handleClickTab={setWorkingTab}
                                 mentalStates={mentalStates}
                                 handleAddMentalState={handleAddMentalState}
+                                handleRemoveMentalState={handleRemoveMentalState}
                             />
                         </Grid>
                     </Grid>
