@@ -20,6 +20,7 @@ const SidePanel = ({
                     handleClickTreeEditor={handleClickTreeEditor} 
                 /> || !!treeEditor && <TreeEditor 
                     tree={treeEditor} 
+                    mentalState={mentalStates[treeEditor - 1]}
                     handleClickTreeEditor={handleClickTreeEditor}
                 />
             }
@@ -37,7 +38,7 @@ const SidePanel = ({
             alignItems: "left",
             margin: "1rem",
         }}>
-            <Tabs handleClickTab={handleClickTab}></Tabs>
+            <Tabs workingTab={workingTab} handleClickTab={handleClickTab}></Tabs>
             {content(workingTab)}
         </Box>
     )
