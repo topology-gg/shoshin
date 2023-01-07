@@ -49,7 +49,7 @@ export default function Character( {agentIndex, viewWidth, characterName, agentF
                     // border: '1px solid #999999',
                     // border: 'none',
                     position: 'absolute', left: left, top: top,
-                    zIndex: 5,
+                    zIndex: -1,
                     background: `url("./images/${characterName}/${bodyStateName}/${direction}/frame_${bodyStateCounter}.png") no-repeat left bottom`,
                     // backgroundRepeat: 'no-repeat',
                     // backgroundSize: 'auto',
