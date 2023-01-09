@@ -2,6 +2,9 @@
 export const SIMULATOR_W = 1000
 export const SIMULATOR_H = 300
 
+export const CharacterComponentW = 600
+export const CharacterComponentH = 300
+
 export const bodyStateNumberToName = {
     'jessica':{
         0: 'idle',

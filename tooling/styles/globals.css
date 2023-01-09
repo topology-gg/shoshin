@@ -139,14 +139,15 @@ https://stackoverflow.com/questions/18389224/how-to-style-html5-range-input-to-h
       overflow: hidden;
       width: 40px;
       -webkit-appearance: none;
-      background-color: #98c0bb;
+      background-color: #cccccc;
+      border-radius: 5px;
     }
 
     input[type='range']::-webkit-slider-runnable-track {
       height: 10px;
       -webkit-appearance: none;
       color: #98c0bb;
-      margin-top: -1px;
+      /* margin-top: -1px; */
     }
 
     input[type='range']::-webkit-slider-thumb {
@@ -155,23 +156,31 @@ https://stackoverflow.com/questions/18389224/how-to-style-html5-range-input-to-h
       height: 10px;
       cursor: ew-resize;
       background: #2d4249;
-      box-shadow: -200px 0 0 200px #937882;
+      border-radius: 5px;
     }
+    input[type='range']:disabled::-webkit-slider-thumb {
+        cursor: default;
+        background: #999999;
+      }
 
 }
 /** FF*/
 input[type="range"]::-moz-range-progress {
-  background-color: #43e5f7;
+  /* background-color: #43e5f7; */
+  background-color: #EEEEEE;
 }
 input[type="range"]::-moz-range-track {
-  background-color: #9a905d;
+  /* background-color: #9a905d; */
+  background-color: #EEEEEE;
 }
 /* IE*/
 input[type="range"]::-ms-fill-lower {
-  background-color: #43e5f7;
+  /* background-color: #43e5f7; */
+  background-color: #EEEEEE;
 }
 input[type="range"]::-ms-fill-upper {
-  background-color: #9a905d;
+  /* background-color: #9a905d; */
+  background-color: #EEEEEE;
 }
 
 /*

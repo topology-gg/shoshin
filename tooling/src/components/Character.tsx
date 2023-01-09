@@ -2,16 +2,20 @@ import {useAccount, useConnectors} from '@starknet-react/core'
 import { useEffect, useState } from 'react'
 import styles from "../../styles/Character.module.css";
 import testJsonStr from '../json/test_engine.json';
-import { SIMULATOR_H, SIMULATOR_W, bodyStateNumberToName, adjustmentForCharacter } from '../constants/constants';
+import {
+    SIMULATOR_H, SIMULATOR_W, bodyStateNumberToName, adjustmentForCharacter,
+    CharacterComponentW, CharacterComponentH,
+} from '../constants/constants';
 import { TestJson, Frame, Rectangle } from '../types/Frame';
 
 interface CharacterProps {
     agentIndex: number;
+    viewWidth: number;
     characterName: string;
     agentFrame: Frame;
 }
 
-export default function Character( {agentIndex, characterName, agentFrame}: CharacterProps ) {
+export default function Character( {agentIndex, viewWidth, characterName, agentFrame}: CharacterProps ) {
 
     console.log(characterName, 'agentFrame:', agentFrame)
 
@@ -29,11 +33,11 @@ export default function Character( {agentIndex, characterName, agentFrame}: Char
     console.log(characterName, 'direction', direction)
 
     // Calculate character's left and top for rendering
-    const CHAR_DIM = 300
     const adjustment = adjustmentForCharacter (characterName, bodyStateName, direction)
     console.log(characterName, 'adjustment', adjustment)
-    const left = SIMULATOR_W/2 + pos.x + adjustment.left
-    const top = SIMULATOR_H - pos.y - CHAR_DIM + adjustment.top
+    // const left = SIMULATOR_W/2 + pos.x + adjustment.left
+    const left = viewWidth/2 + pos.x + adjustment.left
+    const top = SIMULATOR_H - pos.y - CharacterComponentH + adjustment.top
     console.log(characterName, '(left,top):', `(${left},${top})`)
 
     return (
@@ -41,11 +45,11 @@ export default function Character( {agentIndex, characterName, agentFrame}: Char
                 // className={`unit ${characterName}-${animIndex} ${flipClass}`}
                 className={'unit'}
                 style={{
-                    width: CHAR_DIM, height: CHAR_DIM,
+                    width: CharacterComponentW, height: CharacterComponentH,
                     // border: '1px solid #999999',
                     // border: 'none',
                     position: 'absolute', left: left, top: top,
-                    zIndex: 0,
+                    zIndex: -1,
                     background: `url("./images/${characterName}/${bodyStateName}/${direction}/frame_${bodyStateCounter}.png") no-repeat left bottom`,
                     // backgroundRepeat: 'no-repeat',
                     // backgroundSize: 'auto',
