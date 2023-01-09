@@ -7,21 +7,21 @@ import DecisionTree from './DecisionTree'
 
 const data = {
     nodes: [
-        { data: { id: 'if F1' } },
-        { data: { id: 'MS DEFEND' } },
-        { data: { id: 'if F2' } },
-        { data: { id: 'MS CHILL' } },
-        { data: { id: 'if F3' } },
-        { data: { id: 'MS CLOSER' } },
-        { data: { id: 'MS AGGRO' } },
+        { data: { id: 'if F1' }, scratch: {child: false} },
+        { data: { id: 'MS DEFEND' }, scratch: { child: true, branch: 'left' } },
+        { data: { id: 'if F2' }, scratch: { child: false }},
+        { data: { id: 'MS CHILL' }, scratch: { child: true, branch: 'left' }},
+        { data: { id: 'if F3' }, scratch: { child: false } },
+        { data: { id: 'MS CLOSER' }, scratch: { child: true, branch: 'right' } },
+        { data: { id: 'MS AGGRO' }, scratch: { child: true, branch: 'left' } },
     ],
     edges: [
-        { data: { source: 'if F1', target: 'MS DEFEND' } },
-        { data: { source: 'if F1', target: 'if F2' } },
-        { data: { source: 'if F2', target: 'MS CHILL' } },
-        { data: { source: 'if F2', target: 'if F3' } },
-        { data: { source: 'if F3', target: 'MS CLOSER' } },
-        { data: { source: 'if F3', target: 'MS AGGRO' } },
+        { data: { source: 'if F1', target: 'MS DEFEND' } }, // F1 true
+        { data: { source: 'if F1', target: 'if F2' } }, // F1 false
+        { data: { source: 'if F2', target: 'MS CHILL' } }, // F2 true
+        { data: { source: 'if F2', target: 'if F3' } }, // F2 false
+        { data: { source: 'if F3', target: 'MS CLOSER' } }, // F3 true
+        { data: { source: 'if F3', target: 'MS AGGRO' } }, // F3 false
     ]
   };
 

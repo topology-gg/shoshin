@@ -1,28 +1,27 @@
-import React,{Component} from 'react';
+import React from 'react';
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 
 cytoscape.use( dagre );
 
 interface DecisionTreeProps {
-    data: any;
+    data: any,
     height: number,
-    width: number
-  }
+    width: number,
+}
 
 export default class DecisionTree extends React.Component<DecisionTreeProps, {}>{
     private cy: any;
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.renderCytoscapeElement = this.renderCytoscapeElement.bind(this);
     }
 
-    renderCytoscapeElement(){
+    renderCytoscapeElement() {
         console.log('* Cytoscape.js is rendering the graph..');
 
-        this.cy = cytoscape(
-        {
+        this.cy = cytoscape({
             container: document.getElementById('cy'),
 
             boxSelectionEnabled: false,
@@ -35,7 +34,7 @@ export default class DecisionTree extends React.Component<DecisionTreeProps, {}>
                     'width': 80,
                     'background-fit': 'cover',
                     'border-color': '#000',
-                    'background-color': '#CCCCCC',
+                    'background-color': '#FFFFFF',
                     'border-width': 1,
                     'border-opacity': 0.5,
                     'content': 'data(id)',
@@ -47,43 +46,67 @@ export default class DecisionTree extends React.Component<DecisionTreeProps, {}>
                     'target-arrow-shape': 'triangle',
                     'line-color': 'black',
                     'target-arrow-color': 'black',
-                    'curve-style': 'bezier'
+                    'curve-style': 'bezier',
                 })
-                // TODO modify the size of the node based 
-                // on length of the string id
-                // .selector('node[id.length > 10]')
-                // .css({
-                //     'height': 1000,
-                //     'width': 1000,
-                // })
             ,
             elements: {
                 nodes: this.props.data.nodes,
-                edges: this.props.data.edges
+                edges: this.props.data.edges,
             },
             layout: {
                 name: 'breadthfirst',
                 directed: true,
-                padding: 10
+                padding: 10,
+            },
+        });
+        
+        let data = []
+        this.cy.edges().map((e, i, eles) => {
+            let id = e.source().id()
+            if (! data.includes(id)) {
+                data.push(id)
             }
-        }); 
+            return 0
+        })
+
+        this.cy.nodes().filter((e) => {
+            return !data.includes(e.id()) && e.scratch().branch === 'left'
+        })
+        .style({
+            "background-color": "green" 
+        })
+
+        this.cy.nodes().filter((e) => {
+            return !data.includes(e.id()) && e.scratch().branch === 'right'
+        })
+        .style({
+            "background-color": "red" 
+        })
+
+        this.cy.nodes().filter((e) => {
+            return e.id().length > 8
+        })
+        .style({
+            height: 100,
+            width: 100,
+        })
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.renderCytoscapeElement();
     }
 
-    render(){
+    render() {
         let cyStyle = {
             height: this.props.height,
             width: this.props.width,
-            margin: '20px 0px'
-          };
-        
-          return (
+            margin: '20px 0px',
+        };
+
+        return (
             <div>
-              <div style={cyStyle} id="cy"/>
+                <div style={cyStyle} id="cy" />
             </div>
-          );
+        );
     }
 }
