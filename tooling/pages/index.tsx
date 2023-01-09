@@ -7,8 +7,8 @@ import MidScreenControl from '../src/components/MidScreenControl';
 import LoadTestJson from '../src/components/LoadTestJson';
 import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
-import { TestJson, Frame } from '../src/types/Frame';
-import { style } from '@mui/system';
+import { TestJson } from '../src/types/Frame';
+import { Tree, Direction} from '../src/types/Tree'
 
 const theme = createTheme({
     typography: {
@@ -49,8 +49,9 @@ export default function Home() {
     const [testJson, setTestJson] = useState<TestJson>(null);
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
     const [workingTab, setWorkingTab] = useState<number>(0);
-    const [mentalStates, setMentalStates] = useState<string[]>(["hey", "there"]);
+    const [mentalStates, setMentalStates] = useState<string[]>([]);
     const [treeEditor, setTreeEditor] = useState<number>(0);
+    const [trees, setTrees] = useState<Tree[]>([])
 
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
@@ -140,20 +141,61 @@ export default function Home() {
         setTestJson ((_) => preloadedJson);
     }
 
-    function handleAddMentalState(new_state: string){
+    function handleAddMentalState(new_state: string) {
         setMentalStates((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
             prev_copy.push(new_state);
             return prev_copy;
         });
+        setTrees((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy.push({ nodes: [] });
+            return prev_copy;
+        });
     }
 
-    function handleClickRemoveMentalState(index: number){
+    function handleClickRemoveMentalState(index: number) {
         setMentalStates((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
             prev_copy.splice(index, 1);
             return prev_copy;
         });
+        setTrees((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy.splice(index, 1);
+            return prev_copy;
+        });
+    }
+
+    function handleUpdateTree(index: number, input: string) {
+        let new_tree = {nodes: []}
+        let regex_branches = /if *([a-zA-Z0-9_ ]*)\? *([a-zA-Z0-9_ ]*) *\:/g
+
+        let regex_end = /: *\n([a-zA-z0-9_ ]*)/gm
+        
+        let exp = regex_branches.exec(input)
+        while (exp !== null && exp[1] !== '' && exp[2] !== '') {
+            new_tree.nodes.push({id: 'if ' + exp[1].trim(), isChild: false }, { id: exp[2].trim(), isChild: true, branch: Direction.Left })
+            exp = regex_branches.exec(input)
+        }
+
+        let exp_end = regex_end.exec(input)
+        let end_node;
+        while (exp_end !== null) {
+            end_node = {id: exp_end[1].trim(), isChild: true, branch: Direction.Right }
+            exp_end = regex_end.exec(input)
+        }
+        if (end_node !== undefined && end_node.id !== '') {
+            new_tree.nodes.push(end_node)
+        }
+
+        console.log('new_tree', new_tree)
+
+        setTrees((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy[index] = new_tree
+            return prev_copy;
+        })
     }
 
     // Render
@@ -214,6 +256,8 @@ export default function Home() {
                                 handleClickRemoveMentalState={handleClickRemoveMentalState}
                                 treeEditor={treeEditor}
                                 handleClickTreeEditor={setTreeEditor}
+                                trees={trees}
+                                handleUpdateTree={handleUpdateTree}
                             />
                         </Grid>
                     </Grid>
