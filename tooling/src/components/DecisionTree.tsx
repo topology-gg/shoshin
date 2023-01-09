@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 
@@ -10,18 +10,20 @@ interface DecisionTreeProps {
     width: number,
 }
 
-export default class DecisionTree extends React.Component<DecisionTreeProps, {}>{
-    private cy: any;
+const DecisionTree = ({ data, height, width }) => {
 
-    constructor(props) {
-        super(props);
-        this.renderCytoscapeElement = this.renderCytoscapeElement.bind(this);
+    let cyStyle = {
+        height: height,
+        width: width,
+        margin: '20px 0px',
     }
 
-    renderCytoscapeElement() {
+    useEffect(() => {
         console.log('* Cytoscape.js is rendering the graph..');
+        console.log('data nodes', data.nodes)
+        console.log('data edges', data.edges)
 
-        this.cy = cytoscape({
+        let cy = cytoscape({
             container: document.getElementById('cy'),
 
             boxSelectionEnabled: false,
@@ -50,63 +52,54 @@ export default class DecisionTree extends React.Component<DecisionTreeProps, {}>
                 })
             ,
             elements: {
-                nodes: this.props.data.nodes,
-                edges: this.props.data.edges,
+                nodes: data.nodes,
+                edges: data.edges,
             },
             layout: {
-                name: 'breadthfirst',
+                name: 'dagre',
                 directed: true,
-                padding: 10,
+                padding: 1,
             },
         });
         
-        let data = []
-        this.cy.edges().map((e, i, eles) => {
+        let nodes = []
+        cy.edges().map((e) => {
             let id = e.source().id()
-            if (! data.includes(id)) {
-                data.push(id)
+            if (! nodes.includes(id)) {
+                nodes.push(id)
             }
             return 0
         })
 
-        this.cy.nodes().filter((e) => {
-            return !data.includes(e.id()) && e.scratch().branch === 'left'
+        cy.nodes().filter((e) => {
+            return !nodes.includes(e.id()) && e.scratch().branch === 'left'
         })
         .style({
             "background-color": "green" 
         })
 
-        this.cy.nodes().filter((e) => {
-            return !data.includes(e.id()) && e.scratch().branch === 'right'
+        cy.nodes().filter((e) => {
+            return !nodes.includes(e.id()) && e.scratch().branch === 'right'
         })
         .style({
             "background-color": "red" 
         })
 
-        this.cy.nodes().filter((e) => {
+
+        cy.nodes().filter((e) => {
             return e.id().length > 8
         })
         .style({
             height: 100,
             width: 100,
         })
-    }
+    })
 
-    componentDidMount() {
-        this.renderCytoscapeElement();
-    }
-
-    render() {
-        let cyStyle = {
-            height: this.props.height,
-            width: this.props.width,
-            margin: '20px 0px',
-        };
-
-        return (
-            <div>
-                <div style={cyStyle} id="cy" />
-            </div>
-        );
-    }
+    return (
+        <div>
+            <div style={cyStyle} id="cy" />
+        </div>
+    );
 }
+
+export default DecisionTree;
