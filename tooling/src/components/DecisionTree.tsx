@@ -20,8 +20,6 @@ const DecisionTree = ({ data, height, width }) => {
 
     useEffect(() => {
         console.log('* Cytoscape.js is rendering the graph..');
-        console.log('data nodes', data.nodes)
-        console.log('data edges', data.edges)
 
         let cy = cytoscape({
             container: document.getElementById('cy'),
@@ -86,12 +84,10 @@ const DecisionTree = ({ data, height, width }) => {
         })
 
 
-        cy.nodes().filter((e) => {
-            return e.id().length > 8
-        })
-        .style({
-            height: 100,
-            width: 100,
+        cy.nodes().map((n) => {
+            let size = Math.floor(n.id().length - 4) * 6 + 70
+            n.style({height: size, width: size})
+            return n
         })
     })
 
