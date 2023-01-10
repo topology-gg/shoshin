@@ -9,6 +9,7 @@ import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
 import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
+import { Function, FunctionElement } from '../src/types/Function'
 
 const theme = createTheme({
     typography: {
@@ -52,6 +53,10 @@ export default function Home() {
     const [mentalStates, setMentalStates] = useState<string[]>([]);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [trees, setTrees] = useState<Tree[]>([])
+    const [functions, setFunctions] = useState<Function[]>([])
+    const [functionsIndex, setFunctionsIndex] = useState<number>(0)
+    const [isWarningTextOn, setWarningText] = useState<boolean>(false)
+    // TODO add start new Function button in order to add a empty function inside the functions
 
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
@@ -189,13 +194,28 @@ export default function Home() {
             new_tree.nodes.push(end_node)
         }
 
-        console.log('new_tree', new_tree)
-
         setTrees((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
             prev_copy[index] = new_tree
             return prev_copy;
         })
+    }
+
+    function handleUpdateGeneralFunction(e: Event, index: number, element: FunctionElement) {
+        if (element) {
+            setFunctions((prev) => {
+                let prev_copy = JSON.parse(JSON.stringify(prev));
+                console.log(prev_copy)
+                prev_copy[index].elements = prev_copy[index].elements + element
+                return prev_copy;
+            })
+        }
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
+    function handleConfirmFunction(f: Function) {
+
     }
 
     // Render
@@ -258,6 +278,13 @@ export default function Home() {
                                 handleClickTreeEditor={setTreeEditor}
                                 trees={trees}
                                 handleUpdateTree={handleUpdateTree}
+                                functions={functions}
+                                handleUpdateGeneralFunction={handleUpdateGeneralFunction}
+                                handleConfirmFunction={handleConfirmFunction}
+                                functionsIndex={functionsIndex}
+                                setFunctionsIndex={setFunctionsIndex}
+                                isWarningTextOn={isWarningTextOn}
+                                setWarningText={setWarningText}
                             />
                         </Grid>
                     </Grid>

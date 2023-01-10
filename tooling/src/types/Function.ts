@@ -4,6 +4,13 @@ export interface Function {
 
 export interface FunctionElement {
     value?: Operator | number | Perceptible,
+    type?: ElementType,
+}
+
+export enum ElementType {
+    Operator = 'Operator',
+    Constant = 'Constant',
+    Perceptible = 'Perceptible',
 }
 
 export enum Operator {

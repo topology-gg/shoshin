@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import TextField from '@mui/material/TextField';
-import { FunctionElement, Operator } from '../types/Function'
+import { FunctionElement, Operator, Function, ElementType } from '../types/Function'
 
 const cardStyle = {
     display: 'flex', 
@@ -40,7 +40,8 @@ const handleDrag = (e) => {
     let source = e.target.id.split('-')
     switch (source[0]) {
         case 'operator': {
-            currentDraggedItem = { value: source[1] } as FunctionElement
+            currentDraggedItem = { value: source[1], type: ElementType.Operator} as FunctionElement
+            break;
         }
     }
     e.preventDefault()
@@ -57,13 +58,46 @@ const handleDragOver = (e) => {
     e.stopPropagation()
 }
 
+const handleFunctionDisplay = (f: Function) => {
+    if (!f) {
+        return {color: '#CCCCCC'}
+    }
+    return {color: 'black'}
+}
+
+const handleDisplayWarningText = (isWarningTextOn) => {
+    return isWarningTextOn && 
+        <Grid sx={{color: 'red', border: 'none', boxShadow: 'none', mt: '1rem' }} xs={ 12 } item className='warning-test'>
+            <Typography variant='overline'>Invalid function, please update</Typography>
+        </Grid>
+}
+
+const functionToString = (f: Function, setWarningText) => {
+    if (!f) {
+        return 'Drop your operators, constants and perceptibles here'
+    }
+    let prevElement: FunctionElement;
+    f.elements.map((e) => {
+        switch (e.type) {
+            case ElementType.Operator: {
+                if (prevElement.type !== ElementType.Perceptible && prevElement.type !== ElementType.Constant) {
+                    setWarningText(true)
+                    return 
+                }
+                break
+            }
+        }
+    })
+}
+
 let currentDraggedItem = {} as FunctionElement
 let currentConstant = 0
 
 const GeneralFunctions = ({ 
-    functions, handleUpdateGeneralFunction, handleConfirmFunction, functionsIndex, setFunctionsIndex
+    functions, handleUpdateGeneralFunction, handleConfirmFunction, functionsIndex, 
+    setFunctionsIndex, isWarningTextOn, setWarningText
 }) => {
-    let f = "Drop your operators, constants and perceptibles here"
+    let f = functions[functionsIndex]
     return (
         <Box
         sx={{
@@ -118,17 +152,23 @@ const GeneralFunctions = ({
                 <Grid sx={ gridItemStyle } xs={ 5 } item>
                     Three
                 </Grid>
-                <Grid sx={{ ...gridItemStyle, mt: '2rem' }} xs={ 12 } item className='function-creator'>
+                { handleDisplayWarningText(isWarningTextOn) }
+                <Grid sx={{ ...gridItemStyle, mt: !isWarningTextOn && '1rem' }} xs={ 12 } item className='function-creator'>
                     <Card 
                         style={{ border: 'none', boxShadow: 'none' }} 
                         onDragOver={ (e) => handleDragOver(e) }
                         onDrop={ (e) => handleUpdateGeneralFunction(e, functionsIndex, currentDraggedItem) }
                     >
-                        <Typography variant='caption' color={"#CCCCCC"}>{ f }</Typography>
+                        <Typography 
+                            variant='caption' 
+                            color={ handleFunctionDisplay(f) }
+                        >
+                            { functionToString(f, setWarningText) }
+                        </Typography>
                     </Card>
                 </Grid>
                 <button 
-                    className={styles.confirm}
+                    className={ styles.confirm }
                     onClick={() => handleConfirmFunction()}
                 >
                     Confirm
