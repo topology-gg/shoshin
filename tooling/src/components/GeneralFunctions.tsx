@@ -1,7 +1,56 @@
 import React from 'react';
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+
+const cardStyle = {
+    display: 'flex', 
+    alignItems: 'center', 
+    maxHeight: '2rem', 
+    p: '1px', 
+    m: '1px', 
+    justifyContent: 'space-around',
+    border: 1,
+}
+
+const gridItemStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    border: 1,
+    borderRadius: 4,
+    boxShadow: 3,
+    p: '5px',
+    m: '1px',
+}
+
+const functions_title = [{id: 'Operators', width: 5}, {id: 'Const', width: 1}, {id: 'Perceptibles', width: 5}]
+const operators = ['AND', 'OR', '/', '*', '%', '==', '()']
+
+const handleDrag = (e) => {
+    document.body.style.cursor = 'grabbing';
+    e.preventDefault()
+    e.stopPropagation()
+}
+const handleDragEnd = (e) => {
+    console.log('drag end')
+    document.body.style.cursor = 'default';
+    e.preventDefault()
+    e.stopPropagation()
+}
+const handleDragOver = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+}
+const handleDrop = (e) => {
+    document.body.style.cursor = 'default';
+    e.preventDefault()
+    e.stopPropagation()
+}
 
 const GeneralFunctions = ({}) => {
+    let f = "Drop your operators here"
     return (
         <Box
         sx={{
@@ -9,9 +58,48 @@ const GeneralFunctions = ({}) => {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "left",
-            p: "1rem",
+            mt: "2rem",
         }}>
-            GeneralFunctions
+            <Grid container spacing={0} sx={{display: 'flex', justifyContent: "space-between"}}>
+                <Grid sx={{m: '3px'}} item className='functions-title' xs={12}>
+                    <Grid container sx={{display: 'flex', justifyContent: "space-between"}}>
+                        {
+                            functions_title.map((f) => {
+                                return <Grid key={`function-${f.id}`} sx={{p: '5px'}} item xs={f.width}><Typography variant='overline'>{f.id}</Typography></Grid>
+                            })
+                        }
+                    </Grid>
+                </Grid>
+                <Grid sx={gridItemStyle} xs={5} item>
+                    {
+                        operators.map((o) => {
+                            return <Card 
+                                        key={`operator-${o}`} 
+                                        onDragEnd={(e) => handleDragEnd(e)} 
+                                        onDrag={(e) => handleDrag(e)} 
+                                        draggable 
+                                        sx={cardStyle}>
+                                            <CardContent>{o}</CardContent>
+                                    </Card>
+                        })
+                    }
+                </Grid>
+                <Grid sx={gridItemStyle} xs={1} item>
+                    Two
+                </Grid>
+                <Grid sx={gridItemStyle} xs={5} item>
+                    Three
+                </Grid>
+                <Grid sx={{...gridItemStyle, mt: '2rem'}} xs={12} item className='function-creator'>
+                    <Card 
+                        style={{border: 'none', boxShadow: 'none'}} 
+                        onDragOver={(e) => handleDragOver(e)}
+                        onDrop={(e) => handleDrop(e)}
+                    >
+                        {f}
+                    </Card>
+                </Grid>
+            </Grid>
         </Box>
     )
 }
