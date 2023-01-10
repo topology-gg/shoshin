@@ -4,6 +4,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DecisionTree from './DecisionTree'
+import { Tree } from '../types/Tree'
 
 const data = {
     nodes: [
@@ -25,8 +26,53 @@ const data = {
     ]
   };
 
+const treeToString = (tree: Tree) => {
+    let str = ""
+    tree.nodes.forEach((n) => {
+        if (n?.branch === 'left' && n.isChild) {
+            str += n.id + `:\n`
+        } else if (n?.branch === 'right' && n.isChild) {
+            str += n.id
+        } else {
+            str += n.id + ' ? '
+        }
+    })
+    return str
+}
 
-const TreeEditor = ({tree, mentalState, handleClickTreeEditor}) => {
+const treeToDecisionTree = (tree: Tree) => {
+    let data = { nodes: [], edges: [] }
+    let nodes = tree.nodes
+    let parents = tree.nodes.filter((n) => {
+        return !n.isChild
+    })
+
+    console.log('tree', tree)
+
+    // make edges and nodes
+    for (let i = 0; i < nodes.length - 1; i++){
+        data.edges.push({ data: { source: '', target: '' } })
+    }
+
+    nodes.forEach((n) => {
+        data.nodes.push({ data: { id: n.id }, scratch: { child: n.isChild, branch: n?.branch } })
+    })
+
+    data.edges.map((e, i) => {
+        e.data.source = parents[Math.floor(i/2)].id
+    })
+
+    let roots = nodes.slice(1)
+    roots.forEach((n, i) => {
+        let edge = data.edges[i]
+        edge.data.target = n.id
+        data.edges[i] = edge
+    })
+    return data
+}
+
+
+const TreeEditor = ({indexTree, tree, handleUpdateTree, mentalState, handleClickTreeEditor}) => {
     return(
         <Box
         sx={{
@@ -47,7 +93,9 @@ const TreeEditor = ({tree, mentalState, handleClickTreeEditor}) => {
                 <TextField
                 color={"info"}
                 id="outlined-multiline-static"
+                defaultValue={treeToString(tree)}
                 label={`Decision Tree for ${mentalState}`}
+                onChange={ (event) => handleUpdateTree(indexTree, event.target.value) }
                 fullWidth
                 multiline
                 rows={10}
@@ -62,7 +110,7 @@ const TreeEditor = ({tree, mentalState, handleClickTreeEditor}) => {
                 flexDirection: "column",
                 minWidth: "30vw",
             }}>
-                <DecisionTree data={data} height={300} width={593}></DecisionTree>
+                <DecisionTree data={treeToDecisionTree(tree)} height={300} width={593}></DecisionTree>
             </Box>
         </Box>
     )

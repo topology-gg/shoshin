@@ -8,7 +8,7 @@ import GeneralFunctions from './GeneralFunctions';
 
 const SidePanel = ({
     workingTab, handleClickTab, mentalStates, handleAddMentalState, handleClickRemoveMentalState, 
-    treeEditor, handleClickTreeEditor
+    treeEditor, handleClickTreeEditor, trees, handleUpdateTree
 }) => {
     const content = (workingTab: number) => {
         switch (workingTab) {
@@ -19,7 +19,9 @@ const SidePanel = ({
                     handleClickRemoveMentalState={handleClickRemoveMentalState}
                     handleClickTreeEditor={handleClickTreeEditor} 
                 /> || !!treeEditor && <TreeEditor 
-                    tree={treeEditor} 
+                    indexTree={ treeEditor-1 }
+                    tree={trees[treeEditor - 1]} 
+                    handleUpdateTree={handleUpdateTree}
                     mentalState={mentalStates[treeEditor - 1]}
                     handleClickTreeEditor={handleClickTreeEditor}
                 />

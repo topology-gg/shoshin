@@ -7,9 +7,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 const button_style = { marginBottom:"0.5rem", marginTop:"0.5rem", marginLeft: "0.2rem", marginRight: "0.2rem", height: "1.5rem"};
 
-const onClickTree = (i) => {
-    console.log(`Tree ${i}`);
-}
 let mentalState = "";
 
 const MentalStates = ({mentalStates, handleAddMentalState, handleClickRemoveMentalState, handleClickTreeEditor}) => {
