@@ -54,7 +54,7 @@ const MentalStates = ({mentalStates, handleAddMentalState, handleClickRemoveMent
                             ml: "2rem"
                         }}>
                             <button
-                            style={{ ...button_style}}
+                            style={{ ...button_style }}
                             key={`${i}`}
                             onClick={() => handleClickTreeEditor(i+1)}>
                                 {`${name}`}
