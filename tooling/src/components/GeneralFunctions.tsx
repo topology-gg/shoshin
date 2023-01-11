@@ -43,6 +43,14 @@ const handleDrag = (e) => {
             currentDraggedItem = { value: source[1], type: ElementType.Operator} as FunctionElement
             break;
         }
+        case 'constant': {
+            currentDraggedItem = { value: currentConstant, type: ElementType.Constant} as FunctionElement
+            break;
+        }
+        case 'perceptible': {
+            currentDraggedItem = { value: source[1], type: ElementType.Perceptible} as FunctionElement
+            break;
+        }
     }
     e.preventDefault()
     e.stopPropagation()
@@ -68,17 +76,20 @@ const handleFunctionDisplay = (f: Function) => {
 const handleDisplayWarningText = (isWarningTextOn) => {
     return isWarningTextOn && 
         <Grid sx={{color: 'red', border: 'none', boxShadow: 'none', mt: '1rem' }} xs={ 12 } item className='warning-test'>
-            <Typography variant='overline'>Invalid function, please update</Typography>
+            <Typography variant='overline'>Invalid {currentDraggedItem.type}, please try again</Typography>
         </Grid>
 }
 
-const functionToString = (f: Function, setWarningText) => {
+const functionToString = (f: Function) => {
     if (!f) {
         return 'Drop your operators, constants and perceptibles here'
     }
-    let prevElement: FunctionElement;
+    let str = ' '
     f.elements.map((e) => {
+        console.log(e)
+        str += e.value + ' '
     })
+    return str
 }
 
 let currentDraggedItem = {} as FunctionElement
@@ -130,15 +141,19 @@ const GeneralFunctions = ({
                     }
                 </Grid>
                 <Grid style={{ maxWidth: 'none', flexGrow: 1 }} sx={ { ...gridItemStyle }} xs={ 1 } item>
-                    <TextField 
-                        color={ "info" } 
-                        id="constant" 
-                        type="number" 
-                        InputLabelProps={{ shrink: true }}
-                        defaultValue={currentConstant}
+                    <Box
+                        id='constant'
                         draggable
-                        onChange={(e) => currentConstant=parseInt(e.target.value)}
-                    />
+                        onDragEnd={ (e) => handleDragEnd(e) } 
+                        onDrag={ (e) => handleDrag(e) } 
+                    >
+                        <TextField 
+                            color={ "info" } 
+                            type="number" 
+                            defaultValue={currentConstant}
+                            onChange={(e) => currentConstant=parseInt(e.target.value)}
+                        />
+                    </Box>
                 </Grid>
                 <Grid sx={ gridItemStyle } xs={ 5 } item>
                     Three
@@ -146,15 +161,16 @@ const GeneralFunctions = ({
                 { handleDisplayWarningText(isWarningTextOn) }
                 <Grid sx={{ ...gridItemStyle, mt: !isWarningTextOn && '1rem' }} xs={ 12 } item className='function-creator'>
                     <Card 
-                        style={{ border: 'none', boxShadow: 'none' }} 
+                        style={{ border: 'none', boxShadow: 'none', flexGrow: 1 }} 
                         onDragOver={ (e) => handleDragOver(e) }
                         onDrop={ (e) => handleUpdateGeneralFunction(e, functionsIndex, currentDraggedItem) }
                     >
                         <Typography 
                             variant='caption' 
+                            textAlign={'justify'}
                             color={ handleFunctionDisplay(f) }
                         >
-                            { functionToString(f, setWarningText) }
+                            { functionToString(f) }
                         </Typography>
                     </Card>
                 </Grid>

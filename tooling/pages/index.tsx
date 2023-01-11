@@ -216,6 +216,22 @@ export default function Home() {
                         }
                         break
                     }
+                    case ElementType.Constant: {
+                        if (prevElement?.type !== ElementType.Operator && prevElement !== undefined) {
+                            setWarningText(true)
+                            setTimeout(() => setWarningText(false), 2000)
+                            return prev_copy
+                        }
+                        break
+                    }
+                    case ElementType.Perceptible: {
+                        if (prevElement?.type !== ElementType.Operator && prevElement !== undefined) {
+                            setWarningText(true)
+                            setTimeout(() => setWarningText(false), 2000)
+                            return prev_copy
+                        }
+                        break
+                    }
                 }
                 if (index == 0 && !prev_copy[index]) {
                     prev_copy = [{elements: []}]
