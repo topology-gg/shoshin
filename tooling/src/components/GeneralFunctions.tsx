@@ -5,7 +5,8 @@ import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import TextField from '@mui/material/TextField';
-import { FunctionElement, Operator, Function, ElementType } from '../types/Function'
+import { FunctionElement, Operator, Function, ElementType, Perceptible } from '../types/Function'
+import BasicMenu from './Menu'
 
 const cardStyle = {
     display: 'flex', 
@@ -34,6 +35,7 @@ const functions_title = [
     { id: 'Perceptibles', width: 5 }
 ]
 const operators = Object.values(Operator)
+const perceptibles = Object.keys(Perceptible).filter(x => isNaN(parseInt(x)))
 
 const handleDrag = (e) => {
     document.body.style.cursor = 'grabbing';
@@ -86,8 +88,8 @@ const functionToString = (f: Function) => {
     }
     let str = ' '
     f.elements.map((e) => {
-        console.log(e)
-        str += e.value + ' '
+        let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
+        str += value + ' '
     })
     return str
 }
@@ -97,7 +99,7 @@ let currentConstant = 0
 
 const GeneralFunctions = ({ 
     functions, handleUpdateGeneralFunction, handleConfirmFunction, functionsIndex, 
-    setFunctionsIndex, isWarningTextOn, setWarningText
+    setFunctionsIndex, isWarningTextOn
 }) => {
     let f = functions[functionsIndex]
     return (
@@ -114,8 +116,10 @@ const GeneralFunctions = ({
                     <Grid container sx={{ display: 'flex', justifyContent: "space-between" }}>
                         {
                             functions_title.map((f) => {
+                                let style =  f.id == 'Const' ? { maxWidth: 'none', flexGrow: 1 } : {}
                                 return <Grid 
                                     key={ `function-${f.id}` } 
+                                    style={ style }
                                     sx={{ p: '5px' }} 
                                     item 
                                     xs={ f.width }>
@@ -135,7 +139,7 @@ const GeneralFunctions = ({
                                         onDrag={ (e) => handleDrag(e) } 
                                         draggable 
                                         sx={ cardStyle }>
-                                            <CardContent>{o}</CardContent>
+                                            <CardContent sx={{padding: '5px!important'}}>{o}</CardContent>
                                     </Card>
                         })
                     }
@@ -156,14 +160,25 @@ const GeneralFunctions = ({
                     </Box>
                 </Grid>
                 <Grid sx={ gridItemStyle } xs={ 5 } item>
-                    Three
+                    <Box
+                        id='perceptible'
+                        sx={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }}
+                        onDragEnd={ (e) => handleDragEnd(e) } 
+                        onDrag={ (e) => handleDrag(e) } 
+                    >
+                        <BasicMenu perceptibles={perceptibles} functionsIndex={functionsIndex} handleUpdateGeneralFunction={handleUpdateGeneralFunction}></BasicMenu>
+                    </Box>
                 </Grid>
                 { handleDisplayWarningText(isWarningTextOn) }
                 <Grid sx={{ ...gridItemStyle, mt: !isWarningTextOn && '1rem' }} xs={ 12 } item className='function-creator'>
                     <Card 
                         style={{ border: 'none', boxShadow: 'none', flexGrow: 1 }} 
                         onDragOver={ (e) => handleDragOver(e) }
-                        onDrop={ (e) => handleUpdateGeneralFunction(e, functionsIndex, currentDraggedItem) }
+                        onDrop={(e) => {
+                            handleUpdateGeneralFunction(functionsIndex, currentDraggedItem)
+                            e.preventDefault()
+                            e.stopPropagation()
+                        }}
                     >
                         <Typography 
                             variant='caption' 
