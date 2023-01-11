@@ -3,6 +3,8 @@ import styles from '../../styles/Home.module.css'
 import { Box, Grid } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
+import IconButton from '@mui/material/IconButton';
+import BackspaceIcon from '@mui/icons-material/Backspace';
 import CardContent from '@mui/material/CardContent';
 import TextField from '@mui/material/TextField';
 import { FunctionElement, Operator, Function, ElementType, Perceptible } from '../types/Function'
@@ -69,7 +71,7 @@ const handleDragOver = (e) => {
 }
 
 const handleFunctionDisplay = (f: Function) => {
-    if (!f) {
+    if (!f || !f.elements.length) {
         return {color: '#CCCCCC'}
     }
     return {color: 'black'}
@@ -82,16 +84,16 @@ const handleDisplayWarningText = (isWarningTextOn) => {
         </Grid>
 }
 
-const functionToString = (f: Function) => {
-    if (!f) {
+const functionToDiv = (f: Function) => {
+    if (!f || !f.elements.length) {
         return 'Drop your operators, constants and perceptibles here'
     }
-    let str = ' '
-    f.elements.map((e) => {
-        let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
-        str += value + ' '
-    })
-    return str
+    return (
+        f.elements.map((e, i) => {
+            let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
+            return <Card key={`${e.type}-${e.value}-${i}`}>{value}</Card>
+        })
+    )
 }
 
 let currentDraggedItem = {} as FunctionElement
@@ -99,7 +101,7 @@ let currentConstant = 0
 
 const GeneralFunctions = ({ 
     functions, handleUpdateGeneralFunction, handleConfirmFunction, functionsIndex, 
-    setFunctionsIndex, isWarningTextOn
+    setFunctionsIndex, isWarningTextOn, handleRemoveElementGeneralFunction
 }) => {
     let f = functions[functionsIndex]
     return (
@@ -170,7 +172,7 @@ const GeneralFunctions = ({
                     </Box>
                 </Grid>
                 { handleDisplayWarningText(isWarningTextOn) }
-                <Grid sx={{ ...gridItemStyle, mt: !isWarningTextOn && '1rem' }} xs={ 12 } item className='function-creator'>
+                <Grid sx={{ ...gridItemStyle, mt: !isWarningTextOn && '1rem' }} xs={ 9 } item className='function-creator'>
                     <Card 
                         style={{ border: 'none', boxShadow: 'none', flexGrow: 1 }} 
                         onDragOver={ (e) => handleDragOver(e) }
@@ -182,12 +184,14 @@ const GeneralFunctions = ({
                     >
                         <Typography 
                             variant='caption' 
-                            textAlign={'justify'}
                             color={ handleFunctionDisplay(f) }
                         >
-                            { functionToString(f) }
+                            { functionToDiv(f) }
                         </Typography>
                     </Card>
+                </Grid>
+                <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }} xs={ 2 } item className='delete-interface'>
+                    <IconButton sx={{mt: '1rem'}} onClick={(_) => {handleRemoveElementGeneralFunction(functionsIndex)}}><BackspaceIcon/></IconButton>
                 </Grid>
                 <button 
                     className={ styles.confirm }
@@ -196,7 +200,7 @@ const GeneralFunctions = ({
                     Confirm
                 </button>
                 <Grid 
-                    sx={{ ...gridItemStyle, border: 'none', boxShadow: 'none', mt: '2rem' }} 
+                    sx={{ ...gridItemStyle, border: 'none', boxShadow: 'none', mt: '1rem' }} 
                     xs={ 12 } 
                     item 
                     className='available-functions'

@@ -12,8 +12,10 @@ const BasicMenu = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction }
     setAnchorEl(event.currentTarget)
   }
   const handleClose = (event) => {
-    let perceptible = Perceptible[event.target.id.split('-')[1]]
-    handleUpdateGeneralFunction(functionsIndex, { value: perceptible, type: ElementType.Perceptible } as FunctionElement)
+    if (event.target.id) {
+      let perceptible = Perceptible[event.target.id.split('-')[1]]
+      handleUpdateGeneralFunction(functionsIndex, { value: perceptible, type: ElementType.Perceptible } as FunctionElement)
+    }
     setAnchorEl(null)
   }
 

@@ -242,6 +242,22 @@ export default function Home() {
         }
     }
 
+    function handleRemoveElementGeneralFunction(index: number) {
+        setFunctions((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev))
+            if (!prev_copy[index]) {
+                return prev_copy
+            }
+            let f = prev_copy[index]
+            const length = f.elements.length
+            if (length) {
+                f.elements.splice(length - 1)
+                prev_copy[index] = f
+            }
+            return prev_copy
+        })
+    }
+
     function handleConfirmFunction(f: Function) {
 
     }
@@ -312,6 +328,7 @@ export default function Home() {
                                 functionsIndex={functionsIndex}
                                 setFunctionsIndex={setFunctionsIndex}
                                 isWarningTextOn={isWarningTextOn}
+                                handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
                             />
                         </Grid>
                     </Grid>
