@@ -9,7 +9,7 @@ import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
 import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
-import { Function, FunctionElement } from '../src/types/Function'
+import { Function, FunctionElement, ElementType } from '../src/types/Function'
 
 const theme = createTheme({
     typography: {
@@ -205,8 +205,22 @@ export default function Home() {
         if (element) {
             setFunctions((prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev));
-                console.log(prev_copy)
-                prev_copy[index].elements = prev_copy[index].elements + element
+                let length = prev_copy[index]?.elements?.length
+                let prevElement = prev_copy[index]?.elements[length - 1]
+                switch (element.type) {
+                    case ElementType.Operator: {
+                        if (prevElement?.type !== ElementType.Perceptible && prevElement?.type !== ElementType.Constant) {
+                            setWarningText(true)
+                            setTimeout(() => setWarningText(false), 2000)
+                            return prev_copy
+                        }
+                        break
+                    }
+                }
+                if (index == 0 && !prev_copy[index]) {
+                    prev_copy = [{elements: []}]
+                }
+                prev_copy[index].elements.push(element)
                 return prev_copy;
             })
         }

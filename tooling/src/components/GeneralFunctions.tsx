@@ -78,15 +78,6 @@ const functionToString = (f: Function, setWarningText) => {
     }
     let prevElement: FunctionElement;
     f.elements.map((e) => {
-        switch (e.type) {
-            case ElementType.Operator: {
-                if (prevElement.type !== ElementType.Perceptible && prevElement.type !== ElementType.Constant) {
-                    setWarningText(true)
-                    return 
-                }
-                break
-            }
-        }
     })
 }
 
