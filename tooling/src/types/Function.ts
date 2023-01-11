@@ -20,6 +20,8 @@ export enum Operator {
     Div = '/',
     Mod = '%',
     Parenthesis = '()',
+    Lt = '<',
+    Lte = '<=',
     Equal = '==',
 }
 
@@ -34,7 +36,6 @@ export enum Perceptible {
     SelfInt = 8,
     SelfSta = 9,
     SelfBodyState = 10,
-
     OpponentX = 101,
     OpponentY = 102,
     OpponentVelX = 103,

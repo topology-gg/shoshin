@@ -17,7 +17,7 @@ const theme = createTheme({
     },
     palette: {
         primary: {
-            main: "#FFFE71",
+            main: "#000000",
         },
         secondary: {
             main: "#2d4249",
@@ -201,7 +201,7 @@ export default function Home() {
         })
     }
 
-    function handleUpdateGeneralFunction(e: Event, index: number, element: FunctionElement) {
+    function handleUpdateGeneralFunction(index: number, element: FunctionElement) {
         if (element) {
             setFunctions((prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev));
@@ -240,8 +240,6 @@ export default function Home() {
                 return prev_copy;
             })
         }
-        e.preventDefault()
-        e.stopPropagation()
     }
 
     function handleConfirmFunction(f: Function) {
@@ -314,7 +312,6 @@ export default function Home() {
                                 functionsIndex={functionsIndex}
                                 setFunctionsIndex={setFunctionsIndex}
                                 isWarningTextOn={isWarningTextOn}
-                                setWarningText={setWarningText}
                             />
                         </Grid>
                     </Grid>
