@@ -10,6 +10,7 @@ import SidePanel from '../src/components/SidePanel';
 import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, ElementType, verifyValidFunction } from '../src/types/Function'
+import { Character, MentalState } from '../src/types/MentalState';
 
 const theme = createTheme({
     typography: {
@@ -50,14 +51,14 @@ export default function Home() {
     const [testJson, setTestJson] = useState<TestJson>(null);
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
     const [workingTab, setWorkingTab] = useState<number>(0);
-    const [mentalStates, setMentalStates] = useState<string[]>([]);
+    const [character, setCharacter] = useState<Character>(Character.Jessica)
+    const [mentalStates, setMentalStates] = useState<MentalState[]>([]);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [trees, setTrees] = useState<Tree[]>([])
     const [functions, setFunctions] = useState<Function[]>([])
     const [functionsIndex, setFunctionsIndex] = useState<number>(0)
     const [isWarningTextOn, setWarningTextOn] = useState<boolean>(false)
     const [warningText, setWarningtext] = useState<string>('')
-    // TODO add start new Function button in order to add a empty function inside the functions
 
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
@@ -150,7 +151,7 @@ export default function Home() {
     function handleAddMentalState(new_state: string) {
         setMentalStates((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
-            prev_copy.push(new_state);
+            prev_copy.push({ state: new_state, action: 0 });
             return prev_copy;
         });
         setTrees((prev) => {
@@ -331,6 +332,8 @@ export default function Home() {
                             <SidePanel 
                                 workingTab={workingTab} 
                                 handleClickTab={setWorkingTab}
+                                character={character}
+                                setCharacter={setCharacter}
                                 mentalStates={mentalStates}
                                 handleAddMentalState={handleAddMentalState}
                                 handleClickRemoveMentalState={handleClickRemoveMentalState}
