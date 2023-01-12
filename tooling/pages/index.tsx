@@ -9,6 +9,7 @@ import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
 import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
+import { Function, FunctionElement, ElementType, verifyValidFunction } from '../src/types/Function'
 
 const theme = createTheme({
     typography: {
@@ -16,7 +17,7 @@ const theme = createTheme({
     },
     palette: {
         primary: {
-            main: "#FFFE71",
+            main: "#000000",
         },
         secondary: {
             main: "#2d4249",
@@ -52,6 +53,11 @@ export default function Home() {
     const [mentalStates, setMentalStates] = useState<string[]>([]);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [trees, setTrees] = useState<Tree[]>([])
+    const [functions, setFunctions] = useState<Function[]>([])
+    const [functionsIndex, setFunctionsIndex] = useState<number>(0)
+    const [isWarningTextOn, setWarningTextOn] = useState<boolean>(false)
+    const [warningText, setWarningtext] = useState<string>('')
+    // TODO add start new Function button in order to add a empty function inside the functions
 
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
@@ -189,12 +195,86 @@ export default function Home() {
             new_tree.nodes.push(end_node)
         }
 
-        console.log('new_tree', new_tree)
-
         setTrees((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
             prev_copy[index] = new_tree
             return prev_copy;
+        })
+    }
+
+    function handleUpdateGeneralFunction(index: number, element: FunctionElement) {
+        if (element) {
+            setFunctions((prev) => {
+                let prev_copy = JSON.parse(JSON.stringify(prev));
+                if (index == 0 && !prev_copy[index]) {
+                    prev_copy = [{ elements: [] }]
+                }
+                prev_copy[index].elements.push(element)
+                if (!verifyValidFunction(prev_copy[index], false)) {
+                    setWarningTextOn(true)
+                    setWarningtext(`Invalid ${element.type}, please try again`)
+                    setTimeout(() => setWarningTextOn(false), 2000)
+                    prev_copy[index].elements.pop()
+                    return prev_copy
+                }
+                return prev_copy;
+            })
+        }
+    }
+
+    function handleRemoveElementGeneralFunction(index: number) {
+        setFunctions((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev))
+            if (!prev_copy[index]) {
+                return prev_copy
+            }
+            let f = prev_copy[index]
+            const length = f.elements.length
+            if (length) {
+                f.elements.splice(length - 1)
+                prev_copy[index] = f
+            }
+            return prev_copy
+        })
+    }
+
+    function handleConfirmFunction() {
+        let length = functions.length
+        if(!verifyValidFunction(functions[functionsIndex], true)) {
+            setWarningTextOn(true)
+            setWarningtext(`Invalid function, please update`)
+            setTimeout(() => setWarningTextOn(false), 2000) 
+            return 
+        }
+        if (functionsIndex < length - 1){
+            setFunctionsIndex(() => {
+                return length - 1
+            })
+            return 
+        }
+        if (functions[length - 1]?.elements.length > 0) {
+            setFunctionsIndex((prev) => {
+                return prev + 1
+            })
+            setFunctions((prev) => {
+                let prev_copy = JSON.parse(JSON.stringify(prev))
+                prev_copy.push({elements: []})
+                return prev_copy
+            })
+        }
+    }
+
+    function handleClickDeleteFunction(index: number) {
+        setFunctionsIndex((prev) => {
+            if (index == prev) {
+                return prev - 1
+            }
+            return prev
+        })
+        setFunctions((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev))
+            prev_copy.splice(index, 1)
+            return prev_copy
         })
     }
 
@@ -258,6 +338,15 @@ export default function Home() {
                                 handleClickTreeEditor={setTreeEditor}
                                 trees={trees}
                                 handleUpdateTree={handleUpdateTree}
+                                functions={functions}
+                                handleUpdateGeneralFunction={handleUpdateGeneralFunction}
+                                handleConfirmFunction={handleConfirmFunction}
+                                handleClickDeleteFunction={handleClickDeleteFunction}
+                                functionsIndex={functionsIndex}
+                                setFunctionsIndex={setFunctionsIndex}
+                                isWarningTextOn={isWarningTextOn}
+                                warningText={warningText}
+                                handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
                             />
                         </Grid>
                     </Grid>

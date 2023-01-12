@@ -47,8 +47,6 @@ const treeToDecisionTree = (tree: Tree) => {
         return !n.isChild
     })
 
-    console.log('tree', tree)
-
     // make edges and nodes
     for (let i = 0; i < nodes.length - 1; i++){
         data.edges.push({ data: { source: '', target: '' } })
