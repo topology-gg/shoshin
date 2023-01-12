@@ -70,13 +70,6 @@ const handleDragOver = (e) => {
     e.stopPropagation()
 }
 
-const handleFunctionDisplay = (f: Function) => {
-    if (!f || !f.elements.length) {
-        return {color: '#CCCCCC'}
-    }
-    return {color: 'black'}
-}
-
 const handleDisplayWarningText = (isWarningTextOn) => {
     return isWarningTextOn && 
         <Grid sx={{color: 'red', border: 'none', boxShadow: 'none', mt: '1rem' }} xs={ 12 } item className='warning-test'>
@@ -86,12 +79,14 @@ const handleDisplayWarningText = (isWarningTextOn) => {
 
 const functionToDiv = (f: Function) => {
     if (!f || !f.elements.length) {
-        return 'Drop your operators, constants and perceptibles here'
+        return <Typography variant='caption' color={ '#CCCCCC' } >Drop your operators, constants and perceptibles here</Typography> 
     }
     return (
         f.elements.map((e, i) => {
             let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
-            return <Card key={`${e.type}-${e.value}-${i}`}>{value}</Card>
+            return <Typography variant='caption'>
+                <Box key={`${e.type}-${e.value}-${i}`}>{value}&nbsp;</Box>
+            </Typography>
         })
     )
 }
@@ -173,8 +168,8 @@ const GeneralFunctions = ({
                 </Grid>
                 { handleDisplayWarningText(isWarningTextOn) }
                 <Grid sx={{ ...gridItemStyle, mt: !isWarningTextOn && '1rem' }} xs={ 9 } item className='function-creator'>
-                    <Card 
-                        style={{ border: 'none', boxShadow: 'none', flexGrow: 1 }} 
+                    <Box 
+                        sx={{ display: 'flex', maxWidth: 'none', flexGrow: 1 }}
                         onDragOver={ (e) => handleDragOver(e) }
                         onDrop={(e) => {
                             handleUpdateGeneralFunction(functionsIndex, currentDraggedItem)
@@ -182,13 +177,8 @@ const GeneralFunctions = ({
                             e.stopPropagation()
                         }}
                     >
-                        <Typography 
-                            variant='caption' 
-                            color={ handleFunctionDisplay(f) }
-                        >
-                            { functionToDiv(f) }
-                        </Typography>
-                    </Card>
+                        { functionToDiv(f) }
+                    </Box>
                 </Grid>
                 <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }} xs={ 2 } item className='delete-interface'>
                     <IconButton sx={{mt: '1rem'}} onClick={(_) => {handleRemoveElementGeneralFunction(functionsIndex)}}><BackspaceIcon/></IconButton>
