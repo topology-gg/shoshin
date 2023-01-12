@@ -11,71 +11,76 @@ import { charactersActions, Character, MentalState } from '../types/MentalState'
 const button_style = { marginBottom:"0.5rem", marginTop:"0.5rem", marginLeft: "0.2rem", marginRight: "0.2rem", height: "1.5rem"};
 
 let mentalState = "";
+let current_menu = 0
 const characters: string[] = Object.keys(Character);
 
 const MentalStates = ({
     mentalStates, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, 
-    handleClickTreeEditor
+    handleSetMentalStateAction, handleClickTreeEditor
 }) => {
-    let index = Object.keys(Character).indexOf(character)
-    let actions = Object.keys(charactersActions[index]).filter((a) => isNaN(parseInt(a)))
-
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        let id = event.currentTarget.id.split('-')
+        let menu_index = parseInt(id[id.length - 1])
+        current_menu = menu_index
         setAnchorEl(event.currentTarget)
     }
-    const handleClose = (event, i: number) => {
-        if (event.target.id) {
-            mentalStates[i].action = charactersActions[index][event.target.id.split('-')[1]]
+    const handleClose = (e) => {
+        if (e.target.id) {
+            handleSetMentalStateAction(current_menu, charactersActions[character_index][e.target.id.split('-')[1]])
         }
         setAnchorEl(null)
     }
 
+    let character_index = Object.keys(Character).indexOf(character)
+    let actions = Object.keys(charactersActions[character_index]).filter((a) => isNaN(parseInt(a)))
+
     return (
-        <Box
+        <Grid 
+        container
         sx={{
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             justifyContent: "left",
             alignItems: "left",
             mt: "1rem",
-        }}>
-            <Grid container spacing={0}>
-                <Grid item xs={12}>
-                    <Box>
-                        <Button sx={{ ml: '2rem', border: 1, mb: '5px' }} onClick={() => setCharacter(characters[(index + 1)%characters.length])}>
-                            Selected character: {character}
-                        </Button>
-                    </Box>
-                </Grid>
-                <Grid sx={{
-                    display:"flex",
-                    alignItems:"flex-end",
-                    justifyContent:"space-around"
-                    }} xs={2} item>
-                    <IconButton onClick={(_)=>{
-                        if (mentalState){
-                            handleAddMentalState(mentalState);
-                        }
-                    }}><AddIcon/></IconButton>
-                </Grid>
-                <Grid xs={10} item>
-                    <TextField color={"info"} fullWidth id="standard-basic" label="Input Mental State" variant="standard" onChange={(event) => {mentalState = event.target.value}}/>
-                </Grid>
+        }}
+        >
+            <Grid item xs={12}>
+                <Box>
+                    <Button sx={{ ml: '2rem', border: 1, mb: '5px' }} onClick={() => setCharacter(characters[(character_index + 1)%characters.length])}>
+                        Selected character: {character}
+                    </Button>
+                </Box>
             </Grid>
-            <Box
+            <Grid 
+            xs={2} 
+            item
+            sx={{
+                display:"flex",
+                alignItems:"flex-end",
+                justifyContent:"space-around"
+            }} 
+            >
+                <IconButton onClick={(_)=>{mentalState ? handleAddMentalState(mentalState) : 0}}><AddIcon/></IconButton>
+            </Grid>
+            <Grid xs={10} item>
+                <TextField color={"info"} fullWidth id="standard-basic" label="Input Mental State" variant="standard" onChange={(event) => {mentalState = event.target.value}}/>
+            </Grid>
+            <Grid
+            item
+            xs={12}
             sx={{
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "left",
                 alignItems: "left",
                 mt: "1rem",
-            }}
-            >
+            }}>
                 {
-                    mentalStates.map((state: MentalState, i: number) => (
-                        <Box
+                    mentalStates.map((state: MentalState, i: number) => { 
+                        return <Box
                         key={`button-wrapper-${i}`}
                         sx={{
                             display:"flex",
@@ -92,29 +97,31 @@ const MentalStates = ({
                                 <DeleteIcon sx={{fontSize:"small"}}/>
                             </IconButton>
                             <Button
-                                id='perceptibles-button'
+                                id={`actions-button-${i}`}
                                 aria-controls={open ? 'basic-menu' : undefined}
                                 aria-haspopup='true'
                                 aria-expanded={open ? 'true' : undefined}
                                 onClick={handleClick}
                             >
-                                action {charactersActions[index][state.action]}
+                                action {charactersActions[character_index][state.action]}
                             </Button>
                             <Menu
-                                id='perceptibles-menu'
+                                id={`actions-menu-${i}`}
                                 anchorEl={anchorEl}
                                 open={open}
-                                onClose={(e) => handleClose(e, i)}
+                                onClose={handleClose}
                             >
-                                {actions.map((action) => {
-                                return <MenuItem id={ `action-${action}` } key={ `action-${action}` } onClick={(e) => handleClose(e, i)}>{action}</MenuItem>
-                                })}
+                                {
+                                    actions.map((action) => {
+                                        return <MenuItem id={ `action-${action}-${i}` } key={ `action-${action}-${i}` } onClick={handleClose}>{action}</MenuItem> 
+                                    })
+                                }
                             </Menu>
                         </Box>
-                    ))
+                    })
                 }
-            </Box>
-        </Box>
+            </Grid>
+        </Grid>
     )
 }
 

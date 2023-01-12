@@ -8,7 +8,7 @@ import GeneralFunctions from './GeneralFunctions';
 
 const SidePanel = ({
     workingTab, handleClickTab, mentalStates, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, 
-    treeEditor, handleClickTreeEditor, trees, handleUpdateTree, functions, handleUpdateGeneralFunction,
+    handleSetMentalStateAction, treeEditor, handleClickTreeEditor, trees, handleUpdateTree, functions, handleUpdateGeneralFunction,
     handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isWarningTextOn, warningText, 
     handleRemoveElementGeneralFunction
 }) => {
@@ -21,6 +21,7 @@ const SidePanel = ({
                     setCharacter={setCharacter}
                     handleAddMentalState={handleAddMentalState} 
                     handleClickRemoveMentalState={handleClickRemoveMentalState}
+                    handleSetMentalStateAction={handleSetMentalStateAction}
                     handleClickTreeEditor={handleClickTreeEditor} 
                 /> || !!treeEditor && <TreeEditor 
                     indexTree={ treeEditor-1 }

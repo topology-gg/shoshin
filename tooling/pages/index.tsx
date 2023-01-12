@@ -148,6 +148,14 @@ export default function Home() {
         setTestJson ((_) => preloadedJson);
     }
 
+    function handleSetMentalStateAction(index: number, action: number) {
+        setMentalStates((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy[index] = { state: prev_copy[index].state, action: action }
+            return prev_copy;
+        });
+    }
+
     function handleAddMentalState(new_state: string) {
         setMentalStates((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
@@ -338,6 +346,7 @@ export default function Home() {
                                 mentalStates={mentalStates}
                                 handleAddMentalState={handleAddMentalState}
                                 handleClickRemoveMentalState={handleClickRemoveMentalState}
+                                handleSetMentalStateAction={handleSetMentalStateAction}
                                 treeEditor={treeEditor}
                                 handleClickTreeEditor={setTreeEditor}
                                 trees={trees}
