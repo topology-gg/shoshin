@@ -10,6 +10,7 @@ import SidePanel from '../src/components/SidePanel';
 import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, ElementType } from '../src/types/Function'
+import { prepareSelector } from 'starknet/dist/utils/typedData';
 
 const theme = createTheme({
     typography: {
@@ -258,8 +259,39 @@ export default function Home() {
         })
     }
 
-    function handleConfirmFunction(f: Function) {
+    function handleConfirmFunction() {
+        let length = functions.length
+        console.log(functions)
+        if (functionsIndex < length - 1){
+            setFunctionsIndex(() => {
+                return length - 1
+            })
+            return 
+        }
+        if (functions[length - 1]?.elements.length > 0) {
+            setFunctionsIndex((prev) => {
+                return prev + 1
+            })
+            setFunctions((prev) => {
+                let prev_copy = JSON.parse(JSON.stringify(prev))
+                prev_copy.push({elements: []})
+                return prev_copy
+            })
+        }
+    }
 
+    function handleClickDeleteFunction(index: number) {
+        setFunctionsIndex((prev) => {
+            if (index == prev) {
+                return prev - 1
+            }
+            return prev
+        })
+        setFunctions((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev))
+            prev_copy.splice(index, 1)
+            return prev_copy
+        })
     }
 
     // Render
@@ -325,6 +357,7 @@ export default function Home() {
                                 functions={functions}
                                 handleUpdateGeneralFunction={handleUpdateGeneralFunction}
                                 handleConfirmFunction={handleConfirmFunction}
+                                handleClickDeleteFunction={handleClickDeleteFunction}
                                 functionsIndex={functionsIndex}
                                 setFunctionsIndex={setFunctionsIndex}
                                 isWarningTextOn={isWarningTextOn}

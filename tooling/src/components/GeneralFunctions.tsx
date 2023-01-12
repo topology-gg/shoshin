@@ -3,7 +3,9 @@ import styles from '../../styles/Home.module.css'
 import { Box, Grid } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
+import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import CardContent from '@mui/material/CardContent';
 import TextField from '@mui/material/TextField';
@@ -70,10 +72,12 @@ const handleDragOver = (e) => {
     e.stopPropagation()
 }
 
-const handleDisplayWarningText = (isWarningTextOn) => {
-    return isWarningTextOn && 
-        <Grid sx={{color: 'red', border: 'none', boxShadow: 'none', mt: '1rem' }} xs={ 12 } item className='warning-test'>
-            <Typography variant='overline'>Invalid {currentDraggedItem.type}, please try again</Typography>
+const handleDisplayText = (isWarningTextOn, index) => {
+    return <Grid sx={{ mt: '1rem' }} xs={ 12 } item className='warning-test'>
+            {
+                isWarningTextOn && <Typography color={'red'} variant='overline'>Invalid {currentDraggedItem.type}, please try again</Typography>
+                || !isWarningTextOn && <Typography variant='overline'>Editing F{index}</Typography>
+            } 
         </Grid>
 }
 
@@ -84,7 +88,7 @@ const functionToDiv = (f: Function) => {
     return (
         f.elements.map((e, i) => {
             let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
-            return <Typography variant='caption'>
+            return <Typography key={`${e.type}-${e.value}-${i}`} variant='caption'>
                 <Box key={`${e.type}-${e.value}-${i}`}>{value}&nbsp;</Box>
             </Typography>
         })
@@ -95,8 +99,8 @@ let currentDraggedItem = {} as FunctionElement
 let currentConstant = 0
 
 const GeneralFunctions = ({ 
-    functions, handleUpdateGeneralFunction, handleConfirmFunction, functionsIndex, 
-    setFunctionsIndex, isWarningTextOn, handleRemoveElementGeneralFunction
+    functions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction, 
+    functionsIndex, setFunctionsIndex, isWarningTextOn, handleRemoveElementGeneralFunction
 }) => {
     let f = functions[functionsIndex]
     return (
@@ -166,10 +170,10 @@ const GeneralFunctions = ({
                         <BasicMenu perceptibles={perceptibles} functionsIndex={functionsIndex} handleUpdateGeneralFunction={handleUpdateGeneralFunction}></BasicMenu>
                     </Box>
                 </Grid>
-                { handleDisplayWarningText(isWarningTextOn) }
-                <Grid sx={{ ...gridItemStyle, mt: !isWarningTextOn && '1rem' }} xs={ 9 } item className='function-creator'>
+                { handleDisplayText(isWarningTextOn, functionsIndex) }
+                <Grid sx={{ ...gridItemStyle }} xs={ 9 } item className='function-creator'>
                     <Box 
-                        sx={{ display: 'flex', maxWidth: 'none', flexGrow: 1 }}
+                        sx={{ display: 'inline-flex', maxWidth: '100%', flexGrow: 1, flexWrap: 'wrap' }}
                         onDragOver={ (e) => handleDragOver(e) }
                         onDrop={(e) => {
                             handleUpdateGeneralFunction(functionsIndex, currentDraggedItem)
@@ -180,8 +184,8 @@ const GeneralFunctions = ({
                         { functionToDiv(f) }
                     </Box>
                 </Grid>
-                <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }} xs={ 2 } item className='delete-interface'>
-                    <IconButton sx={{mt: '1rem'}} onClick={(_) => {handleRemoveElementGeneralFunction(functionsIndex)}}><BackspaceIcon/></IconButton>
+                <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none' }} xs={ 2 } item className='delete-interface'>
+                    <IconButton sx={{ mt: '1rem', alignItems: 'flex-end'}} onClick={(_) => {handleRemoveElementGeneralFunction(functionsIndex)}}><BackspaceIcon/></IconButton>
                 </Grid>
                 <button 
                     className={ styles.confirm }
@@ -195,7 +199,14 @@ const GeneralFunctions = ({
                     item 
                     className='available-functions'
                 >
-                    <Box>Function area</Box>
+                    <Box>{functions.slice(0, functions.length - 1).map((_, i) => {
+                        return <Button id={`function-${i}`} key={`function-${i}`} onClick={() => setFunctionsIndex(i)}>
+                            F{i}
+                            <IconButton>
+                                <DeleteIcon onClick={() => handleClickDeleteFunction(i)} fontSize='small'/>
+                            </IconButton>
+                        </Button>
+                    })}</Box>
                 </Grid>
             </Grid>
         </Box>
