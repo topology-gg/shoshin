@@ -241,7 +241,8 @@ export default function Home() {
 
     function handleConfirmFunction() {
         let length = functions.length
-        if(!verifyValidFunction(functions[functionsIndex], true)) {
+        let f = functions[functionsIndex]
+        if(!f?.elements || !verifyValidFunction(f, true)) {
             setWarningTextOn(true)
             setWarningtext(`Invalid function, please update`)
             setTimeout(() => setWarningTextOn(false), 2000) 
