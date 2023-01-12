@@ -9,7 +9,8 @@ import GeneralFunctions from './GeneralFunctions';
 const SidePanel = ({
     workingTab, handleClickTab, mentalStates, handleAddMentalState, handleClickRemoveMentalState, 
     treeEditor, handleClickTreeEditor, trees, handleUpdateTree, functions, handleUpdateGeneralFunction,
-    handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isWarningTextOn, handleRemoveElementGeneralFunction
+    handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isWarningTextOn, warningText, 
+    handleRemoveElementGeneralFunction
 }) => {
     const content = (workingTab: number) => {
         switch (workingTab) {
@@ -36,6 +37,7 @@ const SidePanel = ({
                         functionsIndex={functionsIndex}
                         setFunctionsIndex={setFunctionsIndex}
                         isWarningTextOn={isWarningTextOn}
+                        warningText={warningText}
                         handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
                 />;
             }

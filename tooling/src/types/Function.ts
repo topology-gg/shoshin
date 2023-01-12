@@ -19,7 +19,8 @@ export enum Operator {
     Mul = '*',
     Div = '/',
     Mod = '%',
-    Parenthesis = '()',
+    OpenParenthesis = '(',
+    CloseParenthesis = ')',
     Lt = '<',
     Lte = '<=',
     Equal = '==',
@@ -46,4 +47,47 @@ export enum Perceptible {
     OpponentInt = 108,
     OpponentSta = 109,
     OpponentBodyState = 110,
+}
+
+export function verifyValidFunction(f: Function, confirm: boolean) {
+    let count = 0
+    let prevElement = { type: ElementType.Operator } as FunctionElement
+    for (let e of f?.elements) {
+        if (count < 0) {
+            return false
+        }
+        switch (e?.type) {
+            case ElementType.Operator: {
+                if (e?.value == Operator.OpenParenthesis) {
+                    count += 1
+                    break
+                }
+                if (e?.value == Operator.CloseParenthesis) {
+                    count -= 1
+                    break
+                }
+                if (prevElement.type !== ElementType.Perceptible && prevElement.type !== ElementType.Constant) {
+                    return false
+                }
+                break
+            }
+            case ElementType.Constant: {
+                if (prevElement.type !== ElementType.Operator) {
+                    return false
+                }
+                break
+            }
+            case ElementType.Perceptible: {
+                if (prevElement.type !== ElementType.Operator) {
+                    return false
+                }
+                break
+            }
+        }
+        prevElement = e
+    }
+    if (confirm) {
+        return count == 0
+    }
+    return true
 }

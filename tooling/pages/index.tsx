@@ -9,8 +9,7 @@ import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
 import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
-import { Function, FunctionElement, ElementType } from '../src/types/Function'
-import { prepareSelector } from 'starknet/dist/utils/typedData';
+import { Function, FunctionElement, ElementType, verifyValidFunction } from '../src/types/Function'
 
 const theme = createTheme({
     typography: {
@@ -56,7 +55,8 @@ export default function Home() {
     const [trees, setTrees] = useState<Tree[]>([])
     const [functions, setFunctions] = useState<Function[]>([])
     const [functionsIndex, setFunctionsIndex] = useState<number>(0)
-    const [isWarningTextOn, setWarningText] = useState<boolean>(false)
+    const [isWarningTextOn, setWarningTextOn] = useState<boolean>(false)
+    const [warningText, setWarningtext] = useState<string>('')
     // TODO add start new Function button in order to add a empty function inside the functions
 
     // Decode from React states
@@ -206,38 +206,17 @@ export default function Home() {
         if (element) {
             setFunctions((prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev));
-                let length = prev_copy[index]?.elements?.length
-                let prevElement = prev_copy[index]?.elements[length - 1]
-                switch (element.type) {
-                    case ElementType.Operator: {
-                        if (prevElement?.type !== ElementType.Perceptible && prevElement?.type !== ElementType.Constant) {
-                            setWarningText(true)
-                            setTimeout(() => setWarningText(false), 2000)
-                            return prev_copy
-                        }
-                        break
-                    }
-                    case ElementType.Constant: {
-                        if (prevElement?.type !== ElementType.Operator && prevElement !== undefined) {
-                            setWarningText(true)
-                            setTimeout(() => setWarningText(false), 2000)
-                            return prev_copy
-                        }
-                        break
-                    }
-                    case ElementType.Perceptible: {
-                        if (prevElement?.type !== ElementType.Operator && prevElement !== undefined) {
-                            setWarningText(true)
-                            setTimeout(() => setWarningText(false), 2000)
-                            return prev_copy
-                        }
-                        break
-                    }
-                }
                 if (index == 0 && !prev_copy[index]) {
-                    prev_copy = [{elements: []}]
+                    prev_copy = [{ elements: [] }]
                 }
                 prev_copy[index].elements.push(element)
+                if (!verifyValidFunction(prev_copy[index], false)) {
+                    setWarningTextOn(true)
+                    setWarningtext(`Invalid ${element.type}, please try again`)
+                    setTimeout(() => setWarningTextOn(false), 2000)
+                    prev_copy[index].elements.pop()
+                    return prev_copy
+                }
                 return prev_copy;
             })
         }
@@ -261,7 +240,12 @@ export default function Home() {
 
     function handleConfirmFunction() {
         let length = functions.length
-        console.log(functions)
+        if(!verifyValidFunction(functions[functionsIndex], true)) {
+            setWarningTextOn(true)
+            setWarningtext(`Invalid function, please update`)
+            setTimeout(() => setWarningTextOn(false), 2000) 
+            return 
+        }
         if (functionsIndex < length - 1){
             setFunctionsIndex(() => {
                 return length - 1
@@ -361,6 +345,7 @@ export default function Home() {
                                 functionsIndex={functionsIndex}
                                 setFunctionsIndex={setFunctionsIndex}
                                 isWarningTextOn={isWarningTextOn}
+                                warningText={warningText}
                                 handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
                             />
                         </Grid>

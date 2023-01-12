@@ -72,10 +72,10 @@ const handleDragOver = (e) => {
     e.stopPropagation()
 }
 
-const handleDisplayText = (isWarningTextOn, index) => {
+const handleDisplayText = (isWarningTextOn, warningText, index) => {
     return <Grid sx={{ mt: '1rem' }} xs={ 12 } item className='warning-test'>
             {
-                isWarningTextOn && <Typography color={'red'} variant='overline'>Invalid {currentDraggedItem.type}, please try again</Typography>
+                isWarningTextOn && <Typography color={'red'} variant='overline'>{warningText}</Typography>
                 || !isWarningTextOn && <Typography variant='overline'>Editing F{index}</Typography>
             } 
         </Grid>
@@ -100,7 +100,7 @@ let currentConstant = 0
 
 const GeneralFunctions = ({ 
     functions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction, 
-    functionsIndex, setFunctionsIndex, isWarningTextOn, handleRemoveElementGeneralFunction
+    functionsIndex, setFunctionsIndex, isWarningTextOn, warningText, handleRemoveElementGeneralFunction
 }) => {
     let f = functions[functionsIndex]
     return (
@@ -170,7 +170,7 @@ const GeneralFunctions = ({
                         <BasicMenu perceptibles={perceptibles} functionsIndex={functionsIndex} handleUpdateGeneralFunction={handleUpdateGeneralFunction}></BasicMenu>
                     </Box>
                 </Grid>
-                { handleDisplayText(isWarningTextOn, functionsIndex) }
+                { handleDisplayText(isWarningTextOn, warningText, functionsIndex) }
                 <Grid sx={{ ...gridItemStyle }} xs={ 9 } item className='function-creator'>
                     <Box 
                         sx={{ display: 'inline-flex', maxWidth: '100%', flexGrow: 1, flexWrap: 'wrap' }}
@@ -202,8 +202,8 @@ const GeneralFunctions = ({
                     <Box>{functions.slice(0, functions.length - 1).map((_, i) => {
                         return <Button id={`function-${i}`} key={`function-${i}`} onClick={() => setFunctionsIndex(i)}>
                             F{i}
-                            <IconButton>
-                                <DeleteIcon onClick={() => handleClickDeleteFunction(i)} fontSize='small'/>
+                            <IconButton onClick={() => handleClickDeleteFunction(i)}>
+                                <DeleteIcon fontSize='small'/>
                             </IconButton>
                         </Button>
                     })}</Box>
