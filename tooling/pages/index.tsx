@@ -10,7 +10,8 @@ import SidePanel from '../src/components/SidePanel';
 import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, ElementType, verifyValidFunction } from '../src/types/Function'
-import { Character, MentalState } from '../src/types/MentalState';
+import { MentalState } from '../src/types/MentalState';
+import { Character } from '../src/constants/constants';
 
 const theme = createTheme({
     typography: {
