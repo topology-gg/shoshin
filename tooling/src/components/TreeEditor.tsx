@@ -90,9 +90,10 @@ const TreeEditor = ({indexTree, tree, handleUpdateTree, mentalState, handleClick
             }}>
                 <TextField
                 color={"info"}
-                id="outlined-multiline-static"
+                id="outlined-textarea"
+                placeholder={`if F1? MS IDLE:\nif F2? MS ATTACK:\nMS DEFEND`}
                 defaultValue={treeToString(tree)}
-                label={`Decision Tree for ${mentalState}`}
+                label={`Decision Tree for ${mentalState.state}`}
                 onChange={ (event) => handleUpdateTree(indexTree, event.target.value) }
                 fullWidth
                 multiline
