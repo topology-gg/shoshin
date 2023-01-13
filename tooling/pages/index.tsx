@@ -60,6 +60,7 @@ export default function Home() {
     const [functionsIndex, setFunctionsIndex] = useState<number>(0)
     const [isWarningTextOn, setWarningTextOn] = useState<boolean>(false)
     const [warningText, setWarningtext] = useState<string>('')
+    const [combos, setCombos] = useState<number[][]>([])
 
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
@@ -289,6 +290,16 @@ export default function Home() {
         })
     }
 
+    function handleValidateCombo(combo: number[], index: number) {
+        if (combo.length > 0) {
+            setCombos((prev) => {
+                let prev_copy = JSON.parse(JSON.stringify(prev))
+                prev_copy[index] = combo
+                return prev_copy
+            })
+        }
+    }
+
     // Render
     return (
         <div className={styles.container}>
@@ -345,6 +356,8 @@ export default function Home() {
                                 character={character}
                                 setCharacter={setCharacter}
                                 mentalStates={mentalStates}
+                                combos={combos}
+                                handleValidateCombo={handleValidateCombo}
                                 handleAddMentalState={handleAddMentalState}
                                 handleClickRemoveMentalState={handleClickRemoveMentalState}
                                 handleSetMentalStateAction={handleSetMentalStateAction}

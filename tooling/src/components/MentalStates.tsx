@@ -1,5 +1,5 @@
 import React, { useState, KeyboardEventHandler } from 'react';
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Box, Button, Card, Grid, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
@@ -16,27 +16,37 @@ import { Character, CHARACTERS_ACTIONS, ACTIONS_ICON_MAP, MAX_COMBO_SIZE } from 
 
 const button_style = { marginBottom:"0.5rem", marginTop:"0.5rem", marginLeft: "0.2rem", marginRight: "0.2rem", height: "1.5rem"};
 let mentalState = "";
-let current_menu = 0
+let currentMenu = 0
+let combosIndex = 0
 const characters: string[] = Object.keys(Character);
 
+const comboToStr = (combo: number[], characterIndex) => {
+    let str = ""
+    combo.forEach((action) => {
+        let a = CHARACTERS_ACTIONS[characterIndex][action].replace('_', ' ')
+        str += a + ' '
+    })
+    return str
+}
+
 const MentalStates = ({
-    mentalStates, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, 
+    mentalStates, combos, handleValidateCombo, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, 
     handleSetMentalStateAction, handleClickTreeEditor
 }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const [selectedNewAction, setSelectedNewAction] = useState<boolean>(false);
-    const [combo, setCombo] = useState<number[]>([0, 1, 1])
+    const [combo, setCombo] = useState<number[]>([])
 
     const open = Boolean(anchorEl)
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         let id = event.currentTarget.id.split('-')
-        let menu_index = parseInt(id[id.length - 1])
-        current_menu = menu_index
+        let menuIndex = parseInt(id[id.length - 1])
+        currentMenu = menuIndex
         setAnchorEl(event.currentTarget)
     }
     const handleClose = (e) => {
         if (e.target.id) {
-            handleSetMentalStateAction(current_menu, CHARACTERS_ACTIONS[character_index][e.target.id.split('-')[1]])
+            handleSetMentalStateAction(currentMenu, CHARACTERS_ACTIONS[character_index][e.target.id.split('-')[1]])
         }
         setAnchorEl(null)
     }
@@ -237,8 +247,51 @@ const MentalStates = ({
                             selected={selectedNewAction}
                             characterIndex={character_index}
                         />
-                        <ValidateCombo onValidateCombo={() => {}} />
+                        <ValidateCombo onValidateCombo={() => { 
+                            handleValidateCombo(combo, combosIndex)
+                            combosIndex += 1
+                            setCombo([])
+                        }} />
                     </div>
+                    <Box
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        padding: '0.5rem',
+                    }}
+                    >
+                        {
+                            combos.map((combo, key) => {
+                                return (
+                                    <Tooltip key={`combos-tooltip-${key}`} title={comboToStr(combo, character_index)}>
+                                        <Card 
+                                            sx=
+                                            {{
+                                                marginLeft: '1.5rem',
+                                                padding: '0.2rem',
+                                                height: '1.5rem',
+                                                width: '4rem',
+                                                fontSize: '12px',
+                                                textAlign: 'center',
+                                                border: '1px solid black',
+                                                ':hover': {
+                                                    bgcolor: '#CCCCCC',
+                                                    cursor: 'pointer'
+                                                }
+                                            }} 
+                                            key={`combo-${key}`}
+                                            onClick={() => {
+                                                combosIndex = key
+                                                setCombo(combos[combosIndex])
+                                            }}
+                                            >  
+                                                Combo {key}
+                                        </Card>
+                                    </Tooltip>
+                                )
+                            })
+                        }
+                    </Box>
                 </Box>
             </Grid>
         </Grid>
