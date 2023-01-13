@@ -150,3 +150,5 @@ export const ACTIONS_ICON_MAP = {
     DASH_FORWARD  : 'keyboard_double_arrow_left',
     DASH_BACKWARD : 'keyboard_double_arrow_right',
 }
+
+export const MAX_COMBO_SIZE = 10;
