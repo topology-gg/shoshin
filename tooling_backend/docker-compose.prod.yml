@@ -10,7 +10,7 @@ services:
     ports:
     - 27017:27017
     volumes:
-    - ./_docker/apibara_mongodb:/data/db
+    - mongo-data:/data/db
 
   indexer:
     build:
@@ -25,3 +25,6 @@ services:
       PYTHONUNBUFFERED: "1"
     links:
     - mongo
+
+volumes:
+  mongo-data:

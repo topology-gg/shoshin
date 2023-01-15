@@ -29,9 +29,10 @@ def cli():
 async def start(server_url, mongo_url, restart):
     """Start the Apibara indexer."""
     if server_url is None:
-        server_url = "goerli.starknet.stream.apibara.com"
+        server_url = "mainnet.starknet.a5a.ch"
     if mongo_url is None:
         mongo_url = "mongodb://apibara:apibara@localhost:27017"
+
     await run_indexer(
         restart=restart,
         server_url=server_url,
