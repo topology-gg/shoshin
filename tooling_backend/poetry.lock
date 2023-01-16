@@ -72,19 +72,20 @@ files = [
 
 [[package]]
 name = "apibara"
-version = "0.6.0a0"
+version = "0.6.0"
 description = "Apibara cliend SDK. Stream and transform on-chain data with Python."
 category = "main"
 optional = false
 python-versions = ">=3.8,<3.11"
 files = [
-    {file = "apibara-0.6.0a0-py3-none-any.whl", hash = "sha256:3a925a69de8a71cb95e8e05db963dab509c6056149fc73d2eb5e161e8c4f71f3"},
-    {file = "apibara-0.6.0a0.tar.gz", hash = "sha256:013cb6033b7432254d5ce0b88b6e934b7e595ce1612a8e7baa944e91b988b51c"},
+    {file = "apibara-0.6.0-py3-none-any.whl", hash = "sha256:23d2fd22136d49710065721431bff6207d12422c7ca465872169c1e496992cf8"},
+    {file = "apibara-0.6.0.tar.gz", hash = "sha256:7760adae0a75133bcf3cbc213ea4ff85203b29de44aa370bdf4c6f67ed9a8550"},
 ]
 
 [package.dependencies]
 grpcio = ">=1.50,<2.0"
 protobuf = ">=4.20,<5"
+pymongo = {version = ">=4.3.3,<5.0.0", optional = true, markers = "extra == \"indexer\""}
 
 [package.extras]
 indexer = ["pymongo (>=4.3.3,<5.0.0)"]
@@ -2331,4 +2332,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">3.8,<3.10"
-content-hash = "0640fcda38d72d5c9e86b349715166dab1cc3f4e7a0f4f4a6f238d424221c2af"
+content-hash = "7e522dde1aef8da987aff0114ae89044697002cae47aa6e7c8cfcd4a7fc7e42b"
