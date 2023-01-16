@@ -202,7 +202,6 @@ const MentalStates = ({
                     }}
                     >
                         {actions.map((key, key_i) => {
-                            console.log(key)
                             if (!key.includes('COMBO')){
                                 return (
                                     <Tooltip key={`${key}`} title={`${key.replaceAll('_', ' ')}`}>

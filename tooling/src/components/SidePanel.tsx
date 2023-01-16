@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from '../../styles/Home.module.css';
 import { Box } from "@mui/material";
 import Tabs from './Tabs';
 import MentalStates from './MentalStates';
@@ -10,7 +11,7 @@ const SidePanel = ({
     workingTab, handleClickTab, mentalStates, combos, handleValidateCombo, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, 
     handleSetMentalStateAction, treeEditor, handleClickTreeEditor, trees, handleUpdateTree, functions, handleUpdateGeneralFunction,
     handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isWarningTextOn, warningText, 
-    handleRemoveElementGeneralFunction
+    handleRemoveElementGeneralFunction, handleValidateCharacter
 }) => {
     const content = (workingTab: number) => {
         switch (workingTab) {
@@ -30,6 +31,7 @@ const SidePanel = ({
                     tree={trees[treeEditor - 1]} 
                     handleUpdateTree={handleUpdateTree}
                     mentalState={mentalStates[treeEditor - 1]}
+                    functions={functions}
                     handleClickTreeEditor={handleClickTreeEditor}
                 />
             }
@@ -59,6 +61,16 @@ const SidePanel = ({
         }}>
             <Tabs workingTab={workingTab} handleClickTab={handleClickTab}></Tabs>
             {content(workingTab)}
+            {
+                !treeEditor && 
+                <button
+                className={ styles.confirm }
+                style={{ maxWidth: '11rem', minHeight: '2rem', marginTop: '1rem' }}
+                onClick={() => handleValidateCharacter(mentalStates, combos, trees, functions)}
+                >
+                    Validate your character
+                </button>
+            }
         </Box>
     )
 }

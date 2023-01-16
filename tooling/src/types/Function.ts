@@ -91,3 +91,12 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
     }
     return true
 }
+
+export function functionToStr(f: Function) {
+    let str = ''
+    f.elements.forEach((e) => {
+        let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
+        str += value + ' '
+    })
+    return str
+}

@@ -300,6 +300,14 @@ export default function Home() {
         }
     }
 
+    function handleValidateCharacter(mentalStates: MentalState[], combos: number[][], trees: Tree[], functions: Function[]) {
+        console.log('Mental States', mentalStates)
+        console.log('Combos', combos)
+        console.log('Trees', trees)
+        console.log('Functions', functions)
+        return 
+    }
+
     // Render
     return (
         <div className={styles.container}>
@@ -374,6 +382,7 @@ export default function Home() {
                                 isWarningTextOn={isWarningTextOn}
                                 warningText={warningText}
                                 handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
+                                handleValidateCharacter={handleValidateCharacter}
                             />
                         </Grid>
                     </Grid>
