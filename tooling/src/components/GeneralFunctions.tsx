@@ -202,12 +202,28 @@ const GeneralFunctions = ({
                     <Box>
                         {
                             functions.slice(0, functions.length - 1).map((_, i) => {
-                                return <Button id={`function-${i}`} key={`function-${i}`} onClick={() => setFunctionsIndex(i)}>
-                                    F{i}
-                                    <IconButton onClick={() => handleClickDeleteFunction(i)}>
-                                        <DeleteIcon fontSize='small'/>
-                                    </IconButton>
-                                </Button> 
+                                return (
+                                    <Card 
+                                    sx={{ 
+                                        border: 'none', 
+                                        boxShadow: 'none',
+                                        padding: '0.2rem',
+                                        ':hover': {
+                                            backgroundColor: '#DDDDDD',
+                                            border: "1px!important solid #ffffff00",
+                                            cursor: 'pointer',
+                                        }
+                                    }} 
+                                    id={`function-${i}`} 
+                                    key={`function-${i}`} 
+                                    onClick={() => setFunctionsIndex(i)}
+                                    >
+                                        F{i}
+                                        <IconButton onClick={() => handleClickDeleteFunction(i)}>
+                                            <DeleteIcon fontSize='small'/>
+                                        </IconButton>
+                                    </Card> 
+                                )
                             })
                         }
                     </Box>

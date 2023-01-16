@@ -1,10 +1,11 @@
 import React from 'react';
-import { Box } from "@mui/material";
+import { Box, Card, Tooltip, Typography } from "@mui/material";
 import CancelIcon from '@mui/icons-material/Cancel';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DecisionTree from './DecisionTree'
 import { Tree } from '../types/Tree'
+import { functionToStr } from '../types/Function'
 
 const data = {
     nodes: [
@@ -27,7 +28,7 @@ const data = {
   };
 
 const treeToString = (tree: Tree) => {
-    let str = ""
+    let str = ''
     tree.nodes.forEach((n) => {
         if (n?.branch === 'left' && n.isChild) {
             str += n.id + `:\n`
@@ -70,27 +71,27 @@ const treeToDecisionTree = (tree: Tree) => {
 }
 
 
-const TreeEditor = ({indexTree, tree, handleUpdateTree, mentalState, handleClickTreeEditor}) => {
+const TreeEditor = ({indexTree, tree, handleUpdateTree, mentalState, functions, handleClickTreeEditor}) => {
     return(
         <Box
         sx={{
-            display: "flex",
+            display: 'flex',
             flexGrow: 1,
-            flexDirection: "column",
-            justifyContent: "left",
-            alignItems: "flex-start",
-            mt: "1rem",
+            flexDirection: 'column',
+            justifyContent: 'left',
+            alignItems: 'flex-start',
+            mt: '1rem',
         }}>
             <IconButton onClick={(_)=>{handleClickTreeEditor(0)}}><CancelIcon/></IconButton>
             <Box
             sx={{
-                mt: "1rem",
-                ml: "1rem",
-                minWidth:"30vw"
+                mt: '1rem',
+                ml: '1rem',
+                minWidth:'30vw'
             }}>
                 <TextField
-                color={"info"}
-                id="outlined-textarea"
+                color={'info'}
+                id='outlined-textarea'
                 placeholder={`if F1? MS IDLE:\nif F2? MS ATTACK:\nMS DEFEND`}
                 defaultValue={treeToString(tree)}
                 label={`Decision Tree for ${mentalState.state}`}
@@ -99,15 +100,38 @@ const TreeEditor = ({indexTree, tree, handleUpdateTree, mentalState, handleClick
                 multiline
                 rows={10}
                 />
+                <Box
+                sx={{
+                    mt: '1rem',
+                    display: 'flex',
+                    flexDirection: 'row'
+                }}
+                >
+                    <Typography variant='overline'>Available functions:</Typography>
+                    {
+                        functions.slice(0, functions.length - 1).map((f, i) => {
+                            return (
+                                <Tooltip key={`tooltip-function-${i}`} title={`${functionToStr(f)}`}>
+                                    <Card
+                                    sx={{ 
+                                        margin: '0.2rem',
+                                        padding: '0.2rem',
+                                    }}
+                                    >F{i}</Card>
+                                </Tooltip>
+                            )
+                        })
+                    }
+                </Box>
             </Box>
             <Box
             sx={{
-                mt: "1rem",
-                ml: "1rem",
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "column",
-                minWidth: "30vw",
+                mt: '1rem',
+                ml: '1rem',
+                display: 'flex',
+                alignItems: 'center',
+                flexDirection: 'column',
+                minWidth: '30vw',
             }}>
                 <DecisionTree data={treeToDecisionTree(tree)} height={300} width={593}></DecisionTree>
             </Box>
