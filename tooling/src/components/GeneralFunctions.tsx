@@ -199,14 +199,18 @@ const GeneralFunctions = ({
                     item 
                     className='available-functions'
                 >
-                    <Box>{functions.slice(0, functions.length - 1).map((_, i) => {
-                        return <Button id={`function-${i}`} key={`function-${i}`} onClick={() => setFunctionsIndex(i)}>
-                            F{i}
-                            <IconButton onClick={() => handleClickDeleteFunction(i)}>
-                                <DeleteIcon fontSize='small'/>
-                            </IconButton>
-                        </Button>
-                    })}</Box>
+                    <Box>
+                        {
+                            functions.slice(0, functions.length - 1).map((_, i) => {
+                                return <Button id={`function-${i}`} key={`function-${i}`} onClick={() => setFunctionsIndex(i)}>
+                                    F{i}
+                                    <IconButton onClick={() => handleClickDeleteFunction(i)}>
+                                        <DeleteIcon fontSize='small'/>
+                                    </IconButton>
+                                </Button> 
+                            })
+                        }
+                    </Box>
                 </Grid>
             </Grid>
         </Box>

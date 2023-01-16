@@ -101,3 +101,52 @@ export const adjustmentForCharacter = (characterName: string, bodyStateName: str
     // todo: Antoc adjustment
     return {'left':0, 'top':0}
 }
+
+export enum Character {
+    Jessica = 'Jessica',
+    Antoc = 'Antoc',
+}
+
+export enum ActionsJessica {
+    NULL = 0,
+    SLASH = 1,
+    UPSWING = 2,
+    SIDECUT = 3,
+    BLOCK = 4,
+    MOVE_FORWARD  = 5,
+    MOVE_BACKWARD = 6,
+    DASH_FORWARD  = 7,
+    DASH_BACKWARD = 8,
+}
+
+export enum ActionsAntoc {
+    NULL = 0,
+    HORI = 1,
+    VERT = 2,
+    BLOCK = 3,
+    MOVE_FORWARD = 4,
+    MOVE_BACKWARD = 5,
+    DASH_FORWARD = 6,
+    DASH_BACKWARD = 7,
+}
+
+export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc]
+
+export const ACTIONS_ICON_MAP = {
+    NULL: 'close',
+
+    SLASH : 'local_dining',
+    UPSWING : 'swipe_vertical',
+    SIDECUT : 'swipe_left',
+
+    HORI : 'local_dining',
+    VERT : 'swipe_vertical',
+
+    BLOCK : 'block',
+    MOVE_FORWARD  : 'arrow_forward',
+    MOVE_BACKWARD : 'arrow_back',
+    DASH_FORWARD  : 'keyboard_double_arrow_left',
+    DASH_BACKWARD : 'keyboard_double_arrow_right',
+}
+
+export const MAX_COMBO_SIZE = 10;

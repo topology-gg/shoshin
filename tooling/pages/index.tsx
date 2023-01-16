@@ -10,6 +10,8 @@ import SidePanel from '../src/components/SidePanel';
 import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, ElementType, verifyValidFunction } from '../src/types/Function'
+import { MentalState } from '../src/types/MentalState';
+import { Character } from '../src/constants/constants';
 
 const theme = createTheme({
     typography: {
@@ -50,14 +52,15 @@ export default function Home() {
     const [testJson, setTestJson] = useState<TestJson>(null);
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
     const [workingTab, setWorkingTab] = useState<number>(0);
-    const [mentalStates, setMentalStates] = useState<string[]>([]);
+    const [character, setCharacter] = useState<Character>(Character.Jessica)
+    const [mentalStates, setMentalStates] = useState<MentalState[]>([]);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [trees, setTrees] = useState<Tree[]>([])
     const [functions, setFunctions] = useState<Function[]>([])
     const [functionsIndex, setFunctionsIndex] = useState<number>(0)
     const [isWarningTextOn, setWarningTextOn] = useState<boolean>(false)
     const [warningText, setWarningtext] = useState<string>('')
-    // TODO add start new Function button in order to add a empty function inside the functions
+    const [combos, setCombos] = useState<number[][]>([])
 
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
@@ -147,10 +150,18 @@ export default function Home() {
         setTestJson ((_) => preloadedJson);
     }
 
+    function handleSetMentalStateAction(index: number, action: number) {
+        setMentalStates((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy[index] = { state: prev_copy[index].state, action: action }
+            return prev_copy;
+        });
+    }
+
     function handleAddMentalState(new_state: string) {
         setMentalStates((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
-            prev_copy.push(new_state);
+            prev_copy.push({ state: new_state, action: 0 });
             return prev_copy;
         });
         setTrees((prev) => {
@@ -240,7 +251,8 @@ export default function Home() {
 
     function handleConfirmFunction() {
         let length = functions.length
-        if(!verifyValidFunction(functions[functionsIndex], true)) {
+        let f = functions[functionsIndex]
+        if(!f?.elements || !verifyValidFunction(f, true)) {
             setWarningTextOn(true)
             setWarningtext(`Invalid function, please update`)
             setTimeout(() => setWarningTextOn(false), 2000) 
@@ -276,6 +288,16 @@ export default function Home() {
             prev_copy.splice(index, 1)
             return prev_copy
         })
+    }
+
+    function handleValidateCombo(combo: number[], index: number) {
+        if (combo.length > 0) {
+            setCombos((prev) => {
+                let prev_copy = JSON.parse(JSON.stringify(prev))
+                prev_copy[index] = combo
+                return prev_copy
+            })
+        }
     }
 
     // Render
@@ -331,9 +353,14 @@ export default function Home() {
                             <SidePanel 
                                 workingTab={workingTab} 
                                 handleClickTab={setWorkingTab}
+                                character={character}
+                                setCharacter={setCharacter}
                                 mentalStates={mentalStates}
+                                combos={combos}
+                                handleValidateCombo={handleValidateCombo}
                                 handleAddMentalState={handleAddMentalState}
                                 handleClickRemoveMentalState={handleClickRemoveMentalState}
+                                handleSetMentalStateAction={handleSetMentalStateAction}
                                 treeEditor={treeEditor}
                                 handleClickTreeEditor={setTreeEditor}
                                 trees={trees}
