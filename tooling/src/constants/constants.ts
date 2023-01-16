@@ -117,7 +117,6 @@ export enum ActionsJessica {
     MOVE_BACKWARD = 6,
     DASH_FORWARD  = 7,
     DASH_BACKWARD = 8,
-    COMBO = 10,
 }
 
 export enum ActionsAntoc {
@@ -129,7 +128,6 @@ export enum ActionsAntoc {
     MOVE_BACKWARD = 5,
     DASH_FORWARD = 6,
     DASH_BACKWARD = 7,
-    COMBO = 10,
 }
 
 export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc]

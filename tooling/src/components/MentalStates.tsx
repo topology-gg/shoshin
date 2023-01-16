@@ -14,7 +14,7 @@ import { MentalState } from '../types/MentalState';
 import { Character, CHARACTERS_ACTIONS, ACTIONS_ICON_MAP, MAX_COMBO_SIZE } from '../constants/constants';
 
 
-const button_style = { marginBottom:"0.5rem", marginTop:"0.5rem", marginLeft: "0.2rem", marginRight: "0.2rem", height: "1.5rem"};
+const buttonStyle = { marginBottom:"0.5rem", marginTop:"0.5rem", marginLeft: "0.2rem", marginRight: "0.2rem", height: "1.5rem"};
 let mentalState = "";
 let currentMenu = 0
 let combosIndex = 0
@@ -27,6 +27,13 @@ const comboToStr = (combo: number[], characterIndex) => {
         str += a + ' '
     })
     return str
+}
+
+const actionToStr = (action: number, characterIndex) => {
+    if (action < 100) {
+        return CHARACTERS_ACTIONS[characterIndex][action]?.replace('_', ' ')
+    }
+    return `Combo ${action - 101}`
 }
 
 const MentalStates = ({
@@ -46,7 +53,13 @@ const MentalStates = ({
     }
     const handleClose = (e) => {
         if (e.target.id) {
-            handleSetMentalStateAction(currentMenu, CHARACTERS_ACTIONS[character_index][e.target.id.split('-')[1]])
+            let a = e.target.id.split('-')[1]
+            if (!a.includes('COMBO')) {
+                handleSetMentalStateAction(currentMenu, CHARACTERS_ACTIONS[characterIndex][a])
+            } else {
+                let comboNumber = parseInt(a.split('_')[1])
+                handleSetMentalStateAction(currentMenu, 101 + comboNumber)
+            }
         }
         setAnchorEl(null)
     }
@@ -71,8 +84,11 @@ const MentalStates = ({
         }     
     };
 
-    let character_index = Object.keys(Character).indexOf(character)
-    let actions = Object.keys(CHARACTERS_ACTIONS[character_index]).filter((a) => isNaN(parseInt(a)))
+    let characterIndex = Object.keys(Character).indexOf(character)
+    let actions = Object.keys(CHARACTERS_ACTIONS[characterIndex]).filter((a) => isNaN(parseInt(a)))
+    combos.forEach((_, i) => {
+        actions.push(`COMBO_${i}`)
+    })
 
     return (
         <Grid 
@@ -87,7 +103,7 @@ const MentalStates = ({
         >
             <Grid item xs={12}>
                 <Box>
-                    <Button sx={{ ml: '2rem', border: 1, mb: '5px' }} onClick={() => setCharacter(characters[(character_index + 1)%characters.length])}>
+                    <Button sx={{ ml: '2rem', border: 1, mb: '5px' }} onClick={() => setCharacter(characters[(characterIndex + 1)%characters.length])}>
                         Selected character: {character}
                     </Button>
                 </Box>
@@ -126,7 +142,7 @@ const MentalStates = ({
                             ml: "2rem"
                         }}>
                             <button
-                            style={{ ...button_style }}
+                            style={{ ...buttonStyle }}
                             key={`${i}`}
                             onClick={() => handleClickTreeEditor(i+1)}>
                                 {`${state.state}`}
@@ -141,7 +157,7 @@ const MentalStates = ({
                                 aria-expanded={open ? 'true' : undefined}
                                 onClick={handleClick}
                             >
-                                action {CHARACTERS_ACTIONS[character_index][state.action]}
+                                action {actionToStr(state.action, characterIndex)}
                             </Button>
                             <Menu
                                 id={`actions-menu-${i}`}
@@ -151,7 +167,7 @@ const MentalStates = ({
                             >
                                 {
                                     actions.map((action) => {
-                                        return <MenuItem id={ `action-${action}-${i}` } key={ `action-${action}-${i}` } onClick={handleClose}>{action}</MenuItem> 
+                                        return <MenuItem id={ `action-${action}-${i}` } key={ `action-${action}-${i}` } onClick={handleClose}>{action.replaceAll('_', ' ')}</MenuItem> 
                                     })
                                 }
                             </Menu>
@@ -186,7 +202,8 @@ const MentalStates = ({
                     }}
                     >
                         {actions.map((key, key_i) => {
-                            if (key !== 'COMBO'){
+                            console.log(key)
+                            if (!key.includes('COMBO')){
                                 return (
                                     <Tooltip key={`${key}`} title={`${key.replaceAll('_', ' ')}`}>
                                         <div
@@ -211,7 +228,7 @@ const MentalStates = ({
                                                 {ACTIONS_ICON_MAP[key]}
                                             </i>
                                             <p style={{ marginTop: "0.1rem", marginBottom: "0" }}>
-                                                {CHARACTERS_ACTIONS[character_index][key]}
+                                                {CHARACTERS_ACTIONS[characterIndex][key]}
                                             </p>
                                         </div>
                                     </Tooltip>
@@ -232,7 +249,7 @@ const MentalStates = ({
                             <SingleAction
                                 key={`action-${index}`}
                                 action={action}
-                                characterIndex={character_index}
+                                characterIndex={characterIndex}
                             />
                         ))}
                         <NewAction
@@ -245,7 +262,7 @@ const MentalStates = ({
                                 setSelectedNewAction(false)
                             }}
                             selected={selectedNewAction}
-                            characterIndex={character_index}
+                            characterIndex={characterIndex}
                         />
                         <ValidateCombo onValidateCombo={() => { 
                             handleValidateCombo(combo, combosIndex)
@@ -263,7 +280,7 @@ const MentalStates = ({
                         {
                             combos.map((combo, key) => {
                                 return (
-                                    <Tooltip key={`combos-tooltip-${key}`} title={comboToStr(combo, character_index)}>
+                                    <Tooltip key={`combos-tooltip-${key}`} title={comboToStr(combo, characterIndex)}>
                                         <Card 
                                             sx=
                                             {{
