@@ -1,33 +1,14 @@
 import React from 'react';
-import { Box } from "@mui/material";
+import { Box, Card, Tooltip, Typography } from "@mui/material";
 import CancelIcon from '@mui/icons-material/Cancel';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DecisionTree from './DecisionTree'
 import { Tree } from '../types/Tree'
-
-const data = {
-    nodes: [
-        { data: { id: 'if F1' }, scratch: {child: false} },
-        { data: { id: 'MS DEFEND' }, scratch: { child: true, branch: 'left' } },
-        { data: { id: 'if F2' }, scratch: { child: false }},
-        { data: { id: 'MS CHILL' }, scratch: { child: true, branch: 'left' }},
-        { data: { id: 'if F3' }, scratch: { child: false } },
-        { data: { id: 'MS CLOSER' }, scratch: { child: true, branch: 'right' } },
-        { data: { id: 'MS AGGRO' }, scratch: { child: true, branch: 'left' } },
-    ],
-    edges: [
-        { data: { source: 'if F1', target: 'MS DEFEND' } }, // F1 true
-        { data: { source: 'if F1', target: 'if F2' } }, // F1 false
-        { data: { source: 'if F2', target: 'MS CHILL' } }, // F2 true
-        { data: { source: 'if F2', target: 'if F3' } }, // F2 false
-        { data: { source: 'if F3', target: 'MS CLOSER' } }, // F3 true
-        { data: { source: 'if F3', target: 'MS AGGRO' } }, // F3 false
-    ]
-  };
+import { functionToStr } from '../types/Function'
 
 const treeToString = (tree: Tree) => {
-    let str = ""
+    let str = ''
     tree.nodes.forEach((n) => {
         if (n?.branch === 'left' && n.isChild) {
             str += n.id + `:\n`
@@ -70,27 +51,31 @@ const treeToDecisionTree = (tree: Tree) => {
 }
 
 
-const TreeEditor = ({indexTree, tree, handleUpdateTree, mentalState, handleClickTreeEditor}) => {
+const TreeEditor = ({
+    indexTree, tree, handleUpdateTree, mentalStates, functions, handleClickTreeEditor,
+    isWarningTextOn, warningText
+}) => {
+    let mentalState = mentalStates[indexTree]
     return(
         <Box
         sx={{
-            display: "flex",
+            display: 'flex',
             flexGrow: 1,
-            flexDirection: "column",
-            justifyContent: "left",
-            alignItems: "flex-start",
-            mt: "1rem",
+            flexDirection: 'column',
+            justifyContent: 'left',
+            alignItems: 'flex-start',
+            mt: '1rem',
         }}>
             <IconButton onClick={(_)=>{handleClickTreeEditor(0)}}><CancelIcon/></IconButton>
             <Box
             sx={{
-                mt: "1rem",
-                ml: "1rem",
-                minWidth:"30vw"
+                mt: '1rem',
+                ml: '1rem',
+                minWidth:'30vw'
             }}>
                 <TextField
-                color={"info"}
-                id="outlined-textarea"
+                color={'info'}
+                id='outlined-textarea'
                 placeholder={`if F1? MS IDLE:\nif F2? MS ATTACK:\nMS DEFEND`}
                 defaultValue={treeToString(tree)}
                 label={`Decision Tree for ${mentalState.state}`}
@@ -99,15 +84,73 @@ const TreeEditor = ({indexTree, tree, handleUpdateTree, mentalState, handleClick
                 multiline
                 rows={10}
                 />
+                <Box
+                sx={{
+                    mt: '1rem',
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}
+                >
+                    <Box>
+                        <Box margin={'0.5rem'}>{isWarningTextOn && <Typography color='red' padding={'0.1rem'} fontSize={'11px'} variant='overline'>{warningText}</Typography>}</Box>
+                    </Box>
+                    <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        marginLeft: '0.5rem',
+                    }}
+                    >
+                        <Typography padding={'0.1rem'} fontSize={'11px'} variant='overline'>Available functions:</Typography>
+                        {(functions.length == 0) && <Typography padding={'0.1rem'} fontSize={'11px'} color='red' variant='overline'>No functions available, go to General Functions tab to create some</Typography>}
+                        {
+                            functions.slice(0, functions.length - 1).map((f, i) => {
+                                return (
+                                    <Tooltip key={`tooltip-function-${i}`} title={`${functionToStr(f)}`}>
+                                        <Card
+                                        sx={{ 
+                                            margin: '0.2rem 0.2rem 0.3rem 0.2rem',
+                                            padding: '0.1rem',
+                                        }}
+                                        key={`card-function-${i}`}
+                                        >F{i}</Card>
+                                    </Tooltip>
+                                )
+                            })
+                        }
+                    </Box>
+                    <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        marginLeft: '0.5rem',
+                    }}
+                    >
+                        <Typography padding={'0.1rem'} fontSize={'11px'} variant='overline'>Available mental states:</Typography>
+                        {
+                            mentalStates.map((ms, i) => {
+                                return (
+                                    <Card
+                                    sx={{ 
+                                        margin: '0.2rem 0.2rem 0.3rem 0.2rem',
+                                        padding: '0.1rem',
+                                    }}
+                                    key={`card-mental-state-${i}`}
+                                    >{ms.state}</Card>
+                                )
+                            })
+                        }
+                    </Box>
+                </Box>
             </Box>
             <Box
             sx={{
-                mt: "1rem",
-                ml: "1rem",
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "column",
-                minWidth: "30vw",
+                mt: '1rem',
+                ml: '1rem',
+                display: 'flex',
+                alignItems: 'center',
+                flexDirection: 'column',
+                minWidth: '30vw',
             }}>
                 <DecisionTree data={treeToDecisionTree(tree)} height={300} width={593}></DecisionTree>
             </Box>

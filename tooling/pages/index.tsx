@@ -58,8 +58,10 @@ export default function Home() {
     const [trees, setTrees] = useState<Tree[]>([])
     const [functions, setFunctions] = useState<Function[]>([])
     const [functionsIndex, setFunctionsIndex] = useState<number>(0)
-    const [isWarningTextOn, setWarningTextOn] = useState<boolean>(false)
-    const [warningText, setWarningtext] = useState<string>('')
+    const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
+    const [generalFunctionWarningText, setGeneralFunctionWarningText] = useState<string>('')
+    const [isTreeEditorWarningTextOn, setTreeEditorWarningTextOn] = useState<boolean>(false)
+    const [treeEditorWarningText, setTreeEditorWarningText] = useState<string>('')
     const [combos, setCombos] = useState<number[][]>([])
 
     // Decode from React states
@@ -184,6 +186,11 @@ export default function Home() {
         });
     }
 
+    function handleClickTreeEditor(index: number) {
+        setTreeEditorWarningTextOn(false)
+        setTreeEditor(index)
+    }
+
     function handleUpdateTree(index: number, input: string) {
         let new_tree = {nodes: []}
         let regex_branches = /if *([a-zA-Z0-9_ ]*)\? *([a-zA-Z0-9_ ]*) *\:/g
@@ -191,10 +198,26 @@ export default function Home() {
         let regex_end = /: *\n([a-zA-z0-9_ ]*)/gm
         
         let exp = regex_branches.exec(input)
+        let f = functions.slice(0, functions.length - 1).map((_, i) => {return `F${i}`})
+        let ms = mentalStates.map((m) => {return m.state})
+        console.log(f, ms)
         while (exp !== null && exp[1] !== '' && exp[2] !== '') {
-            new_tree.nodes.push({id: 'if ' + exp[1].trim(), isChild: false }, { id: exp[2].trim(), isChild: true, branch: Direction.Left })
+            let fCondition = f.includes(exp[1].trim()) 
+            let mCondition = ms.includes(exp[2].trim())
+            if (fCondition && mCondition) {
+                new_tree.nodes.push({id: 'if ' + exp[1].trim(), isChild: false }, { id: exp[2].trim(), isChild: true, branch: Direction.Left })
+            } else {
+                let text = !fCondition ? !mCondition ? 
+                                        `Function ${exp[1]} and mental state ${exp[2]} not included in currect build`: 
+                                        `Function ${exp[1]} not included in current build` :
+                            `Mental state ${exp[2]} not included in current build`
+                setTreeEditorWarningTextOn(true)
+                setTreeEditorWarningText(text)
+                return
+            }
             exp = regex_branches.exec(input)
         }
+        setTreeEditorWarningTextOn(false)
 
         let exp_end = regex_end.exec(input)
         let end_node;
@@ -202,9 +225,18 @@ export default function Home() {
             end_node = {id: exp_end[1].trim(), isChild: true, branch: Direction.Right }
             exp_end = regex_end.exec(input)
         }
+        // TODO check that end_node in MS
         if (end_node !== undefined && end_node.id !== '') {
-            new_tree.nodes.push(end_node)
+            let mCondition = ms.includes(end_node.id)
+            if (mCondition) {
+                new_tree.nodes.push(end_node)
+            } else {
+                setTreeEditorWarningTextOn(true)
+                setTreeEditorWarningText(`Mental state ${end_node.id} not included in current build`)
+                return
+            }
         }
+        setTreeEditorWarningTextOn(false)
 
         setTrees((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
@@ -222,9 +254,9 @@ export default function Home() {
                 }
                 prev_copy[index].elements.push(element)
                 if (!verifyValidFunction(prev_copy[index], false)) {
-                    setWarningTextOn(true)
-                    setWarningtext(`Invalid ${element.type}, please try again`)
-                    setTimeout(() => setWarningTextOn(false), 2000)
+                    setGeneralFunctionWarningTextOn(true)
+                    setGeneralFunctionWarningText(`Invalid ${element.type}, please try again`)
+                    setTimeout(() => setGeneralFunctionWarningTextOn(false), 2000)
                     prev_copy[index].elements.pop()
                     return prev_copy
                 }
@@ -253,9 +285,9 @@ export default function Home() {
         let length = functions.length
         let f = functions[functionsIndex]
         if(!f?.elements || !verifyValidFunction(f, true)) {
-            setWarningTextOn(true)
-            setWarningtext(`Invalid function, please update`)
-            setTimeout(() => setWarningTextOn(false), 2000) 
+            setGeneralFunctionWarningTextOn(true)
+            setGeneralFunctionWarningText(`Invalid function, please update`)
+            setTimeout(() => setGeneralFunctionWarningTextOn(false), 2000) 
             return 
         }
         if (functionsIndex < length - 1){
@@ -298,6 +330,14 @@ export default function Home() {
                 return prev_copy
             })
         }
+    }
+
+    function handleValidateCharacter(mentalStates: MentalState[], combos: number[][], trees: Tree[], functions: Function[]) {
+        console.log('Mental States', mentalStates)
+        console.log('Combos', combos)
+        console.log('Trees', trees)
+        console.log('Functions', functions)
+        return 
     }
 
     // Render
@@ -362,7 +402,7 @@ export default function Home() {
                                 handleClickRemoveMentalState={handleClickRemoveMentalState}
                                 handleSetMentalStateAction={handleSetMentalStateAction}
                                 treeEditor={treeEditor}
-                                handleClickTreeEditor={setTreeEditor}
+                                handleClickTreeEditor={handleClickTreeEditor}
                                 trees={trees}
                                 handleUpdateTree={handleUpdateTree}
                                 functions={functions}
@@ -371,9 +411,12 @@ export default function Home() {
                                 handleClickDeleteFunction={handleClickDeleteFunction}
                                 functionsIndex={functionsIndex}
                                 setFunctionsIndex={setFunctionsIndex}
-                                isWarningTextOn={isWarningTextOn}
-                                warningText={warningText}
+                                isGeneralFunctionWarningTextOn={isGeneralFunctionWarningTextOn}
+                                generalFunctionWarningText={generalFunctionWarningText}
+                                isTreeEditorWarningTextOn={isTreeEditorWarningTextOn}
+                                treeEditorWarningText={treeEditorWarningText}
                                 handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
+                                handleValidateCharacter={handleValidateCharacter}
                             />
                         </Grid>
                     </Grid>

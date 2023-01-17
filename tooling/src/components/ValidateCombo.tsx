@@ -9,6 +9,7 @@ const ValidateCombo = ({
         onClick={onValidateCombo}
         sx={{
             border: '1px solid black',
+            marginLeft: '0.4rem',
             width: '1.1rem',
             display: 'flex',
             cursor: 'pointer',

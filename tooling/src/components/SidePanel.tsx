@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from '../../styles/Home.module.css';
 import { Box } from "@mui/material";
 import Tabs from './Tabs';
 import MentalStates from './MentalStates';
@@ -9,8 +10,8 @@ import GeneralFunctions from './GeneralFunctions';
 const SidePanel = ({
     workingTab, handleClickTab, mentalStates, combos, handleValidateCombo, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, 
     handleSetMentalStateAction, treeEditor, handleClickTreeEditor, trees, handleUpdateTree, functions, handleUpdateGeneralFunction,
-    handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isWarningTextOn, warningText, 
-    handleRemoveElementGeneralFunction
+    handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText, 
+    isTreeEditorWarningTextOn, treeEditorWarningText, handleRemoveElementGeneralFunction, handleValidateCharacter
 }) => {
     const content = (workingTab: number) => {
         switch (workingTab) {
@@ -26,11 +27,14 @@ const SidePanel = ({
                     handleSetMentalStateAction={handleSetMentalStateAction}
                     handleClickTreeEditor={handleClickTreeEditor} 
                 /> || !!treeEditor && <TreeEditor 
-                    indexTree={ treeEditor-1 }
+                    indexTree={ treeEditor - 1 }
                     tree={trees[treeEditor - 1]} 
                     handleUpdateTree={handleUpdateTree}
-                    mentalState={mentalStates[treeEditor - 1]}
+                    mentalStates={mentalStates}
+                    functions={functions}
                     handleClickTreeEditor={handleClickTreeEditor}
+                    isWarningTextOn={isTreeEditorWarningTextOn}
+                    warningText={treeEditorWarningText}
                 />
             }
             case 1: {
@@ -41,8 +45,8 @@ const SidePanel = ({
                         handleClickDeleteFunction={handleClickDeleteFunction}
                         functionsIndex={functionsIndex}
                         setFunctionsIndex={setFunctionsIndex}
-                        isWarningTextOn={isWarningTextOn}
-                        warningText={warningText}
+                        isWarningTextOn={isGeneralFunctionWarningTextOn}
+                        warningText={generalFunctionWarningText}
                         handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
                 />;
             }
@@ -59,6 +63,16 @@ const SidePanel = ({
         }}>
             <Tabs workingTab={workingTab} handleClickTab={handleClickTab}></Tabs>
             {content(workingTab)}
+            {
+                !treeEditor && 
+                <button
+                className={ styles.confirm }
+                style={{ maxWidth: '11rem', minHeight: '2rem', marginTop: '1rem' }}
+                onClick={() => handleValidateCharacter(mentalStates, combos, trees, functions)}
+                >
+                    Validate your character
+                </button>
+            }
         </Box>
     )
 }
