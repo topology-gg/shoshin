@@ -186,6 +186,11 @@ export default function Home() {
         });
     }
 
+    function handleClickTreeEditor(index: number) {
+        setTreeEditorWarningTextOn(false)
+        setTreeEditor(index)
+    }
+
     function handleUpdateTree(index: number, input: string) {
         let new_tree = {nodes: []}
         let regex_branches = /if *([a-zA-Z0-9_ ]*)\? *([a-zA-Z0-9_ ]*) *\:/g
@@ -397,7 +402,7 @@ export default function Home() {
                                 handleClickRemoveMentalState={handleClickRemoveMentalState}
                                 handleSetMentalStateAction={handleSetMentalStateAction}
                                 treeEditor={treeEditor}
-                                handleClickTreeEditor={setTreeEditor}
+                                handleClickTreeEditor={handleClickTreeEditor}
                                 trees={trees}
                                 handleUpdateTree={handleUpdateTree}
                                 functions={functions}
