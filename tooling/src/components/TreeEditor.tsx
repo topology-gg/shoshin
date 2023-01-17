@@ -7,26 +7,6 @@ import DecisionTree from './DecisionTree'
 import { Tree } from '../types/Tree'
 import { functionToStr } from '../types/Function'
 
-const data = {
-    nodes: [
-        { data: { id: 'if F1' }, scratch: {child: false} },
-        { data: { id: 'MS DEFEND' }, scratch: { child: true, branch: 'left' } },
-        { data: { id: 'if F2' }, scratch: { child: false }},
-        { data: { id: 'MS CHILL' }, scratch: { child: true, branch: 'left' }},
-        { data: { id: 'if F3' }, scratch: { child: false } },
-        { data: { id: 'MS CLOSER' }, scratch: { child: true, branch: 'right' } },
-        { data: { id: 'MS AGGRO' }, scratch: { child: true, branch: 'left' } },
-    ],
-    edges: [
-        { data: { source: 'if F1', target: 'MS DEFEND' } }, // F1 true
-        { data: { source: 'if F1', target: 'if F2' } }, // F1 false
-        { data: { source: 'if F2', target: 'MS CHILL' } }, // F2 true
-        { data: { source: 'if F2', target: 'if F3' } }, // F2 false
-        { data: { source: 'if F3', target: 'MS CLOSER' } }, // F3 true
-        { data: { source: 'if F3', target: 'MS AGGRO' } }, // F3 false
-    ]
-  };
-
 const treeToString = (tree: Tree) => {
     let str = ''
     tree.nodes.forEach((n) => {
@@ -71,7 +51,10 @@ const treeToDecisionTree = (tree: Tree) => {
 }
 
 
-const TreeEditor = ({indexTree, tree, handleUpdateTree, mentalState, functions, handleClickTreeEditor}) => {
+const TreeEditor = ({
+    indexTree, tree, handleUpdateTree, mentalState, functions, handleClickTreeEditor,
+    isWarningTextOn, warningText
+}) => {
     return(
         <Box
         sx={{
@@ -104,24 +87,36 @@ const TreeEditor = ({indexTree, tree, handleUpdateTree, mentalState, functions, 
                 sx={{
                     mt: '1rem',
                     display: 'flex',
-                    flexDirection: 'row'
+                    flexDirection: 'column'
                 }}
                 >
-                    <Typography variant='overline'>Available functions:</Typography>
-                    {
-                        functions.slice(0, functions.length - 1).map((f, i) => {
-                            return (
-                                <Tooltip key={`tooltip-function-${i}`} title={`${functionToStr(f)}`}>
-                                    <Card
-                                    sx={{ 
-                                        margin: '0.2rem',
-                                        padding: '0.2rem',
-                                    }}
-                                    >F{i}</Card>
-                                </Tooltip>
-                            )
-                        })
-                    }
+                    <Box>
+                        <Box margin={'0.5rem'}>{isWarningTextOn && <Typography color='red' padding={'0.1rem'} fontSize={'11px'} variant='overline'>{warningText}</Typography>}</Box>
+                    </Box>
+                    <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        marginLeft: '0.5rem',
+                    }}
+                    >
+                        <Typography padding={'0.1rem'} fontSize={'11px'} variant='overline'>Available functions:</Typography>
+                        {(functions.length == 0) && <Typography padding={'0.1rem'} fontSize={'11px'} color='red' variant='overline'>No functions available, go to General Functions tab to create some</Typography>}
+                        {
+                            functions.slice(0, functions.length - 1).map((f, i) => {
+                                return (
+                                    <Tooltip key={`tooltip-function-${i}`} title={`${functionToStr(f)}`}>
+                                        <Card
+                                        sx={{ 
+                                            margin: '0.2rem',
+                                            padding: '0.2rem',
+                                        }}
+                                        >F{i}</Card>
+                                    </Tooltip>
+                                )
+                            })
+                        }
+                    </Box>
                 </Box>
             </Box>
             <Box

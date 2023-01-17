@@ -10,8 +10,8 @@ import GeneralFunctions from './GeneralFunctions';
 const SidePanel = ({
     workingTab, handleClickTab, mentalStates, combos, handleValidateCombo, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, 
     handleSetMentalStateAction, treeEditor, handleClickTreeEditor, trees, handleUpdateTree, functions, handleUpdateGeneralFunction,
-    handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isWarningTextOn, warningText, 
-    handleRemoveElementGeneralFunction, handleValidateCharacter
+    handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText, 
+    isTreeEditorWarningTextOn, treeEditorWarningText, handleRemoveElementGeneralFunction, handleValidateCharacter
 }) => {
     const content = (workingTab: number) => {
         switch (workingTab) {
@@ -27,12 +27,14 @@ const SidePanel = ({
                     handleSetMentalStateAction={handleSetMentalStateAction}
                     handleClickTreeEditor={handleClickTreeEditor} 
                 /> || !!treeEditor && <TreeEditor 
-                    indexTree={ treeEditor-1 }
+                    indexTree={ treeEditor - 1 }
                     tree={trees[treeEditor - 1]} 
                     handleUpdateTree={handleUpdateTree}
                     mentalState={mentalStates[treeEditor - 1]}
                     functions={functions}
                     handleClickTreeEditor={handleClickTreeEditor}
+                    isWarningTextOn={isTreeEditorWarningTextOn}
+                    warningText={treeEditorWarningText}
                 />
             }
             case 1: {
@@ -43,8 +45,8 @@ const SidePanel = ({
                         handleClickDeleteFunction={handleClickDeleteFunction}
                         functionsIndex={functionsIndex}
                         setFunctionsIndex={setFunctionsIndex}
-                        isWarningTextOn={isWarningTextOn}
-                        warningText={warningText}
+                        isWarningTextOn={isGeneralFunctionWarningTextOn}
+                        warningText={generalFunctionWarningText}
                         handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
                 />;
             }
