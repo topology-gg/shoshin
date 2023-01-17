@@ -52,9 +52,10 @@ const treeToDecisionTree = (tree: Tree) => {
 
 
 const TreeEditor = ({
-    indexTree, tree, handleUpdateTree, mentalState, functions, handleClickTreeEditor,
+    indexTree, tree, handleUpdateTree, mentalStates, functions, handleClickTreeEditor,
     isWarningTextOn, warningText
 }) => {
+    let mentalState = mentalStates[indexTree]
     return(
         <Box
         sx={{
@@ -108,11 +109,34 @@ const TreeEditor = ({
                                     <Tooltip key={`tooltip-function-${i}`} title={`${functionToStr(f)}`}>
                                         <Card
                                         sx={{ 
-                                            margin: '0.2rem',
-                                            padding: '0.2rem',
+                                            margin: '0.2rem 0.2rem 0.3rem 0.2rem',
+                                            padding: '0.1rem',
                                         }}
+                                        key={`card-function-${i}`}
                                         >F{i}</Card>
                                     </Tooltip>
+                                )
+                            })
+                        }
+                    </Box>
+                    <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        marginLeft: '0.5rem',
+                    }}
+                    >
+                        <Typography padding={'0.1rem'} fontSize={'11px'} variant='overline'>Available mental states:</Typography>
+                        {
+                            mentalStates.map((ms, i) => {
+                                return (
+                                    <Card
+                                    sx={{ 
+                                        margin: '0.2rem 0.2rem 0.3rem 0.2rem',
+                                        padding: '0.1rem',
+                                    }}
+                                    key={`card-mental-state-${i}`}
+                                    >{ms.state}</Card>
                                 )
                             })
                         }

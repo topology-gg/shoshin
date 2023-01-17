@@ -193,12 +193,12 @@ export default function Home() {
         let regex_end = /: *\n([a-zA-z0-9_ ]*)/gm
         
         let exp = regex_branches.exec(input)
-        let f = functions.map((_, i) => {return `F${i}`})
+        let f = functions.slice(0, functions.length - 1).map((_, i) => {return `F${i}`})
         let ms = mentalStates.map((m) => {return m.state})
         console.log(f, ms)
         while (exp !== null && exp[1] !== '' && exp[2] !== '') {
-            let fCondition = f.includes(exp[1]) 
-            let mCondition = ms.includes(exp[2])
+            let fCondition = f.includes(exp[1].trim()) 
+            let mCondition = ms.includes(exp[2].trim())
             if (fCondition && mCondition) {
                 new_tree.nodes.push({id: 'if ' + exp[1].trim(), isChild: false }, { id: exp[2].trim(), isChild: true, branch: Direction.Left })
             } else {
