@@ -1,3 +1,5 @@
+import { OPERATOR_VALUE } from "../constants/constants"
+
 export interface Function {
     elements: FunctionElement[],
 }
@@ -25,6 +27,8 @@ export enum Operator {
     Lte = '<=',
     Equal = '==',
 }
+
+const OPS = Object.values(Operator).filter((o) => o !== '(' && o !== ')').join('').trim().replace('/', '\/')
 
 export enum Perceptible {
     SelfX = 1,
@@ -66,7 +70,7 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
                     count -= 1
                     break
                 }
-                if (prevElement.type !== ElementType.Perceptible && prevElement.type !== ElementType.Constant) {
+                if (prevElement.type !== ElementType.Perceptible && prevElement.type !== ElementType.Constant && prevElement?.value !== Operator.CloseParenthesis) {
                     return false
                 }
                 break
@@ -90,6 +94,61 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
         return count == 0
     }
     return true
+}
+
+export interface N {
+    value: number,
+    left: N[]|number,
+    right: N[]|number,
+}
+
+export function parseFunction(f: Function) {
+    let testString = '( OpponentBodyState == 10 ) OR ( OpponentBodyState == 20 ) OR ( OpponentBodyState == 30 ) '
+    let operator: N = parseInner(testString) 
+    return operator
+}
+
+function parseInner(f: string) {
+    let branches: string[] = f.includes(')') ? getBranches(f): [f]
+    if (branches.length == 1) {
+        let regex = new RegExp(` *([0-9a-zA-Z]+) *([${OPS}]+) *([0-9a-zA-Z]+) *`, 'g')
+        let exp = regex.exec(branches[0])
+        let operator = OPERATOR_VALUE[exp[2]]
+        let parsed_one = parseInt(exp[1])
+        let value_one = isNaN(parsed_one) ? Perceptible[exp[1]]: parsed_one
+        let parsed_two = parseInt(exp[3])
+        let value_two = isNaN(parsed_two) ? Perceptible[exp[3]]: parsed_two
+        return {value: operator, left: value_one, right: value_two}
+    }
+    let recomposed = branches.slice(2).map((b) => Object.values(Operator).includes(b)? b: '('+b+')').join(' ')
+    return {value: branches[1], left: parseInner(branches[0]), right: parseInner(recomposed)}
+}
+
+function getBranches(f: string) {
+    let branches = []
+    let counter = 0
+    let position = 0
+    let inParenthesis = false
+    for (let i = 0; i < f.length; i++) {
+        if (f[i] === '(') {
+            counter += 1
+            if (!inParenthesis) {
+                position = i
+            }
+            inParenthesis = true
+        }
+        if (f[i] === ')') {
+            counter -= 1
+        }
+        if (!counter && inParenthesis) {
+            branches.push(f.slice(position + 1, i))
+            if (i+2 < f.length) {
+                branches.push(f.slice(i + 2, f.indexOf('(', i + 1)).trim())
+            }
+            inParenthesis = false
+        }
+    }
+    return branches
 }
 
 export function functionToStr(f: Function) {

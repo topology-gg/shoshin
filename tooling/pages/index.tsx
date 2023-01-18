@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
-import { Box, createTheme, ThemeProvider, Tooltip } from '@mui/material';
+import React, { useState } from 'react';
+import { createTheme, ThemeProvider } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import MidScreenControl from '../src/components/MidScreenControl';
 import LoadTestJson from '../src/components/LoadTestJson';
@@ -9,9 +9,10 @@ import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
 import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
-import { Function, FunctionElement, ElementType, verifyValidFunction } from '../src/types/Function'
+import { Function, FunctionElement, parseFunction, verifyValidFunction } from '../src/types/Function'
 import { MentalState } from '../src/types/MentalState';
 import { Character } from '../src/constants/constants';
+import Agent from '../src/types/Agent';
 
 const theme = createTheme({
     typography: {
@@ -337,6 +338,26 @@ export default function Home() {
         console.log('Combos', combos)
         console.log('Trees', trees)
         console.log('Functions', functions)
+        let agent: Agent = {}
+        agent.combos = combos
+        agent.states = mentalStates.map((ms) => ms.state)
+        agent.initial_state = 0 // TODO update to input the initial state
+        // test values for the general function: 
+        // 1) (OpponentBodyState == 10) OR (OpponentBodyState == 20) OR (OpponentBodyState == 30): OK
+        // 2) Abs(SelfX - OpponentX) <= 80: NOK
+        let agent_functions = []
+        functions.forEach((f) => {
+            agent_functions.push(parseFunction(f))
+        })
+        agent.general_purpose_functions = agent_functions
+
+
+        // test strings for the mental states:
+        // 1) MS IDLE => if F0? MS BLOCK: F1? MS COMBO: MS CLOSER
+        // 2) MS COMBO => if F0? MS BLOCK: F1? MS COMBO: MS CLOSER
+        // 3) MS BLOCK => if F0? MS BLOCK: MS IDLE
+        // 4) MS CLOSER => if F0? MS BLOCK: F1? MS COMBO: MS CLOSER
+
         return 
     }
 
