@@ -28,8 +28,6 @@ export enum Operator {
     Equal = '==',
 }
 
-const OPS = Object.values(Operator).filter((o) => o !== '(' && o !== ')').join('').trim().replace('/', '\/')
-
 export enum Perceptible {
     SelfX = 1,
     SelfY = 2,
@@ -103,22 +101,33 @@ export interface N {
 }
 
 export function parseFunction(f: Function) {
-    let testString = '( OpponentBodyState == 10 ) OR ( OpponentBodyState == 20 ) OR ( OpponentBodyState == 30 ) '
-    let operator: N = parseInner(testString) 
+    let operator: N = parseInner(functionToStr(f)) 
     return operator
 }
 
 function parseInner(f: string) {
     let branches: string[] = f.includes(')') ? getBranches(f): [f]
     if (branches.length == 1) {
-        let regex = new RegExp(` *([0-9a-zA-Z]+) *([${OPS}]+) *([0-9a-zA-Z]+) *`, 'g')
+        let regex = / *([0-9a-zA-Z]+) *(AND|OR|\/|\*|%|[=<]+) *([0-9a-zA-Z]+) *(AND|OR|\/|\*|%|[=<]+)*/g
+        let matches = []
         let exp = regex.exec(branches[0])
-        let operator = OPERATOR_VALUE[exp[2]]
-        let parsed_one = parseInt(exp[1])
-        let value_one = isNaN(parsed_one) ? Perceptible[exp[1]]: parsed_one
-        let parsed_two = parseInt(exp[3])
-        let value_two = isNaN(parsed_two) ? Perceptible[exp[3]]: parsed_two
-        return {value: operator, left: value_one, right: value_two}
+        while (exp !== null) {
+            matches.push(exp)
+            exp = regex.exec(branches[0])
+        }
+        if (matches.length == 1) {
+            exp = matches[0]
+            let operator = OPERATOR_VALUE[exp[2]]
+            let parsed_one = parseInt(exp[1])
+            let value_one = isNaN(parsed_one) ? Perceptible[exp[1]]: parsed_one
+            let parsed_two = parseInt(exp[3])
+            let value_two = isNaN(parsed_two) ? Perceptible[exp[3]]: parsed_two
+            return {value: operator, left: value_one, right: value_two}
+        }
+        let operator = matches[0][matches[0].length - 1]
+        let recomposedLeft = matches[0].slice(1, -1).join(' ')
+        let recomposedRight = matches.slice(1).map((m) => m.slice(1).join(' ')).join(' ')
+        return {value: operator, left: parseInner(recomposedLeft), right: parseInner(recomposedRight)}
     }
     let recomposed = branches.slice(2).map((b) => Object.values(Operator).includes(b)? b: '('+b+')').join(' ')
     return {value: branches[1], left: parseInner(branches[0]), right: parseInner(recomposed)}
