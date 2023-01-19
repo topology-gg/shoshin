@@ -1,4 +1,4 @@
-import { OPERATOR_VALUE } from "../constants/constants"
+import XRegExp, { MatchRecursiveValueNameMatch } from "xregexp"
 
 export interface Function {
     elements: FunctionElement[],
@@ -121,64 +121,64 @@ export function parseFunction(f: Function) {
 }
 
 function parseInner(f: string) {
-    let branches: string[] = f.includes(')') ? getBranches(f): [f]
-    if (branches.length == 1) {
-        let regex = / *([0-9a-zA-Z]+) *(AND|OR|\/|\*|%|[=<]+) *([0-9a-zA-Z]+) *(AND|OR|\/|\*|%|[=<]+)*/g
-        let matches = []
-        let exp = regex.exec(branches[0])
-        while (exp !== null) {
-            matches.push(exp)
-            exp = regex.exec(branches[0])
-        }
-        if (matches.length == 1) {
-            exp = matches[0]
-            let operator = OPERATOR_VALUE[exp[2]]
-            let parsed_one = parseInt(exp[1])
-            let value_one = isNaN(parsed_one) ? Perceptible[exp[1]]: parsed_one
-            let parsed_two = parseInt(exp[3])
-            let value_two = isNaN(parsed_two) ? Perceptible[exp[3]]: parsed_two
-            return {value: operator, left: value_one, right: value_two}
-        }
-        let operator = matches[0][matches[0].length - 1]
-        let recomposedLeft = matches[0].slice(1, -1).join(' ')
-        let recomposedRight = matches.slice(1).map((m) => m.slice(1).join(' ')).join(' ')
-        return {value: operator, left: parseInner(recomposedLeft), right: parseInner(recomposedRight)}
+    // Allows to match the parenthesis and extract inner and outer values
+    let branches = XRegExp.matchRecursive(f, '\\(', '\\)', 'g', {
+            valueNames: ['between', null, 'match', null],
+            unbalanced: 'skip',
+    });
+    // If multiple operators at top level, match branches
+    if (branches.length >= 2) {
+        return matchBranches(branches)
     }
-    let recomposed = branches.slice(2).map((b) => Object.values(Operator).includes(b)? b: '('+b+')').join(' ')
-    return {value: branches[1], left: parseInner(branches[0]), right: parseInner(recomposed)}
+    // End regex in the case we have X OP Y where X and Y are either a string value or a number
+    let end = / *([a-zA-Z0-9]+)/g
+    let matches = []
+    let m = end.exec(f)
+    while(m) {
+        matches.push(m)
+        m = end.exec(f)
+    }
+    let regexOp = /  *([<=]+|AND|OR|\*|\/|%|-) */g
+    m = regexOp.exec(f)
+    let valueOne = getParsedValue(matches[0][1])
+    let valueTwo = getParsedValue(matches[1][1])
+    return {value: m[1], left: valueOne, right: valueTwo}
 }
 
-function getBranches(f: string) {
-    let branches = []
-    let counter = 0
-    let position = 0
-    let inParenthesis = false
-    for (let i = 0; i < f.length; i++) {
-        if (f[i] === '(') {
-            counter += 1
-            if (!inParenthesis) {
-                position = i
-            }
-            inParenthesis = true
+function matchBranches(branches: MatchRecursiveValueNameMatch[]) {
+    // If multiple operators at top level, extract left and right side then continue parsing
+    // Handle the case where one of the branches are in the form Abs() OP X
+    if (branches.length > 2) {
+        if (branches[0].value === 'Abs') {
+            let split = branches[2].value.trim().split(' ')
+            let parsed = getParsedValue(split[1])
+            return {value: split[0], left: parseInner('Abs('+branches[1].value+')'), right: parsed}
         }
-        if (f[i] === ')') {
-            counter -= 1
-        }
-        if (!counter && inParenthesis) {
-            branches.push(f.slice(position + 1, i))
-            if (i+2 < f.length) {
-                branches.push(f.slice(i + 2, f.indexOf('(', i + 1)).trim())
-            }
-            inParenthesis = false
-        }
+        let recomposed = branches.slice(2).map((b) => {if(b.name === 'match'){return '('+b.value+')'} else{return b.value.trim()}}).join(' ')
+        return {value: branches[1].value.trim(), left: parseInner(branches[0].value), right: parseInner(recomposed)}
     }
-    return branches
+    // If only two branches, f is in the form () OP X or X OP () or Abs()
+    if (branches.length == 2 ) {
+        if (branches[0].value.includes('Abs')) {
+            return {value: 'Abs', left: -1, right: parseInner(branches[1].value)}
+        }
+        let [parenthesisIndex, restIndex] = branches[0].name === 'match'? [0,1] : [1, 0]
+        let split = branches[restIndex].value.trim().split(' ')
+        let parsed = getParsedValue(split[restIndex])
+        return {value: split[parenthesisIndex], left: parsed, right: parseInner(branches[parenthesisIndex].value)}
+    }
+}
+
+function getParsedValue(x: string) {
+    let parsedOne = parseInt(x)
+    return isNaN(parsedOne) ? {value: 14, left:-1, right: Perceptible[x]}: parsedOne
 }
 
 export function functionToStr(f: Function) {
     let str = ''
     f.elements.forEach((e) => {
         let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
+        value = value === '|'? ')' : value
         str += value + ' '
     })
     return str
