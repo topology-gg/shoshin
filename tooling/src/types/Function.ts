@@ -21,8 +21,12 @@ export enum Operator {
     Mul = '*',
     Div = '/',
     Mod = '%',
+    Add = '+',
+    Sub = '-',
     OpenParenthesis = '(',
     CloseParenthesis = ')',
+    OpenAbs = 'Abs(',
+    CloseAbs = '|',
     Lt = '<',
     Lte = '<=',
     Equal = '==',
@@ -52,23 +56,34 @@ export enum Perceptible {
 }
 
 export function verifyValidFunction(f: Function, confirm: boolean) {
-    let count = 0
+    let countParenthesis = 0
+    let countAbs = 0
     let prevElement = { type: ElementType.Operator } as FunctionElement
     for (let e of f?.elements) {
-        if (count < 0) {
+        if (countParenthesis < 0 || countAbs < 0) {
             return false
         }
         switch (e?.type) {
             case ElementType.Operator: {
                 if (e?.value == Operator.OpenParenthesis) {
-                    count += 1
+                    countParenthesis += 1
                     break
                 }
                 if (e?.value == Operator.CloseParenthesis) {
-                    count -= 1
+                    countParenthesis -= 1
                     break
                 }
-                if (prevElement.type !== ElementType.Perceptible && prevElement.type !== ElementType.Constant && prevElement?.value !== Operator.CloseParenthesis) {
+                if (e?.value == Operator.OpenAbs) {
+                    countAbs += 1
+                    break
+                }
+                if (e?.value == Operator.CloseAbs) {
+                    countAbs -= 1
+                    break
+                }
+                if (prevElement.type !== ElementType.Perceptible && 
+                    prevElement.type !== ElementType.Constant && 
+                    prevElement?.value !== Operator.CloseParenthesis) {
                     return false
                 }
                 break
@@ -89,7 +104,7 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
         prevElement = e
     }
     if (confirm) {
-        return count == 0
+        return countParenthesis == 0 && countAbs == 0
     }
     return true
 }

@@ -3,7 +3,6 @@ import styles from '../../styles/Home.module.css'
 import { Box, Grid } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BackspaceIcon from '@mui/icons-material/Backspace';
@@ -43,7 +42,7 @@ const perceptibles = Object.keys(Perceptible).filter(x => isNaN(parseInt(x)))
 
 const handleDrag = (e) => {
     document.body.style.cursor = 'grabbing';
-    let source = e.target.id.split('-')
+    let source = e.target.id.split('.')
     switch (source[0]) {
         case 'operator': {
             currentDraggedItem = { value: source[1], type: ElementType.Operator} as FunctionElement
@@ -88,6 +87,7 @@ const functionToDiv = (f: Function) => {
     return (
         f.elements.map((e, i) => {
             let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
+            value = value === '|' ? ')' : value
             return <Typography key={`${e.type}-${e.value}-${i}`} variant='caption'>
                 <Box key={`${e.type}-${e.value}-${i}`}>{value}&nbsp;</Box>
             </Typography>
@@ -135,7 +135,7 @@ const GeneralFunctions = ({
                         operators.map((o) => {
                             return <Card 
                                         key={ `operator-${o}` } 
-                                        id={  `operator-${o}` }
+                                        id={ `operator.${o}` }
                                         onDragEnd={ (e) => handleDragEnd(e) } 
                                         onDrag={ (e) => handleDrag(e) } 
                                         draggable 
