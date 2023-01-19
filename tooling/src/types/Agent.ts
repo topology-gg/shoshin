@@ -1,9 +1,11 @@
+import { N } from "./Function"
+
 export default interface Agent {
     states?: string[],
     combos?: number[][],
-    initial_state?: number,
-    mental_states?: Map<string, Operations>,
-    general_purpose_functions?: Operations[]
+    initialState?: number,
+    mentalStates?: N[],
+    generalPurposeFunctions?: N[]
 }
 
 export interface Operations {

@@ -10,7 +10,7 @@ import SidePanel from '../src/components/SidePanel';
 import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, parseFunction, verifyValidFunction } from '../src/types/Function'
-import { MentalState } from '../src/types/MentalState';
+import { MentalState, parseMentalState } from '../src/types/MentalState';
 import { Character } from '../src/constants/constants';
 import Agent from '../src/types/Agent';
 
@@ -341,22 +341,25 @@ export default function Home() {
         let agent: Agent = {}
         agent.combos = combos
         agent.states = mentalStates.map((ms) => ms.state)
-        agent.initial_state = 0 // TODO update to input the initial state
+        agent.initialState = 0 // TODO update to input the initial state
         // test values for the general function: 
         // 1) (OpponentBodyState == 10) OR (OpponentBodyState == 20) OR (OpponentBodyState == 30): OK
         // 2) Abs(SelfX - OpponentX) <= 80: NOK
-        let agent_functions = []
+        let agentFunctions = []
         functions.forEach((f) => {
-            agent_functions.push(parseFunction(f))
+            agentFunctions.push(parseFunction(f))
         })
-        agent.general_purpose_functions = agent_functions
-
+        agent.generalPurposeFunctions = agentFunctions
 
         // test strings for the mental states:
         // 1) MS IDLE => if F0? MS BLOCK: F1? MS COMBO: MS CLOSER
         // 2) MS COMBO => if F0? MS BLOCK: F1? MS COMBO: MS CLOSER
         // 3) MS BLOCK => if F0? MS BLOCK: MS IDLE
         // 4) MS CLOSER => if F0? MS BLOCK: F1? MS COMBO: MS CLOSER
+        let agentMentalStates = []
+        mentalStates.forEach((ms) => {
+            agentMentalStates.push(parseMentalState(ms))
+        })
 
         return 
     }

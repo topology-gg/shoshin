@@ -108,45 +108,45 @@ export enum Character {
 }
 
 export enum ActionsJessica {
-    NULL = 0,
-    SLASH = 1,
-    UPSWING = 2,
-    SIDECUT = 3,
-    BLOCK = 4,
-    MOVE_FORWARD  = 5,
-    MOVE_BACKWARD = 6,
-    DASH_FORWARD  = 7,
-    DASH_BACKWARD = 8,
+    Null = 0,
+    Slash = 1,
+    Upswing = 2,
+    Sidecut = 3,
+    Block = 4,
+    MoveForward  = 5,
+    MoveBackward = 6,
+    DashForward  = 7,
+    DashBackward = 8,
 }
 
 export enum ActionsAntoc {
-    NULL = 0,
-    HORI = 1,
-    VERT = 2,
-    BLOCK = 3,
-    MOVE_FORWARD = 4,
-    MOVE_BACKWARD = 5,
-    DASH_FORWARD = 6,
-    DASH_BACKWARD = 7,
+    Null = 0,
+    Hori = 1,
+    Vert = 2,
+    Block = 3,
+    MoveForward = 4,
+    MoveBackward = 5,
+    DashForward = 6,
+    DashBackward = 7,
 }
 
 export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc]
 
 export const ACTIONS_ICON_MAP = {
-    NULL: 'close',
+    Null: 'close',
 
-    SLASH : 'local_dining',
-    UPSWING : 'swipe_vertical',
-    SIDECUT : 'swipe_left',
+    Slash : 'local_dining',
+    Upswing : 'swipe_vertical',
+    Sidecut : 'swipe_left',
 
-    HORI : 'local_dining',
-    VERT : 'swipe_vertical',
+    Hori : 'local_dining',
+    Vert : 'swipe_vertical',
 
-    BLOCK : 'block',
-    MOVE_FORWARD  : 'arrow_forward',
-    MOVE_BACKWARD : 'arrow_back',
-    DASH_FORWARD  : 'keyboard_double_arrow_left',
-    DASH_BACKWARD : 'keyboard_double_arrow_right',
+    Block : 'block',
+    MoveForward  : 'arrow_forward',
+    MoveBackward : 'arrow_back',
+    DashForward  : 'keyboard_double_arrow_left',
+    DashBackward : 'keyboard_double_arrow_right',
 }
 
 export const OPERATOR_VALUE = {
