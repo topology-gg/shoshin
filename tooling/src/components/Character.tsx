@@ -7,6 +7,7 @@ import {
     CharacterComponentW, CharacterComponentH,
 } from '../constants/constants';
 import { TestJson, Frame, Rectangle } from '../types/Frame';
+import { spriteDimensions } from '../constants/sprites';
 
 interface CharacterProps {
     agentIndex: number;
@@ -31,26 +32,35 @@ export default function Character( {agentIndex, viewWidth, characterName, agentF
     const bodyStateName = bodyStateNumberToName [characterName][bodyState]
     const direction = (bodyStateDir == 1) ? 'right' : 'left'
     console.log(characterName, 'direction', direction)
+    
+    const spriteAdjustment = spriteDimensions[characterName][bodyStateName]
+    const spriteSize = spriteAdjustment?.size || [0, 0]
+    const spriteLeftAdjustment = spriteAdjustment?.hitboxOffset[direction][0] || 0
+    const spriteTopAdjustment = spriteAdjustment?.hitboxOffset[direction][1] || 0
+    const spriteSheetName = `./images/${characterName}/${bodyStateName}/${direction}_spritesheet.png`
+
+    const spriteFrameAdjustment = spriteSize[0] * bodyStateCounter
 
     // Calculate character's left and top for rendering
     const adjustment = adjustmentForCharacter (characterName, bodyStateName, direction)
     console.log(characterName, 'adjustment', adjustment)
-    // const left = SIMULATOR_W/2 + pos.x + adjustment.left
-    const left = viewWidth/2 + pos.x + adjustment.left
-    const top = SIMULATOR_H - pos.y - CharacterComponentH + adjustment.top
+
+    const left = viewWidth/2 + pos.x + spriteLeftAdjustment
+    const top = SIMULATOR_H - pos.y - spriteSize[1] + spriteTopAdjustment
     console.log(characterName, '(left,top):', `(${left},${top})`)
+
 
     return (
             <div
                 // className={`unit ${characterName}-${animIndex} ${flipClass}`}
                 className={'unit'}
                 style={{
-                    width: CharacterComponentW, height: CharacterComponentH,
+                    width: spriteSize[0], height: spriteSize[1],
                     // border: '1px solid #999999',
                     // border: 'none',
                     position: 'absolute', left: left, top: top,
                     zIndex: -1,
-                    background: `url("./images/${characterName}/${bodyStateName}/${direction}/frame_${bodyStateCounter}.png") no-repeat left bottom`,
+                    background: `url("${spriteSheetName}") no-repeat ${-spriteFrameAdjustment}px bottom`,
                     // backgroundRepeat: 'no-repeat',
                     // backgroundSize: 'auto',
                     // backgroundPosition: 'left bottom',
