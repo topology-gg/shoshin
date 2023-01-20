@@ -7,7 +7,7 @@ import {
     CharacterComponentW, CharacterComponentH,
 } from '../constants/constants';
 import { TestJson, Frame, Rectangle } from '../types/Frame';
-import { spriteDimensions } from '../constants/sprites';
+import { spriteData } from '../constants/sprites';
 
 interface CharacterProps {
     agentIndex: number;
@@ -33,7 +33,7 @@ export default function Character( {agentIndex, viewWidth, characterName, agentF
     const direction = (bodyStateDir == 1) ? 'right' : 'left'
     console.log(characterName, 'direction', direction)
     
-    const spriteAdjustment = spriteDimensions[characterName][bodyStateName]
+    const spriteAdjustment = spriteData[characterName][bodyStateName]
     const spriteSize = spriteAdjustment?.size || [0, 0]
     const spriteLeftAdjustment = spriteAdjustment?.hitboxOffset[direction][0] || 0
     const spriteTopAdjustment = spriteAdjustment?.hitboxOffset[direction][1] || 0
@@ -42,13 +42,9 @@ export default function Character( {agentIndex, viewWidth, characterName, agentF
     const spriteFrameAdjustment = spriteSize[0] * bodyStateCounter
 
     // Calculate character's left and top for rendering
-    const adjustment = adjustmentForCharacter (characterName, bodyStateName, direction)
-    console.log(characterName, 'adjustment', adjustment)
-
     const left = viewWidth/2 + pos.x + spriteLeftAdjustment
     const top = SIMULATOR_H - pos.y - spriteSize[1] + spriteTopAdjustment
     console.log(characterName, '(left,top):', `(${left},${top})`)
-
 
     return (
             <div
