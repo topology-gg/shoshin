@@ -111,8 +111,8 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
 
 export interface N {
     value: number,
-    left: N[]|number,
-    right: N[]|number,
+    left: N|number,
+    right: N|number,
 }
 
 export function parseFunction(f: Function) {
@@ -138,7 +138,7 @@ function parseInner(f: string) {
         matches.push(m)
         m = end.exec(f)
     }
-    let regexOp = /  *([<=]+|AND|OR|\*|\/|%|-) */g
+    let regexOp = /  *([<=]+|AND|OR|\*|\/|%|-|\+) */g
     m = regexOp.exec(f)
     let valueOne = getParsedValue(matches[0][1])
     let valueTwo = getParsedValue(matches[1][1])

@@ -1,3 +1,6 @@
+import { ElementType, Function, Operator, Perceptible } from "../types/Function"
+import { MentalState } from "../types/MentalState"
+import { Direction, Tree } from "../types/Tree"
 
 export const SIMULATOR_W = 1000
 export const SIMULATOR_H = 300
@@ -168,3 +171,46 @@ export const OPERATOR_VALUE = {
 }
 
 export const MAX_COMBO_SIZE = 10;
+
+export const INITIAL_MENTAL_STATES: MentalState[] = [
+    { state: 'MS IDLE', action: ActionsJessica['Null'] },
+    { state: 'MS CLOSER', action: ActionsJessica['Null'] },
+    { state: 'MS BLOCK', action: ActionsJessica['Null'] },
+    { state: 'MS COMBO', action: ActionsJessica['Null'] },
+]
+
+export const INITIAL_DECISION_TREES: Tree[] = [
+    { 
+        nodes: [
+            { id: 'if F0', isChild: false },
+            { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
+            { id: 'if F1', isChild: false, branch: Direction.Right },
+            { id: 'MS COMBO', isChild: true, branch: Direction.Left },
+            { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
+        ] 
+    },
+    { nodes: [] },
+    { nodes: [] },
+    { nodes: [] },
+]
+
+export const INITIAL_FUNCTIONS: Function[] = [
+    { 
+        elements: [
+            { value: 0, type: ElementType.Constant},
+            { value: Operator.Equal, type: ElementType.Operator},
+            { value: Perceptible.OpponentAccX, type: ElementType.Perceptible},
+        ]
+    },
+    { 
+        elements: [
+            { value: 4, type: ElementType.Constant},
+            { value: Operator.Lte, type: ElementType.Operator},
+            { value: Perceptible.SelfAccX, type: ElementType.Perceptible},
+        ]
+    },
+    {
+        elements: []
+    }
+]
+export const INITIAL_FUNCTIONS_INDEX: number = INITIAL_FUNCTIONS.length

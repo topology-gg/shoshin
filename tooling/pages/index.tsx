@@ -11,7 +11,7 @@ import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, parseFunction, verifyValidFunction } from '../src/types/Function'
 import { MentalState, parseMentalState } from '../src/types/MentalState';
-import { Character } from '../src/constants/constants';
+import { Character, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
 import Agent from '../src/types/Agent';
 
 const theme = createTheme({
@@ -54,11 +54,11 @@ export default function Home() {
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
     const [workingTab, setWorkingTab] = useState<number>(0);
     const [character, setCharacter] = useState<Character>(Character.Jessica)
-    const [mentalStates, setMentalStates] = useState<MentalState[]>([]);
+    const [mentalStates, setMentalStates] = useState<MentalState[]>(INITIAL_MENTAL_STATES);
     const [treeEditor, setTreeEditor] = useState<number>(0);
-    const [trees, setTrees] = useState<Tree[]>([])
-    const [functions, setFunctions] = useState<Function[]>([])
-    const [functionsIndex, setFunctionsIndex] = useState<number>(0)
+    const [trees, setTrees] = useState<Tree[]>(INITIAL_DECISION_TREES)
+    const [functions, setFunctions] = useState<Function[]>(INITIAL_FUNCTIONS)
+    const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
     const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
     const [generalFunctionWarningText, setGeneralFunctionWarningText] = useState<string>('')
     const [isTreeEditorWarningTextOn, setTreeEditorWarningTextOn] = useState<boolean>(false)
@@ -346,7 +346,7 @@ export default function Home() {
         // 1) (OpponentBodyState == 10) OR (OpponentBodyState == 20) OR (OpponentBodyState == 30): OK
         // 2) Abs(SelfX - OpponentX) <= 80: NOK
         let agentFunctions = []
-        functions.forEach((f) => {
+        functions.slice(0, -1).forEach((f) => {
             agentFunctions.push(parseFunction(f))
         })
         agent.generalPurposeFunctions = agentFunctions
@@ -357,8 +357,8 @@ export default function Home() {
         // 3) MS BLOCK => if F0? MS BLOCK: MS IDLE
         // 4) MS CLOSER => if F0? MS BLOCK: F1? MS COMBO: MS CLOSER
         let agentMentalStates = []
-        mentalStates.forEach((ms) => {
-            agentMentalStates.push(parseMentalState(ms))
+        mentalStates.forEach((ms, i) => {
+            agentMentalStates.push(parseMentalState(trees[i], mentalStates))
         })
 
         return 
