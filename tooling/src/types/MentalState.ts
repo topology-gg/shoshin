@@ -10,7 +10,6 @@ export function parseMentalState(t: Tree, ms: MentalState[]) {
     let usedFunctions: Map<number, number> = new Map()
     let tCopy = JSON.parse(JSON.stringify(t))
     let operators = parseInner(tCopy, ms, usedFunctions, 0)
-    console.log('operator', operators)
     return operators
 }
 

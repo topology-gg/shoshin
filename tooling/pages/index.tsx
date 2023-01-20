@@ -55,6 +55,7 @@ export default function Home() {
     const [workingTab, setWorkingTab] = useState<number>(0);
     const [character, setCharacter] = useState<Character>(Character.Jessica)
     const [mentalStates, setMentalStates] = useState<MentalState[]>(INITIAL_MENTAL_STATES);
+    const [initialMentalState, setInitialMentalState] = useState<number>(0);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [trees, setTrees] = useState<Tree[]>(INITIAL_DECISION_TREES)
     const [functions, setFunctions] = useState<Function[]>(INITIAL_FUNCTIONS)
@@ -175,6 +176,9 @@ export default function Home() {
     }
 
     function handleClickRemoveMentalState(index: number) {
+        if (index == initialMentalState) {
+            setInitialMentalState(0)
+        }
         setMentalStates((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
             prev_copy.splice(index, 1);
@@ -201,7 +205,6 @@ export default function Home() {
         let exp = regex_branches.exec(input)
         let f = functions.slice(0, functions.length - 1).map((_, i) => {return `F${i}`})
         let ms = mentalStates.map((m) => {return m.state})
-        console.log(f, ms)
         while (exp !== null && exp[1] !== '' && exp[2] !== '') {
             let fCondition = f.includes(exp[1].trim()) 
             let mCondition = ms.includes(exp[2].trim())
@@ -226,7 +229,6 @@ export default function Home() {
             end_node = {id: exp_end[1].trim(), isChild: true, branch: Direction.Right }
             exp_end = regex_end.exec(input)
         }
-        // TODO check that end_node in MS
         if (end_node !== undefined && end_node.id !== '') {
             let mCondition = ms.includes(end_node.id)
             if (mCondition) {
@@ -334,14 +336,10 @@ export default function Home() {
     }
 
     function handleValidateCharacter(mentalStates: MentalState[], combos: number[][], trees: Tree[], functions: Function[]) {
-        console.log('Mental States', mentalStates)
-        console.log('Combos', combos)
-        console.log('Trees', trees)
-        console.log('Functions', functions)
         let agent: Agent = {}
         agent.combos = combos
         agent.states = mentalStates.map((ms) => ms.state)
-        agent.initialState = 0 // TODO update to input the initial state
+        agent.initialState = initialMentalState
         let agentFunctions = []
         functions.slice(0, -1).forEach((f) => {
             agentFunctions.push(parseFunction(f))
@@ -412,6 +410,8 @@ export default function Home() {
                                 character={character}
                                 setCharacter={setCharacter}
                                 mentalStates={mentalStates}
+                                initialMentalState={initialMentalState}
+                                handleSetInitialMentalState={setInitialMentalState}
                                 combos={combos}
                                 handleValidateCombo={handleValidateCombo}
                                 handleAddMentalState={handleAddMentalState}

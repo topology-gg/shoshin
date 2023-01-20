@@ -37,14 +37,16 @@ const actionToStr = (action: number, characterIndex) => {
 }
 
 const MentalStates = ({
-    mentalStates, combos, handleValidateCombo, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, 
+    mentalStates, initialMentalState, handleSetInitialMentalState, combos, handleValidateCombo, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, 
     handleSetMentalStateAction, handleClickTreeEditor
 }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+    const [anchorElInitialState, setAnchorElInitialState] = useState<null | HTMLElement>(null)
     const [selectedNewAction, setSelectedNewAction] = useState<boolean>(false);
     const [combo, setCombo] = useState<number[]>([])
 
     const open = Boolean(anchorEl)
+    const openInitialState = Boolean(anchorElInitialState)
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         let id = event.currentTarget.id.split('-')
         let menuIndex = parseInt(id[id.length - 1])
@@ -62,6 +64,16 @@ const MentalStates = ({
             }
         }
         setAnchorEl(null)
+    }
+    const handleClickInitialState = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorElInitialState(event.currentTarget)
+    }
+    const handleCloseInitialState = (e) => {
+        if (e.target.id) {
+            let a = e.target.id.split('-')[4]
+            handleSetInitialMentalState(parseInt(a))
+        }
+        setAnchorElInitialState(null)
     }
     const handleInsertInstruction = (action) => {
         if (combo.length > MAX_COMBO_SIZE) {
@@ -121,6 +133,39 @@ const MentalStates = ({
             </Grid>
             <Grid xs={10} item>
                 <TextField color={"info"} fullWidth id="standard-basic" label="Input Mental State" variant="standard" onChange={(event) => {mentalState = event.target.value}}/>
+            </Grid>
+            <Grid 
+            sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "left",
+                alignItems: "left",
+                mt: "1rem",
+                ml: '2rem',
+            }}
+            xs={10} 
+            item>
+                <Button
+                    id={`initial-actions-menu-button`}
+                    aria-controls={openInitialState ? 'basic-menu' : undefined}
+                    aria-haspopup='true'
+                    aria-expanded={openInitialState ? 'true' : undefined}
+                    onClick={handleClickInitialState}
+                >
+                    <Typography variant='overline'>Initial state: {mentalStates.length > 0 ? mentalStates[initialMentalState].state: 'Create at least one mental state'}</Typography>
+                </Button>
+                <Menu
+                id={'initial-actions-menu'}
+                anchorEl={anchorElInitialState}
+                open={openInitialState}
+                onClose={handleCloseInitialState}
+                >
+                    {
+                        mentalStates.map((ms, i) => {
+                            return <MenuItem id={ `initial-mental-state-state-${i}` } key={ `initial-mental-state-state-${i}` } onClick={handleCloseInitialState}>{ms.state}</MenuItem> 
+                        })
+                    }
+                </Menu>
             </Grid>
             <Grid
             item
