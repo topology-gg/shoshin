@@ -83,7 +83,8 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
                 }
                 if (prevElement.type !== ElementType.Perceptible && 
                     prevElement.type !== ElementType.Constant && 
-                    prevElement?.value !== Operator.CloseParenthesis) {
+                    prevElement?.value !== Operator.CloseParenthesis &&
+                    prevElement?.value !== Operator.CloseAbs) {
                     return false
                 }
                 break

@@ -342,26 +342,18 @@ export default function Home() {
         agent.combos = combos
         agent.states = mentalStates.map((ms) => ms.state)
         agent.initialState = 0 // TODO update to input the initial state
-        // test values for the general function: 
-        // 1) (OpponentBodyState == 10) OR (OpponentBodyState == 20) OR (OpponentBodyState == 30): OK
-        // 2) Abs(SelfX - OpponentX) <= 80: NOK
         let agentFunctions = []
         functions.slice(0, -1).forEach((f) => {
             agentFunctions.push(parseFunction(f))
         })
         agent.generalPurposeFunctions = agentFunctions
 
-        // test strings for the mental states:
-        // 1) MS IDLE => if F0? MS BLOCK: F1? MS COMBO: MS CLOSER
-        // 2) MS COMBO => if F0? MS BLOCK: F1? MS COMBO: MS CLOSER
-        // 3) MS BLOCK => if F0? MS BLOCK: MS IDLE
-        // 4) MS CLOSER => if F0? MS BLOCK: F1? MS COMBO: MS CLOSER
         let agentMentalStates = []
         mentalStates.forEach((ms, i) => {
             agentMentalStates.push(parseMentalState(trees[i], mentalStates))
         })
-
-        return 
+        agent.mentalStates = agentMentalStates
+        return agent
     }
 
     // Render

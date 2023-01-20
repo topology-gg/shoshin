@@ -174,9 +174,9 @@ export const MAX_COMBO_SIZE = 10;
 
 export const INITIAL_MENTAL_STATES: MentalState[] = [
     { state: 'MS IDLE', action: ActionsJessica['Null'] },
-    { state: 'MS CLOSER', action: ActionsJessica['Null'] },
-    { state: 'MS BLOCK', action: ActionsJessica['Null'] },
     { state: 'MS COMBO', action: ActionsJessica['Null'] },
+    { state: 'MS BLOCK', action: ActionsJessica['Null'] },
+    { state: 'MS CLOSER', action: ActionsJessica['Null'] },
 ]
 
 export const INITIAL_DECISION_TREES: Tree[] = [
@@ -189,24 +189,64 @@ export const INITIAL_DECISION_TREES: Tree[] = [
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
         ] 
     },
-    { nodes: [] },
-    { nodes: [] },
-    { nodes: [] },
+    { 
+        nodes: [
+            { id: 'if F0', isChild: false },
+            { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
+            { id: 'if F1', isChild: false, branch: Direction.Right },
+            { id: 'MS COMBO', isChild: true, branch: Direction.Left },
+            { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
+        ] 
+    },
+    { 
+        nodes: [
+            { id: 'if F0', isChild: false },
+            { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
+            { id: 'MS IDLE', isChild: true, branch: Direction.Right },
+        ] 
+    },
+    { 
+        nodes: [
+            { id: 'if F0', isChild: false },
+            { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
+            { id: 'if F1', isChild: false, branch: Direction.Right },
+            { id: 'MS COMBO', isChild: true, branch: Direction.Left },
+            { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
+        ] 
+    }
 ]
 
 export const INITIAL_FUNCTIONS: Function[] = [
     { 
         elements: [
-            { value: 0, type: ElementType.Constant},
-            { value: Operator.Equal, type: ElementType.Operator},
-            { value: Perceptible.OpponentAccX, type: ElementType.Perceptible},
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 10, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
+            { value: Operator.Or, type: ElementType.Operator },
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 20, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
+            { value: Operator.Or, type: ElementType.Operator },
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 30, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
         ]
     },
     { 
         elements: [
-            { value: 4, type: ElementType.Constant},
+            { value: Operator.OpenAbs, type: ElementType.Operator},
+            { value: Perceptible.SelfX, type: ElementType.Perceptible},
+            { value: Operator.Sub, type: ElementType.Operator},
+            { value: Perceptible.OpponentX, type: ElementType.Perceptible},
+            { value: Operator.CloseAbs, type: ElementType.Operator},
             { value: Operator.Lte, type: ElementType.Operator},
-            { value: Perceptible.SelfAccX, type: ElementType.Perceptible},
+            { value: 80, type: ElementType.Constant},
         ]
     },
     {
