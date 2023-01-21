@@ -16,6 +16,8 @@ namespace ns_dynamics {
     const SCALE_FP = 10 ** 4;
     const SCALE_FP_SQRT = 10 ** 2;
     const DT_FP = 10 ** 3;  // 0.1
+
+    const GRAVITY_ACC_FP = -100 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_stamina {

@@ -123,7 +123,7 @@ func _physicality{range_check_ptr}(
                 );
             }
             assert action_dimension_0 = Vec2 (ns_jessica_character_dimension.SLASH_HITBOX_W, ns_jessica_character_dimension.SLASH_HITBOX_H);
-        } 
+        }
         if (bool_body_in_block_0 == 1) {
             if (curr_body_state_0.dir == 1) {
                 // # facing right
@@ -139,7 +139,7 @@ func _physicality{range_check_ptr}(
                 );
             }
             assert action_dimension_0 = Vec2 (ns_jessica_character_dimension.BLOCK_HITBOX_W, ns_jessica_character_dimension.BLOCK_HITBOX_H);
-        } 
+        }
     } else {
         assert action_origin_0 = Vec2 (ns_scene.BIGNUM, ns_scene.BIGNUM);
         assert action_dimension_0 = Vec2 (0, 0);
@@ -161,7 +161,7 @@ func _physicality{range_check_ptr}(
                 );
             }
             assert action_dimension_1 = Vec2 (ns_jessica_character_dimension.SLASH_HITBOX_W, ns_jessica_character_dimension.SLASH_HITBOX_H);
-        } 
+        }
         if (bool_body_in_block_1 == 1) {
             if (curr_body_state_1.dir == 1) {
                 // # facing right
@@ -177,7 +177,7 @@ func _physicality{range_check_ptr}(
                 );
             }
             assert action_dimension_1 = Vec2 (ns_jessica_character_dimension.BLOCK_HITBOX_W, ns_jessica_character_dimension.BLOCK_HITBOX_H);
-        } 
+        }
     } else {
         assert action_origin_1 = Vec2 (ns_scene.BIGNUM, ns_scene.BIGNUM);
         assert action_dimension_1 = Vec2 (0, 0);
@@ -221,17 +221,23 @@ func _physicality{range_check_ptr}(
     // 3. Test hitbox overlaps
     //
 
-    // # Agent 1 hit:  action 0 against body 1
+    // Agent 1 hit:  action 0 against body 1
     let (bool_agent_1_hit) = _test_rectangle_overlap(hitboxes_0.action, hitboxes_1.body);
 
-    // # Agent 0 hit:  action 1 against body 0
+    // Agent 0 hit:  action 1 against body 0
     let (bool_agent_0_hit) = _test_rectangle_overlap(hitboxes_1.action, hitboxes_0.body);
 
-    // # Action clash / block: action 0 against action 1
+    // Action clash / block: action 0 against action 1
     let (bool_action_overlap) = _test_rectangle_overlap(hitboxes_0.action, hitboxes_1.action);
 
-    // # Body clash:   body 0 against body 1
+    // Body clash:   body 0 against body 1
     let (bool_body_overlap) = _test_rectangle_overlap(hitboxes_0.body, hitboxes_1.body);
+
+    // Agent 0 clashes against ground
+    let bool_agent_0_ground = is_le (hitboxes_0.body.origin.y, 0);
+
+    // Agent 1 clashes against ground
+    let bool_agent_1_ground = is_le (hitboxes_1.body.origin.y, 0);
 
     //
     // 4. Movement second pass, incorporating hitbox overlap (final positions) to produce final physics states
@@ -242,6 +248,8 @@ func _physicality{range_check_ptr}(
         last_physics_state_1,
         candidate_physics_state_1,
         bool_body_overlap,
+        bool_agent_0_ground,
+        bool_agent_1_ground,
     );
 
     //
