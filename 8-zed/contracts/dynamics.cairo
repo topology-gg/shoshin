@@ -298,9 +298,13 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
     physics_state_cand_0: PhysicsState,
     physics_state_1: PhysicsState,
     physics_state_cand_1: PhysicsState,
+    body_dim_0: Vec2,
+    body_dim_1: Vec2,
     bool_body_overlap: felt,
     bool_agent_0_ground: felt,
     bool_agent_1_ground: felt,
+    bool_agent_0_knocked: felt,
+    bool_agent_1_knocked: felt,
 ) -> (
     physics_state_fwd_0: PhysicsState,
     physics_state_fwd_1: PhysicsState,
@@ -337,16 +341,22 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
         // Handle X component only in case body-body overlaps
         // Back the character bodies off from candidate positions using reversed candidate velocities;
         //
-        let vx_fp_cand_reversed_0 = (-1) * physics_state_cand_0.vel_fp.x;
-        let vx_fp_cand_reversed_1 = (-1) * physics_state_cand_1.vel_fp.x;
+        let sign_vx_cand_0 = sign(physics_state_cand_0.vel_fp.x);
+        let sign_vx_cand_1 = sign(physics_state_cand_1.vel_fp.x);
+        local vx_fp_cand_reversed_0;
+        local vx_fp_cand_reversed_1;
         let bool_1_to_the_right_of_0 = sign(physics_state_1.pos.x - physics_state_0.pos.x);
 
         // note: assuming Jessica and Antoc shares the same BODY_HITBOX_W !
         local abs_distance;
         if (bool_1_to_the_right_of_0 == 1) {
-            assert abs_distance = ns_jessica_character_dimension.BODY_HITBOX_W - (physics_state_cand_1.pos.x - physics_state_cand_0.pos.x);
+            assert abs_distance = body_dim_0.x - (physics_state_cand_1.pos.x - physics_state_cand_0.pos.x);
+            assert vx_fp_cand_reversed_0 = (-1) * sign_vx_cand_0 * physics_state_cand_0.vel_fp.x;
+            assert vx_fp_cand_reversed_1 = (-1) * sign_vx_cand_1 * physics_state_cand_1.vel_fp.x;
         } else {
-            assert abs_distance = ns_jessica_character_dimension.BODY_HITBOX_W - (physics_state_cand_0.pos.x - physics_state_cand_1.pos.x);
+            assert abs_distance = body_dim_1.x - (physics_state_cand_0.pos.x - physics_state_cand_1.pos.x);
+            assert vx_fp_cand_reversed_0 = sign_vx_cand_0 * physics_state_cand_0.vel_fp.x;
+            assert vx_fp_cand_reversed_1 = sign_vx_cand_1 * physics_state_cand_1.vel_fp.x;
         }
         let abs_distance_fp_fp = abs_distance * ns_dynamics.SCALE_FP * ns_dynamics.SCALE_FP;
 
@@ -376,14 +386,30 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
         let x_0 = physics_state_cand_0.pos.x + back_off_x_0 + sign_0 * 2;  // # back off more to guarantee non-overlap
         let x_1 = physics_state_cand_1.pos.x + back_off_x_1 + sign_1 * 2;
 
+        //
+        // If knocked, keep candidate X velocity, otherwise set to 0
+        //
+        local vx_fp_0_final;
+        local vx_fp_1_final;
+        if (bool_agent_0_knocked == 1) {
+            assert vx_fp_0_final = physics_state_cand_0.vel_fp.x;
+        } else {
+            assert vx_fp_0_final = 0;
+        }
+        if (bool_agent_1_knocked == 1) {
+            assert vx_fp_1_final = physics_state_cand_1.vel_fp.x;
+        } else {
+            assert vx_fp_1_final = 0;
+        }
+
         let physics_state_fwd_0: PhysicsState = PhysicsState(
             pos = Vec2(x_0, y_0_ground_handled),
-            vel_fp = Vec2(0, vy_fp_0_ground_handled),
+            vel_fp = Vec2(vx_fp_0_final, vy_fp_0_ground_handled),
             acc_fp = physics_state_cand_0.acc_fp,
         );
         let physics_state_fwd_1: PhysicsState = PhysicsState(
             pos = Vec2(x_1, y_1_ground_handled),
-            vel_fp = Vec2(0, vy_fp_1_ground_handled),
+            vel_fp = Vec2(vx_fp_1_final, vy_fp_1_ground_handled),
             acc_fp = physics_state_cand_1.acc_fp,
         );
 
