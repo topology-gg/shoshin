@@ -247,9 +247,13 @@ func _physicality{range_check_ptr}(
         candidate_physics_state_0,
         last_physics_state_1,
         candidate_physics_state_1,
+        body_dim_0,
+        body_dim_1,
         bool_body_overlap,
         bool_agent_0_ground,
         bool_agent_1_ground,
+        bool_body_in_knocked_early_0 + bool_body_in_knocked_late_0,
+        bool_body_in_knocked_early_1 + bool_body_in_knocked_late_1,
     );
 
     //
