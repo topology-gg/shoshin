@@ -4,10 +4,76 @@ use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::{collections::VecDeque, convert::From};
+use wasm_bindgen::prelude::*;
 
 lazy_static! {
     pub static ref PRIME: BigInt = (BigInt::from(FIELD.0) << 128) + BigInt::from(FIELD.1);
     pub static ref PRIME_HALF: BigInt = &*PRIME >> 1;
+}
+
+#[wasm_bindgen]
+#[derive(Debug)]
+pub struct ShoshinInput {
+    combos_offset_0: Vec<i32>,
+    combos_0: Vec<i32>,
+    combos_offset_1: Vec<i32>,
+    combos_1: Vec<i32>,
+    state_machine_offset_0: Vec<i32>,
+    state_machine_0: Vec<i32>,
+    state_machine_offset_1: Vec<i32>,
+    state_machine_1: Vec<i32>,
+    functions_offset_0: Vec<i32>,
+    functions_0: Vec<i32>,
+    functions_offset_1: Vec<i32>,
+    functions_1: Vec<i32>,
+    actions_0: Vec<i32>,
+    actions_1: Vec<i32>,
+    pub char_0: u8,
+    pub char_1: u8,
+}
+
+impl ShoshinInput {
+    pub fn get_vector_arguments(self) -> Vec<Vec<i32>> {
+        vec![
+            self.combos_offset_0,
+            self.combos_0,
+            self.combos_offset_1,
+            self.combos_1,
+            self.state_machine_offset_0,
+            self.state_machine_0,
+            self.state_machine_offset_1,
+            self.state_machine_1,
+            self.functions_offset_0,
+            self.functions_0,
+            self.functions_offset_1,
+            self.functions_1,
+            self.actions_0,
+            self.actions_1,
+        ]
+    }
+}
+
+impl From<Vec<Vec<i32>>> for ShoshinInput {
+    fn from(mut value: Vec<Vec<i32>>) -> Self {
+        ShoshinInput {
+            actions_1: value.pop().unwrap(),
+            actions_0: value.pop().unwrap(),
+            functions_1: value.pop().unwrap(),
+            functions_offset_1: value.pop().unwrap(),
+            functions_0: value.pop().unwrap(),
+            functions_offset_0: value.pop().unwrap(),
+            state_machine_1: value.pop().unwrap(),
+            state_machine_offset_1: value.pop().unwrap(),
+            state_machine_0: value.pop().unwrap(),
+            state_machine_offset_0: value.pop().unwrap(),
+            combos_1: value.pop().unwrap(),
+            combos_offset_1: value.pop().unwrap(),
+            combos_0: value.pop().unwrap(),
+            combos_offset_0: value.pop().unwrap(),
+            char_0: 0,
+            char_1: 0,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
