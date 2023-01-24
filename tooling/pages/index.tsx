@@ -7,12 +7,13 @@ import MidScreenControl from '../src/components/MidScreenControl';
 import LoadTestJson from '../src/components/LoadTestJson';
 import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
-import { TestJson } from '../src/types/Frame';
+import { FrameScene, TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, parseFunction, verifyValidFunction } from '../src/types/Function'
 import { MentalState, parseMentalState } from '../src/types/MentalState';
 import { Character, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
 import Agent from '../src/types/Agent';
+import { CairoSimulation } from '../src/components/CairoSimulation';
 
 const theme = createTheme({
     typography: {
@@ -354,6 +355,12 @@ export default function Home() {
         return agent
     }
 
+    function handleClickRunCairoSimulation(output: FrameScene) {
+        setTestJson((_) => {
+            return { agent_0: { frames: output.agent_0, type: 0 }, agent_1: { frames: output.agent_1, type: 1 } }
+        })
+    }
+
     // Render
     return (
         <div className={styles.container}>
@@ -402,6 +409,7 @@ export default function Home() {
                                 handleLoadTestJson={handleLoadTestJson}
                                 handleClickPreloadedTestJson={handleClickPreloadedTestJson}
                             />
+                            <CairoSimulation style={styles.confirm} handleClickRunCairoSimulation={handleClickRunCairoSimulation}></CairoSimulation>
                         </Grid>
                         <Grid item xs={4} className={styles.panel}>
                             <SidePanel
