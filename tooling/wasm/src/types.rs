@@ -1,8 +1,11 @@
-use cairo_felt::FIELD;
+use crate::{bigint, mayberelocatable};
+use cairo_felt::{Felt, NewFelt, FIELD};
+use cairo_vm::{types::relocatable::MaybeRelocatable, vm::runners::cairo_runner::CairoArg};
 use lazy_static::lazy_static;
 use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
+use std::marker::Copy;
 use std::{collections::VecDeque, convert::From};
 use wasm_bindgen::prelude::*;
 
@@ -14,26 +17,26 @@ lazy_static! {
 #[wasm_bindgen]
 #[derive(Debug)]
 pub struct ShoshinInput {
-    combos_offset_0: Vec<i32>,
-    combos_0: Vec<i32>,
-    combos_offset_1: Vec<i32>,
-    combos_1: Vec<i32>,
-    state_machine_offset_0: Vec<i32>,
-    state_machine_0: Vec<i32>,
-    state_machine_offset_1: Vec<i32>,
-    state_machine_1: Vec<i32>,
-    functions_offset_0: Vec<i32>,
-    functions_0: Vec<i32>,
-    functions_offset_1: Vec<i32>,
-    functions_1: Vec<i32>,
-    actions_0: Vec<i32>,
-    actions_1: Vec<i32>,
+    combos_offset_0: (Vec<i32>, u8),
+    combos_0: (Vec<i32>, u8),
+    combos_offset_1: (Vec<i32>, u8),
+    combos_1: (Vec<i32>, u8),
+    state_machine_offset_0: (Vec<i32>, u8),
+    state_machine_0: (Vec<i32>, u8),
+    state_machine_offset_1: (Vec<i32>, u8),
+    state_machine_1: (Vec<i32>, u8),
+    functions_offset_0: (Vec<i32>, u8),
+    functions_0: (Vec<i32>, u8),
+    functions_offset_1: (Vec<i32>, u8),
+    functions_1: (Vec<i32>, u8),
+    actions_0: (Vec<i32>, u8),
+    actions_1: (Vec<i32>, u8),
     pub char_0: u8,
     pub char_1: u8,
 }
 
 impl ShoshinInput {
-    pub fn get_vector_arguments(self) -> Vec<Vec<i32>> {
+    fn get_vector_arguments(self) -> Vec<(Vec<i32>, u8)> {
         vec![
             self.combos_offset_0,
             self.combos_0,
@@ -51,25 +54,49 @@ impl ShoshinInput {
             self.actions_1,
         ]
     }
+    pub fn get_vm_args(self) -> Vec<CairoArg> {
+        let char_0 = self.char_0;
+        let char_1 = self.char_1;
+        let inputs = self.get_vector_arguments();
+        let mut args = vec![];
+        for x in inputs {
+            args.push(CairoArg::from(mayberelocatable!(x.0.len() / x.1 as usize)));
+            let vals = num_into_mayberelocatable(x.0);
+            args.push(CairoArg::from(vals));
+        }
+        args.insert(12, CairoArg::Single(mayberelocatable!(0)));
+        args.insert(17, CairoArg::Single(mayberelocatable!(0)));
+        args.push(CairoArg::from(mayberelocatable!(char_0)));
+        args.push(CairoArg::from(mayberelocatable!(char_1)));
+        args
+    }
+}
+
+fn num_into_mayberelocatable<T: Into<BigInt>>(x: Vec<T>) -> Vec<MaybeRelocatable> {
+    let mut y = vec![];
+    for i in x {
+        y.push(mayberelocatable!(i));
+    }
+    y
 }
 
 impl From<Vec<Vec<i32>>> for ShoshinInput {
     fn from(mut value: Vec<Vec<i32>>) -> Self {
         ShoshinInput {
-            actions_1: value.pop().unwrap(),
-            actions_0: value.pop().unwrap(),
-            functions_1: value.pop().unwrap(),
-            functions_offset_1: value.pop().unwrap(),
-            functions_0: value.pop().unwrap(),
-            functions_offset_0: value.pop().unwrap(),
-            state_machine_1: value.pop().unwrap(),
-            state_machine_offset_1: value.pop().unwrap(),
-            state_machine_0: value.pop().unwrap(),
-            state_machine_offset_0: value.pop().unwrap(),
-            combos_1: value.pop().unwrap(),
-            combos_offset_1: value.pop().unwrap(),
-            combos_0: value.pop().unwrap(),
-            combos_offset_0: value.pop().unwrap(),
+            actions_1: (value.pop().unwrap(), 1),
+            actions_0: (value.pop().unwrap(), 1),
+            functions_1: (value.pop().unwrap(), 3),
+            functions_offset_1: (value.pop().unwrap(), 1),
+            functions_0: (value.pop().unwrap(), 3),
+            functions_offset_0: (value.pop().unwrap(), 1),
+            state_machine_1: (value.pop().unwrap(), 3),
+            state_machine_offset_1: (value.pop().unwrap(), 1),
+            state_machine_0: (value.pop().unwrap(), 3),
+            state_machine_offset_0: (value.pop().unwrap(), 1),
+            combos_1: (value.pop().unwrap(), 1),
+            combos_offset_1: (value.pop().unwrap(), 1),
+            combos_0: (value.pop().unwrap(), 1),
+            combos_offset_0: (value.pop().unwrap(), 1),
             char_0: 0,
             char_1: 0,
         }
