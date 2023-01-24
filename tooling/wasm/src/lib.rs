@@ -14,7 +14,7 @@ use cairo_vm::{
 use num_bigint::BigInt;
 use std::collections::VecDeque;
 use std::io::Cursor;
-use types::FrameScene;
+use types::{FrameScene, ShoshinInput};
 use wasm_bindgen::prelude::*;
 
 macro_rules! bigint {
@@ -32,10 +32,7 @@ macro_rules! mayberelocatable {
     };
 }
 
-pub fn run_cairo_program(
-    combos_offset_0: Vec<MaybeRelocatable>,
-    combos_0: Vec<MaybeRelocatable>,
-) -> Result<VirtualMachine, Error> {
+pub fn run_cairo_program(shoshin_input: ShoshinInput) -> Result<VirtualMachine, Error> {
     const PROGRAM_JSON: &str = include_str!("./compiled_loop.json");
     let program = Program::from_reader(Cursor::new(PROGRAM_JSON), Some("loop"))?;
 
@@ -54,46 +51,23 @@ pub fn run_cairo_program(
     cairo_runner.initialize_builtins(&mut vm).unwrap();
     cairo_runner.initialize_segments(&mut vm, None);
 
-    let combos_offset_1 = vec![mayberelocatable!(0), mayberelocatable!(1)];
-    let combos_1 = vec![
-        mayberelocatable!(2),
-        mayberelocatable!(2),
-        mayberelocatable!(2),
-        mayberelocatable!(2),
-        mayberelocatable!(2),
-    ];
-
-    let state_machine_offset_0 = vec![mayberelocatable!(1), mayberelocatable!(1)];
-    let state_machine_0 = vec![
-        mayberelocatable!(0),
-        mayberelocatable!(-1),
-        mayberelocatable!(-1),
-    ];
-
-    let state_machine_offset_1 = vec![mayberelocatable!(1), mayberelocatable!(1)];
-    let state_machine_1 = vec![
-        mayberelocatable!(0),
-        mayberelocatable!(-1),
-        mayberelocatable!(-1),
-    ];
-
-    let functions_offset_0 = vec![mayberelocatable!(0)];
-    let functions_0: Vec<MaybeRelocatable> = vec![
-        mayberelocatable!(0),
-        mayberelocatable!(-1),
-        mayberelocatable!(-1),
-    ];
-
-    let functions_offset_1 = vec![mayberelocatable!(0)];
-    let functions_1: Vec<MaybeRelocatable> = vec![
-        mayberelocatable!(0),
-        mayberelocatable!(-1),
-        mayberelocatable!(-1),
-    ];
-
-    let actions_0 = vec![mayberelocatable!(101)];
-
-    let actions_1 = vec![mayberelocatable!(101)];
+    let char_0 = shoshin_input.char_0;
+    let char_1 = shoshin_input.char_1;
+    let mut inputs = shoshin_input.get_vector_arguments();
+    let actions_1 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let actions_0 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let functions_1 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let functions_offset_1 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let functions_0 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let functions_offset_0 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let state_machine_1 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let state_machine_offset_1 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let state_machine_0 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let state_machine_offset_0 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let combos_1 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let combos_offset_1 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let combos_0 = num_into_mayberelocatable(inputs.pop().unwrap());
+    let combos_offset_0 = num_into_mayberelocatable(inputs.pop().unwrap());
 
     let range_check = CairoArg::from(MaybeRelocatable::from((2, 0)));
     let frames = CairoArg::from(mayberelocatable!(120));
@@ -127,8 +101,8 @@ pub fn run_cairo_program(
     let a_0 = CairoArg::from(actions_0);
     let a_1_len = CairoArg::from(mayberelocatable!(actions_1.len()));
     let a_1 = CairoArg::from(actions_1);
-    let char_0 = CairoArg::from(mayberelocatable!(0));
-    let char_1 = CairoArg::from(mayberelocatable!(1));
+    let char_0 = CairoArg::from(mayberelocatable!(char_0));
+    let char_1 = CairoArg::from(mayberelocatable!(char_1));
 
     let args = vec![
         &range_check,
@@ -171,20 +145,17 @@ pub fn run_cairo_program(
     Ok(vm)
 }
 
+fn num_into_mayberelocatable<T: Into<BigInt>>(x: Vec<T>) -> Vec<MaybeRelocatable> {
+    let mut y = vec![];
+    for i in x {
+        y.push(mayberelocatable!(i));
+    }
+    y
+}
+
 #[wasm_bindgen(js_name = runCairoProgram)]
-pub fn run_cairo_program_wasm(
-    combos_offset_0_js: Vec<i32>,
-    combos_0_js: Vec<i32>,
-) -> Result<JsValue, JsError> {
-    let mut combos_offset_0 = vec![];
-    for i in combos_offset_0_js {
-        combos_offset_0.push(mayberelocatable!(i))
-    }
-    let mut combos_0 = vec![];
-    for i in combos_0_js {
-        combos_0.push(mayberelocatable!(i))
-    }
-    let vm = run_cairo_program(combos_offset_0, combos_0).unwrap();
+pub fn run_cairo_program_wasm(shoshin_input: ShoshinInput) -> Result<JsValue, JsError> {
+    let vm = run_cairo_program(shoshin_input).unwrap();
     let frames_size = 44;
     let mut frames = vec![];
     if let [len_re, frames_re] = &vm.get_return_values(2).unwrap()[..] {
