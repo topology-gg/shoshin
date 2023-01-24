@@ -11,11 +11,11 @@ export const spriteData: Record<string, Record<string, SpriteData>> = {
         },
         dash_backward: {
             size: [193, 142],
-            hitboxOffset: { left: [-32,17], right: [] },
+            hitboxOffset: { left: [-32,17], right: [0,0] },
         },
         dash_forward: {
             size: [193, 142],
-            hitboxOffset: { left: [-32,17], right: [] },
+            hitboxOffset: { left: [-32,17], right: [0,0] },
         },
         hori: {
             size: [343, 239],
@@ -27,7 +27,7 @@ export const spriteData: Record<string, Record<string, SpriteData>> = {
         },
         knocked: {
             size: [363, 217],
-            hitboxOffset: { left: [], right: [] },
+            hitboxOffset: { left: [0,0], right: [0,0] },
         },
         vert: {
             size: [343, 239],
@@ -45,19 +45,19 @@ export const spriteData: Record<string, Record<string, SpriteData>> = {
     jessica: {
         block: {
             size: [103, 126],
-            hitboxOffset: { left: [], right: [-37, 8] },
+            hitboxOffset: { left: [0,0], right: [-37, 8] },
         },
         clash: {
             size: [132, 141],
-            hitboxOffset: { left: [], right: [] },
+            hitboxOffset: { left: [0,0], right: [0,0] },
         },
         dash_backward: {
             size: [147, 106],
-            hitboxOffset: { left: [], right: [-21,0] },
+            hitboxOffset: { left: [0,0], right: [-21,0] },
         },
         dash_forward: {
             size: [113, 104],
-            hitboxOffset: { left: [], right: [-21,0] },
+            hitboxOffset: { left: [0,0], right: [-21,0] },
         },
         hurt: {
             size: [105, 142],
@@ -69,7 +69,7 @@ export const spriteData: Record<string, Record<string, SpriteData>> = {
         },
         knocked: {
             size: [261, 137],
-            hitboxOffset: { left: [], right: [] },
+            hitboxOffset: { left: [0,0], right: [0,0] },
         },
         sidecut: {
             size: [239, 141],
