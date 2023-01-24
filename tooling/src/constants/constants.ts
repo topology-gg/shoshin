@@ -253,4 +253,4 @@ export const INITIAL_FUNCTIONS: Function[] = [
         elements: []
     }
 ]
-export const INITIAL_FUNCTIONS_INDEX: number = INITIAL_FUNCTIONS.length
+export const INITIAL_FUNCTIONS_INDEX: number = INITIAL_FUNCTIONS.length - 1
