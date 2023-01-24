@@ -178,32 +178,41 @@ pub fn run_cairo_program_wasm(shoshin_input: ShoshinInput) -> Result<JsValue, Js
 
 #[cfg(test)]
 mod tests {
+    use std::vec;
+
     use super::*;
+
+    fn get_shoshin_input() -> Vec<Vec<i32>> {
+        vec![
+            vec![0, 1],
+            vec![2, 2, 2, 2, 2],
+            vec![0, 1],
+            vec![2, 2, 2, 2, 2],
+            vec![1, 1],
+            vec![0, -1, -1],
+            vec![1, 1],
+            vec![0, -1, -1],
+            vec![0],
+            vec![0, -1, -1],
+            vec![0],
+            vec![0, -1, -1],
+            vec![101],
+            vec![101],
+        ]
+    }
 
     #[test]
     fn test_main_loop() {
-        let combos_offset_0 = vec![mayberelocatable!(0), mayberelocatable!(1)];
-        let combos_0 = vec![
-            mayberelocatable!(1),
-            mayberelocatable!(1),
-            mayberelocatable!(1),
-            mayberelocatable!(1),
-            mayberelocatable!(1),
-        ];
-        run_cairo_program(combos_offset_0, combos_0).unwrap();
+        let mut shoshin_input = ShoshinInput::from(get_shoshin_input());
+        shoshin_input.char_1 = 1;
+        run_cairo_program(shoshin_input).unwrap();
     }
 
     #[test]
     fn test_get_frames() {
-        let combos_offset_0 = vec![mayberelocatable!(0), mayberelocatable!(1)];
-        let combos_0 = vec![
-            mayberelocatable!(1),
-            mayberelocatable!(1),
-            mayberelocatable!(1),
-            mayberelocatable!(1),
-            mayberelocatable!(1),
-        ];
-        let vm = run_cairo_program(combos_offset_0, combos_0).unwrap();
+        let mut shoshin_input = ShoshinInput::from(get_shoshin_input());
+        shoshin_input.char_1 = 1;
+        let vm = run_cairo_program(shoshin_input).unwrap();
         let frames_size = 44;
         let mut frames = vec![];
         if let [len_re, frames_re] = &vm.get_return_values(2).unwrap()[..] {
