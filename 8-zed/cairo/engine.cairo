@@ -65,7 +65,7 @@ func loop{range_check_ptr}(
     actions_1: felt*,
     character_type_0: felt,
     character_type_1: felt,
-) -> () {
+) -> (frames_len: felt, frames: FrameScene*) {
     alloc_locals;
 
     //
@@ -158,7 +158,7 @@ func loop{range_check_ptr}(
     );
 
     tempvar arr_empty: felt* = new ();
-    _loop(
+    return _loop(
         idx = 1,
         len = len,
         arr_frames = arr_frames,
@@ -175,8 +175,6 @@ func loop{range_check_ptr}(
         character_type_0 = character_type_0,
         character_type_1 = character_type_1,
     );
-
-    return ();
 }
 
 func _loop{range_check_ptr}(
@@ -195,10 +193,10 @@ func _loop{range_check_ptr}(
     actions_1: felt*,
     character_type_0: felt,
     character_type_1: felt,
-) -> () {
+) -> (frames_len: felt, frames: FrameScene*) {
     alloc_locals;
     if (idx == len) {
-        return ();
+        return (frames_len=len, frames=arr_frames);
     }
 
     //
@@ -360,7 +358,7 @@ func _loop{range_check_ptr}(
     // Tail recursion
     //
     tempvar arr_empty: felt* = new ();
-    _loop(
+    return _loop(
         idx = idx + 1,
         len = len,
         arr_frames = arr_frames,
@@ -377,5 +375,4 @@ func _loop{range_check_ptr}(
         character_type_0 = character_type_0,
         character_type_1 = character_type_1,
     );
-    return ();
 }
