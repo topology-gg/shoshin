@@ -86,6 +86,7 @@ async def test(starknet):
     contract = await starknet.deploy(
         source="contracts/engine.cairo",
         cairo_path=[path],
+        disable_hint_validation=True,
     )
     LOGGER.info(f"> Deployed engine.cairo.")
 
