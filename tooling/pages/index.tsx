@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
-import { Box, createTheme, ThemeProvider, Tooltip } from '@mui/material';
+import React, { useState } from 'react';
+import { createTheme, ThemeProvider } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import MidScreenControl from '../src/components/MidScreenControl';
 import LoadTestJson from '../src/components/LoadTestJson';
@@ -9,9 +9,10 @@ import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
 import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
-import { Function, FunctionElement, ElementType, verifyValidFunction } from '../src/types/Function'
-import { MentalState } from '../src/types/MentalState';
-import { Character } from '../src/constants/constants';
+import { Function, FunctionElement, parseFunction, verifyValidFunction } from '../src/types/Function'
+import { MentalState, parseMentalState } from '../src/types/MentalState';
+import { Character, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
+import Agent from '../src/types/Agent';
 
 const theme = createTheme({
     typography: {
@@ -53,11 +54,12 @@ export default function Home() {
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
     const [workingTab, setWorkingTab] = useState<number>(0);
     const [character, setCharacter] = useState<Character>(Character.Jessica)
-    const [mentalStates, setMentalStates] = useState<MentalState[]>([]);
+    const [mentalStates, setMentalStates] = useState<MentalState[]>(INITIAL_MENTAL_STATES);
+    const [initialMentalState, setInitialMentalState] = useState<number>(0);
     const [treeEditor, setTreeEditor] = useState<number>(0);
-    const [trees, setTrees] = useState<Tree[]>([])
-    const [functions, setFunctions] = useState<Function[]>([])
-    const [functionsIndex, setFunctionsIndex] = useState<number>(0)
+    const [trees, setTrees] = useState<Tree[]>(INITIAL_DECISION_TREES)
+    const [functions, setFunctions] = useState<Function[]>(INITIAL_FUNCTIONS)
+    const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
     const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
     const [generalFunctionWarningText, setGeneralFunctionWarningText] = useState<string>('')
     const [isTreeEditorWarningTextOn, setTreeEditorWarningTextOn] = useState<boolean>(false)
@@ -174,6 +176,9 @@ export default function Home() {
     }
 
     function handleClickRemoveMentalState(index: number) {
+        if (index == initialMentalState) {
+            setInitialMentalState(0)
+        }
         setMentalStates((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
             prev_copy.splice(index, 1);
@@ -200,7 +205,6 @@ export default function Home() {
         let exp = regex_branches.exec(input)
         let f = functions.slice(0, functions.length - 1).map((_, i) => {return `F${i}`})
         let ms = mentalStates.map((m) => {return m.state})
-        console.log(f, ms)
         while (exp !== null && exp[1] !== '' && exp[2] !== '') {
             let fCondition = f.includes(exp[1].trim())
             let mCondition = ms.includes(exp[2].trim())
@@ -225,7 +229,6 @@ export default function Home() {
             end_node = {id: exp_end[1].trim(), isChild: true, branch: Direction.Right }
             exp_end = regex_end.exec(input)
         }
-        // TODO check that end_node in MS
         if (end_node !== undefined && end_node.id !== '') {
             let mCondition = ms.includes(end_node.id)
             if (mCondition) {
@@ -333,11 +336,22 @@ export default function Home() {
     }
 
     function handleValidateCharacter(mentalStates: MentalState[], combos: number[][], trees: Tree[], functions: Function[]) {
-        console.log('Mental States', mentalStates)
-        console.log('Combos', combos)
-        console.log('Trees', trees)
-        console.log('Functions', functions)
-        return
+        let agent: Agent = {}
+        agent.combos = combos
+        agent.states = mentalStates.map((ms) => ms.state)
+        agent.initialState = initialMentalState
+        let agentFunctions = []
+        functions.slice(0, -1).forEach((f) => {
+            agentFunctions.push(parseFunction(f))
+        })
+        agent.generalPurposeFunctions = agentFunctions
+
+        let agentMentalStates = []
+        mentalStates.forEach((ms, i) => {
+            agentMentalStates.push(parseMentalState(trees[i], mentalStates))
+        })
+        agent.mentalStates = agentMentalStates
+        return agent
     }
 
     // Render
@@ -396,6 +410,8 @@ export default function Home() {
                                 character={character}
                                 setCharacter={setCharacter}
                                 mentalStates={mentalStates}
+                                initialMentalState={initialMentalState}
+                                handleSetInitialMentalState={setInitialMentalState}
                                 combos={combos}
                                 handleValidateCombo={handleValidateCombo}
                                 handleAddMentalState={handleAddMentalState}

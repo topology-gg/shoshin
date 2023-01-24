@@ -1,3 +1,6 @@
+import { ElementType, Function, Operator, Perceptible } from "../types/Function"
+import { MentalState } from "../types/MentalState"
+import { Direction, Tree } from "../types/Tree"
 
 export const SIMULATOR_W = 1000
 export const SIMULATOR_H = 300
@@ -108,45 +111,146 @@ export enum Character {
 }
 
 export enum ActionsJessica {
-    NULL = 0,
-    SLASH = 1,
-    UPSWING = 2,
-    SIDECUT = 3,
-    BLOCK = 4,
-    MOVE_FORWARD  = 5,
-    MOVE_BACKWARD = 6,
-    DASH_FORWARD  = 7,
-    DASH_BACKWARD = 8,
+    Null = 0,
+    Slash = 1,
+    Upswing = 2,
+    Sidecut = 3,
+    Block = 4,
+    MoveForward  = 5,
+    MoveBackward = 6,
+    DashForward  = 7,
+    DashBackward = 8,
 }
 
 export enum ActionsAntoc {
-    NULL = 0,
-    HORI = 1,
-    VERT = 2,
-    BLOCK = 3,
-    MOVE_FORWARD = 4,
-    MOVE_BACKWARD = 5,
-    DASH_FORWARD = 6,
-    DASH_BACKWARD = 7,
+    Null = 0,
+    Hori = 1,
+    Vert = 2,
+    Block = 3,
+    MoveForward = 4,
+    MoveBackward = 5,
+    DashForward = 6,
+    DashBackward = 7,
 }
 
 export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc]
 
 export const ACTIONS_ICON_MAP = {
-    NULL: 'close',
+    Null: 'close',
 
-    SLASH : 'local_dining',
-    UPSWING : 'swipe_vertical',
-    SIDECUT : 'swipe_left',
+    Slash : 'local_dining',
+    Upswing : 'swipe_vertical',
+    Sidecut : 'swipe_left',
 
-    HORI : 'local_dining',
-    VERT : 'swipe_vertical',
+    Hori : 'local_dining',
+    Vert : 'swipe_vertical',
 
-    BLOCK : 'block',
-    MOVE_FORWARD  : 'arrow_forward',
-    MOVE_BACKWARD : 'arrow_back',
-    DASH_FORWARD  : 'keyboard_double_arrow_left',
-    DASH_BACKWARD : 'keyboard_double_arrow_right',
+    Block : 'block',
+    MoveForward  : 'arrow_forward',
+    MoveBackward : 'arrow_back',
+    DashForward  : 'keyboard_double_arrow_left',
+    DashBackward : 'keyboard_double_arrow_right',
+}
+
+export const OPERATOR_VALUE = {
+    '+': 1,
+    '-': 2,
+    '*': 3,
+    '/': 4,
+    '%': 5,
+    'ABS': 6,
+    'SQRT': 7,
+    'POW': 8,
+    IS_NN: 9,
+    '<=': 10,
+    '!': 11,
+    '==': 12,
+    MEM: 13,
+    DICT: 14,
+    FUNC: 15,
 }
 
 export const MAX_COMBO_SIZE = 10;
+
+export const INITIAL_MENTAL_STATES: MentalState[] = [
+    { state: 'MS IDLE', action: ActionsJessica['Null'] },
+    { state: 'MS COMBO', action: ActionsJessica['Null'] },
+    { state: 'MS BLOCK', action: ActionsJessica['Null'] },
+    { state: 'MS CLOSER', action: ActionsJessica['Null'] },
+]
+
+export const INITIAL_DECISION_TREES: Tree[] = [
+    { 
+        nodes: [
+            { id: 'if F0', isChild: false },
+            { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
+            { id: 'if F1', isChild: false, branch: Direction.Right },
+            { id: 'MS COMBO', isChild: true, branch: Direction.Left },
+            { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
+        ] 
+    },
+    { 
+        nodes: [
+            { id: 'if F0', isChild: false },
+            { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
+            { id: 'if F1', isChild: false, branch: Direction.Right },
+            { id: 'MS COMBO', isChild: true, branch: Direction.Left },
+            { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
+        ] 
+    },
+    { 
+        nodes: [
+            { id: 'if F0', isChild: false },
+            { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
+            { id: 'MS IDLE', isChild: true, branch: Direction.Right },
+        ] 
+    },
+    { 
+        nodes: [
+            { id: 'if F0', isChild: false },
+            { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
+            { id: 'if F1', isChild: false, branch: Direction.Right },
+            { id: 'MS COMBO', isChild: true, branch: Direction.Left },
+            { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
+        ] 
+    }
+]
+
+export const INITIAL_FUNCTIONS: Function[] = [
+    { 
+        elements: [
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 10, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
+            { value: Operator.Or, type: ElementType.Operator },
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 20, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
+            { value: Operator.Or, type: ElementType.Operator },
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 30, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
+        ]
+    },
+    { 
+        elements: [
+            { value: Operator.OpenAbs, type: ElementType.Operator},
+            { value: Perceptible.SelfX, type: ElementType.Perceptible},
+            { value: Operator.Sub, type: ElementType.Operator},
+            { value: Perceptible.OpponentX, type: ElementType.Perceptible},
+            { value: Operator.CloseAbs, type: ElementType.Operator},
+            { value: Operator.Lte, type: ElementType.Operator},
+            { value: 80, type: ElementType.Constant},
+        ]
+    },
+    {
+        elements: []
+    }
+]
+export const INITIAL_FUNCTIONS_INDEX: number = INITIAL_FUNCTIONS.length - 1

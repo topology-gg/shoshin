@@ -1,3 +1,5 @@
+import XRegExp, { MatchRecursiveValueNameMatch } from "xregexp"
+
 export interface Function {
     elements: FunctionElement[],
 }
@@ -19,8 +21,12 @@ export enum Operator {
     Mul = '*',
     Div = '/',
     Mod = '%',
+    Add = '+',
+    Sub = '-',
     OpenParenthesis = '(',
     CloseParenthesis = ')',
+    OpenAbs = 'Abs(',
+    CloseAbs = '|',
     Lt = '<',
     Lte = '<=',
     Equal = '==',
@@ -50,23 +56,35 @@ export enum Perceptible {
 }
 
 export function verifyValidFunction(f: Function, confirm: boolean) {
-    let count = 0
+    let countParenthesis = 0
+    let countAbs = 0
     let prevElement = { type: ElementType.Operator } as FunctionElement
     for (let e of f?.elements) {
-        if (count < 0) {
+        if (countParenthesis < 0 || countAbs < 0) {
             return false
         }
         switch (e?.type) {
             case ElementType.Operator: {
                 if (e?.value == Operator.OpenParenthesis) {
-                    count += 1
+                    countParenthesis += 1
                     break
                 }
                 if (e?.value == Operator.CloseParenthesis) {
-                    count -= 1
+                    countParenthesis -= 1
                     break
                 }
-                if (prevElement.type !== ElementType.Perceptible && prevElement.type !== ElementType.Constant) {
+                if (e?.value == Operator.OpenAbs) {
+                    countAbs += 1
+                    break
+                }
+                if (e?.value == Operator.CloseAbs) {
+                    countAbs -= 1
+                    break
+                }
+                if (prevElement.type !== ElementType.Perceptible && 
+                    prevElement.type !== ElementType.Constant && 
+                    prevElement?.value !== Operator.CloseParenthesis &&
+                    prevElement?.value !== Operator.CloseAbs) {
                     return false
                 }
                 break
@@ -87,15 +105,81 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
         prevElement = e
     }
     if (confirm) {
-        return count == 0
+        return countParenthesis == 0 && countAbs == 0
     }
     return true
+}
+
+export interface N {
+    value: number,
+    left: N|number,
+    right: N|number,
+}
+
+export function parseFunction(f: Function) {
+    let operator: N = parseInner(functionToStr(f)) 
+    return operator
+}
+
+function parseInner(f: string) {
+    // Allows to match the parenthesis and extract inner and outer values
+    let branches = XRegExp.matchRecursive(f, '\\(', '\\)', 'g', {
+            valueNames: ['between', null, 'match', null],
+            unbalanced: 'skip',
+    });
+    // If multiple operators at top level, match branches
+    if (branches.length >= 2) {
+        return matchBranches(branches)
+    }
+    // End regex in the case we have X OP Y where X and Y are either a string value or a number
+    let end = / *([a-zA-Z0-9]+)/g
+    let matches = []
+    let m = end.exec(f)
+    while(m) {
+        matches.push(m)
+        m = end.exec(f)
+    }
+    let regexOp = /  *([<=]+|AND|OR|\*|\/|%|-|\+) */g
+    m = regexOp.exec(f)
+    let valueOne = getParsedValue(matches[0][1])
+    let valueTwo = getParsedValue(matches[1][1])
+    return {value: m[1], left: valueOne, right: valueTwo}
+}
+
+function matchBranches(branches: MatchRecursiveValueNameMatch[]) {
+    // If multiple operators at top level, extract left and right side then continue parsing
+    // Handle the case where one of the branches are in the form Abs() OP X
+    if (branches.length > 2) {
+        if (branches[0].value === 'Abs') {
+            let split = branches[2].value.trim().split(' ')
+            let parsed = getParsedValue(split[1])
+            return {value: split[0], left: parseInner('Abs('+branches[1].value+')'), right: parsed}
+        }
+        let recomposed = branches.slice(2).map((b) => {if(b.name === 'match'){return '('+b.value+')'} else{return b.value.trim()}}).join(' ')
+        return {value: branches[1].value.trim(), left: parseInner(branches[0].value), right: parseInner(recomposed)}
+    }
+    // If only two branches, f is in the form () OP X or X OP () or Abs()
+    if (branches.length == 2 ) {
+        if (branches[0].value.includes('Abs')) {
+            return {value: 'Abs', left: -1, right: parseInner(branches[1].value)}
+        }
+        let [parenthesisIndex, restIndex] = branches[0].name === 'match'? [0,1] : [1, 0]
+        let split = branches[restIndex].value.trim().split(' ')
+        let parsed = getParsedValue(split[restIndex])
+        return {value: split[parenthesisIndex], left: parsed, right: parseInner(branches[parenthesisIndex].value)}
+    }
+}
+
+function getParsedValue(x: string) {
+    let parsedOne = parseInt(x)
+    return isNaN(parsedOne) ? {value: 14, left:-1, right: Perceptible[x]}: parsedOne
 }
 
 export function functionToStr(f: Function) {
     let str = ''
     f.elements.forEach((e) => {
         let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
+        value = value === '|'? ')' : value
         str += value + ' '
     })
     return str
