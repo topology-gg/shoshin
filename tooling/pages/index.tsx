@@ -42,7 +42,7 @@ const theme = createTheme({
 export default function Home() {
 
     // Constants
-    const LATENCY = 150;
+    const LATENCY = 100;
     const runnable = true;
 
     // React states
@@ -196,19 +196,19 @@ export default function Home() {
         let regex_branches = /if *([a-zA-Z0-9_ ]*)\? *([a-zA-Z0-9_ ]*) *\:/g
 
         let regex_end = /: *\n([a-zA-z0-9_ ]*)/gm
-        
+
         let exp = regex_branches.exec(input)
         let f = functions.slice(0, functions.length - 1).map((_, i) => {return `F${i}`})
         let ms = mentalStates.map((m) => {return m.state})
         console.log(f, ms)
         while (exp !== null && exp[1] !== '' && exp[2] !== '') {
-            let fCondition = f.includes(exp[1].trim()) 
+            let fCondition = f.includes(exp[1].trim())
             let mCondition = ms.includes(exp[2].trim())
             if (fCondition && mCondition) {
                 new_tree.nodes.push({id: 'if ' + exp[1].trim(), isChild: false }, { id: exp[2].trim(), isChild: true, branch: Direction.Left })
             } else {
-                let text = !fCondition ? !mCondition ? 
-                                        `Function ${exp[1]} and mental state ${exp[2]} not included in currect build`: 
+                let text = !fCondition ? !mCondition ?
+                                        `Function ${exp[1]} and mental state ${exp[2]} not included in currect build`:
                                         `Function ${exp[1]} not included in current build` :
                             `Mental state ${exp[2]} not included in current build`
                 setTreeEditorWarningTextOn(true)
@@ -287,14 +287,14 @@ export default function Home() {
         if(!f?.elements || !verifyValidFunction(f, true)) {
             setGeneralFunctionWarningTextOn(true)
             setGeneralFunctionWarningText(`Invalid function, please update`)
-            setTimeout(() => setGeneralFunctionWarningTextOn(false), 2000) 
-            return 
+            setTimeout(() => setGeneralFunctionWarningTextOn(false), 2000)
+            return
         }
         if (functionsIndex < length - 1){
             setFunctionsIndex(() => {
                 return length - 1
             })
-            return 
+            return
         }
         if (functions[length - 1]?.elements.length > 0) {
             setFunctionsIndex((prev) => {
@@ -337,7 +337,7 @@ export default function Home() {
         console.log('Combos', combos)
         console.log('Trees', trees)
         console.log('Functions', functions)
-        return 
+        return
     }
 
     // Render
@@ -390,8 +390,8 @@ export default function Home() {
                             />
                         </Grid>
                         <Grid item xs={4} className={styles.panel}>
-                            <SidePanel 
-                                workingTab={workingTab} 
+                            <SidePanel
+                                workingTab={workingTab}
                                 handleClickTab={setWorkingTab}
                                 character={character}
                                 setCharacter={setCharacter}
