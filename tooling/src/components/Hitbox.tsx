@@ -29,7 +29,8 @@ export default function Hitbox( {show=false, viewWidth, agentFrame, hitboxType}:
     const top = SIMULATOR_H - hitboxY - hitboxH
 
     // Calculate hitbox render style
-    const borderColor = hitboxType == 'body' ? '#FCE20577' : '#CC333377';
+    // const borderColor = hitboxType == 'body' ? '#FCE20577' : '#CC333377';
+    const borderColor = hitboxType == 'body' ? '#FCE205FF' : '#CC3333FF';
 
     return (
             <div
@@ -39,9 +40,11 @@ export default function Hitbox( {show=false, viewWidth, agentFrame, hitboxType}:
                     position: 'absolute',
                     width: hitboxW, height: hitboxH,
                     left: left, top: top,
-                    border: `7px solid ${borderColor}`,
+                    // border: `7px solid ${borderColor}`,
+                    // backgroundColor:'#33333399',
+                    border: `2px solid ${borderColor}`,
+                    backgroundColor:'#33333322',
                     zIndex: 10,
-                    backgroundColor:'#33333399',
                     color: '#EEEEEE',
                 }}
             >
