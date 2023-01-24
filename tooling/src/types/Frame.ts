@@ -28,6 +28,11 @@ export interface Hitboxes {
     body: Rectangle,
 }
 
+export interface FrameScene {
+    agent_0: Frame[],
+    agent_1: Frame[],
+}
+
 export interface Frame {
     mental_state: number,
     body_state: BodyState,
