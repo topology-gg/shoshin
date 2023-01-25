@@ -1,8 +1,9 @@
 import { useContext, useEffect } from "react";
 import { WASMContext } from "../context/WASM";
+import { flattenAgent } from "../types/Agent";
 import { FrameScene } from "../types/Frame";
 
-export const CairoSimulation = ({style, handleClickRunCairoSimulation}) => {
+export const CairoSimulation = ({style, handleClickRunCairoSimulation, input}) => {
   const ctx = useContext(WASMContext);
 
   useEffect(() => {
@@ -20,9 +21,30 @@ export const CairoSimulation = ({style, handleClickRunCairoSimulation}) => {
     <div>
       <button className={style}
         onClick={() => {
-          let combos_offset_0 = new Int32Array([0, 1])
-          let combos_0 = new Int32Array([1, 1, 1, 1, 1])
-          let output = ctx.wasm.runCairoProgram(combos_offset_0, combos_0);
+          let [combosOffset, combos, mentalStatesOffset, mentalStates, functionsOffset, functions] = flattenAgent(input)
+          let [dummyCombosOffset, dummyCombos, dummyMentalStatesOffset, dummyMentalStates, dummyFunctionsOffset, dummyFunctions, dummyActions] = getDummyArgs()
+          // TODO debug the inputs
+          let shoshinInput = ctx.wasm.from_array(
+            combosOffset, 
+            combos, 
+            dummyCombosOffset, 
+            dummyCombos, 
+            mentalStatesOffset, 
+            mentalStates,
+            input.initialState,
+            dummyMentalStatesOffset,
+            dummyMentalStates,
+            0,
+            functionsOffset,
+            functions, 
+            dummyFunctionsOffset,
+            dummyFunctions,
+            input.actions,
+            dummyActions,
+            input.character,
+            1
+          )
+          let output = ctx.wasm.runCairoProgram(shoshinInput);
           handleClickRunCairoSimulation(cairoOutputToFrameScene(output))
         }}
       >
@@ -31,6 +53,18 @@ export const CairoSimulation = ({style, handleClickRunCairoSimulation}) => {
     </div>
   );
 };
+
+const getDummyArgs = () => {
+  return [
+    new Int32Array([0, 5]),
+    new Int32Array([2, 2, 2, 2, 2]),
+    new Int32Array([1, 1]),
+    new Int32Array([0, -1, -1]),
+    new Int32Array([1]),
+    new Int32Array([0, -1, -1]),
+    new Int32Array([101]),
+  ]
+}
 
 const cairoOutputToFrameScene = (output: any[]): FrameScene => {
   let scene: FrameScene = { agent_0: [], agent_1: [] }
