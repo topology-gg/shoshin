@@ -95,29 +95,12 @@ pub fn run_cairo_program_wasm(shoshin_input: ShoshinInput) -> Result<JsValue, Js
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::input_args;
+    use crate::types::InputArgs;
     use std::vec;
 
-    use super::*;
-    use crate::types::InputArgs;
-
-    macro_rules! input_args {
-        ($(($x: expr, $y: expr, $z: expr)),*) => {{
-            let mut temp_vec = vec![];
-            $(
-                temp_vec.push(InputArgs::Triple($x, $y, $z));
-            )*
-            temp_vec
-        }};
-        ($($x: expr),*) => {{
-            let mut temp_vec = vec![];
-            $(
-                temp_vec.push(InputArgs::Simple($x));
-            )*
-            temp_vec
-        }};
-    }
-
-    fn get_shoshin_input() -> Vec<Vec<InputArgs>> {
+    fn get_shoshin_test_input() -> Vec<Vec<InputArgs>> {
         vec![
             input_args![0, 1],
             input_args![2, 2, 2, 2, 2],
@@ -137,48 +120,15 @@ mod tests {
     }
 
     #[test]
-    fn macro_test() {
-        let expected = vec![
-            vec![InputArgs::Simple(0), InputArgs::Simple(1)],
-            vec![
-                InputArgs::Simple(2),
-                InputArgs::Simple(2),
-                InputArgs::Simple(2),
-                InputArgs::Simple(2),
-                InputArgs::Simple(2),
-            ],
-            vec![InputArgs::Simple(0), InputArgs::Simple(1)],
-            vec![
-                InputArgs::Simple(2),
-                InputArgs::Simple(2),
-                InputArgs::Simple(2),
-                InputArgs::Simple(2),
-                InputArgs::Simple(2),
-            ],
-            vec![InputArgs::Simple(1), InputArgs::Simple(1)],
-            vec![InputArgs::Triple(0, -1, -1)],
-            vec![InputArgs::Simple(1), InputArgs::Simple(1)],
-            vec![InputArgs::Triple(0, -1, -1)],
-            vec![InputArgs::Simple(0)],
-            vec![InputArgs::Triple(0, -1, -1)],
-            vec![InputArgs::Simple(0)],
-            vec![InputArgs::Triple(0, -1, -1)],
-            vec![InputArgs::Simple(101)],
-            vec![InputArgs::Simple(101)],
-        ];
-        assert_eq!(expected, get_shoshin_input());
-    }
-
-    #[test]
     fn test_main_loop() {
-        let mut shoshin_input = ShoshinInput::from(get_shoshin_input());
+        let mut shoshin_input = ShoshinInput::from(get_shoshin_test_input());
         shoshin_input.char_1 = 1;
         run_cairo_program(shoshin_input).unwrap();
     }
 
     #[test]
     fn test_get_frames() {
-        let mut shoshin_input = ShoshinInput::from(get_shoshin_input());
+        let mut shoshin_input = ShoshinInput::from(get_shoshin_test_input());
         shoshin_input.char_1 = 1;
         let vm = run_cairo_program(shoshin_input).unwrap();
         let frames_size = 44;
