@@ -129,6 +129,47 @@ fn input_arg_into_mayberelocatable(x: Vec<InputArgs>) -> Vec<MaybeRelocatable> {
     out
 }
 
+#[wasm_bindgen]
+pub fn from_array(
+    combos_offset_0: Vec<i32>,
+    combos_0: Vec<i32>,
+    combos_offset_1: Vec<i32>,
+    combos_1: Vec<i32>,
+    state_machine_offset_0: Vec<i32>,
+    state_machine_0: Vec<i32>,
+    state_machine_offset_1: Vec<i32>,
+    state_machine_1: Vec<i32>,
+    functions_offset_0: Vec<i32>,
+    functions_0: Vec<i32>,
+    functions_offset_1: Vec<i32>,
+    functions_1: Vec<i32>,
+    actions_0: Vec<i32>,
+    actions_1: Vec<i32>,
+    char_0: u8,
+    char_1: u8,
+) -> ShoshinInput {
+    let v = vec![
+        input_vec![combos_offset_0, simple],
+        input_vec![combos_0, simple],
+        input_vec![combos_offset_1, simple],
+        input_vec![combos_1, simple],
+        input_vec![state_machine_offset_0, simple],
+        input_vec![state_machine_0, triple],
+        input_vec![state_machine_offset_1, simple],
+        input_vec![state_machine_1, triple],
+        input_vec![functions_offset_0, simple],
+        input_vec![functions_0, triple],
+        input_vec![functions_offset_1, simple],
+        input_vec![functions_1, triple],
+        input_vec![actions_0, simple],
+        input_vec![actions_1, simple],
+    ];
+    let mut s = ShoshinInput::from(v);
+    s.char_0 = char_0;
+    s.char_1 = char_1;
+    s
+}
+
 impl From<Vec<Vec<InputArgs>>> for ShoshinInput {
     fn from(mut value: Vec<Vec<InputArgs>>) -> Self {
         ShoshinInput {
