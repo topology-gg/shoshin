@@ -1,4 +1,5 @@
 import XRegExp, { MatchRecursiveValueNameMatch } from "xregexp"
+import { OPERATOR_VALUE } from "../constants/constants"
 
 export interface Function {
     elements: FunctionElement[],
@@ -131,6 +132,9 @@ function parseInner(f: string) {
     if (branches.length >= 2) {
         return matchBranches(branches)
     }
+    if (branches.length > 0) {
+        f = branches[0].value
+    }
     // End regex in the case we have X OP Y where X and Y are either a string value or a number
     let end = / *([a-zA-Z0-9]+)/g
     let matches = []
@@ -143,7 +147,7 @@ function parseInner(f: string) {
     m = regexOp.exec(f)
     let valueOne = getParsedValue(matches[0][1])
     let valueTwo = getParsedValue(matches[1][1])
-    return {value: m[1], left: valueOne, right: valueTwo}
+    return {value: operatorToNumber(m[1]), left: valueOne, right: valueTwo}
 }
 
 function matchBranches(branches: MatchRecursiveValueNameMatch[]) {
@@ -153,21 +157,25 @@ function matchBranches(branches: MatchRecursiveValueNameMatch[]) {
         if (branches[0].value === 'Abs') {
             let split = branches[2].value.trim().split(' ')
             let parsed = getParsedValue(split[1])
-            return {value: split[0], left: parseInner('Abs('+branches[1].value+')'), right: parsed}
+            return {value: operatorToNumber(split[0]), left: parseInner('Abs('+branches[1].value+')'), right: parsed}
         }
         let recomposed = branches.slice(2).map((b) => {if(b.name === 'match'){return '('+b.value+')'} else{return b.value.trim()}}).join(' ')
-        return {value: branches[1].value.trim(), left: parseInner(branches[0].value), right: parseInner(recomposed)}
+        return {value: operatorToNumber(branches[1].value.trim()), left: parseInner(branches[0].value), right: parseInner(recomposed)}
     }
     // If only two branches, f is in the form () OP X or X OP () or Abs()
     if (branches.length == 2 ) {
         if (branches[0].value.includes('Abs')) {
-            return {value: 'Abs', left: -1, right: parseInner(branches[1].value)}
+            return {value: operatorToNumber('Abs'), left: -1, right: parseInner(branches[1].value)}
         }
         let [parenthesisIndex, restIndex] = branches[0].name === 'match'? [0,1] : [1, 0]
         let split = branches[restIndex].value.trim().split(' ')
         let parsed = getParsedValue(split[restIndex])
-        return {value: split[parenthesisIndex], left: parsed, right: parseInner(branches[parenthesisIndex].value)}
+        return {value: operatorToNumber(split[parenthesisIndex]), left: parsed, right: parseInner(branches[parenthesisIndex].value)}
     }
+}
+
+function operatorToNumber(x: string) {
+    return OPERATOR_VALUE[x.toUpperCase()]
 }
 
 function getParsedValue(x: string) {

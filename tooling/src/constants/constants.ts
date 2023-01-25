@@ -154,8 +154,10 @@ export const ACTIONS_ICON_MAP = {
 
 export const OPERATOR_VALUE = {
     '+': 1,
+    'OR': 1,
     '-': 2,
     '*': 3,
+    'AND': 3,
     '/': 4,
     '%': 5,
     'ABS': 6,
