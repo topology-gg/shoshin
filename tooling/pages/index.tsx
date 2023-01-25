@@ -13,6 +13,7 @@ import { Function, FunctionElement, parseFunction, verifyValidFunction } from '.
 import { MentalState, parseMentalState } from '../src/types/MentalState';
 import { Character, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
 import Agent from '../src/types/Agent';
+import ImagePreloader from '../src/components/ImagePreloader';
 
 const theme = createTheme({
     typography: {
@@ -370,6 +371,11 @@ export default function Home() {
                             {
                                 !testJson ? <></> :
                                 <>
+                                    <ImagePreloader
+                                        onComplete={() => {
+                                            console.log("completed images");
+                                        }}
+                                    />
                                     <Simulator
                                         characterType0={testJson.agent_0.type}
                                         characterType1={testJson.agent_1.type}
