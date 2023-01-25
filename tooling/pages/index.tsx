@@ -368,46 +368,48 @@ export default function Home() {
                     <Grid container spacing={1}>
                         {/* <Grid item xs={2}></Grid> */}
                         <Grid item xs={8} className={styles.main}>
-                            {
-                                !testJson ? <></> :
-                                <div style={{display:'flex', flexDirection:'column'}}>
-                                    <ImagePreloader
-                                        onComplete={() => {
-                                            console.log("completed images");
-                                        }}
-                                    />
-                                    <Simulator
-                                        characterType0={testJson.agent_0.type}
-                                        characterType1={testJson.agent_1.type}
-                                        agentFrame0={testJson.agent_0.frames[animationFrame]}
-                                        agentFrame1={testJson.agent_1.frames[animationFrame]}
-                                        showDebug={checkedShowDebugInfo}
-                                    />
+                            <div style={{display:'flex', flexDirection:'column'}}>
+                                {
+                                    !testJson ? <></> :
+                                    <div style={{display:'flex', flexDirection:'column'}}>
+                                        <ImagePreloader
+                                            onComplete={() => {
+                                                console.log("completed images");
+                                            }}
+                                        />
+                                        <Simulator
+                                            characterType0={testJson.agent_0.type}
+                                            characterType1={testJson.agent_1.type}
+                                            agentFrame0={testJson.agent_0.frames[animationFrame]}
+                                            agentFrame1={testJson.agent_1.frames[animationFrame]}
+                                            showDebug={checkedShowDebugInfo}
+                                        />
 
-                                    <MidScreenControl
-                                        runnable = {true}
-                                        animationFrame = {animationFrame}
-                                        n_cycles = {N_FRAMES}
-                                        animationState = {animationState}
-                                        handleClick = {handleMidScreenControlClick}
-                                        handleSlideChange = {
-                                            evt => {
-                                                if (animationState == "Run") return;
-                                                const slide_val: number = parseInt(evt.target.value);
-                                                setAnimationFrame(slide_val);
+                                        <MidScreenControl
+                                            runnable = {true}
+                                            animationFrame = {animationFrame}
+                                            n_cycles = {N_FRAMES}
+                                            animationState = {animationState}
+                                            handleClick = {handleMidScreenControlClick}
+                                            handleSlideChange = {
+                                                evt => {
+                                                    if (animationState == "Run") return;
+                                                    const slide_val: number = parseInt(evt.target.value);
+                                                    setAnimationFrame(slide_val);
+                                                }
                                             }
-                                        }
-                                        checkedShowDebugInfo = {checkedShowDebugInfo}
-                                        handleChangeDebugInfo = {() => setCheckedShowDebugInfo(
-                                            (_) => !checkedShowDebugInfo
-                                        )}
-                                    />
-                                </div>
-                            }
-                            <LoadTestJson
-                                handleLoadTestJson={handleLoadTestJson}
-                                handleClickPreloadedTestJson={handleClickPreloadedTestJson}
-                            />
+                                            checkedShowDebugInfo = {checkedShowDebugInfo}
+                                            handleChangeDebugInfo = {() => setCheckedShowDebugInfo(
+                                                (_) => !checkedShowDebugInfo
+                                            )}
+                                        />
+                                    </div>
+                                }
+                                <LoadTestJson
+                                    handleLoadTestJson={handleLoadTestJson}
+                                    handleClickPreloadedTestJson={handleClickPreloadedTestJson}
+                                />
+                            </div>
                         </Grid>
                         <Grid item xs={4} className={styles.panel}>
                             <SidePanel
