@@ -66,6 +66,7 @@ export default function Home() {
     const [isTreeEditorWarningTextOn, setTreeEditorWarningTextOn] = useState<boolean>(false)
     const [treeEditorWarningText, setTreeEditorWarningText] = useState<string>('')
     const [combos, setCombos] = useState<number[][]>([])
+    const [agent, setAgent] = useState<Agent>({})
 
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
@@ -348,11 +349,15 @@ export default function Home() {
         agent.generalPurposeFunctions = agentFunctions
 
         let agentMentalStates = []
-        mentalStates.forEach((ms, i) => {
+        mentalStates.forEach((_, i) => {
             agentMentalStates.push(parseMentalState(trees[i], mentalStates))
         })
         agent.mentalStates = agentMentalStates
-        return agent
+        agent.actions = mentalStates.map((ms) => ms.action)
+        agent.character = Object.keys(Character).indexOf(character)
+        setAgent((_) => {
+            return agent
+        })
     }
 
     function handleClickRunCairoSimulation(output: FrameScene) {
@@ -409,7 +414,7 @@ export default function Home() {
                                 handleLoadTestJson={handleLoadTestJson}
                                 handleClickPreloadedTestJson={handleClickPreloadedTestJson}
                             />
-                            <CairoSimulation style={styles.confirm} handleClickRunCairoSimulation={handleClickRunCairoSimulation}></CairoSimulation>
+                            <CairoSimulation style={styles.confirm} handleClickRunCairoSimulation={handleClickRunCairoSimulation} input={agent}></CairoSimulation>
                         </Grid>
                         <Grid item xs={4} className={styles.panel}>
                             <SidePanel
