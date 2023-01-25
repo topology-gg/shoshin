@@ -98,24 +98,75 @@ mod tests {
     use std::vec;
 
     use super::*;
+    use crate::types::InputArgs;
 
-    fn get_shoshin_input() -> Vec<Vec<i32>> {
+    macro_rules! input_args {
+        ($(($x: expr, $y: expr, $z: expr)),*) => {{
+            let mut temp_vec = vec![];
+            $(
+                temp_vec.push(InputArgs::Triple($x, $y, $z));
+            )*
+            temp_vec
+        }};
+        ($($x: expr),*) => {{
+            let mut temp_vec = vec![];
+            $(
+                temp_vec.push(InputArgs::Simple($x));
+            )*
+            temp_vec
+        }};
+    }
+
+    fn get_shoshin_input() -> Vec<Vec<InputArgs>> {
         vec![
-            vec![0, 1],
-            vec![2, 2, 2, 2, 2],
-            vec![0, 1],
-            vec![2, 2, 2, 2, 2],
-            vec![1, 1],
-            vec![0, -1, -1],
-            vec![1, 1],
-            vec![0, -1, -1],
-            vec![0],
-            vec![0, -1, -1],
-            vec![0],
-            vec![0, -1, -1],
-            vec![101],
-            vec![101],
+            input_args![0, 1],
+            input_args![2, 2, 2, 2, 2],
+            input_args![0, 1],
+            input_args![2, 2, 2, 2, 2],
+            input_args![1, 1],
+            input_args![(0, -1, -1)],
+            input_args![1, 1],
+            input_args![(0, -1, -1)],
+            input_args![0],
+            input_args![(0, -1, -1)],
+            input_args![0],
+            input_args![(0, -1, -1)],
+            input_args![101],
+            input_args![101],
         ]
+    }
+
+    #[test]
+    fn macro_test() {
+        let expected = vec![
+            vec![InputArgs::Simple(0), InputArgs::Simple(1)],
+            vec![
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+            ],
+            vec![InputArgs::Simple(0), InputArgs::Simple(1)],
+            vec![
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+            ],
+            vec![InputArgs::Simple(1), InputArgs::Simple(1)],
+            vec![InputArgs::Triple(0, -1, -1)],
+            vec![InputArgs::Simple(1), InputArgs::Simple(1)],
+            vec![InputArgs::Triple(0, -1, -1)],
+            vec![InputArgs::Simple(0)],
+            vec![InputArgs::Triple(0, -1, -1)],
+            vec![InputArgs::Simple(0)],
+            vec![InputArgs::Triple(0, -1, -1)],
+            vec![InputArgs::Simple(101)],
+            vec![InputArgs::Simple(101)],
+        ];
+        assert_eq!(expected, get_shoshin_input());
     }
 
     #[test]
