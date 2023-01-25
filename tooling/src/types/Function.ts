@@ -117,12 +117,44 @@ export interface N {
     right: N|number,
 }
 
+export function flattenN(n: N) {
+    if (typeof n.left === 'number' && typeof n.right == 'number') {
+        return isUniqueOperator(n.value) ? [n.value, -1, 1, n.right, -1, -1]: [n.value, 1, 2, n.left, -1, -1, n.right, -1, -1]
+    }
+    if (typeof n.left === 'number') {
+        return isUniqueOperator(n.value)? [n.value, -1, 1, ...flattenN(n.right as N)]: [n.value, -1, 1, n.left, -1, -1, ...flattenN(n.right as N)]
+    }
+    if (typeof n.right === 'number') {
+        return [n.value, 1, brancheSize(n.left) + 1, ...flattenN(n.left), n.right, -1, -1]
+    }
+    return [n.value, 1, brancheSize(n.left) + 1, ...flattenN(n.left), ...flattenN(n.right)]
+}
+
+function isUniqueOperator(x: number) {
+    return x == 6 || x == 7 || x == 11 || x == 13 || x == 14 || x == 15
+}
+
+function brancheSize(n: N) {
+    if (typeof n.left === 'number' && typeof n.right == 'number') {
+        return n.left == -1? n.right == -1? 1: 2: 3
+    }
+    if (typeof n.left === 'number') {
+        let add = n.left == -1? 1: 2
+        return add + brancheSize(n.right as N)
+    }
+    if (typeof n.right === 'number') {
+        return 2 + brancheSize(n.left as N)
+    }
+    return brancheSize(n.left) + brancheSize(n.right) + 1
+}
+
 export function parseFunction(f: Function) {
     let operator: N = parseInner(functionToStr(f)) 
     return operator
 }
 
 function parseInner(f: string) {
+    f = f.trim()
     // Allows to match the parenthesis and extract inner and outer values
     let branches = XRegExp.matchRecursive(f, '\\(', '\\)', 'g', {
             valueNames: ['between', null, 'match', null],
@@ -159,7 +191,7 @@ function matchBranches(branches: MatchRecursiveValueNameMatch[]) {
             let parsed = getParsedValue(split[1])
             return {value: operatorToNumber(split[0]), left: parseInner('Abs('+branches[1].value+')'), right: parsed}
         }
-        let recomposed = branches.slice(2).map((b) => {if(b.name === 'match'){return '('+b.value+')'} else{return b.value.trim()}}).join(' ')
+        let recomposed = branches.slice(2).map((b) => {if(b.name === 'match'){return '('+b.value.trim()+')'} else{return b.value.trim()}}).join(' ')
         return {value: operatorToNumber(branches[1].value.trim()), left: parseInner(branches[0].value), right: parseInner(recomposed)}
     }
     // If only two branches, f is in the form () OP X or X OP () or Abs()

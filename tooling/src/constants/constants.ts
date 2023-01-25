@@ -163,13 +163,13 @@ export const OPERATOR_VALUE = {
     'ABS': 6,
     'SQRT': 7,
     'POW': 8,
-    IS_NN: 9,
+    'IS_NN': 9,
     '<=': 10,
     '!': 11,
     '==': 12,
-    MEM: 13,
-    DICT: 14,
-    FUNC: 15,
+    'MEM': 13,
+    'DICT': 14,
+    'FUNC': 15,
 }
 
 export const MAX_COMBO_SIZE = 10;
