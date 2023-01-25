@@ -133,7 +133,7 @@ fn input_arg_into_mayberelocatable(x: Vec<InputArgs>) -> Vec<MaybeRelocatable> {
     out
 }
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = fromArrays)]
 pub fn from_array(
     combos_offset_0: Vec<i32>,
     combos_0: Vec<i32>,

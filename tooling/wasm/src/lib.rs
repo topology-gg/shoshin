@@ -102,17 +102,17 @@ mod tests {
 
     fn get_shoshin_test_input() -> Vec<Vec<InputArgs>> {
         vec![
-            input_args![0, 1],
+            input_args![0, 5],
             input_args![2, 2, 2, 2, 2],
-            input_args![0, 1],
+            input_args![0, 5],
             input_args![2, 2, 2, 2, 2],
             input_args![1, 1],
             input_args![(0, -1, -1)],
             input_args![1, 1],
             input_args![(0, -1, -1)],
-            input_args![0],
+            input_args![1],
             input_args![(0, -1, -1)],
-            input_args![0],
+            input_args![1],
             input_args![(0, -1, -1)],
             input_args![101],
             input_args![101],
