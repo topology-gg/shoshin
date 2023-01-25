@@ -370,7 +370,7 @@ export default function Home() {
                         <Grid item xs={8} className={styles.main}>
                             {
                                 !testJson ? <></> :
-                                <>
+                                <div style={{display:'flex', flexDirection:'column'}}>
                                     <ImagePreloader
                                         onComplete={() => {
                                             console.log("completed images");
@@ -402,7 +402,7 @@ export default function Home() {
                                             (_) => !checkedShowDebugInfo
                                         )}
                                     />
-                                </>
+                                </div>
                             }
                             <LoadTestJson
                                 handleLoadTestJson={handleLoadTestJson}

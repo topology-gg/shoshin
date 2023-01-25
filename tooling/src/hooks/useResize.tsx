@@ -19,7 +19,8 @@ export const useResize = (myRef) => {
         window.removeEventListener('load', handleResize)
         window.removeEventListener('resize', handleResize)
       }
-    }, [myRef, handleResize])
+    }, [])
+    // }, [myRef, handleResize])
 
     return { width, height }
 }
