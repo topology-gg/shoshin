@@ -59,8 +59,10 @@ pub struct ShoshinInput {
     combos_1: Vec<InputArgs>,
     state_machine_offset_0: Vec<InputArgs>,
     state_machine_0: Vec<InputArgs>,
+    pub initial_state_0: u8,
     state_machine_offset_1: Vec<InputArgs>,
     state_machine_1: Vec<InputArgs>,
+    pub initial_state_1: u8,
     functions_offset_0: Vec<InputArgs>,
     functions_0: Vec<InputArgs>,
     functions_offset_1: Vec<InputArgs>,
@@ -99,6 +101,8 @@ impl ShoshinInput {
     pub fn get_vm_args(self) -> Vec<CairoArg> {
         let char_0 = self.char_0;
         let char_1 = self.char_1;
+        let initial_state_0 = self.initial_state_0;
+        let initial_state_1 = self.initial_state_1;
         let inputs = self.get_vector_arguments();
         let mut args = vec![];
         for x in inputs {
@@ -106,8 +110,8 @@ impl ShoshinInput {
             let vals = input_arg_into_mayberelocatable(x);
             args.push(CairoArg::from(vals));
         }
-        args.insert(12, CairoArg::Single(mayberelocatable!(0)));
-        args.insert(17, CairoArg::Single(mayberelocatable!(0)));
+        args.insert(12, CairoArg::Single(mayberelocatable!(initial_state_0)));
+        args.insert(17, CairoArg::Single(mayberelocatable!(initial_state_1)));
         args.push(CairoArg::from(mayberelocatable!(char_0)));
         args.push(CairoArg::from(mayberelocatable!(char_1)));
         args
@@ -137,8 +141,10 @@ pub fn from_array(
     combos_1: Vec<i32>,
     state_machine_offset_0: Vec<i32>,
     state_machine_0: Vec<i32>,
+    initial_state_0: u8,
     state_machine_offset_1: Vec<i32>,
     state_machine_1: Vec<i32>,
+    initial_state_1: u8,
     functions_offset_0: Vec<i32>,
     functions_0: Vec<i32>,
     functions_offset_1: Vec<i32>,
@@ -167,6 +173,8 @@ pub fn from_array(
     let mut s = ShoshinInput::from(v);
     s.char_0 = char_0;
     s.char_1 = char_1;
+    s.initial_state_0 = initial_state_0;
+    s.initial_state_1 = initial_state_1;
     s
 }
 
@@ -187,6 +195,8 @@ impl From<Vec<Vec<InputArgs>>> for ShoshinInput {
             combos_offset_1: value.pop().unwrap(),
             combos_0: value.pop().unwrap(),
             combos_offset_0: value.pop().unwrap(),
+            initial_state_0: 0,
+            initial_state_1: 0,
             char_0: 0,
             char_1: 0,
         }
