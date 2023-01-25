@@ -369,14 +369,14 @@ export default function Home() {
                         {/* <Grid item xs={2}></Grid> */}
                         <Grid item xs={8} className={styles.main}>
                             <div style={{display:'flex', flexDirection:'column'}}>
+                                <ImagePreloader
+                                    onComplete={() => {
+                                        console.log("completed images");
+                                    }}
+                                />
                                 {
                                     !testJson ? <></> :
                                     <div style={{display:'flex', flexDirection:'column'}}>
-                                        <ImagePreloader
-                                            onComplete={() => {
-                                                console.log("completed images");
-                                            }}
-                                        />
                                         <Simulator
                                             characterType0={testJson.agent_0.type}
                                             characterType1={testJson.agent_1.type}
