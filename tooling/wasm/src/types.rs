@@ -14,6 +14,42 @@ lazy_static! {
     pub static ref PRIME_HALF: BigInt = &*PRIME >> 1;
 }
 
+#[macro_export]
+macro_rules! input_args {
+        ($(($x: expr, $y: expr, $z: expr)),*) => {{
+            let mut temp_vec = vec![];
+            $(
+                temp_vec.push(InputArgs::Triple($x, $y, $z));
+            )*
+            temp_vec
+        }};
+        ($($x: expr),*) => {{
+            let mut temp_vec = vec![];
+            $(
+                temp_vec.push(InputArgs::Simple($x));
+            )*
+            temp_vec
+        }};
+}
+
+#[macro_export]
+macro_rules! input_vec {
+    ($v: expr, simple) => {{
+        let mut temp_vec = vec![];
+        for i in $v {
+            temp_vec.push(InputArgs::Simple(i));
+        }
+        temp_vec
+    }};
+    ($v: expr, triple) => {{
+        let mut temp_vec = vec![];
+        for x in $v.chunks(3) {
+            temp_vec.push(InputArgs::Triple(x[0], x[1], x[2]));
+        }
+        temp_vec
+    }};
+}
+
 #[wasm_bindgen]
 #[derive(Debug)]
 pub struct ShoshinInput {
