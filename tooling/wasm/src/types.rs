@@ -352,3 +352,75 @@ fn mod_prime(x: BigInt) -> BigInt {
     }
     x
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn get_shoshin_test_input() -> Vec<Vec<InputArgs>> {
+        vec![
+            input_args![0, 1],
+            input_args![2, 2, 2, 2, 2],
+            input_args![0, 1],
+            input_args![2, 2, 2, 2, 2],
+            input_args![1, 1],
+            input_args![(0, -1, -1)],
+            input_args![1, 1],
+            input_args![(0, -1, -1)],
+            input_args![0],
+            input_args![(0, -1, -1)],
+            input_args![0],
+            input_args![(0, -1, -1)],
+            input_args![101],
+            input_args![101],
+        ]
+    }
+
+    #[test]
+    fn test_macro_args() {
+        let expected = vec![
+            vec![InputArgs::Simple(0), InputArgs::Simple(1)],
+            vec![
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+            ],
+            vec![InputArgs::Simple(0), InputArgs::Simple(1)],
+            vec![
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+                InputArgs::Simple(2),
+            ],
+            vec![InputArgs::Simple(1), InputArgs::Simple(1)],
+            vec![InputArgs::Triple(0, -1, -1)],
+            vec![InputArgs::Simple(1), InputArgs::Simple(1)],
+            vec![InputArgs::Triple(0, -1, -1)],
+            vec![InputArgs::Simple(0)],
+            vec![InputArgs::Triple(0, -1, -1)],
+            vec![InputArgs::Simple(0)],
+            vec![InputArgs::Triple(0, -1, -1)],
+            vec![InputArgs::Simple(101)],
+            vec![InputArgs::Simple(101)],
+        ];
+        assert_eq!(expected, get_shoshin_test_input());
+    }
+
+    #[test]
+    fn test_macro_vec() {
+        let v = vec![1, 2, 3];
+        assert_eq!(
+            vec![
+                InputArgs::Simple(1),
+                InputArgs::Simple(2),
+                InputArgs::Simple(3)
+            ],
+            input_vec!(v, simple)
+        );
+        let w = vec![1, 2, 3];
+        assert_eq!(vec![InputArgs::Triple(1, 2, 3)], input_vec!(w, triple));
+    }
+}
