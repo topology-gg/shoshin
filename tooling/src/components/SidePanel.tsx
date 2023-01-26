@@ -5,6 +5,7 @@ import Tabs from './Tabs';
 import MentalStates from './MentalStates';
 import TreeEditor from './TreeEditor';
 import GeneralFunctions from './GeneralFunctions';
+import Combos from './Combos';
     
 
 const SidePanel = ({
@@ -21,7 +22,6 @@ const SidePanel = ({
                     initialMentalState={initialMentalState}
                     handleSetInitialMentalState={handleSetInitialMentalState}
                     combos={combos}
-                    handleValidateCombo={handleValidateCombo}
                     character={character}
                     setCharacter={setCharacter}
                     handleAddMentalState={handleAddMentalState} 
@@ -40,6 +40,13 @@ const SidePanel = ({
                 />
             }
             case 1: {
+                return <Combos
+                        character={character}
+                        combos={combos}
+                        handleValidateCombo={handleValidateCombo}
+                        ></Combos>
+            }
+            case 2: {
                 return <GeneralFunctions
                         functions={functions}
                         handleUpdateGeneralFunction={handleUpdateGeneralFunction}
