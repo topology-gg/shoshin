@@ -159,8 +159,9 @@ function matchBranches(branches: MatchRecursiveValueNameMatch[]) {
             let parsed = getParsedValue(split[1])
             return {value: operatorToNumber(split[0]), left: parseInner('Abs('+branches[1].value+')'), right: parsed}
         }
-        let recomposed = branches.slice(2).map((b) => {if(b.name === 'match'){return '('+b.value.trim()+')'} else{return b.value.trim()}}).join(' ')
-        let trimmedRecomposed = recomposed.replace(/^\(/g, '').replace(/$\)/g, '')
+        let unparsedBranches = branches.slice(2)
+        let recomposed = unparsedBranches.map((b) => {if(b.name === 'match'){return '('+b.value.trim()+')'} else{return b.value.trim()}}).join(' ')
+        let trimmedRecomposed = unparsedBranches.length == 1? recomposed.replace(/^\(/g, '').replace(/$\)/g, ''): recomposed
         return {value: operatorToNumber(branches[1].value.trim()), left: parseInner(branches[0].value), right: parseInner(trimmedRecomposed)}
     }
     // If only two branches, f is in the form () OP X or X OP () or Abs()
