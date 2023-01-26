@@ -35,6 +35,7 @@ macro_rules! mayberelocatable {
 }
 
 pub fn run_cairo_program(shoshin_input: ShoshinInput) -> Result<VirtualMachine, Error> {
+    // Prepare the cairo runner, the vm and an empty hint processor
     const PROGRAM_JSON: &str = include_str!("./compiled_loop.json");
     let program = Program::from_reader(Cursor::new(PROGRAM_JSON), Some("loop"))?;
 
@@ -53,6 +54,7 @@ pub fn run_cairo_program(shoshin_input: ShoshinInput) -> Result<VirtualMachine, 
     cairo_runner.initialize_builtins(&mut vm).unwrap();
     cairo_runner.initialize_segments(&mut vm, None);
 
+    // Append the range_check_ptr and frames count to the arguments
     let mut args = vec![
         CairoArg::from(MaybeRelocatable::from((2, 0))),
         CairoArg::from(mayberelocatable!(120)),
@@ -62,7 +64,7 @@ pub fn run_cairo_program(shoshin_input: ShoshinInput) -> Result<VirtualMachine, 
 
     cairo_runner.run_from_entrypoint(
         entrypoint,
-        &args.iter().collect::<Vec<&CairoArg>>()[..],
+        &args.iter().collect::<Vec<&CairoArg>>(),
         false,
         &mut vm,
         &mut hint_processor,
@@ -72,14 +74,21 @@ pub fn run_cairo_program(shoshin_input: ShoshinInput) -> Result<VirtualMachine, 
 
 #[wasm_bindgen(js_name = runCairoProgram)]
 pub fn run_cairo_program_wasm(shoshin_input: ShoshinInput) -> Result<JsValue, JsError> {
+    // Run the shoshin cairo program with the inputs
     let vm = run_cairo_program(shoshin_input).unwrap();
+    // Prepare frames and frames size
     let frames_size = 44;
     let mut frames = vec![];
+
+    // Handle return values: (frames_len: felt, frames: FrameScene*)
     if let [len_re, frames_re] = &vm.get_return_values(2).unwrap()[..] {
         let len = len_re.get_int_ref().unwrap().to_bigint().to_u32_digits().1[0];
         let frames_address = frames_re.get_relocatable().unwrap();
+
+        // Loop the memory segment in frames_address len times, extracting each integer
         for i in 0..len {
             let mut frame = VecDeque::new();
+
             for j in 0..frames_size {
                 let word_address = Relocatable {
                     segment_index: frames_address.segment_index,
