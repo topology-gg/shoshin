@@ -54,19 +54,22 @@ export default function Home() {
     const [testJson, setTestJson] = useState<TestJson>(null);
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
     const [workingTab, setWorkingTab] = useState<number>(0);
-    const [character, setCharacter] = useState<Character>(Character.Jessica)
+    const [combos, setCombos] = useState<number[][]>([])
     const [mentalStates, setMentalStates] = useState<MentalState[]>(INITIAL_MENTAL_STATES);
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [trees, setTrees] = useState<Tree[]>(INITIAL_DECISION_TREES)
     const [functions, setFunctions] = useState<Function[]>(INITIAL_FUNCTIONS)
     const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
+    const [agent, setAgent] = useState<Agent>({})
+    const [character, setCharacter] = useState<Character>(Character.Jessica)
+
+    // Warnings
     const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
     const [generalFunctionWarningText, setGeneralFunctionWarningText] = useState<string>('')
     const [isTreeEditorWarningTextOn, setTreeEditorWarningTextOn] = useState<boolean>(false)
     const [treeEditorWarningText, setTreeEditorWarningText] = useState<string>('')
-    const [combos, setCombos] = useState<number[][]>([])
-    const [agent, setAgent] = useState<Agent>({})
+    const [runCairoSimulationWarning, setCairoSimulationWarning] = useState<string>('')
 
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
@@ -366,6 +369,11 @@ export default function Home() {
         })
     }
 
+    function handleInputError() {
+        setCairoSimulationWarning('Incorrect agent, please verify. If error persists, please contact us on Discord.')
+        setTimeout(() => setCairoSimulationWarning(''), 5000)
+    }
+
     // Render
     return (
         <div className={styles.container}>
@@ -414,7 +422,7 @@ export default function Home() {
                                 handleLoadTestJson={handleLoadTestJson}
                                 handleClickPreloadedTestJson={handleClickPreloadedTestJson}
                             />
-                            <CairoSimulation style={styles.confirm} handleClickRunCairoSimulation={handleClickRunCairoSimulation} input={agent}></CairoSimulation>
+                            <CairoSimulation style={styles.confirm} handleClickRunCairoSimulation={handleClickRunCairoSimulation} handleInputError={handleInputError} warning={runCairoSimulationWarning} input={agent}></CairoSimulation>
                         </Grid>
                         <Grid item xs={4} className={styles.panel}>
                             <SidePanel
