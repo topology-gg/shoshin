@@ -252,6 +252,34 @@ export const INITIAL_FUNCTIONS: Function[] = [
         ]
     },
     {
+        elements: [
+            { value: Operator.OpenAbs, type: ElementType.Operator},
+            { value: Perceptible.OpponentVelX, type: ElementType.Perceptible},
+            { value: Operator.CloseAbs, type: ElementType.Operator},
+            { value: Operator.Lte, type: ElementType.Operator},
+            { value: 10, type: ElementType.Constant},
+        ]
+    },
+    {
+        elements: [
+            { value: Operator.OpenParenthesis, type: ElementType.Operator},
+            { value: Perceptible.OpponentInt, type: ElementType.Perceptible},
+            { value: Operator.Lte, type: ElementType.Operator},
+            { value: 300, type: ElementType.Constant},
+            { value: Operator.CloseParenthesis, type: ElementType.Operator},
+            { value: Operator.And, type: ElementType.Operator},
+            { value: Operator.OpenParenthesis, type: ElementType.Operator},
+            { value: Operator.OpenAbs, type: ElementType.Operator},
+            { value: Perceptible.SelfX, type: ElementType.Perceptible},
+            { value: Operator.Sub, type: ElementType.Operator},
+            { value: Perceptible.OpponentX, type: ElementType.Perceptible},
+            { value: Operator.CloseAbs, type: ElementType.Operator},
+            { value: Operator.Lte, type: ElementType.Operator},
+            { value: 80, type: ElementType.Constant},
+            { value: Operator.CloseParenthesis, type: ElementType.Operator},
+        ]
+    },
+    {
         elements: []
     }
 ]
