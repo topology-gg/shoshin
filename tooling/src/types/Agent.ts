@@ -18,21 +18,21 @@ export function flattenAgent(agent: Agent) {
     let combosOffset = [0]
     let combos = []
     agent.combos.forEach((c) => {
-        combosOffset.push(combos.push(...c))
+        combosOffset.push(combosOffset[combosOffset.length - 1] + combos.push(...c))
     })
     let mentalStatesOffset = []
     let mentalStates = []
     agent.mentalStates.forEach((ms) => {
         mentalStatesOffset.push(1)
         let flattened = flattenN(ms)
-        mentalStatesOffset.push(flattened.length)
+        mentalStatesOffset.push(flattened.length / 3)
         mentalStates.push(...flattened)
     })
     let functionsOffset = []
     let functions = []
     agent.generalPurposeFunctions.forEach((f) => {
         let flattened = flattenN(f)
-        functionsOffset.push(flattened.length)
+        functionsOffset.push(flattened.length / 3)
         functions.push(...flattened)
     })
     return [

@@ -122,7 +122,7 @@ export function flattenN(n: N) {
         return isUniqueOperator(n.value) ? [n.value, -1, 1, n.right, -1, -1]: [n.value, 1, 2, n.left, -1, -1, n.right, -1, -1]
     }
     if (typeof n.left === 'number') {
-        return isUniqueOperator(n.value)? [n.value, -1, 1, ...flattenN(n.right as N)]: [n.value, -1, 1, n.left, -1, -1, ...flattenN(n.right as N)]
+        return isUniqueOperator(n.value)? [n.value, -1, 1, ...flattenN(n.right as N)]: [n.value, 1, 2, n.left, -1, -1, ...flattenN(n.right as N)]
     }
     if (typeof n.right === 'number') {
         return [n.value, 1, brancheSize(n.left) + 1, ...flattenN(n.left), n.right, -1, -1]
