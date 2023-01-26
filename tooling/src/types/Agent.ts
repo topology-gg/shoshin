@@ -1,4 +1,8 @@
+import { parseFunction } from "./Function"
 import Leaf, { flattenN } from "./Leaf" 
+import { MentalState, parseMentalState } from "./MentalState"
+import { Tree } from "./Tree"
+import { Function } from "./Function"
 
 export default interface Agent {
     states?: string[],
@@ -8,6 +12,34 @@ export default interface Agent {
     generalPurposeFunctions?: Leaf[],
     actions?: number[],
     character?: number,
+}
+
+export function buildAgent(mentalStates: MentalState[], combos: number[][], trees: Tree[], functions: Function[], initialMentalState, character) {
+    let agent: Agent = {}
+    agent.combos = combos
+    agent.states = mentalStates.map((ms) => ms.state)
+    agent.initialState = initialMentalState
+
+    let agentMentalStates = []
+    let indexes: Map<number, boolean> = new Map()
+    mentalStates.forEach((_, i) => {
+        let [parsedMentalState, usedFunctions] = parseMentalState(trees[i], mentalStates)
+        usedFunctions.forEach((_, k) => {
+            indexes.set(k, true)
+        })
+        agentMentalStates.push(parsedMentalState)
+    })
+    agent.mentalStates = agentMentalStates
+
+    let agentFunctions = []
+    Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => functions[i]).forEach((f) => {
+        agentFunctions.push(parseFunction(f))
+    })
+    agent.generalPurposeFunctions = agentFunctions
+
+    agent.actions = mentalStates.map((ms) => ms.action)
+    agent.character = character
+    return agent
 }
 
 export interface Operations {

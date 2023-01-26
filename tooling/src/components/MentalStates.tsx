@@ -40,10 +40,10 @@ const MentalStates = ({
     const handleClose = (e) => {
         if (e.target.id) {
             let a = e.target.id.split('-')[1]
-            if (!a.includes('COMBO')) {
+            if (!a.includes('Combo')) {
                 handleSetMentalStateAction(currentMenu, CHARACTERS_ACTIONS[characterIndex][a])
             } else {
-                let comboNumber = parseInt(a.split('_')[1])
+                let comboNumber = parseInt(a.split(' ')[1])
                 handleSetMentalStateAction(currentMenu, 101 + comboNumber)
             }
         }

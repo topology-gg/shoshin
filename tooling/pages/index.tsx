@@ -12,7 +12,7 @@ import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, parseFunction, verifyValidFunction } from '../src/types/Function'
 import { MentalState, parseMentalState } from '../src/types/MentalState';
 import { Character, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
-import Agent from '../src/types/Agent';
+import Agent, { buildAgent } from '../src/types/Agent';
 import { CairoSimulation } from '../src/components/CairoSimulation';
 
 const theme = createTheme({
@@ -341,32 +341,9 @@ export default function Home() {
     }
 
     function handleValidateCharacter(mentalStates: MentalState[], combos: number[][], trees: Tree[], functions: Function[]) {
-        let agent: Agent = {}
-        agent.combos = combos
-        agent.states = mentalStates.map((ms) => ms.state)
-        agent.initialState = initialMentalState
-
-        let agentMentalStates = []
-        let indexes: Map<number, boolean> = new Map()
-        mentalStates.forEach((_, i) => {
-            let [parsedMentalState, usedFunctions] = parseMentalState(trees[i], mentalStates)
-            usedFunctions.forEach((_, k) => {
-                indexes.set(k, true)
-            })
-            agentMentalStates.push(parsedMentalState)
-        })
-        agent.mentalStates = agentMentalStates
-
-        let agentFunctions = []
-        Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => functions[i]).forEach((f) => {
-            agentFunctions.push(parseFunction(f))
-        })
-        agent.generalPurposeFunctions = agentFunctions
-
-        agent.actions = mentalStates.map((ms) => ms.action)
-        agent.character = Object.keys(Character).indexOf(character)
+        let char = Object.keys(Character).indexOf(character)
         setAgent((_) => {
-            return agent
+            return buildAgent(mentalStates, combos, trees, functions, initialMentalState, char)
         })
     }
 
