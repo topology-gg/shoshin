@@ -1,11 +1,11 @@
-import { flattenN, N } from "./Function"
+import Leaf, { flattenN } from "./Leaf" 
 
 export default interface Agent {
     states?: string[],
     combos?: number[][],
-    mentalStates?: N[],
+    mentalStates?: Leaf[],
     initialState?: number,
-    generalPurposeFunctions?: N[],
+    generalPurposeFunctions?: Leaf[],
     actions?: number[],
     character?: number,
 }

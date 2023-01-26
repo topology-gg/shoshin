@@ -345,17 +345,25 @@ export default function Home() {
         agent.combos = combos
         agent.states = mentalStates.map((ms) => ms.state)
         agent.initialState = initialMentalState
+
+        // TODO check that the currently added functions are correctly parsed => currently incorrect
+        let agentMentalStates = []
+        let indexes: Map<number, boolean> = new Map()
+        mentalStates.forEach((_, i) => {
+            let [parsedMentalState, usedFunctions] = parseMentalState(trees[i], mentalStates)
+            usedFunctions.forEach((_, k) => {
+                indexes.set(k, true)
+            })
+            agentMentalStates.push(parsedMentalState)
+        })
+        agent.mentalStates = agentMentalStates
+
         let agentFunctions = []
-        functions.slice(0, -1).forEach((f) => {
+        Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => functions[i]).forEach((f) => {
             agentFunctions.push(parseFunction(f))
         })
         agent.generalPurposeFunctions = agentFunctions
 
-        let agentMentalStates = []
-        mentalStates.forEach((_, i) => {
-            agentMentalStates.push(parseMentalState(trees[i], mentalStates))
-        })
-        agent.mentalStates = agentMentalStates
         agent.actions = mentalStates.map((ms) => ms.action)
         agent.character = Object.keys(Character).indexOf(character)
         setAgent((_) => {
