@@ -1,12 +1,26 @@
-import { Typography } from "@mui/material";
+import { useState } from 'react'
+import { Typography, Button } from "@mui/material";
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { useContext, useEffect } from "react";
 import { INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_MENTAL_STATES } from "../constants/constants";
 import { WASMContext } from "../context/WASM";
 import { buildAgent, flattenAgent } from "../types/Agent";
 import { FrameScene } from "../types/Frame";
 
-export const CairoSimulation = ({style, handleClickRunCairoSimulation, warning, handleInputError, input}) => {
+export const CairoSimulation = ({
+  style, handleClickRunCairoSimulation, warning, handleInputError, input, isDefensiveAdversary, setIsDefensiveAdversary
+}) => {
   const ctx = useContext(WASMContext);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const opened = Boolean(anchorEl)
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+}
+const handleClose = (isDefensive) => {
+    setIsDefensiveAdversary(isDefensive)
+    setAnchorEl(null)
+}
 
   useEffect(() => {
     // Initialize wasm env.
@@ -35,7 +49,7 @@ export const CairoSimulation = ({style, handleClickRunCairoSimulation, warning, 
           <button className={style}
           onClick={() => {
             let [combosOffset, combos, mentalStatesOffset, mentalStates, functionsOffset, functions] = flattenAgent(input)
-            let [dummyCombosOffset, dummyCombos, dummyMentalStatesOffset, dummyMentalStates, dummyFunctionsOffset, dummyFunctions, dummyActions] = getDummyArgs()
+            let [dummyCombosOffset, dummyCombos, dummyMentalStatesOffset, dummyMentalStates, dummyFunctionsOffset, dummyFunctions, dummyActions] = getDummyArgs(isDefensiveAdversary)
             let output
             try {
               let shoshinInput = ctx.wasm.from_array(
@@ -71,13 +85,44 @@ export const CairoSimulation = ({style, handleClickRunCairoSimulation, warning, 
         (!displayButton && <Typography variant="overline">Validate your agent to simulate it</Typography>)
       }
       { displayWarning && <Typography variant="overline" color="red">{warning}</Typography> }
-    </div>
-  );
+      <Button
+          id={`initial-actions-menu-button`}
+          aria-controls={opened ? 'basic-menu' : undefined}
+          aria-haspopup='true'
+          aria-expanded={opened ? 'true' : undefined}
+          onClick={handleClick}
+          sx={{
+            marginTop: '1rem'
+          }}
+      >
+          <Typography variant='overline'>{(isDefensiveAdversary? 'Defensive': 'Offensive') + ' adversary'}</Typography>
+      </Button>
+      <Menu
+      id={'initial-actions-menu'}
+      anchorEl={anchorEl}
+      open={opened}
+      onClose={handleClose}
+      >
+        <MenuItem key={ `defensive-adversary` } onClick={() => handleClose(true)}>Defensive adversary</MenuItem> 
+        <MenuItem key={ `offensive-adversary` } onClick={() => handleClose(false)}>Offensive adversary</MenuItem> 
+      </Menu>
+</div>
+);
 };
 
-const getDummyArgs = () => {
+const getDummyOffensiveArgs = () => {
   let agent = buildAgent(INITIAL_MENTAL_STATES, [[1, 1, 1, 1, 1]], INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, 0, 1)
   return [...flattenAgent(agent), new Int32Array([0, 101, 3, 4])]
+}
+
+const getDummyDefensiveArgs = () => {
+  // TODO Update this to a more defensive agent
+  let agent = buildAgent(INITIAL_MENTAL_STATES, [[1, 1, 1, 1, 1]], INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, 0, 1)
+  return [...flattenAgent(agent), new Int32Array([0, 101, 3, 4])]
+}
+
+const getDummyArgs = (defensive) => {
+  return defensive? getDummyDefensiveArgs(): getDummyOffensiveArgs()
 }
 
 const cairoOutputToFrameScene = (output: any[]): FrameScene => {

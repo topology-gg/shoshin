@@ -63,6 +63,7 @@ export default function Home() {
     const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
     const [agent, setAgent] = useState<Agent>({})
     const [character, setCharacter] = useState<Character>(Character.Jessica)
+    const [isDefensiveAdversary, setIsDefensiveAdversary] = useState<boolean>(true)
 
     // Warnings
     const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
@@ -406,7 +407,15 @@ export default function Home() {
                                 handleLoadTestJson={handleLoadTestJson}
                                 handleClickPreloadedTestJson={handleClickPreloadedTestJson}
                             />
-                            <CairoSimulation style={styles.confirm} handleClickRunCairoSimulation={handleClickRunCairoSimulation} handleInputError={handleInputError} warning={runCairoSimulationWarning} input={agent}></CairoSimulation>
+                            <CairoSimulation 
+                                style={styles.confirm} 
+                                handleClickRunCairoSimulation={handleClickRunCairoSimulation} 
+                                handleInputError={handleInputError} 
+                                warning={runCairoSimulationWarning} 
+                                input={agent} 
+                                isDefensiveAdversary={isDefensiveAdversary}
+                                setIsDefensiveAdversary={setIsDefensiveAdversary}
+                            />
                         </Grid>
                         <Grid item xs={4} className={styles.panel}>
                             <SidePanel
