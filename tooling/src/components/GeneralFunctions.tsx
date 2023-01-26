@@ -130,7 +130,7 @@ const GeneralFunctions = ({
                         }
                     </Grid>
                 </Grid>
-                <Grid sx={ gridItemStyle } xs={ 5 } item>
+                <Grid sx={{ ...gridItemStyle, flexWrap: 'wrap' }} style={{ flexGrow: 1, maxWidth: 'none' }} xs={ 5 } item>
                     {
                         operators.map((o) => {
                             return <Card 
