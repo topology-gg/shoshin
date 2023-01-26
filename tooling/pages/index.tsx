@@ -365,7 +365,7 @@ export default function Home() {
 
     function handleClickRunCairoSimulation(output: FrameScene) {
         setTestJson((_) => {
-            return { agent_0: { frames: output.agent_0, type: 0 }, agent_1: { frames: output.agent_1, type: 1 } }
+            return { agent_0: { frames: output.agent_0, type: agent.character }, agent_1: { frames: output.agent_1, type: 1 } }
         })
     }
 
