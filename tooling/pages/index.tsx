@@ -346,7 +346,6 @@ export default function Home() {
         agent.states = mentalStates.map((ms) => ms.state)
         agent.initialState = initialMentalState
 
-        // TODO check that the currently added functions are correctly parsed => currently incorrect
         let agentMentalStates = []
         let indexes: Map<number, boolean> = new Map()
         mentalStates.forEach((_, i) => {

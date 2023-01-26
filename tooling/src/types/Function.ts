@@ -132,6 +132,7 @@ function parseInner(f: string) {
         f = branches[0].value
     }
     // End regex in the case we have X OP Y where X and Y are either a string value or a number
+    // or if we just have X
     let end = / *([a-zA-Z0-9]+)/g
     let matches = []
     let m = end.exec(f)
@@ -141,6 +142,9 @@ function parseInner(f: string) {
     }
     let regexOp = /  *([<=]+|AND|OR|\*|\/|%|-|\+) */g
     m = regexOp.exec(f)
+    if (matches.length < 2) {
+        return getParsedValue(matches[0][1])
+    }
     let valueOne = getParsedValue(matches[0][1])
     let valueTwo = getParsedValue(matches[1][1])
     return {value: operatorToNumber(m[1]), left: valueOne, right: valueTwo}
@@ -156,7 +160,8 @@ function matchBranches(branches: MatchRecursiveValueNameMatch[]) {
             return {value: operatorToNumber(split[0]), left: parseInner('Abs('+branches[1].value+')'), right: parsed}
         }
         let recomposed = branches.slice(2).map((b) => {if(b.name === 'match'){return '('+b.value.trim()+')'} else{return b.value.trim()}}).join(' ')
-        return {value: operatorToNumber(branches[1].value.trim()), left: parseInner(branches[0].value), right: parseInner(recomposed)}
+        let trimmedRecomposed = recomposed.replace(/^\(/g, '').replace(/$\)/g, '')
+        return {value: operatorToNumber(branches[1].value.trim()), left: parseInner(branches[0].value), right: parseInner(trimmedRecomposed)}
     }
     // If only two branches, f is in the form () OP X or X OP () or Abs()
     if (branches.length == 2 ) {
