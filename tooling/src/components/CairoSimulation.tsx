@@ -52,7 +52,7 @@ const handleClose = (isDefensive) => {
             let [dummyCombosOffset, dummyCombos, dummyMentalStatesOffset, dummyMentalStates, dummyFunctionsOffset, dummyFunctions, dummyActions] = getDummyArgs(isDefensiveAdversary)
             let output
             try {
-              let shoshinInput = ctx.wasm.from_array(
+              let shoshinInput = ctx.wasm.fromArrays(
                 combosOffset, 
                 combos, 
                 dummyCombosOffset, 
