@@ -1,7 +1,8 @@
 import { Typography } from "@mui/material";
 import { useContext, useEffect } from "react";
+import { INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_MENTAL_STATES } from "../constants/constants";
 import { WASMContext } from "../context/WASM";
-import { flattenAgent } from "../types/Agent";
+import { buildAgent, flattenAgent } from "../types/Agent";
 import { FrameScene } from "../types/Frame";
 
 export const CairoSimulation = ({style, handleClickRunCairoSimulation, warning, handleInputError, input}) => {
@@ -75,15 +76,8 @@ export const CairoSimulation = ({style, handleClickRunCairoSimulation, warning, 
 };
 
 const getDummyArgs = () => {
-  return [
-    new Int32Array([0, 5]),
-    new Int32Array([0, 0, 0, 0, 0]),
-    new Int32Array([1, 1]),
-    new Int32Array([0, -1, -1]),
-    new Int32Array([1]),
-    new Int32Array([0, -1, -1]),
-    new Int32Array([101]),
-  ]
+  let agent = buildAgent(INITIAL_MENTAL_STATES, [[1, 1, 1, 1, 1]], INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, 0, 1)
+  return [...flattenAgent(agent), new Int32Array([0, 101, 3, 4])]
 }
 
 const cairoOutputToFrameScene = (output: any[]): FrameScene => {
