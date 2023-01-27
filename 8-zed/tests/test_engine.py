@@ -94,6 +94,8 @@ async def test(starknet):
     # [COUNT_TREES_STATE_0, LEN_TREE_0_STATE_0, LEN_TREE_1_STATE_0, ..., COUNT_TREES_STATE_1, LEN_TREE_0_STATE_1, LEN_TREE_1_STATE_1, ...]
     # functions_offsets should be in the form
     # [LEN_TREE_0, LEN_TREE_1, LEN_TREE_2, ...]
+    # combos_offsets shoud be in the form
+    # [0, LEN_COMBO_0, LEN_COMBO_0 + LEN_COMBO_1, LEN_COMBO_0 + LEN_COMBO_1 + LEN_COMBO_2, ...]
     (
         combos_offset_0,
         combos_0,
