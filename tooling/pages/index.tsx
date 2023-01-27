@@ -350,6 +350,7 @@ export default function Home() {
     }
 
     function handleClickRunCairoSimulation(output: FrameScene) {
+        setAnimationFrame(0)
         setTestJson((_) => {
             return { agent_0: { frames: output.agent_0, type: agent.character }, agent_1: { frames: output.agent_1, type: 1 } }
         })
@@ -414,16 +415,16 @@ export default function Home() {
                                     handleLoadTestJson={handleLoadTestJson}
                                     handleClickPreloadedTestJson={handleClickPreloadedTestJson}
                                 />
-                                <CairoSimulation 
-                                    style={styles.confirm} 
-                                    handleClickRunCairoSimulation={handleClickRunCairoSimulation} 
-                                    handleInputError={handleInputError} 
-                                    warning={runCairoSimulationWarning} 
-                                    input={agent} 
-                                    isDefensiveAdversary={isDefensiveAdversary}
-                                    setIsDefensiveAdversary={setIsDefensiveAdversary}
-                                />
                             </div>
+                            <CairoSimulation 
+                                style={styles.confirm} 
+                                handleClickRunCairoSimulation={handleClickRunCairoSimulation} 
+                                handleInputError={handleInputError} 
+                                warning={runCairoSimulationWarning} 
+                                input={agent} 
+                                isDefensiveAdversary={isDefensiveAdversary}
+                                setIsDefensiveAdversary={setIsDefensiveAdversary}
+                            />
                         </Grid>
                         <Grid item xs={4} className={styles.panel}>
                             <SidePanel

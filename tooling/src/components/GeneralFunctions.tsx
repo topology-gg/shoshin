@@ -32,10 +32,10 @@ const gridItemStyle = {
     m: '1px',
 }
 
-const functions_title = [
-    { id: 'Operators', width: 5 }, 
-    { id: 'Const', width: 1 }, 
-    { id: 'Perceptibles', width: 5 }
+const functionsTitle = [
+    { id: 'Operators', width: 6 }, 
+    { id: 'Const', width: 2 }, 
+    { id: 'Perceptibles', width: 4 }
 ]
 const operators = Object.values(Operator)
 const perceptibles = Object.keys(Perceptible).filter(x => isNaN(parseInt(x)))
@@ -116,7 +116,7 @@ const GeneralFunctions = ({
                 <Grid sx={{ m: '3px' }} item className='functions-title' xs={ 12 }>
                     <Grid container sx={{ display: 'flex', justifyContent: "space-between" }}>
                         {
-                            functions_title.map((f) => {
+                            functionsTitle.map((f) => {
                                 let style =  f.id == 'Const' ? { maxWidth: 'none', flexGrow: 1 } : {}
                                 return <Grid 
                                     key={ `function-${f.id}` } 
@@ -160,7 +160,7 @@ const GeneralFunctions = ({
                         />
                     </Box>
                 </Grid>
-                <Grid sx={ gridItemStyle } xs={ 5 } item>
+                <Grid sx={ gridItemStyle } xs={ 4 } item>
                     <Box
                         id='perceptible'
                         sx={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }}
