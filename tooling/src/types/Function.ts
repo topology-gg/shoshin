@@ -29,9 +29,9 @@ export enum Operator {
     CloseParenthesis = ')',
     OpenAbs = 'Abs(',
     CloseAbs = '|',
-    Lt = '<',
     Lte = '<=',
     Equal = '==',
+    Not = '!'
 }
 
 export enum Perceptible {
@@ -45,6 +45,7 @@ export enum Perceptible {
     SelfInt = 8,
     SelfSta = 9,
     SelfBodyState = 10,
+    SelfBodyCounter = 11,
     OpponentX = 101,
     OpponentY = 102,
     OpponentVelX = 103,
@@ -55,6 +56,7 @@ export enum Perceptible {
     OpponentInt = 108,
     OpponentSta = 109,
     OpponentBodyState = 110,
+    OpponentBodyCounter = 111,
 }
 
 export function verifyValidFunction(f: Function, confirm: boolean) {
@@ -86,7 +88,8 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
                 if (prevElement.type !== ElementType.Perceptible && 
                     prevElement.type !== ElementType.Constant && 
                     prevElement?.value !== Operator.CloseParenthesis &&
-                    prevElement?.value !== Operator.CloseAbs) {
+                    prevElement?.value !== Operator.CloseAbs &&
+                    prevElement?.value !== Operator.Not) {
                     return false
                 }
                 break
@@ -119,6 +122,10 @@ export function parseFunction(f: Function) {
 
 function parseInner(f: string) {
     f = f.trim()
+    // Check if the first value is not a !
+    if (f[0] === '!') {
+        return { value: OPERATOR_VALUE['!'], left: -1, right: parseInner(f.slice(1)) }
+    }
     // Allows to match the parenthesis and extract inner and outer values
     let branches = XRegExp.matchRecursive(f, '\\(', '\\)', 'g', {
             valueNames: ['between', null, 'match', null],
