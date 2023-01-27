@@ -11,7 +11,7 @@ import { FrameScene, TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, parseFunction, verifyValidFunction } from '../src/types/Function'
 import { MentalState, parseMentalState } from '../src/types/MentalState';
-import { Character, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
+import { Character, INITIAL_COMBOS, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
 import Agent, { buildAgent } from '../src/types/Agent';
 import { CairoSimulation } from '../src/components/CairoSimulation';
 import ImagePreloader from '../src/components/ImagePreloader';
@@ -55,7 +55,7 @@ export default function Home() {
     const [testJson, setTestJson] = useState<TestJson>(null);
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
     const [workingTab, setWorkingTab] = useState<number>(0);
-    const [combos, setCombos] = useState<number[][]>([])
+    const [combos, setCombos] = useState<number[][]>(INITIAL_COMBOS)
     const [mentalStates, setMentalStates] = useState<MentalState[]>(INITIAL_MENTAL_STATES);
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
     const [treeEditor, setTreeEditor] = useState<number>(0);

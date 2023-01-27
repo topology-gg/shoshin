@@ -3,9 +3,9 @@ import { Typography, Button } from "@mui/material";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useContext, useEffect } from "react";
-import { INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_MENTAL_STATES } from "../constants/constants";
+import { DEFENSIVE_AGENT, OFFENSIVE_AGENT } from "../constants/constants";
 import { WASMContext } from "../context/WASM";
-import { buildAgent, flattenAgent } from "../types/Agent";
+import { flattenAgent } from "../types/Agent";
 import { FrameScene } from "../types/Frame";
 
 export const CairoSimulation = ({
@@ -74,6 +74,7 @@ const handleClose = (isDefensive) => {
               )
               output = ctx.wasm.runCairoProgram(shoshinInput);
             } catch (e) {
+              console.log('Got an error running wasm', e)
               handleInputError(e)
               return
             }
@@ -111,14 +112,13 @@ const handleClose = (isDefensive) => {
 };
 
 const getDummyOffensiveArgs = () => {
-  let agent = buildAgent(INITIAL_MENTAL_STATES, [[1, 1, 1, 1, 1]], INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, 0, 1)
-  return [...flattenAgent(agent), new Int32Array([0, 101, 3, 4])]
+  let agent = OFFENSIVE_AGENT;
+  return [...flattenAgent(agent), new Int32Array(agent.actions)]
 }
 
 const getDummyDefensiveArgs = () => {
-  // TODO Update this to a more defensive agent
-  let agent = buildAgent(INITIAL_MENTAL_STATES, [[1, 1, 1, 1, 1]], INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, 0, 1)
-  return [...flattenAgent(agent), new Int32Array([0, 101, 3, 4])]
+  let agent = DEFENSIVE_AGENT;
+  return [...flattenAgent(agent), new Int32Array(agent.actions)]
 }
 
 const getDummyArgs = (defensive) => {
