@@ -7,12 +7,13 @@ import MidScreenControl from '../src/components/MidScreenControl';
 import LoadTestJson from '../src/components/LoadTestJson';
 import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
-import { TestJson } from '../src/types/Frame';
+import { FrameScene, TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, parseFunction, verifyValidFunction } from '../src/types/Function'
 import { MentalState, parseMentalState } from '../src/types/MentalState';
-import { Character, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
-import Agent from '../src/types/Agent';
+import { Character, INITIAL_COMBOS, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
+import Agent, { buildAgent } from '../src/types/Agent';
+import { CairoSimulation } from '../src/components/CairoSimulation';
 import ImagePreloader from '../src/components/ImagePreloader';
 
 const theme = createTheme({
@@ -54,18 +55,23 @@ export default function Home() {
     const [testJson, setTestJson] = useState<TestJson>(null);
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
     const [workingTab, setWorkingTab] = useState<number>(0);
-    const [character, setCharacter] = useState<Character>(Character.Jessica)
+    const [combos, setCombos] = useState<number[][]>(INITIAL_COMBOS)
     const [mentalStates, setMentalStates] = useState<MentalState[]>(INITIAL_MENTAL_STATES);
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [trees, setTrees] = useState<Tree[]>(INITIAL_DECISION_TREES)
     const [functions, setFunctions] = useState<Function[]>(INITIAL_FUNCTIONS)
     const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
+    const [agent, setAgent] = useState<Agent>({})
+    const [character, setCharacter] = useState<Character>(Character.Jessica)
+    const [isDefensiveAdversary, setIsDefensiveAdversary] = useState<boolean>(true)
+
+    // Warnings
     const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
     const [generalFunctionWarningText, setGeneralFunctionWarningText] = useState<string>('')
     const [isTreeEditorWarningTextOn, setTreeEditorWarningTextOn] = useState<boolean>(false)
     const [treeEditorWarningText, setTreeEditorWarningText] = useState<string>('')
-    const [combos, setCombos] = useState<number[][]>([])
+    const [runCairoSimulationWarning, setCairoSimulationWarning] = useState<string>('')
 
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
@@ -337,22 +343,22 @@ export default function Home() {
     }
 
     function handleValidateCharacter(mentalStates: MentalState[], combos: number[][], trees: Tree[], functions: Function[]) {
-        let agent: Agent = {}
-        agent.combos = combos
-        agent.states = mentalStates.map((ms) => ms.state)
-        agent.initialState = initialMentalState
-        let agentFunctions = []
-        functions.slice(0, -1).forEach((f) => {
-            agentFunctions.push(parseFunction(f))
+        let char = Object.keys(Character).indexOf(character)
+        setAgent((_) => {
+            return buildAgent(mentalStates, combos, trees, functions, initialMentalState, char)
         })
-        agent.generalPurposeFunctions = agentFunctions
+    }
 
-        let agentMentalStates = []
-        mentalStates.forEach((ms, i) => {
-            agentMentalStates.push(parseMentalState(trees[i], mentalStates))
+    function handleClickRunCairoSimulation(output: FrameScene) {
+        setAnimationFrame(0)
+        setTestJson((_) => {
+            return { agent_0: { frames: output.agent_0, type: agent.character }, agent_1: { frames: output.agent_1, type: 1 } }
         })
-        agent.mentalStates = agentMentalStates
-        return agent
+    }
+
+    function handleInputError() {
+        setCairoSimulationWarning('Incorrect agent, please verify. If error persists, please contact us on Discord.')
+        setTimeout(() => setCairoSimulationWarning(''), 5000)
     }
 
     // Render
@@ -410,6 +416,15 @@ export default function Home() {
                                     handleClickPreloadedTestJson={handleClickPreloadedTestJson}
                                 />
                             </div>
+                            <CairoSimulation 
+                                style={styles.confirm} 
+                                handleClickRunCairoSimulation={handleClickRunCairoSimulation} 
+                                handleInputError={handleInputError} 
+                                warning={runCairoSimulationWarning} 
+                                input={agent} 
+                                isDefensiveAdversary={isDefensiveAdversary}
+                                setIsDefensiveAdversary={setIsDefensiveAdversary}
+                            />
                         </Grid>
                         <Grid item xs={4} className={styles.panel}>
                             <SidePanel

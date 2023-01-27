@@ -1,10 +1,11 @@
 import React from 'react';
 import styles from '../../styles/Home.module.css';
-import { Box } from "@mui/material";
+import { Box } from '@mui/material';
 import Tabs from './Tabs';
 import MentalStates from './MentalStates';
 import TreeEditor from './TreeEditor';
 import GeneralFunctions from './GeneralFunctions';
+import Combos from './Combos';
     
 
 const SidePanel = ({
@@ -21,7 +22,6 @@ const SidePanel = ({
                     initialMentalState={initialMentalState}
                     handleSetInitialMentalState={handleSetInitialMentalState}
                     combos={combos}
-                    handleValidateCombo={handleValidateCombo}
                     character={character}
                     setCharacter={setCharacter}
                     handleAddMentalState={handleAddMentalState} 
@@ -40,6 +40,13 @@ const SidePanel = ({
                 />
             }
             case 1: {
+                return <Combos
+                        character={character}
+                        combos={combos}
+                        handleValidateCombo={handleValidateCombo}
+                        ></Combos>
+            }
+            case 2: {
                 return <GeneralFunctions
                         functions={functions}
                         handleUpdateGeneralFunction={handleUpdateGeneralFunction}
@@ -57,23 +64,30 @@ const SidePanel = ({
     return (
         <Box
         sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "left",
-            margin: "1rem",
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'left',
+            margin: '1rem',
         }}>
             <Tabs workingTab={workingTab} handleClickTab={handleClickTab}></Tabs>
             {content(workingTab)}
             {
                 !treeEditor && 
-                <button
-                className={ styles.confirm }
-                style={{ maxWidth: '11rem', minHeight: '2rem', marginTop: '1rem' }}
-                onClick={() => handleValidateCharacter(mentalStates, combos, trees, functions)}
+                <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-around',
+                }}
                 >
-                    Validate your character
-                </button>
+                    <button
+                    className={ styles.confirm }
+                    style={{ maxWidth: '11rem', minHeight: '2rem', marginTop: '1rem' }}
+                    onClick={() => handleValidateCharacter(mentalStates, combos, trees, functions)}
+                    >
+                        Validate your character
+                    </button>
+                </Box>
             }
         </Box>
     )

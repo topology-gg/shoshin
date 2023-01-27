@@ -1,3 +1,4 @@
+import Agent, { buildAgent } from "../types/Agent"
 import { ElementType, Function, Operator, Perceptible } from "../types/Function"
 import { MentalState } from "../types/MentalState"
 import { Direction, Tree } from "../types/Tree"
@@ -148,36 +149,40 @@ export const ACTIONS_ICON_MAP = {
     Block : 'block',
     MoveForward  : 'arrow_forward',
     MoveBackward : 'arrow_back',
-    DashForward  : 'keyboard_double_arrow_left',
-    DashBackward : 'keyboard_double_arrow_right',
+    DashForward  : 'keyboard_double_arrow_right',
+    DashBackward : 'keyboard_double_arrow_left',
 }
 
 export const OPERATOR_VALUE = {
     '+': 1,
+    'OR': 1,
     '-': 2,
     '*': 3,
+    'AND': 3,
     '/': 4,
     '%': 5,
     'ABS': 6,
     'SQRT': 7,
     'POW': 8,
-    IS_NN: 9,
+    'IS_NN': 9,
     '<=': 10,
     '!': 11,
     '==': 12,
-    MEM: 13,
-    DICT: 14,
-    FUNC: 15,
+    'MEM': 13,
+    'DICT': 14,
+    'FUNC': 15,
 }
 
 export const MAX_COMBO_SIZE = 10;
 
 export const INITIAL_MENTAL_STATES: MentalState[] = [
     { state: 'MS IDLE', action: ActionsJessica['Null'] },
-    { state: 'MS COMBO', action: ActionsJessica['Null'] },
-    { state: 'MS BLOCK', action: ActionsJessica['Null'] },
-    { state: 'MS CLOSER', action: ActionsJessica['Null'] },
+    { state: 'MS COMBO', action: 101 },
+    { state: 'MS BLOCK', action: ActionsJessica['Block'] },
+    { state: 'MS CLOSER', action: ActionsJessica['MoveForward'] },
 ]
+
+export const INITIAL_COMBOS: number[][] = [[7, 7, 2, 2, 2, 2, 2]]
 
 export const INITIAL_DECISION_TREES: Tree[] = [
     { 
@@ -250,7 +255,148 @@ export const INITIAL_FUNCTIONS: Function[] = [
         ]
     },
     {
+        elements: [
+            { value: Operator.OpenAbs, type: ElementType.Operator},
+            { value: Perceptible.OpponentVelX, type: ElementType.Perceptible},
+            { value: Operator.CloseAbs, type: ElementType.Operator},
+            { value: Operator.Lte, type: ElementType.Operator},
+            { value: 10, type: ElementType.Constant},
+        ]
+    },
+    {
+        elements: [
+            { value: Operator.OpenParenthesis, type: ElementType.Operator},
+            { value: Perceptible.OpponentInt, type: ElementType.Perceptible},
+            { value: Operator.Lte, type: ElementType.Operator},
+            { value: 300, type: ElementType.Constant},
+            { value: Operator.CloseParenthesis, type: ElementType.Operator},
+            { value: Operator.And, type: ElementType.Operator},
+            { value: Operator.OpenParenthesis, type: ElementType.Operator},
+            { value: Operator.OpenAbs, type: ElementType.Operator},
+            { value: Perceptible.SelfX, type: ElementType.Perceptible},
+            { value: Operator.Sub, type: ElementType.Operator},
+            { value: Perceptible.OpponentX, type: ElementType.Perceptible},
+            { value: Operator.CloseAbs, type: ElementType.Operator},
+            { value: Operator.Lte, type: ElementType.Operator},
+            { value: 80, type: ElementType.Constant},
+            { value: Operator.CloseParenthesis, type: ElementType.Operator},
+        ]
+    },
+    {
+        elements: [
+            { value: Operator.OpenParenthesis, type: ElementType.Operator},
+            { value: Perceptible.SelfInt, type: ElementType.Perceptible},
+            { value: Operator.Lte, type: ElementType.Operator},
+            { value: 200, type: ElementType.Constant},
+            { value: Operator.CloseParenthesis, type: ElementType.Operator},
+        ]
+    },
+    {
+        elements: [
+            { value: Operator.OpenParenthesis, type: ElementType.Operator},
+            { value: Operator.OpenParenthesis, type: ElementType.Operator},
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible},
+            { value: Operator.Equal, type: ElementType.Operator},
+            { value: 90, type: ElementType.Constant},
+            { value: Operator.CloseParenthesis, type: ElementType.Operator},
+            { value: Operator.Or, type: ElementType.Operator},
+            { value: Operator.OpenParenthesis, type: ElementType.Operator},
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible},
+            { value: Operator.Equal, type: ElementType.Operator},
+            { value: 110, type: ElementType.Constant},
+            { value: Operator.CloseParenthesis, type: ElementType.Operator},
+            { value: Operator.CloseParenthesis, type: ElementType.Operator},
+            { value: Operator.And, type: ElementType.Operator},
+            { value: Operator.OpenParenthesis, type: ElementType.Operator},
+            { value: Perceptible.SelfInt, type: ElementType.Perceptible},
+            { value: Operator.Lte, type: ElementType.Operator},
+            { value: 300, type: ElementType.Constant},
+            { value: Operator.CloseParenthesis, type: ElementType.Operator},
+        ]
+    }, 
+    {
+        elements: [
+            { value: Perceptible.SelfBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 0, type: ElementType.Constant },
+        ]
+    },    
+    { 
+        elements: [
+            { value: Operator.Not, type: ElementType.Operator },
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 10, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
+            { value: Operator.Or, type: ElementType.Operator },
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 20, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
+            { value: Operator.Or, type: ElementType.Operator },
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 30, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
+        ]
+    },
+    {
+        elements: [
+            { value: Perceptible.SelfBodyCounter, type: ElementType.Perceptible },
+            { value: Operator.Lte, type: ElementType.Operator },
+            { value: 4, type: ElementType.Constant },
+        ]
+    },
+    {
         elements: []
     }
 ]
 export const INITIAL_FUNCTIONS_INDEX: number = INITIAL_FUNCTIONS.length - 1
+
+const DECISION_TREE_OFFENSIVE_AGENT = INITIAL_DECISION_TREES
+const MENTAL_STATES_OFFENSIVE_AGENT: MentalState[] = [
+    { state: 'MS IDLE', action: ActionsAntoc['Null'] },
+    { state: 'MS COMBO', action: 101 },
+    { state: 'MS BLOCK', action: ActionsAntoc['Block'] },
+    { state: 'MS CLOSER', action: ActionsAntoc['MoveForward'] },
+]
+const COMBOS_OFFENSIVE_AGENT: number[][] = [[1, 1, 1, 1, 1, 1, 1]]
+export const OFFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_OFFENSIVE_AGENT, COMBOS_OFFENSIVE_AGENT, DECISION_TREE_OFFENSIVE_AGENT, INITIAL_FUNCTIONS, 0, 1)
+
+const DECISION_TREE_DEFENSIVE_AGENT = [
+    { 
+        nodes: [
+            { id: 'if F0', isChild: false },
+            { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
+            { id: 'MS IDLE', isChild: true, branch: Direction.Right },
+        ] 
+    },
+    { 
+        nodes: [
+            { id: 'if F0', isChild: false },
+            { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
+            { id: 'MS RETRAIT', isChild: true, branch: Direction.Right },
+        ] 
+    },
+    { 
+        nodes: [
+            { id: 'if F0', isChild: false },
+            { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
+            { id: 'if F8', isChild: false },
+            { id: 'MS RETRAIT', isChild: true, branch: Direction.Right },
+            { id: 'MS IDLE', isChild: true, branch: Direction.Right },
+        ] 
+    },
+]
+const MENTAL_STATES_DEFENSIVE_AGENT: MentalState[] = [
+    { state: 'MS IDLE', action: ActionsAntoc['Null'] },
+    { state: 'MS BLOCK', action: 101 },
+    { state: 'MS RETRAIT', action: 102 },
+]
+const COMBOS_DEFENSIVE_AGENT: number[][] = [[3, 3, 3, 3, 3, 3], [5, 5, 5, 5, 5, 5]]
+export const DEFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_DEFENSIVE_AGENT, COMBOS_DEFENSIVE_AGENT, DECISION_TREE_DEFENSIVE_AGENT, INITIAL_FUNCTIONS, 0, 1)
