@@ -14,6 +14,7 @@ import { MentalState, parseMentalState } from '../src/types/MentalState';
 import { Character, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
 import Agent, { buildAgent } from '../src/types/Agent';
 import { CairoSimulation } from '../src/components/CairoSimulation';
+import ImagePreloader from '../src/components/ImagePreloader';
 
 const theme = createTheme({
     typography: {
@@ -372,50 +373,57 @@ export default function Home() {
                     <Grid container spacing={1}>
                         {/* <Grid item xs={2}></Grid> */}
                         <Grid item xs={8} className={styles.main}>
-                            {
-                                !testJson ? <></> :
-                                <>
-                                    <Simulator
-                                        characterType0={testJson.agent_0.type}
-                                        characterType1={testJson.agent_1.type}
-                                        agentFrame0={testJson.agent_0.frames[animationFrame]}
-                                        agentFrame1={testJson.agent_1.frames[animationFrame]}
-                                        showDebug={checkedShowDebugInfo}
-                                    />
+                            <div style={{display:'flex', flexDirection:'column'}}>
+                                <ImagePreloader
+                                    onComplete={() => {
+                                        console.log("completed images");
+                                    }}
+                                />
+                                {
+                                    !testJson ? <></> :
+                                    <div style={{display:'flex', flexDirection:'column'}}>
+                                        <Simulator
+                                            characterType0={testJson.agent_0.type}
+                                            characterType1={testJson.agent_1.type}
+                                            agentFrame0={testJson.agent_0.frames[animationFrame]}
+                                            agentFrame1={testJson.agent_1.frames[animationFrame]}
+                                            showDebug={checkedShowDebugInfo}
+                                        />
 
-                                    <MidScreenControl
-                                        runnable = {true}
-                                        animationFrame = {animationFrame}
-                                        n_cycles = {N_FRAMES}
-                                        animationState = {animationState}
-                                        handleClick = {handleMidScreenControlClick}
-                                        handleSlideChange = {
-                                            evt => {
-                                                if (animationState == "Run") return;
-                                                const slide_val: number = parseInt(evt.target.value);
-                                                setAnimationFrame(slide_val);
+                                        <MidScreenControl
+                                            runnable = {true}
+                                            animationFrame = {animationFrame}
+                                            n_cycles = {N_FRAMES}
+                                            animationState = {animationState}
+                                            handleClick = {handleMidScreenControlClick}
+                                            handleSlideChange = {
+                                                evt => {
+                                                    if (animationState == "Run") return;
+                                                    const slide_val: number = parseInt(evt.target.value);
+                                                    setAnimationFrame(slide_val);
+                                                }
                                             }
-                                        }
-                                        checkedShowDebugInfo = {checkedShowDebugInfo}
-                                        handleChangeDebugInfo = {() => setCheckedShowDebugInfo(
-                                            (_) => !checkedShowDebugInfo
-                                        )}
-                                    />
-                                </>
-                            }
-                            <LoadTestJson
-                                handleLoadTestJson={handleLoadTestJson}
-                                handleClickPreloadedTestJson={handleClickPreloadedTestJson}
-                            />
-                            <CairoSimulation 
-                                style={styles.confirm} 
-                                handleClickRunCairoSimulation={handleClickRunCairoSimulation} 
-                                handleInputError={handleInputError} 
-                                warning={runCairoSimulationWarning} 
-                                input={agent} 
-                                isDefensiveAdversary={isDefensiveAdversary}
-                                setIsDefensiveAdversary={setIsDefensiveAdversary}
-                            />
+                                            checkedShowDebugInfo = {checkedShowDebugInfo}
+                                            handleChangeDebugInfo = {() => setCheckedShowDebugInfo(
+                                                (_) => !checkedShowDebugInfo
+                                            )}
+                                        />
+                                    </div>
+                                }
+                                <LoadTestJson
+                                    handleLoadTestJson={handleLoadTestJson}
+                                    handleClickPreloadedTestJson={handleClickPreloadedTestJson}
+                                />
+                                <CairoSimulation 
+                                    style={styles.confirm} 
+                                    handleClickRunCairoSimulation={handleClickRunCairoSimulation} 
+                                    handleInputError={handleInputError} 
+                                    warning={runCairoSimulationWarning} 
+                                    input={agent} 
+                                    isDefensiveAdversary={isDefensiveAdversary}
+                                    setIsDefensiveAdversary={setIsDefensiveAdversary}
+                                />
+                            </div>
                         </Grid>
                         <Grid item xs={4} className={styles.panel}>
                             <SidePanel
