@@ -21,10 +21,11 @@ function parseInner(t: Tree, ms: MentalState[], usedFunctions: Map<number, numbe
     if (!condition?.isChild) {
         let stateLeft = ms.findIndex((mental) => t.nodes[1].id === mental.state)
         let f = parseInt(condition.id.split(' ')[1][1])
-        let fEval: Leaf = { value: 15, left: -1, right: f }
+        let fEval: Leaf
         if (usedFunctions.has(f)) {
             fEval = { value: 13, left: -1, right: usedFunctions.get(f) } 
         } else {
+            fEval = { value: 15, left: -1, right: usedIndex }
             usedFunctions.set(f, usedIndex)
             usedIndex += 1
         }

@@ -50,7 +50,7 @@ export function flattenAgent(agent: Agent) {
     let combosOffset = [0]
     let combos = []
     agent.combos.forEach((c) => {
-        combosOffset.push(combosOffset[combosOffset.length - 1] + combos.push(...c))
+        combosOffset.push(combos.push(...c))
     })
     let mentalStatesOffset = []
     let mentalStates = []
