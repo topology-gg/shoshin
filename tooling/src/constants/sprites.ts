@@ -41,6 +41,10 @@ export const spriteData: Record<string, Record<string, SpriteData>> = {
             size: [185, 142],
             hitboxOffset: { left: [-36,18], right: [-98,18] },
         },
+        hurt: {
+            size: [187, 140],
+            hitboxOffset: { left: [-34,0], right: [0,0] },
+        }
     },
     jessica: {
         block: {
