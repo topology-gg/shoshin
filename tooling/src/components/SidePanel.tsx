@@ -68,7 +68,7 @@ const SidePanel = ({
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'left',
-            margin: '1rem',
+            padding: 2,
         }}>
             <Tabs workingTab={workingTab} handleClickTab={handleClickTab}></Tabs>
             {content(workingTab)}
