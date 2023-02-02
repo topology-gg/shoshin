@@ -29,7 +29,7 @@ const theme = createTheme({
         },
         info: {
             main: "#848f98",
-        }
+        },
     },
     components: {
         MuiButton: {
@@ -426,7 +426,7 @@ export default function Home() {
                                 setIsDefensiveAdversary={setIsDefensiveAdversary}
                             />
                         </Grid>
-                        <Grid item xs={4} className={styles.panel}>
+                        <Grid item xs={4} sx={{ bgcolor: 'grey.50' }}>
                             <SidePanel
                                 workingTab={workingTab}
                                 handleClickTab={setWorkingTab}
