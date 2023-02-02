@@ -35,7 +35,6 @@ Run FD_ana : Obs_n, Lat_ana_n => Lat_ana_n+1, Act_ana_n
 Run FW     : Obs_n, Act_bob_n, Act_ana_n => Obs_n+1
 ```
 
-
 ### Goal
 - The goal now is to come up with an interactive protocol that simulates the interaction between two agents, each privately known by its human creator.
 - Concretely, an agent's `Lat` and `FD` should remain private throughout the simulation; the actions performed by agents as well as the observable quantities are public.
@@ -59,4 +58,4 @@ Run FW     : Obs_n, Act_bob_n, Act_ana_n => Obs_n+1
 - ^ @Lev could you furnish this protocol with functional commitment steps?
 
 ### Peer-to-peer version
-- (Bob and Ana take turn to run `FW`, each time producing a validity proof to be verified by their counterparty)
+- (Bob and Ana take turn to run `FW`, each time producing a validity proof to be verified by their counterparty; at the end of the interaction, all proofs are aggregated and submitted onchain in one transaction to be verified onchain)

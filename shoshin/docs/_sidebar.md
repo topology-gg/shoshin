@@ -1,16 +1,20 @@
 <!-- docs/_sidebar.md -->
 
-- Overview
-  - [Overview](overview.md)
+- Welcome
+  - [Introduction](overview/introduction.md)
+  - [Design Philosophy](overview/philosophy.md)
 
 - Concepts
-  - [Summary](concept-summary.md)
-  - [Observables](concept-observables.md)
-  - [Conditions](concept-conditions.md)
-  - [Mind](concept-mind.md)
-  - [Action](concept-action.md)
-  - [Combo](concept-combo.md)
-  - [Body](concept-body.md)
+  - [Summary](concepts/summary.md)
+  - [Observables](concepts/observables.md)
+  - [Conditions](concepts/conditions.md)
+  - [Mind](concepts/mind.md)
+  - [Action](concepts/action.md)
+  - [Combo](concepts/combo.md)
+  - [Body](concepts/body.md)
+
+- Technical Design
+  - [Architecture](technical/architecture.md)
 
 - Double Blinding
-  - [Proposal](double-blinding-proposal.md)
+  - [Proposal](dbo/proposal.md)
