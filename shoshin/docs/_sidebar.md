@@ -10,8 +10,9 @@
   - [Conditions](concepts/conditions.md)
   - [Mind](concepts/mind.md)
   - [Action](concepts/action.md)
-  - [Combo](concepts/combo.md)
+  - [Stimulus](concepts/stimulus.md)
   - [Body](concepts/body.md)
+  - [Physics](concepts/physics.md)
 
 - Technical Design
   - [Architecture](technical/architecture.md)

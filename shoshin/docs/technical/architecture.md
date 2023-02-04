@@ -8,6 +8,6 @@
 4. The emitted events get indexed, parsed, and visualized at the frontend.
 
 Note:
-- The battle simulation logic, implemented in Cairo, is needed at the frontend so that players can iterate on their Mind designs.
+- The battle simulation logic, implemented in Cairo, is needed at the frontend so that players can iterate on their Mind designs responsively instead of having to .
 - Currently the simulation logic is executed by Cairo-rs via Wasm at the frontend.
   - [Cairo-rs](https://github.com/lambdaclass/cairo-rs) is Lambdaclass's Rust implementation of Cairo VM.
