@@ -5,7 +5,9 @@
   - [Design Philosophy](overview/philosophy.md)
 
 - Concepts
-  - [Summary](concepts/summary.md)
+  - [Mind-Body Separation](concepts/mbs.md)
+  - [Glossary & Pseudocode](concepts/glossary_code.md)
+  - [Character Type](concepts/character-type.md)
   - [Observables](concepts/observables.md)
   - [Conditions](concepts/conditions.md)
   - [Mind](concepts/mind.md)
@@ -15,7 +17,7 @@
   - [Physics](concepts/physics.md)
 
 - Technical Design
-  - [Architecture](technical/architecture.md)
+  - [Flow](technical/flow.md)
 
 - Double Blinding
   - [Proposal](dbo/proposal.md)

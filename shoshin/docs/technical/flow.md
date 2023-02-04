@@ -1,4 +1,4 @@
-# Architecture
+# Flow
 
 [ insert block diagram here ]
 

@@ -1,7 +1,6 @@
-# Summary
+# Glossary and Pseudocode
 
-
-### Notations
+### Glossary
 - **Observables**: variables that can be observed by agents for decision-making. Examples include health points, positions, velocities, and body states.
 - **Conditions**: boolean (true/false) expressions built from Observables, constants, and supported operators.
 - **Mind**: a stateful function that makes use of Conditions to decide which Action to perform.
