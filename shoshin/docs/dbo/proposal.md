@@ -43,7 +43,7 @@ Run FW     : Obs_n, Act_bob_n, Act_ana_n => Obs_n+1
 1. Bob has his agent, which comprises a pure function `FD_bob` and some states `Lat_bob`, located in his machine's memory.
 2. Ana has her agent, which comprises a pure function `FD_ana` and some states `Lat_ana`, located in her machine's memory.
 3. We must run `FD_bob` on Bob's machine, and run `FD_ana` on Ana's machine.
-4. The public should be able to verify: Bob sticks to the same `FD_bob` throughout the simulation, and same with Ana; Bob's agent latent state is updated only by `FD_bob`, and same for Ana.
+4. The public should be able to verify: Bob sticks to the same `FD_bob` throughout the simulation, and same with Ana; `Lat_bob` is updated only by `FD_bob`, and `Lat_ana` is updated only by `FD_ana`.
 
 ### Proposed protocol
 - Entities involved: Bob's machine, Ana's machine, the blockchain.
