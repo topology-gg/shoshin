@@ -26,6 +26,7 @@ const BasicMenu = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction }
         aria-haspopup='true'
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
+        variant="outlined"
       >
         Perceptibles List
       </Button>

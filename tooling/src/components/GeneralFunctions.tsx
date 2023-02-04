@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from '../../styles/Home.module.css'
-import { Box, Grid } from "@mui/material";
+import { Box, Button, Chip, Grid, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
@@ -11,64 +11,34 @@ import TextField from '@mui/material/TextField';
 import { FunctionElement, Operator, Function, ElementType, Perceptible } from '../types/Function'
 import BasicMenu from './Menu'
 
-const cardStyle = {
-    display: 'flex', 
-    alignItems: 'center', 
-    maxHeight: '2rem', 
-    p: '1px', 
-    m: '1px', 
-    justifyContent: 'space-around',
-    border: 1,
-}
-
 const gridItemStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
     border: 1,
-    borderRadius: 4,
-    boxShadow: 3,
+    borderColor: "grey.500",
+    borderRadius: 2,
     p: '5px',
-    m: '1px',
 }
 
 const functionsTitle = [
-    { id: 'Operators', width: 6 }, 
-    { id: 'Const', width: 2 }, 
+    { id: 'Operators', width: 5 }, 
+    { id: 'Const', width: 3 }, 
     { id: 'Perceptibles', width: 4 }
 ]
 const operators = Object.values(Operator)
 const perceptibles = Object.keys(Perceptible).filter(x => isNaN(parseInt(x)))
 
-const handleDrag = (e) => {
-    document.body.style.cursor = 'grabbing';
-    let source = e.target.id.split('.')
+const elementFromEvent = (e): FunctionElement => {
+    let source = e.currentTarget.id.split('.')
     switch (source[0]) {
         case 'operator': {
-            currentDraggedItem = { value: source[1], type: ElementType.Operator} as FunctionElement
-            break;
+            return { value: source[1], type: ElementType.Operator }
         }
         case 'constant': {
-            currentDraggedItem = { value: currentConstant, type: ElementType.Constant} as FunctionElement
-            break;
+            return { value: currentConstant, type: ElementType.Constant }
         }
         case 'perceptible': {
-            currentDraggedItem = { value: source[1], type: ElementType.Perceptible} as FunctionElement
-            break;
+            return { value: source[1], type: ElementType.Perceptible }
         }
     }
-    e.preventDefault()
-    e.stopPropagation()
-}
-const handleDragEnd = (e) => {
-    document.body.style.cursor = 'default';
-    currentDraggedItem = {}
-    e.preventDefault()
-    e.stopPropagation()
-}
-const handleDragOver = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
 }
 
 const handleDisplayText = (isWarningTextOn, warningText, index) => {
@@ -89,13 +59,12 @@ const functionToDiv = (f: Function) => {
             let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
             value = value === '|' ? ')' : value
             return <Typography key={`${e.type}-${e.value}-${i}`} variant='caption'>
-                <Box key={`${e.type}-${e.value}-${i}`}>{value}&nbsp;</Box>
+                <span key={`${e.type}-${e.value}-${i}`}>{value} </span>
             </Typography>
         })
     )
 }
 
-let currentDraggedItem = {} as FunctionElement
 let currentConstant = 0
 
 const GeneralFunctions = ({ 
@@ -103,6 +72,12 @@ const GeneralFunctions = ({
     functionsIndex, setFunctionsIndex, isWarningTextOn, warningText, handleRemoveElementGeneralFunction
 }) => {
     let f = functions[functionsIndex]
+
+    const handleAddElement = (e) => {
+        const element = elementFromEvent(e)
+        handleUpdateGeneralFunction(functionsIndex, element)
+    }
+
     return (
         <Box
         sx={{
@@ -112,9 +87,9 @@ const GeneralFunctions = ({
             alignItems: "left",
             mt: "2rem",
         }}>
-            <Grid container spacing={0} sx={{ display: 'flex', justifyContent: "space-between" }}>
-                <Grid sx={{ m: '3px' }} item className='functions-title' xs={ 12 }>
-                    <Grid container sx={{ display: 'flex', justifyContent: "space-between" }}>
+            <Grid container spacing={1}>
+                <Grid item className='functions-title' xs={ 12 }>
+                    <Grid container spacing={1}>
                         {
                             functionsTitle.map((f) => {
                                 let style =  f.id == 'Const' ? { maxWidth: 'none', flexGrow: 1 } : {}
@@ -130,56 +105,44 @@ const GeneralFunctions = ({
                         }
                     </Grid>
                 </Grid>
-                <Grid sx={{ ...gridItemStyle, flexWrap: 'wrap' }} style={{ flexGrow: 1, maxWidth: 'none' }} xs={ 5 } item>
-                    {
-                        operators.map((o) => {
-                            return <Card 
-                                        key={ `operator-${o}` } 
-                                        id={ `operator.${o}` }
-                                        onDragEnd={ (e) => handleDragEnd(e) } 
-                                        onDrag={ (e) => handleDrag(e) } 
-                                        draggable 
-                                        sx={ cardStyle }>
-                                            <CardContent sx={{padding: '5px!important'}}>{o}</CardContent>
-                                    </Card>
-                        })
-                    }
+                <Grid xs={ functionsTitle[0].width } item>
+                    <Box sx={ {display: "flex", flexWrap: 'wrap', gap: 0.5} }>
+                        {
+                            operators.map((o) => {
+                                return <Chip 
+                                            key={ `operator-${o}` } 
+                                            id={ `operator.${o}` }
+                                            onClick={ handleAddElement }
+                                            variant='outlined'
+                                            size='small'
+                                            label={o} />
+                            })
+                        }
+                    </Box>
                 </Grid>
-                <Grid style={{ maxWidth: 'none', flexGrow: 1 }} sx={ { ...gridItemStyle }} xs={ 1 } item>
-                    <Box
-                        id='constant'
-                        draggable
-                        onDragEnd={ (e) => handleDragEnd(e) } 
-                        onDrag={ (e) => handleDrag(e) } 
-                    >
+                <Grid xs={ functionsTitle[1].width } item>
+                    <Box>
                         <TextField 
                             color={ "info" } 
                             type="number" 
                             defaultValue={currentConstant}
                             onChange={(e) => currentConstant=parseInt(e.target.value)}
                         />
+                        <Button id='constant' variant="outlined" onClick={handleAddElement}>Add</Button>
                     </Box>
                 </Grid>
-                <Grid sx={ gridItemStyle } xs={ 4 } item>
+                <Grid xs={ functionsTitle[2].width } item>
                     <Box
                         id='perceptible'
                         sx={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }}
-                        onDragEnd={ (e) => handleDragEnd(e) } 
-                        onDrag={ (e) => handleDrag(e) } 
                     >
                         <BasicMenu perceptibles={perceptibles} functionsIndex={functionsIndex} handleUpdateGeneralFunction={handleUpdateGeneralFunction}></BasicMenu>
                     </Box>
                 </Grid>
                 { handleDisplayText(isWarningTextOn, warningText, functionsIndex) }
-                <Grid sx={{ ...gridItemStyle }} xs={ 9 } item className='function-creator'>
+                <Grid xs={ 9 } item className='function-creator'>
                     <Box 
-                        sx={{ display: 'inline-flex', maxWidth: '100%', flexGrow: 1, flexWrap: 'wrap' }}
-                        onDragOver={ (e) => handleDragOver(e) }
-                        onDrop={(e) => {
-                            handleUpdateGeneralFunction(functionsIndex, currentDraggedItem)
-                            e.preventDefault()
-                            e.stopPropagation()
-                        }}
+                        sx={{ ...gridItemStyle }}
                     >
                         { functionToDiv(f) }
                     </Box>
@@ -187,46 +150,42 @@ const GeneralFunctions = ({
                 <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none' }} xs={ 2 } item className='delete-interface'>
                     <IconButton sx={{ mt: '1rem', alignItems: 'flex-end'}} onClick={(_) => {handleRemoveElementGeneralFunction(functionsIndex)}}><BackspaceIcon/></IconButton>
                 </Grid>
-                <button 
-                    className={ styles.confirm }
-                    onClick={() => handleConfirmFunction()}
-                >
-                    Confirm
-                </button>
-                <Grid 
-                    sx={{ ...gridItemStyle, border: 'none', boxShadow: 'none', mt: '1rem' }} 
+                <Grid item>
+                    <button 
+                        className={ styles.confirm }
+                        onClick={() => handleConfirmFunction()}
+                    >
+                        Confirm
+                    </button>
+                </Grid>
+                <Grid
                     xs={ 12 } 
                     item 
                     className='available-functions'
                 >
-                    <Box>
+                    <List dense sx={{ flex: 1 }}>
                         {
                             functions.slice(0, functions.length - 1).map((_, i) => {
                                 return (
-                                    <Card 
-                                    sx={{ 
-                                        border: 'none', 
-                                        boxShadow: 'none',
-                                        padding: '0.2rem',
-                                        ':hover': {
-                                            backgroundColor: '#DDDDDD',
-                                            border: "1px!important solid #ffffff00",
-                                            cursor: 'pointer',
+                                    <ListItem 
+                                        disablePadding
+                                        id={`function-${i}`} 
+                                        key={`function-${i}`}
+                                        secondaryAction={
+                                            <IconButton edge="end" aria-label="delete" onClick={() => handleClickDeleteFunction(i)}>
+                                                <DeleteIcon />
+                                            </IconButton>
                                         }
-                                    }} 
-                                    id={`function-${i}`} 
-                                    key={`function-${i}`} 
-                                    onClick={() => setFunctionsIndex(i)}
                                     >
-                                        F{i}
-                                        <IconButton onClick={() => handleClickDeleteFunction(i)}>
-                                            <DeleteIcon fontSize='small'/>
-                                        </IconButton>
-                                    </Card> 
+                                        <ListItemButton onClick={() => setFunctionsIndex(i)}>
+                                            <ListItemText primary={`F${i}`} />
+                                        </ListItemButton>
+                                        
+                                    </ListItem> 
                                 )
                             })
                         }
-                    </Box>
+                    </List>
                 </Grid>
             </Grid>
         </Box>
