@@ -45,7 +45,23 @@ Run FW     : Obs_n, Act_bob_n, Act_ana_n => Obs_n+1
 3. We must run `FD_bob` on Bob's machine, and run `FD_ana` on Ana's machine.
 4. The public should be able to verify: Bob sticks to the same `FD_bob` throughout the simulation, and same with Ana; `Lat_bob` is updated only by `FD_bob`, and `Lat_ana` is updated only by `FD_ana`.
 
+### Cryptography Background
+We will give a brief overview of the guarantees of private function commitments.
+Given a secret function, $g: X \rightarrow Y$, we can get a commitment $C_g = Comm_{f}(g)$. Then, given a $(x, y)$, a verifier can check if $g(x) = y$. More formally, $V_f(C_g, x, y) = 1$ with if $g(x) = y$ and, with overwhelming probability, if $g(x) \neq y$,
+then $V_f(C_g, x, y) = 0$. Moreover, $C_g$ does not reveal anything about $g$.
+
 ### Proposed protocol
+
+### Modifying FD
+We need to modify FD in order to get latent space privacy.
+
+#### 1: Setup Stage
+- Setup has to only occur **once** per agent
+- Bob and Alice both publicly commit to their FD's and their initial latent space. I.e. they post the following to a ledger.
+> $$C_B = Comm_{f}(FD_{B}), C_A = Comm_{f}(FD_{A}), C_{\ell A} = Comm(Lat_A), C_{\ell B} = Comm(Lat_B) $$
+
+#### 2: Evaluation Stage
+
 - Entities involved: Bob's machine, Ana's machine, the blockchain.
 - Bob's machine and Ana's machine each run a ZKVM e.g. CairoVM.
 - `FD_bob`, `FD_ana`, and `FW` are all implemented in the language executable by said ZKVM.
