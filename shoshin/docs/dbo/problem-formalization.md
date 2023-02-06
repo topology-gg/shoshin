@@ -13,7 +13,7 @@ Then, Alice and Bob both have a secret state which is from the set $\mathcal{L}_
 > Question for Topology: does $\mathcal{L}_A = \mathcal{L}_B$? I.e. is the set of possible secrets the same.
 
 Alice and Bob also have a secret function,
-$F_A: \mathcal{O} \times \mathcal{L}_A \rightarrow \mathcal{A} \times \mathcal{L}_A$
+$F_A: \mathcal{O} \times \mathcal{L}_A \rightarrow \mathcal{A} \times \mathcal{L}_A$ and 
 $F_B: \mathcal{O} \times \mathcal{L}_B \rightarrow \mathcal{A} \times \mathcal{L}_B$.
 
 The game is that we start with some globally known state, $o_0 \in \mathcal{O}$ and hidden latent states $a \in \mathcal{L}_A$ for Alice and $b \in \mathcal{L}_B$ for Bob.
