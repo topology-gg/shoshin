@@ -33,19 +33,20 @@ const DecisionTree = ({ data, height, width }) => {
                     'height': 80,
                     'width': 80,
                     'background-fit': 'cover',
-                    'border-color': '#000',
+                    'border-color': '#36454F',
                     'background-color': '#FFFFFF',
                     'border-width': 1,
                     'border-opacity': 0.5,
                     'content': 'data(id)',
                     'text-valign': 'center',
+                    'color': '#36454F',
                 })
                 .selector('edge')
                 .css({
                     'width': 3,
                     'target-arrow-shape': 'triangle',
-                    'line-color': 'black',
-                    'target-arrow-color': 'black',
+                    'line-color': '#36454F',
+                    'target-arrow-color': '#36454F',
                     'curve-style': 'bezier',
                 })
             ,
@@ -59,7 +60,7 @@ const DecisionTree = ({ data, height, width }) => {
                 padding: 1,
             },
         });
-        
+
         let nodes = []
         cy.edges().map((e) => {
             let id = e.source().id()
@@ -73,22 +74,26 @@ const DecisionTree = ({ data, height, width }) => {
             return !nodes.includes(e.id()) && e.scratch().branch === 'left'
         })
         .style({
-            "background-color": "green" 
+            "background-color": "#fedfb0"
         })
 
         cy.nodes().filter((e) => {
             return !nodes.includes(e.id()) && e.scratch().branch === 'right'
         })
         .style({
-            "background-color": "red" 
+            "background-color": "#fedfb0"
         })
 
 
-        cy.nodes().map((n) => {
-            let size = Math.floor(n.id().length - 4) * 6 + 70
-            n.style({height: size, width: size})
-            return n
-        })
+        // cy.nodes().map((n) => {
+        //     let size = Math.floor(n.id().length - 4) * 6 + 70
+        //     n.style({height: size, width: size})
+        //     return n
+        // })
+
+        cy.zoom(1.0)
+        cy.minZoom(0.5)
+        cy.maxZoom(1.1)
     })
 
     return (
