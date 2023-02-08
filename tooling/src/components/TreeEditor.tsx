@@ -74,15 +74,15 @@ const TreeEditor = ({
                 minWidth:'30vw'
             }}>
                 <TextField
-                color={'info'}
-                id='outlined-textarea'
-                placeholder={`if F1? MS IDLE:\nif F2? MS ATTACK:\nMS DEFEND`}
-                defaultValue={treeToString(tree)}
-                label={`Decision Tree for ${mentalState.state}`}
-                onChange={ (event) => handleUpdateTree(indexTree, event.target.value) }
-                fullWidth
-                multiline
-                rows={10}
+                    color={'info'}
+                    id='outlined-textarea'
+                    placeholder={`if F1? MS IDLE:\nif F2? MS ATTACK:\nMS DEFEND`}
+                    defaultValue={treeToString(tree)}
+                    label={`Decision Tree for ${mentalState.state}`}
+                    onChange={ (event) => handleUpdateTree(indexTree, event.target.value) }
+                    fullWidth
+                    multiline
+                    rows={10}
                 />
                 <Box
                 sx={{
@@ -108,7 +108,7 @@ const TreeEditor = ({
                                 return (
                                     <Tooltip key={`tooltip-function-${i}`} title={`${functionToStr(f)}`}>
                                         <Card
-                                        sx={{ 
+                                        sx={{
                                             margin: '0.2rem 0.2rem 0.3rem 0.2rem',
                                             padding: '0.1rem',
                                         }}
@@ -131,7 +131,7 @@ const TreeEditor = ({
                             mentalStates.map((ms, i) => {
                                 return (
                                     <Card
-                                    sx={{ 
+                                    sx={{
                                         margin: '0.2rem 0.2rem 0.3rem 0.2rem',
                                         padding: '0.1rem',
                                     }}
