@@ -107,7 +107,7 @@ func _body_antoc {range_check_ptr}(
                     return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, updated_stamina, dir) );
                 }
                 // otherwise return to IDLE
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, default_stamina, dir) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
             }
         } else {
             // increment counter
@@ -151,7 +151,7 @@ func _body_antoc {range_check_ptr}(
                     return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, updated_stamina, dir) );
                 }
                 // otherwise return to IDLE
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, default_stamina, dir) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
             }
         } else {
             // increment counter
@@ -188,7 +188,7 @@ func _body_antoc {range_check_ptr}(
         }
 
         // otherwise return to IDLE
-        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, default_stamina, dir) );
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -208,7 +208,7 @@ func _body_antoc {range_check_ptr}(
 
         // if counter is full => return to IDLE
         if (counter == ns_antoc_body_state_duration.HURT - 1) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, default_stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
         }
 
         // else stay in HURT and increment counter
@@ -232,7 +232,7 @@ func _body_antoc {range_check_ptr}(
 
         // if counter is full => return to Idle
         if (counter == ns_antoc_body_state_duration.KNOCKED - 1) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, default_stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
         }
 
         // else stay in KNOCKED and increment counter
@@ -374,7 +374,7 @@ func _body_antoc {range_check_ptr}(
         }
 
         // otherwise return to IDLE
-        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, default_stamina, dir) );
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     //
@@ -398,7 +398,7 @@ func _body_antoc {range_check_ptr}(
         }
 
         // otherwise return to IDLE
-        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, default_stamina, dir) );
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir) );
     }
 
     with_attr error_message("Input body state is not recognized.") {
