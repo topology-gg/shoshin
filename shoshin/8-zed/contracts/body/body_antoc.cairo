@@ -2,11 +2,15 @@
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
+from starkware.cairo.common.bool import (TRUE, FALSE)
 from contracts.constants.constants import (
-    BodyState, ns_stimulus
+    BodyState, ns_stimulus, ns_common_stamina_effect, ns_stamina, ns_character_type
 )
 from contracts.constants.constants_antoc import (
     ns_antoc_action, ns_antoc_body_state, ns_antoc_body_state_duration, ns_antoc_body_state_qualifiers
+)
+from contracts.body.body_utils import (
+    _settle_stamina_change
 )
 
 //
@@ -26,17 +30,22 @@ func _body_antoc {range_check_ptr}(
     let stamina = body_state.stamina;
     let dir = body_state.dir;
 
+    let hurt_integrity = integrity - 100;
+    let knocked_integrity = integrity - 100;
+
+    let default_stamina = calculate_default_stamina(stamina, ns_character_type.ANTOC);
+    let updated_stamina = calculate_stamina_change(stamina, intent, ns_stamina.INIT_STAMINA, ns_character_type.ANTOC);
+
     //
     // Idle
     //
     if (state == ns_antoc_body_state.IDLE) {
-
         // body responds to stimulus first
         if (stimulus == ns_stimulus.HURT) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, hurt_integrity , stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, knocked_integrity, stamina, dir) );
         }
 
         // body responds to intent; locomotive action has lowest priority
@@ -77,10 +86,10 @@ func _body_antoc {range_check_ptr}(
 
         // body responds to stimulus first
         if (stimulus == ns_stimulus.HURT) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, hurt_integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, knocked_integrity, stamina, dir) );
         }
 
         // note: clash does not interrupt Antoc's attack because of sword's heaviness;
@@ -110,10 +119,10 @@ func _body_antoc {range_check_ptr}(
 
         // body responds to stimulus first
         if (stimulus == ns_stimulus.HURT) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, hurt_integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, knocked_integrity, stamina, dir) );
         }
 
         // note: clash does not interrupt Antoc's attack because of sword's heaviness;
@@ -153,10 +162,10 @@ func _body_antoc {range_check_ptr}(
         let is_in_block_active = ns_antoc_body_state_qualifiers.is_in_block_active(state, counter);
         if (is_in_block_active == 0) {
             if (stimulus == ns_stimulus.HURT) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, hurt_integrity, stamina, dir) );
             }
             if (stimulus == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, knocked_integrity, stamina, dir) );
             }
         }
 
@@ -183,11 +192,11 @@ func _body_antoc {range_check_ptr}(
         // check for interruption
         if (stimulus == ns_stimulus.HURT) {
             // hurt again while in hurt => stay in hurt but reset counter
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, hurt_integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
             // knocked while in hurt => worsen into knocked
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, knocked_integrity, stamina, dir) );
         }
 
         // if counter is full => return to IDLE
@@ -207,11 +216,11 @@ func _body_antoc {range_check_ptr}(
         // check for interruption
         if (stimulus == ns_stimulus.HURT) {
             // hurt while in knocked => stay in knocked and reset counter to a small number
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 3, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 3, hurt_integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
             // hurt while in knocked => stay in knocked and reset counter to a small number
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 3, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 3, knocked_integrity, stamina, dir) );
         }
 
         // if counter is full => return to Idle
@@ -230,10 +239,10 @@ func _body_antoc {range_check_ptr}(
 
         // interruptible by stimulus
         if (stimulus == ns_stimulus.HURT) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, hurt_integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, knocked_integrity, stamina, dir) );
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
@@ -278,10 +287,10 @@ func _body_antoc {range_check_ptr}(
 
         // interruptible by stimulus
         if (stimulus == ns_stimulus.HURT) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, hurt_integrity, stamina, dir) );
         }
         if (stimulus == ns_stimulus.KNOCKED) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, integrity, stamina, dir) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, knocked_integrity, stamina, dir) );
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)

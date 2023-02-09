@@ -50,7 +50,13 @@ namespace ns_antoc_action {
     const DASH_FORWARD = 6;
     const DASH_BACKWARD = 7;
 
+    // noncents : can this action be removed?
     const COMBO = 10;
+}
+
+namespace ns_antoc_stamina_effect {
+    const HORI = 100;
+    const VERT = 100;
 }
 
 namespace ns_antoc_body_state_duration {

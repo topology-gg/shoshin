@@ -1,7 +1,7 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
-from starkware.cairo.common.math_cmp import is_le
+from starkware.cairo.common.math_cmp import is_le, is_in_range
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.dict_access import DictAccess
 from starkware.cairo.common.dict import dict_read
@@ -213,6 +213,23 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // Preparation
     //
     let last_frame: FrameScene = arr_frames[idx - 1];
+    
+
+    //
+    /// See if a player has health <= 0
+    //
+
+    let agent_0_standing = is_in_range(last_frame.agent_0.body_state.integrity, 0, 101);
+    let agent_1_standing = is_in_range(last_frame.agent_0.body_state.integrity, 0, 101);
+
+    
+    if (agent_0_standing == 0) {
+       return ();
+    }
+    if (agent_1_standing == 0) {
+       return ();
+    }
+
 
     //
     // Perception Phase
