@@ -22,6 +22,18 @@ namespace ns_stamina {
     const INIT_STAMINA = 1000;
 }
 
+
+namespace ns_common_stamina_effect {
+    // These values are added to the players stamina
+    const NULL = 50;
+    const MOVE_FORWARD = 50;
+    const MOVE_BACKWARD = 50;
+    const BLOCK = 25;
+    // These values are removed from the players stamina
+    const DASH_FORWARD = 50;
+    const DASH_BACKWARD = 50;
+}
+
 namespace ns_integrity {
     const INIT_INTEGRITY = 1000;
     const CRITICAL_INTEGRITY = 400;
@@ -43,6 +55,7 @@ namespace ns_stimulus {
     const KNOCKED = 2;
     const CLASH = 3;
 }
+
 
 struct Vec2 {
     x: felt,

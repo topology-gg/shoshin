@@ -54,6 +54,13 @@ namespace ns_jessica_action {
     const COMBO = 10;
 }
 
+namespace ns_jessica_stamina_effect {
+    const SLASH = 100;
+    const UPSWING = 100;
+    const SIDECUT = 100;
+}
+
+
 namespace ns_jessica_body_state_duration {
     const IDLE = 5;
     const SLASH = 5;
