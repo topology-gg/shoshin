@@ -104,7 +104,7 @@ func _body_antoc {range_check_ptr}(
         if (counter == ns_antoc_body_state_duration.HORI - 1) {
             if (intent == ns_antoc_action.HORI ) {
                 // return to first frame
-                if(enough_stamina == 1){
+                if(enough_stamina == TRUE){
                     return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, updated_stamina, dir) );
                 }
                 // otherwise return to IDLE
@@ -138,7 +138,7 @@ func _body_antoc {range_check_ptr}(
         // VERT=>HORI fast transition: able to go directly to HORI's first frame at VERT's frame 8, 9, or 10
         if (intent == ns_antoc_action.HORI) {
             if ( (counter-7) * (counter-8) * (counter-9) == 0 ) {
-                if(enough_stamina == 1) {
+                if(enough_stamina == TRUE) {
                     return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, updated_stamina, dir) );
                 }
             }
@@ -148,7 +148,7 @@ func _body_antoc {range_check_ptr}(
         if (counter == ns_antoc_body_state_duration.VERT - 1) {
             if (intent == ns_antoc_action.VERT) {
                 // return to first frame
-                if(enough_stamina == 1){
+                if(enough_stamina == TRUE){
                     return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, updated_stamina, dir) );
                 }
                 // otherwise return to IDLE
@@ -309,7 +309,7 @@ func _body_antoc {range_check_ptr}(
         if (intent == ns_antoc_action.BLOCK) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, updated_stamina, dir) );
         }
-        if (enough_stamina == 1) {
+        if (enough_stamina == TRUE) {
             if (intent == ns_antoc_action.HORI) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, updated_stamina, dir) );
             }
@@ -357,7 +357,7 @@ func _body_antoc {range_check_ptr}(
         if (intent == ns_antoc_action.DASH_FORWARD) {
             if (counter == ns_antoc_body_state_duration.DASH_FORWARD - 1) {
                 // reset counter
-                if(enough_stamina == 1) {
+                if(enough_stamina == TRUE) {
                     return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir) );
                 }
             }
@@ -381,7 +381,7 @@ func _body_antoc {range_check_ptr}(
         if (intent == ns_antoc_action.DASH_BACKWARD) {
             if (counter == ns_antoc_body_state_duration.DASH_BACKWARD - 1) {
                 // reset counter
-                if(enough_stamina == 1) {
+                if(enough_stamina == TRUE) {
                     return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir) );
                 }
                 // increment counter
