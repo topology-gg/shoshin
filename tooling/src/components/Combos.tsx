@@ -1,10 +1,10 @@
 import React, { useState, KeyboardEventHandler } from "react";
-import { Box, Card, Typography } from "@mui/material";
+import { Box, Button, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
 import Tooltip from '@mui/material/Tooltip';
 import SingleAction  from './SingleAction'
 import NewAction  from './NewAction'
-import ValidateCombo from './ValidateCombo';
 import { Character, CHARACTERS_ACTIONS, ACTIONS_ICON_MAP, MAX_COMBO_SIZE } from '../constants/constants';
+import { ChevronRight } from "@mui/icons-material";
 
 const comboToStr = (combo: number[], characterIndex) => {
     let str = ""
@@ -14,22 +14,23 @@ const comboToStr = (combo: number[], characterIndex) => {
     })
     return str
 }
-let combosIndex = 0
 
 const Combos = ({
     character, combos, handleValidateCombo
 }) => {
     const [selectedNewAction, setSelectedNewAction] = useState<boolean>(false);
-    const [combo, setCombo] = useState<number[]>([])
+    const [editingCombo, setEditingCombo] = useState<number[]>([])
+    // If the selectedIndex is null, it means the "New Combo" is selected
+    const [selectedIndex, setSelectedIndex] = useState<number>(null)
 
     let characterIndex = Object.keys(Character).indexOf(character)
     let actions = Object.keys(CHARACTERS_ACTIONS[characterIndex]).filter((a) => isNaN(parseInt(a)))
 
     const handleInsertInstruction = (action) => {
-        if (combo.length > MAX_COMBO_SIZE) {
+        if (editingCombo.length > MAX_COMBO_SIZE) {
             return;
         } else {
-            setCombo((prev) => {
+            setEditingCombo((prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev))
                 prev_copy.push(action)
                 return prev_copy
@@ -39,7 +40,7 @@ const Combos = ({
     const handleKeyDown: KeyboardEventHandler = (event) => {
         if (event.code === "Backspace") {
             // Backspace - Remove last instruction
-            setCombo((prev) => {
+            setEditingCombo((prev) => {
                 const new_program = prev.slice(0, -1);
                 return new_program
             })
@@ -54,19 +55,67 @@ const Combos = ({
                 alignItems: "left",
                 mt: "2rem",
             }}>
-                <Typography sx={{ ml: '1rem', fontSize: '17px' }} variant='overline'>Combos</Typography>
-                <Box
-                style={{
-                    border: '1px solid',
-                    borderRadius: '45px'
-                }}
-                >
+                <Typography sx={{ fontSize: '17px' }} variant='overline'>Combos</Typography>
+                <List dense>
+                    {
+                        combos.map((combo, index) => {
+                            return (
+                                <Tooltip key={`combos-tooltip-${index}`} title={comboToStr(combo, characterIndex)}>
+                                    <ListItem
+                                        disablePadding
+                                        key={`combo-${index}`}
+                                    >  
+                                        <ListItemButton 
+                                            selected={selectedIndex === index}
+                                            onClick={
+                                                () => {
+                                                    setEditingCombo(combo)
+                                                    setSelectedIndex(index)
+                                                }
+                                            }
+                                        >
+                                            {selectedIndex === index && 
+                                                <ListItemIcon>
+                                                    <ChevronRight />
+                                                </ListItemIcon>
+                                            }
+                                            <ListItemText inset={selectedIndex !== index}>
+                                                Combo {index}
+                                            </ListItemText>    
+                                        </ListItemButton>
+                                    </ListItem>
+                                </Tooltip>
+                            )
+                        })
+                    }
+                    <ListItem 
+                        disablePadding
+                    >  
+                        <ListItemButton 
+                            selected={selectedIndex === null}
+                            onClick={() => {
+                                setEditingCombo([])
+                                setSelectedIndex(null)
+                            }}
+                        >
+                            {selectedIndex === null && 
+                                <ListItemIcon>
+                                    <ChevronRight />
+                                </ListItemIcon>
+                            }
+                            <ListItemText inset={selectedIndex !== null}>
+                                New Combo
+                            </ListItemText>    
+                        </ListItemButton>
+                    </ListItem>
+                </List>
+                <Typography variant='overline'>Combo Actions</Typography>
+                <Box>
                     <Box
                     style={{
                         display: "flex",
                         flexDirection: "row",
                         margin: "0rem 0 2rem 0",
-                        padding: '0.5rem',
                         justifyContent: "center",
                     }}
                     >
@@ -107,13 +156,13 @@ const Combos = ({
                     <div
                         style={{
                             height: "25px",
-                            margin: '0 0 0.5rem 2rem',
+                            margin: '0 0 0.5rem 0',
                             position: 'relative',
                             display: 'flex',
                         }}
                     >    
-                        <Typography sx={{mr: '1rem'}} variant='overline'>Build combo</Typography>
-                        {combo.map((action, index) => (
+                        
+                        {editingCombo.map((action, index) => (
                             <SingleAction
                                 key={`action-${index}`}
                                 action={action}
@@ -132,51 +181,13 @@ const Combos = ({
                             selected={selectedNewAction}
                             characterIndex={characterIndex}
                         />
-                        <ValidateCombo onValidateCombo={() => { 
-                            handleValidateCombo(combo, combosIndex)
-                            combosIndex += 1
-                            setCombo([])
-                        }} />
+                        <Button variant="outlined" onClick={() => { 
+                            handleValidateCombo(editingCombo, selectedIndex)
+                            setEditingCombo([])
+                            setSelectedIndex(null)
+                        }}>Confirm</Button>
                     </div>
-                    <Box
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        padding: '0.5rem',
-                    }}
-                    >
-                        {
-                            combos.map((combo, key) => {
-                                return (
-                                    <Tooltip key={`combos-tooltip-${key}`} title={comboToStr(combo, characterIndex)}>
-                                        <Card 
-                                            sx=
-                                            {{
-                                                marginLeft: '1.5rem',
-                                                padding: '0.2rem',
-                                                height: '1.5rem',
-                                                width: '4rem',
-                                                fontSize: '12px',
-                                                textAlign: 'center',
-                                                border: '1px solid black',
-                                                ':hover': {
-                                                    bgcolor: '#CCCCCC',
-                                                    cursor: 'pointer'
-                                                }
-                                            }} 
-                                            key={`combo-${key}`}
-                                            onClick={() => {
-                                                combosIndex = key
-                                                setCombo(combos[combosIndex])
-                                            }}
-                                            >  
-                                                Combo {key}
-                                        </Card>
-                                    </Tooltip>
-                                )
-                            })
-                        }
-                    </Box>
+                    
                 </Box>
             </Box>
 }

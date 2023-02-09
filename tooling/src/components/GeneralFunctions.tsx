@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from '../../styles/Home.module.css'
-import { Box, Button, Chip, Grid, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { Box, Button, Chip, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
@@ -10,6 +10,7 @@ import CardContent from '@mui/material/CardContent';
 import TextField from '@mui/material/TextField';
 import { FunctionElement, Operator, Function, ElementType, Perceptible } from '../types/Function'
 import BasicMenu from './Menu'
+import { ChevronRight } from '@mui/icons-material';
 
 const gridItemStyle = {
     border: 1,
@@ -87,7 +88,52 @@ const GeneralFunctions = ({
             alignItems: "left",
             mt: "2rem",
         }}>
+            <Typography sx={{ fontSize: '17px' }} variant='overline'>Functions</Typography>
             <Grid container spacing={1}>
+                <Grid
+                    xs={ 12 } 
+                    item 
+                    className='available-functions'
+                >
+                    <List dense sx={{ flex: 1 }}>
+                        {
+                            functions.slice(0, functions.length - 1).map((_, i) => {
+                                return (
+                                    <ListItem
+                                        disablePadding
+                                        id={`function-${i}`} 
+                                        key={`function-${i}`}
+                                        secondaryAction={
+                                            <IconButton edge="end" aria-label="delete" onClick={() => handleClickDeleteFunction(i)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        }
+                                    >
+                                        <ListItemButton 
+                                            onClick={() => setFunctionsIndex(i)}
+                                            selected={i === functionsIndex}
+                                        >
+                                            {i === functionsIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
+                                            <ListItemText inset={i !== functionsIndex} primary={`F${i}`} />
+                                        </ListItemButton>
+                                        
+                                    </ListItem> 
+                                )
+                            })
+                        }
+                        <ListItem
+                            disablePadding
+                        >
+                            <ListItemButton 
+                                onClick={() => setFunctionsIndex(functions.length - 1)}
+                                selected={functions.length - 1 === functionsIndex}
+                            >
+                                {functions.length - 1 === functionsIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
+                                <ListItemText inset={functions.length - 1 !== functionsIndex} primary="New Function" />
+                            </ListItemButton>
+                        </ListItem>
+                    </List>
+                </Grid>
                 <Grid item className='functions-title' xs={ 12 }>
                     <Grid container spacing={1}>
                         {
@@ -157,35 +203,6 @@ const GeneralFunctions = ({
                     >
                         Confirm
                     </button>
-                </Grid>
-                <Grid
-                    xs={ 12 } 
-                    item 
-                    className='available-functions'
-                >
-                    <List dense sx={{ flex: 1 }}>
-                        {
-                            functions.slice(0, functions.length - 1).map((_, i) => {
-                                return (
-                                    <ListItem 
-                                        disablePadding
-                                        id={`function-${i}`} 
-                                        key={`function-${i}`}
-                                        secondaryAction={
-                                            <IconButton edge="end" aria-label="delete" onClick={() => handleClickDeleteFunction(i)}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        }
-                                    >
-                                        <ListItemButton onClick={() => setFunctionsIndex(i)}>
-                                            <ListItemText primary={`F${i}`} />
-                                        </ListItemButton>
-                                        
-                                    </ListItem> 
-                                )
-                            })
-                        }
-                    </List>
                 </Grid>
             </Grid>
         </Box>
