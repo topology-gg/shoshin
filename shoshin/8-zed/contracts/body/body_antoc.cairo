@@ -10,7 +10,8 @@ from contracts.constants.constants_antoc import (
     ns_antoc_action, ns_antoc_body_state, ns_antoc_body_state_duration, ns_antoc_body_state_qualifiers
 )
 from contracts.body.body_utils import (
-    _settle_stamina_change
+    calculate_stamina_change,
+    calculate_default_stamina
 )
 
 //
@@ -52,7 +53,7 @@ func _body_antoc {range_check_ptr}(
         if (intent == ns_antoc_action.BLOCK) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, updated_stamina, dir) );
         }
-        if(enough_stamina == true){
+        if(enough_stamina == TRUE){
             if (intent == ns_antoc_action.HORI) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, updated_stamina, dir) );
             }
@@ -256,7 +257,7 @@ func _body_antoc {range_check_ptr}(
         if (intent == ns_antoc_action.BLOCK) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, updated_stamina, dir) );
         }
-        if(enough_stamina == true){
+        if(enough_stamina == TRUE){
             if (intent == ns_antoc_action.HORI) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, updated_stamina, dir) );
                 
@@ -310,25 +311,16 @@ func _body_antoc {range_check_ptr}(
         }
         if (enough_stamina == 1) {
             if (intent == ns_antoc_action.HORI) {
-                if(enough_stamina == true){
-                    return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, updated_stamina, dir) );
-                }
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, updated_stamina, dir) );
             }
             if (intent == ns_antoc_action.VERT) {
-                if(enough_stamina == true){
-                    return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, updated_stamina, dir) );
-                }
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, updated_stamina, dir) );
             }
-
-            if (intent == ns_antoc_action.DASH_FORWARD) {
-                if(enough_stamina == true){
-                    return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir) );
-                }
+            if (intent == ns_antoc_action.DASH_FORWARD) {             
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir) );             
             }
-            if (intent == ns_antoc_action.DASH_BACKWARD) {
-                if(enough_stamina == true){
-                    return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir) );
-                }
+            if (intent == ns_antoc_action.DASH_BACKWARD) {            
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir) );            
             }
 
         }
