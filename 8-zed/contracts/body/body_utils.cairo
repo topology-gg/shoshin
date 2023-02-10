@@ -6,6 +6,7 @@ from contracts.constants.constants import (ns_common_stamina_effect, ns_stamina,
 from contracts.constants.constants_antoc import (ns_antoc_stamina_effect, ns_antoc_action)
 from contracts.constants.constants_jessica import (ns_jessica_stamina_effect, ns_jessica_action)
 
+
 func calculate_default_stamina{range_check_ptr}(stamina : felt, character_type : felt) -> felt {
     if (character_type == ns_character_type.JESSICA) {
         let (updated_stamina_default_recovery, _) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, ns_stamina.INIT_STAMINA, TRUE);
@@ -18,14 +19,6 @@ func calculate_default_stamina{range_check_ptr}(stamina : felt, character_type :
 }
 
 func calculate_stamina_change{range_check_ptr}(stamina : felt, intent : felt, max_stamina : felt, character_type : felt) -> (felt, felt) {
-        if (intent == ns_antoc_action.HORI) {
-            let (updated_stamina, enough_stamina)  = _settle_stamina_change(stamina, ns_antoc_stamina_effect.HORI, max_stamina, FALSE);
-            return (updated_stamina, enough_stamina);
-        }
-        if (intent == ns_antoc_action.VERT) {
-            let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_antoc_stamina_effect.VERT, max_stamina, FALSE);
-            return (updated_stamina, enough_stamina);
-        }
         if (intent == ns_antoc_action.BLOCK) {
             let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.BLOCK, max_stamina, TRUE);
             return (updated_stamina, enough_stamina);

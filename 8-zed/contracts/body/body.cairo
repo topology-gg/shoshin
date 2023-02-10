@@ -23,5 +23,5 @@ func _body{range_check_ptr}(
     with_attr error_message("Character type is not recognized.") {
         assert 0 = 1;
     }
-    return ( body_state_nxt = BodyState(0,0,0,0,0) );
+    return ( body_state_nxt = BodyState(0,0,0,0,0,0) );
 }
