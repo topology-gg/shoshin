@@ -24,12 +24,14 @@ namespace ns_stamina {
 
 
 namespace ns_common_stamina_effect {
-    // These values are added to the players stamina
-    const NULL = 50;
-    const MOVE_FORWARD = 50;
-    const MOVE_BACKWARD = 50;
-    const BLOCK = 25;
+    // These values are added to the players stamina, 
+    // They are amortized across the entire animation
+    const NULL = 20;
+    const MOVE_FORWARD = 20;
+    const MOVE_BACKWARD = 20;
+    const BLOCK = 10;
     // These values are removed from the players stamina
+    // These have an upfront cost that is paid in the first frame
     const DASH_FORWARD = 50;
     const DASH_BACKWARD = 50;
 }
@@ -91,6 +93,7 @@ struct BodyState {
     integrity: felt,
     stamina: felt,
     dir: felt,
+    fatigued : felt,
 }
 
 struct PhysicsState {
