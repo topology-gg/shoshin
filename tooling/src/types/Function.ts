@@ -85,8 +85,8 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
                     countAbs -= 1
                     break
                 }
-                if (prevElement.type !== ElementType.Perceptible && 
-                    prevElement.type !== ElementType.Constant && 
+                if (prevElement.type !== ElementType.Perceptible &&
+                    prevElement.type !== ElementType.Constant &&
                     prevElement?.value !== Operator.CloseParenthesis &&
                     prevElement?.value !== Operator.CloseAbs &&
                     prevElement?.value !== Operator.Not) {
@@ -116,7 +116,7 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
 }
 
 export function parseFunction(f: Function) {
-    let operator: Leaf = parseInner(functionToStr(f)) 
+    let operator: Leaf = parseInner(functionToStr(f))
     return operator
 }
 

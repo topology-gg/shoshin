@@ -40,17 +40,28 @@ const handleClose = (isDefensive) => {
     <div
         style={{
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'row',
             alignItems: 'center',
             marginTop: '1.5rem',
         }}
     >
-      {
-          displayButton &&
-        //   <button className={style}
+
+        <Button
+            id={`initial-actions-menu-button`}
+            variant="outlined"
+            aria-controls={opened ? 'basic-menu' : undefined}
+            aria-haspopup='true'
+            aria-expanded={opened ? 'true' : undefined}
+            onClick={handleClick}
+        >
+            {/* <Typography variant='overline'>{(isDefensiveAdversary? 'Defensive': 'Offensive') + ' adversary'}</Typography> */}
+            {(isDefensiveAdversary? 'Defensive': 'Offensive') + ' adversary'}
+        </Button>
+
         <Button
             id={`run-cairo-simulation`}
             variant="outlined"
+            disabled={!displayButton}
             onClick={() => {
                 let [combosOffset, combos, mentalStatesOffset, mentalStates, functionsOffset, functions] = flattenAgent(input)
                 let [dummyCombosOffset, dummyCombos, dummyMentalStatesOffset, dummyMentalStates, dummyFunctionsOffset, dummyFunctions, dummyActions] = getDummyArgs(isDefensiveAdversary)
@@ -84,29 +95,16 @@ const handleClose = (isDefensive) => {
                 }
                 handleClickRunCairoSimulation(cairoOutputToFrameScene(output))
             }}
+            sx={{
+                marginLeft: '1rem'
+            }}
         >
-          Run the Cairo Simulation
-        </Button> ||
-        (!displayButton && <Typography variant="overline">Validate your agent first</Typography>)
-      }
+            Fight
+        </Button>
+
       { displayWarning && <Typography variant="overline" color="red">{warning}</Typography> }
 
       {/* <Button id='constant' variant="outlined" onClick={handleAddElement}>Add</Button> */}
-
-      <Button
-          id={`initial-actions-menu-button`}
-          variant="outlined"
-          aria-controls={opened ? 'basic-menu' : undefined}
-          aria-haspopup='true'
-          aria-expanded={opened ? 'true' : undefined}
-          onClick={handleClick}
-          sx={{
-            marginTop: '1rem'
-          }}
-      >
-          {/* <Typography variant='overline'>{(isDefensiveAdversary? 'Defensive': 'Offensive') + ' adversary'}</Typography> */}
-          {(isDefensiveAdversary? 'Defensive': 'Offensive') + ' adversary'}
-      </Button>
 
       <Menu
       id={'initial-actions-menu'}

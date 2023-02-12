@@ -9,7 +9,7 @@ export const SIMULATOR_H = 300
 export const CharacterComponentW = 600
 export const CharacterComponentH = 300
 
-export const SpriteTopAdjustmentToBg = -5
+export const SpriteTopAdjustmentToBg = -10
 
 export const bodyStateNumberToName = {
     'jessica':{
