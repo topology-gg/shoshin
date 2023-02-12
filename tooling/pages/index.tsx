@@ -422,16 +422,16 @@ export default function Home() {
                                     handleLoadTestJson={handleLoadTestJson}
                                     handleClickPreloadedTestJson={handleClickPreloadedTestJson}
                                 /> */}
+                                <CairoSimulation
+                                    style={styles.confirm}
+                                    handleClickRunCairoSimulation={handleClickRunCairoSimulation}
+                                    handleInputError={handleInputError}
+                                    warning={runCairoSimulationWarning}
+                                    input={agent}
+                                    isDefensiveAdversary={isDefensiveAdversary}
+                                    setIsDefensiveAdversary={setIsDefensiveAdversary}
+                                />
                             </div>
-                            <CairoSimulation
-                                style={styles.confirm}
-                                handleClickRunCairoSimulation={handleClickRunCairoSimulation}
-                                handleInputError={handleInputError}
-                                warning={runCairoSimulationWarning}
-                                input={agent}
-                                isDefensiveAdversary={isDefensiveAdversary}
-                                setIsDefensiveAdversary={setIsDefensiveAdversary}
-                            />
                         </Grid>
                         <Grid item xs={4} sx={{ bgcolor: 'grey.50' }}>
                             <SidePanel

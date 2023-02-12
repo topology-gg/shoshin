@@ -42,6 +42,7 @@ const handleClose = (isDefensive) => {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
+            justifyContent: 'center',
             marginTop: '1.5rem',
         }}
     >
