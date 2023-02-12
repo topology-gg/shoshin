@@ -9,6 +9,8 @@ export const SIMULATOR_H = 300
 export const CharacterComponentW = 600
 export const CharacterComponentH = 300
 
+export const SpriteTopAdjustmentToBg = -5
+
 export const bodyStateNumberToName = {
     'jessica':{
         0: 'idle',
@@ -185,44 +187,44 @@ export const INITIAL_MENTAL_STATES: MentalState[] = [
 export const INITIAL_COMBOS: number[][] = [[7, 7, 2, 2, 2, 2, 2]]
 
 export const INITIAL_DECISION_TREES: Tree[] = [
-    { 
+    {
         nodes: [
             { id: 'if F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'if F1', isChild: false, branch: Direction.Right },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
-        ] 
+        ]
     },
-    { 
+    {
         nodes: [
             { id: 'if F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'if F1', isChild: false, branch: Direction.Right },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
-        ] 
+        ]
     },
-    { 
+    {
         nodes: [
             { id: 'if F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
-        ] 
+        ]
     },
-    { 
+    {
         nodes: [
             { id: 'if F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'if F1', isChild: false, branch: Direction.Right },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
-        ] 
+        ]
     }
 ]
 
 export const INITIAL_FUNCTIONS: Function[] = [
-    { 
+    {
         elements: [
             { value: Operator.OpenParenthesis, type: ElementType.Operator },
             { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
@@ -243,7 +245,7 @@ export const INITIAL_FUNCTIONS: Function[] = [
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
         ]
     },
-    { 
+    {
         elements: [
             { value: Operator.OpenAbs, type: ElementType.Operator},
             { value: Perceptible.SelfX, type: ElementType.Perceptible},
@@ -313,15 +315,15 @@ export const INITIAL_FUNCTIONS: Function[] = [
             { value: 300, type: ElementType.Constant},
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
         ]
-    }, 
+    },
     {
         elements: [
             { value: Perceptible.SelfBodyState, type: ElementType.Perceptible },
             { value: Operator.Equal, type: ElementType.Operator },
             { value: 0, type: ElementType.Constant },
         ]
-    },    
-    { 
+    },
+    {
         elements: [
             { value: Operator.Not, type: ElementType.Operator },
             { value: Operator.OpenParenthesis, type: ElementType.Operator },
@@ -369,28 +371,28 @@ const COMBOS_OFFENSIVE_AGENT: number[][] = [[1, 1, 1, 1, 1, 1, 1]]
 export const OFFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_OFFENSIVE_AGENT, COMBOS_OFFENSIVE_AGENT, DECISION_TREE_OFFENSIVE_AGENT, INITIAL_FUNCTIONS, 0, 1)
 
 const DECISION_TREE_DEFENSIVE_AGENT = [
-    { 
+    {
         nodes: [
             { id: 'if F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
-        ] 
+        ]
     },
-    { 
+    {
         nodes: [
             { id: 'if F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'MS RETRAIT', isChild: true, branch: Direction.Right },
-        ] 
+        ]
     },
-    { 
+    {
         nodes: [
             { id: 'if F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'if F8', isChild: false },
             { id: 'MS RETRAIT', isChild: true, branch: Direction.Right },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
-        ] 
+        ]
     },
 ]
 const MENTAL_STATES_DEFENSIVE_AGENT: MentalState[] = [

@@ -418,17 +418,17 @@ export default function Home() {
                                         />
                                     </div>
                                 }
-                                <LoadTestJson
+                                {/* <LoadTestJson
                                     handleLoadTestJson={handleLoadTestJson}
                                     handleClickPreloadedTestJson={handleClickPreloadedTestJson}
-                                />
+                                /> */}
                             </div>
-                            <CairoSimulation 
-                                style={styles.confirm} 
-                                handleClickRunCairoSimulation={handleClickRunCairoSimulation} 
-                                handleInputError={handleInputError} 
-                                warning={runCairoSimulationWarning} 
-                                input={agent} 
+                            <CairoSimulation
+                                style={styles.confirm}
+                                handleClickRunCairoSimulation={handleClickRunCairoSimulation}
+                                handleInputError={handleInputError}
+                                warning={runCairoSimulationWarning}
+                                input={agent}
                                 isDefensiveAdversary={isDefensiveAdversary}
                                 setIsDefensiveAdversary={setIsDefensiveAdversary}
                             />

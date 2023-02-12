@@ -4,7 +4,7 @@ import styles from "../../styles/Character.module.css";
 import testJsonStr from '../json/test_engine.json';
 import {
     SIMULATOR_H, SIMULATOR_W, bodyStateNumberToName, adjustmentForCharacter,
-    CharacterComponentW, CharacterComponentH,
+    CharacterComponentW, CharacterComponentH, SpriteTopAdjustmentToBg,
 } from '../constants/constants';
 import { TestJson, Frame, Rectangle } from '../types/Frame';
 import { spriteData } from '../constants/sprites';
@@ -32,7 +32,7 @@ export default function Character( {agentIndex, viewWidth, characterName, agentF
     const bodyStateName = bodyStateNumberToName [characterName][bodyState]
     const direction = (bodyStateDir == 1) ? 'right' : 'left'
     console.log(characterName, 'direction', direction)
-    
+
     const spriteAdjustment = spriteData[characterName][bodyStateName]
     const spriteSize = spriteAdjustment?.size || [0, 0]
     const spriteLeftAdjustment = spriteAdjustment?.hitboxOffset[direction][0] || 0
@@ -43,7 +43,7 @@ export default function Character( {agentIndex, viewWidth, characterName, agentF
 
     // Calculate character's left and top for rendering
     const left = viewWidth/2 + pos.x + spriteLeftAdjustment
-    const top = SIMULATOR_H - pos.y - spriteSize[1] + spriteTopAdjustment
+    const top = SIMULATOR_H - pos.y - spriteSize[1] + spriteTopAdjustment + SpriteTopAdjustmentToBg
     console.log(characterName, '(left,top):', `(${left},${top})`)
 
     return (
@@ -55,7 +55,7 @@ export default function Character( {agentIndex, viewWidth, characterName, agentF
                     // border: '1px solid #999999',
                     // border: 'none',
                     position: 'absolute', left: left, top: top,
-                    zIndex: -1,
+                    zIndex: 10,
                     background: `url("${spriteSheetName}") no-repeat ${-spriteFrameAdjustment}px bottom`,
                     // backgroundRepeat: 'no-repeat',
                     // backgroundSize: 'auto',
