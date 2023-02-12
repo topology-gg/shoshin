@@ -23,7 +23,7 @@ const actionToStr = (action: number, characterIndex) => {
 }
 
 const MentalStates = ({
-    mentalStates, initialMentalState, handleSetInitialMentalState, combos, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, 
+    mentalStates, initialMentalState, handleSetInitialMentalState, combos, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState,
     handleSetMentalStateAction, handleClickTreeEditor
 }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -67,7 +67,7 @@ const MentalStates = ({
     })
 
     return (
-        <Grid 
+        <Grid
         container
         sx={{
             display: "flex",
@@ -80,25 +80,25 @@ const MentalStates = ({
             <Grid item xs={12}>
                 <Box>
                     <Button sx={{ ml: '2rem', border: 1, mb: '5px' }} onClick={() => setCharacter(characters[(characterIndex + 1)%characters.length])}>
-                        Selected character: {character}
+                        You are: {character}
                     </Button>
                 </Box>
             </Grid>
-            <Grid 
-            xs={2} 
+            <Grid
+            xs={2}
             item
             sx={{
                 display:"flex",
                 alignItems:"flex-end",
                 justifyContent:"space-around"
-            }} 
+            }}
             >
                 <IconButton onClick={(_)=>{mentalState ? handleAddMentalState(mentalState) : 0}}><AddIcon/></IconButton>
             </Grid>
             <Grid xs={10} item>
                 <TextField color={"info"} fullWidth id="standard-basic" label="Input Mental State" variant="standard" onChange={(event) => {mentalState = event.target.value}}/>
             </Grid>
-            <Grid 
+            <Grid
             sx={{
                 display: "flex",
                 flexDirection: "row",
@@ -107,7 +107,7 @@ const MentalStates = ({
                 mt: "1rem",
                 ml: '2rem',
             }}
-            xs={10} 
+            xs={10}
             item>
                 <Button
                     id={`initial-actions-menu-button`}
@@ -116,7 +116,7 @@ const MentalStates = ({
                     aria-expanded={openInitialState ? 'true' : undefined}
                     onClick={handleClickInitialState}
                 >
-                    <Typography variant='overline'>Initial state: {mentalStates.length > 0 ? mentalStates[initialMentalState].state: 'Create at least one mental state'}</Typography>
+                    <Typography variant='overline'>Starting state: {mentalStates.length > 0 ? mentalStates[initialMentalState].state: 'Create at least one mental state'}</Typography>
                 </Button>
                 <Menu
                 id={'initial-actions-menu'}
@@ -126,7 +126,7 @@ const MentalStates = ({
                 >
                     {
                         mentalStates.map((ms, i) => {
-                            return <MenuItem id={ `initial-mental-state-state-${i}` } key={ `initial-mental-state-state-${i}` } onClick={handleCloseInitialState}>{ms.state}</MenuItem> 
+                            return <MenuItem id={ `initial-mental-state-state-${i}` } key={ `initial-mental-state-state-${i}` } onClick={handleCloseInitialState}>{ms.state}</MenuItem>
                         })
                     }
                 </Menu>
@@ -142,7 +142,7 @@ const MentalStates = ({
                 mt: "1rem",
             }}>
                 {
-                    mentalStates.map((state: MentalState, i: number) => { 
+                    mentalStates.map((state: MentalState, i: number) => {
                         return <Box
                         key={`button-wrapper-${i}`}
                         sx={{
@@ -176,7 +176,7 @@ const MentalStates = ({
                             >
                                 {
                                     actions.map((action) => {
-                                        return <MenuItem id={ `action-${action}-${i}` } key={ `action-${action}-${i}` } onClick={handleClose}>{action.replaceAll('_', ' ')}</MenuItem> 
+                                        return <MenuItem id={ `action-${action}-${i}` } key={ `action-${action}-${i}` } onClick={handleClose}>{action.replaceAll('_', ' ')}</MenuItem>
                                     })
                                 }
                             </Menu>
@@ -184,7 +184,7 @@ const MentalStates = ({
                     })
                 }
             </Grid>
-            
+
         </Grid>
     )
 }

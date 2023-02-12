@@ -20,8 +20,8 @@ const gridItemStyle = {
 }
 
 const functionsTitle = [
-    { id: 'Operators', width: 5 }, 
-    { id: 'Const', width: 3 }, 
+    { id: 'Operators', width: 5 },
+    { id: 'Const', width: 3 },
     { id: 'Perceptibles', width: 4 }
 ]
 const operators = Object.values(Operator)
@@ -47,13 +47,13 @@ const handleDisplayText = (isWarningTextOn, warningText, index) => {
             {
                 isWarningTextOn && <Typography color={'red'} variant='overline'>{warningText}</Typography>
                 || !isWarningTextOn && <Typography variant='overline'>Editing F{index}</Typography>
-            } 
+            }
         </Grid>
 }
 
 const functionToDiv = (f: Function) => {
     if (!f || !f.elements.length) {
-        return <Typography variant='caption' color={ '#CCCCCC' } >Drop your operators, constants and perceptibles here</Typography> 
+        return <Typography variant='caption' color={ '#CCCCCC' } >Drop your operators, constants and perceptibles here</Typography>
     }
     return (
         f.elements.map((e, i) => {
@@ -68,8 +68,8 @@ const functionToDiv = (f: Function) => {
 
 let currentConstant = 0
 
-const GeneralFunctions = ({ 
-    functions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction, 
+const GeneralFunctions = ({
+    functions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction,
     functionsIndex, setFunctionsIndex, isWarningTextOn, warningText, handleRemoveElementGeneralFunction
 }) => {
     let f = functions[functionsIndex]
@@ -91,8 +91,8 @@ const GeneralFunctions = ({
             <Typography sx={{ fontSize: '17px' }} variant='overline'>Functions</Typography>
             <Grid container spacing={1}>
                 <Grid
-                    xs={ 12 } 
-                    item 
+                    xs={ 12 }
+                    item
                     className='available-functions'
                 >
                     <List dense sx={{ flex: 1 }}>
@@ -101,7 +101,7 @@ const GeneralFunctions = ({
                                 return (
                                     <ListItem
                                         disablePadding
-                                        id={`function-${i}`} 
+                                        id={`function-${i}`}
                                         key={`function-${i}`}
                                         secondaryAction={
                                             <IconButton edge="end" aria-label="delete" onClick={() => handleClickDeleteFunction(i)}>
@@ -109,22 +109,22 @@ const GeneralFunctions = ({
                                             </IconButton>
                                         }
                                     >
-                                        <ListItemButton 
+                                        <ListItemButton
                                             onClick={() => setFunctionsIndex(i)}
                                             selected={i === functionsIndex}
                                         >
                                             {i === functionsIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
                                             <ListItemText inset={i !== functionsIndex} primary={`F${i}`} />
                                         </ListItemButton>
-                                        
-                                    </ListItem> 
+
+                                    </ListItem>
                                 )
                             })
                         }
                         <ListItem
                             disablePadding
                         >
-                            <ListItemButton 
+                            <ListItemButton
                                 onClick={() => setFunctionsIndex(functions.length - 1)}
                                 selected={functions.length - 1 === functionsIndex}
                             >
@@ -139,13 +139,13 @@ const GeneralFunctions = ({
                         {
                             functionsTitle.map((f) => {
                                 let style =  f.id == 'Const' ? { maxWidth: 'none', flexGrow: 1 } : {}
-                                return <Grid 
-                                    key={ `function-${f.id}` } 
+                                return <Grid
+                                    key={ `function-${f.id}` }
                                     style={ style }
-                                    sx={{ p: '5px' }} 
-                                    item 
+                                    sx={{ p: '5px' }}
+                                    item
                                     xs={ f.width }>
-                                        <Typography variant='overline'>{ f.id }</Typography> 
+                                        <Typography variant='overline'>{ f.id }</Typography>
                                     </Grid>
                             })
                         }
@@ -155,28 +155,43 @@ const GeneralFunctions = ({
                     <Box sx={ {display: "flex", flexWrap: 'wrap', gap: 0.5} }>
                         {
                             operators.map((o) => {
-                                return <Chip 
-                                            key={ `operator-${o}` } 
-                                            id={ `operator.${o}` }
-                                            onClick={ handleAddElement }
-                                            variant='outlined'
-                                            size='small'
-                                            label={o} />
+                                return (
+                                    <Chip
+                                        key={ `operator-${o}` }
+                                        id={ `operator.${o}` }
+                                        onClick={ handleAddElement }
+                                        variant='outlined'
+                                        size='small'
+                                        label={o}
+                                        sx={{
+                                            "&&:hover": {backgroundColor: "#E0B0FF"}
+                                        }}
+                                    />
+                                )
                             })
                         }
                     </Box>
                 </Grid>
+
                 <Grid xs={ functionsTitle[1].width } item>
                     <Box>
-                        <TextField 
-                            color={ "info" } 
-                            type="number" 
+                        <TextField
+                            color={ "info" }
+                            type="number"
                             defaultValue={currentConstant}
                             onChange={(e) => currentConstant=parseInt(e.target.value)}
                         />
-                        <Button id='constant' variant="outlined" onClick={handleAddElement}>Add</Button>
+                        <Button
+                            id='constant'
+                            variant="outlined"
+                            onClick={handleAddElement}
+                            sx={{marginTop:'0.5rem'}}
+                        >
+                                Add
+                        </Button>
                     </Box>
                 </Grid>
+
                 <Grid xs={ functionsTitle[2].width } item>
                     <Box
                         id='perceptible'
@@ -187,7 +202,7 @@ const GeneralFunctions = ({
                 </Grid>
                 { handleDisplayText(isWarningTextOn, warningText, functionsIndex) }
                 <Grid xs={ 9 } item className='function-creator'>
-                    <Box 
+                    <Box
                         sx={{ ...gridItemStyle }}
                     >
                         { functionToDiv(f) }
@@ -196,14 +211,18 @@ const GeneralFunctions = ({
                 <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none' }} xs={ 2 } item className='delete-interface'>
                     <IconButton sx={{ mt: '1rem', alignItems: 'flex-end'}} onClick={(_) => {handleRemoveElementGeneralFunction(functionsIndex)}}><BackspaceIcon/></IconButton>
                 </Grid>
+
                 <Grid item>
-                    <button 
-                        className={ styles.confirm }
+                    <Button
+                        id={`confirm-gp-function`}
+                        variant="outlined"
+                        // className={ styles.confirm }
                         onClick={() => handleConfirmFunction()}
                     >
                         Confirm
-                    </button>
+                    </Button>
                 </Grid>
+
             </Grid>
         </Box>
     )
