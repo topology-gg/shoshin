@@ -19,18 +19,10 @@
     "semantic-release": "semantic-release",
     "test:watch": "jest --watch",
     "test": "jest --coverage",
+    "build-test-circuits": "./circuits/__tests__/compile_tests.sh && jest --coverage circuits/** #TODO:remove the precompile/ be smarter",
     "typecheck": "tsc --noEmit"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ryansonshine/typescript-npm-cli-template.git"
-  },
   "license": "MIT",
-  "author": {
-    "name": "Ryan Sonshine",
-    "email": "ryansonshine@users.noreply.github.com",
-    "url": "https://github.com/ryansonshine"
-  },
   "engines": {
     "node": ">=12.0"
   },
@@ -50,6 +42,11 @@
   },
   "homepage": "https://github.com/ryansonshine/typescript-npm-cli-template#readme",
   "dependencies": {
+    "circom_tester": "^0.0.19",
+    "circomlib": "^2.0.5",
+    "circomlib-matrix": "^1.0.2",
+    "circomlib-ml": "^1.4.4",
+    "circomlibjs": "^0.1.7",
     "commander": "^7.2.0"
   },
   "devDependencies": {
