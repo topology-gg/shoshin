@@ -76,17 +76,48 @@ template FirstTrue(N_CONDITIONALS) {
 	}
 }
 
-// For abs we can do, with compconstant (1 - (x < 0) * 2) * x
-// For /, we can do something simple with c <-- a/b, b * c === a
-// For %, we can do p <-- a % p, q <-- a\b, b * q + p === a and 0 <= p < b
-
 template Abs(WORD_SIZE) {
 	component lt = LessThan(WORD_SIZE);
 	signal input inp;
 	signal output out;
 	inp ==> lt.in[0];
 	0 ==> lt.in[1];
-	out <== (1 - lt.out * 2) * x;
+	out <== (1 - lt.out * 2) * inp;
+}
+
+template IntegerDivideRemainder(WORD_SIZE) {
+	signal input inp[2];
+	signal output quotient;
+	signal output remainder;
+	component lt_r = LessThan(WORD_SIZE);
+	component gte_r = GreaterEqThan(WORD_SIZE);
+
+	component lte_q = LessEqThan(WORD_SIZE);
+	component gte_q = GreaterEqThan(WORD_SIZE);
+
+
+	quotient <-- inp[0] \ inp[1];
+	remainder <-- inp[0] % inp[1];
+	// Check that for a / b, a = b * q + r
+	inp[0] === inp[1] * quotient + remainder;
+
+	//  Check that 0 <= remainder < b
+	0 ==> gte_r.in[0];
+	remainder ==> gte_r.in[1];
+	gte_r.out === 1;
+	remainder ==> lt_r.in[0];
+	inp[1] ==> lt_r.in[1];
+	lt_r.out === 1;
+
+	//  Check that 0 <= remainder < b
+	0 ==> gte_q.in[0];
+	quotient ==> gte_q.in[1];
+	gte_q.out === 1;
+	quotient ==> lte_q.in[0];
+	inp[0] ==> lte_q.in[1];
+	lt_r.out === 1;
+
+	// TODO: HARD BAKE SIZE REQUIREMENT OF WORD SIZE (being less than half max number of bits)
 }
 
 template Buffer(WORD_SIZE) {
@@ -94,11 +125,24 @@ template Buffer(WORD_SIZE) {
 	signal output out;
 	signal input mux_sel[2];
 
-	component r1csConstr;
 	component abs = Abs(WORD_SIZE);
-	component modulo; // TODO: 3 below!
-	component divide;
+	component divide_mod = IntegerDivideRemainder(WORD_SIZE);
+	component mux = Mux2();
 
+	inps[0] ==> abs.inp;
+
+	inps[0] ==> divide_mod.inp[0];
+	inps[1] ==> divide_mod.inp[1];
+
+	mux_sel[0] ==> mux.s[0];
+	mux_sel[1] ==> mux.s[1];
+
+	mux.c[0] <== inps[0] * inps[1] + inps[2];
+	mux.c[1] <== abs.out;
+	mux.c[2] <== divide_mod.quotient;
+	mux.c[3] <== divide_mod.remainder;
+
+	mux.out ==> out;
 
 }
 
@@ -114,20 +158,20 @@ template Buffers(BUFFER_SIZE, INPUT_SIZE, WORD_SIZE) {
 	component buffers[BUFFER_SIZE];
 
 	for (var i = 0; i < BUFFER_SIZE; i++) {
-		buffers[i] = Buffer();
+		buffers[i] = Buffer(WORD_SIZE);
 		for (var j = 0; j < 3; j++) {
 			buffer_inp_muxes[i][j] = Multiplexer(1, INPUT_SIZE + i);
 			for (var x = 0; x < INPUT_SIZE; x++) {
 				inp[x] ==> buffer_inp_muxes[i][j].inp[x][0];
 			}
 			for (var x = 0; x < i; x++) {
-				buffer[x] ==> buffer_inp_muxes[i][j].inp[INPUT_SIZE + x][0];
+				out[x] ==> buffer_inp_muxes[i][j].inp[INPUT_SIZE + x][0];
 			}
 			buffer_inp_mux_sel[i][j] ==> buffer_inp_muxes[i][j].sel;
-			buffer_inp_mux_sel[i][j].out ==> buffers[i].inps[j];
+			buffer_inp_muxes[i][j].out[0] ==> buffers[i].inps[j];
 		}
-		buffer_type_sel[i][0] ==> buffers[i].sel[0];
-		buffer_type_sel[i][1] ==> buffers[i].sel[1];
+		buffer_type_sel[i][0] ==> buffers[i].mux_sel[0];
+		buffer_type_sel[i][1] ==> buffers[i].mux_sel[1];
 		buffers[i].out ==> out[i];
 	}
 }
@@ -147,6 +191,7 @@ template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {
 	// Range over selectors for the inputs and buffers with smaller indices so we can chain things
 	// TODO: for generality we have another layer of muxing... :(
 	signal input buffer_mux_sel[BUFFER_SIZE][3];
+	signal input buffer_type_sel[BUFFER_SIZE][2];
 
   signal output selected_next;
 
@@ -162,28 +207,39 @@ template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {
 	component conditionals[N_CONDITIONALS];
 	component first_true = FirstTrue(N_CONDITIONALS);
 
-	signal buffer[BUFFER_SIZE];
-
-//  TODO: clean up with new component
-	// First populate the buffer
-	for (var i = 0; i < BUFFER_SIZE; i++) {
-		for (var x = 0; x < INPUT_SIZE; x++) {
-			inputs[x] ==> buffer_muxes[i][0].inp[x][0];
-			inputs[x] ==> buffer_muxes[i][1].inp[x][0];
-			inputs[x] ==> buffer_muxes[i][2].inp[x][0];
-		}
-		for (var j = 0; j < i; j++) {
-			buffer[j] ==> buffer_muxes[i][0].inp[INPUT_SIZE + j][0];
-			buffer[j] ==> buffer_muxes[i][1].inp[INPUT_SIZE + j][0];
-			buffer[j] ==> buffer_muxes[i][2].inp[INPUT_SIZE + j][0];
-		}
-
-		buffer_mux_sel[i][0] ==> buffer_muxes[i][0].sel;
-		buffer_mux_sel[i][1] ==> buffer_muxes[i][1].sel;
-		buffer_mux_sel[i][2] ==> buffer_muxes[i][2].sel;
-
-		buffer[i] <== buffer_muxes[i][0].out[0] * buffer_muxes[i][1].out[0] + buffer_muxes[i][2].out[0];
+	component buffers = Buffers(BUFFER_SIZE, INPUT_SIZE, N_WORD_BITS);
+	for (var i = 0; i < INPUT_SIZE; i++) {
+		inputs[i] ==> buffers.inp[i];
 	}
+	for(var i = 0; i < BUFFER_SIZE; i++) {
+		buffer_mux_sel[i][0] ==> buffers.buffer_inp_mux_sel[i][0];
+		buffer_mux_sel[i][1] ==> buffers.buffer_inp_mux_sel[i][1];
+		buffer_mux_sel[i][2] ==> buffers.buffer_inp_mux_sel[i][2];
+		buffer_type_sel[i][0] ==> buffers.buffer_type_sel[i][0];
+		buffer_type_sel[i][1] ==> buffers.buffer_type_sel[i][1];
+	}
+
+
+// //  TODO: clean up with new component
+// 	// First populate the buffer
+// 	for (var i = 0; i < BUFFER_SIZE; i++) {
+// 		for (var x = 0; x < INPUT_SIZE; x++) {
+// 			inputs[x] ==> buffer_muxes[i][0].inp[x][0];
+// 			inputs[x] ==> buffer_muxes[i][1].inp[x][0];
+// 			inputs[x] ==> buffer_muxes[i][2].inp[x][0];
+// 		}
+// 		for (var j = 0; j < i; j++) {
+// 			buffer[j] ==> buffer_muxes[i][0].inp[INPUT_SIZE + j][0];
+// 			buffer[j] ==> buffer_muxes[i][1].inp[INPUT_SIZE + j][0];
+// 			buffer[j] ==> buffer_muxes[i][2].inp[INPUT_SIZE + j][0];
+// 		}
+
+// 		buffer_mux_sel[i][0] ==> buffer_muxes[i][0].sel;
+// 		buffer_mux_sel[i][1] ==> buffer_muxes[i][1].sel;
+// 		buffer_mux_sel[i][2] ==> buffer_muxes[i][2].sel;
+
+// 		buffer[i] <== buffer_muxes[i][0].out[0] * buffer_muxes[i][1].out[0] + buffer_muxes[i][2].out[0];
+// 	}
 
 	signal next_state_accum[N_CONDITIONALS];
 
@@ -198,8 +254,8 @@ template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {
 		}
 		
 		for (var x = 0; x < BUFFER_SIZE; x++) {
-			buffer[x] ==> conditional_muxes_inputs[i][0].buffers[x];
-			buffer[x] ==> conditional_muxes_inputs[i][1].buffers[x];
+			buffers.out[x] ==> conditional_muxes_inputs[i][0].buffers[x];
+			buffers.out[x] ==> conditional_muxes_inputs[i][1].buffers[x];
 		}
 
 		conditional_inputs_mux_sel[i][0] ==> conditional_muxes_inputs[i][0].sel;
