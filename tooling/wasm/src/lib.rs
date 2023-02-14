@@ -77,7 +77,7 @@ pub fn run_cairo_program_wasm(shoshin_input: ShoshinInput) -> Result<JsValue, Js
     // Run the shoshin cairo program with the inputs
     let vm = run_cairo_program(shoshin_input).unwrap();
     // Prepare frames and frames size
-    let frames_size = 44;
+    let frames_size = 46; //TODO make a global const
     let mut frames = vec![];
 
     // Handle return values: (frames_len: felt, frames: FrameScene*)
