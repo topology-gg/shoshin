@@ -44,6 +44,10 @@ describe('FD VM Circuit test', () => {
         [0, 1, 2], // Calculate 10 * 20 + 30
         [2, 2, 4], // Calculate 30 * 30 + 50
       ],
+      buffer_type_sel: [
+        [0, 0],
+        [0, 0],
+      ],
     };
 
     const witness = await circuit.calculateWitness(INPUT, true);
