@@ -160,3 +160,7 @@ struct Metadata{
     character_type_0 : felt,
     character_type_1 : felt,
 }
+
+
+const HURT_EFFECT = 100;
+const KNOCKED_EFFECT = 100;
