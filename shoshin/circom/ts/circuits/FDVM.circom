@@ -86,6 +86,7 @@ template Abs(WORD_SIZE) {
 }
 
 template IntegerDivideRemainder(WORD_SIZE) {
+	// TODO: assert(n <= ___blah___)
 	signal input inp[2];
 	signal output quotient;
 	signal output remainder;
@@ -102,20 +103,19 @@ template IntegerDivideRemainder(WORD_SIZE) {
 	inp[0] === inp[1] * quotient + remainder;
 
 	//  Check that 0 <= remainder < b
-	0 ==> gte_r.in[0];
-	remainder ==> gte_r.in[1];
-	gte_r.out === 1;
+	remainder ==> gte_r.in[0];
+	0 ==> gte_r.in[1];
 	remainder ==> lt_r.in[0];
 	inp[1] ==> lt_r.in[1];
 	lt_r.out === 1;
 
 	//  Check that 0 <= remainder < b
-	0 ==> gte_q.in[0];
-	quotient ==> gte_q.in[1];
+	quotient ==> gte_q.in[0];
+	0 ==> gte_q.in[1];
 	gte_q.out === 1;
 	quotient ==> lte_q.in[0];
 	inp[0] ==> lte_q.in[1];
-	lt_r.out === 1;
+	lte_q.out === 1;
 
 	// TODO: HARD BAKE SIZE REQUIREMENT OF WORD SIZE (being less than half max number of bits)
 }
