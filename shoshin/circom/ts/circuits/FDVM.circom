@@ -76,7 +76,6 @@ template FirstTrue(N_CONDITIONALS) {
 	}
 }
 
-// TODO: MAX STACK SIZE same as prog max steps? (because ops never increase size of stack)
 template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {  
 	// TODO: think about splitting up next state and next intent... for now just keep it simple with one next function...
 	signal input next_state[N_CONDITIONALS];
