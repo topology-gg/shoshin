@@ -50,6 +50,12 @@ func _body_antoc {range_check_ptr}(
         }
 
         // body responds to intent; locomotive action has lowest priority
+        if (intent == ns_antoc_action.MOVE_FORWARD) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+        }
+        if (intent == ns_antoc_action.MOVE_BACKWARD) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
+        }
         if (intent == ns_antoc_action.BLOCK) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, updated_stamina, dir, FALSE) );
         }
@@ -66,20 +72,14 @@ func _body_antoc {range_check_ptr}(
             if (intent == ns_antoc_action.DASH_BACKWARD) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
             }
-            if (intent == ns_antoc_action.MOVE_FORWARD) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
-            }
-            if (intent == ns_antoc_action.MOVE_BACKWARD) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
-            }
         }
-
-
+        
         // otherwise stay in IDLE but increment counter modulo duration
-        if (counter == ns_antoc_body_state_duration.IDLE - 1) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, updated_stamina, dir, is_fatigued) );
-        } else {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, counter + 1, integrity, updated_stamina, dir, is_fatigued) );
+        let (updated_stamina, _) = calculate_stamina_change(stamina, ns_antoc_action.NULL, ns_stamina.INIT_STAMINA, ns_character_type.ANTOC);
+        if (counter == ns_antoc_body_state_duration.IDLE - 1) {            
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, updated_stamina, dir, is_fatigued) );                      
+            } else {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, counter + 1, integrity, updated_stamina, dir, is_fatigued) );            
         }
     }
 
