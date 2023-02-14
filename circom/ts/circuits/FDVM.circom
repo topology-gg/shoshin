@@ -76,6 +76,22 @@ template FirstTrue(N_CONDITIONALS) {
 	}
 }
 
+// For abs we can do, with compconstant (1 - (x < 0) * 2) * x
+// For /, we can do something simple with c <-- a/b, b * c === a
+// For %, we can do p <-- a % p, q <-- a\b, b * q + p === a and 0 <= p < b
+
+// Lets add more func to the buffers now...
+template Buffers(BUFFER_SIZE, INPUT_SIZE) {
+	signal input inp[INPUT_SIZE];
+	signal input buffer_inp_mux_sel[BUFFER_SIZE][2];
+	signal input buffer_type_sel[BUFFER_SIZE][2];
+
+	component muxs; // Should be mux2s
+
+	signal output buffer[BUFFER_SIZE];
+	component buffer_inp_muxes[BUFFER_SIZE][3]; // We either allow for quad constraint of %, abs, /
+}
+
 template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {  
 	// TODO: think about splitting up next state and next intent... for now just keep it simple with one next function...
 	signal input next_state[N_CONDITIONALS];
@@ -110,7 +126,6 @@ template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {
 
 	// First populate the buffer
 	for (var i = 0; i < BUFFER_SIZE; i++) {
-		// TODO: setup the buffer mux
 		for (var x = 0; x < INPUT_SIZE; x++) {
 			inputs[x] ==> buffer_muxes[i][0].inp[x][0];
 			inputs[x] ==> buffer_muxes[i][1].inp[x][0];
