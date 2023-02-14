@@ -140,7 +140,7 @@ mod tests {
         let mut shoshin_input = ShoshinInput::from(get_shoshin_test_input());
         shoshin_input.char_1 = 1;
         let vm = run_cairo_program(shoshin_input).unwrap();
-        let frames_size = 44;
+        let frames_size = 46;
         let mut frames = vec![];
         if let [len_re, frames_re] = &vm.get_return_values(2).unwrap()[..] {
             let len = len_re.get_int_ref().unwrap().to_bigint().to_u32_digits().1[0];

@@ -226,6 +226,7 @@ pub struct BodyState {
     pub integrity: BigInt,
     pub stamina: BigInt,
     pub dir: BigInt,
+    pub fatigued: BigInt,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -264,6 +265,7 @@ impl From<VecDeque<BigInt>> for FrameScene {
                 integrity: value_mod.pop_front().unwrap(),
                 stamina: value_mod.pop_front().unwrap(),
                 dir: value_mod.pop_front().unwrap(),
+                fatigued: value_mod.pop_front().unwrap(),
             },
             physics_state: PhysicsState {
                 pos: Vector {
@@ -312,6 +314,7 @@ impl From<VecDeque<BigInt>> for FrameScene {
                 integrity: value_mod.pop_front().unwrap(),
                 stamina: value_mod.pop_front().unwrap(),
                 dir: value_mod.pop_front().unwrap(),
+                fatigued: value_mod.pop_front().unwrap(),
             },
             physics_state: PhysicsState {
                 pos: Vector {

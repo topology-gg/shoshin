@@ -5,6 +5,7 @@ export interface BodyState {
     integrity: number,
     stamina: number,
     dir: number,
+    fatigued: number,
 }
 
 export interface Vec2 {
