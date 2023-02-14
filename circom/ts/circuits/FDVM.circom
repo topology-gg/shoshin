@@ -80,16 +80,56 @@ template FirstTrue(N_CONDITIONALS) {
 // For /, we can do something simple with c <-- a/b, b * c === a
 // For %, we can do p <-- a % p, q <-- a\b, b * q + p === a and 0 <= p < b
 
+template Abs(WORD_SIZE) {
+	component lt = LessThan(WORD_SIZE);
+	signal input inp;
+	signal output out;
+	inp ==> lt.in[0];
+	0 ==> lt.in[1];
+	out <== (1 - lt.out * 2) * x;
+}
+
+template Buffer(WORD_SIZE) {
+	signal input inps[3];
+	signal output out;
+	signal input mux_sel[2];
+
+	component r1csConstr;
+	component abs = Abs(WORD_SIZE);
+	component modulo; // TODO: 3 below!
+	component divide;
+
+
+}
+
 // Lets add more func to the buffers now...
-template Buffers(BUFFER_SIZE, INPUT_SIZE) {
+template Buffers(BUFFER_SIZE, INPUT_SIZE, WORD_SIZE) {
 	signal input inp[INPUT_SIZE];
-	signal input buffer_inp_mux_sel[BUFFER_SIZE][2];
+	signal input buffer_inp_mux_sel[BUFFER_SIZE][3];
 	signal input buffer_type_sel[BUFFER_SIZE][2];
 
-	component muxs; // Should be mux2s
-
-	signal output buffer[BUFFER_SIZE];
+	signal output out[BUFFER_SIZE];
 	component buffer_inp_muxes[BUFFER_SIZE][3]; // We either allow for quad constraint of %, abs, /
+	component muxs_out = Mux2(); // Should be mux2s
+	component buffers[BUFFER_SIZE];
+
+	for (var i = 0; i < BUFFER_SIZE; i++) {
+		buffers[i] = Buffer();
+		for (var j = 0; j < 3; j++) {
+			buffer_inp_muxes[i][j] = Multiplexer(1, INPUT_SIZE + i);
+			for (var x = 0; x < INPUT_SIZE; x++) {
+				inp[x] ==> buffer_inp_muxes[i][j].inp[x][0];
+			}
+			for (var x = 0; x < i; x++) {
+				buffer[x] ==> buffer_inp_muxes[i][j].inp[INPUT_SIZE + x][0];
+			}
+			buffer_inp_mux_sel[i][j] ==> buffer_inp_muxes[i][j].sel;
+			buffer_inp_mux_sel[i][j].out ==> buffers[i].inps[j];
+		}
+		buffer_type_sel[i][0] ==> buffers[i].sel[0];
+		buffer_type_sel[i][1] ==> buffers[i].sel[1];
+		buffers[i].out ==> out[i];
+	}
 }
 
 template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {  
@@ -124,6 +164,7 @@ template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {
 
 	signal buffer[BUFFER_SIZE];
 
+//  TODO: clean up with new component
 	// First populate the buffer
 	for (var i = 0; i < BUFFER_SIZE; i++) {
 		for (var x = 0; x < INPUT_SIZE; x++) {
