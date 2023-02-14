@@ -4,4 +4,4 @@ include "../../FDVM.circom";
 // Allow for 1,000 steps of the program
 // Input size of 10
 // Input program size of 100
-component main = FD_VM(10, 20, 40, 32);
+component main = FD_VM(2, 5, 5, 32);
