@@ -82,11 +82,13 @@ template Abs(WORD_SIZE) {
 	signal output out;
 	inp ==> lt.in[0];
 	0 ==> lt.in[1];
-	out <== (1 - lt.out * 2) * inp;
+	out <== (1 - lt.out * 2) * inp; // TODO: I am actually not super sure about this...
+	// 0 === 1; // Depreciate for now till figure out
 }
 
 template IntegerDivideRemainder(WORD_SIZE) {
 	// TODO: assert(n <= ___blah___)
+	assert(WORD_SIZE < 128);
 	signal input inp[2];
 	signal output quotient;
 	signal output remainder;
@@ -153,7 +155,7 @@ template Buffers(BUFFER_SIZE, INPUT_SIZE, WORD_SIZE) {
 	signal input buffer_type_sel[BUFFER_SIZE][2];
 
 	signal output out[BUFFER_SIZE];
-	component buffer_inp_muxes[BUFFER_SIZE][3]; // We either allow for quad constraint of %, abs, /
+	component buffer_inp_muxes[BUFFER_SIZE][3];
 	component muxs_out = Mux2(); // Should be mux2s
 	component buffers[BUFFER_SIZE];
 
@@ -219,30 +221,7 @@ template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {
 		buffer_type_sel[i][1] ==> buffers.buffer_type_sel[i][1];
 	}
 
-
-// //  TODO: clean up with new component
-// 	// First populate the buffer
-// 	for (var i = 0; i < BUFFER_SIZE; i++) {
-// 		for (var x = 0; x < INPUT_SIZE; x++) {
-// 			inputs[x] ==> buffer_muxes[i][0].inp[x][0];
-// 			inputs[x] ==> buffer_muxes[i][1].inp[x][0];
-// 			inputs[x] ==> buffer_muxes[i][2].inp[x][0];
-// 		}
-// 		for (var j = 0; j < i; j++) {
-// 			buffer[j] ==> buffer_muxes[i][0].inp[INPUT_SIZE + j][0];
-// 			buffer[j] ==> buffer_muxes[i][1].inp[INPUT_SIZE + j][0];
-// 			buffer[j] ==> buffer_muxes[i][2].inp[INPUT_SIZE + j][0];
-// 		}
-
-// 		buffer_mux_sel[i][0] ==> buffer_muxes[i][0].sel;
-// 		buffer_mux_sel[i][1] ==> buffer_muxes[i][1].sel;
-// 		buffer_mux_sel[i][2] ==> buffer_muxes[i][2].sel;
-
-// 		buffer[i] <== buffer_muxes[i][0].out[0] * buffer_muxes[i][1].out[0] + buffer_muxes[i][2].out[0];
-// 	}
-
 	signal next_state_accum[N_CONDITIONALS];
-
 	// Now check the conditions
 	for (var i = 0; i < N_CONDITIONALS; i++) {
 		conditionals[i] = MuxedComparator(N_WORD_BITS);
