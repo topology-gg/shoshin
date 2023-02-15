@@ -12,7 +12,7 @@ We need our Circom to verify that an FD emulator ran correctly. We do this by sp
 
 ### The specifics
 
-`FD_Emulator` takes as input
+Below we outline the inputs to the `FD Emulator` circuit.
 
 ```typescript
 {
@@ -77,3 +77,8 @@ We need our Circom to verify that an FD emulator ran correctly. We do this by sp
 
 }
 ```
+
+#### Circuit Block Diagram
+
+The following block diagram also gives a high level overview of how the circuit works
+![imgs/FDBlockDiagram.png](imgs/FDBlockDiagram.png)
