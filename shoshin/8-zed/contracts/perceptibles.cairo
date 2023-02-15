@@ -48,6 +48,11 @@ func update_perceptibles{range_check_ptr}(perceptibles: DictAccess*, p: Percepti
         key=ns_perceptibles.SELF_BODY_STATE, new_value=p.self_body_state.state
     );
 
+     // Self body counter update
+    dict_write{dict_ptr=perceptibles}(
+        key=ns_perceptibles.SELF_BODY_COUNTER, new_value=p.self_body_state.counter
+    );
+
     // OPPONENT
     // Opponent position update
     dict_write{dict_ptr=perceptibles}(
@@ -86,6 +91,11 @@ func update_perceptibles{range_check_ptr}(perceptibles: DictAccess*, p: Percepti
     // Opponent body state update
     dict_write{dict_ptr=perceptibles}(
         key=ns_perceptibles.OPPONENT_BODY_STATE, new_value=p.opponent_body_state.state
+    );
+
+    // Opponent body counter update
+    dict_write{dict_ptr=perceptibles}(
+        key=ns_perceptibles.OPPONENT_BODY_COUNTER, new_value=p.opponent_body_state.counter
     );
     return (perceptibles_new=perceptibles);
 }
