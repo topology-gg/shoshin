@@ -30,7 +30,7 @@ template MuxedComparator(N_WORD_BITS) {
 
 	component mux = Mux2();
 	component eq = IsEqual();
-	component lt = LessThan(N_WORD_BITS); // TODO: SPECIFIY MAX BIT SIZE!!!
+	component lt = LessThan(N_WORD_BITS);
 	component lte = LessEqThan(N_WORD_BITS);
 
 	inp[0] ==> eq.in[0];
@@ -93,7 +93,6 @@ template Abs(WORD_SIZE) {
 * Get the quotient and remainder of **positive** integers
 */
 template IntegerDivideRemainder(WORD_SIZE) {
-	assert(WORD_SIZE < 119);
 	signal input inp[2];
 	signal output quotient;
 	signal output remainder;
@@ -224,6 +223,11 @@ template ConditionalAnding(N_CONDITIONALS, MAX_AND_SIZE) {
 }
 
 template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
+	// We require the WORD_SIZE to be less than 1/2 of the the bit size of |p| so that we
+	// can get away with integer division etc on the raw numbers
+	// TODO: this requirement may not be super necessary...
+
+	assert(WORD_SIZE < 119);
 	// The number of conditionals + 1 for a default
 	signal input next_state[N_CONDITIONALS + 1];
 
