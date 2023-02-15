@@ -11,6 +11,7 @@ func assert_fatigue_effect{range_check_ptr}(stamina_effect : felt, intent : felt
     alloc_locals;
     let stamina = stamina_effect - 1;
     tempvar body_state = BodyState(state, 0, 1000, stamina, 0, FALSE);
+    
     let stimulus = ns_stimulus.NULL;
     let (body_state_nxt) = _body_antoc(body_state = body_state, stimulus = stimulus, intent = intent);
 
@@ -29,13 +30,32 @@ func assert_fatigue_effect_idle{range_check_ptr}(stamina_effect : felt, intent :
     return();
 }
 
+func assert_fatigue_effect_move_forward_or_backward{range_check_ptr}(stamina_effect : felt, intent : felt, state : felt, fallback_action_stamina_effect : felt){
+    alloc_locals;
+    let stamina = stamina_effect - 1;
+    tempvar body_state = BodyState(state, 0, 1000, stamina, 0, FALSE);
+
+    let stimulus = ns_stimulus.NULL;
+    let (body_state_nxt) = _body_antoc(body_state = body_state, stimulus = stimulus, intent = intent);
+
+    assert body_state_nxt.state = ns_antoc_body_state.IDLE;
+    assert body_state_nxt.integrity = body_state.integrity;
+    assert body_state_nxt.stamina = body_state.stamina + fallback_action_stamina_effect;
+    assert body_state_nxt.dir = body_state.dir;
+    assert body_state_nxt.fatigued = TRUE;
+    assert body_state_nxt.counter = 0;
+    
+    return();
+}
+
+
 func assert_fatigue_effect_move_forward{range_check_ptr}(stamina_effect : felt, intent : felt){
-    assert_fatigue_effect(stamina_effect=stamina_effect, intent=intent, state=ns_antoc_body_state.MOVE_FORWARD, fallback_action_stamina_effect=ns_common_stamina_effect.MOVE_FORWARD);
+    assert_fatigue_effect_move_forward_or_backward(stamina_effect=stamina_effect, intent=intent, state=ns_antoc_body_state.MOVE_FORWARD,  fallback_action_stamina_effect=ns_common_stamina_effect.MOVE_FORWARD);
     return();
 }
 
 func assert_fatigue_effect_move_backward{range_check_ptr}(stamina_effect : felt, intent : felt){
-    assert_fatigue_effect(stamina_effect=stamina_effect, intent=intent, state=ns_antoc_body_state.MOVE_BACKWARD,  fallback_action_stamina_effect=ns_common_stamina_effect.MOVE_BACKWARD);
+    assert_fatigue_effect_move_forward_or_backward(stamina_effect=stamina_effect, intent=intent, state=ns_antoc_body_state.MOVE_BACKWARD,  fallback_action_stamina_effect=ns_common_stamina_effect.MOVE_BACKWARD);
     return();
 }
 
