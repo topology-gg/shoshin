@@ -123,6 +123,7 @@ namespace ns_perceptibles {
     const SELF_INT = 8;
     const SELF_STA = 9;
     const SELF_BODY_STATE = 10;
+    const SELF_BODY_COUNTER = 11;
 
     const OPPONENT_X_POS = 101;
     const OPPONENT_Y_POS = 102;
@@ -134,6 +135,7 @@ namespace ns_perceptibles {
     const OPPONENT_INT = 108;
     const OPPONENT_STA = 109;
     const OPPONENT_BODY_STATE = 110;
+    const OPPONENT_BODY_COUNTER = 111;
 }
 
 //
