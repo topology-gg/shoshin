@@ -3,6 +3,7 @@ dir?=8-zed
 path?=cairo_test
 cairo_files := $(shell find $(dir) -name "*.cairo" -path "*/contracts/*")
 lib_files := $(shell find $(dir) -name "*.cairo" -path "*/lib/*")
+output?=compiled.json
 
 # In order to correctly build the starnet cairo file to a pure cairo file, the
 # following annotations can be done in the starknet code using comments:
@@ -22,8 +23,8 @@ lib-build: prepare
 
 cairo-compile: cairo-build lib-build
 	cd $(dir) && \
-	cairo-compile $(path)/engine.cairo --output compiled_loop.json && \
-	mv compiled_loop.json ../
+	cairo-compile $(path)/engine.cairo --output $(output) && \
+	mv $(output) ../
 
 clean: cairo-compile
 	rm -rf $(dir)/$(path)
