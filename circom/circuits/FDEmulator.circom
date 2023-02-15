@@ -222,12 +222,12 @@ template ConditionalAnding(N_CONDITIONALS, MAX_AND_SIZE) {
 	}
 }
 
-template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
+template FD_Emulator (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
 	// We require the WORD_SIZE to be less than 1/2 of the the bit size of |p| so that we
 	// can get away with integer division etc on the raw numbers
 	// TODO: this requirement may not be super necessary...
-
 	assert(WORD_SIZE < 119);
+
 	// The number of conditionals + 1 for a default
 	signal input next_state[N_CONDITIONALS + 1];
 
