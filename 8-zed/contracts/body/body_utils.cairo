@@ -19,30 +19,7 @@ func calculate_default_stamina{range_check_ptr}(stamina : felt, character_type :
 }
 
 func calculate_stamina_change{range_check_ptr}(stamina : felt, intent : felt, max_stamina : felt, character_type : felt) -> (felt, felt) {
-        if (intent == ns_antoc_action.BLOCK) {
-            let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.BLOCK, max_stamina, TRUE);
-            return (updated_stamina, enough_stamina);
-        }
-        if (intent == ns_antoc_action.DASH_FORWARD) {
-            let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.DASH_FORWARD, max_stamina, FALSE);
-            return (updated_stamina, enough_stamina);
-        }
-        if (intent == ns_antoc_action.DASH_BACKWARD) {
-            let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.DASH_BACKWARD, max_stamina, FALSE);
-            return (updated_stamina, enough_stamina);
-        }
-        if (intent == ns_antoc_action.MOVE_FORWARD) {
-            let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.MOVE_FORWARD, max_stamina, TRUE);
-            return (updated_stamina, enough_stamina);
-        }
-        if (intent == ns_antoc_action.MOVE_BACKWARD) {
-            let (updated_stamina, enough_stamina)= _settle_stamina_change(stamina, ns_common_stamina_effect.MOVE_BACKWARD, max_stamina, TRUE);
-            return (updated_stamina, enough_stamina);
-        }
-        if (intent == ns_antoc_action.NULL){
-            let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, max_stamina, TRUE);
-            return (updated_stamina, enough_stamina);
-        }
+
 
         if (character_type == ns_character_type.JESSICA) {
             if (intent == ns_jessica_action.SLASH){
@@ -57,6 +34,30 @@ func calculate_stamina_change{range_check_ptr}(stamina : felt, intent : felt, ma
                 let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_jessica_stamina_effect.SIDECUT, max_stamina, FALSE);
                 return (updated_stamina, enough_stamina);
             }
+            if (intent == ns_jessica_action.BLOCK) {
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.BLOCK, max_stamina, TRUE);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_jessica_action.DASH_FORWARD) {
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.DASH_FORWARD, max_stamina, FALSE);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_jessica_action.DASH_BACKWARD) {
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.DASH_BACKWARD, max_stamina, FALSE);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_jessica_action.MOVE_FORWARD) {
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.MOVE_FORWARD, max_stamina, TRUE);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_jessica_action.MOVE_BACKWARD) {
+                let (updated_stamina, enough_stamina)= _settle_stamina_change(stamina, ns_common_stamina_effect.MOVE_BACKWARD, max_stamina, TRUE);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_jessica_action.NULL){
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, max_stamina, TRUE);
+                return (updated_stamina, enough_stamina);
+            }
         }
 
         if (character_type == ns_character_type.ANTOC) {
@@ -66,6 +67,30 @@ func calculate_stamina_change{range_check_ptr}(stamina : felt, intent : felt, ma
             }
             if (intent == ns_antoc_action.VERT){
                 let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_antoc_stamina_effect.VERT, max_stamina, FALSE);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_antoc_action.BLOCK) {
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.BLOCK, max_stamina, TRUE);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_antoc_action.DASH_FORWARD) {
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.DASH_FORWARD, max_stamina, FALSE);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_antoc_action.DASH_BACKWARD) {
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.DASH_BACKWARD, max_stamina, FALSE);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_antoc_action.MOVE_FORWARD) {
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.MOVE_FORWARD, max_stamina, TRUE);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_antoc_action.MOVE_BACKWARD) {
+                let (updated_stamina, enough_stamina)= _settle_stamina_change(stamina, ns_common_stamina_effect.MOVE_BACKWARD, max_stamina, TRUE);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_antoc_action.NULL){
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, max_stamina, TRUE);
                 return (updated_stamina, enough_stamina);
             }
         }

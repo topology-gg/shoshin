@@ -39,7 +39,7 @@ func assert_body_uneffected(a : BodyState, b : BodyState){
     return();
 }
 
-// Every antioc intent is interruptible by a hurt or knocked stimulus, includes hurt
+// Every antoc intent is interruptible by a hurt or knocked stimulus, includes hurt
 @external
 func test_body_antoc_hurt{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
@@ -86,7 +86,7 @@ func test_body_antoc_hurt{
     return ();
 }
 
-// Knocked antioc's should remain knocked when hurt
+// Knocked antoc's should remain knocked when hurt
 @external
 func test_body_antoc_knocked_hurt{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
@@ -175,7 +175,7 @@ func test_body_antoc_idle_knocked{
     return ();
 }
 
-// Knocked antioc's should remain knocked when hurt
+// Knocked antoc's should remain knocked when hurt
 @external
 func test_body_antoc_knocked_knocked{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
