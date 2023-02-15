@@ -146,6 +146,7 @@ const cairoOutputToFrameScene = (output: any[]): FrameScene => {
           integrity: f.agent_0.body_state.integrity[0]? f.agent_0.body_state.integrity[0] * f.agent_0.body_state.integrity[1][0]: 0,
           stamina: f.agent_0.body_state.stamina[0]? f.agent_0.body_state.stamina[0] * f.agent_0.body_state.stamina[1][0]: 0,
           state: f.agent_0.body_state.state[0]? f.agent_0.body_state.state[0] * f.agent_0.body_state.state[1][0]: 0,
+          fatigued: f.agent_0.body_state.fatigued[0]? f.agent_0.body_state.fatigued[0] * f.agent_0.body_state.fatigued[1][0]: 0,
         },
         hitboxes: {
           action: {
@@ -194,6 +195,7 @@ const cairoOutputToFrameScene = (output: any[]): FrameScene => {
           integrity: f.agent_1.body_state.integrity[0]? f.agent_1.body_state.integrity[0] * f.agent_1.body_state.integrity[1][0]: 0,
           stamina: f.agent_1.body_state.stamina[0]? f.agent_1.body_state.stamina[0] * f.agent_1.body_state.stamina[1][0]: 0,
           state: f.agent_1.body_state.state[0]? f.agent_1.body_state.state[0] * f.agent_1.body_state.state[1][0]: 0,
+          fatigued: f.agent_1.body_state.fatigued[0]? f.agent_1.body_state.fatigued[0] * f.agent_1.body_state.fatigued[1][0]: 0,
         },
         hitboxes: {
           action: {
