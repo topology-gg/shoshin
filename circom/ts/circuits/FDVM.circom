@@ -3,6 +3,7 @@ pragma circom 2.0.0;
 include "../circomlib/circuits/multiplexer.circom";
 include "../circomlib/circuits/mux2.circom";
 include "../circomlib/circuits/comparators.circom";
+include "../circomlib/circuits/gates.circom";
 
 /* A simple wrapper to mux between to arrays, inputs and buffers */
 template InputAndBufferMux(INPUT_SIZE, BUFFER_SIZE) {
@@ -61,7 +62,7 @@ template MuxedComparator(N_WORD_BITS) {
  */
 template FirstTrue(N_CONDITIONALS) {
 	signal input bool_inps[N_CONDITIONALS];
-	signal output bool_outs[N_CONDITIONALS];
+	signal output bool_outs[N_CONDITIONALS + 1];
 
 	// Accum should be set to 1 if any prior or current boolean has been set to true or
 	signal accum[N_CONDITIONALS];
@@ -74,6 +75,7 @@ template FirstTrue(N_CONDITIONALS) {
 		bool_outs[i] <== (1 - accum[i - 1]) * bool_inps[i]; 
 		accum[i] <== accum[i - 1] + bool_inps[i] - accum[i - 1] * bool_inps[i]; // An or operation
 	}
+	bool_outs[N_CONDITIONALS] <== 1 - accum[N_CONDITIONALS - 1]; // Set to 1 if accum is 0
 }
 
 template Abs(WORD_SIZE) {
@@ -178,9 +180,45 @@ template Buffers(BUFFER_SIZE, INPUT_SIZE, WORD_SIZE) {
 	}
 }
 
-template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {  
+/**
+ * And boolean statements together using muxes. We expect the last bool in `bools`
+ */
+template ConditionalAnding(N_CONDITIONALS, MAX_AND_SIZE) {
+	signal input bools[N_CONDITIONALS];
+	signal input and_inps_sel[N_CONDITIONALS][MAX_AND_SIZE];
+
+	signal output out[N_CONDITIONALS];
+
+	signal true_sig;
+	true_sig <== 1;
+	signal false_sig;
+	false_sig <== 0;
+
+	component ands[N_CONDITIONALS];
+	component muxes[N_CONDITIONALS][MAX_AND_SIZE];
+
+	for (var i = 0; i < N_CONDITIONALS; i++) {
+		ands[i] = MultiAND(MAX_AND_SIZE);
+		for (var x = 0; x < MAX_AND_SIZE; x++) {
+			muxes[i][x] = Multiplexer(1, N_CONDITIONALS + 2);
+			for (var j = 0; j < N_CONDITIONALS; j++) {
+				bools[j] ==> muxes[i][x].inp[j][0];
+			}
+			true_sig ==> muxes[i][x].inp[N_CONDITIONALS][0];
+			false_sig ==> muxes[i][x].inp[N_CONDITIONALS + 1][0];
+			and_inps_sel[i][x] ==> muxes[i][x].sel;
+			muxes[i][x].out[0] ==> ands[i].in[x];
+		}
+		ands[i].out ==> out[i];
+	}
+}
+
+template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
 	// TODO: think about splitting up next state and next intent... for now just keep it simple with one next function...
-	signal input next_state[N_CONDITIONALS];
+	// The number of conditionals + 1 for a default
+	signal input next_state[N_CONDITIONALS + 1];
+
+	signal input and_selectors[N_CONDITIONALS][MAX_AND_SIZE];
 
 	signal input inputs[INPUT_SIZE];
 
@@ -205,9 +243,6 @@ template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {
 		buffer_muxes[i][2] = Multiplexer(1, INPUT_SIZE + i);
 	}
 
-	component conditional_muxes_inputs[N_CONDITIONALS][2];
-	component conditionals[N_CONDITIONALS];
-	component first_true = FirstTrue(N_CONDITIONALS);
 
 	component buffers = Buffers(BUFFER_SIZE, INPUT_SIZE, N_WORD_BITS);
 	for (var i = 0; i < INPUT_SIZE; i++) {
@@ -221,8 +256,9 @@ template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {
 		buffer_type_sel[i][1] ==> buffers.buffer_type_sel[i][1];
 	}
 
-	signal next_state_accum[N_CONDITIONALS];
 	// Now check the conditions
+	component conditional_muxes_inputs[N_CONDITIONALS][2];
+	component conditionals[N_CONDITIONALS];
 	for (var i = 0; i < N_CONDITIONALS; i++) {
 		conditionals[i] = MuxedComparator(N_WORD_BITS);
 		conditional_muxes_inputs[i][0] = InputAndBufferMux(INPUT_SIZE, BUFFER_SIZE);
@@ -246,13 +282,26 @@ template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS) {
 		conditional_mux_sel[i][0] ==> conditionals[i].sel[0];
 		conditional_mux_sel[i][1] ==> conditionals[i].sel[1];
 
-	 	conditionals[i].out ==> first_true.bool_inps[i];
 	}
 
+	component anding = ConditionalAnding(N_CONDITIONALS, MAX_AND_SIZE);
+	for (var i = 0; i < N_CONDITIONALS; i++) {
+		conditionals[i].out ==> anding.bools[i];
+		for (var x = 0; x < MAX_AND_SIZE; x++) {
+			and_selectors[i][x] ==> anding.and_inps_sel[i][x];
+		}
+	}
+
+	component first_true = FirstTrue(N_CONDITIONALS);
+	for (var i = 0; i < N_CONDITIONALS; i++) {
+	 	anding.out[i] ==> first_true.bool_inps[i];
+	}
+
+	signal next_state_accum[N_CONDITIONALS + 1];
 	next_state_accum[0] <== first_true.bool_outs[0] * next_state[0];
-	for (var i = 1; i < N_CONDITIONALS; i++) {
+	for (var i = 1; i <= N_CONDITIONALS; i++) {
 		next_state_accum[i] <== next_state_accum[i - 1] + first_true.bool_outs[i] * next_state[i];
 	}
 	// TODO: allow for defaults???
-	selected_next <== next_state_accum[N_CONDITIONALS - 1];
+	selected_next <== next_state_accum[N_CONDITIONALS];
 }
