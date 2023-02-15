@@ -55,8 +55,8 @@ namespace ns_antoc_action {
 }
 
 namespace ns_antoc_stamina_effect {
-    const HORI = 100;
-    const VERT = 100;
+    const HORI = -100;
+    const VERT = -100;
 }
 
 namespace ns_antoc_body_state_duration {

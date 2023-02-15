@@ -13,15 +13,15 @@ func test_settle_stamina_change{
 }() {
     alloc_locals;    
 
-    let (stamina, enough_stamina) = _settle_stamina_change(stamina = 1, stamina_change = 10, max_stamina = 10, is_add = TRUE);
+    let (stamina, enough_stamina) = _settle_stamina_change(stamina = 1, stamina_change = 10, max_stamina = 10);
     assert stamina = 10;
     assert enough_stamina = TRUE;
     
-    let (stamina, enough_stamina) = _settle_stamina_change(stamina = 10, stamina_change = 10, max_stamina = 10, is_add = FALSE);
+    let (stamina, enough_stamina) = _settle_stamina_change(stamina = 10, stamina_change = -10, max_stamina = 10);
     assert stamina = 0;
     assert enough_stamina = TRUE;
     
-    let (stamina, enough_stamina) = _settle_stamina_change(stamina = 9, stamina_change = 10, max_stamina = 10, is_add = FALSE);
+    let (stamina, enough_stamina) = _settle_stamina_change(stamina = 9, stamina_change = -10, max_stamina = 10);
     assert stamina = 0;
     assert enough_stamina = FALSE;
     

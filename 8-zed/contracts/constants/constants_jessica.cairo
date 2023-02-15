@@ -55,9 +55,9 @@ namespace ns_jessica_action {
 }
 
 namespace ns_jessica_stamina_effect {
-    const SLASH = 100;
-    const UPSWING = 100;
-    const SIDECUT = 100;
+    const SLASH = -100;
+    const UPSWING = -100;
+    const SIDECUT = -100;
 }
 
 
