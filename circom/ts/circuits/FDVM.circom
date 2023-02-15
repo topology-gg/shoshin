@@ -82,12 +82,16 @@ template Abs(WORD_SIZE) {
 	component lt = LessThan(WORD_SIZE);
 	signal input inp;
 	signal output out;
+	signal output is_neg;
 	inp ==> lt.in[0];
 	0 ==> lt.in[1];
-	out <== (1 - lt.out * 2) * inp; // TODO: I am actually not super sure about this...
-	// 0 === 1; // Depreciate for now till figure out
+	out <== (1 - 2 * lt.out) * inp; // TODO: I am actually not super sure about this...
+	is_neg <== lt.out;
 }
 
+/**
+* Get the quotient and remainder of **positive** integers
+*/
 template IntegerDivideRemainder(WORD_SIZE) {
 	assert(WORD_SIZE < 119);
 	signal input inp[2];
@@ -100,8 +104,9 @@ template IntegerDivideRemainder(WORD_SIZE) {
 	component gte_q = GreaterEqThan(WORD_SIZE);
 
 
-	quotient <-- inp[0] \ inp[1];
+	quotient <-- inp[0] \ inp[1]; // TODO: INTEGER DIVISION IS ILL DEFINED SOMETIMES!!
 	remainder <-- inp[0] % inp[1];
+	
 	// Check that for a / b, a = b * q + r
 	inp[0] === inp[1] * quotient + remainder;
 
@@ -126,21 +131,29 @@ template Buffer(WORD_SIZE) {
 	signal output out;
 	signal input mux_sel[2];
 
-	component abs = Abs(WORD_SIZE);
+	component abs_num = Abs(WORD_SIZE);
+	component abs_denom = Abs(WORD_SIZE);
 	component divide_mod = IntegerDivideRemainder(WORD_SIZE);
 	component mux = Mux2();
 
-	inps[0] ==> abs.inp;
+	inps[0] ==> abs_num.inp;
+	inps[1] ==> abs_denom.inp;
 
-	inps[0] ==> divide_mod.inp[0];
-	inps[1] ==> divide_mod.inp[1];
+	// The XOR of numerator and divisor sign
+	signal quotient_is_neg;
+	quotient_is_neg <== (1 - abs_num.is_neg) * abs_denom.is_neg +
+		(1 - abs_denom.is_neg) * abs_num.is_neg;
+	// TODO: Do we have to add support for negative/ positive %?
+
+	abs.out ==> divide_mod.inp[0];
+	abs_divisor.out ==> divide_mod.inp[1];
 
 	mux_sel[0] ==> mux.s[0];
 	mux_sel[1] ==> mux.s[1];
 
 	mux.c[0] <== inps[0] * inps[1] + inps[2];
-	mux.c[1] <== abs.out;
-	mux.c[2] <== divide_mod.quotient;
+	mux.c[1] <== abs_num.out;
+	mux.c[2] <== divide_mod.quotient * (1 - 2 * quotient_is_neg);
 	mux.c[3] <== divide_mod.remainder;
 
 	mux.out ==> out;
