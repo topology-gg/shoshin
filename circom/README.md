@@ -27,12 +27,13 @@ We need our Circom to verify that an FD emulator ran correctly. We do this by sp
   inputs: [Input Size].
 
 
-	/**
-   * Select how to `and` the conditionals. Essentially, every single clause conditional can be transformed into a multi clause conditional
-   * by selecting which get `anded` together. The selection index ranges from [0, Number of Conditional + 2) where setting
+  /**
+   * Select how to `and` the conditionals. Essentially, every single clause conditional can be
+   * transformed into a multi clause conditional by selecting which get `anded` together. The selection
+   * index ranges from [0, Number of Conditional + 2) where setting
    * the selection to NumberOfConditionals is hardwired to `true` and NumberOfConditionals+1 is hardwired to `false`
    *
-   * The and conditionals are the ones that are finally associated with the output
+   * The and conditionals are the ones that are finally associated with the output `next_state`
    */
   and_selectors: [Number of Conditionals][Max Number of And Clauses],
 
@@ -47,16 +48,21 @@ We need our Circom to verify that an FD emulator ran correctly. We do this by sp
 
   /**
    * for each conditional, a ?= b, select `a` and `b`. Selection values range
-   * from Number of Conditionals + Number of Buffers, where i in [0, Number of Conditionals) selects the ith input and i in [Number of Conditionals, Number of Conditionals + Number of Buffers) selects the i - Number of Conditionals buffer.
-  */
+   * from Number of Conditionals + Number of Buffers, where i in [0, Number of Conditionals) selects the ith input
+   * and i in [Number of Conditionals, Number of Conditionals + Number of Buffers)
+   * selects the i - Number of Conditionals buffer.
+   */
   conditional_inputs_mux_sel[Number of Conditionals][2],
 
   /**
-  * Each buffer can operate on at most 3 elements. This selects the inputs for each buffer.
-  * For buffer i in [0, Buffer Size), the selector takes Input Size + i possible values.
-  * The first Input Size represent selecting from an input. For j in [Input Size, Input Size + i), j represents selecting the output of buffer `j - Input Size`
-  */
+   * Each buffer can operate on at most 3 elements. This selects the inputs for each buffer.
+   * For buffer i in [0, Buffer Size), the selector takes Input Size + i possible values.
+   * The first Input Size represent selecting from an input.
+   * For j in [Input Size, Input Size + i),
+   * j represents selecting the output of buffer `j - Input Size`
+   */
   buffer_mux_sel: [Buffer Size][3],
+
   /**
   * Each buffer can take input, a, b, and c.
   *
