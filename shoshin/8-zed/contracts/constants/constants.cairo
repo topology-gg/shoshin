@@ -32,8 +32,8 @@ namespace ns_common_stamina_effect {
     const BLOCK = 10;
     // These values are removed from the players stamina
     // These have an upfront cost that is paid in the first frame
-    const DASH_FORWARD = 50;
-    const DASH_BACKWARD = 50;
+    const DASH_FORWARD = -50;
+    const DASH_BACKWARD = -50;
 }
 
 namespace ns_integrity {
