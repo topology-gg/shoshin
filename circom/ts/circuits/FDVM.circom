@@ -89,8 +89,7 @@ template Abs(WORD_SIZE) {
 }
 
 template IntegerDivideRemainder(WORD_SIZE) {
-	// TODO: assert(n <= ___blah___)
-	assert(WORD_SIZE < 128);
+	assert(WORD_SIZE < 119);
 	signal input inp[2];
 	signal output quotient;
 	signal output remainder;
@@ -120,8 +119,6 @@ template IntegerDivideRemainder(WORD_SIZE) {
 	quotient ==> lte_q.in[0];
 	inp[0] ==> lte_q.in[1];
 	lte_q.out === 1;
-
-	// TODO: HARD BAKE SIZE REQUIREMENT OF WORD SIZE (being less than half max number of bits)
 }
 
 template Buffer(WORD_SIZE) {
@@ -214,7 +211,6 @@ template ConditionalAnding(N_CONDITIONALS, MAX_AND_SIZE) {
 }
 
 template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
-	// TODO: think about splitting up next state and next intent... for now just keep it simple with one next function...
 	// The number of conditionals + 1 for a default
 	signal input next_state[N_CONDITIONALS + 1];
 
@@ -229,7 +225,6 @@ template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_AND_SI
 	signal input conditional_inputs_mux_sel[N_CONDITIONALS][2];
 
 	// Range over selectors for the inputs and buffers with smaller indices so we can chain things
-	// TODO: for generality we have another layer of muxing... :(
 	signal input buffer_mux_sel[BUFFER_SIZE][3];
 	signal input buffer_type_sel[BUFFER_SIZE][2];
 
@@ -281,7 +276,6 @@ template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_AND_SI
 
 		conditional_mux_sel[i][0] ==> conditionals[i].sel[0];
 		conditional_mux_sel[i][1] ==> conditionals[i].sel[1];
-
 	}
 
 	component anding = ConditionalAnding(N_CONDITIONALS, MAX_AND_SIZE);
@@ -297,11 +291,12 @@ template FD_VM (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_AND_SI
 	 	anding.out[i] ==> first_true.bool_inps[i];
 	}
 
+	// Accumulate over the output. Because the output conditionals are 1 hot, we always add 0 * next_state[i]
+	// except for when `i` matches to the first true conditional
 	signal next_state_accum[N_CONDITIONALS + 1];
 	next_state_accum[0] <== first_true.bool_outs[0] * next_state[0];
 	for (var i = 1; i <= N_CONDITIONALS; i++) {
 		next_state_accum[i] <== next_state_accum[i - 1] + first_true.bool_outs[i] * next_state[i];
 	}
-	// TODO: allow for defaults???
 	selected_next <== next_state_accum[N_CONDITIONALS];
 }
