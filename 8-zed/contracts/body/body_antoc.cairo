@@ -286,15 +286,15 @@ func _body_antoc {range_check_ptr}(
         // continue moving forward
         if (intent == ns_antoc_action.MOVE_FORWARD) {
             if (counter == ns_antoc_body_state_duration.MOVE_FORWARD - 1) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, updated_stamina, dir, is_fatigued) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
             } else {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, counter + 1, integrity, updated_stamina, dir, is_fatigued) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, counter + 1, integrity, updated_stamina, dir, FALSE) );
             }
         }
 
         // able to reverse direction immediately
         if (intent == ns_antoc_action.MOVE_BACKWARD) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, updated_stamina, dir, is_fatigued) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
         }
 
         // otherwise return to idle
@@ -337,15 +337,15 @@ func _body_antoc {range_check_ptr}(
         // continue moving forward
         if (intent == ns_antoc_action.MOVE_BACKWARD) {
             if (counter == ns_antoc_body_state_duration.MOVE_BACKWARD - 1) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, updated_stamina, dir, is_fatigued) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
             } else {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, counter + 1, integrity, updated_stamina, dir, is_fatigued) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, counter + 1, integrity, updated_stamina, dir, FALSE) );
             }
         }
         
         // able to reverse direction immediately
         if (intent == ns_antoc_action.MOVE_FORWARD) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, updated_stamina, dir, is_fatigued) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
         }
 
         // otherwise return to idle
