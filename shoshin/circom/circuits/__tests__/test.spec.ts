@@ -95,11 +95,9 @@ describe('FD VM Circuit test', () => {
     circuit.assertOut(witness, { selected_next: Fr.e(3) });
   });
 
-  it.only('Test abs valuing', async () => {
+  it('Test abs valuing', async () => {
     const circuit = await load_FD_circuit();
-    const babyJub = await buildBabyjub();
     const inps = ['-10', '10', '30', '40', '50'];
-    console.log('INPUTS', inps);
     // 2 buffers, 5 inputs, 5 conditionals, 32 size words
     const INPUT = {
       next_state: [1, 2, 3, 4, 5, 6], // Match to each conditional
