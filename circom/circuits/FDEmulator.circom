@@ -140,11 +140,10 @@ template Buffer(WORD_SIZE) {
 
 	// The XOR of numerator and divisor sign
 	signal quotient_is_neg;
-	quotient_is_neg <== (1 - abs_num.is_neg) * abs_denom.is_neg +
-		(1 - abs_denom.is_neg) * abs_num.is_neg;
+	quotient_is_neg <== abs_denom.is_neg + abs_num.is_neg - 2 * abs_denom.is_neg * abs_num.is_neg;
 
-	abs.out ==> divide_mod.inp[0];
-	abs_divisor.out ==> divide_mod.inp[1];
+	abs_num.out ==> divide_mod.inp[0];
+	abs_denom.out ==> divide_mod.inp[1];
 
 	mux_sel[0] ==> mux.s[0];
 	mux_sel[1] ==> mux.s[1];
@@ -230,7 +229,7 @@ template FD_Emulator (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_
 	// integer division can easily be verified by checking that b * q + c = a, 0 <= c < b, 0 < q < a
 	// Note that we require b * q < p as to not overflow/ wrap around the modulus. Thus, if 2 * word sizes + 1
 	// is less than the word size of p, (q * b + a) < p and no overflowing occurs
-	assert(WORD_SIZE < 119);
+	assert(N_WORD_BITS < 119);
 
 	// The number of conditionals + 1 for a default
 	signal input next_state[N_CONDITIONALS + 1];
