@@ -85,7 +85,7 @@ template Abs(WORD_SIZE) {
 	signal output is_neg;
 	inp ==> lt.in[0];
 	0 ==> lt.in[1];
-	out <== (1 - 2 * lt.out) * inp; // TODO: I am actually not super sure about this...
+	out <== (1 - 2 * lt.out) * inp;
 	is_neg <== lt.out;
 }
 
@@ -103,7 +103,7 @@ template IntegerDivideRemainder(WORD_SIZE) {
 	component gte_q = GreaterEqThan(WORD_SIZE);
 
 
-	quotient <-- inp[0] \ inp[1]; // TODO: INTEGER DIVISION IS ILL DEFINED SOMETIMES!!
+	quotient <-- inp[0] \ inp[1];
 	remainder <-- inp[0] % inp[1];
 	
 	// Check that for a / b, a = b * q + r
@@ -142,7 +142,6 @@ template Buffer(WORD_SIZE) {
 	signal quotient_is_neg;
 	quotient_is_neg <== (1 - abs_num.is_neg) * abs_denom.is_neg +
 		(1 - abs_denom.is_neg) * abs_num.is_neg;
-	// TODO: Do we have to add support for negative/ positive %?
 
 	abs.out ==> divide_mod.inp[0];
 	abs_divisor.out ==> divide_mod.inp[1];
@@ -153,6 +152,8 @@ template Buffer(WORD_SIZE) {
 	mux.c[0] <== inps[0] * inps[1] + inps[2];
 	mux.c[1] <== abs_num.out;
 	mux.c[2] <== divide_mod.quotient * (1 - 2 * quotient_is_neg);
+	// Note that we do not support positive or negatives with the % operation
+	// I.e. for a, b, we calculate |a| % |b|
 	mux.c[3] <== divide_mod.remainder;
 
 	mux.out ==> out;
@@ -224,8 +225,11 @@ template ConditionalAnding(N_CONDITIONALS, MAX_AND_SIZE) {
 
 template FD_Emulator (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
 	// We require the WORD_SIZE to be less than 1/2 of the the bit size of |p| so that we
-	// can get away with integer division etc on the raw numbers
-	// TODO: this requirement may not be super necessary...
+	// can get away with integer division on the raw numbers
+	// I.e. for a // b = q and a % b = c,
+	// integer division can easily be verified by checking that b * q + c = a, 0 <= c < b, 0 < q < a
+	// Note that we require b * q < p as to not overflow/ wrap around the modulus. Thus, if 2 * word sizes + 1
+	// is less than the word size of p, (q * b + a) < p and no overflowing occurs
 	assert(WORD_SIZE < 119);
 
 	// The number of conditionals + 1 for a default
