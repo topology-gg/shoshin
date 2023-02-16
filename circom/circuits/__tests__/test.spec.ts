@@ -50,7 +50,7 @@ const mapInputToBN = (inp: any) => {
   };
 };
 
-describe('FD VM Circuit test', () => {
+describe('FD Emulator Circuit test', () => {
   it('Test basic FD function', async () => {
     const circuit = await load_FD_circuit();
     // 2 buffers, 5 inputs, 5 conditionals, 32 size words
