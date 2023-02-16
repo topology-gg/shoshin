@@ -399,10 +399,10 @@ export default function Home() {
                                             showDebug={checkedShowDebugInfo}
                                         />
                                         <StatusBarPanel 
-                                        integrity_0={20}
-                                        integrity_1={testJson.agent_1.frames[animationFrame].integrity}
-                                        stamina_0={testJson.agent_0.frames[animationFrame].stamina}
-                                        stamina_1={testJson.agent_1.frames[animationFrame].stamina}
+                                        integrity_0={testJson.agent_0.frames[animationFrame].body_state.integrity}
+                                        integrity_1={testJson.agent_1.frames[animationFrame].body_state.integrity}
+                                        stamina_0={testJson.agent_0.frames[animationFrame].body_state.stamina}
+                                        stamina_1={testJson.agent_1.frames[animationFrame].body_state.stamina}
                                          />
                                         <MidScreenControl
                                             runnable = {true}
