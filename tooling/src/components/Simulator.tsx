@@ -43,10 +43,11 @@ export default function Simulator( {
                 display:'flex', flexDirection:'row',
                 // width:componentWidth,
                 height:SIMULATOR_H,
-                borderBottom:'1px solid #333333',
+                // borderBottom:'2px solid #333333',
                 position:'relative',
                 marginBottom: '20px',
             }}
+            id={'simulator-background'}
         >
             <Character agentIndex={0} viewWidth={componentWidth} characterName={characterName0} agentFrame={agentFrame0} />
             <Character agentIndex={1} viewWidth={componentWidth} characterName={characterName1} agentFrame={agentFrame1} />

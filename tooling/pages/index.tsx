@@ -30,13 +30,20 @@ const theme = createTheme({
         },
         info: {
             main: "#848f98",
-        }
+        },
     },
     components: {
         MuiButton: {
             styleOverrides: {
                 outlinedPrimary: {
                     color: "black",
+                    backgroundColor: "white",
+                    ":hover": {
+                      backgroundColor: '#2EE59D',
+                      boxShadow: '0px 15px 20px rgba(46, 229, 157, 0.4)',
+                      color: '#fff',
+                      transform: 'translateY(-4px)',
+                    }
                 }
             }
         }
@@ -417,22 +424,22 @@ export default function Home() {
                                         />
                                     </div>
                                 }
-                                <LoadTestJson
+                                {/* <LoadTestJson
                                     handleLoadTestJson={handleLoadTestJson}
                                     handleClickPreloadedTestJson={handleClickPreloadedTestJson}
+                                /> */}
+                                <CairoSimulation
+                                    style={styles.confirm}
+                                    handleClickRunCairoSimulation={handleClickRunCairoSimulation}
+                                    handleInputError={handleInputError}
+                                    warning={runCairoSimulationWarning}
+                                    input={agent}
+                                    isDefensiveAdversary={isDefensiveAdversary}
+                                    setIsDefensiveAdversary={setIsDefensiveAdversary}
                                 />
                             </div>
-                            <CairoSimulation 
-                                style={styles.confirm} 
-                                handleClickRunCairoSimulation={handleClickRunCairoSimulation} 
-                                handleInputError={handleInputError} 
-                                warning={runCairoSimulationWarning} 
-                                input={agent} 
-                                isDefensiveAdversary={isDefensiveAdversary}
-                                setIsDefensiveAdversary={setIsDefensiveAdversary}
-                            />
                         </Grid>
-                        <Grid item xs={4} className={styles.panel}>
+                        <Grid item xs={4} sx={{ bgcolor: 'grey.50' }}>
                             <SidePanel
                                 workingTab={workingTab}
                                 handleClickTab={setWorkingTab}

@@ -2,7 +2,7 @@ import {useAccount, useConnectors} from '@starknet-react/core'
 import { useEffect, useState } from 'react'
 import styles from "../../styles/Character.module.css";
 import testJsonStr from '../json/test_engine.json';
-import { SIMULATOR_H, SIMULATOR_W, bodyStateNumberToName } from '../constants/constants';
+import { SIMULATOR_H, SIMULATOR_W, bodyStateNumberToName, SpriteTopAdjustmentToBg } from '../constants/constants';
 import { TestJson, Frame, Rectangle } from '../types/Frame';
 
 interface HitboxProps {
@@ -26,7 +26,7 @@ export default function Hitbox( {show=false, viewWidth, agentFrame, hitboxType}:
     const hitboxX = hitbox.origin.x
     const hitboxY = hitbox.origin.y
     const left = viewWidth/2 + hitboxX
-    const top = SIMULATOR_H - hitboxY - hitboxH
+    const top = SIMULATOR_H - hitboxY - hitboxH + SpriteTopAdjustmentToBg
 
     // Calculate hitbox render style
     // const borderColor = hitboxType == 'body' ? '#FCE20577' : '#CC333377';
@@ -43,8 +43,8 @@ export default function Hitbox( {show=false, viewWidth, agentFrame, hitboxType}:
                     // border: `7px solid ${borderColor}`,
                     // backgroundColor:'#33333399',
                     border: `2px solid ${borderColor}`,
-                    backgroundColor:'#33333322',
-                    zIndex: 10,
+                    backgroundColor:'#33333366',
+                    zIndex: 20,
                     color: '#EEEEEE',
                 }}
             >

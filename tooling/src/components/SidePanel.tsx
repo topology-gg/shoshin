@@ -1,36 +1,36 @@
 import React from 'react';
 import styles from '../../styles/Home.module.css';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import Tabs from './Tabs';
 import MentalStates from './MentalStates';
 import TreeEditor from './TreeEditor';
 import GeneralFunctions from './GeneralFunctions';
 import Combos from './Combos';
-    
+
 
 const SidePanel = ({
-    workingTab, handleClickTab, mentalStates, initialMentalState, handleSetInitialMentalState, combos, handleValidateCombo, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, 
+    workingTab, handleClickTab, mentalStates, initialMentalState, handleSetInitialMentalState, combos, handleValidateCombo, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState,
     handleSetMentalStateAction, treeEditor, handleClickTreeEditor, trees, handleUpdateTree, functions, handleUpdateGeneralFunction,
-    handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText, 
+    handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText,
     isTreeEditorWarningTextOn, treeEditorWarningText, handleRemoveElementGeneralFunction, handleValidateCharacter
 }) => {
     const content = (workingTab: number) => {
         switch (workingTab) {
             case 0: {
-                return !treeEditor && <MentalStates 
+                return !treeEditor && <MentalStates
                     mentalStates={mentalStates}
                     initialMentalState={initialMentalState}
                     handleSetInitialMentalState={handleSetInitialMentalState}
                     combos={combos}
                     character={character}
                     setCharacter={setCharacter}
-                    handleAddMentalState={handleAddMentalState} 
+                    handleAddMentalState={handleAddMentalState}
                     handleClickRemoveMentalState={handleClickRemoveMentalState}
                     handleSetMentalStateAction={handleSetMentalStateAction}
-                    handleClickTreeEditor={handleClickTreeEditor} 
-                /> || !!treeEditor && <TreeEditor 
+                    handleClickTreeEditor={handleClickTreeEditor}
+                /> || !!treeEditor && <TreeEditor
                     indexTree={ treeEditor - 1 }
-                    tree={trees[treeEditor - 1]} 
+                    tree={trees[treeEditor - 1]}
                     handleUpdateTree={handleUpdateTree}
                     mentalStates={mentalStates}
                     functions={functions}
@@ -63,30 +63,33 @@ const SidePanel = ({
     }
     return (
         <Box
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'left',
-            margin: '1rem',
-        }}>
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'left',
+                padding: 2,
+            }}
+        >
             <Tabs workingTab={workingTab} handleClickTab={handleClickTab}></Tabs>
             {content(workingTab)}
             {
-                !treeEditor && 
+                !treeEditor &&
                 <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'space-around',
-                }}
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-around',
+                    }}
                 >
-                    <button
-                    className={ styles.confirm }
-                    style={{ maxWidth: '11rem', minHeight: '2rem', marginTop: '1rem' }}
-                    onClick={() => handleValidateCharacter(mentalStates, combos, trees, functions)}
+                    <Button
+                        id={`validate-character`}
+                        variant="outlined"
+                        // className={ styles.confirm }
+                        sx={{ marginTop: '1rem' }}
+                        onClick={() => handleValidateCharacter(mentalStates, combos, trees, functions)}
                     >
-                        Validate your character
-                    </button>
+                        Validate the Mind
+                    </Button>
                 </Box>
             }
         </Box>
