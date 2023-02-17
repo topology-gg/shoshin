@@ -1,18 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import Rating from "@mui/material/Rating";
 import { styled } from "@mui/material/styles";
-import { animated, useSpring } from "@react-spring/web";
-import useMeasure from "react-use-measure";
 import styles from "../../styles/StatusBar.module.css";
 import "../../styles/StatusBar.module.css";
-import { Grid } from "@mui/material";
 
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
-import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
-import { color } from "@mui/system";
 
 const StyledRating = styled(Rating)({
     "& .MuiRating-iconFilled": {
@@ -23,21 +18,11 @@ const StyledRating = styled(Rating)({
     },
 });
 
-enum CustomColor {
-    INTEGRITY = "integrity",
-    STAMINA = "stamina",
-}
-
 interface statusBarProps {
     value: number;
-    max: number;
-    customColor?: string;
 }
 const IntegrityBar = (props: statusBarProps) => {
-    let { value, max, customColor } = props;
-
-    const [ref, { width }] = useMeasure();
-    const springProps = useSpring({ width: value });
+    let { value } = props;
 
     return (
         <div>
@@ -57,15 +42,9 @@ const IntegrityBar = (props: statusBarProps) => {
 };
 
 const StaminaBar = (props: statusBarProps) => {
-    let { value, max, customColor } = props;
-    const [ref, { width }] = useMeasure();
-    const springProps = useSpring({ width: value });
-
-
+    let { value } = props;
 
     let staminaBarValues = [];
-
-    
 
     for (let i = 1; i < 10; i++) {
         staminaBarValues.push(
@@ -113,20 +92,12 @@ const StatusBarPanel = ({
     return (
         <div>
             <div className={styles.statusBarRow}>
-                <IntegrityBar value={integrity_0} max={1000} />
-                <IntegrityBar
-                    value={integrity_1}
-                    max={1000}
-                    customColor={CustomColor.STAMINA}
-                />
+                <IntegrityBar value={integrity_0} />
+                <IntegrityBar value={integrity_1} />
             </div>
             <div className={styles.statusBarRow}>
-                <StaminaBar value={stamina_0} max={1000} />
-                <StaminaBar
-                    value={stamina_1}
-                    max={1000}
-                    customColor={CustomColor.STAMINA}
-                />
+                <StaminaBar value={stamina_0} />
+                <StaminaBar value={stamina_1} />
             </div>
         </div>
     );
