@@ -229,9 +229,13 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
     
     if (agent_0_standing == 0) {
+        // cairo -i return(frames_len=idx, frames=arr_frames);
+        // cairo -d 
        return ();
     }
     if (agent_1_standing == 0) {
+        // cairo -i return(frames_len=idx, frames=arr_frames);
+        // cairo -d 
        return ();
     }
 
