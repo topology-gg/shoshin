@@ -8,4 +8,3 @@ target = ["tests"]
 
 [contracts]
 main = ["contracts/engine.cairo"]
-
