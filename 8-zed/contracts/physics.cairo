@@ -244,6 +244,18 @@ func _physicality{range_check_ptr}(
         bool_body_overlap,
     );
 
+    // Hitbox 0 update
+    local hitboxes_0: Hitboxes = Hitboxes(
+        action = hitboxes_0.action,
+        body = Rectangle (curr_physics_state_0.pos, body_dim_0)
+    );
+
+    // Hitbox 1 update
+    local hitboxes_1: Hitboxes = Hitboxes(
+        action = hitboxes_1.action,
+        body = Rectangle (curr_physics_state_1.pos, body_dim_1)
+    );
+
     //
     // 5. Produce stimuli
     // (NULL / HURT / KNOCKED / CLASH)

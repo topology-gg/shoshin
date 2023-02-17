@@ -1,10 +1,10 @@
-["protostar.config"]
-protostar_version = "0.6.0"
+[project]
+protostar-version = "0.9.1"
+lib-path = "lib"
+cairo-path = ["lib/bto_cairo_git"]
 
-["protostar.project"]
-libs_path = "lib"
+[test]
+target = ["tests"]
 
-["protostar.contracts"]
-main = [
-    "src/main.cairo",
-]
+[contracts]
+main = ["contracts/engine.cairo"]
