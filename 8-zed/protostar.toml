@@ -1,0 +1,11 @@
+[project]
+protostar-version = "0.9.1"
+lib-path = "lib"
+cairo-path = ["lib/bto_cairo_git"]
+
+[test]
+target = ["tests"]
+
+[contracts]
+main = ["contracts/engine.cairo"]
+
