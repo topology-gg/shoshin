@@ -1,38 +1,3 @@
-.main {
-    position: relative;
-    width: 200px;
-    height: 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    border: 2px solid #272727;
-    overflow: hidden;
-  }
-  
-  .fill {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: lightpink;
-  }
-
-  .staminaa {
-    background: lightgreen;
-  }
-
-  .content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #272727;
-  }
-
   .statusBarRow {
     margin-bottom: 5px;
     display: flex;
