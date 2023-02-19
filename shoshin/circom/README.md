@@ -129,7 +129,9 @@ Say that the maximum number of "anded clauses" is 2 and our buffer size is 1. So
 
   inputs: [curr_state, stamina, 2, 10, STAMINA_COST_ATTACK,],
 
-  and_selectors: [[0, 1]], // We have 1 conditional, then the index following the number of conditionals (1) is true by default
+  // We have 1 conditional, then the index following the number of conditionals (1) is true by default
+  // I.e. we are choosing to do: `<conditional 0 output> && true`
+  and_selectors: [[0, 1]],
 
   conditional_mux_sel: [[0, 1]], // Select a <= b
 
