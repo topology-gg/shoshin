@@ -142,3 +142,25 @@ Say that the maximum number of "anded clauses" is 2 and our buffer size is 1. So
   buffer_mux_sel: [[4, 2, 3]], // Buffer is now STAMINA_COST_ATTACK * 2 + 10
 }
 ```
+
+The next intent inputs are similar:
+
+```typescript
+{
+  next_state: [INT_ATTACK, INT_NULL],
+
+  inputs: [curr_state, stamina, MS_ATTACK, 0, STAMINA_COST_ATTACK,], // The 0 is just a dummy value
+
+  // We have 1 conditional, then the index following the number of conditionals (1) is true by default
+  // I.e. we are choosing to do: `<conditional 0 output> && true`
+  and_selectors: [[0, 1]],
+
+  conditional_mux_sel: [[0, 0]], // Select a == b
+
+  conditional_inputs_mux_sel[[0, 2]], // Select curr_state == MS_ATTACK
+
+  buffer_type_sel: [[0, 0]], // The buffer is unused so we just need some valid selection
+
+  buffer_mux_sel: [[0, 0, 0]], // The buffer is unused so we just need some valid selection
+}
+```
