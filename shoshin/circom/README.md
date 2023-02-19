@@ -82,3 +82,61 @@ Below we outline the inputs to the `FD Emulator` circuit.
 
 The following block diagram also gives a high level overview of how the circuit works
 ![imgs/FDBlockDiagram.png](imgs/FDBlockDiagram.png)
+
+### An example of a compiled FD
+
+Say our mental space can be from the following enum,
+
+```
+enum MentalState {
+  MS_IDLE=0,
+  MS_ATTACK=1,
+}
+```
+
+an our intents can be from
+
+```
+enum Intents {
+  INT_NULL=0,
+  INT_ATTACK=1,
+}
+```
+
+and our transition functions are very basic.
+
+For the next mental state we have,
+
+```
+if (stamina >= STAMINA_COST_ATTACK * 2 + 10) return MS_ATTACK;
+else return MS_IDLE;
+```
+
+and our next intent we have
+
+```
+if (current_state == MS_ATTACK) return INT_ATTACK;
+else return INT_NULL;
+```
+
+Now we step through what the Circom input would look like. First, note that we have a "wrapper" Circom module which instantiates the FD Emulator. This will be in a future PR. This wrapper module will ensure that global constants, such as `STAMINA_COST_ATTACK`, mental spaces, and public inputs are passed into the inputs of the FD Emulator properly.
+
+Say that the maximum number of "anded clauses" is 2 and our buffer size is 1. So then, we would have the following FD Emulator Inputs for the next mental state
+
+```typescript
+{
+  next_state: [MS_ATTACK, MS_IDLE],
+
+  inputs: [curr_state, stamina, 2, 10, STAMINA_COST_ATTACK,],
+
+  and_selectors: [[0, 1]], // We have 1 conditional, then the index following the number of conditionals (1) is true by default
+
+  conditional_mux_sel: [[0, 1]], // Select a <= b
+
+  conditional_inputs_mux_sel[[5, 1]], // Select <Buffer 1 out> <= stamina
+
+  buffer_type_sel: [[0, 0]], // Quadratic constraint buffer is selected to give use a * b + c
+
+  buffer_mux_sel: [[4, 2, 3]], // Buffer is now STAMINA_COST_ATTACK * 2 + 10
+}
+```
