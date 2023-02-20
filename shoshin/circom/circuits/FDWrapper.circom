@@ -16,9 +16,9 @@ template PoseidonElemCommitment() {
    comm === pos.out;
 }
 
-template FDWrapper(BUFFER_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
-   assert(PUBLIC_INPUT_SIZE <= INPUT_SIZE - 1);
-   var FD_CONST_SIZE = INPUT_SIZE - 1 - PUBLIC_INPUT_SIZE;
+template FDWrapper(BUFFER_SIZE, PUBLIC_INPUT_SIZE, FD_CONST_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
+   // assert(PUBLIC_INPUT_SIZE <= INPUT_SIZE - 1);
+   var INPUT_SIZE = 1 + PUBLIC_INPUT_SIZE + FD_CONST_SIZE;
    var FD_DESC_SIZE =  FD_CONST_SIZE + // The number of ``constants'' in the FD
                         (N_CONDITIONALS + 1) + // The number of ``next state''
                         (N_CONDITIONALS * MAX_AND_SIZE) + // The number of and selectors for conditionals
@@ -144,4 +144,4 @@ template FDWrapper(BUFFER_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_CONDITIONALS, N
    /****************** End FD inputs *********************/
 }
 
-component main = FDWrapper(20, 10, 10, 32, 64, 5);
+// component main = FDWrapper(20, 10, 10, 32, 64, 5);
