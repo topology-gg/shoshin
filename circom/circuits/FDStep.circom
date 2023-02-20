@@ -18,16 +18,16 @@ template FDStep (BUFFER_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_CONDITIONALS, N_W
 
    signal public input FD_comm;
    // TODO: these into a different component
-   // signal public input latent_space_comm;
-   // signal public input next_latent_space_comm;
+   // signal public input mind_comm;
+   // signal public input next_mind_comm;
    signal public input pub_inputs[PUBLIC_INPUT_SIZE];
    
    // Randomness for comm openings
    signal input FD_comm_randomness;
-   // signal input latent_space_comm_randomness;
-   // signal input next_latent_space_comm_randomness;
+   // signal input mind_comm_randomness;
+   // signal input next_mind_comm_randomness;
 
-   signal input latent_space;
+   signal input mind;
 
 	//  TODO: hmmmmm..... one proof or two? I guess we could just like split it up anywho later...
    /********** Signals for describing FD ****************/
@@ -43,7 +43,7 @@ template FDStep (BUFFER_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_CONDITIONALS, N_W
 	signal input buffer_type_sel[BUFFER_SIZE][2];
    /********** Signals for describing FD ****************/
 
-   signal output next_state;
+   signal output selected_next;
    
    // Signals for the next event
    // signal public input next_intent;
@@ -105,39 +105,14 @@ template FDStep (BUFFER_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_CONDITIONALS, N_W
    for (var i = 0; i < PUBLIC_INPUT_SIZE; i++) {
       pub_inputs[i] ==> FD_emulator.inputs[1 + i];
    }
-   latent_space ==> FD_emulator.inputs[0];
+   mind ==> FD_emulator.inputs[0];
 
    // Set the randomness for the commitment
    FD_comm_randomness ==> poseidon_FD[cum_pos];
 
 	// Check the commitment
    FD_comm === poseidon_FD.out;
-
-
-
-   // TODO: we want these in a parent component
-	// component poseidon_latent = Poseidon(2);
-   // latent_space ==> poseidon_latent.inputs[0];
-   // latent_space_comm_randomness ==> poseidon_latent.inputs[1];
-
-   // component poseidon_next_latent = Poseidon(2);
-   // FD_emulator_latent.selected_next ==> poseidon_next_latent.inputs[0];
-   // next_latent_space_comm_randomness ==> poseidon_next_latent.inputs[1];
-
-
-	// Check that the next intent matches up
-   // next_intent === FD_emulator_intent.selected_next;   
-
-	// // Check that all the commitments match up
-   // FD_comm === poseidon_FD.out;
-   // latent_space_comm === poseidon_latent.out;
-   // next_latent_space_comm === poseidon_next_latent.out;
-
-   // TODO: use multi thingy to check FD commitment...
-   
-   // Inputs for described the FD_latent and FD_intent
-   // TODO:
-   // signal...
+   selected_next <== FD_emulator.selected_next;
 }
 
 // component main = FDS();
