@@ -164,3 +164,48 @@ The next intent inputs are similar:
   buffer_mux_sel: [[0, 0, 0]], // The buffer is unused so we just need some valid selection
 }
 ```
+
+#### A Slightly More Complex FD with 2-recursion in the Buffer
+
+Say for the next mental state we have,
+
+```
+if (stamina >= abs(STAMINA_COST_ATTACK * 2 - 10)) return MS_ATTACK;
+else if (chaos_level > stamina / CHAOS_TO_STAMINA_SCALING && current_state == MS_ATTACK) return MS_ATTACK;
+else return MS_IDLE;
+```
+
+Now, we need the buffer to be at least size 3, 2 conditionals, and at least 2 `and-ings` supported.
+
+```typescript
+{
+  next_state: [MS_ATTACK, MS_IDLE],
+
+	// 8 inputs
+  inputs: [curr_state, chaos_level, stamina, 2, -10, MS_ATTACK, CHAOS_TO_STAMINA_SCALING, STAMINA_COST_ATTACK,],
+
+  // We have 3 conditionals, then the index following the number of conditionals (3) is true by default
+  // I.e. we are choosing to do: `<conditional 0 output> && true` and `<conditional 1> && <conditional 2>
+  and_selectors: [[0, 3], [1, 2]],
+
+  conditional_mux_sel: [[0, 1], [1, 0], [0, 0]], // Select a >= 1, a > b, a == b
+
+  conditional_inputs_mux_sel[
+    [9, 2], // Select stamina <= <2nd buffer out>
+    [10, 1], // Select <3rd buffer out> < chaos_level
+    [0, 5], // Select curr_state == MS_ATTACK
+  ],
+
+  buffer_type_sel: [
+    [0, 0], // a * b + c
+    [1, 0], // abs(.)
+    [0, 1], // Integer division
+  ],
+
+  buffer_mux_sel: [
+    [6, 3, 4], // STAMINA_COST_ATTACK * 2 - 10,
+    [8, 0, 0], // abs(<buffer 0 output>)
+    [2, 6, 0], // stamina // CHAOS_TO_STAMINA_SCALING
+  ],
+}
+```
