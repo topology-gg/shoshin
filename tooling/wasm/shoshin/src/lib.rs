@@ -83,14 +83,15 @@ fn extract_output(vm: VirtualMachine) -> Result<Vec<FrameScene>, Error> {
 
         // Loop the memory segment in frames_address len times, extracting each integer
         for i in 0..len {
-            let mut frame = VecDeque::new();
-
-            for j in 0..frames_size {
+            let mut frame = Vec::new();
+            // Reverse the memory iteration, in order to be able to .pop() starting from the first value in
+            // the memory segment
+            for j in (0..frames_size).rev() {
                 let word_address = Relocatable {
                     segment_index: frames_address.segment_index,
                     offset: (i * frames_size + j) as usize,
                 };
-                frame.push_back(vm.get_integer(word_address).unwrap().to_bigint());
+                frame.push(vm.get_integer(word_address).unwrap().to_bigint());
             }
             frames.push(FrameScene::from(frame));
         }

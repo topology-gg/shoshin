@@ -14,7 +14,7 @@ lazy_static! {
     pub static ref PRIME_HALF: BigInt = &*PRIME >> 1;
 }
 
-/// Trait defining how to convert a type to CairoArgs
+/// Trait defining how to convert a type to CairoArg
 trait IntoCairoArgs {
     fn into(self) -> CairoArg;
 }
@@ -106,10 +106,10 @@ impl IntoCairoArgs for Vec<i32> {
     }
 }
 
-#[derive(Debug, PartialEq, Default)]
-/// Represents a value in the binary tree operator
-/// reprensation of the state machines and functions
+/// A value in the binary tree operator
+/// representation of the state machines and functions
 /// (see https://github.com/greged93/bto-cairo)
+#[derive(Debug, PartialEq, Default)]
 pub struct Tree {
     pub opcode: i32,
     pub first_value: i32,
@@ -203,104 +203,104 @@ impl Sizeable for FrameScene {
     }
 }
 
-// TODO improve the From<> implementation to make it generic
-impl From<VecDeque<BigInt>> for FrameScene {
-    fn from(value: VecDeque<BigInt>) -> Self {
-        let mut value_mod: VecDeque<BigInt> = value.into_iter().map(mod_prime).collect();
+// TODO improve the From<Vec<BigInt>> implementation to make it generic via a macro
+impl From<Vec<BigInt>> for FrameScene {
+    fn from(value: Vec<BigInt>) -> Self {
+        let mut value_mod: Vec<BigInt> = value.into_iter().map(mod_prime).collect();
         let agent_0 = Agent {
-            mental_state: value_mod.pop_front().unwrap(),
+            mental_state: value_mod.pop().unwrap(),
             body_state: BodyState {
-                state: value_mod.pop_front().unwrap(),
-                counter: value_mod.pop_front().unwrap(),
-                integrity: value_mod.pop_front().unwrap(),
-                stamina: value_mod.pop_front().unwrap(),
-                dir: value_mod.pop_front().unwrap(),
-                fatigued: value_mod.pop_front().unwrap(),
+                state: value_mod.pop().unwrap(),
+                counter: value_mod.pop().unwrap(),
+                integrity: value_mod.pop().unwrap(),
+                stamina: value_mod.pop().unwrap(),
+                dir: value_mod.pop().unwrap(),
+                fatigued: value_mod.pop().unwrap(),
             },
             physics_state: PhysicsState {
                 pos: Vector {
-                    x: value_mod.pop_front().unwrap(),
-                    y: value_mod.pop_front().unwrap(),
+                    x: value_mod.pop().unwrap(),
+                    y: value_mod.pop().unwrap(),
                 },
                 vel_fp: Vector {
-                    x: value_mod.pop_front().unwrap(),
-                    y: value_mod.pop_front().unwrap(),
+                    x: value_mod.pop().unwrap(),
+                    y: value_mod.pop().unwrap(),
                 },
                 acc_fp: Vector {
-                    x: value_mod.pop_front().unwrap(),
-                    y: value_mod.pop_front().unwrap(),
+                    x: value_mod.pop().unwrap(),
+                    y: value_mod.pop().unwrap(),
                 },
             },
-            action: value_mod.pop_front().unwrap(),
-            stimulus: value_mod.pop_front().unwrap(),
+            action: value_mod.pop().unwrap(),
+            stimulus: value_mod.pop().unwrap(),
             hitboxes: Hitboxes {
                 action: Rectangle {
                     origin: Vector {
-                        x: value_mod.pop_front().unwrap(),
-                        y: value_mod.pop_front().unwrap(),
+                        x: value_mod.pop().unwrap(),
+                        y: value_mod.pop().unwrap(),
                     },
                     dimension: Vector {
-                        x: value_mod.pop_front().unwrap(),
-                        y: value_mod.pop_front().unwrap(),
+                        x: value_mod.pop().unwrap(),
+                        y: value_mod.pop().unwrap(),
                     },
                 },
                 body: Rectangle {
                     origin: Vector {
-                        x: value_mod.pop_front().unwrap(),
-                        y: value_mod.pop_front().unwrap(),
+                        x: value_mod.pop().unwrap(),
+                        y: value_mod.pop().unwrap(),
                     },
                     dimension: Vector {
-                        x: value_mod.pop_front().unwrap(),
-                        y: value_mod.pop_front().unwrap(),
+                        x: value_mod.pop().unwrap(),
+                        y: value_mod.pop().unwrap(),
                     },
                 },
             },
         };
         let agent_1 = Agent {
-            mental_state: value_mod.pop_front().unwrap(),
+            mental_state: value_mod.pop().unwrap(),
             body_state: BodyState {
-                state: value_mod.pop_front().unwrap(),
-                counter: value_mod.pop_front().unwrap(),
-                integrity: value_mod.pop_front().unwrap(),
-                stamina: value_mod.pop_front().unwrap(),
-                dir: value_mod.pop_front().unwrap(),
-                fatigued: value_mod.pop_front().unwrap(),
+                state: value_mod.pop().unwrap(),
+                counter: value_mod.pop().unwrap(),
+                integrity: value_mod.pop().unwrap(),
+                stamina: value_mod.pop().unwrap(),
+                dir: value_mod.pop().unwrap(),
+                fatigued: value_mod.pop().unwrap(),
             },
             physics_state: PhysicsState {
                 pos: Vector {
-                    x: value_mod.pop_front().unwrap(),
-                    y: value_mod.pop_front().unwrap(),
+                    x: value_mod.pop().unwrap(),
+                    y: value_mod.pop().unwrap(),
                 },
                 vel_fp: Vector {
-                    x: value_mod.pop_front().unwrap(),
-                    y: value_mod.pop_front().unwrap(),
+                    x: value_mod.pop().unwrap(),
+                    y: value_mod.pop().unwrap(),
                 },
                 acc_fp: Vector {
-                    x: value_mod.pop_front().unwrap(),
-                    y: value_mod.pop_front().unwrap(),
+                    x: value_mod.pop().unwrap(),
+                    y: value_mod.pop().unwrap(),
                 },
             },
-            action: value_mod.pop_front().unwrap(),
-            stimulus: value_mod.pop_front().unwrap(),
+            action: value_mod.pop().unwrap(),
+            stimulus: value_mod.pop().unwrap(),
             hitboxes: Hitboxes {
                 action: Rectangle {
                     origin: Vector {
-                        x: value_mod.pop_front().unwrap(),
-                        y: value_mod.pop_front().unwrap(),
+                        x: value_mod.pop().unwrap(),
+                        y: value_mod.pop().unwrap(),
                     },
                     dimension: Vector {
-                        x: value_mod.pop_front().unwrap(),
-                        y: value_mod.pop_front().unwrap(),
+                        x: value_mod.pop().unwrap(),
+                        y: value_mod.pop().unwrap(),
                     },
                 },
                 body: Rectangle {
                     origin: Vector {
-                        x: value_mod.pop_front().unwrap(),
-                        y: value_mod.pop_front().unwrap(),
+                        x: value_mod.pop().unwrap(),
+                        y: value_mod.pop().unwrap(),
                     },
                     dimension: Vector {
-                        x: value_mod.pop_front().unwrap(),
-                        y: value_mod.pop_front().unwrap(),
+                        x: value_mod.pop().unwrap(),
+                        y: value_mod.pop().unwrap(),
                     },
                 },
             },
