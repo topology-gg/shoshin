@@ -21,3 +21,6 @@
 
 - Double Blinding
   - [Proposal](dbo/proposal.md)
+
+- Appendix
+  - [Agent Json Spec](appendix/agent.md)
