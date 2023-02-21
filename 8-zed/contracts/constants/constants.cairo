@@ -22,7 +22,6 @@ namespace ns_stamina {
     const INIT_STAMINA = 1000;
 }
 
-
 namespace ns_common_stamina_effect {
     // These values are added to the players stamina, 
     // They are amortized across the entire animation
