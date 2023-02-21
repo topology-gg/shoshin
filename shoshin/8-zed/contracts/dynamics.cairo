@@ -276,6 +276,20 @@ func _cap_fp{range_check_ptr}(x_fp: felt, max_fp: felt, min_fp: felt) -> (x_fp_c
     return (x_fp,);
 }
 
+func _is_cap_fp{range_check_ptr}(x_fp: felt, max_fp: felt, min_fp: felt) -> (is_x_fp_capped: felt) {
+    let is_max = x_fp - max_fp;
+    if (is_max == 0) {
+        return (is_x_fp_capped=1);
+    }
+
+    let is_min = x_fp - min_fp;
+    if (is_min == 0) {
+        return (is_x_fp_capped=1);
+    }
+
+    return (is_x_fp_capped=0);
+}
+
 //##
 
 func _euler_forward_consider_hitbox{range_check_ptr}(
@@ -299,18 +313,40 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
         let vx_fp_cand_reversed_1 = (-1) * physics_state_cand_1.vel_fp.x;
         let bool_1_to_the_right_of_0 = sign(physics_state_1.pos.x - physics_state_0.pos.x);
 
-        // note: assuming Jessica and Antoc shares the same BODY_HITBOX_W !
         local abs_distance;
+        local move_0;
+        local move_1;
+        local abs_relative_vx_fp;
+
+        // check if agent against the boundaries
+        // only use the speed of unbounded agents
+        let (is_capped_0) = _is_cap_fp(physics_state_cand_0.pos.x, ns_scene.X_MAX, ns_scene.X_MIN);
+        let (is_capped_1) = _is_cap_fp(physics_state_cand_1.pos.x, ns_scene.X_MAX, ns_scene.X_MIN);
+        if (is_capped_0 == 1) {
+            assert move_0 = 0;
+            assert move_1 = 1;
+            assert abs_relative_vx_fp = abs_value(physics_state_cand_1.vel_fp.x);
+        } else {
+            if (is_capped_1 == 1) {
+                assert move_0 = 1;
+                assert move_1 = 0;
+                assert abs_relative_vx_fp = abs_value(physics_state_cand_0.vel_fp.x);
+            } else {
+                assert move_0 = 1;
+                assert move_1 = 1;
+                assert abs_relative_vx_fp = abs_value(
+                    physics_state_cand_0.vel_fp.x - physics_state_cand_1.vel_fp.x
+                );
+            }
+        }
+
+        // note: assuming Jessica and Antoc shares the same BODY_HITBOX_W !
         if (bool_1_to_the_right_of_0 == 1) {
             assert abs_distance = ns_jessica_character_dimension.BODY_HITBOX_W - (physics_state_cand_1.pos.x - physics_state_cand_0.pos.x);
         } else {
             assert abs_distance = ns_jessica_character_dimension.BODY_HITBOX_W - (physics_state_cand_0.pos.x - physics_state_cand_1.pos.x);
         }
         let abs_distance_fp_fp = abs_distance * ns_dynamics.SCALE_FP * ns_dynamics.SCALE_FP;
-
-        let abs_relative_vx_fp = abs_value(
-            physics_state_cand_0.vel_fp.x - physics_state_cand_1.vel_fp.x
-        );
 
         let (time_required_to_separate_fp, _) = unsigned_div_rem(
             abs_distance_fp_fp, abs_relative_vx_fp
@@ -331,8 +367,9 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
 
         let sign_0 = sign(back_off_x_0);
         let sign_1 = sign(back_off_x_1);
-        let x_0 = physics_state_cand_0.pos.x + back_off_x_0 + sign_0 * 2;  // # back off more to guarantee non-overlap
-        let x_1 = physics_state_cand_1.pos.x + back_off_x_1 + sign_1 * 2;
+        // prevent backing off if against boundaries
+        let x_0 = physics_state_cand_0.pos.x + (back_off_x_0 + sign_0 * 2) * move_0;  // # back off more to guarantee non-overlap
+        let x_1 = physics_state_cand_1.pos.x + (back_off_x_1 + sign_1 * 2) * move_1;
 
         // note: do nothing for now to Y component
 
