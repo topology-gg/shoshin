@@ -6,8 +6,7 @@ use lazy_static::lazy_static;
 use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
 use shoshin_derive::{CairoArgs, CairoStruct};
-use std::fmt::Debug;
-use std::{collections::VecDeque, convert::From};
+use std::{convert::From, fmt::Debug};
 
 lazy_static! {
     pub static ref PRIME: BigInt = (BigInt::from(FIELD_HIGH) << 128) + BigInt::from(FIELD_LOW);
