@@ -15,6 +15,7 @@ import { Character, INITIAL_COMBOS, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, I
 import Agent, { buildAgent } from '../src/types/Agent';
 import { CairoSimulation } from '../src/components/CairoSimulation';
 import ImagePreloader from '../src/components/ImagePreloader';
+import StatusBarPanel from '../src/components/StatusBar';
 
 const theme = createTheme({
     typography: {
@@ -397,7 +398,12 @@ export default function Home() {
                                             agentFrame1={testJson.agent_1.frames[animationFrame]}
                                             showDebug={checkedShowDebugInfo}
                                         />
-
+                                        <StatusBarPanel 
+                                        integrity_0={testJson.agent_0.frames[animationFrame].body_state.integrity}
+                                        integrity_1={testJson.agent_1.frames[animationFrame].body_state.integrity}
+                                        stamina_0={testJson.agent_0.frames[animationFrame].body_state.stamina}
+                                        stamina_1={testJson.agent_1.frames[animationFrame].body_state.stamina}
+                                         />
                                         <MidScreenControl
                                             runnable = {true}
                                             animationFrame = {animationFrame}
