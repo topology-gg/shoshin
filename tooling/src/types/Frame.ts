@@ -41,6 +41,8 @@ export interface Frame {
     action: number,
     stimulus: number,
     hitboxes: Hitboxes,
+    stamina : number | undefined,
+    integrity : number | undefined
 }
 
 export interface TestJson {
