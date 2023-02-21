@@ -5,7 +5,7 @@ from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import abs_value, unsigned_div_rem, signed_div_rem, sign
 from starkware.cairo.common.math_cmp import is_le, is_not_zero
 from contracts.constants.constants import (
-    ns_dynamics, ns_character_type,
+    ns_dynamics, ns_character_type, ns_scene,
     Vec2, PhysicsState, BodyState,
 )
 from contracts.constants.constants_jessica import (
@@ -105,6 +105,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     local acc_fp_x;
     let acc_fp_y = 0;  // no jump for now!
     let sign_vel_x = sign(physics_state.vel_fp.x);
+    local physics_state_fwd: PhysicsState;
 
     if (state == MOVE_FORWARD) {
         if (dir == 1) {
@@ -146,25 +147,23 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         if (counter == 0) {
             if (dir == 1) {
                 // # back off the difference between normal body sprite width and knocked sprite width
-                return (
-                    PhysicsState(
-                        pos=Vec2(physics_state.pos.x - BODY_KNOCKED_ADJUST_W, physics_state.pos.y),
-                        vel_fp=Vec2(0, 0),
-                        acc_fp=Vec2(0, 0),
-                    ),
+                assert physics_state_fwd = PhysicsState(
+                    pos=Vec2(physics_state.pos.x - BODY_KNOCKED_ADJUST_W, physics_state.pos.y),
+                    vel_fp=Vec2(0, 0),
+                    acc_fp=Vec2(0, 0),
                 );
             } else {
-                return (
-                    PhysicsState(
-                            pos=Vec2(physics_state.pos.x + 1, physics_state.pos.y),
-                            vel_fp=Vec2(0, 0),
-                            acc_fp=Vec2(0, 0),
-                    ),
+                assert physics_state_fwd = PhysicsState(
+                    pos=Vec2(physics_state.pos.x + 1, physics_state.pos.y),
+                    vel_fp=Vec2(0, 0),
+                    acc_fp=Vec2(0, 0),
                 );
             }
         } else {
-            return (physics_state,);
+            assert physics_state_fwd = physics_state;
         }
+        tempvar range_check_ptr = range_check_ptr;
+        jmp cap;
     }
 
     // # otherwise, deaccelerate dramatically
@@ -214,11 +213,19 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     //
     update_pos:
     let (pos_nxt: Vec2) = _euler_forward_pos_no_hitbox(physics_state.pos, vel_fp_nxt);
-
-    let physics_state_fwd: PhysicsState = PhysicsState(
+    assert physics_state_fwd = PhysicsState(
         pos=pos_nxt,
         vel_fp=vel_fp_nxt,
         acc_fp=Vec2(acc_fp_x, acc_fp_y),
+    );
+    tempvar range_check_ptr = range_check_ptr;
+
+    cap:
+    let (x_cap) = _cap_fp(physics_state_fwd.pos.x, ns_scene.X_MAX, ns_scene.X_MIN);
+    let physics_state_fwd: PhysicsState = PhysicsState(
+        pos=Vec2(x=x_cap, y=physics_state_fwd.pos.y),
+        vel_fp=physics_state_fwd.vel_fp,
+        acc_fp=physics_state_fwd.acc_fp,
     );
 
     return (physics_state_fwd,);
