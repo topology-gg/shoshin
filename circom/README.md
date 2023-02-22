@@ -82,3 +82,130 @@ Below we outline the inputs to the `FD Emulator` circuit.
 
 The following block diagram also gives a high level overview of how the circuit works
 ![imgs/FDBlockDiagram.png](imgs/FDBlockDiagram.png)
+
+### An example of a compiled FD
+
+Say our mental space can be from the following enum,
+
+```
+enum MentalState {
+  MS_IDLE=0,
+  MS_ATTACK=1,
+}
+```
+
+an our intents can be from
+
+```
+enum Intents {
+  INT_NULL=0,
+  INT_ATTACK=1,
+}
+```
+
+and our transition functions are very basic.
+
+For the next mental state we have,
+
+```
+if (stamina >= STAMINA_COST_ATTACK * 2 + 10) return MS_ATTACK;
+else return MS_IDLE;
+```
+
+and our next intent we have
+
+```
+if (current_state == MS_ATTACK) return INT_ATTACK;
+else return INT_NULL;
+```
+
+Now we step through what the Circom input would look like. First, note that we have a "wrapper" Circom module which instantiates the FD Emulator. This will be in a future PR. This wrapper module will ensure that global constants, such as `STAMINA_COST_ATTACK`, mental spaces, and public inputs are passed into the inputs of the FD Emulator properly.
+
+Say that the maximum number of "anded clauses" is 2 and our buffer size is 1. So then, we would have the following FD Emulator Inputs for the next mental state
+
+```typescript
+{
+  next_state: [MS_ATTACK, MS_IDLE],
+
+  inputs: [curr_state, stamina, 2, 10, STAMINA_COST_ATTACK,],
+
+  // We have 1 conditional, then the index following the number of conditionals (1) is true by default
+  // I.e. we are choosing to do: `<conditional 0 output> && true`
+  and_selectors: [[0, 1]],
+
+  conditional_mux_sel: [[0, 1]], // Select a <= b
+
+  conditional_inputs_mux_sel[[5, 1]], // Select <Buffer 1 out> <= stamina
+
+  buffer_type_sel: [[0, 0]], // Quadratic constraint buffer is selected to give use a * b + c
+
+  buffer_mux_sel: [[4, 2, 3]], // Buffer is now STAMINA_COST_ATTACK * 2 + 10
+}
+```
+
+The next intent inputs are similar:
+
+```typescript
+{
+  next_state: [INT_ATTACK, INT_NULL],
+
+  inputs: [curr_state, stamina, MS_ATTACK, 0, STAMINA_COST_ATTACK,], // The 0 is just a dummy value
+
+  // We have 1 conditional, then the index following the number of conditionals (1) is true by default
+  // I.e. we are choosing to do: `<conditional 0 output> && true`
+  and_selectors: [[0, 1]],
+
+  conditional_mux_sel: [[0, 0]], // Select a == b
+
+  conditional_inputs_mux_sel[[0, 2]], // Select curr_state == MS_ATTACK
+
+  buffer_type_sel: [[0, 0]], // The buffer is unused so we just need some valid selection
+
+  buffer_mux_sel: [[0, 0, 0]], // The buffer is unused so we just need some valid selection
+}
+```
+
+#### A Slightly More Complex FD with 2-recursion in the Buffer
+
+Say for the next mental state we have,
+
+```
+if (stamina >= abs(STAMINA_COST_ATTACK * 2 - 10)) return MS_ATTACK;
+else if (chaos_level > stamina / CHAOS_TO_STAMINA_SCALING && current_state == MS_ATTACK) return MS_ATTACK;
+else return MS_IDLE;
+```
+
+Now, we need the buffer to be at least size 3, 2 conditionals, and at least 2 `and-ings` supported.
+
+```typescript
+{
+  next_state: [MS_ATTACK, MS_IDLE],
+
+	// 8 inputs
+  inputs: [curr_state, chaos_level, stamina, 2, -10, MS_ATTACK, CHAOS_TO_STAMINA_SCALING, STAMINA_COST_ATTACK,],
+
+  // We have 3 conditionals, then the index following the number of conditionals (3) is true by default
+  // I.e. we are choosing to do: `<conditional 0 output> && true` and `<conditional 1> && <conditional 2>
+  and_selectors: [[0, 3], [1, 2]],
+
+  conditional_mux_sel: [[0, 1], [1, 0], [0, 0]], // Select a >= 1, a > b, a == b
+
+  conditional_inputs_mux_sel[
+    [9, 2], // Select stamina <= <2nd buffer out>
+    [10, 1], // Select <3rd buffer out> < chaos_level
+    [0, 5], // Select curr_state == MS_ATTACK
+  ],
+
+  buffer_type_sel: [
+    [0, 0], // a * b + c
+    [1, 0], // abs(.)
+    [0, 1], // Integer division
+  ],
+
+  buffer_mux_sel: [
+    [6, 3, 4], // STAMINA_COST_ATTACK * 2 - 10,
+    [8, 0, 0], // abs(<buffer 0 output>)
+    [2, 6, 0], // stamina // CHAOS_TO_STAMINA_SCALING
+  ],
+}
+```
