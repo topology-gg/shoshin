@@ -174,6 +174,44 @@ template ConditionalBuffers(N_SIGNLE_CLAUSE_CONDITIONALS, CONDITIONAL_BUFFER_SIZ
 	}
 }
 
+template ConditionalsToOutput(N_SIGNLE_CLAUSE_CONDITIONALS, CONDITIONAL_BUFFER_SIZE, N_OUTPUT_CONDITIONALS) {
+	signal input single_clause[N_SIGNLE_CLAUSE_CONDITIONALS];
+	signal input buffer_out[CONDITIONAL_BUFFER_SIZE];
+	signal input next_states[N_OUTPUT_CONDITIONALS + 1];
+	signal input selecting_conditionals[N_OUTPUT_CONDITIONALS];
+
+	signal output selected_state;
+
+	component selecting_mux[N_OUTPUT_CONDITIONALS];
+
+	for (var i = 0; i < N_OUTPUT_CONDITIONALS; i++) {
+		selecting_mux[i] = Multiplexer(1, N_SIGNLE_CLAUSE_CONDITIONALS + CONDITIONAL_BUFFER_SIZE + 2);
+		for (var j = 0; j < N_SIGNLE_CLAUSE_CONDITIONALS; j++) {
+			single_clause[j] ==> selecting_mux[i].inp[j][0];
+		}
+		for (var j = 0; j < CONDITIONAL_BUFFER_SIZE; j++) {
+			buffer_out[j] ==> selecting_mux[i].inp[N_SIGNLE_CLAUSE_CONDITIONALS + j][0];
+		}
+		// Set default signals
+		true ==> selecting_mux[i].inp[N_SIGNLE_CLAUSE_CONDITIONALS + CONDITIONAL_BUFFER_SIZE][0];
+		false ==> selecting_mux[i].inp[N_SIGNLE_CLAUSE_CONDITIONALS + CONDITIONAL_BUFFER_SIZE + 1][0];
+	}
+
+	component first_true = FirstTrue(N_SIGNLE_CLAUSE_CONDITIONALS);
+	for (var i = 0; i < N_OUTPUT_CONDITIONALS; i++) {
+	 	selecting_mux[i].out[0] ==> first_true.bool_inps[i];
+	}
+
+	// Accumulate over the output. Because the output conditionals are 1 hot, we always add 0 * next_state[i]
+	// except for when `i` matches to the first true conditional
+	signal next_state_accum[N_OUTPUT_CONDITIONALS + 1];
+	next_state_accum[0] <== first_true.bool_outs[0] * next_state[0];
+	for (var i = 1; i <= N_OUTPUT_CONDITIONALS; i++) {
+		next_state_accum[i] <== next_state_accum[i - 1] + first_true.bool_outs[i] * next_state[i];
+	}
+	selected_next <== next_state_accum[N_OUTPUT_CONDITIONALS];
+}
+
 template Buffer(WORD_SIZE) {
 	signal input inps[3];
 	signal output out;
@@ -358,17 +396,4 @@ template FD_Emulator (INPUT_BUFFER_SIZE, CONDITIONAL_BUFFER_SIZE, INPUT_SIZE, N_
 	// 	}
 	// }
 
-	component first_true = FirstTrue(N_SIGNLE_CLAUSE_CONDITIONALS);
-	for (var i = 0; i < N_SIGNLE_CLAUSE_CONDITIONALS; i++) {
-	 	anding.out[i] ==> first_true.bool_inps[i];
-	}
-
-	// Accumulate over the output. Because the output conditionals are 1 hot, we always add 0 * next_state[i]
-	// except for when `i` matches to the first true conditional
-	signal next_state_accum[N_SIGNLE_CLAUSE_CONDITIONALS + 1];
-	next_state_accum[0] <== first_true.bool_outs[0] * next_state[0];
-	for (var i = 1; i <= N_SIGNLE_CLAUSE_CONDITIONALS; i++) {
-		next_state_accum[i] <== next_state_accum[i - 1] + first_true.bool_outs[i] * next_state[i];
-	}
-	selected_next <== next_state_accum[N_SIGNLE_CLAUSE_CONDITIONALS];
 }
