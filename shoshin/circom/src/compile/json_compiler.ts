@@ -8,6 +8,59 @@ interface CircomShoshingParams {
   N_WORD_BITS: number;
 }
 
+interface TreeLeaf {
+  e: 'Leaf';
+}
+
+type Instr = string;
+
+// Leaf index
+type LeafMemLookupIdx = number;
+type LeftNode = number;
+type RightNode = number;
+
+type TreeNode = [Instr, LeftNode, RightNode];
+type LeafNode = [LeafMemLookupIdx, -1, -1];
+
+type Tree = (TreeNode | LeafNode)[];
+
+// Say we have each leaf
+
+// TODO: notes
+// Finding number of leaves / buffers should be straight forward
+// I guess we just have to "reorder" our input such that the leaves come first, then the lowest level buffers and so on
+
+// Okay
+// 1) Traverse the tree and add all **leaves** to the starting index (with associated lookup). Also, create dup tree w/o the leaves
+// 2) Do a depth ordered traversal on the tree w/o leaves to order the buffers. Use this to fill in the op_buffers
+
+enum OpCodes {
+  ABS = 0,
+  INTEGER_DIV = 1,
+  ADD = 2,
+  MUL = 3,
+  EQ = 4,
+  LT = 5,
+  LTE = 6,
+  OR = 7,
+}
+
+interface OpBuffer {
+  // Select input/ buffer output left
+  sel_a: number;
+  // Select input/ buffer output right
+  sel_b: number;
+  op_code: OpCodes;
+}
+
+interface CircomMapping {
+  n_inputs: number;
+  n_buffers: number;
+  op_buffers: OpBuffer[];
+}
+
+const treeToMappings = (tree: Tree): CircomMapping => {};
+
 const getCompiler = (params: CircomShoshingParams) => {
   const default_true_sel =
     params.CONDITIONAL_BUFFER_SIZE + params.N_SIGNLE_CLAUSE_CONDITIONALS;
