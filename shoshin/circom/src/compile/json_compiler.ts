@@ -1,3 +1,5 @@
+import { deepcopy } from '../utils';
+
 interface CircomShoshingParams {
   INPUT_BUFFER_SIZE: number;
   CONDITIONAL_BUFFER_SIZE: number;
@@ -8,19 +10,15 @@ interface CircomShoshingParams {
   N_WORD_BITS: number;
 }
 
-interface TreeLeaf {
-  e: 'Leaf';
-}
-
 type Instr = string;
 
 // Leaf index
-type LeafMemLookupIdx = number;
+type LeafValue = number;
 type LeftNode = number;
 type RightNode = number;
 
 type TreeNode = [Instr, LeftNode, RightNode];
-type LeafNode = [LeafMemLookupIdx, -1, -1];
+type LeafNode = [LeafValue, -1, -1];
 
 type Tree = (TreeNode | LeafNode)[];
 
@@ -57,9 +55,141 @@ interface CircomMapping {
   n_inputs: number;
   n_buffers: number;
   op_buffers: OpBuffer[];
+  inputs: number[];
 }
 
-const treeToMappings = (tree: Tree): CircomMapping => {};
+type TreeDict = { [leaf_key: number]: number };
+type IndexedNode = [TreeNode | LeafNode, number];
+
+const has_key = (key: number, dict: TreeDict) =>
+  !(dict[key] === undefined || dict[key] === null);
+
+const dfs_traverse = (
+  parent_idx: number,
+  tree: IndexedNode[],
+  leave_dict: TreeDict
+): IndexedNode[] => {
+  const depth_ordered_visited_non_leafs: IndexedNode[] = [];
+  const aug_recursive_dfs = (curr: IndexedNode) => {
+    const left = curr[0][1];
+    const right = curr[0][2];
+
+    // We have a left, non-leaf child
+    if (left !== -1 && !has_key(left, leave_dict)) {
+      aug_recursive_dfs(tree[left]);
+    }
+    // We have a right child
+    if (right !== -1 && !has_key(right, leave_dict)) {
+      aug_recursive_dfs(tree[right]);
+    }
+    depth_ordered_visited_non_leafs.push(deepcopy(curr));
+  };
+
+  let parent_node = tree.find(([t, i]) => i === parent_idx);
+  if (!parent_node) throw `Could not find valid parent node`;
+
+  aug_recursive_dfs(parent_node);
+
+  console.debug(
+    `Have recursive tree ordered as ${depth_ordered_visited_non_leafs}}`
+  );
+
+  return depth_ordered_visited_non_leafs;
+};
+
+const get_parent_node = (tree_idxed: IndexedNode[]) => {
+  const n_pointers_to = Array(tree_idxed.length).fill(0);
+
+  tree_idxed.forEach(([[_, left, right], i]) => {
+    if (left !== -1) n_pointers_to[left] += 1;
+    if (right !== -1) n_pointers_to[right] += 1;
+  });
+
+  const idx = n_pointers_to.findIndex(x => x === 0);
+  const idxRev = n_pointers_to.reverse().findIndex(x => x === 0);
+  if (idx === -1) throw `No root of tree found`;
+  if (idx !== idxRev)
+    throw `The tree has more than one root and is thus invalid`;
+  return idx;
+};
+
+const tree_to_circom = (
+  parent_idx: number,
+  tree: Tree,
+  max_number_inputs: number
+): CircomMapping => {
+  const dup_tree_kv: { [ind: string]: TreeNode | LeafNode } = Object.assign(
+    {},
+    tree
+  ) as any;
+
+  const tree_idxed = tree.map((t, i) => [t, i] as IndexedNode);
+  const leave_idxs = tree_idxed.filter(
+    ([t, i]) => t[1] === -1 && t[2] === -1
+  ) as [LeafNode, number][];
+  const n_inputs = leave_idxs.length;
+
+  // The reverse of leave_idxs, maps circom inputs to leaves
+  const leaves_to_inputs: TreeDict = leave_idxs.reduce(
+    (prev_dict, leave, i) => {
+      const [_tmp, leave_idx] = leave;
+      prev_dict[leave_idx] = i;
+      return prev_dict;
+    },
+    {} as TreeDict
+  );
+
+  const parent_node_idx = get_parent_node(tree_idxed);
+
+  // Order the nodes by their depth
+  const nodes_depth_first_traversal = dfs_traverse(
+    parent_node_idx,
+    tree_idxed,
+    leaves_to_inputs
+  );
+  // Mapping node indices to their buffer indices
+  const nodes_to_buffers = nodes_depth_first_traversal.reduce(
+    (prev_dict, node, i) => {
+      const [_tmp, node_idx] = node;
+      prev_dict[node_idx] = 1;
+      return prev_dict;
+    },
+    {} as TreeDict
+  );
+
+  // Get the value of the leaves
+  const inputs = leave_idxs.map(([[val, _l, _r], _i]) => val);
+
+  const tree_idx_to_selection_idx = (tree_idx: number) => {
+    if (has_key(tree_idx, leaves_to_inputs)) {
+      return leaves_to_inputs[tree_idx];
+    } else if (has_key(tree_idx, nodes_to_buffers)) {
+      return nodes_to_buffers[tree_idx];
+    } else {
+      throw `An unexpected error occurred, tree idx ${tree_idx} should be in the inputs (leaves) or buffers`;
+    }
+  };
+
+  const op_buffers = nodes_depth_first_traversal.map(
+    ([[instr, left, right], idx]) => {
+      const op_code: OpCodes = instr_to_opcode(instr);
+      const sel_a = left === -1 ? 0 : tree_idx_to_selection_idx(left);
+      const sel_b = right === -1 ? 0 : tree_idx_to_selection_idx(right);
+      return {
+        sel_a,
+        sel_b,
+        op_code,
+      };
+    }
+  );
+
+  return {
+    n_inputs,
+    n_buffers: tree.length - n_inputs,
+    op_buffers,
+    inputs,
+  };
+};
 
 const getCompiler = (params: CircomShoshingParams) => {
   const default_true_sel =
