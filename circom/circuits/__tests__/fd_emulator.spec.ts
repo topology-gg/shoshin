@@ -72,12 +72,12 @@ describe('FD Emulator Circuit test', () => {
       cond_buffer_mux_sel: [
         [0, 2],
         [1, 2],
-        [7, 7], // set to false, false
+        [0, 0],
       ],
       cond_buffer_type_sel: [
         0, // &&
         1, // ||
-        1, // ||
+        0, // &&
       ],
     };
 
