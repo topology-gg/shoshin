@@ -89,40 +89,51 @@ export const CairoSimulation = ({
           onClick={() => {
               let [combosOffset, combos, mentalStatesOffset, mentalStates, functionsOffset, functions] = flattenAgent(input)
               let [dummyCombosOffset, dummyCombos, dummyMentalStatesOffset, dummyMentalStates, dummyFunctionsOffset, dummyFunctions, dummyActions] = getDummyArgs(adversary)
-              let output
               try {
-                  let shoshinInput = ctx.wasm.fromArrays(
-                      combosOffset,
-                      combos,
-                      dummyCombosOffset,
-                      dummyCombos,
-                      mentalStatesOffset,
-                      mentalStates,
+                  let shoshinInput = new Int32Array([
+                      combosOffset.length,
+                      ...combosOffset,
+                      combos.length,
+                      ...combos,
+                      dummyCombosOffset.length,
+                      ...dummyCombosOffset,
+                      dummyCombos.length,
+                      ...dummyCombos,
+                      mentalStatesOffset.length,
+                      ...mentalStatesOffset,
+                      mentalStates.length/3,
+                      ...mentalStates,
                       input.initialState,
-                      dummyMentalStatesOffset,
-                      dummyMentalStates,
+                      dummyMentalStatesOffset.length,
+                      ...dummyMentalStatesOffset,
+                      dummyMentalStates.length/3,
+                      ...dummyMentalStates,
                       0,
-                      functionsOffset,
-                      functions,
-                      dummyFunctionsOffset,
-                      dummyFunctions,
-                      input.actions,
-                      dummyActions,
+                      functionsOffset.length,
+                      ...functionsOffset,
+                      functions.length/3,
+                      ...functions,
+                      dummyFunctionsOffset.length,
+                      ...dummyFunctionsOffset,
+                      dummyFunctions.length/3,
+                      ...dummyFunctions,
+                      input.actions.length,
+                      ...input.actions,
+                      dummyActions.length,
+                      ...dummyActions,
                       input.character,
                       1
-                  )
-                  output = ctx.wasm.runCairoProgram(shoshinInput);
+                  ])
+                  let output = ctx.wasm.runCairoProgram(shoshinInput);
+                  handleClickRunCairoSimulation(cairoOutputToFrameScene(output))
               } catch (e) {
                   console.log('Got an error running wasm', e)
                   handleInputError(e)
-                  return;
               }
-              handleClickRunCairoSimulation(cairoOutputToFrameScene(output))
           }}
       >
           Fight
       </Button>
-
 
       <Button
           id={`initial-actions-menu-button`}
