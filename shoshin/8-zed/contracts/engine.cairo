@@ -1,7 +1,7 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
-from starkware.cairo.common.math_cmp import is_le
+from starkware.cairo.common.math_cmp import is_le, is_in_range
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.dict_access import DictAccess
 from starkware.cairo.common.dict import dict_read
@@ -67,6 +67,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     character_type_0: felt,
     character_type_1: felt,
 ) -> () {
+    // cairo --return (frames_len: felt, frames: FrameScene*)
     alloc_locals;
 
     //
@@ -100,7 +101,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     assert arr_frames[0] = FrameScene(
         agent_0 = Frame(
             mental_state  = agent_0_initial_state,
-            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1), // IDLE body state is 0 for both Jessica and Antoc; right is 1
+            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1, 0), // IDLE body state is 0 for both Jessica and Antoc; right is 1
             physics_state = physics_state_0,
             action        = 0, // NULL action is 0 for both Jessica and Antoc
             stimulus      = ns_stimulus.NULL,
@@ -111,7 +112,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             ),
         agent_1 = Frame(
             mental_state  = agent_1_initial_state,
-            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0), // IDLE body state is 0 for both Jessica and Antoc, left is 0
+            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0, 0), // IDLE body state is 0 for both Jessica and Antoc, left is 0
             physics_state = physics_state_1,
             action        = 0, // NULL action is 0 for both Jessica and Antoc
             stimulus      = ns_stimulus.NULL,
@@ -164,6 +165,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     );
 
     tempvar arr_empty: felt* = new ();
+    // cairo -p return
     _loop(
         idx = 1,
         len = len,
@@ -183,7 +185,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     );
 
     event_array.emit(len, arr_frames);
-
+    // cairo -d
     return ();
 }
 
@@ -204,8 +206,11 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     character_type_0: felt,
     character_type_1: felt,
 ) -> () {
+    // cairo --return (frames_len: felt, frames: FrameScene*) 
     alloc_locals;
     if (idx == len) {
+        // cairo -i return(frames_len=len, frames=arr_frames);
+        // cairo -d 
         return ();
     }
 
@@ -213,6 +218,27 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // Preparation
     //
     let last_frame: FrameScene = arr_frames[idx - 1];
+    
+
+    //
+    /// See if a player has health <= 0
+    //
+
+    let agent_0_standing = is_in_range(last_frame.agent_0.body_state.integrity, 0, 1001);
+    let agent_1_standing = is_in_range(last_frame.agent_0.body_state.integrity, 0, 1001);
+
+    
+    if (agent_0_standing == 0) {
+        // cairo -i return(frames_len=idx, frames=arr_frames);
+        // cairo -d 
+       return ();
+    }
+    if (agent_1_standing == 0) {
+        // cairo -i return(frames_len=idx, frames=arr_frames);
+        // cairo -d 
+       return ();
+    }
+
 
     //
     // Perception Phase
@@ -368,6 +394,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // Tail recursion
     //
     tempvar arr_empty: felt* = new ();
+    // cairo -p return
     _loop(
         idx = idx + 1,
         len = len,
@@ -385,6 +412,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         character_type_0 = character_type_0,
         character_type_1 = character_type_1,
     );
+    // cairo -d
     return ();
 }
 

@@ -24,14 +24,27 @@ namespace ns_stamina {
     const INIT_STAMINA = 1000;
 }
 
+namespace ns_common_stamina_effect {
+    // These values are added to the players stamina, 
+    // They are amortized across the entire animation
+    const NULL = 20;
+    const MOVE_FORWARD = 20;
+    const MOVE_BACKWARD = 20;
+    const BLOCK = 10;
+    // These values are removed from the players stamina
+    // These have an upfront cost that is paid in the first frame
+    const DASH_FORWARD = -50;
+    const DASH_BACKWARD = -50;
+}
+
 namespace ns_integrity {
     const INIT_INTEGRITY = 1000;
     const CRITICAL_INTEGRITY = 400;
 }
 
 namespace ns_scene {
-    const X_MAX = 500;
-    const X_MIN = -500;
+    const X_MAX = 400;
+    const X_MIN = -400;
     const BIGNUM = 2000;
 }
 
@@ -45,6 +58,7 @@ namespace ns_stimulus {
     const KNOCKED = 2;
     const CLASH = 3;
 }
+
 
 struct Vec2 {
     x: felt,
@@ -80,6 +94,7 @@ struct BodyState {
     integrity: felt,
     stamina: felt,
     dir: felt,
+    fatigued : felt,
 }
 
 struct PhysicsState {
@@ -109,6 +124,7 @@ namespace ns_perceptibles {
     const SELF_INT = 8;
     const SELF_STA = 9;
     const SELF_BODY_STATE = 10;
+    const SELF_BODY_COUNTER = 11;
 
     const OPPONENT_X_POS = 101;
     const OPPONENT_Y_POS = 102;
@@ -120,6 +136,7 @@ namespace ns_perceptibles {
     const OPPONENT_INT = 108;
     const OPPONENT_STA = 109;
     const OPPONENT_BODY_STATE = 110;
+    const OPPONENT_BODY_COUNTER = 111;
 }
 
 //
@@ -146,3 +163,7 @@ struct Metadata{
     character_type_0 : felt,
     character_type_1 : felt,
 }
+
+
+const HURT_EFFECT = 100;
+const KNOCKED_EFFECT = 100;
