@@ -71,7 +71,7 @@ export default function Home() {
     const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
     const [agent, setAgent] = useState<Agent>({})
     const [character, setCharacter] = useState<Character>(Character.Jessica)
-    const [isDefensiveAdversary, setIsDefensiveAdversary] = useState<boolean>(true)
+    const [adversary, setAdversary] = useState<string>('defensive')
 
     // Warnings
     const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
@@ -339,9 +339,7 @@ export default function Home() {
         })
     }
 
-    function handleValidateCombo(combo: number[], setEditingCombo: CallableFunction, index: number, setSelectedIndex: CallableFunction) {
-        setEditingCombo([])
-        setSelectedIndex(null)
+    function handleValidateCombo(combo: number[], index: number) {
         if (combo.length > 0) {
             if (index === null) {
                 setCombos((prev) => {
@@ -443,8 +441,8 @@ export default function Home() {
                                     handleInputError={handleInputError}
                                     warning={runCairoSimulationWarning}
                                     input={agent}
-                                    isDefensiveAdversary={isDefensiveAdversary}
-                                    setIsDefensiveAdversary={setIsDefensiveAdversary}
+                                    adversary={adversary}
+                                    setAdversary={setAdversary}
                                 />
                             </div>
                         </Grid>

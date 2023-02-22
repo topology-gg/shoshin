@@ -3,24 +3,29 @@ import { Typography, Button } from "@mui/material";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useContext, useEffect } from "react";
-import { DEFENSIVE_AGENT, OFFENSIVE_AGENT } from "../constants/constants";
+import ComboEditor from './ComboEditor';
+import { DECISION_TREE_COMBO_AGENT, DEFENSIVE_AGENT, INITIAL_FUNCTIONS, MENTAL_STATES_COMBO_AGENT, OFFENSIVE_AGENT } from "../constants/constants";
 import { WASMContext } from "../context/WASM";
 import { flattenAgent } from "../types/Agent";
 import { FrameScene } from "../types/Frame";
+import Agent, { buildAgent } from '../types/Agent';
+
 
 export const CairoSimulation = ({
-  style, handleClickRunCairoSimulation, warning, handleInputError, input, isDefensiveAdversary, setIsDefensiveAdversary
+  style, handleClickRunCairoSimulation, warning, handleInputError, input, adversary, setAdversary
 }) => {
   const ctx = useContext(WASMContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [editingCombo, setEditingCombo] = useState<number[]>([])
+
   const opened = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
-}
-const handleClose = (isDefensive) => {
-    setIsDefensiveAdversary(isDefensive)
-    setAnchorEl(null)
-}
+  }
+  const handleClose = (a: string) => {
+      setAdversary(a)
+      setAnchorEl(null)
+  }
 
   useEffect(() => {
     // Initialize wasm env.
@@ -36,105 +41,132 @@ const handleClose = (isDefensive) => {
   let displayWarning = warning !== ''
   let displayButton = JSON.stringify(input) !== '{}'
 
+  const getDummyDefensiveArgs = () => {
+    let agent = DEFENSIVE_AGENT;
+    return [...flattenAgent(agent), new Int32Array(agent.actions)]
+  }
+
+  const getDummyOffensiveArgs = () => {
+    let agent = OFFENSIVE_AGENT;
+    return [...flattenAgent(agent), new Int32Array(agent.actions)]
+  }
+
+  const getDummyComboArgs = () => {
+    let agent: Agent = buildAgent(MENTAL_STATES_COMBO_AGENT, [editingCombo], DECISION_TREE_COMBO_AGENT, INITIAL_FUNCTIONS, 0, 1)
+    console.log(agent)
+    return [...flattenAgent(agent), new Int32Array(agent.actions)]
+  }
+
+  const getDummyArgs = (a: string) => {
+    switch (a) {
+      case 'defensive': {
+        return getDummyDefensiveArgs() 
+      }
+      case 'offensive': {
+        return getDummyOffensiveArgs() 
+      }
+      case 'combo': {
+        return getDummyComboArgs() 
+      }
+    }
+  }
+  console.log("COMBOS", editingCombo)
+
   return (
     <div
         style={{
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             marginTop: '1.5rem',
         }}
     >
+      <Button
+          id={`run-cairo-simulation`}
+          variant="outlined"
+          disabled={!displayButton}
+          onClick={() => {
+              let [combosOffset, combos, mentalStatesOffset, mentalStates, functionsOffset, functions] = flattenAgent(input)
+              let [dummyCombosOffset, dummyCombos, dummyMentalStatesOffset, dummyMentalStates, dummyFunctionsOffset, dummyFunctions, dummyActions] = getDummyArgs(adversary)
+              let output
+              try {
+                  let shoshinInput = ctx.wasm.fromArrays(
+                      combosOffset,
+                      combos,
+                      dummyCombosOffset,
+                      dummyCombos,
+                      mentalStatesOffset,
+                      mentalStates,
+                      input.initialState,
+                      dummyMentalStatesOffset,
+                      dummyMentalStates,
+                      0,
+                      functionsOffset,
+                      functions,
+                      dummyFunctionsOffset,
+                      dummyFunctions,
+                      input.actions,
+                      dummyActions,
+                      input.character,
+                      1
+                  )
+                  output = ctx.wasm.runCairoProgram(shoshinInput);
+              } catch (e) {
+                  console.log('Got an error running wasm', e)
+                  handleInputError(e)
+                  return;
+              }
+              handleClickRunCairoSimulation(cairoOutputToFrameScene(output))
+          }}
+      >
+          Fight
+      </Button>
 
-        <Button
-            id={`initial-actions-menu-button`}
-            variant="outlined"
-            aria-controls={opened ? 'basic-menu' : undefined}
-            aria-haspopup='true'
-            aria-expanded={opened ? 'true' : undefined}
-            onClick={handleClick}
-        >
-            {/* <Typography variant='overline'>{(isDefensiveAdversary? 'Defensive': 'Offensive') + ' adversary'}</Typography> */}
-            {(isDefensiveAdversary? 'Defensive': 'Offensive') + ' adversary'}
-        </Button>
 
-        <Button
-            id={`run-cairo-simulation`}
-            variant="outlined"
-            disabled={!displayButton}
-            onClick={() => {
-                let [combosOffset, combos, mentalStatesOffset, mentalStates, functionsOffset, functions] = flattenAgent(input)
-                let [dummyCombosOffset, dummyCombos, dummyMentalStatesOffset, dummyMentalStates, dummyFunctionsOffset, dummyFunctions, dummyActions] = getDummyArgs(isDefensiveAdversary)
-                let output
-                try {
-                    let shoshinInput = ctx.wasm.fromArrays(
-                        combosOffset,
-                        combos,
-                        dummyCombosOffset,
-                        dummyCombos,
-                        mentalStatesOffset,
-                        mentalStates,
-                        input.initialState,
-                        dummyMentalStatesOffset,
-                        dummyMentalStates,
-                        0,
-                        functionsOffset,
-                        functions,
-                        dummyFunctionsOffset,
-                        dummyFunctions,
-                        input.actions,
-                        dummyActions,
-                        input.character,
-                        1
-                    )
-                    output = ctx.wasm.runCairoProgram(shoshinInput);
-                } catch (e) {
-                    console.log('Got an error running wasm', e)
-                    handleInputError(e)
-                    return;
-                }
-                handleClickRunCairoSimulation(cairoOutputToFrameScene(output))
-            }}
-            sx={{
-                marginLeft: '1rem'
-            }}
-        >
-            Fight
-        </Button>
+      <Button
+          id={`initial-actions-menu-button`}
+          variant="outlined"
+          aria-controls={opened ? 'basic-menu' : undefined}
+          aria-haspopup='true'
+          aria-expanded={opened ? 'true' : undefined}
+          onClick={handleClick}
+          sx={{
+              marginTop: '1rem'
+          }}
+      >
+          {/* <Typography variant='overline'>{(isDefensiveAdversary? 'Defensive': 'Offensive') + ' adversary'}</Typography> */}
+          {(adversary === 'defensive'? 'Defensive': adversary === 'offensive'? 'Offensive': 'Combo') + ' adversary'}
+      </Button>
 
       { displayWarning && <Typography variant="overline" color="red">{warning}</Typography> }
 
       {/* <Button id='constant' variant="outlined" onClick={handleAddElement}>Add</Button> */}
-
       <Menu
       id={'initial-actions-menu'}
       anchorEl={anchorEl}
       open={opened}
       onClose={handleClose}
       >
-        <MenuItem key={ `defensive-adversary` } onClick={() => handleClose(true)}>Defensive adversary</MenuItem>
-        <MenuItem key={ `offensive-adversary` } onClick={() => handleClose(false)}>Offensive adversary</MenuItem>
+        <MenuItem key={ `defensive-adversary` } onClick={() => handleClose('defensive')}>Defensive adversary</MenuItem>
+        <MenuItem key={ `offensive-adversary` } onClick={() => handleClose('offensive')}>Offensive adversary</MenuItem>
+        <MenuItem key={ `combo-adversary` } onClick={() => handleClose('combo')}>Combo adversary</MenuItem>
       </Menu>
-
+      
+      { adversary === 'combo' && 
+        <ComboEditor 
+          editingCombo={editingCombo} 
+          setEditingCombo={setEditingCombo}
+          characterIndex={1}
+          selectedIndex={0}
+          setSelectedIndex={() => {}}
+          handleValidateCombo={() => {}}
+          displayButton={false}
+        ></ComboEditor>
+      }
 </div>
 );
 };
-
-const getDummyOffensiveArgs = () => {
-  let agent = OFFENSIVE_AGENT;
-  return [...flattenAgent(agent), new Int32Array(agent.actions)]
-}
-
-const getDummyDefensiveArgs = () => {
-  let agent = DEFENSIVE_AGENT;
-  return [...flattenAgent(agent), new Int32Array(agent.actions)]
-}
-
-const getDummyArgs = (defensive) => {
-  return defensive? getDummyDefensiveArgs(): getDummyOffensiveArgs()
-}
-
 
 const DEFAULT_STAMINA = 1000;
 const DEFAULT_INTEGRITY = 1000;

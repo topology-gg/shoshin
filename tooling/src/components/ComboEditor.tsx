@@ -6,7 +6,8 @@ import NewAction  from './NewAction'
 import { CHARACTERS_ACTIONS, ACTIONS_ICON_MAP, MAX_COMBO_SIZE } from '../constants/constants';
 
 const ComboEditor = ({
-    editingCombo, setEditingCombo, characterIndex, selectedIndex, setSelectedIndex, handleValidateCombo
+    editingCombo, setEditingCombo, characterIndex, selectedIndex, setSelectedIndex, handleValidateCombo,
+    displayButton
 }) => {
     const [selectedNewAction, setSelectedNewAction] = useState<boolean>(false);
 
@@ -113,9 +114,14 @@ const ComboEditor = ({
                             selected={selectedNewAction}
                             characterIndex={characterIndex}
                         />
-                        <Button variant="outlined" onClick={() => { 
-                            handleValidateCombo(editingCombo, setEditingCombo, selectedIndex, setSelectedIndex)
-                        }}>Confirm</Button>
+                        {
+                            displayButton && 
+                            <Button variant="outlined" onClick={() => { 
+                                handleValidateCombo(editingCombo, selectedIndex)
+                                setEditingCombo([])
+                                setSelectedIndex(null)
+                            }}>Confirm</Button>
+                        }
                     </div>
                 </Box>
             </Box>
