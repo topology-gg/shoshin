@@ -1,22 +1,23 @@
 pragma circom 2.0.0;
 
 include "../circomlib/circuits/multiplexer.circom";
+include "../circomlib/circuits/mux1.circom";
 include "../circomlib/circuits/mux2.circom";
 include "../circomlib/circuits/comparators.circom";
 include "../circomlib/circuits/gates.circom";
 
 /* A simple wrapper to mux between to arrays, inputs and buffers */
-template InputAndBufferMux(INPUT_SIZE, BUFFER_SIZE) {
-	component mux = Multiplexer(1, INPUT_SIZE + BUFFER_SIZE);
+template InputAndBufferMux(INPUT_SIZE, INPUT_BUFFER_SIZE) {
+	component mux = Multiplexer(1, INPUT_SIZE + INPUT_BUFFER_SIZE);
 	signal input inputs[INPUT_SIZE];
-	signal input buffers[BUFFER_SIZE];
+	signal input buffers[INPUT_BUFFER_SIZE];
 	signal input sel;
 	signal output out;
 
 	for (var i = 0; i < INPUT_SIZE; i++) {
 		inputs[i] ==> mux.inp[i][0];
 	}
-	for (var i = 0; i < BUFFER_SIZE; i++) {
+	for (var i = 0; i < INPUT_BUFFER_SIZE; i++) {
 		buffers[i] ==> mux.inp[INPUT_SIZE + i][0];
 	}
 	sel ==> mux.sel;
@@ -60,22 +61,22 @@ template MuxedComparator(N_WORD_BITS) {
  * This will be done via a duel XORing construction where we keep an accumulator
  * and the modified output signals
  */
-template FirstTrue(N_CONDITIONALS) {
-	signal input bool_inps[N_CONDITIONALS];
-	signal output bool_outs[N_CONDITIONALS + 1];
+template FirstTrue(N_SIGNLE_CLAUSE_CONDITIONALS) {
+	signal input bool_inps[N_SIGNLE_CLAUSE_CONDITIONALS];
+	signal output bool_outs[N_SIGNLE_CLAUSE_CONDITIONALS + 1];
 
 	// Accum should be set to 1 if any prior or current boolean has been set to true or
-	signal accum[N_CONDITIONALS];
+	signal accum[N_SIGNLE_CLAUSE_CONDITIONALS];
 
 	bool_inps[0] ==> bool_outs[0];	
 	accum[0] <== bool_inps[0];
 
-	for (var i = 1; i < N_CONDITIONALS; i++) {
+	for (var i = 1; i < N_SIGNLE_CLAUSE_CONDITIONALS; i++) {
 		// Set to bool_inps iff no true boolean has been seen in the prior stage
 		bool_outs[i] <== (1 - accum[i - 1]) * bool_inps[i]; 
 		accum[i] <== accum[i - 1] + bool_inps[i] - accum[i - 1] * bool_inps[i]; // An or operation
 	}
-	bool_outs[N_CONDITIONALS] <== 1 - accum[N_CONDITIONALS - 1]; // Set to 1 if accum is 0
+	bool_outs[N_SIGNLE_CLAUSE_CONDITIONALS] <== 1 - accum[N_SIGNLE_CLAUSE_CONDITIONALS - 1]; // Set to 1 if accum is 0
 }
 
 template Abs(WORD_SIZE) {
@@ -125,6 +126,54 @@ template IntegerDivideRemainder(WORD_SIZE) {
 	lte_q.out === 1;
 }
 
+template ConditionalBuffer() {
+	signal input cond_sel;
+	signal input a;
+	signal input b;
+	signal output out;
+
+ 	component and = AND();
+	a ==> and.a;
+	b ==> and.b;
+ 	component or = OR();
+	a ==> or.a;
+	b ==> or.b;
+	// signal input
+	component mux = Mux1();
+	and.out ==> mux.c[0];
+	or.out ==> mux.c[1];
+	cond_sel ==> mux.s;
+	mux.out ==> out;
+}
+
+template ConditionalBuffers(N_SIGNLE_CLAUSE_CONDITIONALS, CONDITIONAL_BUFFER_SIZE) {
+	signal input conditionals[N_SIGNLE_CLAUSE_CONDITIONALS];	
+	signal input inp_sels[CONDITIONAL_BUFFER_SIZE][2];
+	// 0 or 1, 0 for AND, 1 for OR
+	signal input type_sel[CONDITIONAL_BUFFER_SIZE];
+
+	signal output outs[CONDITIONAL_BUFFER_SIZE];
+
+	component cond_buffer_muxes[CONDITIONAL_BUFFER_SIZE][2];
+	component cond_buffer[CONDITIONAL_BUFFER_SIZE];
+
+	for (var i = 0; i < CONDITIONAL_BUFFER_SIZE; i++) {
+		for (var a = 0; a < 2; a++) {
+			cond_buffer_muxes[i][a] = Multiplexer(1, N_SIGNLE_CLAUSE_CONDITIONALS + i);
+			for (var x = 0; x < N_SIGNLE_CLAUSE_CONDITIONALS; x++)
+				conditionals[x].out ==> cond_buffer_muxes[i][a].inp[x][0];
+			for (var j = 0; j < i; j++)
+				outs[j] ==> cond_buffer_muxes[i][a].inp[N_SIGNLE_CLAUSE_CONDITIONALS + j][0];
+		 	inp_sels[i][a] ==> cond_buffer_muxes[i][a].sel;
+		}
+		cond_buffer = ConditionalBuffer();
+		cond_buffer_muxes[i][0] ==> cond_buffer.a;
+		cond_buffer_muxes[i][1] ==> cond_buffer.b;
+		type_sel[i] ==> cond_buffer.cond_sel;
+		cond_buffer.out ==> outs[i];
+	}
+}
+
 template Buffer(WORD_SIZE) {
 	signal input inps[3];
 	signal output out;
@@ -160,17 +209,17 @@ template Buffer(WORD_SIZE) {
 }
 
 // Lets add more func to the buffers now...
-template Buffers(BUFFER_SIZE, INPUT_SIZE, WORD_SIZE) {
+template Buffers(INPUT_BUFFER_SIZE, INPUT_SIZE, WORD_SIZE) {
 	signal input inp[INPUT_SIZE];
-	signal input buffer_inp_mux_sel[BUFFER_SIZE][3];
-	signal input buffer_type_sel[BUFFER_SIZE][2];
+	signal input buffer_inp_mux_sel[INPUT_BUFFER_SIZE][3];
+	signal input buffer_type_sel[INPUT_BUFFER_SIZE][2];
 
-	signal output out[BUFFER_SIZE];
-	component buffer_inp_muxes[BUFFER_SIZE][3];
+	signal output out[INPUT_BUFFER_SIZE];
+	component buffer_inp_muxes[INPUT_BUFFER_SIZE][3];
 	component muxs_out = Mux2(); // Should be mux2s
-	component buffers[BUFFER_SIZE];
+	component buffers[INPUT_BUFFER_SIZE];
 
-	for (var i = 0; i < BUFFER_SIZE; i++) {
+	for (var i = 0; i < INPUT_BUFFER_SIZE; i++) {
 		buffers[i] = Buffer(WORD_SIZE);
 		for (var j = 0; j < 3; j++) {
 			buffer_inp_muxes[i][j] = Multiplexer(1, INPUT_SIZE + i);
@@ -189,40 +238,40 @@ template Buffers(BUFFER_SIZE, INPUT_SIZE, WORD_SIZE) {
 	}
 }
 
-/**
- * And boolean statements together using muxes. We expect the last bool in `bools`
- */
-template ConditionalAnding(N_CONDITIONALS, MAX_AND_SIZE) {
-	signal input bools[N_CONDITIONALS];
-	signal input and_inps_sel[N_CONDITIONALS][MAX_AND_SIZE];
+// /**
+//  * And boolean statements together using muxes. We expect the last bool in `bools`
+//  */
+// template ConditionalAnding(N_SIGNLE_CLAUSE_CONDITIONALS, MAX_AND_SIZE) {
+// 	signal input bools[N_SIGNLE_CLAUSE_CONDITIONALS];
+// 	signal input and_inps_sel[N_SIGNLE_CLAUSE_CONDITIONALS][MAX_AND_SIZE];
 
-	signal output out[N_CONDITIONALS];
+// 	signal output out[N_SIGNLE_CLAUSE_CONDITIONALS];
 
-	signal true_sig;
-	true_sig <== 1;
-	signal false_sig;
-	false_sig <== 0;
+// 	signal true_sig;
+// 	true_sig <== 1;
+// 	signal false_sig;
+// 	false_sig <== 0;
 
-	component ands[N_CONDITIONALS];
-	component muxes[N_CONDITIONALS][MAX_AND_SIZE];
+// 	component ands[N_SIGNLE_CLAUSE_CONDITIONALS];
+// 	component muxes[N_SIGNLE_CLAUSE_CONDITIONALS][MAX_AND_SIZE];
 
-	for (var i = 0; i < N_CONDITIONALS; i++) {
-		ands[i] = MultiAND(MAX_AND_SIZE);
-		for (var x = 0; x < MAX_AND_SIZE; x++) {
-			muxes[i][x] = Multiplexer(1, N_CONDITIONALS + 2);
-			for (var j = 0; j < N_CONDITIONALS; j++) {
-				bools[j] ==> muxes[i][x].inp[j][0];
-			}
-			true_sig ==> muxes[i][x].inp[N_CONDITIONALS][0];
-			false_sig ==> muxes[i][x].inp[N_CONDITIONALS + 1][0];
-			and_inps_sel[i][x] ==> muxes[i][x].sel;
-			muxes[i][x].out[0] ==> ands[i].in[x];
-		}
-		ands[i].out ==> out[i];
-	}
-}
+// 	for (var i = 0; i < N_SIGNLE_CLAUSE_CONDITIONALS; i++) {
+// 		ands[i] = MultiAND(MAX_AND_SIZE);
+// 		for (var x = 0; x < MAX_AND_SIZE; x++) {
+// 			muxes[i][x] = Multiplexer(1, N_SIGNLE_CLAUSE_CONDITIONALS + 2);
+// 			for (var j = 0; j < N_SIGNLE_CLAUSE_CONDITIONALS; j++) {
+// 				bools[j] ==> muxes[i][x].inp[j][0];
+// 			}
+// 			true_sig ==> muxes[i][x].inp[N_SIGNLE_CLAUSE_CONDITIONALS][0];
+// 			false_sig ==> muxes[i][x].inp[N_SIGNLE_CLAUSE_CONDITIONALS + 1][0];
+// 			and_inps_sel[i][x] ==> muxes[i][x].sel;
+// 			muxes[i][x].out[0] ==> ands[i].in[x];
+// 		}
+// 		ands[i].out ==> out[i];
+// 	}
+// }
 
-template FD_Emulator (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
+template FD_Emulator (INPUT_BUFFER_SIZE, CONDITIONAL_BUFFER_SIZE, INPUT_SIZE, N_SIGNLE_CLAUSE_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
 	// We require the WORD_SIZE to be less than 1/2 of the the bit size of |p| so that we
 	// can get away with integer division on the raw numbers
 	// I.e. for a // b = q and a % b = c,
@@ -232,38 +281,33 @@ template FD_Emulator (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_
 	assert(N_WORD_BITS < 119);
 
 	// The number of conditionals + 1 for a default
-	signal input next_state[N_CONDITIONALS + 1];
+	signal input next_state[N_SIGNLE_CLAUSE_CONDITIONALS + 1];
 
-	signal input and_selectors[N_CONDITIONALS][MAX_AND_SIZE];
+	signal input and_selectors[N_SIGNLE_CLAUSE_CONDITIONALS][MAX_AND_SIZE];
 
 	signal input inputs[INPUT_SIZE];
 
 	// Range over 0-2 to select from eq, lt, and lte
-	signal input conditional_mux_sel[N_CONDITIONALS][2];
+	signal input conditional_mux_sel[N_SIGNLE_CLAUSE_CONDITIONALS][2];
 	
 	// Range over inputs and buffer inputs for the inputs into conditionals
-	signal input conditional_inputs_mux_sel[N_CONDITIONALS][2];
+	signal input conditional_inputs_mux_sel[N_SIGNLE_CLAUSE_CONDITIONALS][2];
 
 	// Range over selectors for the inputs and buffers with smaller indices so we can chain things
-	signal input buffer_mux_sel[BUFFER_SIZE][3];
-	signal input buffer_type_sel[BUFFER_SIZE][2];
+	signal input buffer_mux_sel[INPUT_BUFFER_SIZE][3];
+	signal input buffer_type_sel[INPUT_BUFFER_SIZE][2];
+
+	// Range over selectors for the inputs and buffers with smaller indices so we can chain things
+	signal input cond_buffer_mux_sel[CONDITIONAL_BUFFER_SIZE][2];
+	signal input cond_buffer_type_sel[CONDITIONAL_BUFFER_SIZE][2];
 
   signal output selected_next;
 
-	component buffer_muxes[BUFFER_SIZE][3];
-	for (var i = 0; i < BUFFER_SIZE; i++) {
-		// Give buffers access to prior inputs
-		buffer_muxes[i][0] = Multiplexer(1, INPUT_SIZE + i);
-		buffer_muxes[i][1] = Multiplexer(1, INPUT_SIZE + i);
-		buffer_muxes[i][2] = Multiplexer(1, INPUT_SIZE + i);
-	}
-
-
-	component buffers = Buffers(BUFFER_SIZE, INPUT_SIZE, N_WORD_BITS);
+	component buffers = Buffers(INPUT_BUFFER_SIZE, INPUT_SIZE, N_WORD_BITS);
 	for (var i = 0; i < INPUT_SIZE; i++) {
 		inputs[i] ==> buffers.inp[i];
 	}
-	for(var i = 0; i < BUFFER_SIZE; i++) {
+	for(var i = 0; i < INPUT_BUFFER_SIZE; i++) {
 		buffer_mux_sel[i][0] ==> buffers.buffer_inp_mux_sel[i][0];
 		buffer_mux_sel[i][1] ==> buffers.buffer_inp_mux_sel[i][1];
 		buffer_mux_sel[i][2] ==> buffers.buffer_inp_mux_sel[i][2];
@@ -272,18 +316,18 @@ template FD_Emulator (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_
 	}
 
 	// Now check the conditions
-	component conditional_muxes_inputs[N_CONDITIONALS][2];
-	component conditionals[N_CONDITIONALS];
-	for (var i = 0; i < N_CONDITIONALS; i++) {
+	component conditional_muxes_inputs[N_SIGNLE_CLAUSE_CONDITIONALS][2];
+	component conditionals[N_SIGNLE_CLAUSE_CONDITIONALS];
+	for (var i = 0; i < N_SIGNLE_CLAUSE_CONDITIONALS; i++) {
 		conditionals[i] = MuxedComparator(N_WORD_BITS);
-		conditional_muxes_inputs[i][0] = InputAndBufferMux(INPUT_SIZE, BUFFER_SIZE);
-		conditional_muxes_inputs[i][1] = InputAndBufferMux(INPUT_SIZE, BUFFER_SIZE);
+		conditional_muxes_inputs[i][0] = InputAndBufferMux(INPUT_SIZE, INPUT_BUFFER_SIZE);
+		conditional_muxes_inputs[i][1] = InputAndBufferMux(INPUT_SIZE, INPUT_BUFFER_SIZE);
 		for (var x = 0; x < INPUT_SIZE; x++) {
 			inputs[x] ==> conditional_muxes_inputs[i][0].inputs[x];
 			inputs[x] ==> conditional_muxes_inputs[i][1].inputs[x];
 		}
 		
-		for (var x = 0; x < BUFFER_SIZE; x++) {
+		for (var x = 0; x < INPUT_BUFFER_SIZE; x++) {
 			buffers.out[x] ==> conditional_muxes_inputs[i][0].buffers[x];
 			buffers.out[x] ==> conditional_muxes_inputs[i][1].buffers[x];
 		}
@@ -298,25 +342,33 @@ template FD_Emulator (BUFFER_SIZE, INPUT_SIZE, N_CONDITIONALS, N_WORD_BITS, MAX_
 		conditional_mux_sel[i][1] ==> conditionals[i].sel[1];
 	}
 
-	component anding = ConditionalAnding(N_CONDITIONALS, MAX_AND_SIZE);
-	for (var i = 0; i < N_CONDITIONALS; i++) {
-		conditionals[i].out ==> anding.bools[i];
-		for (var x = 0; x < MAX_AND_SIZE; x++) {
-			and_selectors[i][x] ==> anding.and_inps_sel[i][x];
-		}
-	}
+ component cond_buffers = ConditionalBuffers(N_SIGNLE_CLAUSE_CONDITIONALS, CONDITIONAL_BUFFER_SIZE);
+ for (var i = 0; i < N_SIGNLE_CLAUSE_CONDITIONALS; i++)
+ 	conditionals[i].out ==> cond_buffers.conditionals[i];
+ for (var i = 0; i < CONDITIONAL_BUFFER_SIZE) {
+	cond_buffer_mux_sel[i][0] ==> cond_buffers.inp_sels[i][0];
+	cond_buffer_mux_sel[i][1] ==> cond_buffers.inp_sels[i][1];
+	cond_buffer_type_sel[i] ==> cond_buffers.type_sel[i];
+ }
+	// component anding = ConditionalAnding(N_SIGNLE_CLAUSE_CONDITIONALS, MAX_AND_SIZE);
+	// for (var i = 0; i < N_SIGNLE_CLAUSE_CONDITIONALS; i++) {
+	// 	conditionals[i].out ==> anding.bools[i];
+	// 	for (var x = 0; x < MAX_AND_SIZE; x++) {
+	// 		and_selectors[i][x] ==> anding.and_inps_sel[i][x];
+	// 	}
+	// }
 
-	component first_true = FirstTrue(N_CONDITIONALS);
-	for (var i = 0; i < N_CONDITIONALS; i++) {
+	component first_true = FirstTrue(N_SIGNLE_CLAUSE_CONDITIONALS);
+	for (var i = 0; i < N_SIGNLE_CLAUSE_CONDITIONALS; i++) {
 	 	anding.out[i] ==> first_true.bool_inps[i];
 	}
 
 	// Accumulate over the output. Because the output conditionals are 1 hot, we always add 0 * next_state[i]
 	// except for when `i` matches to the first true conditional
-	signal next_state_accum[N_CONDITIONALS + 1];
+	signal next_state_accum[N_SIGNLE_CLAUSE_CONDITIONALS + 1];
 	next_state_accum[0] <== first_true.bool_outs[0] * next_state[0];
-	for (var i = 1; i <= N_CONDITIONALS; i++) {
+	for (var i = 1; i <= N_SIGNLE_CLAUSE_CONDITIONALS; i++) {
 		next_state_accum[i] <== next_state_accum[i - 1] + first_true.bool_outs[i] * next_state[i];
 	}
-	selected_next <== next_state_accum[N_CONDITIONALS];
+	selected_next <== next_state_accum[N_SIGNLE_CLAUSE_CONDITIONALS];
 }
