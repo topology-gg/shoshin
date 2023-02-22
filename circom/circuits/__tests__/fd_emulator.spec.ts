@@ -29,47 +29,29 @@ const Fr = new F1Field(p);
 
 const load_FD_circuit = async () => {
   const circuit = await wasm_tester(
-    path.join(__dirname, 'circuits', 'fd_tester.circom')
+    path.join(__dirname, 'circuits', 'fd_emulator_tester.circom')
   );
   await circuit.loadSymbols();
   await circuit.loadConstraints();
   return circuit;
 };
 
-const mapInputToBN = (inp: any) => {
-  const toObj = (a: any) => BigInt(a);
-  const arrToObj = (a: any[]) => a.map(toObj);
-  return {
-    next_state: inp.next_state.map(toObj),
-    inputs: inp.inputs.map(toObj),
-    conditional_mux_sel: inp.conditional_mux_sel.map(arrToObj),
-    conditional_inputs_mux_sel: inp.conditional_inputs_mux_sel.map(arrToObj),
-    buffer_mux_sel: inp.buffer_mux_sel.map(arrToObj),
-    buffer_type_sel: inp.buffer_type_sel.map(arrToObj),
-    and_selectors: inp.and_selectors.map(arrToObj),
-  };
-};
-
 describe('FD Emulator Circuit test', () => {
-  it('Test basic FD function', async () => {
+  it.only('Test basic FD function', async () => {
     const circuit = await load_FD_circuit();
     // 2 buffers, 5 inputs, 5 conditionals, 32 size words
     const INPUT = {
-      next_state: [1, 2, 3, 4, 5, 6], // Match to each conditional
-      inputs: [10, 20, 30, 40, 50],
+      next_state: [1, 2, 3, 4, 5], // Match to each conditional, 5 is default
+      inputs: [10, 20, 30, 40, 50, 60],
       conditional_mux_sel: [
-        [0, 1],
-        [0, 0],
-        [1, 0],
-        [1, 1],
-        [0, 1],
+        [0, 1], // <=
+        [0, 0], // ==
+        [1, 0], // <
       ],
       conditional_inputs_mux_sel: [
-        [2, 1], // 30 < 20
+        [2, 1], // 30 <= 20
         [2, 3], // 30 == 40
-        [3, 4], // 40 \leq 50 (Checks out!)
-        [4, 5], // 50 != 230
-        [5, 6], // 230 < 950 ],
+        [3, 4], // 40 < 50 (Checks out!)
       ],
       buffer_mux_sel: [
         [0, 1, 2], // Calculate 10 * 20 + 30
@@ -81,18 +63,26 @@ describe('FD Emulator Circuit test', () => {
         [0, 0],
         [0, 0],
       ],
-      // Bypass all ands
-      and_selectors: [
-        [0, 5, 5],
-        [1, 5, 5],
-        [2, 5, 5],
-        [3, 5, 5],
-        [4, 5, 5],
+      conditionals_to_state_selectors: [
+        0, // 30 <= 20
+        1, // 30 == 40
+        3, // 30 <= 20 && 40 < 50
+        4, // 30 == 40 || 40 < 50
+      ],
+      cond_buffer_mux_sel: [
+        [0, 2],
+        [1, 2],
+        [7, 7], // set to false, false
+      ],
+      cond_buffer_type_sel: [
+        0, // &&
+        1, // ||
+        1, // ||
       ],
     };
 
     const witness = await circuit.calculateWitness(INPUT, true);
-    circuit.assertOut(witness, { selected_next: Fr.e(3) });
+    circuit.assertOut(witness, { selected_next: Fr.e(4) });
   });
 
   it('Test abs valuing', async () => {
