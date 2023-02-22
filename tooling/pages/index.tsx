@@ -342,6 +342,14 @@ export default function Home() {
 
     function handleValidateCombo(combo: number[], index: number) {
         if (combo.length > 0) {
+            if (index === null) {
+                setCombos((prev) => {
+                    let prev_copy: number[][] = JSON.parse(JSON.stringify(prev))
+                    prev_copy.push(combo)
+                    return prev_copy
+                })
+                return
+            }
             setCombos((prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev))
                 prev_copy[index] = combo
