@@ -36,53 +36,34 @@ const load_FD_circuit = async () => {
   return circuit;
 };
 
+enum OpCodes {
+  ABS = 0,
+  INTEGER_DIV = 1,
+  ADD = 2,
+  MUL = 3,
+  EQ = 4,
+  LT = 5,
+  LTE = 6,
+  OR = 7,
+}
+
 describe('FD Emulator Circuit test', () => {
   it('Test basic FD function', async () => {
     const circuit = await load_FD_circuit();
-    // 2 buffers, 5 inputs, 5 conditionals, 32 size words
+    // Compute abs(-10) + (30 / -10) = 7
+    // 3 buffers, 6 inputs
     const INPUT = {
-      next_state: [1, 2, 3, 4, 5], // Match to each conditional, 5 is default
-      inputs: [10, 20, 30, 40, 50, 60],
-      conditional_mux_sel: [
-        [0, 1], // <=
-        [0, 0], // ==
-        [1, 0], // <
+      inputs: [-10, 20, 30, 40, 50, 60],
+      buffer_inp_selectors: [
+        [0, 1],
+        [2, 0],
+        [6, 7],
       ],
-      conditional_inputs_mux_sel: [
-        [2, 1], // 30 <= 20
-        [2, 3], // 30 == 40
-        [3, 4], // 40 < 50 (Checks out!)
-      ],
-      buffer_mux_sel: [
-        [0, 1, 2], // Calculate 10 * 20 + 30
-        [2, 2, 4], // Calculate 30 * 30 + 50
-        [2, 2, 4], // Calculate 30 * 30 + 50
-      ],
-      buffer_type_sel: [
-        [0, 0],
-        [0, 0],
-        [0, 0],
-      ],
-      conditionals_to_state_selectors: [
-        0, // 30 <= 20
-        1, // 30 == 40
-        3, // 30 <= 20 && 40 < 50
-        4, // 30 == 40 || 40 < 50
-      ],
-      cond_buffer_mux_sel: [
-        [0, 2],
-        [1, 2],
-        [0, 0],
-      ],
-      cond_buffer_type_sel: [
-        0, // &&
-        1, // ||
-        0, // &&
-      ],
+      buffer_type_selectors: [OpCodes.ABS, OpCodes.INTEGER_DIV, OpCodes.ADD],
     };
 
     const witness = await circuit.calculateWitness(INPUT, true);
-    circuit.assertOut(witness, { selected_next: Fr.e(4) });
+    circuit.assertOut(witness, { out: Fr.e(7) });
   });
 
   xit('Test abs valuing', async () => {
