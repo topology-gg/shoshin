@@ -10,7 +10,7 @@ interface CircomShoshingParams {
   N_WORD_BITS: number;
 }
 
-type Instr = string;
+type Instr = OpCodes;
 
 // Leaf index
 type LeafValue = number;
@@ -172,7 +172,7 @@ const tree_to_circom = (
 
   const op_buffers = nodes_depth_first_traversal.map(
     ([[instr, left, right], idx]) => {
-      const op_code: OpCodes = instr_to_opcode(instr);
+      const op_code: OpCodes = instr;
       const sel_a = left === -1 ? 0 : tree_idx_to_selection_idx(left);
       const sel_b = right === -1 ? 0 : tree_idx_to_selection_idx(right);
       return {
