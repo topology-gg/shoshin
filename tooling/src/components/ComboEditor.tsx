@@ -114,9 +114,7 @@ const ComboEditor = ({
                             characterIndex={characterIndex}
                         />
                         <Button variant="outlined" onClick={() => { 
-                            handleValidateCombo(editingCombo, selectedIndex)
-                            setEditingCombo([])
-                            setSelectedIndex(null)
+                            handleValidateCombo(editingCombo, setEditingCombo, selectedIndex, setSelectedIndex)
                         }}>Confirm</Button>
                     </div>
                 </Box>
