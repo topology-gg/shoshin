@@ -48,7 +48,7 @@ enum OpCodes {
 }
 
 describe('FD Emulator Circuit test', () => {
-  it('Test basic FD function', async () => {
+  it.only('Test basic FD function', async () => {
     const circuit = await load_FD_circuit();
     // Compute abs(-10) + (30 / -10) = 7
     // 3 buffers, 6 inputs
