@@ -28,8 +28,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
     MIN_VEL_DASH_FP: felt,
     MOVE_ACC_FP: felt,
     DASH_ACC_FP: felt,
-    KNOCK_ACC_X_FP: felt,
-    KNOCK_ACC_Y_FP: felt,
+    KNOCK_VEL_X_FP: felt,
+    KNOCK_VEL_Y_FP: felt,
     DEACC_FP: felt,
     BODY_KNOCKED_ADJUST_W: felt,
 ) {
@@ -46,8 +46,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_jessica_dynamics.MIN_VEL_DASH_FP,
             ns_jessica_dynamics.MOVE_ACC_FP,
             ns_jessica_dynamics.DASH_ACC_FP,
-            ns_jessica_dynamics.KNOCK_ACC_X_FP,
-            ns_jessica_dynamics.KNOCK_ACC_Y_FP,
+            ns_jessica_dynamics.KNOCK_VEL_X_FP,
+            ns_jessica_dynamics.KNOCK_VEL_Y_FP,
             ns_jessica_dynamics.DEACC_FP,
             ns_jessica_character_dimension.BODY_KNOCKED_ADJUST_W,
         );
@@ -64,8 +64,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_antoc_dynamics.MIN_VEL_DASH_FP,
             ns_antoc_dynamics.MOVE_ACC_FP,
             ns_antoc_dynamics.DASH_ACC_FP,
-            ns_antoc_dynamics.KNOCK_ACC_X_FP,
-            ns_antoc_dynamics.KNOCK_ACC_Y_FP,
+            ns_antoc_dynamics.KNOCK_VEL_X_FP,
+            ns_antoc_dynamics.KNOCK_VEL_Y_FP,
             ns_antoc_dynamics.DEACC_FP,
             ns_antoc_character_dimension.BODY_KNOCKED_ADJUST_W,
         );
@@ -101,8 +101,8 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         MIN_VEL_DASH_FP: felt,
         MOVE_ACC_FP: felt,
         DASH_ACC_FP: felt,
-        KNOCK_ACC_X_FP: felt,
-        KNOCK_ACC_Y_FP: felt,
+        KNOCK_VEL_X_FP: felt,
+        KNOCK_VEL_Y_FP: felt,
         DEACC_FP: felt,
         BODY_KNOCKED_ADJUST_W: felt,
     ) = _character_specific_constants (character_type);
@@ -112,6 +112,8 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     //
     local acc_fp_x;
     local acc_fp_y;
+    local vel_fp_x;
+    local vel_fp_y;
     let sign_vel_x = sign(physics_state.vel_fp.x);
     local physics_state_fwd: PhysicsState;
 
@@ -161,17 +163,23 @@ func _euler_forward_no_hitbox {range_check_ptr}(
             // apply momentum at first frame depending on direction
             if (dir == 1) {
                 // facing right
-                assert acc_fp_y = KNOCK_ACC_Y_FP;
-                assert acc_fp_x = (-1) * KNOCK_ACC_X_FP;
+                assert vel_fp_y = KNOCK_VEL_Y_FP;
+                assert vel_fp_x = (-1) * KNOCK_VEL_X_FP;
+                assert acc_fp_y = 0;
+                assert acc_fp_x = 0;
             } else {
                 // facing left
-                assert acc_fp_y = KNOCK_ACC_Y_FP;
-                assert acc_fp_x = KNOCK_ACC_X_FP;
+                assert vel_fp_y = KNOCK_VEL_Y_FP;
+                assert vel_fp_x = KNOCK_VEL_X_FP;
+                assert acc_fp_y = 0;
+                assert acc_fp_x = 0;
             }
         } else {
             // apply gravity
-            assert acc_fp_x = 0;
+            assert vel_fp_y = physics_state.vel_fp.y;
+            assert vel_fp_x = physics_state.vel_fp.x;
             assert acc_fp_y = ns_dynamics.GRAVITY_ACC_FP;
+            assert acc_fp_x = 0;
         }
 
         jmp update_vel_knocked;
@@ -224,7 +232,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     // reusing dash's max & min velocity for knocked physics for now
     // note: only x-axis velocity is capped by max & min
     let (vel_fp_nxt_: Vec2) = _euler_forward_vel_no_hitbox(
-        physics_state.vel_fp,
+        Vec2(vel_fp_x, vel_fp_y),
         Vec2(acc_fp_x, acc_fp_y),
         MAX_VEL_DASH_FP,
         MIN_VEL_DASH_FP,
