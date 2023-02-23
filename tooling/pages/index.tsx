@@ -15,10 +15,12 @@ import Agent, { buildAgent } from '../src/types/Agent';
 import { CairoSimulation } from '../src/components/CairoSimulation';
 import ImagePreloader from '../src/components/ImagePreloader';
 import StatusBarPanel from '../src/components/StatusBar';
+import FrameInspector from '../src/components/FrameInspector';
 
 const theme = createTheme({
     typography: {
-        fontFamily: "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;"
+        fontFamily: "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;",
+        fontSize: 12,
     },
     palette: {
         primary: {
@@ -393,8 +395,8 @@ export default function Home() {
                 <ThemeProvider theme={theme}>
                     <Grid container spacing={1}>
                         {/* <Grid item xs={2}></Grid> */}
-                        <Grid item xs={8} className={styles.main}>
-                            <div style={{display:'flex', flexDirection:'column'}}>
+                        <Grid item xs={8}>
+                            <div className={styles.main} style={{display:'flex', flexDirection:'column'}}>
                                 <ImagePreloader
                                     onComplete={() => {
                                         console.log("completed images");
@@ -411,11 +413,17 @@ export default function Home() {
                                             showDebug={checkedShowDebugInfo}
                                         />
                                         <StatusBarPanel 
-                                        integrity_0={testJson.agent_0.frames[animationFrame].body_state.integrity}
-                                        integrity_1={testJson.agent_1.frames[animationFrame].body_state.integrity}
-                                        stamina_0={testJson.agent_0.frames[animationFrame].body_state.stamina}
-                                        stamina_1={testJson.agent_1.frames[animationFrame].body_state.stamina}
+                                            integrity_0={testJson.agent_0.frames[animationFrame].body_state.integrity}
+                                            integrity_1={testJson.agent_1.frames[animationFrame].body_state.integrity}
+                                            stamina_0={testJson.agent_0.frames[animationFrame].body_state.stamina}
+                                            stamina_1={testJson.agent_1.frames[animationFrame].body_state.stamina}
                                          />
+                                        <FrameInspector
+                                            characterLeftType={testJson.agent_0.type}
+                                            characterRightType={testJson.agent_1.type}
+                                            frameLeft={testJson.agent_0.frames[animationFrame]} 
+                                            frameRight={testJson.agent_1.frames[animationFrame]}
+                                        />
                                         <MidScreenControl
                                             runnable = {true}
                                             animationFrame = {animationFrame}
