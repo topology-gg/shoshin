@@ -12,7 +12,7 @@ import Agent, { buildAgent } from '../types/Agent';
 
 
 export const CairoSimulation = ({
-  style, handleClickRunCairoSimulation, warning, handleInputError, input, adversary, setAdversary
+  style, handleClickRunCairoSimulation, handleBuildAgent, warning, handleInputError, adversary, setAdversary
 }) => {
   const ctx = useContext(WASMContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -37,9 +37,11 @@ export const CairoSimulation = ({
   if (!ctx.wasm) {
     return <>...</>;
   }
+  
+  let agent: Agent = handleBuildAgent()
 
   let displayWarning = warning !== ''
-  let displayButton = JSON.stringify(input) !== '{}'
+  let displayButton = JSON.stringify(agent) !== '{}'
 
   const getDummyDefensiveArgs = () => {
     let agent = DEFENSIVE_AGENT;
@@ -70,7 +72,6 @@ export const CairoSimulation = ({
       }
     }
   }
-  console.log("COMBOS", editingCombo)
 
   return (
     <div
@@ -87,7 +88,7 @@ export const CairoSimulation = ({
           variant="outlined"
           disabled={!displayButton}
           onClick={() => {
-              let [combosOffset, combos, mentalStatesOffset, mentalStates, functionsOffset, functions] = flattenAgent(input)
+              let [combosOffset, combos, mentalStatesOffset, mentalStates, functionsOffset, functions] = flattenAgent(agent)
               let [dummyCombosOffset, dummyCombos, dummyMentalStatesOffset, dummyMentalStates, dummyFunctionsOffset, dummyFunctions, dummyActions] = getDummyArgs(adversary)
               try {
                   let shoshinInput = new Int32Array([
@@ -103,7 +104,7 @@ export const CairoSimulation = ({
                       ...mentalStatesOffset,
                       mentalStates.length/3,
                       ...mentalStates,
-                      input.initialState,
+                      agent.initialState,
                       dummyMentalStatesOffset.length,
                       ...dummyMentalStatesOffset,
                       dummyMentalStates.length/3,
@@ -117,15 +118,15 @@ export const CairoSimulation = ({
                       ...dummyFunctionsOffset,
                       dummyFunctions.length/3,
                       ...dummyFunctions,
-                      input.actions.length,
-                      ...input.actions,
+                      agent.actions.length,
+                      ...agent.actions,
                       dummyActions.length,
                       ...dummyActions,
-                      input.character,
+                      agent.character,
                       1
                   ])
                   let output = ctx.wasm.runCairoProgram(shoshinInput);
-                  handleClickRunCairoSimulation(cairoOutputToFrameScene(output))
+                  handleClickRunCairoSimulation(cairoOutputToFrameScene(output), agent)
               } catch (e) {
                   console.log('Got an error running wasm', e)
                   handleInputError(e)

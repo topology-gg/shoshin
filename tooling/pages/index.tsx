@@ -357,17 +357,22 @@ export default function Home() {
         }
     }
 
-    function handleValidateCharacter(mentalStates: MentalState[], combos: number[][], trees: Tree[], functions: Function[]) {
-        let char = Object.keys(Character).indexOf(character)
+    function handleValidateCharacter(new_agent: Agent) {
         setAgent((_) => {
-            return buildAgent(mentalStates, combos, trees, functions, initialMentalState, char)
+            return new_agent
         })
     }
 
-    function handleClickRunCairoSimulation(output: FrameScene) {
+    function handleBuildAgent() {
+        let char = Object.keys(Character).indexOf(character)
+        return buildAgent(mentalStates, combos, trees, functions, initialMentalState, char)
+    }
+    
+    function handleClickRunCairoSimulation(output: FrameScene, new_agent: Agent) {
         setAnimationFrame(0)
+        handleValidateCharacter(new_agent)
         setTestJson((_) => {
-            return { agent_0: { frames: output.agent_0, type: agent.character }, agent_1: { frames: output.agent_1, type: 1 } }
+            return { agent_0: { frames: output.agent_0, type: new_agent.character }, agent_1: { frames: output.agent_1, type: 1 } }
         })
     }
 
@@ -440,7 +445,7 @@ export default function Home() {
                                     handleClickRunCairoSimulation={handleClickRunCairoSimulation}
                                     handleInputError={handleInputError}
                                     warning={runCairoSimulationWarning}
-                                    input={agent}
+                                    handleBuildAgent={handleBuildAgent}
                                     adversary={adversary}
                                     setAdversary={setAdversary}
                                 />
@@ -475,7 +480,6 @@ export default function Home() {
                                 isTreeEditorWarningTextOn={isTreeEditorWarningTextOn}
                                 treeEditorWarningText={treeEditorWarningText}
                                 handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
-                                handleValidateCharacter={handleValidateCharacter}
                             />
                         </Grid>
                     </Grid>
