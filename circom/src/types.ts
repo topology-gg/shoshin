@@ -1,0 +1,60 @@
+export enum OpCodes {
+  ADD = 1,
+  SUB = 2,
+  MUL = 3,
+  DIV = 4,
+  // MOD = 5,
+  ABS = 6,
+  // SQRT = 7,
+  // POW = 8,
+
+  IS_NN = 9,
+  IS_LE = 10,
+  NOT = 11,
+  EQ = 12,
+
+  // MEM = 13,
+  // DICT = 14,
+  // FUNC = 15,
+}
+
+export interface OpBuffer {
+  // Select input/ buffer output left
+  sel_a: number;
+  // Select input/ buffer output right
+  sel_b: number;
+  op_code: OpCodes;
+}
+
+export interface CircomMapping {
+  n_inputs: number;
+  n_buffers: number;
+  op_buffers: OpBuffer[];
+  inputs: number[];
+}
+
+// Leaf index
+type LeftNode = number;
+type RightNode = number;
+
+export type TreeNode = [OpCodes, LeftNode, RightNode];
+export type LeafNode<ValType> = [ValType, -1, -1];
+/**
+ * A tree node with the corresponding index
+ */
+export type IndexedNodeGen<ValType> = [TreeNode | LeafNode<ValType>, number];
+
+/**
+ * A tree node with the corresponding index
+ */
+export type IndexedNode = [TreeNode | LeafNode<number>, number];
+
+export type TreeGen<ValType> = (TreeNode | LeafNode<ValType>)[];
+export type Tree = (TreeNode | LeafNode<number>)[];
+
+/**
+ * A lookup table from the `key` of node/leaf in a tree to some other value.
+ * Normally, this is used to lookup the index of a node or leaf in an a list
+ * and the key is the original index of a node in the `Tree` structure.
+ */
+export type TreeDict = { [node_key: number]: number };
