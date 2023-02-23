@@ -15,10 +15,10 @@ from contracts.constants.constants import (
     Hitboxes,
 )
 from contracts.constants.constants_jessica import (
-    ns_jessica_character_dimension, ns_jessica_body_state_qualifiers
+    ns_jessica_character_dimension, ns_jessica_body_state_qualifiers, ns_jessica_hitbox
 )
 from contracts.constants.constants_antoc import (
-    ns_antoc_character_dimension, ns_antoc_body_state_qualifiers
+    ns_antoc_character_dimension, ns_antoc_body_state_qualifiers, ns_antoc_hitbox
 )
 from contracts.dynamics import _euler_forward_no_hitbox, _euler_forward_consider_hitbox
 
@@ -36,8 +36,7 @@ func is_in_various_states_given_character_type {range_check_ptr}(
     counter: felt,
 ) -> (
     bool_body_in_atk_active: felt,
-    bool_body_in_knocked_early: felt,
-    bool_body_in_knocked_late: felt,
+    bool_body_in_knocked: felt,
     bool_body_in_block: felt,
     bool_body_in_active: felt,
 ) {
@@ -46,6 +45,22 @@ func is_in_various_states_given_character_type {range_check_ptr}(
     } else {
         return ns_antoc_body_state_qualifiers.is_in_various_states (state, counter);
     }
+}
+
+func get_hitbox_dimension{range_check_ptr} (character_type: felt, counter: felt) -> (
+    body_dimension: Vec2
+) {
+    if (character_type == ns_character_type.JESSICA) {
+        return ns_jessica_hitbox.get_body_hitbox_dimension(counter);
+    }
+    if (character_type == ns_character_type.ANTOC) {
+        return ns_antoc_hitbox.get_body_hitbox_dimension(counter);
+    }
+
+    with_attr error_message("Character type is not recognized.") {
+        assert 0 = 1;
+    }
+    return ( body_dimension = Vec2(0,0) );
 }
 
 func _physicality{range_check_ptr}(
@@ -87,15 +102,13 @@ func _physicality{range_check_ptr}(
     //
     let (
         bool_body_in_atk_active_0: felt,
-        bool_body_in_knocked_early_0: felt,
-        bool_body_in_knocked_late_0: felt,
+        bool_body_in_knocked_0: felt,
         bool_body_in_block_0: felt,
         bool_body_in_active_0: felt,
     ) = is_in_various_states_given_character_type (character_type_0, curr_body_state_0.state, curr_body_state_0.counter);
     let (
         bool_body_in_atk_active_1: felt,
-        bool_body_in_knocked_early_1: felt,
-        bool_body_in_knocked_late_1: felt,
+        bool_body_in_knocked_1: felt,
         bool_body_in_block_1: felt,
         bool_body_in_active_1: felt,
     ) = is_in_various_states_given_character_type (character_type_1, curr_body_state_1.state, curr_body_state_1.counter);
@@ -187,24 +200,22 @@ func _physicality{range_check_ptr}(
     local body_dim_0: Vec2;
     local body_dim_1: Vec2;
 
-    if (bool_body_in_knocked_early_0 == 1) {
-        assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
+    if (bool_body_in_knocked_0 == 1) {
+        let (body_dimension_0) = get_hitbox_dimension(character_type_0, curr_body_state_0.counter);
+        assert body_dim_0 = body_dimension_0;
+        tempvar range_check_ptr = range_check_ptr;
     } else {
-        if (bool_body_in_knocked_late_0 == 1) {
-            assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
-        } else {
-            assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H);
-        }
+        assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H);
+        tempvar range_check_ptr = range_check_ptr;
     }
 
-    if (bool_body_in_knocked_early_1 == 1) {
-        assert body_dim_1 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H);
+    if (bool_body_in_knocked_1 == 1) {
+        let (body_dimension_1) = get_hitbox_dimension(character_type_1, curr_body_state_1.counter);
+        assert body_dim_1 = body_dimension_1;
+        tempvar range_check_ptr = range_check_ptr;
     } else {
-        if (bool_body_in_knocked_late_1 == 1) {
-            assert body_dim_1 = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H);
-        } else {
-            assert body_dim_1 = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H);
-        }
+        assert body_dim_1 = Vec2 (ns_antoc_character_dimension.BODY_HITBOX_W, ns_antoc_character_dimension.BODY_HITBOX_H);
+        tempvar range_check_ptr = range_check_ptr;
     }
 
     local hitboxes_0: Hitboxes = Hitboxes(
@@ -252,8 +263,8 @@ func _physicality{range_check_ptr}(
         bool_body_overlap,
         bool_agent_0_ground,
         bool_agent_1_ground,
-        bool_body_in_knocked_early_0 + bool_body_in_knocked_late_0,
-        bool_body_in_knocked_early_1 + bool_body_in_knocked_late_1,
+        bool_body_in_knocked_0,
+        bool_body_in_knocked_1,
     );
 
     // Hitbox 0 update

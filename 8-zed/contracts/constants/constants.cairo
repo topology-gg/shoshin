@@ -1,10 +1,6 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
-from starkware.cairo.common.alloc import alloc
-from starkware.cairo.common.math_cmp import is_le
-from starkware.cairo.common.dict_access import DictAccess
-from lib.bto_cairo_git.lib.tree import Tree
 
 namespace ns_character_type {
     const JESSICA = 0;
@@ -17,7 +13,7 @@ namespace ns_dynamics {
     const SCALE_FP_SQRT = 10 ** 2;
     const DT_FP = 10 ** 3;  // 0.1
 
-    const GRAVITY_ACC_FP = -200 * ns_dynamics.SCALE_FP;
+    const GRAVITY_ACC_FP = -2100 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_stamina {
