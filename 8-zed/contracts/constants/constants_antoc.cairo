@@ -19,7 +19,7 @@ namespace ns_antoc_dynamics {
     const DASH_ACC_FP = 3000 * ns_dynamics.SCALE_FP;
 
     const KNOCK_VEL_X_FP = 20 * ns_dynamics.SCALE_FP;
-    const KNOCK_VEL_Y_FP = 30 * ns_dynamics.SCALE_FP;
+    const KNOCK_VEL_Y_FP = 50 * ns_dynamics.SCALE_FP;
 
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
 }
@@ -68,7 +68,7 @@ namespace ns_antoc_body_state_duration {
     const VERT = 10;
     const BLOCK = 6; // active for counter == 1,2,3,4
     const HURT = 3;
-    const KNOCKED = 20;
+    const KNOCKED = 11;
     const MOVE_FORWARD = 7;
     const MOVE_BACKWARD = 6;
     const DASH_FORWARD = 9;
@@ -81,7 +81,7 @@ namespace ns_antoc_body_state {
     const VERT = 20;  // 10 frames
     const BLOCK = 40;    // 6 frames
     const HURT = 50;     // 3 frames
-    const KNOCKED = 60;  // 20 frames
+    const KNOCKED = 60;  // 11 frames
     const MOVE_FORWARD = 90;  // 7 frames
     const MOVE_BACKWARD = 100;  // 6 frames
     const DASH_FORWARD = 110;  // 9 frames
@@ -137,9 +137,9 @@ namespace ns_antoc_body_state_qualifiers {
             return 0;
         }
 
-        // counter <= 4
-        let bool_counter_le_4 = is_le (counter, 4);
-        if (bool_counter_le_4 == 1) {
+        // counter <= 2
+        let bool_counter_le_2 = is_le (counter, 2);
+        if (bool_counter_le_2 == 1) {
             return 1;
         }
         return 0;
@@ -150,9 +150,9 @@ namespace ns_antoc_body_state_qualifiers {
             return 0;
         }
 
-        // counter >= 5
-        let bool_counter_ge_5 = is_le(5, counter);
-        if (bool_counter_ge_5 == 1) {
+        // counter >= 3
+        let bool_counter_ge_3 = is_le(3, counter);
+        if (bool_counter_ge_3 == 1) {
             return 1;
         }
         return 0;

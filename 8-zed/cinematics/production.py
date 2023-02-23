@@ -229,15 +229,6 @@ SPRITES_ANTOC = {
     68: pygame.image.load("../art/antoc/antoc-knocked/frame_8.png"),
     69: pygame.image.load("../art/antoc/antoc-knocked/frame_9.png"),
     70: pygame.image.load("../art/antoc/antoc-knocked/frame_10.png"),
-    71: pygame.image.load("../art/antoc/antoc-knocked/frame_11.png"),
-    72: pygame.image.load("../art/antoc/antoc-knocked/frame_12.png"),
-    73: pygame.image.load("../art/antoc/antoc-knocked/frame_13.png"),
-    74: pygame.image.load("../art/antoc/antoc-knocked/frame_14.png"),
-    75: pygame.image.load("../art/antoc/antoc-knocked/frame_15.png"),
-    76: pygame.image.load("../art/antoc/antoc-knocked/frame_16.png"),
-    77: pygame.image.load("../art/antoc/antoc-knocked/frame_17.png"),
-    78: pygame.image.load("../art/antoc/antoc-knocked/frame_18.png"),
-    79: pygame.image.load("../art/antoc/antoc-knocked/frame_19.png"),
     90: pygame.image.load("../art/antoc/antoc-forward-walk/frame_0.png"),
     91: pygame.image.load("../art/antoc/antoc-forward-walk/frame_1.png"),
     92: pygame.image.load("../art/antoc/antoc-forward-walk/frame_2.png"),
@@ -416,7 +407,7 @@ while True:
         #
         # Draw agent
         #
-        draw_character(frame, character_type, flip=agent_idx)
+        draw_character(frame, character_type, flip=0)
 
         #
         # Draw debug view
