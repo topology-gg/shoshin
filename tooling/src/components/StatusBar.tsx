@@ -58,6 +58,7 @@ const StaminaBar = (props: statusBarProps) => {
                     height: 5,
                     backgroundColor: "white",
                 }}
+                key={`status-bar-value-${i}`}
             ></div>
         );
     }
