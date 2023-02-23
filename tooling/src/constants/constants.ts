@@ -402,3 +402,16 @@ const MENTAL_STATES_DEFENSIVE_AGENT: MentalState[] = [
 ]
 const COMBOS_DEFENSIVE_AGENT: number[][] = [[3, 3, 3, 3, 3, 3], [5, 5, 5, 5, 5, 5]]
 export const DEFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_DEFENSIVE_AGENT, COMBOS_DEFENSIVE_AGENT, DECISION_TREE_DEFENSIVE_AGENT, INITIAL_FUNCTIONS, 0, 1)
+
+export const DECISION_TREE_COMBO_AGENT = [
+    {
+        nodes: [
+            { id: 'if F0', isChild: false },
+            { id: 'MS COMBO', isChild: true, branch: Direction.Left },
+            { id: 'MS COMBO', isChild: true, branch: Direction.Right },
+        ]
+    }
+]
+export const MENTAL_STATES_COMBO_AGENT: MentalState[] = [
+    { state: 'MS COMBO', action: 101 },
+]

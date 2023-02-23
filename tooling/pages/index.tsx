@@ -4,13 +4,12 @@ import React, { useState } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import MidScreenControl from '../src/components/MidScreenControl';
-import LoadTestJson from '../src/components/LoadTestJson';
 import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
 import { FrameScene, TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
-import { Function, FunctionElement, parseFunction, verifyValidFunction } from '../src/types/Function'
-import { MentalState, parseMentalState } from '../src/types/MentalState';
+import { Function, FunctionElement, verifyValidFunction } from '../src/types/Function'
+import { MentalState } from '../src/types/MentalState';
 import { Character, INITIAL_COMBOS, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
 import Agent, { buildAgent } from '../src/types/Agent';
 import { CairoSimulation } from '../src/components/CairoSimulation';
@@ -72,7 +71,7 @@ export default function Home() {
     const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
     const [agent, setAgent] = useState<Agent>({})
     const [character, setCharacter] = useState<Character>(Character.Jessica)
-    const [isDefensiveAdversary, setIsDefensiveAdversary] = useState<boolean>(true)
+    const [adversary, setAdversary] = useState<string>('defensive')
 
     // Warnings
     const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
@@ -342,6 +341,14 @@ export default function Home() {
 
     function handleValidateCombo(combo: number[], index: number) {
         if (combo.length > 0) {
+            if (index === null) {
+                setCombos((prev) => {
+                    let prev_copy: number[][] = JSON.parse(JSON.stringify(prev))
+                    prev_copy.push(combo)
+                    return prev_copy
+                })
+                return
+            }
             setCombos((prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev))
                 prev_copy[index] = combo
@@ -434,8 +441,8 @@ export default function Home() {
                                     handleInputError={handleInputError}
                                     warning={runCairoSimulationWarning}
                                     input={agent}
-                                    isDefensiveAdversary={isDefensiveAdversary}
-                                    setIsDefensiveAdversary={setIsDefensiveAdversary}
+                                    adversary={adversary}
+                                    setAdversary={setAdversary}
                                 />
                             </div>
                         </Grid>
