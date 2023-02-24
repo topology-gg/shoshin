@@ -76,3 +76,7 @@ export function flattenAgent(agent: Agent) {
         new Int32Array(functions),
     ]
 }
+
+export function equals(agent_1: Agent, agent_2: Agent) {
+    return JSON.stringify(agent_1) === JSON.stringify(agent_2)
+}
