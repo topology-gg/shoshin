@@ -2,7 +2,7 @@ import {
   CircomMapping,
   IndexedNode,
   LeafNode,
-  OpBuffer,
+  OpTrace,
   OpCodes,
   Dag,
   DagDict,
@@ -11,8 +11,8 @@ import {
 import { deepcopy, get_parent_node, has_key } from '../utils';
 
 interface CircomShoshingParams {
-  INPUT_BUFFER_SIZE: number;
-  CONDITIONAL_BUFFER_SIZE: number;
+  INPUT_TRACE_SIZE: number;
+  CONDITIONAL_TRACE_SIZE: number;
   CONSTS_INPUT_SIZE: number;
   PUBLIC_INPUT_SIZE: number;
   N_SIGNLE_CLAUSE_CONDITIONALS: number;
@@ -22,12 +22,12 @@ interface CircomShoshingParams {
 // Say we have each leaf
 
 // TODO: notes
-// Finding number of leaves / buffers should be straight forward
-// I guess we just have to "reorder" our input such that the leaves come first, then the lowest level buffers and so on
+// Finding number of leaves / traces should be straight forward
+// I guess we just have to "reorder" our input such that the leaves come first, then the lowest level traces and so on
 
 // Okay
 // 1) Traverse the dag and add all **leaves** to the starting index (with associated lookup). Also, create dup dag w/o the leaves
-// 2) Do a depth ordered traversal on the dag w/o leaves to order the buffers. Use this to fill in the op_buffers
+// 2) Do a depth ordered traversal on the dag w/o leaves to order the traces. Use this to fill in the op_traces
 
 const dfs_traverse = (
   parent_idx: number,
@@ -104,8 +104,8 @@ export const dag_to_circom = (
     dag_idxed,
     leaves_to_inputs
   );
-  // Mapping node indices to their buffer indices
-  const nodes_to_buffers = nodes_depth_first_traversal.reduce(
+  // Mapping node indices to their trace indices
+  const nodes_to_traces = nodes_depth_first_traversal.reduce(
     (prev_dict, node, i) => {
       const [_tmp, node_idx] = node;
       prev_dict[node_idx] = i;
@@ -137,18 +137,16 @@ export const dag_to_circom = (
       } else {
         return idx; // a lookup into the inputs // TODO: verify
       }
-    } else if (has_key(dag_idx, nodes_to_buffers)) {
+    } else if (has_key(dag_idx, nodes_to_traces)) {
       return (
-        nodes_to_buffers[dag_idx] +
-        max_number_dict_inputs +
-        max_number_constants
+        nodes_to_traces[dag_idx] + max_number_dict_inputs + max_number_constants
       );
     } else {
-      throw `An unexpected error occurred, dag idx ${dag_idx} should be in the inputs (leaves) or buffers`;
+      throw `An unexpected error occurred, dag idx ${dag_idx} should be in the inputs (leaves) or traces`;
     }
   };
 
-  const op_buffers = nodes_depth_first_traversal.map(
+  const op_traces = nodes_depth_first_traversal.map(
     ([[instr, left, right], idx]) => {
       const op_code: OpCodes = instr;
       const sel_a = left === -1 ? 0 : dag_idx_to_selection_idx(left);
@@ -163,8 +161,8 @@ export const dag_to_circom = (
 
   return {
     n_inputs,
-    n_buffers: dag.length - n_inputs,
-    op_buffers,
+    n_traces: dag.length - n_inputs,
+    op_traces,
     inputs_constant,
   };
 };

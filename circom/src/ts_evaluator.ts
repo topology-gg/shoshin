@@ -13,6 +13,10 @@ import { get_parent_node, has_key } from './utils';
 const p = BigInt(
   '21888242871839275222246405745257275088548364400416034343698204186575808495617'
 );
+
+const zero = BigInt(0).valueOf();
+const one = BigInt(1).valueOf();
+
 const dag_to_big_int = (t: IndexedNode[]): IndexedNodeGen<BigInt>[] => {
   return t.map(
     ([[val_or_op, left, right], idx]) =>
@@ -33,9 +37,9 @@ const eval_single_op = (op: OpCodes, val: bigint) => {
       return val < 0 ? val * BigInt(-1) : val;
       break;
     case OpCodes.IS_NN:
-      return val >= 0 ? 1 : 0;
+      return val >= 0 ? one : zero;
     case OpCodes.NOT:
-      return val === BigInt(0).valueOf() ? val >= 1 : 0;
+      return val === BigInt(0).valueOf() ? val >= one : zero;
     default:
       throw `Opcode ${op} is not a single input opcode`;
   }
@@ -53,9 +57,9 @@ const eval_double_inp_op = (op: OpCodes, a: bigint, b: bigint) => {
       // Automatically gives integer division as we are working with big ints
       return (BigInt(a).valueOf() / BigInt(b).valueOf()) % p.valueOf();
     case OpCodes.IS_LE:
-      return a < b ? 1 : 0;
+      return a < b ? one : zero;
     case OpCodes.EQ:
-      return a === b ? 1 : 0;
+      return a === b ? one : zero;
     default:
       throw `Opcode ${op} is not a double input opcode`;
   }

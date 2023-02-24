@@ -18,18 +18,18 @@ export enum OpCodes {
   // FUNC = 15,
 }
 
-export interface OpBuffer {
-  // Select input/ buffer output left
+export interface OpTrace {
+  // Select input/ trace output left
   sel_a: number;
-  // Select input/ buffer output right
+  // Select input/ trace output right
   sel_b: number;
   op_code: OpCodes;
 }
 
 export interface CircomMapping {
   n_inputs: number;
-  n_buffers: number;
-  op_buffers: OpBuffer[];
+  n_traces: number;
+  op_traces: OpTrace[];
   inputs_constant: number[];
 }
 
