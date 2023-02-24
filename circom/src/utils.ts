@@ -17,3 +17,6 @@ export const get_parent_node = (tree_idxed: IndexedNode[]): number => {
     throw `The tree has more than one root and is thus invalid`;
   return idx;
 };
+
+export const has_key = (key: number, dict: { [k: number | string]: any }) =>
+  !(dict[key] === undefined || dict[key] === null);
