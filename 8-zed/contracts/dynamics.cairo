@@ -374,8 +374,6 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
         //
         let sign_vx_cand_0 = sign(physics_state_cand_0.vel_fp.x);
         let sign_vx_cand_1 = sign(physics_state_cand_1.vel_fp.x);
-        local vx_fp_cand_reversed_0;
-        local vx_fp_cand_reversed_1;
         let bool_1_to_the_right_of_0 = sign(physics_state_1.pos.x - physics_state_0.pos.x);
 
         local abs_distance;
@@ -406,24 +404,38 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
         }
         tempvar range_check_ptr = range_check_ptr;
 
-        // note: assuming Jessica and Antoc shares the same BODY_HITBOX_W !
+        local direction;
+        // note: body_dim_i contains the current body dimension
+        // fix direction of backoff based on how agents are placed
         if (bool_1_to_the_right_of_0 == 1) {
             assert abs_distance = body_dim_0.x - (physics_state_cand_1.pos.x - physics_state_cand_0.pos.x);
-            assert vx_fp_cand_reversed_0 = (-1) * sign_vx_cand_0 * physics_state_cand_0.vel_fp.x;
-            assert vx_fp_cand_reversed_1 = (-1) * sign_vx_cand_1 * physics_state_cand_1.vel_fp.x;
+            assert direction = -1;
         } else {
             assert abs_distance = body_dim_1.x - (physics_state_cand_0.pos.x - physics_state_cand_1.pos.x);
-            assert vx_fp_cand_reversed_0 = sign_vx_cand_0 * physics_state_cand_0.vel_fp.x;
-            assert vx_fp_cand_reversed_1 = sign_vx_cand_1 * physics_state_cand_1.vel_fp.x;
+            assert direction = 1;
         }
+        // abs(physics_state_cand_0.vel_fp.x) = sign_vx_cand_0 * physics_state_cand_0.vel_fp.x;
+        // direction = -1 if 1 to the right of 0 else 1
+        local vx_fp_cand_reversed_0 = direction * sign_vx_cand_0 * physics_state_cand_0.vel_fp.x;
+        local vx_fp_cand_reversed_1 = (-direction) * sign_vx_cand_1 * physics_state_cand_1.vel_fp.x;
         let abs_distance_fp_fp = abs_distance * ns_dynamics.SCALE_FP * ns_dynamics.SCALE_FP;
 
-        let (time_required_to_separate_fp, _) = unsigned_div_rem(
-            abs_distance_fp_fp, abs_relative_vx_fp
-        );
+        local back_off_x_0_scaled;
+        local back_off_x_1_scaled;
+        // avoid division by 0 if abs_relative_vx_fp == 0 
+        // use direction in order to set the sign for back_off_x_i_scaled
+        if (abs_relative_vx_fp == 0) {
+            let abs_distance_fp_half = abs_distance_fp_fp / 2;
+            assert back_off_x_0_scaled = (direction) *  abs_distance_fp_half * (2 * move_0 - move_1);
+            assert back_off_x_1_scaled = (-direction) * abs_distance_fp_half * (2 * move_1 - move_0);
+            tempvar range_check_ptr = range_check_ptr;
+        } else {
+            let (time_required_to_separate_fp, _) = unsigned_div_rem(abs_distance_fp_fp, abs_relative_vx_fp);
+            assert back_off_x_0_scaled = vx_fp_cand_reversed_0 * time_required_to_separate_fp;
+            assert back_off_x_1_scaled = vx_fp_cand_reversed_1 * time_required_to_separate_fp;
+            tempvar range_check_ptr = range_check_ptr;
+        }
 
-        let back_off_x_0_scaled = vx_fp_cand_reversed_0 * time_required_to_separate_fp;
-        let back_off_x_1_scaled = vx_fp_cand_reversed_1 * time_required_to_separate_fp;
         let (back_off_x_0, _) = signed_div_rem(
             back_off_x_0_scaled,
             ns_dynamics.SCALE_FP * ns_dynamics.SCALE_FP,
