@@ -59,14 +59,20 @@ export enum Perceptible {
     OpponentBodyCounter = 111,
 }
 
+// Verify that the input function is valid
 export function verifyValidFunction(f: Function, confirm: boolean) {
+    // count the open and close parenthesis
     let countParenthesis = 0
+    // count the open and close absolute values
     let countAbs = 0
     let prevElement = { type: ElementType.Operator } as FunctionElement
     for (let e of f?.elements) {
+        // if count negative, exit early
         if (countParenthesis < 0 || countAbs < 0) {
             return false
         }
+        // check the following rules are applied: operator must be preceded by
+        // constant, perceptible, not operator, or closing of absolute/parenthesis
         switch (e?.type) {
             case ElementType.Operator: {
                 if (e?.value == Operator.OpenParenthesis) {
@@ -94,12 +100,14 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
                 }
                 break
             }
+            // constant must be preceded by an operator
             case ElementType.Constant: {
                 if (prevElement.type !== ElementType.Operator) {
                     return false
                 }
                 break
             }
+            // perceptible must be preceded by an operator
             case ElementType.Perceptible: {
                 if (prevElement.type !== ElementType.Operator) {
                     return false
@@ -122,7 +130,7 @@ export function parseFunction(f: Function) {
 
 function parseInner(f: string) {
     f = f.trim()
-    // Check if the first value is not a !
+    // Check if the first value is not a ! operator
     if (f[0] === '!') {
         return { value: OPERATOR_VALUE['!'], left: -1, right: parseInner(f.slice(1)) }
     }

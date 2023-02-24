@@ -1,7 +1,7 @@
 ///! This crate allows to run the Shoshin loop written in Cairo on the cairo-rs VM.
 mod types;
 mod utils;
-use anyhow::{Error, Ok};
+use anyhow::Error;
 use cairo_felt::{self, Felt};
 use cairo_vm::types::relocatable::Relocatable;
 use cairo_vm::vm::errors::cairo_run_errors::CairoRunError;

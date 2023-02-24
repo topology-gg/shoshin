@@ -87,7 +87,9 @@ export const CairoSimulation = ({
           variant="outlined"
           disabled={!displayButton}
           onClick={() => {
+              // flatten the user input agent
               let [combosOffset, combos, mentalStatesOffset, mentalStates, functionsOffset, functions] = flattenAgent(agent)
+              // flatten the dummy agent
               let [dummyCombosOffset, dummyCombos, dummyMentalStatesOffset, dummyMentalStates, dummyFunctionsOffset, dummyFunctions, dummyActions] = getDummyArgs(adversary)
               try {
                   let shoshinInput = new Int32Array([
