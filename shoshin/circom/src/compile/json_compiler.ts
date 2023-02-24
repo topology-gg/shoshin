@@ -8,7 +8,7 @@ import {
   TreeDict,
   TreeNode,
 } from '../types';
-import { deepcopy, get_parent_node } from '../utils';
+import { deepcopy, get_parent_node, has_key } from '../utils';
 
 interface CircomShoshingParams {
   INPUT_BUFFER_SIZE: number;
@@ -28,9 +28,6 @@ interface CircomShoshingParams {
 // Okay
 // 1) Traverse the tree and add all **leaves** to the starting index (with associated lookup). Also, create dup tree w/o the leaves
 // 2) Do a depth ordered traversal on the tree w/o leaves to order the buffers. Use this to fill in the op_buffers
-
-const has_key = (key: number, dict: TreeDict) =>
-  !(dict[key] === undefined || dict[key] === null);
 
 const dfs_traverse = (
   parent_idx: number,
@@ -58,10 +55,6 @@ const dfs_traverse = (
 
   aug_recursive_dfs(parent_node);
 
-  console.debug(
-    `Have recursive tree ordered as ${depth_ordered_visited_non_leafs}}`
-  );
-
   return depth_ordered_visited_non_leafs;
 };
 
@@ -70,9 +63,6 @@ export const tree_to_circom = (
   tree: Tree,
   max_number_inputs: number
 ): CircomMapping => {
-  const dup_tree_kv: { [ind: string]: TreeNode | LeafNode<number> } =
-    Object.assign({}, tree) as any;
-
   const tree_idxed = tree.map((t, i) => [t, i] as IndexedNode);
   const leave_idxs = tree_idxed.filter(
     ([t, i]) => t[1] === -1 && t[2] === -1

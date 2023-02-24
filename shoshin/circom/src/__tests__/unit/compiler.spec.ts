@@ -1,20 +1,12 @@
-import { resolve } from 'path';
-import { Tree, tree_to_circom } from '../../compile/json_compiler';
-import { OpCodes } from '../../types';
+import { tree_to_circom } from '../../compile/json_compiler';
+import { tree_simple } from './tree_test_common';
 
-describe.only('compiler', () => {
+describe('compiler', () => {
   it('should compile a basic Shoshin tree to the circom representation', () => {
     const max_number_inputs = 10;
-    const tree: Tree = [
-      [OpCodes.IS_LE, 1, 3],
-      [OpCodes.ABS, -1, 2],
-      [-10, -1, -1],
-      [OpCodes.ADD, 4, 5],
-      [2, -1, -1],
-      [7, -1, -1],
-    ];
+
     const { n_inputs, n_buffers, op_buffers, inputs } = tree_to_circom(
-      tree,
+      tree_simple,
       max_number_inputs
     );
     expect(n_inputs).toEqual(3);
