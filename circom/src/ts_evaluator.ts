@@ -4,16 +4,16 @@ import {
   IndexedNodeGen,
   LeafNode,
   OpCodes,
-  Tree,
-  TreeGen,
-  TreeNode,
+  Dag,
+  DagGen,
+  DagNode,
 } from './types';
 import { get_parent_node, has_key } from './utils';
 
 const p = BigInt(
   '21888242871839275222246405745257275088548364400416034343698204186575808495617'
 );
-const tree_to_big_int = (t: IndexedNode[]): IndexedNodeGen<BigInt>[] => {
+const dag_to_big_int = (t: IndexedNode[]): IndexedNodeGen<BigInt>[] => {
   return t.map(
     ([[val_or_op, left, right], idx]) =>
       [
@@ -62,12 +62,12 @@ const eval_double_inp_op = (op: OpCodes, a: bigint, b: bigint) => {
 };
 
 /**
- * @brief Evaluate the tree through DFS
+ * @brief Evaluate the dag through DFS
  *
- * Use DFS to search through the tree. When `exiting` a node, we evaluate it.
+ * Use DFS to search through the dag. When `exiting` a node, we evaluate it.
  * Essentially, exiting a node means that all children
  */
-const dfs_eval = (parent_idx: number, tree: IndexedNodeGen<BigInt>[]) => {
+const dfs_eval = (parent_idx: number, dag: IndexedNodeGen<BigInt>[]) => {
   const memo: { [k: number]: BigInt } = {};
   const recursive_dfs_eval = (curr: IndexedNodeGen<BigInt>): BigInt => {
     const [[val_or_op, left, right], idx] = curr;
@@ -83,14 +83,14 @@ const dfs_eval = (parent_idx: number, tree: IndexedNodeGen<BigInt>[]) => {
     let ret = BigInt(0);
     // We have a single child node
     if (left === -1) {
-      const right_val = recursive_dfs_eval(tree[right]);
+      const right_val = recursive_dfs_eval(dag[right]);
       ret = BigInt(eval_single_op(val_or_op as number, right_val.valueOf()));
     }
 
     // We have a dual child node
     else {
-      const left_val = recursive_dfs_eval(tree[left]);
-      const right_val = recursive_dfs_eval(tree[right]);
+      const left_val = recursive_dfs_eval(dag[left]);
+      const right_val = recursive_dfs_eval(dag[right]);
       ret = BigInt(
         eval_double_inp_op(
           val_or_op as number,
@@ -102,15 +102,15 @@ const dfs_eval = (parent_idx: number, tree: IndexedNodeGen<BigInt>[]) => {
     memo[idx] = ret;
     return ret;
   };
-  return recursive_dfs_eval(tree[parent_idx]);
+  return recursive_dfs_eval(dag[parent_idx]);
 };
 
-// Evaluate the tree in Typescript. This is useful for fuzzing or just getting the output without the circom steps
+// Evaluate the dag in Typescript. This is useful for fuzzing or just getting the output without the circom steps
 //
 // TODO: big numbers and modding over your the circom Prime
-export const ts_tree_evaluator = (tree_inp: Tree): BigInt => {
-  const tree_idxed = tree_inp.map((t, i) => [t, i] as IndexedNode);
-  const parent_idx = get_parent_node(tree_idxed);
-  const tree = tree_to_big_int(tree_idxed);
-  return dfs_eval(parent_idx, tree);
+export const ts_dag_evaluator = (dag_inp: Dag): BigInt => {
+  const dag_idxed = dag_inp.map((t, i) => [t, i] as IndexedNode);
+  const parent_idx = get_parent_node(dag_idxed);
+  const dag = dag_to_big_int(dag_idxed);
+  return dfs_eval(parent_idx, dag);
 };
