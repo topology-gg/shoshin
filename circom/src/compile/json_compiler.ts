@@ -35,18 +35,27 @@ const dfs_traverse = (
   leave_dict: DagDict
 ): IndexedNode[] => {
   const depth_ordered_visited_non_leafs: IndexedNode[] = [];
+  const visited: DagDict = {};
+
   const aug_recursive_dfs = (curr: IndexedNode) => {
     const left = curr[0][1];
     const right = curr[0][2];
 
     // We have a left, non-leaf child
-    if (left !== -1 && !has_key(left, leave_dict)) {
+    if (left !== -1 && !has_key(left, leave_dict) && !has_key(left, visited)) {
       aug_recursive_dfs(dag[left]);
+      visited[left] = 1;
     }
     // We have a right child
-    if (right !== -1 && !has_key(right, leave_dict)) {
+    if (
+      right !== -1 &&
+      !has_key(right, leave_dict) &&
+      !has_key(right, visited)
+    ) {
       aug_recursive_dfs(dag[right]);
+      visited[right] = 1;
     }
+
     depth_ordered_visited_non_leafs.push(deepcopy(curr));
   };
 
