@@ -70,12 +70,23 @@ const dfs_traverse = (
 // TODO: support DAG?
 export const dag_to_circom = (
   dag: Dag,
-  max_number_inputs: number
+  max_number_constants: number,
+  max_number_dict_inputs: number
 ): CircomMapping => {
   const dag_idxed = dag.map((t, i) => [t, i] as IndexedNode);
-  const leave_idxs = dag_idxed.filter(
+  // TODO: or DICT lookup
+  // TODO: or we have to build a map with DICT
+
+  // TODO: verify numb constants in range
+  const leave_idxs_constants = dag_idxed.filter(
     ([t, i]) => t[1] === -1 && t[2] === -1
-  ) as [LeafNode<number>, number][];
+  );
+  // TODO: verify DICT inputs in range
+  const leave_idxs_dict = dag_idxed.filter(
+    ([[op, left, right], i]) => right !== -1 && op === OpCodes.DICT
+  );
+
+  const leave_idxs = leave_idxs_constants.concat(leave_idxs_dict);
   const n_inputs = leave_idxs.length;
 
   // The reverse of leave_idxs, maps circom inputs to leaves
@@ -104,13 +115,32 @@ export const dag_to_circom = (
   );
 
   // Get the value of the leaves
-  const inputs = leave_idxs.map(([[val, _l, _r], _i]) => val);
+  const inputs_constant = leave_idxs_constants.map(
+    ([[val, _l, _r], _i]) => val
+  );
+
+  // TODO: for Lev tomorrow
+  /**
+   * Basically check that this constant/ dict thing makes sense with basic tests (which use both dict and constants)
+   * Then, FUZZING!
+   */
 
   const dag_idx_to_selection_idx = (dag_idx: number) => {
     if (has_key(dag_idx, leaves_to_inputs)) {
-      return leaves_to_inputs[dag_idx];
+      const idx = leaves_to_inputs[dag_idx];
+      if (idx >= leave_idxs_constants.length) {
+        const dict_idx =
+          leave_idxs_dict[idx - leave_idxs_constants.length][0][2];
+        return dict_idx; // a lookup into the input DICT
+      } else {
+        return idx + max_number_dict_inputs; // a lookup into the inputs // TODO: verify
+      }
     } else if (has_key(dag_idx, nodes_to_buffers)) {
-      return nodes_to_buffers[dag_idx] + max_number_inputs;
+      return (
+        nodes_to_buffers[dag_idx] +
+        max_number_dict_inputs +
+        max_number_constants
+      );
     } else {
       throw `An unexpected error occurred, dag idx ${dag_idx} should be in the inputs (leaves) or buffers`;
     }
@@ -133,6 +163,6 @@ export const dag_to_circom = (
     n_inputs,
     n_buffers: dag.length - n_inputs,
     op_buffers,
-    inputs,
+    inputs_constant,
   };
 };

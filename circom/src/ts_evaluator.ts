@@ -67,17 +67,26 @@ const eval_double_inp_op = (op: OpCodes, a: bigint, b: bigint) => {
  * Use DFS to search through the dag. When `exiting` a node, we evaluate it.
  * Essentially, exiting a node means that all children
  */
-const dfs_eval = (parent_idx: number, dag: IndexedNodeGen<BigInt>[]) => {
+const dfs_eval = (
+  parent_idx: number,
+  dag: IndexedNodeGen<BigInt>[],
+  dict: BigInt[]
+) => {
   const memo: { [k: number]: BigInt } = {};
   const recursive_dfs_eval = (curr: IndexedNodeGen<BigInt>): BigInt => {
     const [[val_or_op, left, right], idx] = curr;
 
     if (has_key(idx, memo)) return memo[idx];
 
-    // Return the value
+    // Return the value as we have a constant
     if (left === -1 && right === -1) {
       memo[idx] = val_or_op as BigInt;
       return val_or_op as BigInt;
+    }
+
+    if (val_or_op === OpCodes.DICT) {
+      memo[idx] = dict[right];
+      return dict[right];
     }
 
     let ret = BigInt(0);
@@ -108,9 +117,16 @@ const dfs_eval = (parent_idx: number, dag: IndexedNodeGen<BigInt>[]) => {
 // Evaluate the dag in Typescript. This is useful for fuzzing or just getting the output without the circom steps
 //
 // TODO: big numbers and modding over your the circom Prime
-export const ts_dag_evaluator = (dag_inp: Dag): BigInt => {
+export const ts_dag_evaluator = (dag_inp: Dag, dict: number[]): BigInt => {
+  const dict_big_int = dict.map(BigInt);
   const dag_idxed = dag_inp.map((t, i) => [t, i] as IndexedNode);
   const parent_idx = get_parent_node(dag_idxed);
   const dag = dag_to_big_int(dag_idxed);
-  return dfs_eval(parent_idx, dag);
+  // TODO: dict...
+
+  // DICT:
+  /*
+
+  */
+  return dfs_eval(parent_idx, dag, dict_big_int);
 };
