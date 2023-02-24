@@ -16,7 +16,7 @@ template PoseidonElemCommitment() {
    comm === pos.out;
 }
 
-template FDWrapper(INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, FD_CONST_SIZE, N_SIGNLE_CLAUSE_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
+template FDWrapper(INPUT_TRACE_SIZE, PUBLIC_INPUT_SIZE, FD_CONST_SIZE, N_SIGNLE_CLAUSE_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
    // assert(PUBLIC_INPUT_SIZE <= INPUT_SIZE - 1);
    var INPUT_SIZE = 1 + PUBLIC_INPUT_SIZE + FD_CONST_SIZE;
    var FD_DESC_SIZE =  FD_CONST_SIZE + // The number of ``constants'' in the FD
@@ -24,8 +24,8 @@ template FDWrapper(INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, FD_CONST_SIZE, N_SIGNLE
                         (N_SIGNLE_CLAUSE_CONDITIONALS * MAX_AND_SIZE) + // The number of and selectors for conditionals
                         (N_SIGNLE_CLAUSE_CONDITIONALS * 2) + // The number of signals for muxing the conditional types
                         (N_SIGNLE_CLAUSE_CONDITIONALS * 2) + // The number of signals for selecting the mux input
-                        (INPUT_BUFFER_SIZE * 3) + // The number of signals for selecting the buffer inputs
-                        (INPUT_BUFFER_SIZE * 2); // The number of signals for selecting the buffer mux type
+                        (INPUT_TRACE_SIZE * 3) + // The number of signals for selecting the trace inputs
+                        (INPUT_TRACE_SIZE * 2); // The number of signals for selecting the trace mux type
 
 	/************* Next Intent *************/
    signal public input next_intent;
@@ -61,13 +61,13 @@ template FDWrapper(INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, FD_CONST_SIZE, N_SIGNLE
 	signal input mind_constant_inputs[FD_CONST_SIZE];
 	// Range over 0-2 to select from eq, lt, and lte
 	signal input mind_conditional_mux_sel[N_SIGNLE_CLAUSE_CONDITIONALS][2];
-	// Range over inputs and buffer inputs for the inputs into conditionals
+	// Range over inputs and trace inputs for the inputs into conditionals
 	signal input mind_conditional_inputs_mux_sel[N_SIGNLE_CLAUSE_CONDITIONALS][2];
-	// Range over selectors for the inputs and buffers with smaller indices so we can chain things
-	signal input mind_buffer_mux_sel[INPUT_BUFFER_SIZE][3];
-	signal input mind_buffer_type_sel[INPUT_BUFFER_SIZE][2];
+	// Range over selectors for the inputs and traces with smaller indices so we can chain things
+	signal input mind_trace_mux_sel[INPUT_TRACE_SIZE][3];
+	signal input mind_trace_type_sel[INPUT_TRACE_SIZE][2];
 
-   component fd_mind = FDStep(INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_SIGNLE_CLAUSE_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE);
+   component fd_mind = FDStep(INPUT_TRACE_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_SIGNLE_CLAUSE_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE);
    mind_FD_comm ==> fd_mind.FD_comm;
    mind_FD_comm_randomness ==> fd_mind.FD_comm_randomness;
    mind ==> fd_mind.mind;
@@ -85,13 +85,13 @@ template FDWrapper(INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, FD_CONST_SIZE, N_SIGNLE
       mind_conditional_inputs_mux_sel[i][0] ==> fd_mind.conditional_inputs_mux_sel[0];
       mind_conditional_inputs_mux_sel[i][1] ==> fd_mind.conditional_inputs_mux_sel[1];
    }
-   for (var i = 0; i < INPUT_BUFFER_SIZE; i++) {
-      mind_buffer_mux_sel[i][0] = fd_mind.buffer_mux_sel[i][0];
-      mind_buffer_mux_sel[i][1] = fd_mind.buffer_mux_sel[i][1];
-      mind_buffer_mux_sel[i][2] = fd_mind.buffer_mux_sel[i][2];
+   for (var i = 0; i < INPUT_TRACE_SIZE; i++) {
+      mind_trace_mux_sel[i][0] = fd_mind.trace_mux_sel[i][0];
+      mind_trace_mux_sel[i][1] = fd_mind.trace_mux_sel[i][1];
+      mind_trace_mux_sel[i][2] = fd_mind.trace_mux_sel[i][2];
 
-      mind_buffer_type_sel[i][0] = fd_mind.buffer_type_sel[i][0];
-      mind_buffer_type_sel[i][1] = fd_mind.buffer_type_sel[i][1];
+      mind_trace_type_sel[i][0] = fd_mind.trace_type_sel[i][0];
+      mind_trace_type_sel[i][1] = fd_mind.trace_type_sel[i][1];
    }
 
 	//  TODO: we can just do an assignment and remove next_mind from inputs... is it worth it though?
@@ -106,13 +106,13 @@ template FDWrapper(INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, FD_CONST_SIZE, N_SIGNLE
 	signal input intent_constant_inputs[FD_CONST_SIZE];
 	// Range over 0-2 to select from eq, lt, and lte
 	signal input intent_conditional_mux_sel[N_SIGNLE_CLAUSE_CONDITIONALS][2];
-	// Range over inputs and buffer inputs for the inputs into conditionals
+	// Range over inputs and trace inputs for the inputs into conditionals
 	signal input intent_conditional_inputs_mux_sel[N_SIGNLE_CLAUSE_CONDITIONALS][2];
-	// Range over selectors for the inputs and buffers with smaller indices so we can chain things
-	signal input intent_buffer_mux_sel[INPUT_BUFFER_SIZE][3];
-	signal input intent_buffer_type_sel[INPUT_BUFFER_SIZE][2];
+	// Range over selectors for the inputs and traces with smaller indices so we can chain things
+	signal input intent_trace_mux_sel[INPUT_TRACE_SIZE][3];
+	signal input intent_trace_type_sel[INPUT_TRACE_SIZE][2];
 
-   component fd_intent = FDStep(INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_SIGNLE_CLAUSE_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE);
+   component fd_intent = FDStep(INPUT_TRACE_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_SIGNLE_CLAUSE_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE);
    mind_FD_comm ==> fd_intent.FD_comm;
    mind_FD_comm_randomness ==> fd_intent.FD_comm_randomness;
    mind ==> fd_intent.mind;
@@ -130,13 +130,13 @@ template FDWrapper(INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, FD_CONST_SIZE, N_SIGNLE
       intent_conditional_inputs_mux_sel[i][0] ==> fd_intent.conditional_inputs_mux_sel[0];
       intent_conditional_inputs_mux_sel[i][1] ==> fd_intent.conditional_inputs_mux_sel[1];
    }
-   for (var i = 0; i < INPUT_BUFFER_SIZE; i++) {
-      intent_buffer_mux_sel[i][0] = fd_intent.buffer_mux_sel[i][0];
-      intent_buffer_mux_sel[i][1] = fd_intent.buffer_mux_sel[i][1];
-      intent_buffer_mux_sel[i][2] = fd_intent.buffer_mux_sel[i][2];
+   for (var i = 0; i < INPUT_TRACE_SIZE; i++) {
+      intent_trace_mux_sel[i][0] = fd_intent.trace_mux_sel[i][0];
+      intent_trace_mux_sel[i][1] = fd_intent.trace_mux_sel[i][1];
+      intent_trace_mux_sel[i][2] = fd_intent.trace_mux_sel[i][2];
 
-      intent_buffer_type_sel[i][0] = fd_intent.buffer_type_sel[i][0];
-      intent_buffer_type_sel[i][1] = fd_intent.buffer_type_sel[i][1];
+      intent_trace_type_sel[i][0] = fd_intent.trace_type_sel[i][0];
+      intent_trace_type_sel[i][1] = fd_intent.trace_type_sel[i][1];
    }
 
 	//  TODO: we can just do an assignment and remove next_mind from inputs... is it worth it though?

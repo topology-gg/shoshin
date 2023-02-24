@@ -5,7 +5,7 @@ include "../circomlib/circuits/poseidon.circom";
 
 /*This circuit template checks that c is the multiplication of a and b.*/  
 
-template FDStep (INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_SIGNLE_CLAUSE_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
+template FDStep (INPUT_TRACE_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_SIGNLE_CLAUSE_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE) {  
    assert(PUBLIC_INPUT_SIZE <= INPUT_SIZE - 1);
    var FD_CONST_SIZE = INPUT_SIZE - 1 - PUBLIC_INPUT_SIZE;
    var FD_DESC_SIZE =  FD_CONST_SIZE + // The number of ``constants'' in the FD
@@ -13,8 +13,8 @@ template FDStep (INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_SIGNLE_CLAU
                         (N_SIGNLE_CLAUSE_CONDITIONALS * MAX_AND_SIZE) + // The number of and selectors for conditionals
                         (N_SIGNLE_CLAUSE_CONDITIONALS * 2) + // The number of signals for muxing the conditional types
                         (N_SIGNLE_CLAUSE_CONDITIONALS * 2) + // The number of signals for selecting the mux input
-                        (INPUT_BUFFER_SIZE * 3) + // The number of signals for selecting the buffer inputs
-                        (INPUT_BUFFER_SIZE * 2); // The number of signals for selecting the buffer mux type
+                        (INPUT_TRACE_SIZE * 3) + // The number of signals for selecting the trace inputs
+                        (INPUT_TRACE_SIZE * 2); // The number of signals for selecting the trace mux type
 
    signal public input FD_comm;
    // TODO: these into a different component
@@ -36,11 +36,11 @@ template FDStep (INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_SIGNLE_CLAU
 	signal input constant_inputs[FD_CONST_SIZE];
 	// Range over 0-2 to select from eq, lt, and lte
 	signal input conditional_mux_sel[N_SIGNLE_CLAUSE_CONDITIONALS][2];
-	// Range over inputs and buffer inputs for the inputs into conditionals
+	// Range over inputs and trace inputs for the inputs into conditionals
 	signal input conditional_inputs_mux_sel[N_SIGNLE_CLAUSE_CONDITIONALS][2];
-	// Range over selectors for the inputs and buffers with smaller indices so we can chain things
-	signal input buffer_mux_sel[INPUT_BUFFER_SIZE][3];
-	signal input buffer_type_sel[INPUT_BUFFER_SIZE][2];
+	// Range over selectors for the inputs and traces with smaller indices so we can chain things
+	signal input trace_mux_sel[INPUT_TRACE_SIZE][3];
+	signal input trace_type_sel[INPUT_TRACE_SIZE][2];
    /********** Signals for describing FD ****************/
 
    signal output selected_next;
@@ -51,7 +51,7 @@ template FDStep (INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_SIGNLE_CLAU
 	// Initialize the FD Emulators
    
    component FD_emulator = FD_Emulator(
-      INPUT_BUFFER_SIZE, INPUT_SIZE, N_SIGNLE_CLAUSE_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE
+      INPUT_TRACE_SIZE, INPUT_SIZE, N_SIGNLE_CLAUSE_CONDITIONALS, N_WORD_BITS, MAX_AND_SIZE
    );
 
    component poseidon_FD = Poseidon(FD_DESC_SIZE + 1); // Two FDs and 1 randomness
@@ -59,15 +59,15 @@ template FDStep (INPUT_BUFFER_SIZE, PUBLIC_INPUT_SIZE, INPUT_SIZE, N_SIGNLE_CLAU
 	// TODO: IN THE BELOW SET UP EMULATOR INPUTS AND POSEIDON INPUTS
    // TODO: there has to be a better way of quick setting...
    var cum_pos = 0;
-   for (var i = 0; i < INPUT_BUFFER_SIZE; i++) {
+   for (var i = 0; i < INPUT_TRACE_SIZE; i++) {
       for (var x = 0; x < 3; x++) {
-         buffer_mux_sel[i][x] ==> FD_emulator.buffer_mux_sel[i][x];
-         buffer_mux_sel[i][x] ==> poseidon_FD[cum_pos];
+         trace_mux_sel[i][x] ==> FD_emulator.trace_mux_sel[i][x];
+         trace_mux_sel[i][x] ==> poseidon_FD[cum_pos];
          cum_pois += 1;
       }
       for (var x = 0; x < 2; x++) {
-         buffer_type_sel[i][x] ==> FD_emulator.buffer_type_sel[cum_pois];
-         buffer_type_sel[i][x] ==> poseidon_FD[cum_pos];
+         trace_type_sel[i][x] ==> FD_emulator.trace_type_sel[cum_pois];
+         trace_type_sel[i][x] ==> poseidon_FD[cum_pos];
          cum_pos += 1;
       }
    }
