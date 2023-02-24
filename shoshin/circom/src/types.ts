@@ -14,7 +14,7 @@ export enum OpCodes {
   EQ = 12,
 
   // MEM = 13,
-  // DICT = 14,
+  DICT = 14,
   // FUNC = 15,
 }
 
@@ -30,7 +30,7 @@ export interface CircomMapping {
   n_inputs: number;
   n_buffers: number;
   op_buffers: OpBuffer[];
-  inputs: number[];
+  inputs_constant: number[];
 }
 
 // Leaf index
@@ -39,6 +39,7 @@ type RightNode = number;
 
 export type DagNode = [OpCodes, LeftNode, RightNode];
 export type LeafNode<ValType> = [ValType, -1, -1];
+
 /**
  * A dag node with the corresponding index
  */

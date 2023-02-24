@@ -5,10 +5,12 @@ describe('compiler', () => {
   it('should compile a basic Shoshin dag to the circom representation', () => {
     const max_number_inputs = 10;
 
-    const { n_inputs, n_buffers, op_buffers, inputs } = dag_to_circom(
-      dag_simple,
-      max_number_inputs
-    );
+    const {
+      n_inputs,
+      n_buffers,
+      op_buffers,
+      inputs_constant: inputs,
+    } = dag_to_circom(dag_simple, max_number_inputs);
     expect(n_inputs).toEqual(3);
     expect(n_buffers).toEqual(3);
     expect(op_buffers).toEqual([
@@ -22,10 +24,12 @@ describe('compiler', () => {
   it.only('should test a dag with a node having multiple parents', () => {
     const max_number_inputs = 10;
 
-    const { n_inputs, n_buffers, op_buffers, inputs } = dag_to_circom(
-      dag_arithmetic_with_memo,
-      max_number_inputs
-    );
+    const {
+      n_inputs,
+      n_buffers,
+      op_buffers,
+      inputs_constant: inputs,
+    } = dag_to_circom(dag_arithmetic_with_memo, max_number_inputs);
     expect(n_inputs).toEqual(3);
     expect(n_buffers).toEqual(3);
     expect(op_buffers).toEqual([

@@ -1,4 +1,4 @@
-import { IndexedNode } from './types';
+import { DagNode, IndexedNode, LeafNode, OpCodes } from './types';
 
 export const deepcopy = (obj: any) => JSON.parse(JSON.stringify(obj));
 
@@ -20,3 +20,8 @@ export const get_parent_node = (dag_idxed: IndexedNode[]): number => {
 
 export const has_key = (key: number, dict: { [k: number | string]: any }) =>
   !(dict[key] === undefined || dict[key] === null);
+
+export const isLeaf = (node: DagNode | LeafNode<any>): boolean => {
+  const [_v, left, right] = node;
+  return (left < 0 && right < 0) || _v === OpCodes.DICT;
+};
