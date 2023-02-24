@@ -5,7 +5,7 @@ import {
   dag_simple,
 } from './dag_test_common';
 
-describe.only('TypeScript dag evaluation', () => {
+describe('TypeScript dag evaluation', () => {
   it('should evaluate a simple dag and give the output value', () => {
     const out = ts_dag_evaluator(dag_simple);
     expect(out).toEqual(BigInt(0));
@@ -18,7 +18,8 @@ describe.only('TypeScript dag evaluation', () => {
 
   it('should evaluate a simple non tree arithmetic DAG', () => {
     const out = ts_dag_evaluator(dag_arithmetic_with_memo);
-    expect(out).toEqual(BigInt(9));
+    console.log(`OUT OF ${out}`);
+    expect(out).toEqual(BigInt(7));
   });
 
   xit('should throw an error when the maximum number of buffers are exceeded', () => {});

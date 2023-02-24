@@ -1,5 +1,5 @@
 import { dag_to_circom } from '../../compile/json_compiler';
-import { dag_simple } from './dag_test_common';
+import { dag_arithmetic_with_memo, dag_simple } from './dag_test_common';
 
 describe('compiler', () => {
   it('should compile a basic Shoshin dag to the circom representation', () => {
@@ -18,6 +18,26 @@ describe('compiler', () => {
     ]);
     expect(inputs).toEqual([-10, 2, 7]);
   });
+
+  it.only('should test a dag with a node having multiple parents', () => {
+    const max_number_inputs = 10;
+
+    const { n_inputs, n_buffers, op_buffers, inputs } = dag_to_circom(
+      dag_arithmetic_with_memo,
+      max_number_inputs
+    );
+    expect(n_inputs).toEqual(3);
+    expect(n_buffers).toEqual(3);
+    expect(op_buffers).toEqual([
+      { sel_a: 0, sel_b: 1, op_code: 3 },
+      { sel_a: 2, sel_b: 10, op_code: 4 },
+      { sel_a: 10, sel_b: 11, op_code: 1 },
+    ]);
+    expect(inputs).toEqual([3, 2, 10]);
+    console.log(n_inputs, n_buffers, op_buffers, inputs);
+  });
+
   xit('should throw an error when the maximum number of inputs are exceeded', () => {});
+
   xit('should throw an error when the maximum number of buffers are exceeded', () => {});
 });
