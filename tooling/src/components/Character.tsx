@@ -33,7 +33,8 @@ export default function Character( {agentIndex, viewWidth, characterName, agentF
     const direction = (bodyStateDir == 1) ? 'right' : 'left'
     console.log(characterName, 'direction', direction)
 
-    const spriteAdjustment = spriteData[characterName][bodyStateName]
+    const spriteAdjustments = spriteData[characterName][bodyStateName]
+    const spriteAdjustment = spriteAdjustments.length == 1 ? spriteAdjustments[0] : spriteAdjustments[bodyStateCounter] // if having more than one adjustments, use body counter to index the adjustments
     const spriteSize = spriteAdjustment?.size || [0, 0]
     const spriteLeftAdjustment = spriteAdjustment?.hitboxOffset[direction][0] || 0
     const spriteTopAdjustment = spriteAdjustment?.hitboxOffset[direction][1] || 0
