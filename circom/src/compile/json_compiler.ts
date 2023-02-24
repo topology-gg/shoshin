@@ -129,11 +129,13 @@ export const dag_to_circom = (
     if (has_key(dag_idx, leaves_to_inputs)) {
       const idx = leaves_to_inputs[dag_idx];
       if (idx >= leave_idxs_constants.length) {
+        // We have a dict
         const dict_idx =
+          max_number_constants +
           leave_idxs_dict[idx - leave_idxs_constants.length][0][2];
         return dict_idx; // a lookup into the input DICT
       } else {
-        return idx + max_number_dict_inputs; // a lookup into the inputs // TODO: verify
+        return idx; // a lookup into the inputs // TODO: verify
       }
     } else if (has_key(dag_idx, nodes_to_buffers)) {
       return (

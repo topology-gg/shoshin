@@ -28,3 +28,12 @@ export const dag_arithmetic_with_memo: Dag = [
   [OpCodes.DIV, 5, 1],
   [10, -1, -1],
 ];
+
+export const dag_with_dict: Dag = [
+  [OpCodes.ADD, 1, 4],
+  [OpCodes.MUL, 2, 3],
+  [OpCodes.DICT, -1, 0],
+  [2, -1, -1],
+  [OpCodes.DIV, 5, 1],
+  [10, -1, -1],
+];

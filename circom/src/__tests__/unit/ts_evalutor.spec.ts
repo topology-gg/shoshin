@@ -3,6 +3,7 @@ import {
   dag_arithmetic,
   dag_arithmetic_with_memo,
   dag_simple,
+  dag_with_dict,
 } from './dag_test_common';
 
 describe('TypeScript dag evaluation', () => {
@@ -18,9 +19,11 @@ describe('TypeScript dag evaluation', () => {
 
   it('should evaluate a simple non tree arithmetic DAG', () => {
     const out = ts_dag_evaluator(dag_arithmetic_with_memo, []);
-    console.log(`OUT OF ${out}`);
     expect(out).toEqual(BigInt(7));
   });
 
-  xit('should evaluate a tree with a dict', () => {});
+  xit('should evaluate a tree with a dict', () => {
+    const out = ts_dag_evaluator(dag_with_dict, [3]);
+    expect(out).toEqual(BigInt(7));
+  });
 });
