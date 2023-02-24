@@ -165,8 +165,9 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     );
 
     tempvar arr_empty: felt* = new ();
-    // cairo -p return
-    _loop(
+    // cairo -i return _loop(
+    // cairo -d 
+    let (idx) = _loop(
         idx = 1,
         len = len,
         arr_frames = arr_frames,
@@ -184,7 +185,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         character_type_1 = character_type_1,
     );
 
-    event_array.emit(len, arr_frames);
+    event_array.emit(idx, arr_frames);
     // cairo -d
     return ();
 }
@@ -205,13 +206,13 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     actions_1: felt*,
     character_type_0: felt,
     character_type_1: felt,
-) -> () {
+) -> (idx: felt) {
     // cairo --return (frames_len: felt, frames: FrameScene*) 
     alloc_locals;
     if (idx == len) {
         // cairo -i return(frames_len=len, frames=arr_frames);
         // cairo -d 
-        return ();
+        return (idx=len);
     }
 
     //
@@ -231,12 +232,12 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     if (agent_0_standing == 0) {
         // cairo -i return(frames_len=idx, frames=arr_frames);
         // cairo -d 
-       return ();
+       return (idx=idx);
     }
     if (agent_1_standing == 0) {
         // cairo -i return(frames_len=idx, frames=arr_frames);
         // cairo -d 
-       return ();
+       return (idx=idx);
     }
 
 
@@ -394,8 +395,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // Tail recursion
     //
     tempvar arr_empty: felt* = new ();
-    // cairo -p return
-    _loop(
+    return _loop(
         idx = idx + 1,
         len = len,
         arr_frames = arr_frames,
@@ -412,8 +412,6 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         character_type_0 = character_type_0,
         character_type_1 = character_type_1,
     );
-    // cairo -d
-    return ();
 }
 
 @event
