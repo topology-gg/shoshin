@@ -1,12 +1,12 @@
-import { tree_to_circom } from '../../compile/json_compiler';
-import { tree_simple } from './tree_test_common';
+import { dag_to_circom } from '../../compile/json_compiler';
+import { dag_simple } from './dag_test_common';
 
 describe('compiler', () => {
-  it('should compile a basic Shoshin tree to the circom representation', () => {
+  it('should compile a basic Shoshin dag to the circom representation', () => {
     const max_number_inputs = 10;
 
-    const { n_inputs, n_buffers, op_buffers, inputs } = tree_to_circom(
-      tree_simple,
+    const { n_inputs, n_buffers, op_buffers, inputs } = dag_to_circom(
+      dag_simple,
       max_number_inputs
     );
     expect(n_inputs).toEqual(3);

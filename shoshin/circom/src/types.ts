@@ -37,24 +37,24 @@ export interface CircomMapping {
 type LeftNode = number;
 type RightNode = number;
 
-export type TreeNode = [OpCodes, LeftNode, RightNode];
+export type DagNode = [OpCodes, LeftNode, RightNode];
 export type LeafNode<ValType> = [ValType, -1, -1];
 /**
- * A tree node with the corresponding index
+ * A dag node with the corresponding index
  */
-export type IndexedNodeGen<ValType> = [TreeNode | LeafNode<ValType>, number];
+export type IndexedNodeGen<ValType> = [DagNode | LeafNode<ValType>, number];
 
 /**
- * A tree node with the corresponding index
+ * A dag node with the corresponding index
  */
-export type IndexedNode = [TreeNode | LeafNode<number>, number];
+export type IndexedNode = [DagNode | LeafNode<number>, number];
 
-export type TreeGen<ValType> = (TreeNode | LeafNode<ValType>)[];
-export type Tree = (TreeNode | LeafNode<number>)[];
+export type DagGen<ValType> = (DagNode | LeafNode<ValType>)[];
+export type Dag = (DagNode | LeafNode<number>)[];
 
 /**
- * A lookup table from the `key` of node/leaf in a tree to some other value.
+ * A lookup table from the `key` of node/leaf in a dag to some other value.
  * Normally, this is used to lookup the index of a node or leaf in an a list
- * and the key is the original index of a node in the `Tree` structure.
+ * and the key is the original index of a node in the `Dag` structure.
  */
-export type TreeDict = { [node_key: number]: number };
+export type DagDict = { [node_key: number]: number };
