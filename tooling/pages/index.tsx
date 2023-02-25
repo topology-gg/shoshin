@@ -1,21 +1,22 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import React, { useState } from 'react';
-import { createTheme, ThemeProvider } from '@mui/material';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Button, createTheme, ThemeProvider } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import MidScreenControl from '../src/components/MidScreenControl';
 import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
-import { FrameScene, TestJson } from '../src/types/Frame';
+import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, verifyValidFunction } from '../src/types/Function'
 import { MentalState } from '../src/types/MentalState';
 import { Character, INITIAL_COMBOS, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
 import Agent, { buildAgent } from '../src/types/Agent';
-import { CairoSimulation } from '../src/components/CairoSimulation';
+import { AdversarySelection as AdversarySelection } from '../src/components/AdversarySelection';
 import ImagePreloader from '../src/components/ImagePreloader';
 import StatusBarPanel from '../src/components/StatusBar';
 import FrameInspector from '../src/components/FrameInspector';
+import useRunCairoSimulation from '../src/hooks/useRunCairoSimulation';
 
 const theme = createTheme({
     typography: {
@@ -71,9 +72,9 @@ export default function Home() {
     const [trees, setTrees] = useState<Tree[]>(INITIAL_DECISION_TREES)
     const [functions, setFunctions] = useState<Function[]>(INITIAL_FUNCTIONS)
     const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
-    const [agent, setAgent] = useState<Agent>({})
     const [character, setCharacter] = useState<Character>(Character.Jessica)
     const [adversary, setAdversary] = useState<string>('defensive')
+    const [adversaryCombo, setAdversaryCombo] = useState<number[]>()
 
     // Warnings
     const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
@@ -86,6 +87,27 @@ export default function Home() {
     if (testJson !== null) { console.log('testJson:',testJson); }
     const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length
 
+    const agent: Agent = useMemo(() => {
+        return handleBuildAgent()
+    }, [character, mentalStates, combos, trees, functions, initialMentalState])
+
+    const { runCairoSimulation, output, error: simulationError, wasmReady } = useRunCairoSimulation(agent, adversary, adversaryCombo)
+
+    useEffect(() => {
+        if (output) {
+            setTestJson((_) => {
+                return { agent_0: { frames: output.agent_0, type: agent.character }, agent_1: { frames: output.agent_1, type: 1 } }
+            })
+        }
+    }, [output])
+
+
+    useEffect(() => {
+        if (!simulationError) return
+
+        setCairoSimulationWarning('Incorrect agent, please verify. If error persists, please contact us on Discord.')
+        setTimeout(() => setCairoSimulationWarning(''), 5000)
+    }, [simulationError])
 
     function handleMidScreenControlClick (operation: string) {
 
@@ -120,6 +142,8 @@ export default function Home() {
 
             // If in Stop => perform simulation then go to Run
             else if (animationState == "Stop" && runnable) {
+
+                runCairoSimulation()
 
                 // Begin animation
                 setAnimationState("Run");
@@ -359,28 +383,9 @@ export default function Home() {
         }
     }
 
-    function handleValidateCharacter(new_agent: Agent) {
-        setAgent((_) => {
-            return new_agent
-        })
-    }
-
     function handleBuildAgent() {
         let char = Object.keys(Character).indexOf(character)
         return buildAgent(mentalStates, combos, trees, functions, initialMentalState, char)
-    }
-    
-    function handleClickRunCairoSimulation(output: FrameScene, new_agent: Agent) {
-        setAnimationFrame(0)
-        handleValidateCharacter(new_agent)
-        setTestJson((_) => {
-            return { agent_0: { frames: output.agent_0, type: new_agent.character }, agent_1: { frames: output.agent_1, type: 1 } }
-        })
-    }
-
-    function handleInputError() {
-        setCairoSimulationWarning('Incorrect agent, please verify. If error persists, please contact us on Discord.')
-        setTimeout(() => setCairoSimulationWarning(''), 5000)
     }
 
     // Render
@@ -403,7 +408,7 @@ export default function Home() {
                                     }}
                                 />
                                 {
-                                    !testJson ? <></> :
+                                    !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant="outlined" disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
                                     <div style={{display:'flex', flexDirection:'column'}}>
                                         <Simulator
                                             characterType0={testJson.agent_0.type}
@@ -448,14 +453,11 @@ export default function Home() {
                                     handleLoadTestJson={handleLoadTestJson}
                                     handleClickPreloadedTestJson={handleClickPreloadedTestJson}
                                 /> */}
-                                <CairoSimulation
-                                    style={styles.confirm}
-                                    handleClickRunCairoSimulation={handleClickRunCairoSimulation}
-                                    handleInputError={handleInputError}
+                                <AdversarySelection
                                     warning={runCairoSimulationWarning}
-                                    handleBuildAgent={handleBuildAgent}
                                     adversary={adversary}
                                     setAdversary={setAdversary}
+                                    onComboChange={setAdversaryCombo}
                                 />
                             </div>
                         </Grid>
