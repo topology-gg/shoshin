@@ -1,18 +1,12 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
-import { Box } from "@mui/material";
+import { Box, Button, FormControlLabel, Switch } from "@mui/material";
+import { FastForward, FastRewind, Pause, PlayArrow, Stop } from "@mui/icons-material";
 
 const MidScreenControl = ({
     runnable = true, animationFrame, n_cycles, animationState, handleClick, handleSlideChange,
     checkedShowDebugInfo, handleChangeDebugInfo
 
 }) => {
-
-    const makeshift_button_style = { marginLeft: "0.2rem", marginRight: "0.2rem", height: "1.5rem" };
-    const makeshift_run_button_style = runnable
-        ? makeshift_button_style
-        : { ...makeshift_button_style, color: "#CCCCCC" };
-
     const BLANK_COLOR = '#EFEFEF'
 
     return (
@@ -22,10 +16,9 @@ const MidScreenControl = ({
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
-                width: "27rem",
                 backgroundColor: BLANK_COLOR,
                 p: "1rem",
-                mt: "1rem",
+                mb: 2,
                 border: 1,
                 borderRadius: 4,
                 boxShadow: 3,
@@ -37,9 +30,8 @@ const MidScreenControl = ({
                     flexDirection: "row",
                     justifyContent: "center",
                     alignItems: "center",
-                    width: "27rem",
                     backgroundColor: '#ffffff00',
-                    p: "0.5rem",
+                    gap: 1,
                 }}
             >
                 <p
@@ -67,68 +59,42 @@ const MidScreenControl = ({
                     value={animationFrame}
                     onChange={handleSlideChange}
                     step="1"
-                    style={{ width: "6.5rem" }}
+                    style={{ flex: 1, width: "auto" }}
                     disabled={animationState == 'Run'}
                 />
 
-                {/* ref: https://stackoverflow.com/questions/22885702/html-for-the-pause-symbol-in-audio-and-video-control */}
-                <button
-                    style={{ ...makeshift_run_button_style, marginLeft: "0.5rem" }}
-                    onClick={() => handleClick("ToggleRun")}
-                    className={animationState == "Pause" ? "paused" : ""}
+                <Button size="small" variant="outlined" onClick={() => handleClick("ToggleRun")}>
+                    {animationState != "Run" ? <PlayArrow /> : <Pause />}
+                </Button>
+                <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => handleClick("Stop")}
                 >
-                    {" "}
-                    {animationState != "Run" ? (
-                        <i className="material-icons" style={{ fontSize: "1.2rem" }}>
-                            play_arrow
-                        </i>
-                    ) : (
-                        <i className="material-icons" style={{ fontSize: "1.2rem" }}>
-                            pause
-                        </i>
-                    )}{" "}
-                </button>
-                <button style={makeshift_button_style} onClick={() => handleClick("Stop")}>
-                    <i className="material-icons" style={{ fontSize: "1.2rem" }}>
-                        stop
-                    </i>
-                </button>
-
-                <button style={makeshift_button_style} onClick={() => handleClick("PrevFrame")}>
-                    <i className="material-icons" style={{ fontSize: "1.2rem" }}>
-                        fast_rewind
-                    </i>
-                </button>
-                <button style={makeshift_button_style} onClick={() => handleClick("NextFrame")}>
-                    <i className="material-icons" style={{ fontSize: "1.2rem" }}>
-                        fast_forward
-                    </i>
-                </button>
+                    <Stop />
+                </Button>
+                <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => handleClick("PrevFrame")}
+                >
+                    <FastRewind />
+                </Button>
+                <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => handleClick("NextFrame")}
+                >
+                    <FastForward />
+                </Button>
+                <FormControlLabel
+                    control={
+                        <Switch size="small" defaultChecked onChange={handleChangeDebugInfo} checked={checkedShowDebugInfo} />
+                    }
+                    label="Debug"
+                    sx={{ml: 1}}
+                />
             </Box>
-
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "27rem",
-                    backgroundColor: '#ffffff00',
-                    p: "0.5rem",
-                }}
-            >
-                <label style={{fontSize:'12px'}}>
-                    <input
-                        type="checkbox"
-                        checked={checkedShowDebugInfo}
-                        onChange={handleChangeDebugInfo}
-                        style={{ verticalAlign:"middle", marginRight:'10px'}}
-                    />
-                    Show debug info
-                </label>
-
-            </Box>
-
         </Box>
     );
 };

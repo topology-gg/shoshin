@@ -423,12 +423,6 @@ export default function Home() {
                                             stamina_0={testJson.agent_0.frames[animationFrame].body_state.stamina}
                                             stamina_1={testJson.agent_1.frames[animationFrame].body_state.stamina}
                                          />
-                                        <FrameInspector
-                                            characterLeftType={testJson.agent_0.type}
-                                            characterRightType={testJson.agent_1.type}
-                                            frameLeft={testJson.agent_0.frames[animationFrame]} 
-                                            frameRight={testJson.agent_1.frames[animationFrame]}
-                                        />
                                         <MidScreenControl
                                             runnable = {true}
                                             animationFrame = {animationFrame}
@@ -447,18 +441,24 @@ export default function Home() {
                                                 (_) => !checkedShowDebugInfo
                                             )}
                                         />
+                                        <FrameInspector
+                                            characterLeftType={testJson.agent_0.type}
+                                            characterRightType={testJson.agent_1.type}
+                                            frameLeft={testJson.agent_0.frames[animationFrame]} 
+                                            frameRight={testJson.agent_1.frames[animationFrame]}
+                                        />
+                                        <AdversarySelection
+                                            warning={runCairoSimulationWarning}
+                                            adversary={adversary}
+                                            setAdversary={setAdversary}
+                                            onComboChange={setAdversaryCombo}
+                                        />
                                     </div>
                                 }
                                 {/* <LoadTestJson
                                     handleLoadTestJson={handleLoadTestJson}
                                     handleClickPreloadedTestJson={handleClickPreloadedTestJson}
                                 /> */}
-                                <AdversarySelection
-                                    warning={runCairoSimulationWarning}
-                                    adversary={adversary}
-                                    setAdversary={setAdversary}
-                                    onComboChange={setAdversaryCombo}
-                                />
                             </div>
                         </Grid>
                         <Grid item xs={4} sx={{ bgcolor: 'grey.50' }}>
