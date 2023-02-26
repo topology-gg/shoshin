@@ -66,6 +66,7 @@ const useRunCairoSimulation = (
             console.warn("WASM not initialized");
             return;
         }
+        // flatten the user input agent
         let [
             combosOffset,
             combos,
@@ -74,6 +75,7 @@ const useRunCairoSimulation = (
             functionsOffset,
             functions,
         ] = flattenAgent(agent);
+        // flatten the dummy agent
         let [
             dummyCombosOffset,
             dummyCombos,
