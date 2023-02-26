@@ -52,7 +52,6 @@ template OpTraceALU(WORD_SIZE) {
 	0 ==> mux.inp[8][0];
 
 	/************ Conditional Operators ****************/
-	// TODO: make sure the correct value is on the right side... (i.e. left vs right)
 	component eq = IsEqual();
 	component lt = LessThan(WORD_SIZE);
 	component lte = LessEqThan(WORD_SIZE);

@@ -25,11 +25,7 @@ template IntegerDivideRemainder(WORD_SIZE) {
 	component lte_q = LessEqThan(WORD_SIZE);
 	component gte_q = GreaterEqThan(WORD_SIZE);
 
-	// component is_denom_zero = IsZero();
-
-	// inp[1] ==> is_denom_zero.in;
-
-	// To handle division by zero, we tree division by zero as setting the quotient to zero
+		// To handle division by zero, we tree division by zero as setting the quotient to zero
 	// and the remainder to zero
 	quotient <-- inp[1] != 0 ? inp[0] \ inp[1] : 0; //(inp[0] \ (inp[1] + is_denom_zero.out)) * (1 - is_denom_zero.out);
 	remainder <-- inp[1] != 0 ? inp[0] % inp[1] : 0; //(inp[0] % (inp[1] + is_denom_zero.out)) * (1 - is_denom_zero.out);
