@@ -55,7 +55,6 @@ export const CairoSimulation = ({
 
   const getDummyComboArgs = () => {
     let agent: Agent = buildAgent(MENTAL_STATES_COMBO_AGENT, [editingCombo], DECISION_TREE_COMBO_AGENT, INITIAL_FUNCTIONS, 0, 1)
-    console.log(agent)
     return [...flattenAgent(agent), new Int32Array(agent.actions)]
   }
 
@@ -88,7 +87,9 @@ export const CairoSimulation = ({
           variant="outlined"
           disabled={!displayButton}
           onClick={() => {
+              // flatten the user input agent
               let [combosOffset, combos, mentalStatesOffset, mentalStates, functionsOffset, functions] = flattenAgent(agent)
+              // flatten the dummy agent
               let [dummyCombosOffset, dummyCombos, dummyMentalStatesOffset, dummyMentalStates, dummyFunctionsOffset, dummyFunctions, dummyActions] = getDummyArgs(adversary)
               try {
                   let shoshinInput = new Int32Array([
