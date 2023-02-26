@@ -37,11 +37,11 @@ const load_FD_circuit = async () => {
 };
 
 describe('fuzzing tests', () => {
-  it('Should test 100 fuzzing samples of smallish circuits', async () => {
-    const n_tests = 100;
+  it('Should test 500 fuzzing samples of smallish circuits', async () => {
+    const n_tests = 500;
     const circuit = await load_FD_circuit();
     for (let i = 0; i < n_tests; i++) {
-      const max_n_traces_fuzzing = 1000;
+      const max_n_traces_fuzzing = 2000;
       const { dag, dict } = gen_random_dag(
         MAX_CONSTANTS,
         MAX_DICT,
