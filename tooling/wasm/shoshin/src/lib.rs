@@ -1,9 +1,10 @@
 ///! This crate allows to run the Shoshin loop written in Cairo on the cairo-rs VM.
 mod types;
 mod utils;
-use anyhow::{Error, Ok};
+use anyhow::Error;
 use cairo_felt::{self, Felt};
 use cairo_vm::types::relocatable::Relocatable;
+use cairo_vm::vm::errors::cairo_run_errors::CairoRunError;
 use cairo_vm::{
     hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor,
     types::{program::Program, relocatable::MaybeRelocatable},
@@ -24,7 +25,7 @@ use wasm_bindgen::prelude::*;
 ///
 /// # Returns
 /// The final VM state
-pub fn run_cairo_program(shoshin_input: ShoshinInput) -> Result<VirtualMachine, Error> {
+pub fn run_cairo_program(shoshin_input: ShoshinInput) -> Result<VirtualMachine, CairoRunError> {
     // Prepare the cairo runner, the vm and an empty hint processor
     const PROGRAM_JSON: &str = include_str!("./compiled_loop.json");
     let program = Program::from_reader(Cursor::new(PROGRAM_JSON), Some("loop"))?;
@@ -52,16 +53,14 @@ pub fn run_cairo_program(shoshin_input: ShoshinInput) -> Result<VirtualMachine, 
     let mut user_args = shoshin_input.into();
     args.append(&mut user_args);
 
-    cairo_runner
-        .run_from_entrypoint(
-            entrypoint,
-            &args.iter().collect::<Vec<&CairoArg>>(),
-            false,
-            &mut vm,
-            &mut hint_processor,
-        )
-        .unwrap();
-    Ok(vm)
+    cairo_runner.run_from_entrypoint(
+        entrypoint,
+        &args.iter().collect::<Vec<&CairoArg>>(),
+        false,
+        &mut vm,
+        &mut hint_processor,
+    )?;
+    Result::Ok(vm)
 }
 
 /// Extract the frame scene from the final VM state
@@ -107,9 +106,12 @@ fn extract_output(vm: VirtualMachine) -> Result<Vec<FrameScene>, Error> {
 #[wasm_bindgen(js_name = runCairoProgram)]
 pub fn run_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
     // Run the shoshin cairo program with the inputs
-    let vm = run_cairo_program(ShoshinInput::from(inputs)).unwrap();
-    match extract_output(vm) {
-        Result::Ok(x) => Result::Ok(serde_wasm_bindgen::to_value(&x)?),
+    let run = run_cairo_program(ShoshinInput::from(inputs));
+    match run {
+        Result::Ok(vm) => match extract_output(vm) {
+            Result::Ok(x) => Result::Ok(serde_wasm_bindgen::to_value(&x)?),
+            Result::Err(e) => Result::Err(JsError::new(&e.to_string())),
+        },
         Result::Err(e) => Result::Err(JsError::new(&e.to_string())),
     }
 }
