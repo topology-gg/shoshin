@@ -12,23 +12,23 @@ template OpTraceALU(WORD_SIZE) {
 	signal input type_sel;
 	signal output out;
 
- 	var mux_i = 0;
-
-	// 4 arithmetic, 3 conditionals, 1 bit operators (||), (Note that is just a multiplication and not is 1 - x)
-	var n_operations = 8; 
+	// Support 13 operations as per the opcodes but have ``dummmy'' outputs for the unset ones
+	// We do not count MEM=13, DICT=14, FUNC=15 here
+	var n_operations = 13; 
 	component mux = Multiplexer(1, n_operations);
 	type_sel ==> mux.sel;
+
+	/************ Null 0 Op *************/
+	0 ==> mux.inp[0][0];
 
 	/************ Arithmetic Operators ****************/
 	component abs_num = Abs(WORD_SIZE);
 	component abs_denom = Abs(WORD_SIZE);
 	component divide_mod = IntegerDivideRemainder(WORD_SIZE);
 
-	// Set up the absolute value
-	inp[0] ==> abs_num.inp;
-	inp[1] ==> abs_denom.inp;
-	abs_num.out ==> mux.inp[mux_i][0];
-	mux_i += 1;
+	inp[0] + inp[1] ==> mux.inp[1][0];
+	inp[0] - inp[1] ==> mux.inp[2][0];
+	inp[0] * inp[1] ==> mux.inp[3][0];
 
 	// Quotient
 	// The XOR of numerator and divisor sign
@@ -36,43 +36,47 @@ template OpTraceALU(WORD_SIZE) {
 	quotient_is_neg <== abs_denom.is_neg + abs_num.is_neg - 2 * abs_denom.is_neg * abs_num.is_neg;
 	abs_num.out ==> divide_mod.inp[0];
 	abs_denom.out ==> divide_mod.inp[1];
-	divide_mod.quotient * (1 - 2 * quotient_is_neg) ==> mux.inp[mux_i][0];
-	mux_i += 1;
+	divide_mod.quotient * (1 - 2 * quotient_is_neg) ==> mux.inp[4][0];
 
-	// Addition
-	inp[0] + inp[1] ==> mux.inp[mux_i][0];
-	mux_i += 1;
+	//  Mod Opcode Disabled
+	0 ==> mux.inp[5][0];
 
-	// Multiplication
-	inp[0] * inp[1] ==> mux.inp[mux_i][0];
-	mux_i += 1;
+	// Set up the absolute value
+	inp[0] ==> abs_num.inp;
+	inp[1] ==> abs_denom.inp;
+	abs_num.out ==> mux.inp[6][0];
+
+	//  SQRT Opcode Disabled
+	0 ==> mux.inp[7][0];
+	//  Pow Opcode Disabled
+	0 ==> mux.inp[8][0];
 
 	/************ Conditional Operators ****************/
+	// TODO: make sure the correct value is on the right side... (i.e. left vs right)
 	component eq = IsEqual();
 	component lt = LessThan(WORD_SIZE);
 	component lte = LessEqThan(WORD_SIZE);
 
+	// IS_NN
+	(1 - abs_num.is_neg) ==> mux.inp[9][0];
+
+	// IS_LE
+	inp[0] ==> lte.in[0];
+	inp[1] ==> lte.in[1];
+	lte.out ==> mux.inp[10][0];
+
+	// NOT
+	1 - inp[0] ==> mux.inp[11][0];
+
+	// EQ
 	inp[0] ==> eq.in[0];
 	inp[1] ==> eq.in[1];
-	eq.out ==> mux.inp[mux_i][0];
-	mux_i += 1;
+	eq.out ==> mux.inp[12][0];
 
 	inp[0] ==> lt.in[0];
 	inp[1] ==> lt.in[1];
 	lt.out ==> mux.inp[mux_i][0];
 	mux_i += 1;
-
-	inp[0] ==> lte.in[0];
-	inp[1] ==> lte.in[1];
-	lte.out ==> mux.inp[mux_i][0];
-	mux_i += 1;
-
-	/************ Boolean Operators, Assume Inputs are Booleans ****************/
-	// Or
-	inp[0] + inp[1] - inp[0] * inp[1] ==> mux.inp[mux_i][0];
-	mux_i += 1;
-
-	mux.out[0] ==> out;
 }
 
 /**

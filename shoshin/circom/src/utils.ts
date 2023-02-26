@@ -8,12 +8,10 @@ export const get_parent_node = (dag_idxed: IndexedNode[]): number => {
   dag_idxed.forEach(([n, i]) => {
     const [_op, left, right] = n;
     if (!isLeaf(n)) {
-      console.log('LR', left, right, _op);
       if (left !== -1) n_pointers_to[left] += 1;
       if (right !== -1) n_pointers_to[right] += 1;
     }
   });
-  console.log('||||||||||||||||', n_pointers_to, dag_idxed, dag_idxed.length);
 
   const idx = n_pointers_to.indexOf(0);
   const idxRev = n_pointers_to.lastIndexOf(0);

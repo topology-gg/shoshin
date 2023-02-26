@@ -58,14 +58,13 @@ export const gen_random_dag = (
   const dfs_find_hit = (curr_idx: number) => {
     const node = dag_ordered[curr_idx];
     node_hit[curr_idx] = 1;
-    if (isLeaf(node)) {
-      return;
+    if (!isLeaf(node)) {
+      const [_op, left, right] = node;
+      if (left > -1) {
+        dfs_find_hit(left);
+      }
+      dfs_find_hit(right);
     }
-    const [_op, left, right] = node;
-    if (left > -1) {
-      dfs_find_hit(left);
-    }
-    dfs_find_hit(right);
   };
   dfs_find_hit(dag_ordered.length - 1);
 
@@ -74,26 +73,27 @@ export const gen_random_dag = (
     .map((t, i) => [t, i])
     .filter(([t, i]) => t === 0)
     .map(([t, i]) => i);
-  console.log('FIND HIT', node_hit, dangling_nodes);
 
-  // Update the opcodes left/ right children by scanning through the list
-  for (let i = 0; i < dangling_nodes.length; i++) {
-    const idx_start = dangling_nodes[i];
-    const idx_end =
-      i + 1 === dangling_nodes.length
-        ? dag_ordered.length
-        : dangling_nodes[i + 1];
-    for (let j = idx_start + 1; j < idx_end; j++) {
-      const [_op, left, right] = dag_ordered[j];
-      if (!isLeaf(dag_ordered[j])) {
-        // Subtract off the number of preceding deleted indices
-        if (left >= idx_start) {
-          dag_ordered[j][1] -= i + 1;
-        }
-        if (right >= idx_start) {
-          dag_ordered[j][2] -= i + 1;
-        }
+  // We now need to shift the indices of the children of the remaining nodes
+  // in order to point towards the correct nodes
+  for (let i = 0; i < dag_ordered.length; i++) {
+    if (!isLeaf(dag_ordered[i])) {
+      const [_op, left, right] = dag_ordered[i];
+      if (left !== -1) {
+        // Find the first dangling index that is larger than right
+        const first_left = dangling_nodes.findIndex(
+          dangl_idx => dangl_idx >= left
+        );
+        const left_sub = first_left === -1 ? dangling_nodes.length : first_left;
+        dag_ordered[i][1] -= left_sub;
       }
+      // Find the first dangling index that is larger than right
+      const first_right = dangling_nodes.findIndex(
+        dangl_idx => dangl_idx >= right
+      );
+      const right_sub =
+        first_right === -1 ? dangling_nodes.length : first_right;
+      dag_ordered[i][2] -= right_sub;
     }
   }
 
