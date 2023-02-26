@@ -40,11 +40,10 @@ describe('fuzzing tests', () => {
   it(
     'Should test 100 fuzzing samples of smallish circuits',
     async () => {
-      jest.setTimeout(60000 * 2); // two minutes
-      const n_tests = 10;
+      const n_tests = 100;
       let n_test_run = 0;
       while (n_test_run < n_tests) {
-        // We need to reload the circuit
+        // We need to reload the circuit or we get odd errors
         const circuit = await load_FD_circuit();
         const max_n_traces_fuzzing = 1000;
         const { dag, dict } = gen_random_dag(
@@ -85,13 +84,19 @@ describe('fuzzing tests', () => {
             trace_type_selectors: traces_padded.map(o => o.op_code),
           };
           const witness = await circuit.calculateWitness(circ_input, true);
-          circuit.assertOut(witness, { out: ts_out.valueOf() });
+          if (ts_out.valueOf() < BigInt(0).valueOf()) {
+            // remove the negative as the output of circom is not negative
+            // but rather works over the unsigned ints
+            circuit.assertOut(witness, { out: p + ts_out.valueOf() });
+          } else {
+            circuit.assertOut(witness, { out: ts_out.valueOf() });
+          }
           // We need to call a Jest test in order to keep the For Loop Going
           expect(1).toEqual(1);
         }
       }
       console.log(`Successfully ran ${n_test_run} tests`);
     },
-    60000 * 2
+    60000 * 10 // ten minutes for the testing
   );
 });
