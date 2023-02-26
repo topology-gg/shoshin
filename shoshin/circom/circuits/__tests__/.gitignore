@@ -1,3 +1,4 @@
 *.r1cs
 *.ptau
 *.sym
+*tester_js
