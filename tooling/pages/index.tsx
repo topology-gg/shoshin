@@ -445,6 +445,8 @@ export default function Home() {
                                             characterRightType={testJson.agent_1.type}
                                             frameLeft={testJson.agent_0.frames[animationFrame]} 
                                             frameRight={testJson.agent_1.frames[animationFrame]}
+                                            adversaryType={adversary}
+                                            onAdversaryEdit={() => setWorkingTab(3)}
                                         />
                                     </div>
                                 }

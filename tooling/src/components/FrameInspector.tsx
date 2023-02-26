@@ -1,11 +1,14 @@
+import { Edit, Person } from "@mui/icons-material";
 import {
     Grid,
+    IconButton,
     Table,
     TableBody,
     TableCell,
     TableHead,
     TableRow,
 } from "@mui/material";
+import { Box } from "@mui/system";
 import React from "react";
 import { bodyStateNumberToName } from "../constants/constants";
 import { Frame } from "../types/Frame";
@@ -15,6 +18,8 @@ type FrameInspectorProps = {
     characterRightType: number;
     frameLeft: Frame;
     frameRight: Frame;
+    adversaryType: string;
+    onAdversaryEdit: () => void;
 };
 
 const FrameInspector = ({
@@ -22,6 +27,8 @@ const FrameInspector = ({
     characterRightType,
     frameLeft,
     frameRight,
+    adversaryType,
+    onAdversaryEdit,
 }: FrameInspectorProps) => {
     if (!frameLeft || !frameRight) return;
     const frames = [frameLeft, frameRight];
@@ -37,8 +44,33 @@ const FrameInspector = ({
                     <Table size="small">
                         <TableHead>
                             <TableRow>
-                                <TableCell colSpan={3}>
+                                <TableCell colSpan={1}>
                                     <b>{characterNames[i]}</b>
+                                </TableCell>
+                                <TableCell align="right" colSpan={2}>
+                                    <Box sx={{ whiteSpace: "nowrap" }}>
+                                        {frame === frameRight ? (
+                                            <>
+                                                Opponent: {adversaryType}{" "}
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={onAdversaryEdit}
+                                                >
+                                                    <Edit />
+                                                </IconButton>
+                                            </>
+                                        ) : (
+                                            <>
+                                                Player{" "}
+                                                <IconButton
+                                                    disabled
+                                                    size="small"
+                                                >
+                                                    <Person />
+                                                </IconButton>
+                                            </>
+                                        )}
+                                    </Box>
                                 </TableCell>
                             </TableRow>
                         </TableHead>
@@ -49,11 +81,11 @@ const FrameInspector = ({
                                     {
                                         bodyStateNumberToName[
                                             characterNames[i]
-                                        ][frames[i].body_state.state]
+                                        ][frame.body_state.state]
                                     }
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frames[i].body_state.state}
+                                    {frame.body_state.state}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -61,7 +93,7 @@ const FrameInspector = ({
                                     body_state.counter
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frames[i].body_state.counter}
+                                    {frame.body_state.counter}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -69,7 +101,7 @@ const FrameInspector = ({
                                     body_state.stamina
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frames[i].body_state.stamina}
+                                    {frame.body_state.stamina}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -77,7 +109,7 @@ const FrameInspector = ({
                                     body_state.integrity
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frames[i].body_state.integrity}
+                                    {frame.body_state.integrity}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -85,7 +117,7 @@ const FrameInspector = ({
                                     body_state.dir
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frames[i].body_state.dir}
+                                    {frame.body_state.dir}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -93,8 +125,8 @@ const FrameInspector = ({
                                     hitboxes.body.origin (x, y)
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frames[i].hitboxes.body.origin.x},{" "}
-                                    {frames[i].hitboxes.body.origin.y}
+                                    {frame.hitboxes.body.origin.x},{" "}
+                                    {frame.hitboxes.body.origin.y}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -102,8 +134,8 @@ const FrameInspector = ({
                                     physics_state.vel_fp
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frames[i].physics_state.vel_fp.x},{" "}
-                                    {frames[i].physics_state.vel_fp.y}
+                                    {frame.physics_state.vel_fp.x},{" "}
+                                    {frame.physics_state.vel_fp.y}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -111,8 +143,8 @@ const FrameInspector = ({
                                     physics_state.acc_fp
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frames[i].physics_state.acc_fp.x},{" "}
-                                    {frames[i].physics_state.acc_fp.y}
+                                    {frame.physics_state.acc_fp.x},{" "}
+                                    {frame.physics_state.acc_fp.y}
                                 </TableCell>
                             </TableRow>
                         </TableBody>
