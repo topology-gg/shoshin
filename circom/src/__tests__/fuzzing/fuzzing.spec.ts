@@ -30,26 +30,15 @@ const load_FD_circuit = async () => {
 
 describe('fuzzing tests', () => {
   it('Should test fuzzing of small circuits', () => {
-    const max_n_constants = 20;
-    const max_n_dict = 20;
-    const max_n_traces = 30;
+    const max_n_constants = 100;
+    const max_n_dict = 100;
+    const max_n_traces = 1000;
     const { dag, dict } = gen_random_dag(
       max_n_constants,
       max_n_dict,
       max_n_traces
     );
-    console.log(dag, dict);
     const ts_out = ts_dag_evaluator(dag, dict);
     console.log('Output', ts_out);
-    // TODO: hmmmm... what if we get division by 0?
   });
 });
-
-// Hmmmmm
-// [
-//     [ -332, -1, -1 ],
-//     [ 4, 0, 1 ],
-//     [ 14, -1, 0 ],
-//     [ 14, -1, 0 ],
-//     [ 3, 4, 2 ]
-//   ] [ -94, -414 ]
