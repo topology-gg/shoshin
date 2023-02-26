@@ -25,17 +25,15 @@ template IntegerDivideRemainder(WORD_SIZE) {
 	component lte_q = LessEqThan(WORD_SIZE);
 	component gte_q = GreaterEqThan(WORD_SIZE);
 
+	// component is_denom_zero = IsZero();
 
-	// To avoid div by zero we say that x \ 0 yeilds quotient = 0, remainder = 0
-	var quot = 0;
-	var rem = 0;
-	if (inp[1] != 0) {
-		quot = inp[0] \ inp[1];
-		rem = inp[0] % inp[1];
-	}
-	quotient <-- quot;
-	remainder <-- rem;
-	
+	// inp[1] ==> is_denom_zero.in;
+
+	// To handle division by zero, we tree division by zero as setting the quotient to zero
+	// and the remainder to zero
+	quotient <-- inp[1] != 0 ? inp[0] \ inp[1] : 0; //(inp[0] \ (inp[1] + is_denom_zero.out)) * (1 - is_denom_zero.out);
+	remainder <-- inp[1] != 0 ? inp[0] % inp[1] : 0; //(inp[0] % (inp[1] + is_denom_zero.out)) * (1 - is_denom_zero.out);
+
 	// Check that for a / b, a = b * q + r
 	inp[0] === inp[1] * quotient + remainder;
 

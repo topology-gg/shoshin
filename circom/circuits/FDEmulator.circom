@@ -18,8 +18,8 @@ template OpTraceALU(WORD_SIZE) {
 	component mux = Multiplexer(1, n_operations);
 	type_sel ==> mux.sel;
 
-	/************ Null 0 Op *************/
-	0 ==> mux.inp[0][0];
+	/************ Null 0 Op, Pass inp[0] into the current out *************/
+	inp[0] ==> mux.inp[0][0];
 
 	/************ Arithmetic Operators ****************/
 	component abs_num = Abs(WORD_SIZE);
@@ -72,6 +72,8 @@ template OpTraceALU(WORD_SIZE) {
 	inp[0] ==> eq.in[0];
 	inp[1] ==> eq.in[1];
 	eq.out ==> mux.inp[12][0];
+
+	mux.out[0] ==> out;
 }
 
 /**
