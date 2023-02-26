@@ -12,69 +12,33 @@ We need our Circom to verify that an FD emulator ran correctly. We do this by sp
 
 ### The specifics
 
-Below we outline the inputs to the `FD Emulator` circuit.
+Below we outline the inputs to the `FD Emulator` circuit. The outputs can be broken down into 2 categories: `inputs` and `trace` selectors. We can think of traces as the circuit equivalent of trace cells in Cairo. Essentially, they are write once values that store intermediary computations. The output of the circuit is the last trace cell's output. Because we are working with circuits, we have a **constant** number of trace cells and inputs.
+
+Unused inputs can be set to 0. Unused trace cells should have their `type` (OpCode) set to 0 which signifies that the output should be the first input. The inputs to the unused trace cells should be the output of the prior trace cell.
+Inputs to trace cells are based off of indexing. Setting an input selector to be in the range of [0, NUMB_INPUTS) signifies that the trace cell's input is selecting from the inputs to the circuit. Setting a trace cell's input selector to index i in [NUMB_INPUTS, NUMB_INPUTS + NUMB_TRACE_CELLS) signifies setting the input selector to the output of trace cell i minus NUMB_INPUTS.
+
+> Note that trace cells can only use outputs of trace cells with smaller indices. I.e. trace cell 10 can only use the outputs from trace cells 0 to 9.
+
+So, for this example, we have 8 inputs and 5 trace cells.
 
 ```typescript
 {
-  /**
-   * The value of the next state associated with each conditional and the default
-   * The first NumberOfConditional values are associated with conditionals. The last one is a default
-   */
-  next_state: [Number of Conditionals + 1], // length of Number of Conditionals + 1
-  /**
-  * The input to the circuit
-  */
-  inputs: [Input Size].
-
-
-  /**
-   * Select how to `and` the conditionals. Essentially, every single clause conditional can be
-   * transformed into a multi clause conditional by selecting which get `anded` together. The selection
-   * index ranges from [0, Number of Conditional + 2) where setting
-   * the selection to NumberOfConditionals is hardwired to `true` and NumberOfConditionals+1 is hardwired to `false`
-   *
-   * The and conditionals are the ones that are finally associated with the output `next_state`
-   */
-  and_selectors: [Number of Conditionals][Max Number of And Clauses],
-
-	/**
-   * Selects which conditional to use for each conditional:
-   * [0, 0] (0) represent a == b
-   * [1, 0] (1) represents a < b
-   * [0, 1] (2) represents a <= b
-   * [1, 1] (3) represents a != b
-   */
-  conditional_mux_sel: [Number of Conditionals][2],
-
-  /**
-   * for each conditional, a ?= b, select `a` and `b`. Selection values range
-   * from Number of Conditionals + Number of Buffers, where i in [0, Number of Conditionals) selects the ith input
-   * and i in [Number of Conditionals, Number of Conditionals + Number of Buffers)
-   * selects the i - Number of Conditionals buffer.
-   */
-  conditional_inputs_mux_sel[Number of Conditionals][2],
-
-  /**
-   * Each buffer can operate on at most 3 elements. This selects the inputs for each buffer.
-   * For buffer i in [0, Buffer Size), the selector takes Input Size + i possible values.
-   * The first Input Size represent selecting from an input.
-   * For j in [Input Size, Input Size + i),
-   * j represents selecting the output of buffer `j - Input Size`
-   */
-  buffer_mux_sel: [Buffer Size][3],
-
-  /**
-  * Each buffer can take input, a, b, and c.
-  *
-  * The different types associated with the buffers are
-  *
-  * [0, 0] => a * b + c
-  * [1, 0] => |a|
-  * [0, 1] => a \ b (integer division)
-  * [1, 1] => a % b
-  */
-  buffer_type_sel: [Buffer Size][2],
-
+  inputs: [-10, 20, 30, 40, 50, 60, 0, 0],
+  trace_inp_selectors: [
+    [0, 1],
+    [2, 0],
+    [8, 9],
+    [10, 0],
+    [11, 0],
+    [12, 0],
+  ],
+  trace_type_selectors: [
+    OpCodes.ABS,
+    OpCodes.DIV,
+    OpCodes.ADD,
+    0,
+    0,
+  ],
 }
 ```
 
@@ -83,129 +47,6 @@ Below we outline the inputs to the `FD Emulator` circuit.
 The following block diagram also gives a high level overview of how the circuit works
 ![imgs/FDBlockDiagram.png](imgs/FDBlockDiagram.png)
 
-### An example of a compiled FD
+### From Directed Acyclic Graph (DAG) Programs to Circom
 
-Say our mental space can be from the following enum,
-
-```
-enum MentalState {
-  MS_IDLE=0,
-  MS_ATTACK=1,
-}
-```
-
-an our intents can be from
-
-```
-enum Intents {
-  INT_NULL=0,
-  INT_ATTACK=1,
-}
-```
-
-and our transition functions are very basic.
-
-For the next mental state we have,
-
-```
-if (stamina >= STAMINA_COST_ATTACK * 2 + 10) return MS_ATTACK;
-else return MS_IDLE;
-```
-
-and our next intent we have
-
-```
-if (current_state == MS_ATTACK) return INT_ATTACK;
-else return INT_NULL;
-```
-
-Now we step through what the Circom input would look like. First, note that we have a "wrapper" Circom module which instantiates the FD Emulator. This will be in a future PR. This wrapper module will ensure that global constants, such as `STAMINA_COST_ATTACK`, mental spaces, and public inputs are passed into the inputs of the FD Emulator properly.
-
-Say that the maximum number of "anded clauses" is 2 and our buffer size is 1. So then, we would have the following FD Emulator Inputs for the next mental state
-
-```typescript
-{
-  next_state: [MS_ATTACK, MS_IDLE],
-
-  inputs: [curr_state, stamina, 2, 10, STAMINA_COST_ATTACK,],
-
-  // We have 1 conditional, then the index following the number of conditionals (1) is true by default
-  // I.e. we are choosing to do: `<conditional 0 output> && true`
-  and_selectors: [[0, 1]],
-
-  conditional_mux_sel: [[0, 1]], // Select a <= b
-
-  conditional_inputs_mux_sel[[5, 1]], // Select <Buffer 1 out> <= stamina
-
-  buffer_type_sel: [[0, 0]], // Quadratic constraint buffer is selected to give use a * b + c
-
-  buffer_mux_sel: [[4, 2, 3]], // Buffer is now STAMINA_COST_ATTACK * 2 + 10
-}
-```
-
-The next intent inputs are similar:
-
-```typescript
-{
-  next_state: [INT_ATTACK, INT_NULL],
-
-  inputs: [curr_state, stamina, MS_ATTACK, 0, STAMINA_COST_ATTACK,], // The 0 is just a dummy value
-
-  // We have 1 conditional, then the index following the number of conditionals (1) is true by default
-  // I.e. we are choosing to do: `<conditional 0 output> && true`
-  and_selectors: [[0, 1]],
-
-  conditional_mux_sel: [[0, 0]], // Select a == b
-
-  conditional_inputs_mux_sel[[0, 2]], // Select curr_state == MS_ATTACK
-
-  buffer_type_sel: [[0, 0]], // The buffer is unused so we just need some valid selection
-
-  buffer_mux_sel: [[0, 0, 0]], // The buffer is unused so we just need some valid selection
-}
-```
-
-#### A Slightly More Complex FD with 2-recursion in the Buffer
-
-Say for the next mental state we have,
-
-```
-if (stamina >= abs(STAMINA_COST_ATTACK * 2 - 10)) return MS_ATTACK;
-else if (chaos_level > stamina / CHAOS_TO_STAMINA_SCALING && current_state == MS_ATTACK) return MS_ATTACK;
-else return MS_IDLE;
-```
-
-Now, we need the buffer to be at least size 3, 2 conditionals, and at least 2 `and-ings` supported.
-
-```typescript
-{
-  next_state: [MS_ATTACK, MS_IDLE],
-
-	// 8 inputs
-  inputs: [curr_state, chaos_level, stamina, 2, -10, MS_ATTACK, CHAOS_TO_STAMINA_SCALING, STAMINA_COST_ATTACK,],
-
-  // We have 3 conditionals, then the index following the number of conditionals (3) is true by default
-  // I.e. we are choosing to do: `<conditional 0 output> && true` and `<conditional 1> && <conditional 2>
-  and_selectors: [[0, 3], [1, 2]],
-
-  conditional_mux_sel: [[0, 1], [1, 0], [0, 0]], // Select a >= 1, a > b, a == b
-
-  conditional_inputs_mux_sel[
-    [9, 2], // Select stamina <= <2nd buffer out>
-    [10, 1], // Select <3rd buffer out> < chaos_level
-    [0, 5], // Select curr_state == MS_ATTACK
-  ],
-
-  buffer_type_sel: [
-    [0, 0], // a * b + c
-    [1, 0], // abs(.)
-    [0, 1], // Integer division
-  ],
-
-  buffer_mux_sel: [
-    [6, 3, 4], // STAMINA_COST_ATTACK * 2 - 10,
-    [8, 0, 0], // abs(<buffer 0 output>)
-    [2, 6, 0], // stamina // CHAOS_TO_STAMINA_SCALING
-  ],
-}
-```
+To get from a DAG program, as used in Shoshin, to the Circom we will use a simple compiler. All the compiler has to do is define the order of the trace cells such that the computations in the DAG with the larger depth get computed in the trace **_before_** the more shallow nodes. This will be in Part 2 of this pull request.
