@@ -31,6 +31,8 @@ export interface CircomMapping {
   n_traces: number;
   op_traces: OpTrace[];
   inputs_constant: number[];
+  dict: number[];
+  compiler_info?: CircomCompilerOutInfo[];
 }
 
 // Leaf index
@@ -59,3 +61,8 @@ export type Dag = (DagNode | LeafNode<number>)[];
  * and the key is the original index of a node in the `Dag` structure.
  */
 export type DagDict = { [node_key: number]: number };
+
+export enum CircomCompilerOutInfo {
+  TRUNCATED_DICT,
+  TRUNCATED_TRACES,
+}

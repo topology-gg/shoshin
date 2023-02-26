@@ -7,6 +7,7 @@ import {
   Dag,
   DagDict,
   DagNode,
+  CircomCompilerOutInfo,
 } from '../types';
 import {
   deepcopy,
@@ -14,26 +15,8 @@ import {
   has_key,
   is_leaf,
   pad_array_to_len,
+  range,
 } from '../utils';
-
-interface CircomShoshingParams {
-  INPUT_TRACE_SIZE: number;
-  CONDITIONAL_TRACE_SIZE: number;
-  CONSTS_INPUT_SIZE: number;
-  PUBLIC_INPUT_SIZE: number;
-  N_SIGNLE_CLAUSE_CONDITIONALS: number;
-  N_OUTPUT_CONDITIONALS: number;
-  N_WORD_BITS: number;
-}
-// Say we have each leaf
-
-// TODO: notes
-// Finding number of leaves / traces should be straight forward
-// I guess we just have to "reorder" our input such that the leaves come first, then the lowest level traces and so on
-
-// Okay
-// 1) Traverse the dag and add all **leaves** to the starting index (with associated lookup). Also, create dup dag w/o the leaves
-// 2) Do a depth ordered traversal on the dag w/o leaves to order the traces. Use this to fill in the op_traces
 
 const dfs_traverse = (
   parent_idx: number,
@@ -71,19 +54,26 @@ const dfs_traverse = (
   return depth_ordered_visited_non_leafs;
 };
 
-// TODO: support DAG?
+/**
+ * @brief Compile a dag to circom inputs
+ *
+ * Return the circom inputs to specify the trace cells. This function also
+ * pads the inputs and dict to the maximum size. The returned trace cells are also
+ * padded to the maximum number of tract cells
+ */
 export const dag_to_circom = (
   dag: Dag,
+  dict: number[],
   max_number_constants: number,
-  max_number_dict_inputs: number
+  max_number_dict_inputs: number,
+  max_number_traces: number
 ): CircomMapping => {
   const dag_idxed = dag.map((t, i) => [t, i] as IndexedNode);
 
-  // TODO: verify numb constants in range
   const leave_idxs_constants = dag_idxed.filter(
     ([t, i]) => t[1] === -1 && t[2] === -1
   );
-  // TODO: verify DICT inputs in range
+
   const leave_idxs_dict = dag_idxed.filter(
     ([[op, left, right], i]) => op === OpCodes.DICT
   );
@@ -125,7 +115,7 @@ export const dag_to_circom = (
           leave_idxs_dict[idx - leave_idxs_constants.length][0][2];
         return dict_idx; // a lookup into the input DICT
       } else {
-        return idx; // a lookup into the inputs // TODO: verify
+        return idx; // a lookup into the inputs
       }
     } else if (has_key(dag_idx, nodes_to_traces)) {
       return (
@@ -158,10 +148,37 @@ export const dag_to_circom = (
     ([[val, _l, _r], _i]) => val
   );
 
+  const op_traces_padded =
+    op_traces.length > max_number_traces
+      ? op_traces.slice(0, max_number_traces)
+      : pad_array_to_len(
+          op_traces,
+          max_number_traces,
+          range(op_traces.length, max_number_traces).map(i => {
+            return {
+              op_code: 0,
+              sel_a: max_number_constants + max_number_dict_inputs + i - 1,
+              sel_b: 0,
+            };
+          })
+        );
+
+  // Add info about truncation
+  const compiler_info: CircomCompilerOutInfo[] = [];
+  if (dict.length > max_number_dict_inputs)
+    compiler_info.push(CircomCompilerOutInfo.TRUNCATED_DICT);
+  if (op_traces.length > max_number_traces)
+    compiler_info.push(CircomCompilerOutInfo.TRUNCATED_TRACES);
+
   return {
     n_inputs,
     n_traces: dag.length - n_inputs,
-    op_traces,
+    op_traces: op_traces_padded,
     inputs_constant: pad_array_to_len(inputs_constant, max_number_constants, 0),
+    dict:
+      dict.length > max_number_dict_inputs
+        ? dict.slice(0, max_number_dict_inputs)
+        : pad_array_to_len(dict, max_number_dict_inputs, 0),
+    compiler_info,
   };
 };
