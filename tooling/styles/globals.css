@@ -287,4 +287,6 @@ input::placeholder {
     background: #FFFFFF00 url('../public/images/bg/shoshin-bg-white-long.png') no-repeat;
     background-size: cover;
     background-position: bottom;
+    /* Render the bg image and the sprites as pixelated images */
+    image-rendering: pixelated;
 }
