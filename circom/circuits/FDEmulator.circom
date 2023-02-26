@@ -25,6 +25,9 @@ template OpTraceALU(WORD_SIZE) {
 	component abs_num = Abs(WORD_SIZE);
 	component abs_denom = Abs(WORD_SIZE);
 	component divide_mod = IntegerDivideRemainder(WORD_SIZE);
+	// Set up the absolute value
+	inp[0] ==> abs_num.inp;
+	inp[1] ==> abs_denom.inp;
 
 	inp[0] + inp[1] ==> mux.inp[1][0];
 	inp[0] - inp[1] ==> mux.inp[2][0];
@@ -41,9 +44,6 @@ template OpTraceALU(WORD_SIZE) {
 	//  Mod Opcode Disabled
 	0 ==> mux.inp[5][0];
 
-	// Set up the absolute value
-	inp[0] ==> abs_num.inp;
-	inp[1] ==> abs_denom.inp;
 	abs_num.out ==> mux.inp[6][0];
 
 	//  SQRT Opcode Disabled
@@ -72,11 +72,6 @@ template OpTraceALU(WORD_SIZE) {
 	inp[0] ==> eq.in[0];
 	inp[1] ==> eq.in[1];
 	eq.out ==> mux.inp[12][0];
-
-	inp[0] ==> lt.in[0];
-	inp[1] ==> lt.in[1];
-	lt.out ==> mux.inp[mux_i][0];
-	mux_i += 1;
 }
 
 /**
