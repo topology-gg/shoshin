@@ -41,7 +41,7 @@ describe('fuzzing tests', () => {
   it(
     'Should test 100 fuzzing samples of smallish circuits',
     async () => {
-      const n_tests = 10; // On Lev's laptop, we estimate each takes ~6 seconds. So 100 tests takes ~10
+      const n_tests = 100; // On Lev's laptop, we estimate each takes ~6 seconds. So 100 tests takes ~10
       let n_test_run = 0;
       while (n_test_run < n_tests) {
         // We need to reload the circuit or we get odd errors
