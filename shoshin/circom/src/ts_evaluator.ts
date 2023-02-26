@@ -35,11 +35,10 @@ const eval_single_op = (op: OpCodes, val: bigint) => {
   switch (op) {
     case OpCodes.ABS:
       return val < 0 ? val * BigInt(-1) : val;
-      break;
     case OpCodes.IS_NN:
       return val >= 0 ? one : zero;
     case OpCodes.NOT:
-      return val === BigInt(0).valueOf() ? val >= one : zero;
+      return one - val; // Needs to exactly mimic the Circom
     default:
       throw `Opcode ${op} is not a single input opcode`;
   }
@@ -50,7 +49,7 @@ const eval_double_inp_op = (op: OpCodes, a: bigint, b: bigint) => {
     case OpCodes.ADD:
       return (a + b) % p.valueOf();
     case OpCodes.SUB:
-      return a - (b % p.valueOf());
+      return (a - b) % p.valueOf();
     case OpCodes.MUL:
       return (a * b) % p.valueOf();
     case OpCodes.DIV:
@@ -60,7 +59,7 @@ const eval_double_inp_op = (op: OpCodes, a: bigint, b: bigint) => {
         ? zero
         : (BigInt(a).valueOf() / BigInt(b).valueOf()) % p.valueOf();
     case OpCodes.IS_LE:
-      return a < b ? one : zero;
+      return a <= b ? one : zero;
     case OpCodes.EQ:
       return a === b ? one : zero;
     default:

@@ -44,7 +44,9 @@ export const shuffle_arr = <T>(arr: T[]) =>
     .sort((a, b) => a.sort - b.sort)
     .map(({ value }) => value);
 
-export const pad_array_to_len = <T>(arr: T[], len: number, fill: T) =>
+export const pad_array_to_len = <T>(arr: T[], len: number, fill: T | T[]) =>
   arr.length < len
-    ? arr.concat(Array(len - arr.length).fill(fill)).slice(0, len)
+    ? arr
+        .concat(Array.isArray(fill) ? fill : Array(len - arr.length).fill(fill))
+        .slice(0, len)
     : arr;
