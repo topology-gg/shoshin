@@ -123,7 +123,6 @@ const useRunCairoSimulation = (
             ]);
             let output = ctx.wasm.runCairoProgram(shoshinInput);
             setOutput(cairoOutputToFrameScene(output));
-            console.log("New simulation output", output);
         } catch (e) {
             console.log("Got an error running wasm", e);
             setError(e);

@@ -1,10 +1,6 @@
 import { useState } from 'react'
-import { Typography, Button } from "@mui/material";
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import { useContext, useEffect } from "react";
+import { Typography, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import ComboEditor from './ComboEditor';
-import { WASMContext } from "../context/WASM";
 
 
 export const AdversarySelection = ({
@@ -39,34 +35,15 @@ export const AdversarySelection = ({
             marginTop: '1.5rem',
         }}
     >
-      <Button
-          id={`initial-actions-menu-button`}
-          variant="outlined"
-          aria-controls={opened ? 'basic-menu' : undefined}
-          aria-haspopup='true'
-          aria-expanded={opened ? 'true' : undefined}
-          onClick={handleClick}
-          sx={{
-              marginTop: '1rem'
-          }}
-      >
-          {/* <Typography variant='overline'>{(isDefensiveAdversary? 'Defensive': 'Offensive') + ' adversary'}</Typography> */}
-          {(adversary === 'defensive'? 'Defensive': adversary === 'offensive'? 'Offensive': 'Combo') + ' adversary'}
-      </Button>
+      <ToggleButtonGroup value={adversary} exclusive onChange={(e, value) => handleClose(value)}>
+        <ToggleButton value="defensive">Defensive</ToggleButton>
+        <ToggleButton value="offensive">Offensive</ToggleButton>
+        <ToggleButton value="combo">Combo</ToggleButton>
+      </ToggleButtonGroup>
 
       { displayWarning && <Typography variant="overline" color="red">{warning}</Typography> }
 
       {/* <Button id='constant' variant="outlined" onClick={handleAddElement}>Add</Button> */}
-      <Menu
-      id={'initial-actions-menu'}
-      anchorEl={anchorEl}
-      open={opened}
-      onClose={handleClose}
-      >
-        <MenuItem key={ `defensive-adversary` } onClick={() => handleClose('defensive')}>Defensive adversary</MenuItem>
-        <MenuItem key={ `offensive-adversary` } onClick={() => handleClose('offensive')}>Offensive adversary</MenuItem>
-        <MenuItem key={ `combo-adversary` } onClick={() => handleClose('combo')}>Combo adversary</MenuItem>
-      </Menu>
       
       { adversary === 'combo' && 
         <ComboEditor 

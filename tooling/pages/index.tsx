@@ -12,7 +12,6 @@ import { Function, FunctionElement, verifyValidFunction } from '../src/types/Fun
 import { MentalState } from '../src/types/MentalState';
 import { Character, INITIAL_COMBOS, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
 import Agent, { buildAgent } from '../src/types/Agent';
-import { AdversarySelection as AdversarySelection } from '../src/components/AdversarySelection';
 import ImagePreloader from '../src/components/ImagePreloader';
 import StatusBarPanel from '../src/components/StatusBar';
 import FrameInspector from '../src/components/FrameInspector';
@@ -74,7 +73,7 @@ export default function Home() {
     const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
     const [character, setCharacter] = useState<Character>(Character.Jessica)
     const [adversary, setAdversary] = useState<string>('defensive')
-    const [adversaryCombo, setAdversaryCombo] = useState<number[]>()
+    const [adversaryCombo, setAdversaryCombo] = useState<number[]>([])
 
     // Warnings
     const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
@@ -447,12 +446,6 @@ export default function Home() {
                                             frameLeft={testJson.agent_0.frames[animationFrame]} 
                                             frameRight={testJson.agent_1.frames[animationFrame]}
                                         />
-                                        <AdversarySelection
-                                            warning={runCairoSimulationWarning}
-                                            adversary={adversary}
-                                            setAdversary={setAdversary}
-                                            onComboChange={setAdversaryCombo}
-                                        />
                                     </div>
                                 }
                                 {/* <LoadTestJson
@@ -490,6 +483,10 @@ export default function Home() {
                                 isTreeEditorWarningTextOn={isTreeEditorWarningTextOn}
                                 treeEditorWarningText={treeEditorWarningText}
                                 handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
+                                runCairoSimulationWarning={runCairoSimulationWarning}
+                                adversary={adversary}
+                                setAdversary={setAdversary}
+                                onComboChange={setAdversaryCombo}
                             />
                         </Grid>
                     </Grid>
