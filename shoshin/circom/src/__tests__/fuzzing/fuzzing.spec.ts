@@ -40,7 +40,7 @@ describe('fuzzing tests', () => {
   it(
     'Should test 100 fuzzing samples of smallish circuits',
     async () => {
-      const n_tests = 100;
+      const n_tests = 100; // On Lev's laptop, we estimate each takes ~6 seconds. So 100 tests takes ~10 minutes
       let n_test_run = 0;
       while (n_test_run < n_tests) {
         // We need to reload the circuit or we get odd errors
@@ -53,7 +53,7 @@ describe('fuzzing tests', () => {
         );
         const { n_inputs, n_traces, op_traces, inputs_constant } =
           dag_to_circom(dag, MAX_CONSTANTS, MAX_DICT);
-        console.log(dag, dict, op_traces);
+        // console.log(dag, dict, op_traces);
         if (
           n_inputs <= MAX_CONSTANTS + MAX_DICT &&
           inputs_constant.length <= MAX_CONSTANTS &&
@@ -97,6 +97,6 @@ describe('fuzzing tests', () => {
       }
       console.log(`Successfully ran ${n_test_run} tests`);
     },
-    60000 * 10 // ten minutes for the testing
+    60000 * 20 // twenty minutes for the testing
   );
 });
