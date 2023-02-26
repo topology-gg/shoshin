@@ -8,7 +8,13 @@ import {
   DagDict,
   DagNode,
 } from '../types';
-import { deepcopy, get_parent_node, has_key } from '../utils';
+import {
+  deepcopy,
+  get_parent_node,
+  has_key,
+  is_leaf,
+  pad_array_to_len,
+} from '../utils';
 
 interface CircomShoshingParams {
   INPUT_TRACE_SIZE: number;
@@ -31,27 +37,25 @@ interface CircomShoshingParams {
 
 const dfs_traverse = (
   parent_idx: number,
-  dag: IndexedNode[],
-  leave_dict: DagDict
+  dag: IndexedNode[]
 ): IndexedNode[] => {
   const depth_ordered_visited_non_leafs: IndexedNode[] = [];
   const visited: DagDict = {};
 
+  let i = 0;
   const aug_recursive_dfs = (curr: IndexedNode) => {
+    // console.log(i);
+    i += 1;
     const left = curr[0][1];
     const right = curr[0][2];
 
     // We have a left, non-leaf child
-    if (left !== -1 && !has_key(left, leave_dict) && !has_key(left, visited)) {
+    if (left !== -1 && !is_leaf(dag[left][0]) && !has_key(left, visited)) {
       aug_recursive_dfs(dag[left]);
       visited[left] = 1;
     }
     // We have a right child
-    if (
-      right !== -1 &&
-      !has_key(right, leave_dict) &&
-      !has_key(right, visited)
-    ) {
+    if (right !== -1 && !is_leaf(dag[right][0]) && !has_key(right, visited)) {
       aug_recursive_dfs(dag[right]);
       visited[right] = 1;
     }
@@ -74,8 +78,6 @@ export const dag_to_circom = (
   max_number_dict_inputs: number
 ): CircomMapping => {
   const dag_idxed = dag.map((t, i) => [t, i] as IndexedNode);
-  // TODO: or DICT lookup
-  // TODO: or we have to build a map with DICT
 
   // TODO: verify numb constants in range
   const leave_idxs_constants = dag_idxed.filter(
@@ -83,7 +85,7 @@ export const dag_to_circom = (
   );
   // TODO: verify DICT inputs in range
   const leave_idxs_dict = dag_idxed.filter(
-    ([[op, left, right], i]) => right !== -1 && op === OpCodes.DICT
+    ([[op, left, right], i]) => op === OpCodes.DICT
   );
 
   const leave_idxs = leave_idxs_constants.concat(leave_idxs_dict);
@@ -99,13 +101,12 @@ export const dag_to_circom = (
   const parent_node_idx = get_parent_node(dag_idxed);
 
   // Order the nodes by their depth
-  const nodes_depth_first_traversal = dfs_traverse(
+  const non_leaf_nodes_depth_first_traversal = dfs_traverse(
     parent_node_idx,
-    dag_idxed,
-    leaves_to_inputs
+    dag_idxed
   );
   // Mapping node indices to their trace indices
-  const nodes_to_traces = nodes_depth_first_traversal.reduce(
+  const nodes_to_traces = non_leaf_nodes_depth_first_traversal.reduce(
     (prev_dict, node, i) => {
       const [_tmp, node_idx] = node;
       prev_dict[node_idx] = i;
@@ -114,19 +115,8 @@ export const dag_to_circom = (
     {} as DagDict
   );
 
-  // Get the value of the leaves
-  const inputs_constant = leave_idxs_constants.map(
-    ([[val, _l, _r], _i]) => val
-  );
-
-  // TODO: for Lev tomorrow
-  /**
-   * Basically check that this constant/ dict thing makes sense with basic tests (which use both dict and constants)
-   * Then, FUZZING!
-   */
-
-  const dag_idx_to_selection_idx = (dag_idx: number) => {
-    if (has_key(dag_idx, leaves_to_inputs)) {
+  const dag_idx_to_circom_selection_idx = (dag_idx: number) => {
+    if (is_leaf(dag[dag_idx])) {
       const idx = leaves_to_inputs[dag_idx];
       if (idx >= leave_idxs_constants.length) {
         // We have a dict
@@ -146,11 +136,15 @@ export const dag_to_circom = (
     }
   };
 
-  const op_traces = nodes_depth_first_traversal.map(
+  const op_traces = non_leaf_nodes_depth_first_traversal.map(
     ([[instr, left, right], idx]) => {
       const op_code: OpCodes = instr;
-      const sel_a = left === -1 ? 0 : dag_idx_to_selection_idx(left);
-      const sel_b = right === -1 ? 0 : dag_idx_to_selection_idx(right);
+      const sel_left = left === -1 ? 0 : dag_idx_to_circom_selection_idx(left);
+      const sel_right =
+        right === -1 ? 0 : dag_idx_to_circom_selection_idx(right);
+
+      const sel_a = left === -1 ? sel_right : sel_left;
+      const sel_b = left === -1 ? 0 : sel_right;
       return {
         sel_a,
         sel_b,
@@ -159,10 +153,15 @@ export const dag_to_circom = (
     }
   );
 
+  // Get the value of the leaves
+  const inputs_constant = leave_idxs_constants.map(
+    ([[val, _l, _r], _i]) => val
+  );
+
   return {
     n_inputs,
     n_traces: dag.length - n_inputs,
     op_traces,
-    inputs_constant,
+    inputs_constant: pad_array_to_len(inputs_constant, max_number_constants, 0),
   };
 };

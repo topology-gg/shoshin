@@ -1,3 +1,4 @@
+pragma circom 2.0.0;
 include "../circomlib/circuits/comparators.circom";
 
 template Abs(WORD_SIZE) {
@@ -25,8 +26,15 @@ template IntegerDivideRemainder(WORD_SIZE) {
 	component gte_q = GreaterEqThan(WORD_SIZE);
 
 
-	quotient <-- inp[0] \ inp[1];
-	remainder <-- inp[0] % inp[1];
+	// To avoid div by zero we say that x \ 0 yeilds quotient = 0, remainder = 0
+	var quot = 0;
+	var rem = 0;
+	if (inp[1] != 0) {
+		quot = inp[0] \ inp[1];
+		rem = inp[0] % inp[1];
+	}
+	quotient <-- quot;
+	remainder <-- rem;
 	
 	// Check that for a / b, a = b * q + r
 	inp[0] === inp[1] * quotient + remainder;

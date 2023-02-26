@@ -1,5 +1,5 @@
 import { Dag, DagNode, OpCodes } from '../../types';
-import { isLeaf, range, shuffle_arr } from '../../utils';
+import { is_leaf, range, shuffle_arr } from '../../utils';
 
 /**
  * @brief Generate a random, valid DAG
@@ -41,7 +41,7 @@ export const gen_random_dag = (
 
   for (let i = n_max_constants + n_max_dict; i < n_max_nodes; i++) {
     const sub_arr_size = Math.random() < p_single_inp_trace ? 1 : 2;
-    const flip_on_edge = get_random_subarray(range(0, i - 1), sub_arr_size);
+    const flip_on_edge = get_random_subarray(range(0, i), sub_arr_size);
     // flip_on_edge.forEach(child_node => (lower_triang[i][child_node] = 1));
     const opcode =
       sub_arr_size === 1
@@ -58,12 +58,15 @@ export const gen_random_dag = (
   const dfs_find_hit = (curr_idx: number) => {
     const node = dag_ordered[curr_idx];
     node_hit[curr_idx] = 1;
-    if (!isLeaf(node)) {
+    if (!is_leaf(node)) {
       const [_op, left, right] = node;
       if (left > -1) {
         dfs_find_hit(left);
       }
       dfs_find_hit(right);
+    } else {
+      // Mark all leaves as hit
+      node_hit[curr_idx] = 1;
     }
   };
   dfs_find_hit(dag_ordered.length - 1);
@@ -77,7 +80,7 @@ export const gen_random_dag = (
   // We now need to shift the indices of the children of the remaining nodes
   // in order to point towards the correct nodes
   for (let i = 0; i < dag_ordered.length; i++) {
-    if (!isLeaf(dag_ordered[i])) {
+    if (!is_leaf(dag_ordered[i])) {
       const [_op, left, right] = dag_ordered[i];
       if (left !== -1) {
         // Find the first dangling index that is larger than right
@@ -98,7 +101,6 @@ export const gen_random_dag = (
   }
 
   // Remove the non-root traces without any parents
-  // dangling_nodes.forEach((idx, i) => dag_ordered.splice(idx - i, 1));
   const dag_order_filtered = dag_ordered.filter(
     (_e, i) => !dangling_nodes.includes(i)
   );
@@ -110,12 +112,13 @@ export const gen_random_dag = (
     range(0, dag_order_filtered.length)
   );
 
-  // Update the opcodes to point towards the randomized ordering
+  // Update the opcodes `left` and `right` to point towards the randomized ordering
   for (let i = 0; i < dag_order_filtered.length; i++) {
     const [_op, left, right] = dag_order_filtered[i];
-    if (!isLeaf([_op, left, right])) {
-      if (left > -1) dag_order_filtered[i][1] = ordered_to_random_mapping[left];
-      dag_order_filtered[i][2] = ordered_to_random_mapping[right];
+    if (!is_leaf(dag_order_filtered[i])) {
+      if (left !== -1)
+        dag_order_filtered[i][1] = ordered_to_random_mapping.indexOf(left);
+      dag_order_filtered[i][2] = ordered_to_random_mapping.indexOf(right);
     }
   }
 

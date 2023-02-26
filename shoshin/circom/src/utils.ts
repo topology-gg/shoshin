@@ -7,7 +7,7 @@ export const get_parent_node = (dag_idxed: IndexedNode[]): number => {
 
   dag_idxed.forEach(([n, i]) => {
     const [_op, left, right] = n;
-    if (!isLeaf(n)) {
+    if (!is_leaf(n)) {
       if (left !== -1) n_pointers_to[left] += 1;
       if (right !== -1) n_pointers_to[right] += 1;
     }
@@ -24,11 +24,16 @@ export const get_parent_node = (dag_idxed: IndexedNode[]): number => {
 export const has_key = (key: number, dict: { [k: number | string]: any }) =>
   !(dict[key] === undefined || dict[key] === null);
 
-export const isLeaf = (node: DagNode | LeafNode<any>): boolean => {
+export const is_leaf = (node: DagNode | LeafNode<any>): boolean => {
   const [_v, left, right] = node;
   return (left < 0 && right < 0) || _v === OpCodes.DICT;
 };
 
+/**
+ * @brief Get an array ranging from [low, high)
+ *
+ * Like range in Python where we get an array from low to high with high being exclusive
+ */
 export const range = (low: number, high: number) =>
   Array.from(Array(high - low).keys()).map(i => i + low);
 
@@ -38,3 +43,8 @@ export const shuffle_arr = <T>(arr: T[]) =>
     .map(value => ({ value, sort: Math.random() }))
     .sort((a, b) => a.sort - b.sort)
     .map(({ value }) => value);
+
+export const pad_array_to_len = <T>(arr: T[], len: number, fill: T) =>
+  arr.length < len
+    ? arr.concat(Array(len - arr.length).fill(fill)).slice(0, len)
+    : arr;
