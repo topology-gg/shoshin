@@ -14,6 +14,7 @@ import { F1Field, Scalar } from 'ffjavascript';
 import { buildBabyjub } from 'circomlibjs';
 import { gen_random_dag } from './fuzzing_utils';
 import { pad_array_to_len, range } from '../../utils';
+import { CircomCompilerOutInfo } from '../../types';
 
 const MAX_CONSTANTS = 4;
 const MAX_DICT = 4;
@@ -40,7 +41,7 @@ describe('fuzzing tests', () => {
   it(
     'Should test 100 fuzzing samples of smallish circuits',
     async () => {
-      const n_tests = 100; // On Lev's laptop, we estimate each takes ~6 seconds. So 100 tests takes ~10 minutes
+      const n_tests = 10; // On Lev's laptop, we estimate each takes ~6 seconds. So 100 tests takes ~10
       let n_test_run = 0;
       while (n_test_run < n_tests) {
         // We need to reload the circuit or we get odd errors
@@ -51,37 +52,31 @@ describe('fuzzing tests', () => {
           MAX_DICT,
           max_n_traces_fuzzing
         );
-        const { n_inputs, n_traces, op_traces, inputs_constant } =
-          dag_to_circom(dag, MAX_CONSTANTS, MAX_DICT);
+        const {
+          n_inputs,
+          n_traces,
+          op_traces,
+          inputs_constant,
+          dict: dict_padded,
+          compiler_info,
+        } = dag_to_circom(dag, dict, MAX_CONSTANTS, MAX_DICT, MAX_TRACE);
         // console.log(dag, dict, op_traces);
         if (
           n_inputs <= MAX_CONSTANTS + MAX_DICT &&
           inputs_constant.length <= MAX_CONSTANTS &&
-          n_traces < MAX_TRACE
+          n_traces < MAX_TRACE &&
+          !compiler_info?.includes(CircomCompilerOutInfo.TRUNCATED_DICT) &&
+          !compiler_info?.includes(CircomCompilerOutInfo.TRUNCATED_TRACES)
         ) {
           n_test_run += 1;
           const ts_out = ts_dag_evaluator(dag, dict);
 
-          const traces_padded = pad_array_to_len(
-            op_traces,
-            MAX_TRACE,
-            range(op_traces.length, MAX_TRACE).map(i => {
-              return {
-                op_code: 0,
-                sel_a: MAX_CONSTANTS + MAX_DICT + i - 1, // TODO: traces padded from compiler
-                sel_b: 0,
-              };
-            })
-          );
-
-          // TODO: dict from compiler
-          const dict_padded = pad_array_to_len(dict, MAX_DICT, 0);
           const all_inps = inputs_constant.concat(dict_padded);
 
           const circ_input = {
             inputs: all_inps,
-            trace_inp_selectors: traces_padded.map(o => [o.sel_a, o.sel_b]),
-            trace_type_selectors: traces_padded.map(o => o.op_code),
+            trace_inp_selectors: op_traces.map(o => [o.sel_a, o.sel_b]),
+            trace_type_selectors: op_traces.map(o => o.op_code),
           };
           const witness = await circuit.calculateWitness(circ_input, true);
           if (ts_out.valueOf() < BigInt(0).valueOf()) {

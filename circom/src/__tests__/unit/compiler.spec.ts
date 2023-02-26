@@ -8,8 +8,10 @@ describe('compiler', () => {
 
     const { n_inputs, n_traces, op_traces, inputs_constant } = dag_to_circom(
       dag_simple,
+      [],
       max_number_inputs,
-      max_number_dicts
+      max_number_dicts,
+      3
     );
     expect(n_inputs).toEqual(3);
     expect(n_traces).toEqual(3);
@@ -36,8 +38,10 @@ describe('compiler', () => {
       inputs_constant: inputs,
     } = dag_to_circom(
       dag_arithmetic_with_memo,
+      [],
       max_number_inputs,
-      max_number_dicts
+      max_number_dicts,
+      3
     );
     expect(n_inputs).toEqual(3);
     expect(n_traces).toEqual(3);
