@@ -55,7 +55,10 @@ const eval_double_inp_op = (op: OpCodes, a: bigint, b: bigint) => {
       return (a * b) % p.valueOf();
     case OpCodes.DIV:
       // Automatically gives integer division as we are working with big ints
-      return (BigInt(a).valueOf() / BigInt(b).valueOf()) % p.valueOf();
+      // Handle division by 0 by setting div by 0 to 0
+      return b === zero
+        ? zero
+        : (BigInt(a).valueOf() / BigInt(b).valueOf()) % p.valueOf();
     case OpCodes.IS_LE:
       return a < b ? one : zero;
     case OpCodes.EQ:
