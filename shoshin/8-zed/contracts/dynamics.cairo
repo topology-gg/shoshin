@@ -176,10 +176,14 @@ func _euler_forward_no_hitbox {range_check_ptr}(
             }
         } else {
             // apply gravity
-            assert vel_fp_y = physics_state.vel_fp.y;
-            assert vel_fp_x = physics_state.vel_fp.x;
             assert acc_fp_y = ns_dynamics.GRAVITY_ACC_FP;
             assert acc_fp_x = 0;
+            assert vel_fp_y = physics_state.vel_fp.y;
+            if (counter == 9) {
+                assert vel_fp_x = 0;
+            } else {
+                assert vel_fp_x = physics_state.vel_fp.x;
+            }
         }
 
         jmp update_vel_knocked;

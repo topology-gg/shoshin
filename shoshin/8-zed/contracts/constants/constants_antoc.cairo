@@ -17,7 +17,7 @@ namespace ns_antoc_dynamics {
     const MOVE_ACC_FP = 300 * ns_dynamics.SCALE_FP;
     const DASH_ACC_FP = 3000 * ns_dynamics.SCALE_FP;
 
-    const KNOCK_VEL_X_FP = 120 * ns_dynamics.SCALE_FP;
+    const KNOCK_VEL_X_FP = 150 * ns_dynamics.SCALE_FP;
     const KNOCK_VEL_Y_FP = 400 * ns_dynamics.SCALE_FP;
 
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
