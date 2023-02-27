@@ -41,9 +41,9 @@ const theme = createTheme({
                     backgroundColor: "white",
                     ":hover": {
                       backgroundColor: '#2EE59D',
-                      boxShadow: '0px 15px 20px rgba(46, 229, 157, 0.4)',
+                    //   boxShadow: '0px 15px 20px rgba(46, 229, 157, 0.4)',
                       color: '#fff',
-                      transform: 'translateY(-4px)',
+                      transition: "background 0.2s, color 0.2s",
                     }
                 }
             }
@@ -82,9 +82,6 @@ export default function Home() {
     const [treeEditorWarningText, setTreeEditorWarningText] = useState<string>('')
     const [runCairoSimulationWarning, setCairoSimulationWarning] = useState<string>('')
 
-    // Decode from React states
-    if (testJson !== null) { console.log('testJson:',testJson); }
-    const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length
 
     const agent: Agent = useMemo(() => {
         return handleBuildAgent()
@@ -100,7 +97,6 @@ export default function Home() {
         }
     }, [output])
 
-
     useEffect(() => {
         if (!simulationError) return
 
@@ -108,16 +104,17 @@ export default function Home() {
         setTimeout(() => setCairoSimulationWarning(''), 5000)
     }, [simulationError])
 
+    // Decode from React states
+    if (testJson !== null) { console.log('testJson:',testJson); }
+    const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length
+
     function handleMidScreenControlClick (operation: string) {
 
         if (operation == "NextFrame" && animationState != "Run") {
-
-            setAnimationFrame((prev) => (prev < N_FRAMES ? prev + 1 : prev));
+            animationStepForward ()
 
         } else if (operation == "PrevFrame" && animationState != "Run") {
-
-            setAnimationFrame((prev) => (prev > 0 ? prev - 1 : prev));
-
+            animationStepBackward ()
         }
 
         else if (operation == "ToggleRun") {
@@ -165,14 +162,11 @@ export default function Home() {
     }
 
     const animationStepForward = () => {
-        setAnimationFrame((prev) => {
-            if (prev == N_FRAMES-1) {
-                return 0;
-            } else {
-                return prev + 1;
-            }
-        });
+        setAnimationFrame((prev) => (prev == N_FRAMES-1 ? prev : prev + 1));
     };
+    const animationStepBackward = () => {
+        setAnimationFrame((prev) => (prev > 0 ? prev - 1 : prev));
+    }
 
     function handleLoadTestJson (event) {
         var reader = new FileReader();
@@ -387,7 +381,10 @@ export default function Home() {
         return buildAgent(mentalStates, combos, trees, functions, initialMentalState, char)
     }
 
+    //
     // Render
+    //
+    // console.log(`animationFrame: ${animationFrame}/${N_FRAMES-1}`);
     return (
         <div className={styles.container}>
                 <Head>
@@ -416,7 +413,7 @@ export default function Home() {
                                             agentFrame1={testJson.agent_1.frames[animationFrame]}
                                             showDebug={checkedShowDebugInfo}
                                         />
-                                        <StatusBarPanel 
+                                        <StatusBarPanel
                                             integrity_0={testJson.agent_0.frames[animationFrame].body_state.integrity}
                                             integrity_1={testJson.agent_1.frames[animationFrame].body_state.integrity}
                                             stamina_0={testJson.agent_0.frames[animationFrame].body_state.stamina}
@@ -443,7 +440,7 @@ export default function Home() {
                                         <FrameInspector
                                             characterLeftType={testJson.agent_0.type}
                                             characterRightType={testJson.agent_1.type}
-                                            frameLeft={testJson.agent_0.frames[animationFrame]} 
+                                            frameLeft={testJson.agent_0.frames[animationFrame]}
                                             frameRight={testJson.agent_1.frames[animationFrame]}
                                             adversaryType={adversary}
                                             onAdversaryEdit={() => setWorkingTab(3)}

@@ -26,14 +26,15 @@ export default function Character( {agentIndex, viewWidth, characterName, agentF
     const bodyStateDir = agentFrame.body_state.dir
     const physicsState = agentFrame.physics_state
     const pos = physicsState.pos
-    console.log(characterName, 'pos:', pos)
+    // console.log(characterName, 'pos:', pos)
 
     // Calculate path to the correct sprite
     const bodyStateName = bodyStateNumberToName [characterName][bodyState]
     const direction = (bodyStateDir == 1) ? 'right' : 'left'
-    console.log(characterName, 'direction', direction)
+    // console.log(characterName, 'direction', direction)
 
-    const spriteAdjustment = spriteData[characterName][bodyStateName]
+    const spriteAdjustments = spriteData[characterName][bodyStateName]
+    const spriteAdjustment = spriteAdjustments.length == 1 ? spriteAdjustments[0] : spriteAdjustments[bodyStateCounter] // if having more than one adjustments, use body counter to index the adjustments
     const spriteSize = spriteAdjustment?.size || [0, 0]
     const spriteLeftAdjustment = spriteAdjustment?.hitboxOffset[direction][0] || 0
     const spriteTopAdjustment = spriteAdjustment?.hitboxOffset[direction][1] || 0
@@ -44,7 +45,7 @@ export default function Character( {agentIndex, viewWidth, characterName, agentF
     // Calculate character's left and top for rendering
     const left = viewWidth/2 + pos.x + spriteLeftAdjustment
     const top = SIMULATOR_H - pos.y - spriteSize[1] + spriteTopAdjustment + SpriteTopAdjustmentToBg
-    console.log(characterName, '(left,top):', `(${left},${top})`)
+    // console.log(characterName, '(left,top):', `(${left},${top})`)
 
     return (
             <div
