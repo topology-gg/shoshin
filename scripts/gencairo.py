@@ -41,7 +41,7 @@ def apply_push(s: str):
     return re.sub(r"\/\/ cairo -p *(.*) *\n *(.*)", r"\1 \2", s)
 
 def apply_return(s: str):
-    return re.sub(r"-> *\([\w\d]*\) * { *\n *\/\/ * cairo --return *(.*)", r"-> \1 {", s)
+    return re.sub(r"-> *\([\w\d\: ]*\) * { *\n *\/\/ * cairo --return *(.*)", r"-> \1 {", s)
 
 f = [clean_events, clean_lang, clean_at, clean_emits, clean_implicits, update_imports, update_libs, apply_delete_lines, apply_insert, apply_push, apply_return]
 [cairo := x(cairo) for x in f]

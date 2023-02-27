@@ -23,10 +23,14 @@ cairo-build: prepare
 lib-build: prepare
 	sh ./scripts/compile_lib.sh $(PWD)/$(dir)/$(path)/lib $(lib_files)
 
-cairo-compile: cairo-build lib-build
+cairo-compile: cairo-build lib-build format
 	cd $(dir) && \
 	cairo-compile $(path)/$(main) --output $(output) && \
 	mv $(output) ../
+
+format: cairo-build lib-build
+	$(eval TEMP_CAIRO_FILES = $(shell find $(dir) -name "*.cairo" -path "*/$(path)/*")) \
+	cairo-format -i $(TEMP_CAIRO_FILES)
 
 clean: cairo-compile
 	rm -rf $(dir)/$(path)
