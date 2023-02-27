@@ -1,18 +1,19 @@
 import React from 'react';
-import styles from '../../styles/Home.module.css';
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 import Tabs from './Tabs';
 import MentalStates from './MentalStates';
 import TreeEditor from './TreeEditor';
 import GeneralFunctions from './GeneralFunctions';
 import Combos from './Combos';
+import { AdversarySelection } from './AdversarySelection';
 
 
 const SidePanel = ({
     workingTab, handleClickTab, mentalStates, initialMentalState, handleSetInitialMentalState, combos, handleValidateCombo, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState,
     handleSetMentalStateAction, treeEditor, handleClickTreeEditor, trees, handleUpdateTree, functions, handleUpdateGeneralFunction,
     handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText,
-    isTreeEditorWarningTextOn, treeEditorWarningText, handleRemoveElementGeneralFunction
+    isTreeEditorWarningTextOn, treeEditorWarningText, handleRemoveElementGeneralFunction,
+    runCairoSimulationWarning, adversary, setAdversary, onComboChange
 }) => {
     const content = (workingTab: number) => {
         switch (workingTab) {
@@ -57,6 +58,14 @@ const SidePanel = ({
                         isWarningTextOn={isGeneralFunctionWarningTextOn}
                         warningText={generalFunctionWarningText}
                         handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
+                />;
+            }
+            case 3: {
+                return <AdversarySelection
+                    warning={runCairoSimulationWarning}
+                    adversary={adversary}
+                    setAdversary={setAdversary}
+                    onComboChange={onComboChange}
                 />;
             }
         }

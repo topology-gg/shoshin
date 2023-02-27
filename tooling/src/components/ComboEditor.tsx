@@ -18,8 +18,11 @@ const ComboEditor = ({
             return;
         } else {
             setEditingCombo((prev) => {
+                let action_int = parseInt(action, 10)
                 let prev_copy = JSON.parse(JSON.stringify(prev))
-                prev_copy.push(action)
+                if (!isNaN(action_int)) {
+                    prev_copy.push(action_int)
+                }
                 return prev_copy
             })
         }

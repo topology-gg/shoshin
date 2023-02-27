@@ -7,6 +7,7 @@ import { SIMULATOR_H, SIMULATOR_W } from '../constants/constants';
 import testJsonStr from '../json/test_engine.json';
 import { TestJson, Frame } from '../types/Frame';
 import { useResize } from '../hooks/useResize';
+import { Box } from '@mui/material';
 
 interface SimulatorProps {
     characterType0: number;
@@ -37,15 +38,16 @@ export default function Simulator( {
     const characterName1 = characterType1 == 0 ? 'jessica' : 'antoc'
 
     return (
-        <div
+        <Box
             ref={componentRef}
-            style={{
-                display:'flex', flexDirection:'row',
-                // width:componentWidth,
-                height:SIMULATOR_H,
-                // borderBottom:'2px solid #333333',
-                position:'relative',
-                marginBottom: '20px',
+            sx={{
+              border: 1,
+              borderRadius: 4,
+              display: 'flex',
+              height: SIMULATOR_H,
+              flexDirection: "row",
+              position: "relative",
+              mb: 2
             }}
             id={'simulator-background'}
         >
@@ -61,7 +63,7 @@ export default function Simulator( {
 
             <Debug show={showDebug} viewWidth={componentWidth} agentIndex={0} agentFrame={agentFrame0} characterName={characterName0} />
             <Debug show={showDebug} viewWidth={componentWidth} agentIndex={1} agentFrame={agentFrame1} characterName={characterName1} />
-        </div>
+        </Box>
     )
 }
 

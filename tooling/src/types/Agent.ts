@@ -14,6 +14,8 @@ export default interface Agent {
     character?: number,
 }
 
+// Build the agent from the user's mental states (consisting of the Tree construction for each mental state and the
+// action linked to this state), combos, functions, initial mental state and character
 export function buildAgent(mentalStates: MentalState[], combos: number[][], trees: Tree[], functions: Function[], initialMentalState, character) {
     let agent: Agent = {}
     agent.combos = combos
@@ -21,6 +23,7 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     agent.initialState = initialMentalState
 
     let agentMentalStates = []
+    // used to only extract the functions used in the mental states
     let indexes: Map<number, boolean> = new Map()
     mentalStates.forEach((_, i) => {
         let [parsedMentalState, usedFunctions] = parseMentalState(trees[i], mentalStates)
@@ -32,6 +35,7 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     agent.mentalStates = agentMentalStates
 
     let agentFunctions = []
+    // makes use of indexes to only parse the necessary functions
     Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => functions[i]).forEach((f) => {
         agentFunctions.push(parseFunction(f))
     })
@@ -46,12 +50,22 @@ export interface Operations {
     data?: (string|[])[]
 }
 
+// Flatten the agent
+// combosOffset should be in the form
+// [0 LEN_COMBO_0, LEN_COMBO_1, LEN_COMBO_2, ...]
+// mentalStatesOffset should be in the form (in the current implementation, only one tree is usedd so COUNT_TREES_STATE_i will always be 1)
+// [COUNT_TREES_STATE_0, LEN_TREE_0_STATE_0, LEN_TREE_1_STATE_0, ..., COUNT_TREES_STATE_1, LEN_TREE_0_STATE_1, LEN_TREE_1_STATE_1, ...]
+// functionsOffsets should be in the form
+// [LEN_TREE_0, LEN_TREE_1, LEN_TREE_2, ...]
 export function flattenAgent(agent: Agent) {
+    // flatten combos
     let combosOffset = [0]
     let combos = []
     agent.combos.forEach((c) => {
         combosOffset.push(combos.push(...c))
     })
+
+    // flatten mental states
     let mentalStatesOffset = []
     let mentalStates = []
     agent.mentalStates.forEach((ms) => {
@@ -60,6 +74,8 @@ export function flattenAgent(agent: Agent) {
         mentalStatesOffset.push(flattened.length / 3)
         mentalStates.push(...flattened)
     })
+
+    // flatten function
     let functionsOffset = []
     let functions = []
     agent.generalPurposeFunctions.forEach((f) => {
@@ -67,6 +83,7 @@ export function flattenAgent(agent: Agent) {
         functionsOffset.push(flattened.length / 3)
         functions.push(...flattened)
     })
+
     return [
         new Int32Array(combosOffset), 
         new Int32Array(combos), 
@@ -75,4 +92,8 @@ export function flattenAgent(agent: Agent) {
         new Int32Array(functionsOffset), 
         new Int32Array(functions),
     ]
+}
+
+export function equals(agent_1: Agent, agent_2: Agent) {
+    return JSON.stringify(agent_1) === JSON.stringify(agent_2)
 }
