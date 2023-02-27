@@ -68,7 +68,7 @@ namespace ns_antoc_body_state_duration {
     const HORI = 7;
     const VERT = 10;
     const BLOCK = 6; // active for counter == 1,2,3,4
-    const HURT = 3;
+    const HURT = 2;
     const KNOCKED = 11;
     const MOVE_FORWARD = 7;
     const MOVE_BACKWARD = 6;
