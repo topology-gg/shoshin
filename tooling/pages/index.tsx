@@ -41,9 +41,9 @@ const theme = createTheme({
                     backgroundColor: "white",
                     ":hover": {
                       backgroundColor: '#2EE59D',
-                      boxShadow: '0px 15px 20px rgba(46, 229, 157, 0.4)',
+                    //   boxShadow: '0px 15px 20px rgba(46, 229, 157, 0.4)',
                       color: '#fff',
-                      transform: 'translateY(-4px)',
+                      transition: "background 0.2s, color 0.2s",
                     }
                 }
             }
@@ -416,7 +416,7 @@ export default function Home() {
                                             agentFrame1={testJson.agent_1.frames[animationFrame]}
                                             showDebug={checkedShowDebugInfo}
                                         />
-                                        <StatusBarPanel 
+                                        <StatusBarPanel
                                             integrity_0={testJson.agent_0.frames[animationFrame].body_state.integrity}
                                             integrity_1={testJson.agent_1.frames[animationFrame].body_state.integrity}
                                             stamina_0={testJson.agent_0.frames[animationFrame].body_state.stamina}
@@ -443,7 +443,7 @@ export default function Home() {
                                         <FrameInspector
                                             characterLeftType={testJson.agent_0.type}
                                             characterRightType={testJson.agent_1.type}
-                                            frameLeft={testJson.agent_0.frames[animationFrame]} 
+                                            frameLeft={testJson.agent_0.frames[animationFrame]}
                                             frameRight={testJson.agent_1.frames[animationFrame]}
                                             adversaryType={adversary}
                                             onAdversaryEdit={() => setWorkingTab(3)}
