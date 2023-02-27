@@ -82,9 +82,6 @@ export default function Home() {
     const [treeEditorWarningText, setTreeEditorWarningText] = useState<string>('')
     const [runCairoSimulationWarning, setCairoSimulationWarning] = useState<string>('')
 
-    // Decode from React states
-    if (testJson !== null) { console.log('testJson:',testJson); }
-    const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length
 
     const agent: Agent = useMemo(() => {
         return handleBuildAgent()
@@ -100,7 +97,6 @@ export default function Home() {
         }
     }, [output])
 
-
     useEffect(() => {
         if (!simulationError) return
 
@@ -108,16 +104,17 @@ export default function Home() {
         setTimeout(() => setCairoSimulationWarning(''), 5000)
     }, [simulationError])
 
+    // Decode from React states
+    if (testJson !== null) { console.log('testJson:',testJson); }
+    const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length
+
     function handleMidScreenControlClick (operation: string) {
 
         if (operation == "NextFrame" && animationState != "Run") {
-
-            setAnimationFrame((prev) => (prev < N_FRAMES ? prev + 1 : prev));
+            animationStepForward ()
 
         } else if (operation == "PrevFrame" && animationState != "Run") {
-
-            setAnimationFrame((prev) => (prev > 0 ? prev - 1 : prev));
-
+            animationStepBackward ()
         }
 
         else if (operation == "ToggleRun") {
@@ -165,14 +162,11 @@ export default function Home() {
     }
 
     const animationStepForward = () => {
-        setAnimationFrame((prev) => {
-            if (prev == N_FRAMES-1) {
-                return 0;
-            } else {
-                return prev + 1;
-            }
-        });
+        setAnimationFrame((prev) => (prev == N_FRAMES-1 ? prev : prev + 1));
     };
+    const animationStepBackward = () => {
+        setAnimationFrame((prev) => (prev > 0 ? prev - 1 : prev));
+    }
 
     function handleLoadTestJson (event) {
         var reader = new FileReader();
@@ -387,7 +381,10 @@ export default function Home() {
         return buildAgent(mentalStates, combos, trees, functions, initialMentalState, char)
     }
 
+    //
     // Render
+    //
+    // console.log(`animationFrame: ${animationFrame}/${N_FRAMES-1}`);
     return (
         <div className={styles.container}>
                 <Head>
