@@ -207,10 +207,6 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.HURT) {
 
         // check for interruption
-        if (stimulus == ns_stimulus.HURT) {
-            // hurt again while in hurt => stay in hurt but reset counter
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, hurt_integrity, stamina, dir, FALSE) );
-        }
         if (stimulus == ns_stimulus.KNOCKED) {
             // knocked while in hurt => worsen into knocked
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
@@ -229,16 +225,6 @@ func _body_antoc {range_check_ptr}(
     // Knocked
     //
     if (state == ns_antoc_body_state.KNOCKED) {
-
-        // check for interruption
-        if (stimulus == ns_stimulus.HURT) {
-            // hurt while in knocked => stay in knocked and reset counter to a small number
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 3, hurt_integrity, stamina, dir, FALSE) );
-        }
-        if (stimulus == ns_stimulus.KNOCKED) {
-            // hurt while in knocked => stay in knocked and reset counter to a small number
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 3, knocked_integrity, stamina, dir, FALSE) );
-        }
 
         // if counter is full => return to Idle
         if (counter == ns_antoc_body_state_duration.KNOCKED - 1) {

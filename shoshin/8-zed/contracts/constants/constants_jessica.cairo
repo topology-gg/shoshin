@@ -73,7 +73,7 @@ namespace ns_jessica_body_state_duration {
     const SIDECUT = 5;
     const BLOCK = 3;
     const CLASH = 4;
-    const HURT = 3;
+    const HURT = 2;
     const KNOCKED = 11;
     const MOVE_FORWARD = 8;
     const MOVE_BACKWARD = 6;
