@@ -14,7 +14,7 @@ export const spriteData: Record<string, Record<string, SpriteData[]>> = {
         dash_backward: [
             {
                 size: [193, 142],
-                hitboxOffset: { left: [-32,17], right: [0,0] },
+                hitboxOffset: { left: [-32,17], right: [-105,16] },
             }
         ],
         dash_forward: [
@@ -32,53 +32,53 @@ export const spriteData: Record<string, Record<string, SpriteData[]>> = {
         idle: [
             {
                 size: [180, 142],
-                hitboxOffset: { left: [-22, 16], right: [-108, 16] },
+                hitboxOffset: { left: [-22, 16], right: [-103, 16] },
             }
         ],
         knocked: [
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-39,24], right: [0,0] },
+                hitboxOffset: { left: [-39,24], right: [-278,25] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-45,50], right: [0,0] },
+                hitboxOffset: { left: [-45,50], right: [-150,0] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-70,70], right: [0,0] },
+                hitboxOffset: { left: [-70,70], right: [-150,0] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-110,87], right: [0,0] },
+                hitboxOffset: { left: [-110,87], right: [-144,73] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-135,50], right: [0,0] },
+                hitboxOffset: { left: [-135,50], right: [-128,50] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-160,18], right: [0,0] },
+                hitboxOffset: { left: [-160,18], right: [-102,17] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-209,17], right: [0,0] },
+                hitboxOffset: { left: [-209,17], right: [-53,17] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-202,17], right: [0,0] },
+                hitboxOffset: { left: [-202,17], right: [-33,18] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-203,17], right: [0,0] },
+                hitboxOffset: { left: [-203,17], right: [-100,18] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-175,17], right: [0,0] },
+                hitboxOffset: { left: [-175,17], right: [-142,17] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-166,15], right: [0,0] },
+                hitboxOffset: { left: [-166,15], right: [-140,17] },
             }
         ],
         vert: [
@@ -102,7 +102,7 @@ export const spriteData: Record<string, Record<string, SpriteData[]>> = {
         hurt: [
             {
                 size: [187, 140],
-                hitboxOffset: { left: [-34,0], right: [0,0] },
+                hitboxOffset: { left: [-34,0], right: [-97,0] },
             }
         ]
     },
