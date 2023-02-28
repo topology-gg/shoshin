@@ -31,8 +31,13 @@ def update_imports(s: str):
 def update_libs(s: str):
     return re.sub(r"from lib.*\.(\w*) ", f"from {new_folder}.lib.\\1 ", s)
 
-def apply_delete_lines(s: str):
+def apply_delete_line(s: str):
     return re.sub(r"\/\/ *cairo -d *\n.*", "", s)
+
+def apply_delete_lines(s: str):
+    for arg in re.findall(r"\/\/ * cairo -D (\w*)", s):
+        s = re.sub(r"\/\/ * cairo -D (\w*) *(([\n \d\w=\(\),]*);){" + re.escape(arg) + r"}", "", s)
+    return s
 
 def apply_insert(s: str):
     return re.sub(r"\/\/ cairo -i *(.*)", r"\1", s)
@@ -43,7 +48,8 @@ def apply_push(s: str):
 def apply_return(s: str):
     return re.sub(r"-> *\([\w\d\: ]*\) * { *\n *\/\/ * cairo --return *(.*)", r"-> \1 {", s)
 
-f = [clean_events, clean_lang, clean_at, clean_emits, clean_implicits, update_imports, update_libs, apply_delete_lines, apply_insert, apply_push, apply_return]
+f = [clean_events, clean_lang, clean_at, clean_emits, clean_implicits, update_imports, 
+     update_libs, apply_delete_line, apply_delete_lines, apply_insert, apply_push, apply_return]
 [cairo := x(cairo) for x in f]
 
 if is_main:
