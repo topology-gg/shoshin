@@ -22,7 +22,7 @@ describe('TypeScript dag evaluation', () => {
     expect(out).toEqual(BigInt(7));
   });
 
-  xit('should evaluate a tree with a dict', () => {
+  it('should evaluate a tree with a dict', () => {
     const out = ts_dag_evaluator(dag_with_dict, [3]);
     expect(out).toEqual(BigInt(7));
   });
