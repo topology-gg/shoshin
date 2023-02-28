@@ -4,7 +4,10 @@ from apibara.starknet import felt, FieldElement
 
 PRIME = 2**251 + 17 * 2**192 + 1
 
+# Defines all the types necessary for indexing
+# of the shoshin contract events
 
+# Convert a FieldElement to an int.
 def felt_to_int(it: Iterator[FieldElement]):
     i = felt.to_int(next(it))
     return i if i < PRIME / 2 else -(PRIME - i)

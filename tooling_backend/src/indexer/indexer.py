@@ -41,6 +41,7 @@ class ShoshinIndexer(StarkNetIndexer):
 
     async def handle_data(self, info: Info, data: Block):
         # Handle one block of data
+        # Event arrive in pairs, first metadata then scenes
         metadata_events = data.events[0::2]
         arr_events = data.events[1::2]
 
@@ -61,6 +62,7 @@ class ShoshinIndexer(StarkNetIndexer):
 
     @staticmethod
     def decode_metadata(event_metadata: Event, tx: Transaction):
+        # decode one metadata event
         metadata = EventMetadata.from_iter(iter(event_metadata.data))
         return dict(
             combos_offset_0=metadata.combos_offset_0,
@@ -85,6 +87,7 @@ class ShoshinIndexer(StarkNetIndexer):
 
     @staticmethod
     def decode_arr(event_arr: Event, tx: Transaction):
+        # decode one scene event
         arr = EventArray.from_iter(iter(event_arr.data))
         return dict(frame_scene=[scene.to_json() for scene in arr.arr])
 
