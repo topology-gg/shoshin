@@ -21,6 +21,8 @@ services:
     - start
     - --mongo-url
     - "mongodb://apibara:apibara@mongo:27017"
+    - --server-url 
+    - "goerli.starknet.a5a.ch"
     environment:
       PYTHONUNBUFFERED: "1"
     links:

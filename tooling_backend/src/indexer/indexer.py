@@ -62,7 +62,6 @@ class ShoshinIndexer(StarkNetIndexer):
     @staticmethod
     def decode_metadata(event_metadata: Event, tx: Transaction):
         metadata = EventMetadata.from_iter(iter(event_metadata.data))
-        print("transaction", tx)
         return dict(
             combos_offset_0=metadata.combos_offset_0,
             combos_0=metadata.combos_0,
