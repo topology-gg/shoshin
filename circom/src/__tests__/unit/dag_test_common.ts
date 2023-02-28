@@ -19,7 +19,6 @@ export const dag_arithmetic: Dag = [
   [3, -1, -1],
 ];
 
-// TODO:
 export const dag_arithmetic_with_memo: Dag = [
   [OpCodes.ADD, 1, 4],
   [OpCodes.MUL, 2, 3],

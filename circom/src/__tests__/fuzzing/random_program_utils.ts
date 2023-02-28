@@ -2,13 +2,17 @@ import { Dag, DagNode, OpCodes } from '../../types';
 import { is_leaf, range, shuffle_arr } from '../../utils';
 
 /**
- * @brief Generate a random, valid DAG
+ * @brief Generate a random, valid DAG whic is used for testing
  *
  * @param n_max_traces - the maximum number of traces. Realistically we will have a lot
- * less than the max as we need to "prune" isolated traces
+ * less than the max as we need to "prune" isolated traces. I.e. we only keep traces which can be reached from the root
  *
- * This is done by randomly selecting which nodes should be dict leads,
- * constant leafs. The rest are then just trace nodes
+ * Random DAG generation is done by having each trace cell's operation be randomly selected (where the trace cell has
+ * probability `p_single_inp_trace` of being a trace cell with one child (like ABS of IS_NN). Then, each trace cell's children
+ * are randomly selected amongst the inputs and prior trace cells.
+ * The function then uses DFS to discard any trace cells not reachable by the root.
+ * Finally, the order of the trace cells, inputs, and dict are randomized. A random dict
+ * and random inputs are returned alongside the random DAG.
  */
 export const gen_random_dag = (
   n_max_constants: number,
@@ -19,11 +23,6 @@ export const gen_random_dag = (
   const n_max_nodes = n_max_constants + n_max_dict + n_max_traces;
   // We can now create a dag via a lower triangular matrix.
   // Leaves and dict will be the first rows with no children.
-
-  // // Sample matrix and round to 0/1
-  // const lower_triang = Array(n_max_nodes)
-  //   .fill([])
-  //   .map(_i => Array(n_max_nodes).fill(0));
 
   const dag_ordered: DagNode[] = [];
 
