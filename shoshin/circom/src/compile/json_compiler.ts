@@ -18,6 +18,14 @@ import {
   range,
 } from '../utils';
 
+/**
+ * @brief Use DFS to order all trace cells.
+ *
+ * Ordering is done according to the `exit` step in DFS. The exit step
+ * refers to the time step when all of a node's children are explored. Thus,
+ * we can ensure that nodes "deeper" in the DAG are ordered **before** their
+ * parents.
+ */
 const dfs_traverse = (
   parent_idx: number,
   dag: IndexedNode[]
@@ -27,7 +35,6 @@ const dfs_traverse = (
 
   let i = 0;
   const aug_recursive_dfs = (curr: IndexedNode) => {
-    // console.log(i);
     i += 1;
     const left = curr[0][1];
     const right = curr[0][2];

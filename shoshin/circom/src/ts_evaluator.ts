@@ -1,13 +1,5 @@
 //@ts-ignore
-import {
-  IndexedNode,
-  IndexedNodeGen,
-  LeafNode,
-  OpCodes,
-  Dag,
-  DagGen,
-  DagNode,
-} from './types';
+import { IndexedNode, IndexedNodeGen, OpCodes, Dag } from './types';
 import { get_parent_node, has_key } from './utils';
 
 const p = BigInt(
@@ -71,7 +63,8 @@ const eval_double_inp_op = (op: OpCodes, a: bigint, b: bigint) => {
  * @brief Evaluate the dag through DFS
  *
  * Use DFS to search through the dag. When `exiting` a node, we evaluate it.
- * Essentially, exiting a node means that all children
+ * Essentially, exiting a node means that all children are already evaluated and can
+ * be used in the current node's computation.
  */
 const dfs_eval = (
   parent_idx: number,
@@ -120,19 +113,14 @@ const dfs_eval = (
   return recursive_dfs_eval(dag[parent_idx]);
 };
 
-// Evaluate the dag in Typescript. This is useful for fuzzing or just getting the output without the circom steps
-//
-// TODO: big numbers and modding over your the circom Prime
+/**
+ * @brief Evaluate the DAG in Typescript. This is useful for fuzzing or just getting the output without the circom steps
+ */
 export const ts_dag_evaluator = (dag_inp: Dag, dict: number[]): BigInt => {
   const dict_big_int = dict.map(BigInt);
   const dag_idxed = dag_inp.map((t, i) => [t, i] as IndexedNode);
   const parent_idx = get_parent_node(dag_idxed);
   const dag = dag_to_big_int(dag_idxed);
-  // TODO: dict...
 
-  // DICT:
-  /*
-
-  */
   return dfs_eval(parent_idx, dag, dict_big_int);
 };

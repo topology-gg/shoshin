@@ -12,7 +12,7 @@ import { F1Field, Scalar } from 'ffjavascript';
 
 //@ts-ignore
 import { buildBabyjub } from 'circomlibjs';
-import { gen_random_dag } from './fuzzing_utils';
+import { gen_random_dag } from './random_program_utils';
 import { pad_array_to_len, range } from '../../utils';
 import { CircomCompilerOutInfo } from '../../types';
 
@@ -37,11 +37,14 @@ const load_FD_circuit = async () => {
   return circuit;
 };
 
-describe('fuzzing tests', () => {
+/**
+ * Create random DAGs and ensure that the Circom's output equals to that of the TS Emulator
+ */
+describe('random DAG tests', () => {
   it(
     'Should test 100 fuzzing samples of smallish circuits',
     async () => {
-      const n_tests = 100; // On Lev's laptop, we estimate each takes ~6 seconds. So 100 tests takes ~10
+      const n_tests = 100; // On a Thinkpad laptop, we estimate each takes ~6 seconds. So 100 tests takes ~10
       let n_test_run = 0;
       while (n_test_run < n_tests) {
         // We need to reload the circuit or we get odd errors
