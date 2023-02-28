@@ -104,8 +104,6 @@ export const gen_random_dag = (
     (_e, i) => !dangling_nodes.includes(i)
   );
 
-  // no_paren dag_ordered.splice(i, 1)
-
   // Create a random mapping from ordered to unordered
   const ordered_to_random_mapping = shuffle_arr(
     range(0, dag_order_filtered.length)
