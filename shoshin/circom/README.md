@@ -50,4 +50,19 @@ The following block diagram also gives a high level overview of how the circuit 
 
 ### From Directed Acyclic Graph (DAG) Programs to Circom
 
-To get from a DAG program, as used in Shoshin, to the Circom we will use a simple compiler. All the compiler has to do is define the order of the trace cells such that the computations in the DAG with larger depth get computed in the trace **_before_** the more shallow nodes. This will be specified in more detail in Part 2 of this pull request.
+To get from a DAG program, as used in Shoshin, to the Circom we will use a simple compiler. The compiler has to define the order of the trace cells such that the computations in the DAG with larger depth get computed in the trace **_before_** the more shallow nodes.
+
+As we can in the [BTO Cairo library](https://github.com/greged93/bto-cairo), the Cairo input is ordered as a list along the lines of something like
+
+```
+[{is_le, 1, 12}, {add, 1, 6}, {mul, 1, 4}, {pow, 1, 2}, {a, -1, -1}, {b, -1, -1}, {c, -1, -1}, {div, 1, 2}, {d, -1, -1}, {mod, 1, 2}, {e, -1, -1}, {f, -1, -1}, {abs, -1, 1}, {g, -1, -1}].
+
+```
+
+Simply speaking, each non-leaf item in the list contains the operation, its left child (input A into the operation) and its right child (input B). If an item has a `-1` specified for its left child, then it just takes in one input. If a node has `-1` for both its left and right child, then it is a leaf. We also have the potential for dictionary lookups. For more information, see the [BTO Cairo library](https://github.com/greged93/bto-cairo).
+
+To understand how to get to the Cairo code, lets look at a sample DAG:
+![imgs/SimpleDag.png](imgs/SimpleDag.png)
+We can see each `leaf` as referencing a value (a value in a dictionary/ lookup table or a constant). Each node represents some computation. We can then translate the above into the language of input wires, mux selectors, and trace cells by ordering all nodes according to their depth. Nodes deeper in the DAG get associated to lower index trace cells. Thus, the ancestors of any node have _higher_ trace index than that node. Thus, the ancestors can access the node's computed output. So, for example, `node 6` in the above may be assigned to `trace cell 3` in the Circom. `node 4` may be assigned to `trace cell 4`. And, `node 3` can go to `trace cell 5`. The root gets assigned to the highest indexing trace cell.
+
+For more details, `src/json_compiler.ts`.

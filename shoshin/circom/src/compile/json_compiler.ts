@@ -155,6 +155,8 @@ export const dag_to_circom = (
     ([[val, _l, _r], _i]) => val
   );
 
+  // Pad out the traces to `max_number_traces` where each padded trace is a
+  // "pass through," passing the output of the prior cell to the next
   const op_traces_padded =
     op_traces.length > max_number_traces
       ? op_traces.slice(0, max_number_traces)
