@@ -1,5 +1,12 @@
+import { assert } from 'console';
 import { dag_to_circom } from '../../compile/json_compiler';
-import { dag_arithmetic_with_memo, dag_simple } from './dag_test_common';
+import { CircomCompilerOutInfo } from '../../types';
+import {
+  dag_arithmetic_with_memo,
+  dag_overflow_dict,
+  dag_overflow_traces,
+  dag_simple,
+} from './dag_test_common';
 
 describe('compiler', () => {
   it('should compile a basic Shoshin dag to the circom representation', () => {
@@ -53,7 +60,37 @@ describe('compiler', () => {
     expect(inputs).toEqual([3, 2, 10, 0, 0, 0, 0, 0, 0, 0]);
   });
 
-  xit('should throw an error when the maximum number of inputs are exceeded', () => {});
+  it('should return maximum number of traces are exceeded', () => {
+    const max_number_inputs = 10;
+    const max_number_dicts = 10;
 
-  xit('should throw an error when the maximum number of traces are exceeded', () => {});
+    const { n_inputs, n_traces, op_traces, inputs_constant, compiler_info } =
+      dag_to_circom(
+        dag_overflow_traces,
+        [],
+        max_number_inputs,
+        max_number_dicts,
+        3
+      );
+    expect(
+      compiler_info?.includes(CircomCompilerOutInfo.TRUNCATED_TRACES)
+    ).toEqual(true);
+  });
+
+  it('should throw an error when the maximum number of traces are exceeded', () => {
+    const max_number_inputs = 10;
+    const max_number_dicts = 5;
+
+    const { n_inputs, n_traces, op_traces, inputs_constant, compiler_info } =
+      dag_to_circom(
+        dag_overflow_dict,
+        [0, 0, 0, 0, 0, 10, 12, 13],
+        max_number_inputs,
+        max_number_dicts,
+        30
+      );
+    expect(
+      compiler_info?.includes(CircomCompilerOutInfo.TRUNCATED_DICT)
+    ).toEqual(true);
+  });
 });
