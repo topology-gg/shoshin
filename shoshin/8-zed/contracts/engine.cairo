@@ -73,7 +73,41 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     //
     // Emit metadata
     //
-    event_metadata.emit(Metadata(character_type_0, character_type_1));
+    // cairo -D 1
+    event_metadata.emit(
+        combos_offset_0_len,
+        combos_offset_0,
+        combos_0_len,
+        combos_0,
+        combos_offset_1_len,
+        combos_offset_1,
+        combos_1_len,
+        combos_1,
+        agent_0_state_machine_offset_len,
+        agent_0_state_machine_offset,
+        agent_0_state_machine_len,
+        agent_0_state_machine,
+        agent_0_initial_state,
+        agent_1_state_machine_offset_len,
+        agent_1_state_machine_offset,
+        agent_1_state_machine_len,
+        agent_1_state_machine,
+        agent_1_initial_state,
+        agent_0_functions_offset_len,
+        agent_0_functions_offset,
+        agent_0_functions_len,
+        agent_0_functions,
+        agent_1_functions_offset_len,
+        agent_1_functions_offset,
+        agent_1_functions_len,
+        agent_1_functions,
+        actions_0_len,
+        actions_0,
+        actions_1_len,
+        actions_1,
+        character_type_0,
+        character_type_1,
+    );
 
     //
     // Preparing starting frame
@@ -98,12 +132,14 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         pos=agent_1_origin, vel_fp=Vec2(0, 0), acc_fp=Vec2(0, 0)
     );
 
+    // IDLE body state is 0 for both Jessica and Antoc; right is 1
+    // NULL action is 0 for both Jessica and Antoc
     assert arr_frames[0] = FrameScene(
         agent_0 = Frame(
             mental_state  = agent_0_initial_state,
-            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1, 0), // IDLE body state is 0 for both Jessica and Antoc; right is 1
+            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1, 0), 
             physics_state = physics_state_0,
-            action        = 0, // NULL action is 0 for both Jessica and Antoc
+            action        = 0, 
             stimulus      = ns_stimulus.NULL,
             hitboxes      = Hitboxes(
                 action = null_rect,
@@ -112,9 +148,9 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             ),
         agent_1 = Frame(
             mental_state  = agent_1_initial_state,
-            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0, 0), // IDLE body state is 0 for both Jessica and Antoc, left is 0
+            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0, 0), 
             physics_state = physics_state_1,
-            action        = 0, // NULL action is 0 for both Jessica and Antoc
+            action        = 0, 
             stimulus      = ns_stimulus.NULL,
             hitboxes      = Hitboxes(
                 action = null_rect,
@@ -418,6 +454,40 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 func event_array(arr_len: felt, arr: FrameScene*) {
 }
 
+// emit both agents' description
 @event
-func event_metadata(metadata: Metadata) {
+func event_metadata(
+    combos_offset_0_len: felt,
+    combos_offset_0: felt*,
+    combos_0_len: felt,
+    combos_0: felt*,
+    combos_offset_1_len: felt,
+    combos_offset_1: felt*,
+    combos_1_len: felt,
+    combos_1: felt*,
+    agent_0_state_machine_offset_len: felt,
+    agent_0_state_machine_offset: felt*,
+    agent_0_state_machine_len: felt,
+    agent_0_state_machine: Tree*,
+    agent_0_initial_state: felt,
+    agent_1_state_machine_offset_len: felt,
+    agent_1_state_machine_offset: felt*,
+    agent_1_state_machine_len: felt,
+    agent_1_state_machine: Tree*,
+    agent_1_initial_state: felt,
+    agent_0_functions_offset_len: felt,
+    agent_0_functions_offset: felt*,
+    agent_0_functions_len: felt,
+    agent_0_functions: Tree*,
+    agent_1_functions_offset_len: felt,
+    agent_1_functions_offset: felt*,
+    agent_1_functions_len: felt,
+    agent_1_functions: Tree*,
+    actions_0_len: felt,
+    actions_0: felt*,
+    actions_1_len: felt,
+    actions_1: felt*,
+    character_type_0: felt,
+    character_type_1: felt,
+) {
 }

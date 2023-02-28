@@ -18,6 +18,7 @@ Additionally, the script allows the user to define, inside the Starknet Cairo co
 
 -   // cairo -p xxxx: adds xxxx at the beginning of the next line.
 -   // cairo -d: deletes the next line.
+-   // cairo -D x: delete the next x instructions (each instruction is delimited by a semicolon).
 -   // cairo -i xxxx: inserts xxxx on the below line.
 -   // cairo --return (xxxx:type, yyyy: type): replaces the current functions return with (xxxx:type, yyyy: type).
 
