@@ -27,7 +27,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
     MAX_VEL_DASH_FP: felt,
     MIN_VEL_DASH_FP: felt,
     MOVE_ACC_FP: felt,
-    DASH_ACC_FP: felt,
+    DASH_VEL_FP: felt,
     KNOCK_VEL_X_FP: felt,
     KNOCK_VEL_Y_FP: felt,
     DEACC_FP: felt,
@@ -45,7 +45,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_jessica_dynamics.MAX_VEL_DASH_FP,
             ns_jessica_dynamics.MIN_VEL_DASH_FP,
             ns_jessica_dynamics.MOVE_ACC_FP,
-            ns_jessica_dynamics.DASH_ACC_FP,
+            ns_jessica_dynamics.DASH_VEL_FP,
             ns_jessica_dynamics.KNOCK_VEL_X_FP,
             ns_jessica_dynamics.KNOCK_VEL_Y_FP,
             ns_jessica_dynamics.DEACC_FP,
@@ -63,7 +63,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_antoc_dynamics.MAX_VEL_DASH_FP,
             ns_antoc_dynamics.MIN_VEL_DASH_FP,
             ns_antoc_dynamics.MOVE_ACC_FP,
-            ns_antoc_dynamics.DASH_ACC_FP,
+            ns_antoc_dynamics.DASH_VEL_FP,
             ns_antoc_dynamics.KNOCK_VEL_X_FP,
             ns_antoc_dynamics.KNOCK_VEL_Y_FP,
             ns_antoc_dynamics.DEACC_FP,
@@ -100,7 +100,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         MAX_VEL_DASH_FP: felt,
         MIN_VEL_DASH_FP: felt,
         MOVE_ACC_FP: felt,
-        DASH_ACC_FP: felt,
+        DASH_VEL_FP: felt,
         KNOCK_VEL_X_FP: felt,
         KNOCK_VEL_Y_FP: felt,
         DEACC_FP: felt,
@@ -138,23 +138,43 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     }
 
     if (state == DASH_FORWARD) {
+        // prepare the dash on first frame
+        // dash with vel = DASH_VEL_FP 
+        local vel;
         if (dir == 1) {
-            assert acc_fp_x = DASH_ACC_FP;
+            assert vel = DASH_VEL_FP;
         } else {
-            assert acc_fp_x = (-1) * DASH_ACC_FP;
+            assert vel = (-1) * DASH_VEL_FP;
         }
+        if (counter == 1) {
+            assert vel_fp_nxt = Vec2(vel, 0);
+        } else {
+            assert vel_fp_nxt = Vec2(0, 0);
+        }
+        assert acc_fp_x = 0;
         assert acc_fp_y = 0;
-        jmp update_vel_dash;
+        tempvar range_check_ptr = range_check_ptr;
+        jmp update_pos;
     }
 
     if (state == DASH_BACKWARD) {
+        // prepare the dash on first frame
+        // dash with vel = DASH_VEL_FP 
+        local vel;
         if (dir == 1) {
-            assert acc_fp_x = (-1) * DASH_ACC_FP;
+            assert vel = (-1) * DASH_VEL_FP;
         } else {
-            assert acc_fp_x = DASH_ACC_FP;
+            assert vel = DASH_VEL_FP;
         }
+        if (counter == 1) {
+            assert vel_fp_nxt = Vec2(vel, 0);
+        } else {
+            assert vel_fp_nxt = Vec2(0, 0);
+        }
+        assert acc_fp_x = 0;
         assert acc_fp_y = 0;
-        jmp update_vel_dash;
+        tempvar range_check_ptr = range_check_ptr;
+        jmp update_pos;
     }
 
     if (state == KNOCKED) {
@@ -220,16 +240,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         MIN_VEL_MOVE_FP,
     );
     assert vel_fp_nxt = vel_fp_nxt_;
-    jmp update_pos;
-
-    update_vel_dash:
-    let (vel_fp_nxt_: Vec2) = _euler_forward_vel_no_hitbox(
-        physics_state.vel_fp,
-        Vec2(acc_fp_x, acc_fp_y),
-        MAX_VEL_DASH_FP,
-        MIN_VEL_DASH_FP,
-    );
-    assert vel_fp_nxt = vel_fp_nxt_;
+    tempvar range_check_ptr = range_check_ptr;
     jmp update_pos;
 
     update_vel_knocked:
@@ -242,6 +253,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         MIN_VEL_DASH_FP,
     );
     assert vel_fp_nxt = vel_fp_nxt_;
+    tempvar range_check_ptr = range_check_ptr;
     jmp update_pos;
 
     //
