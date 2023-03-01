@@ -46,13 +46,18 @@ template FD_Merkle_Tree(MT_N_LEVELS) {
 	check_eq.out ==> out;
 }
 
-template FD_Hasher(CONSTANTS_SIZE, N_TRACES) {
+template FD_Hasher(CONSTANTS_SIZE, N_TRACES, N_LEVELS) {
+	var n_inps = CONSTANTS_SIZE + N_TRACES * 3 + 2;
 	signal input mind;
 	signal input constants[CONSTANTS_SIZE];
 	signal input trace_inp_sels[N_TRACES][2];
 	signal input trace_type_sel[N_TRACES];
 	signal input randomness;
 	signal output out;
+
+	// A hasher for each pair of nodes..... AGHHHHHHHHh
+	component hashers[2 ** (N_LEVELS - 1) - 1];
+
 
 	component hasher = Poseidon(CONSTANTS_SIZE + N_TRACES * 3 + 2);
 
