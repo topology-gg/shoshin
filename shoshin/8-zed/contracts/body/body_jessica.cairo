@@ -401,25 +401,17 @@ func _body_jessica {range_check_ptr}(
         }
 
 
-        // note: not able to reverse to the opposite dash immediately
-
-        // if intent remains DASH_FORWARD
-        if (intent == ns_jessica_action.DASH_FORWARD) {
-            if (counter == ns_jessica_body_state_duration.DASH_FORWARD - 1) {
-                if(enough_stamina == TRUE){
-                    // reset counter
-                    return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
-                }else {
-                    return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
-                }
-            } 
-            // increment counter
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, counter + 1, integrity, stamina, dir, FALSE) );
-            
-        }
-
-        // otherwise return to IDLE
-        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, is_fatigued) );
+        // continue the dashing if not interrupted by an attack
+        if (counter == ns_jessica_body_state_duration.DASH_FORWARD - 1) {
+            if(enough_stamina == TRUE){
+                // reset counter
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }else {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
+            }
+        } 
+        // increment counter
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     //
@@ -444,24 +436,17 @@ func _body_jessica {range_check_ptr}(
         }
 
 
-        // note: not able to reverse to the opposite dash immediately
-
-        // if intent remains DASH_BACKWARD
-        if (intent == ns_jessica_action.DASH_BACKWARD) {
-            if (counter == ns_jessica_body_state_duration.DASH_BACKWARD - 1) {
-                if(enough_stamina == TRUE) {
-                    // reset counter
-                    return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
-                } else {
-                    return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
-                }
+        // continue the dashing if not interrupted by an attack
+        if (counter == ns_jessica_body_state_duration.DASH_BACKWARD - 1) {
+            if(enough_stamina == TRUE) {
+                // reset counter
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            } else {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
             }
-            // increment counter
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, counter + 1, integrity, stamina, dir, FALSE) );
         }
-
-        // otherwise return to IDLE
-        return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, is_fatigued) );
+        // increment counter
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     with_attr error_message("Input body state is not recognized.") {

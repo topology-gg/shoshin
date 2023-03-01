@@ -31,7 +31,7 @@ from contracts.perceptibles import update_perceptibles
 from lib.bto_cairo_git.lib.tree import Tree, BinaryOperatorTree
 from contracts.utils import fill_dictionary_offsets, fill_dictionary
 
-@view
+@external
 func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     len: felt,
     combos_offset_0_len: felt,
