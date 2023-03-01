@@ -17,6 +17,7 @@ import StatusBarPanel from '../src/components/StatusBar';
 import FrameInspector from '../src/components/FrameInspector';
 import useRunCairoSimulation from '../src/hooks/useRunCairoSimulation';
 import { useAgents } from '../lib/api'
+import { Metadata, splitAgents } from '../src/types/Metadata';
 
 const theme = createTheme({
     typography: {
@@ -85,8 +86,9 @@ export default function Home() {
 
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents()
-    const t: any[] = data?.agents;
+    const t: Metadata[] = data?.agents;
     console.log("Metadata", t)
+    const agents: [Agent, Agent][] = t.map(splitAgents)
 
 
     const agent: Agent = useMemo(() => {
