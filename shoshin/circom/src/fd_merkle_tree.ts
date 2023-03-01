@@ -6,8 +6,10 @@ import { CircomCanonicalFD, MerkleTree, MerkleTreePosition } from './types';
 
 let poseidonHash: any = null;
 
-const hash = async (childNodes: any): Promise<Uint8Array> => {
+// Hmmm.... we need to make this itself a merkle habib!
+const hash = async (childNodes: any[]): Promise<Uint8Array> => {
   if (poseidonHash == null) poseidonHash = await buildPoseidonReference();
+  console.log('AAAAAAAAAAA', childNodes.length);
   return poseidonHash(childNodes) as Uint8Array;
 };
 

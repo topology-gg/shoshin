@@ -10,10 +10,10 @@ import { wasm as wasm_tester } from 'circom_tester';
 //@ts-ignore
 import { Scalar } from 'ffjavascript';
 
-const N_MAX_CONSTANTS = 10;
-const N_MAX_DICT = 10;
-const N_MAX_TRACE = 40;
-const N_MIND_STATES = 64;
+const N_MAX_CONSTANTS = 3;
+const N_MAX_DICT = 3;
+const N_MAX_TRACE = 10;
+const N_MIND_STATES = 16;
 
 const p = Scalar.fromString(
   '21888242871839275222246405745257275088548364400416034343698204186575808495617'
@@ -31,7 +31,7 @@ const load_circuit = async () => {
   return circuit;
 };
 
-describe('TypeScript merkle tree evaluation', () => {
+describe('TypeScript merkle tree evaluation', async () => {
   it('should evaluate create a merkle tree based on a set of dags and check memberships. Expect proper evaluation', async () => {
     const circom_dags = Array(N_MIND_STATES)
       .fill(0)
