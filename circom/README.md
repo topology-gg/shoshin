@@ -1,5 +1,12 @@
 # Circom and Associated Tooling for Shoshin
 
+## Getting Setup
+
+To get setup, you will need `node.js`, `npm` and packages surrounding Circom.
+
+To get setup with `node.js` and `npm`, checkout [npmjs's documentation](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm/).
+To get setup with Cricom, checkout [Circom's installation documentation](https://docs.circom.io/getting-started/installation/).
+
 ## High Level
 
 This folder contains the circuits, tests, and tooling for Shoshin. The `circuits` folder
