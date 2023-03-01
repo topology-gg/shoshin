@@ -15,3 +15,4 @@ echo "Compiling: circuit..."
 
 # compile circuit
 circom circuits/fd_emulator_tester.circom --r1cs --wasm --sym
+circom circuits/fd_merkle_tester.circom --r1cs --wasm --sym

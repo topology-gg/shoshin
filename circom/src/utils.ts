@@ -50,3 +50,6 @@ export const pad_array_to_len = <T>(arr: T[], len: number, fill: T | T[]) =>
         .concat(Array.isArray(fill) ? fill : Array(len - arr.length).fill(fill))
         .slice(0, len)
     : arr;
+
+// TODO:!!!!
+export const gen_circom_randomness = () => 0n;

@@ -33,14 +33,13 @@ template FD_Merkle_Tree(MT_N_LEVELS) {
 
 	hashers[0] = Poseidon(2);
 	// TODO: check
-	hashers[0][0] <== (elem - siblings[0])*sibling_positions[0] + siblings[0];
-	hashers[0][1] <== (siblings[0] - elem)*sibling_positions[0] + elem;
-	sibling_positions[i] * 
+	hashers[0].inputs[0] <== (elem - siblings[0]) * sibling_positions[0] + siblings[0];
+	hashers[0].inputs[1] <== (siblings[0] - elem) * sibling_positions[0] + elem;
 
 	for (var i = 1; i < MT_N_LEVELS; i++) {
 		hashers[i] = Poseidon(2);
-		hashers[i][0] <== (hashers[i-1].out - siblings[i])*sibling_positions[i] + siblings[i];
-		hashers[i][1] <== (siblings[i] - hashers[i-1].out)*sibling_positions[i] + hashers[i-1].out;
+		hashers[i].inputs[0] <== (hashers[i-1].out - siblings[i])*sibling_positions[i] + siblings[i];
+		hashers[i].inputs[1] <== (siblings[i] - hashers[i-1].out)*sibling_positions[i] + hashers[i-1].out;
 	}
 	component check_eq = IsZero();
 	check_eq.in <== hashers[MT_N_LEVELS - 1].out - root;
@@ -52,9 +51,10 @@ template FD_Hasher(CONSTANTS_SIZE, N_TRACES) {
 	signal input constants[CONSTANTS_SIZE];
 	signal input trace_inp_sels[N_TRACES][2];
 	signal input trace_type_sel[N_TRACES];
+	signal input randomness;
 	signal output out;
 
-	component hasher = Poseidon(CONSTANTS_SIZE + N_TRACES * 3 + 1);
+	component hasher = Poseidon(CONSTANTS_SIZE + N_TRACES * 3 + 2);
 
 	for (var i = 0; i < CONSTANTS_SIZE; i++) {
 		constants[i] ==> hasher.inputs[i];
@@ -65,6 +65,7 @@ template FD_Hasher(CONSTANTS_SIZE, N_TRACES) {
 		trace_inp_sels[i][1] ==> hasher.inputs[CONSTANTS_SIZE + 3 * i + 2];
 	}
 	mind ==> hasher.inputs[CONSTANTS_SIZE + N_TRACES * 3];
+	randomness ==> hasher.inputs[CONSTANTS_SIZE + N_TRACES * 3 + 1];
 
 	hasher.out ==> out;
 
@@ -85,21 +86,21 @@ template FD_Wrapper(
 	// is less than the word size of p, (q * b + a) < p and no overflowing occurs
 	assert(WORD_SIZE < 119);
 
-	signal public input current_mind_comm;
+	signal input current_mind_comm; // Public signal
 	signal input current_mind_randomness;
 	signal input current_mind;
 
 	signal input next_state_randomness;
 	signal input next_state_comm;
 
-	// signal input fd_inputs[INPUT_SIZE];
-	signal input public input_dict[DICT_SIZE];
+	signal input input_dict[DICT_SIZE]; // Public signal
 	signal input input_constant[CONSTANTS_SIZE];
 	signal input fd_trace_inp_selectors[N_TRACES][2];
 	signal input fd_trace_type_selectors[N_TRACES];
+	signal input fd_comm_randomness;
 
 	// Merkle Tree Inputs
-	signal input public mt_root;
+	signal input mt_root; // Public signal
 	signal input mt_siblings[MT_N_LEVELS];
 	signal input mt_sibling_positions[MT_N_LEVELS];
 
@@ -129,10 +130,11 @@ template FD_Wrapper(
 		fd_trace_type_selectors[i] ==> fd_hasher.trace_type_sel[i];
 	}
 	current_mind ==> fd_hasher.mind;
+	fd_comm_randomness ==> fd_hasher.randomness;
 	/***************** End Setup FD_Hasher *******************/
 	
 	/***************** Check that the SMT holds up **************/
-	component mt_verif =  FD_Merkle_Tree(SMT_N_LEVELS);
+	component mt_verif =  FD_Merkle_Tree(MT_N_LEVELS);
 
 	fd_hasher.out ==> mt_verif.elem;
 	mt_root ==> mt_verif.root;
@@ -159,3 +161,8 @@ template FD_Wrapper(
 	// Assert that all three conditions are met
 	3 === comm_next_state.out + comm_current_mind.out + mt_verif.out;
 }
+
+
+// TODO:
+// test the merkle tree habib seperatly
+// Test the whole thing

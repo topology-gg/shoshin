@@ -1,19 +1,15 @@
 import { ts_dag_evaluator } from '../../ts_evaluator';
 import { dag_to_circom } from '../../compile/json_compiler';
 
-//@ts-ignore
-import { groth16 } from 'snarkjs';
 import path from 'path';
 //@ts-ignore
 import { wasm as wasm_tester } from 'circom_tester';
 
 //@ts-ignore
-import { F1Field, Scalar } from 'ffjavascript';
+import { Scalar } from 'ffjavascript';
 
 //@ts-ignore
-import { buildBabyjub } from 'circomlibjs';
 import { gen_random_dag } from './random_program_utils';
-import { pad_array_to_len, range } from '../../utils';
 import { CircomCompilerOutInfo } from '../../types';
 
 const MAX_CONSTANTS = 4;
@@ -23,7 +19,6 @@ const MAX_TRACE = 30;
 const p = Scalar.fromString(
   '21888242871839275222246405745257275088548364400416034343698204186575808495617'
 );
-const Fr = new F1Field(p);
 
 const load_FD_circuit = async () => {
   const p = path.join(
