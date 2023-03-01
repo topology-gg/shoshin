@@ -12,11 +12,11 @@ namespace ns_jessica_dynamics {
     const MAX_VEL_MOVE_FP = 120 * ns_dynamics.SCALE_FP;
     const MIN_VEL_MOVE_FP = (-120) * ns_dynamics.SCALE_FP;
 
-    const MAX_VEL_DASH_FP = 600 * ns_dynamics.SCALE_FP;
-    const MIN_VEL_DASH_FP = (-600) * ns_dynamics.SCALE_FP;
+    const MAX_VEL_DASH_FP = 1200 * ns_dynamics.SCALE_FP;
+    const MIN_VEL_DASH_FP = (-1200) * ns_dynamics.SCALE_FP;
 
     const MOVE_ACC_FP = 300 * ns_dynamics.SCALE_FP;
-    const DASH_ACC_FP = 3000 * ns_dynamics.SCALE_FP;
+    const DASH_VEL_FP = 900 * ns_dynamics.SCALE_FP;
 
     const KNOCK_VEL_X_FP = 150 * ns_dynamics.SCALE_FP; 
     const KNOCK_VEL_Y_FP = 350 * ns_dynamics.SCALE_FP;
@@ -77,8 +77,8 @@ namespace ns_jessica_body_state_duration {
     const KNOCKED = 11;
     const MOVE_FORWARD = 8;
     const MOVE_BACKWARD = 6;
-    const DASH_FORWARD = 5;
-    const DASH_BACKWARD = 5;
+    const DASH_FORWARD = 4;
+    const DASH_BACKWARD = 4;
 }
 
 namespace ns_jessica_body_state {
