@@ -98,14 +98,27 @@ template FD_Wrapper(
 	signal input fd_trace_inp_selectors[N_TRACES][2];
 	signal input fd_trace_type_selectors[N_TRACES];
 
-	// signal input out;
-	component fd_emulator = FD_Emulator(DICT_SIZE + CONSTANTS_SIZE, N_TRACES, WORD_SIZE);
-	// TODO: setup above
-
 	// Merkle Tree Inputs
 	signal input public mt_root;
 	signal input mt_siblings[MT_N_LEVELS];
 	signal input mt_sibling_positions[MT_N_LEVELS];
+
+	// signal input out;
+	/***************** Setup the FD_Emulator *****************/
+	component fd_emulator = FD_Emulator(DICT_SIZE + CONSTANTS_SIZE, N_TRACES, WORD_SIZE);
+	for (var i = 0; i < CONSTANTS_SIZE; i++) {
+		input_dict[i] ==> fd_emulator.inputs[i];
+	}
+	for (var i = 0; i < DICT_SIZE; i++) {
+		input_constant[i] ==> fd_emulator.inputs[DICT_SIZE + i];
+	}
+	for (var i = 0; i < N_TRACES; i++) {
+		fd_trace_inp_selectors[i][0] ==> fd_emulator.trace_inp_selectors[i][0];
+		fd_trace_inp_selectors[i][1] ==> fd_emulator.trace_inp_selectors[i][1];
+		fd_trace_type_selectors[i] ==> fd_emulator.trace_type_selectors[i];
+	}
+
+	/***************** End Setup the FD_Emulator *****************/
 
 	/***************** Setup FD_Hasher *******************/
 	component fd_hasher = FD_Hasher(CONSTANTS_SIZE, N_TRACES);
@@ -143,4 +156,6 @@ template FD_Wrapper(
 	comm_next_state.comm <== next_state_comm;
 	/***************** End check that the next state commitment holds up ************/
 
+	// Assert that all three conditions are met
+	3 === comm_next_state.out + comm_current_mind.out + mt_verif.out;
 }
