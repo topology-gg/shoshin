@@ -3,6 +3,10 @@ import { ElementType, Function, Operator, Perceptible } from "../types/Function"
 import { MentalState } from "../types/MentalState"
 import { Direction, Tree } from "../types/Tree"
 
+// Mongo db name and collection
+export const DB_NAME = 'shoshin_indexer_0'
+export const COLLECTION_NAME = 'shoshin-dogfooding-metadata'
+
 export const SIMULATOR_W = 1000
 export const SIMULATOR_H = 300
 

@@ -16,6 +16,7 @@ import ImagePreloader from '../src/components/ImagePreloader';
 import StatusBarPanel from '../src/components/StatusBar';
 import FrameInspector from '../src/components/FrameInspector';
 import useRunCairoSimulation from '../src/hooks/useRunCairoSimulation';
+import { useAgents } from '../lib/api'
 
 const theme = createTheme({
     typography: {
@@ -81,6 +82,11 @@ export default function Home() {
     const [isTreeEditorWarningTextOn, setTreeEditorWarningTextOn] = useState<boolean>(false)
     const [treeEditorWarningText, setTreeEditorWarningText] = useState<string>('')
     const [runCairoSimulationWarning, setCairoSimulationWarning] = useState<string>('')
+
+    // Retrieve the last 20 agents submissions from the db
+    const { data: data } = useAgents()
+    const t: any[] = data?.agents;
+    console.log("Metadata", t)
 
 
     const agent: Agent = useMemo(() => {
