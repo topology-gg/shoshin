@@ -50,7 +50,7 @@ export interface CircomMapping extends CircomCanonicalFD {
  * This also has the nice feature of the second half of the tree being composed onlyj
  * of leaves
  */
-export type MerkleTree = Uint8Array[];
+export type MerkleTree = bigint[];
 
 export enum MerkleTreePosition {
   LEFT = 0,
