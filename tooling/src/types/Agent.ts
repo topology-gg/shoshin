@@ -1,5 +1,5 @@
 import { parseFunction } from "./Function"
-import Leaf, { flattenN } from "./Leaf" 
+import Leaf, { flattenLeaf } from "./Leaf" 
 import { MentalState, parseMentalState } from "./MentalState"
 import { Tree } from "./Tree"
 import { Function } from "./Function"
@@ -70,7 +70,7 @@ export function flattenAgent(agent: Agent) {
     let mentalStates = []
     agent.mentalStates.forEach((ms) => {
         mentalStatesOffset.push(1)
-        let flattened = flattenN(ms)
+        let flattened = flattenLeaf(ms)
         mentalStatesOffset.push(flattened.length / 3)
         mentalStates.push(...flattened)
     })
@@ -79,7 +79,7 @@ export function flattenAgent(agent: Agent) {
     let functionsOffset = []
     let functions = []
     agent.generalPurposeFunctions.forEach((f) => {
-        let flattened = flattenN(f)
+        let flattened = flattenLeaf(f)
         functionsOffset.push(flattened.length / 3)
         functions.push(...flattened)
     })

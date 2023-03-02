@@ -4,19 +4,25 @@ export default interface Leaf {
     right: Leaf|number,
 }
 
+export interface SimpleLeaf {
+    value: number,
+    left: number,
+    right: number,
+}
+
 // flatten a leaf by recursing all the values 
 // if is a unique operator type (see isUniqueOperator) then left value is -1
-export function flattenN(n: Leaf) {
+export function flattenLeaf(n: Leaf) {
     if (typeof n.left === 'number' && typeof n.right == 'number') {
         return isUniqueOperator(n.value) ? [n.value, -1, 1, n.right, -1, -1]: [n.value, 1, 2, n.left, -1, -1, n.right, -1, -1]
     }
     if (typeof n.left === 'number') {
-        return isUniqueOperator(n.value)? [n.value, -1, 1, ...flattenN(n.right as Leaf)]: [n.value, 1, 2, n.left, -1, -1, ...flattenN(n.right as Leaf)]
+        return isUniqueOperator(n.value)? [n.value, -1, 1, ...flattenLeaf(n.right as Leaf)]: [n.value, 1, 2, n.left, -1, -1, ...flattenLeaf(n.right as Leaf)]
     }
     if (typeof n.right === 'number') {
-        return [n.value, 1, brancheSize(n.left) + 1, ...flattenN(n.left), n.right, -1, -1]
+        return [n.value, 1, brancheSize(n.left) + 1, ...flattenLeaf(n.left), n.right, -1, -1]
     }
-    return [n.value, 1, brancheSize(n.left) + 1, ...flattenN(n.left), ...flattenN(n.right)]
+    return [n.value, 1, brancheSize(n.left) + 1, ...flattenLeaf(n.left), ...flattenLeaf(n.right)]
 }
 
 function isUniqueOperator(x: number) {
@@ -41,4 +47,19 @@ function brancheSize(n: Leaf) {
         return 2 + brancheSize(n.left as Leaf)
     }
     return brancheSize(n.left) + brancheSize(n.right) + 1
+}
+
+// unflatten a array of Leaf
+export function unflattenLeaf(n: SimpleLeaf[]): Leaf {
+    // first value contains the operator and the offsets
+    let leaf = n[0]
+    // if the offsets are -1 -> return constant
+    if (leaf.left == -1 && leaf.right == -1) {
+        return leaf
+    }
+    // recurse in the array and reconstruct the Leaf
+    if (leaf.left == -1) {
+        return {value: leaf.value, left: leaf.left, right: unflattenLeaf(n.slice(leaf.right))}
+    }
+    return {value: leaf.value, left: unflattenLeaf(n.slice(leaf.left)), right: unflattenLeaf(n.slice(leaf.right))}
 }
