@@ -51,7 +51,9 @@ function brancheSize(n: Leaf) {
 
 // unflatten a array of Leaf
 export function unflattenLeaf(n: SimpleLeaf[]): Leaf {
-    // first value contains the operator and the offsets
+    // first value contains the operator
+    // right and left contain the offsets in n on which
+    // the operator applies
     let leaf = n[0]
     // if the offsets are -1 -> return constant
     if (leaf.left == -1 && leaf.right == -1) {
