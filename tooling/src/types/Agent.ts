@@ -1,6 +1,6 @@
 import { parseFunction } from "./Function"
 import Leaf, { flattenLeaf } from "./Leaf" 
-import { MentalState, parseMentalState } from "./MentalState"
+import { MentalState, parseTree } from "./MentalState"
 import { Tree } from "./Tree"
 import { Function } from "./Function"
 
@@ -26,7 +26,7 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     // used to only extract the functions used in the mental states
     let indexes: Map<number, boolean> = new Map()
     mentalStates.forEach((_, i) => {
-        let [parsedMentalState, usedFunctions] = parseMentalState(trees[i], mentalStates)
+        let [parsedMentalState, usedFunctions] = parseTree(trees[i], mentalStates)
         usedFunctions.forEach((_, k) => {
             indexes.set(k, true)
         })

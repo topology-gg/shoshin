@@ -468,9 +468,11 @@ export default function Home() {
                                 character={character}
                                 setCharacter={setCharacter}
                                 mentalStates={mentalStates}
+                                setMentalStates={setMentalStates}
                                 initialMentalState={initialMentalState}
                                 handleSetInitialMentalState={setInitialMentalState}
                                 combos={combos}
+                                setCombos={setCombos}
                                 handleValidateCombo={handleValidateCombo}
                                 handleAddMentalState={handleAddMentalState}
                                 handleClickRemoveMentalState={handleClickRemoveMentalState}
@@ -478,8 +480,10 @@ export default function Home() {
                                 treeEditor={treeEditor}
                                 handleClickTreeEditor={handleClickTreeEditor}
                                 trees={trees}
+                                setTrees={setTrees}
                                 handleUpdateTree={handleUpdateTree}
                                 functions={functions}
+                                setFunctions={setFunctions}
                                 handleUpdateGeneralFunction={handleUpdateGeneralFunction}
                                 handleConfirmFunction={handleConfirmFunction}
                                 handleClickDeleteFunction={handleClickDeleteFunction}

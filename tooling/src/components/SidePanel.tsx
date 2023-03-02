@@ -10,11 +10,12 @@ import { FighterSelection } from './FigherSelection';
 
 
 const SidePanel = ({
-    workingTab, handleClickTab, mentalStates, initialMentalState, handleSetInitialMentalState, combos, handleValidateCombo, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState,
-    handleSetMentalStateAction, treeEditor, handleClickTreeEditor, trees, handleUpdateTree, functions, handleUpdateGeneralFunction,
-    handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText,
-    isTreeEditorWarningTextOn, treeEditorWarningText, handleRemoveElementGeneralFunction,
-    runCairoSimulationWarning, adversary, setAdversary, onComboChange, fighterSelection, setFighterSelection, agents
+    workingTab, handleClickTab, mentalStates, setMentalStates, initialMentalState, handleSetInitialMentalState, combos, setCombos, handleValidateCombo, 
+    character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor, 
+    trees, setTrees, handleUpdateTree, functions, setFunctions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction, 
+    functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText, 
+    handleRemoveElementGeneralFunction, runCairoSimulationWarning, adversary, setAdversary, onComboChange, fighterSelection, setFighterSelection, 
+    agents
 }) => {
     const content = (workingTab: number) => {
         switch (workingTab) {
@@ -74,6 +75,10 @@ const SidePanel = ({
                     fighterSelection={fighterSelection}
                     setFighterSelection={setFighterSelection}
                     agents={agents}
+                    setMentalStates={setMentalStates}
+                    setCombos={setCombos}
+                    setTrees={setTrees}
+                    setFunctions={setFunctions}
                 />;
             }
         }

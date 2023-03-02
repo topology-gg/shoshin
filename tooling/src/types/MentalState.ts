@@ -6,15 +6,15 @@ export interface MentalState {
     action: number,
 }
 
-export function parseMentalState(t: Tree, ms: MentalState[]): [Leaf, Map<number, number>] {
+export function parseTree(t: Tree, ms: MentalState[]): [Leaf, Map<number, number>] {
     let usedFunctions: Map<number, number> = new Map()
     let tCopy = JSON.parse(JSON.stringify(t))
-    let operators = parseInner(tCopy, ms, usedFunctions, 0) as Leaf
+    let operators = parseTreeInner(tCopy, ms, usedFunctions, 0) as Leaf
     return [operators, usedFunctions]
 }
 
 // parse the mental states of the user input
-function parseInner(t: Tree, ms: MentalState[], usedFunctions: Map<number, number>, usedIndex: number) {
+function parseTreeInner(t: Tree, ms: MentalState[], usedFunctions: Map<number, number>, usedIndex: number) {
     if (t.nodes.length == 0) {
         return
     }
@@ -42,7 +42,7 @@ function parseInner(t: Tree, ms: MentalState[], usedFunctions: Map<number, numbe
         let leftBranch: Leaf = { value: 3, left: fEval, right: stateLeft }
         // slice the condition and the left branch
         t.nodes = t.nodes.slice(2)
-        let rightBranch: Leaf = { value: 3, left: subFEval, right: parseInner(t, ms, usedFunctions, usedIndex) }
+        let rightBranch: Leaf = { value: 3, left: subFEval, right: parseTreeInner(t, ms, usedFunctions, usedIndex) }
         return { value: 1, left: leftBranch, right: rightBranch }
     }
     // if condition is a child -> return the corresponding state's index
