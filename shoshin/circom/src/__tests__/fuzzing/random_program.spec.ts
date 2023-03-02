@@ -9,9 +9,16 @@ import { wasm as wasm_tester } from 'circom_tester';
 import { Scalar } from 'ffjavascript';
 
 //@ts-ignore
-import { gen_random_dag } from './random_program_utils';
+import {
+  gen_random_dag_collection,
+  gen_random_dag,
+} from './random_program_utils';
 import { CircomCompilerOutInfo } from '../../types';
+import { gen_fd_proof_inputs } from '../../fd_proof_artifact_gen';
+import { gen_merkle_tree } from '../../fd_merkle_tree';
+import { gen_circom_randomness } from '../../utils';
 
+const N_MIND_STATES = 8;
 const MAX_CONSTANTS = 4;
 const MAX_DICT = 4;
 const MAX_TRACE = 30;
@@ -35,7 +42,7 @@ const load_FD_circuit = async () => {
 /**
  * Create random DAGs and ensure that the Circom's output equals to that of the TS Emulator
  */
-describe('random DAG tests', () => {
+describe('random DAG tests for only FD Emulator', () => {
   it(
     'Should test 100 fuzzing samples of smallish circuits',
     async () => {
@@ -89,6 +96,57 @@ describe('random DAG tests', () => {
         }
       }
       console.log(`Successfully ran ${n_test_run} tests`);
+    },
+    60000 * 20 // twenty minutes for the testing
+  );
+});
+
+describe('random DAG tests for FD Emulator and Wrapper', () => {
+  it(
+    'Should test all FDs for a given mind',
+    async () => {
+      // We need to reload the circuit or we get odd errors
+      const circuit = await load_FD_circuit();
+      const max_n_traces_fuzzing = 1000;
+      const fds = gen_random_dag_collection(
+        N_MIND_STATES,
+        MAX_CONSTANTS,
+        MAX_DICT,
+        max_n_traces_fuzzing,
+        MAX_CONSTANTS,
+        MAX_DICT,
+        MAX_TRACE
+      );
+
+      const fds_circom = fds.map(f =>
+        dag_to_circom(f.dag, f.dict, MAX_CONSTANTS, MAX_DICT, MAX_TRACE)
+      );
+
+      const fds_circom_with_randomness = fds_circom.map(fd => {
+        return { fd, randomness: gen_circom_randomness() };
+      });
+
+      const n_levels = Math.ceil(Math.log2(N_MIND_STATES)) + 1;
+      const merkle_tree = await gen_merkle_tree(
+        fds_circom_with_randomness,
+        n_levels
+      );
+
+      for (let i = 0; i < N_MIND_STATES; i++) {
+        const { dag, dict } = fds[i];
+        const mind = i;
+        const mind_randomness = fds_circom_with_randomness[i].randomness;
+        const proof_artifacts = await gen_fd_proof_inputs(
+          merkle_tree,
+          dag,
+          dict,
+          mind,
+          mind_randomness,
+          MAX_CONSTANTS,
+          MAX_DICT,
+          MAX_TRACE
+        );
+      }
     },
     60000 * 20 // twenty minutes for the testing
   );

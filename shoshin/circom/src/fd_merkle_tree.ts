@@ -1,35 +1,22 @@
 //@ts-ignore
-import { buildPoseidonReference, buildPedersenHash } from 'circomlibjs';
-import { assert } from 'console';
-// import { SMT } from '@cedoor/smt';
-import { CircomCanonicalFD, MerkleTree, MerkleTreePosition } from './types';
+import { buildPoseidonReference } from 'circomlibjs';
+import {
+  CircomCanonicalFD,
+  MerkleProof,
+  MerkleTree,
+  MerkleTreePosition,
+} from './types';
 
 let poseidon_hash: any = null;
-// let pedersen_hash: any = null;
 
-// Hmmm.... we need to make this itself a merkle habib!
-const shrunk_hash = async (child_nodes: any[]): Promise<bigint> => {
+const multi_hash = async (child_nodes: any[]): Promise<bigint> => {
   if (poseidon_hash === null) poseidon_hash = await buildPoseidonReference();
-  // if (pedersen_hash === null) pedersen_hash = await buildPedersenHash();
 
   const reduced = child_nodes.reduce((prev, a) => poseidon_hash([prev, a]), 0n);
   return BigInt(poseidon_hash.F.toString(reduced)).valueOf();
-  // .map(a => pedersen_hash.babyJub.F.e(a)); // Map to uint8array
-  // const ped_out = pedersen_hash.hash(mapped);
-  // console.log(
-  //   'AAAAAAAAAAA',
-  //   child_nodes,
-  //   child_nodes.length,
-  //   mapped,
-  //   ped_out,
-  //   ped_out.length
-  // );
-
-  // const hP = pedersen_hash.babyJub.unpackPoint(ped_out);
-  // return poseidon_hash(hP) as Uint8Array;
 };
 
-const get_mind_fd_hash = async (
+export const get_mind_fd_hash = async (
   fd: CircomCanonicalFD,
   randomness: bigint,
   mind: number
@@ -40,7 +27,7 @@ const get_mind_fd_hash = async (
     mind,
     randomness,
   ].map(b => BigInt(b).valueOf());
-  return await shrunk_hash(hash_arr);
+  return await multi_hash(hash_arr);
 };
 
 export const gen_merkle_tree = async (
@@ -85,7 +72,13 @@ export const gen_merkle_tree = async (
   return tree;
 };
 
-export const get_merkle_tree_proof = (tree: MerkleTree, leaf_idx: number) => {
+export const leaf_index_of = (tree: MerkleTree, leaf: bigint) =>
+  tree.includes(leaf) ? tree.indexOf(leaf) - tree.length / 2 : -1;
+
+export const get_merkle_tree_proof = (
+  tree: MerkleTree,
+  leaf_idx: number
+): MerkleProof => {
   const depth = Math.log2(tree.length);
   if (depth % 1 != 0)
     throw 'Tree must be a full tree and thus have length a power of 2';

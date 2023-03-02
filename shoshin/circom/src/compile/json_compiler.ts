@@ -178,6 +178,8 @@ export const dag_to_circom = (
     compiler_info.push(CircomCompilerOutInfo.TRUNCATED_DICT);
   if (op_traces.length > max_number_traces)
     compiler_info.push(CircomCompilerOutInfo.TRUNCATED_TRACES);
+  if (n_inputs - dict.length > max_number_constants)
+    compiler_info.push(CircomCompilerOutInfo.TRUNCATED_CONSTANTS);
 
   return {
     n_inputs,
