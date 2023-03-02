@@ -6,6 +6,7 @@ import TreeEditor from './TreeEditor';
 import GeneralFunctions from './GeneralFunctions';
 import Combos from './Combos';
 import { AdversarySelection } from './AdversarySelection';
+import { FighterSelection } from './FigherSelection';
 
 
 const SidePanel = ({
@@ -13,7 +14,7 @@ const SidePanel = ({
     handleSetMentalStateAction, treeEditor, handleClickTreeEditor, trees, handleUpdateTree, functions, handleUpdateGeneralFunction,
     handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText,
     isTreeEditorWarningTextOn, treeEditorWarningText, handleRemoveElementGeneralFunction,
-    runCairoSimulationWarning, adversary, setAdversary, onComboChange
+    runCairoSimulationWarning, adversary, setAdversary, onComboChange, fighterSelection, setFighterSelection, agents
 }) => {
     const content = (workingTab: number) => {
         switch (workingTab) {
@@ -66,6 +67,13 @@ const SidePanel = ({
                     adversary={adversary}
                     setAdversary={setAdversary}
                     onComboChange={onComboChange}
+                />;
+            }
+            case 4: {
+                return <FighterSelection
+                    fighterSelection={fighterSelection}
+                    setFighterSelection={setFighterSelection}
+                    agents={agents}
                 />;
             }
         }

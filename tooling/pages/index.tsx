@@ -75,6 +75,7 @@ export default function Home() {
     const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
     const [character, setCharacter] = useState<Character>(Character.Jessica)
     const [adversary, setAdversary] = useState<string>('defensive')
+    const [fighterSelection, setFighterSelection] = useState<string>('adversary')
     const [adversaryCombo, setAdversaryCombo] = useState<number[]>([])
 
     // Warnings
@@ -493,6 +494,9 @@ export default function Home() {
                                 adversary={adversary}
                                 setAdversary={setAdversary}
                                 onComboChange={setAdversaryCombo}
+                                fighterSelection={fighterSelection}
+                                setFighterSelection={setFighterSelection}
+                                agents={agents}
                             />
                         </Grid>
                     </Grid>
