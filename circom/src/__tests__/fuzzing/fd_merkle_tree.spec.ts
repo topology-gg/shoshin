@@ -68,19 +68,28 @@ describe('TypeScript merkle tree evaluation', () => {
         const { sibling_pos, siblings } = get_merkle_tree_proof(tree, i);
         const circ_input = {
           elem,
-          root: tree[1], // TODO: fr mapping
+          root: tree[1],
           siblings,
           sibling_positions: sibling_pos,
         };
         const witness = await circuit.calculateWitness(circ_input, true);
-        // remove the negative as the output of circom is not negative
-        // but rather works over the unsigned ints
-        console.log('AAAAAAAAAAA', i);
         circuit.assertOut(witness, { out: 1 });
-        console.log('BBBBBBBBBBBB', i);
       }
+
+      // Test that the circuit rejects an invalid root
+      const circ_input = {
+        elem: gen_circom_randomness(),
+        root: tree[1],
+        siblings: Array(3).fill(0n),
+        sibling_positions: Array(3).fill(0),
+      };
+      const circuit = await load_circuit();
+      const witness = await circuit.calculateWitness(circ_input, true);
+      // remove the negative as the output of circom is not negative
+      // but rather works over the unsigned ints
+      circuit.assertOut(witness, { out: 0 });
+
       expect(1).toEqual(1);
-      // TODO: wrapper with test of circom... i.e. pull circom **INTO** here
     },
     60 * 1000 // 1 minute
   );
