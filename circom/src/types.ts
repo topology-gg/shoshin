@@ -87,8 +87,14 @@ export type DagDict = { [node_key: number]: number };
 export enum CircomCompilerOutInfo {
   TRUNCATED_DICT,
   TRUNCATED_TRACES,
+  TRUNCATED_CONSTANTS,
 }
 
 export const CIRCOM_PRIME = BigInt(
   '21888242871839275222246405745257275088548364400416034343698204186575808495617'
 ).valueOf();
+
+export interface MerkleProof {
+  siblings: bigint[];
+  sibling_pos: number[];
+}

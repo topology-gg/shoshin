@@ -1,5 +1,48 @@
-import { Dag, DagNode, OpCodes } from '../../types';
+import { dag_to_circom } from '../../compile/json_compiler';
+import { CircomCompilerOutInfo, Dag, DagNode, OpCodes } from '../../types';
 import { is_leaf, range, shuffle_arr } from '../../utils';
+
+/**
+ * @brief generate a collection of random dags with rejection sampling such that
+ * the number of constants, dicts, and traces are below their "cutoff" points
+ */
+export const gen_random_dag_collection = (
+  n_dags: number,
+  n_max_constants: number,
+  n_max_dict: number,
+  n_max_traces: number,
+  constants_cutoff: number,
+  dict_cutoff: number,
+  traces_cutoff: number,
+  p_single_inp_trace = 0.2
+) => {
+  const dags_with_dicts = [];
+  while (dags_with_dicts.length < n_dags) {
+    const { dag, dict } = gen_random_dag(
+      n_max_constants,
+      n_max_dict,
+      n_max_traces,
+      p_single_inp_trace
+    );
+    const circom = dag_to_circom(
+      dag,
+      dict,
+      constants_cutoff,
+      dict_cutoff,
+      traces_cutoff
+    );
+    if (
+      !circom.compiler_info?.includes(
+        CircomCompilerOutInfo.TRUNCATED_CONSTANTS
+      ) &&
+      !circom.compiler_info?.includes(CircomCompilerOutInfo.TRUNCATED_DICT) &&
+      !circom.compiler_info?.includes(CircomCompilerOutInfo.TRUNCATED_TRACES)
+    ) {
+      dags_with_dicts.push({ dag, dict });
+    }
+  }
+  return dags_with_dicts;
+};
 
 /**
  * @brief Generate a random, valid DAG whic is used for testing
