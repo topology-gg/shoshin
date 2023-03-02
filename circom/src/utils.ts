@@ -53,3 +53,6 @@ export const pad_array_to_len = <T>(arr: T[], len: number, fill: T | T[]) =>
 
 // TODO:!!!!
 export const gen_circom_randomness = () => 0n;
+
+// export const uint8_to_bigint = (arr: Uint8Array) =>
+//   BigInt(`0x${Buffer.from(arr).toString('hex')}`).valueOf();

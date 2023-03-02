@@ -1,30 +1,46 @@
 //@ts-ignore
-import { buildPoseidonReference } from 'circomlibjs';
+import { buildPoseidonReference, buildPedersenHash } from 'circomlibjs';
 import { assert } from 'console';
 // import { SMT } from '@cedoor/smt';
 import { CircomCanonicalFD, MerkleTree, MerkleTreePosition } from './types';
 
-let poseidonHash: any = null;
+let poseidon_hash: any = null;
+// let pedersen_hash: any = null;
 
 // Hmmm.... we need to make this itself a merkle habib!
-const hash = async (childNodes: any[]): Promise<Uint8Array> => {
-  if (poseidonHash == null) poseidonHash = await buildPoseidonReference();
-  console.log('AAAAAAAAAAA', childNodes.length);
-  return poseidonHash(childNodes) as Uint8Array;
+const shrunk_hash = async (child_nodes: any[]): Promise<bigint> => {
+  if (poseidon_hash === null) poseidon_hash = await buildPoseidonReference();
+  // if (pedersen_hash === null) pedersen_hash = await buildPedersenHash();
+
+  const reduced = child_nodes.reduce((prev, a) => poseidon_hash([prev, a]), 0n);
+  return BigInt(poseidon_hash.F.toString(reduced)).valueOf();
+  // .map(a => pedersen_hash.babyJub.F.e(a)); // Map to uint8array
+  // const ped_out = pedersen_hash.hash(mapped);
+  // console.log(
+  //   'AAAAAAAAAAA',
+  //   child_nodes,
+  //   child_nodes.length,
+  //   mapped,
+  //   ped_out,
+  //   ped_out.length
+  // );
+
+  // const hP = pedersen_hash.babyJub.unpackPoint(ped_out);
+  // return poseidon_hash(hP) as Uint8Array;
 };
 
 const get_mind_fd_hash = async (
   fd: CircomCanonicalFD,
   randomness: bigint,
   mind: number
-): Promise<Uint8Array> => {
+): Promise<bigint> => {
   const hash_arr: bigint[] = [
     ...fd.inputs_constant,
     ...fd.op_traces.map(f => [f.op_code, f.sel_a, f.sel_b]).flat(),
     mind,
     randomness,
   ].map(b => BigInt(b).valueOf());
-  return hash(hash_arr);
+  return await shrunk_hash(hash_arr);
 };
 
 export const gen_merkle_tree = async (
@@ -32,17 +48,22 @@ export const gen_merkle_tree = async (
   n_levels: number
 ): Promise<MerkleTree> => {
   // Big number hashes.
-  // const tree = new SMT(hash, true);
-  const mind_fd_comms = await Promise.all(
-    mind_to_fd.map((o, mind) => {
-      return get_mind_fd_hash(o.fd, o.randomness, mind);
-    })
-  );
+  // const mind_fd_comms = await Promise.all(
+  //   mind_to_fd.map((o, mind) => {
+  //     return get_mind_fd_hash(o.fd, o.randomness, mind);
+  //   })
+  // );
+  const mind_fd_comms = Array(mind_to_fd.length).fill(new Uint8Array());
+  for (let i = 0; i < mind_to_fd.length; i++) {
+    mind_fd_comms[i] = await get_mind_fd_hash(
+      mind_to_fd[i].fd,
+      mind_to_fd[i].randomness,
+      i
+    );
+  }
   // A tree with `n_levels` has 2 ** n_levels - 1 nodes. Because we leave index 0 empty,
   // we can have a 2 ** n_levels length array
-  const tree: Uint8Array[] = Array(Math.pow(2, n_levels)).fill(
-    new Uint8Array([])
-  );
+  const tree: bigint[] = Array(Math.pow(2, n_levels)).fill(0n);
   // We now populate the second half of the tree with the leaves
   const leave_start_idx = Math.pow(2, n_levels - 1);
   for (
@@ -55,7 +76,10 @@ export const gen_merkle_tree = async (
 
   // We now populate the nodes of the merkle tree starting from the deepest non-leaf nodes
   for (let i = leave_start_idx - 1; i > 0; i--) {
-    tree[i] = await hash([tree[i * 2], tree[i * 2 + 1]]);
+    if (poseidon_hash === null) await buildPoseidonReference();
+    tree[i] = BigInt(
+      poseidon_hash.F.toString(poseidon_hash([tree[i * 2], tree[i * 2 + 1]]))
+    ).valueOf();
   }
 
   return tree;
@@ -64,15 +88,15 @@ export const gen_merkle_tree = async (
 export const get_merkle_tree_proof = (tree: MerkleTree, leaf_idx: number) => {
   const depth = Math.log2(tree.length);
   if (depth % 1 != 0)
-    throw 'Tree must be a full tree and thus have length around a power of 2';
+    throw 'Tree must be a full tree and thus have length a power of 2';
   if (leaf_idx > tree.length / 2 || leaf_idx < 0)
     throw `Unexpected leaf index ${leaf_idx}`;
-  const siblings: Uint8Array[] = Array(depth).fill(0n);
+  const siblings: bigint[] = Array(depth - 1).fill(0n);
   // Signify if left or right.
-  const sibling_pos: number[] = Array(depth).fill(0);
+  const sibling_pos: number[] = Array(depth - 1).fill(0);
 
   let curr_idx = tree.length / 2 + leaf_idx;
-  for (let i = 0; i < depth; i++) {
+  for (let i = 0; i < depth - 1; i++) {
     // An odd element indicates being on the right
     const curr_pos =
       curr_idx % 2 === 1 ? MerkleTreePosition.RIGHT : MerkleTreePosition.LEFT;
@@ -86,9 +110,5 @@ export const get_merkle_tree_proof = (tree: MerkleTree, leaf_idx: number) => {
         : tree[curr_idx + 1];
     curr_idx = Math.floor(curr_idx / 2);
   }
-  assert(
-    curr_idx === 0,
-    'Expected to finish off the loop with current index being 0'
-  );
   return { siblings, sibling_pos };
 };

@@ -3,6 +3,7 @@ pragma circom 2.0.0;
 include "./FDEmulator.circom";
 include "../circomlib/circuits/comparators.circom";
 include "../circomlib/circuits/poseidon.circom";
+include "../circomlib/circuits/pedersen.circom";
 include "../circomlib/circuits/smt/smtverifier.circom";
 
 template Commitment_Check() {
@@ -23,30 +24,30 @@ template Commitment_Check() {
 template FD_Merkle_Tree(MT_N_LEVELS) {
 	signal input elem;
 	signal input root;
-	signal input siblings[MT_N_LEVELS];
+	signal input siblings[MT_N_LEVELS - 1];
 	// Determines if the siblings are on the left or right, 0 for left and 1 for right
-	signal input sibling_positions[MT_N_LEVELS];
+	signal input sibling_positions[MT_N_LEVELS - 1];
 
 	// Set to 1 if the merkle tree contains the element and 0 otherwise
 	signal output out;
-	component hashers[MT_N_LEVELS];
+	component hashers[MT_N_LEVELS - 1];
 
 	hashers[0] = Poseidon(2);
 	// TODO: check
 	hashers[0].inputs[0] <== (elem - siblings[0]) * sibling_positions[0] + siblings[0];
 	hashers[0].inputs[1] <== (siblings[0] - elem) * sibling_positions[0] + elem;
 
-	for (var i = 1; i < MT_N_LEVELS; i++) {
+	for (var i = 1; i < MT_N_LEVELS - 1; i++) {
 		hashers[i] = Poseidon(2);
 		hashers[i].inputs[0] <== (hashers[i-1].out - siblings[i])*sibling_positions[i] + siblings[i];
 		hashers[i].inputs[1] <== (siblings[i] - hashers[i-1].out)*sibling_positions[i] + hashers[i-1].out;
 	}
 	component check_eq = IsZero();
-	check_eq.in <== hashers[MT_N_LEVELS - 1].out - root;
+	check_eq.in <== hashers[MT_N_LEVELS - 2].out - root;
 	check_eq.out ==> out;
 }
 
-template FD_Hasher(CONSTANTS_SIZE, N_TRACES, N_LEVELS) {
+template FD_Hasher(CONSTANTS_SIZE, N_TRACES) {
 	var n_inps = CONSTANTS_SIZE + N_TRACES * 3 + 2;
 	signal input mind;
 	signal input constants[CONSTANTS_SIZE];
@@ -56,24 +57,60 @@ template FD_Hasher(CONSTANTS_SIZE, N_TRACES, N_LEVELS) {
 	signal output out;
 
 	// A hasher for each pair of nodes..... AGHHHHHHHHh
-	component hashers[2 ** (N_LEVELS - 1) - 1];
+	// TODO: WE CAN JUST USE PEDERSON INSTEAD!!!!!!
+	// Check out
+	// https://github.com/iden3/circomlibjs/blob/main/test/pedersenhash.js
 
+ 	// component hasher = Pedersen(CONSTANTS_SIZE + N_TRACES * 3 + 2);
+	component hashers[n_inps];
 
-	component hasher = Poseidon(CONSTANTS_SIZE + N_TRACES * 3 + 2);
-
-	for (var i = 0; i < CONSTANTS_SIZE; i++) {
-		constants[i] ==> hasher.inputs[i];
+	hashers[0] = Poseidon(2);
+	0 ==> hashers[0].inputs[0];
+	constants[0] ==> hashers[0].inputs[1];
+	for (var i = 1; i < CONSTANTS_SIZE; i++) {
+		hashers[i] = Poseidon(2);
+		hashers[i].out ==> hashers[i].inputs[0];
+		constants[i] ==> hashers[i].inputs[1];
 	}
-	for (var i = 0; i < N_TRACES; i++) {
-		trace_type_sel[i] ==> hasher.inputs[CONSTANTS_SIZE + 3 * i];
-		trace_inp_sels[i][0] ==> hasher.inputs[CONSTANTS_SIZE + 3 * i + 1];
-		trace_inp_sels[i][1] ==> hasher.inputs[CONSTANTS_SIZE + 3 * i + 2];
+	for (var i = 0; i < N_TRACES * 3; i += 3) {
+		var curr = i - CONSTANTS_SIZE;
+		hashers[curr] = Poseidon(2);
+		hashers[curr - 1].out ==> hashers[curr].inputs[0];
+		trace_type_sel[i \ 3] ==> hashers[curr].inputs[1];
+
+		hashers[curr + 1] = Poseidon(2);
+		hashers[curr].out ==> hashers[curr + 1].inputs[0];
+		trace_inp_sels[i \ 3][0] ==> hashers[curr + 1].inputs[1];
+
+		hashers[curr + 2] = Poseidon(2);
+		hashers[curr + 1].out ==> hashers[curr + 2].inputs[0];
+		trace_inp_sels[i \ 3][1] ==> hashers[curr + 2].inputs[1];
 	}
-	mind ==> hasher.inputs[CONSTANTS_SIZE + N_TRACES * 3];
-	randomness ==> hasher.inputs[CONSTANTS_SIZE + N_TRACES * 3 + 1];
+	var mind_idx = CONSTANTS_SIZE + N_TRACES * 3;
+	hashers[mind_idx] = Poseidon(2);
+	hashers[mind_idx - 1].out ==> hashers[mind_idx].inputs[0];
+	mind ==> hashers[mind_idx].inputs[1];
 
-	hasher.out ==> out;
+	var rand_idx = CONSTANTS_SIZE + N_TRACES * 3 + 1;
+	hashers[rand_idx] = Poseidon(2);
+	hashers[rand_idx - 1].out ==> hashers[rand_idx].inputs[0];
+	randomness ==> hashers[rand_idx].inputs[1];
 
+	// for (var i = 0; i < CONSTANTS_SIZE; i++) {
+	// 	constants[i] ==> hasher.inputs[i];
+	// }
+	// for (var i = 0; i < N_TRACES; i++) {
+	// 	trace_type_sel[i] ==> hasher.inputs[CONSTANTS_SIZE + 3 * i];
+	// 	trace_inp_sels[i][0] ==> hasher.inputs[CONSTANTS_SIZE + 3 * i + 1];
+	// 	trace_inp_sels[i][1] ==> hasher.inputs[CONSTANTS_SIZE + 3 * i + 2];
+	// }
+	// mind ==> hasher.inputs[CONSTANTS_SIZE + N_TRACES * 3];
+	// randomness ==> hasher.inputs[CONSTANTS_SIZE + N_TRACES * 3 + 1];
+
+	// hasher.out[0] ==> hasher_out.inputs[0];
+	// hasher.out[1] ==> hasher_out.inputs[1];
+
+	hashers[rand_idx] ==> out;
 }
 
 template FD_Wrapper(
