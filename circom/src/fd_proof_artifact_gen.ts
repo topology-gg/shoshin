@@ -8,7 +8,7 @@ import {
 } from './fd_merkle_tree';
 import { ts_dag_evaluator } from './ts_evaluator';
 import { CircomCompilerOutInfo, Dag, MerkleTree } from './types';
-import { gen_circom_randomness } from './utils';
+import { gen_circom_randomness, poseidon_hash } from './utils';
 
 interface FDProofInputs {
   mt_root: bigint;
@@ -63,9 +63,8 @@ export const gen_fd_proof_inputs = async (
   if (leaf_idx === -1)
     throw `Leaf for DAG with hash ${dag_hash} not found in the Merkle Tree`;
 
-  const poseidon_hash = await buildPoseidonReference();
   const proof = get_merkle_tree_proof(tree, leaf_idx);
-  const current_mind_comm = poseidon_hash([
+  const current_mind_comm = await poseidon_hash([
     BigInt(mind).valueOf(),
     mind_randomness,
   ]);
@@ -74,7 +73,7 @@ export const gen_fd_proof_inputs = async (
     current_mind: mind,
     current_mind_randomness: mind_randomness,
 
-    next_state_comm: poseidon_hash([next_state, next_state_randomness]),
+    next_state_comm: await poseidon_hash([next_state, next_state_randomness]),
     next_state_randomness,
 
     mt_root: tree[1],

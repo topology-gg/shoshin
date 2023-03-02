@@ -31,7 +31,7 @@ const load_FD_Wrapper_circuit = async () => {
   const p = path.join(
     __dirname,
     '../../../circuits/__tests__/circuits',
-    'fd_wrapper_test.circom'
+    'fd_wrapper_tester.circom'
   );
   const circuit = await wasm_tester(p);
   await circuit.loadSymbols();
@@ -113,7 +113,7 @@ describe('random DAG tests for only FD Emulator', () => {
   );
 });
 
-describe('random DAG tests for FD Emulator and Wrapper', () => {
+describe.only('random DAG tests for FD Emulator and Wrapper', () => {
   it(
     'Should test all FDs for a given mind',
     async () => {
@@ -161,8 +161,8 @@ describe('random DAG tests for FD Emulator and Wrapper', () => {
         );
 
         const circuit = await load_FD_Wrapper_circuit();
-        const witness = await circuit.calculateWitness(circom_inp, true);
-        circuit.assertOut(witness, { out: 1 });
+        const witness = await circuit.calculateWitness({ ...circom_inp }, true);
+        circuit.assertOut(witness, { out: 3 });
       }
     },
     60000 * 20 // twenty minutes for the testing

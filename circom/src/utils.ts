@@ -1,3 +1,5 @@
+//@ts-ignore
+import { buildPoseidonReference } from 'circomlibjs';
 import { DagNode, IndexedNode, LeafNode, OpCodes } from './types';
 
 export const deepcopy = (obj: any) => JSON.parse(JSON.stringify(obj));
@@ -53,3 +55,9 @@ export const pad_array_to_len = <T>(arr: T[], len: number, fill: T | T[]) =>
 
 // TODO:!!!!
 export const gen_circom_randomness = () => 0n;
+
+let poseidon: any = null;
+export const poseidon_hash = async (elems: any[]): Promise<bigint> => {
+  if (poseidon === null) poseidon = await buildPoseidonReference();
+  return BigInt(poseidon.F.toString(poseidon(elems))).valueOf();
+};

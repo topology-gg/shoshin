@@ -6,4 +6,4 @@ include "../../FDWrapper.circom";
 // trace size = 30
 // n word bits = 96
 // 4 Merkle Tree Levels (for 8 Minds)
-component main {public [current_mind_comm, input_dict, mt_root]} = FD_Wrapper(4, 4, 8, 30, 96, 4);
+component main {public [current_mind_comm, input_dict, mt_root]} = FD_Wrapper(4, 4, 30, 96, 4);
