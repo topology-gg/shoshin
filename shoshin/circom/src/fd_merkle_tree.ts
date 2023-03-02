@@ -6,14 +6,13 @@ import {
   MerkleTree,
   MerkleTreePosition,
 } from './types';
+import { poseidon_hash } from './utils';
 
-let poseidon_hash: any = null;
-
+// TODO: update
 const multi_hash = async (child_nodes: any[]): Promise<bigint> => {
-  if (poseidon_hash === null) poseidon_hash = await buildPoseidonReference();
-
-  const reduced = child_nodes.reduce((prev, a) => poseidon_hash([prev, a]), 0n);
-  return BigInt(poseidon_hash.F.toString(reduced)).valueOf();
+  const p = await buildPoseidonReference();
+  const reduced = child_nodes.reduce((prev, a) => p([prev, a]), 0n);
+  return BigInt(p.F.toString(reduced)).valueOf();
 };
 
 export const get_mind_fd_hash = async (
@@ -63,10 +62,7 @@ export const gen_merkle_tree = async (
 
   // We now populate the nodes of the merkle tree starting from the deepest non-leaf nodes
   for (let i = leave_start_idx - 1; i > 0; i--) {
-    if (poseidon_hash === null) await buildPoseidonReference();
-    tree[i] = BigInt(
-      poseidon_hash.F.toString(poseidon_hash([tree[i * 2], tree[i * 2 + 1]]))
-    ).valueOf();
+    tree[i] = await poseidon_hash([tree[i * 2], tree[i * 2 + 1]]);
   }
 
   return tree;

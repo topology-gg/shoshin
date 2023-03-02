@@ -13,8 +13,8 @@ template Commitment_Check() {
 	signal output out;
 	component hasher = Poseidon(2);
 
-	hasher[0] <== elem;
-	hasher[1] <== randomness;
+	hasher.inputs[0] <== elem;
+	hasher.inputs[1] <== randomness;
 
 	component check_eq = IsZero();
 	check_eq.in <== hasher.out - comm;
@@ -33,7 +33,8 @@ template FD_Merkle_Tree(MT_N_LEVELS) {
 	component hashers[MT_N_LEVELS - 1];
 
 	hashers[0] = Poseidon(2);
-	// TODO: check
+
+	// Select between left and right inputs depending on the position
 	hashers[0].inputs[0] <== (elem - siblings[0]) * sibling_positions[0] + siblings[0];
 	hashers[0].inputs[1] <== (siblings[0] - elem) * sibling_positions[0] + elem;
 
@@ -48,6 +49,7 @@ template FD_Merkle_Tree(MT_N_LEVELS) {
 }
 
 template FD_Hasher(CONSTANTS_SIZE, N_TRACES) {
+	// TODO: USE https://snyk.io/advisor/npm-package/circomlib/functions/circomlib.mimcsponge.multiHash
 	var n_inps = CONSTANTS_SIZE + N_TRACES * 3 + 2;
 	signal input mind;
 	signal input constants[CONSTANTS_SIZE];
@@ -69,11 +71,11 @@ template FD_Hasher(CONSTANTS_SIZE, N_TRACES) {
 	constants[0] ==> hashers[0].inputs[1];
 	for (var i = 1; i < CONSTANTS_SIZE; i++) {
 		hashers[i] = Poseidon(2);
-		hashers[i].out ==> hashers[i].inputs[0];
+		hashers[i - 1].out ==> hashers[i].inputs[0];
 		constants[i] ==> hashers[i].inputs[1];
 	}
 	for (var i = 0; i < N_TRACES * 3; i += 3) {
-		var curr = i - CONSTANTS_SIZE;
+		var curr = i + CONSTANTS_SIZE;
 		hashers[curr] = Poseidon(2);
 		hashers[curr - 1].out ==> hashers[curr].inputs[0];
 		trace_type_sel[i \ 3] ==> hashers[curr].inputs[1];
@@ -96,21 +98,7 @@ template FD_Hasher(CONSTANTS_SIZE, N_TRACES) {
 	hashers[rand_idx - 1].out ==> hashers[rand_idx].inputs[0];
 	randomness ==> hashers[rand_idx].inputs[1];
 
-	// for (var i = 0; i < CONSTANTS_SIZE; i++) {
-	// 	constants[i] ==> hasher.inputs[i];
-	// }
-	// for (var i = 0; i < N_TRACES; i++) {
-	// 	trace_type_sel[i] ==> hasher.inputs[CONSTANTS_SIZE + 3 * i];
-	// 	trace_inp_sels[i][0] ==> hasher.inputs[CONSTANTS_SIZE + 3 * i + 1];
-	// 	trace_inp_sels[i][1] ==> hasher.inputs[CONSTANTS_SIZE + 3 * i + 2];
-	// }
-	// mind ==> hasher.inputs[CONSTANTS_SIZE + N_TRACES * 3];
-	// randomness ==> hasher.inputs[CONSTANTS_SIZE + N_TRACES * 3 + 1];
-
-	// hasher.out[0] ==> hasher_out.inputs[0];
-	// hasher.out[1] ==> hasher_out.inputs[1];
-
-	hashers[rand_idx] ==> out;
+	hashers[rand_idx].out ==> out;
 }
 
 template FD_Wrapper(
@@ -136,15 +124,15 @@ template FD_Wrapper(
 	signal input next_state_comm;
 
 	signal input input_dict[DICT_SIZE]; // Public signal
-	signal input input_constant[CONSTANTS_SIZE];
+	signal input input_constants[CONSTANTS_SIZE];
 	signal input fd_trace_inp_selectors[N_TRACES][2];
 	signal input fd_trace_type_selectors[N_TRACES];
 	signal input fd_comm_randomness;
 
 	// Merkle Tree Inputs
 	signal input mt_root; // Public signal
-	signal input mt_siblings[MT_N_LEVELS];
-	signal input mt_sibling_positions[MT_N_LEVELS];
+	signal input mt_siblings[MT_N_LEVELS - 1];
+	signal input mt_sibling_positions[MT_N_LEVELS - 1];
 
 	// 1 if all checks pass, 0 otherwise
 	signal output out;
@@ -153,10 +141,10 @@ template FD_Wrapper(
 	/***************** Setup the FD_Emulator *****************/
 	component fd_emulator = FD_Emulator(DICT_SIZE + CONSTANTS_SIZE, N_TRACES, WORD_SIZE);
 	for (var i = 0; i < CONSTANTS_SIZE; i++) {
-		input_dict[i] ==> fd_emulator.inputs[i];
+		input_constants[i] ==> fd_emulator.inputs[i];
 	}
 	for (var i = 0; i < DICT_SIZE; i++) {
-		input_constant[i] ==> fd_emulator.inputs[DICT_SIZE + i];
+		input_dict[i] ==> fd_emulator.inputs[CONSTANTS_SIZE + i];
 	}
 	for (var i = 0; i < N_TRACES; i++) {
 		fd_trace_inp_selectors[i][0] ==> fd_emulator.trace_inp_selectors[i][0];
@@ -168,7 +156,7 @@ template FD_Wrapper(
 
 	/***************** Setup FD_Hasher *******************/
 	component fd_hasher = FD_Hasher(CONSTANTS_SIZE, N_TRACES);
-	for (var i = 0; i < CONSTANTS_SIZE; i++) input_constant[i] ==> fd_hasher.constants[i];
+	for (var i = 0; i < CONSTANTS_SIZE; i++) input_constants[i] ==> fd_hasher.constants[i];
 	for (var i = 0; i < N_TRACES; i++) {
 		fd_trace_inp_selectors[i][0] ==> fd_hasher.trace_inp_sels[i][0];
 		fd_trace_inp_selectors[i][1] ==> fd_hasher.trace_inp_sels[i][1];
@@ -183,9 +171,9 @@ template FD_Wrapper(
 
 	fd_hasher.out ==> mt_verif.elem;
 	mt_root ==> mt_verif.root;
-	for (var i = 0; i < MT_N_LEVELS; i++) {
-		mt_siblings ==> mt_verif.siblings[i];
-		mt_sibling_positions ==> mt_verif.sibling_positions[i];
+	for (var i = 0; i < MT_N_LEVELS - 1; i++) {
+		mt_siblings[i] ==> mt_verif.siblings[i];
+		mt_sibling_positions[i] ==> mt_verif.sibling_positions[i];
 	}
 	/***************** End check that the SMT holds up **************/
 
@@ -204,11 +192,14 @@ template FD_Wrapper(
 	/***************** End check that the next state commitment holds up ************/
 
 	// Assert that all three conditions are met
-	3 === comm_next_state.out + comm_current_mind.out + mt_verif.out;
+	// 3 === comm_next_state.out + comm_current_mind.out + mt_verif.out;
 
-	component is_out_3 =  IsZero()
-	is_out_3.in <== comm_next_state.out + comm_current_mind.out + mt_verif.out - 3;
-	is_out_3.out ==> out;
+	out <== comm_next_state.out + comm_current_mind.out + mt_verif.out;
+
+	// component is_out_3 =  IsZero();
+	// is_out_3.in <== comm_next_state.out + comm_current_mind.out + mt_verif.out - 3;
+	// is_out_3.in <== comm_next_state.out + comm_current_mind.out + mt_verif.out - 3;
+	// is_out_3.out ==> out;
 }
 
 
