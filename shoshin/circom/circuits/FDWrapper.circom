@@ -192,14 +192,13 @@ template FD_Wrapper(
 	/***************** End check that the next state commitment holds up ************/
 
 	// Assert that all three conditions are met
-	// 3 === comm_next_state.out + comm_current_mind.out + mt_verif.out;
+	3 === comm_next_state.out + comm_current_mind.out + mt_verif.out;
 
-	out <== comm_next_state.out + comm_current_mind.out + mt_verif.out;
+	// out <== comm_next_state.out + comm_current_mind.out + mt_verif.out;
 
-	// component is_out_3 =  IsZero();
-	// is_out_3.in <== comm_next_state.out + comm_current_mind.out + mt_verif.out - 3;
-	// is_out_3.in <== comm_next_state.out + comm_current_mind.out + mt_verif.out - 3;
-	// is_out_3.out ==> out;
+	component is_out_3 =  IsZero();
+	is_out_3.in <== comm_next_state.out + comm_current_mind.out + mt_verif.out - 3;
+	is_out_3.out ==> out;
 }
 
 

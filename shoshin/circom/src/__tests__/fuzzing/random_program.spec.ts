@@ -162,7 +162,7 @@ describe.only('random DAG tests for FD Emulator and Wrapper', () => {
 
         const circuit = await load_FD_Wrapper_circuit();
         const witness = await circuit.calculateWitness({ ...circom_inp }, true);
-        circuit.assertOut(witness, { out: 3 });
+        circuit.assertOut(witness, { out: 1 });
       }
     },
     60000 * 20 // twenty minutes for the testing
