@@ -2,6 +2,7 @@ pragma circom 2.0.0;
 
 include "./FDEmulator.circom";
 include "../circomlib/circuits/comparators.circom";
+include "../circomlib/circuits/mimc.circom";
 include "../circomlib/circuits/poseidon.circom";
 include "../circomlib/circuits/pedersen.circom";
 include "../circomlib/circuits/smt/smtverifier.circom";
@@ -49,8 +50,8 @@ template FD_Merkle_Tree(MT_N_LEVELS) {
 }
 
 template FD_Hasher(CONSTANTS_SIZE, N_TRACES) {
-	// TODO: USE https://snyk.io/advisor/npm-package/circomlib/functions/circomlib.mimcsponge.multiHash
 	var n_inps = CONSTANTS_SIZE + N_TRACES * 3 + 2;
+
 	signal input mind;
 	signal input constants[CONSTANTS_SIZE];
 	signal input trace_inp_sels[N_TRACES][2];
@@ -58,47 +59,25 @@ template FD_Hasher(CONSTANTS_SIZE, N_TRACES) {
 	signal input randomness;
 	signal output out;
 
-	// A hasher for each pair of nodes..... AGHHHHHHHHh
-	// TODO: WE CAN JUST USE PEDERSON INSTEAD!!!!!!
-	// Check out
-	// https://github.com/iden3/circomlibjs/blob/main/test/pedersenhash.js
+	// 91 mimc rounds as per Circomlibjs:
+	// See, https://github.com/iden3/circomlibjs/blob/main/src/mimc7.js
+	component mimc = MultiMiMC7(n_inps, 91);
+	mimc.k <== 0;
 
- 	// component hasher = Pedersen(CONSTANTS_SIZE + N_TRACES * 3 + 2);
-	component hashers[n_inps];
-
-	hashers[0] = Poseidon(2);
-	0 ==> hashers[0].inputs[0];
-	constants[0] ==> hashers[0].inputs[1];
-	for (var i = 1; i < CONSTANTS_SIZE; i++) {
-		hashers[i] = Poseidon(2);
-		hashers[i - 1].out ==> hashers[i].inputs[0];
-		constants[i] ==> hashers[i].inputs[1];
+	for (var i = 0; i < CONSTANTS_SIZE; i++) {
+		constants[i] ==> mimc.in[i];
 	}
 	for (var i = 0; i < N_TRACES * 3; i += 3) {
-		var curr = i + CONSTANTS_SIZE;
-		hashers[curr] = Poseidon(2);
-		hashers[curr - 1].out ==> hashers[curr].inputs[0];
-		trace_type_sel[i \ 3] ==> hashers[curr].inputs[1];
-
-		hashers[curr + 1] = Poseidon(2);
-		hashers[curr].out ==> hashers[curr + 1].inputs[0];
-		trace_inp_sels[i \ 3][0] ==> hashers[curr + 1].inputs[1];
-
-		hashers[curr + 2] = Poseidon(2);
-		hashers[curr + 1].out ==> hashers[curr + 2].inputs[0];
-		trace_inp_sels[i \ 3][1] ==> hashers[curr + 2].inputs[1];
+		trace_type_sel[i \ 3] ==> mimc.in[i + CONSTANTS_SIZE];
+		trace_inp_sels[i \ 3][0] ==> mimc.in[i + CONSTANTS_SIZE + 1];
+		trace_inp_sels[i \ 3][1] ==> mimc.in[i + CONSTANTS_SIZE + 2];
 	}
 	var mind_idx = CONSTANTS_SIZE + N_TRACES * 3;
-	hashers[mind_idx] = Poseidon(2);
-	hashers[mind_idx - 1].out ==> hashers[mind_idx].inputs[0];
-	mind ==> hashers[mind_idx].inputs[1];
-
+	mind ==> mimc.in[mind_idx];
 	var rand_idx = CONSTANTS_SIZE + N_TRACES * 3 + 1;
-	hashers[rand_idx] = Poseidon(2);
-	hashers[rand_idx - 1].out ==> hashers[rand_idx].inputs[0];
-	randomness ==> hashers[rand_idx].inputs[1];
+	randomness ==> mimc.in[rand_idx];
 
-	hashers[rand_idx].out ==> out;
+	mimc.out ==> out;
 }
 
 template FD_Wrapper(

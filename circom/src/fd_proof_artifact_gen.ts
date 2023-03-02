@@ -41,7 +41,7 @@ export const gen_fd_proof_inputs = async (
   max_trace: number
 ): Promise<FDProofInputs> => {
   const next_state = ts_dag_evaluator(dag, dict).valueOf();
-  const next_state_randomness = gen_circom_randomness();
+  const next_state_randomness = await gen_circom_randomness();
   const circom_dag = dag_to_circom(
     dag,
     dict,

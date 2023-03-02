@@ -36,25 +36,27 @@ describe('TypeScript merkle tree evaluation', () => {
   it(
     'should evaluate create a merkle tree based on a set of dags and check memberships. Expect proper evaluation',
     async () => {
-      const circom_dags = Array(N_MIND_STATES)
-        .fill(0)
-        .map((_, i) => {
-          const { dag, dict } = gen_random_dag(
-            N_MAX_CONSTANTS,
-            N_MAX_DICT,
-            N_MAX_TRACE
-          );
-          return {
-            fd: dag_to_circom(
-              dag,
-              dict,
+      const circom_dags = await Promise.all(
+        Array(N_MIND_STATES)
+          .fill(0)
+          .map(async (_, i) => {
+            const { dag, dict } = gen_random_dag(
               N_MAX_CONSTANTS,
               N_MAX_DICT,
               N_MAX_TRACE
-            ) as CircomCanonicalFD,
-            randomness: gen_circom_randomness(),
-          };
-        });
+            );
+            return {
+              fd: dag_to_circom(
+                dag,
+                dict,
+                N_MAX_CONSTANTS,
+                N_MAX_DICT,
+                N_MAX_TRACE
+              ) as CircomCanonicalFD,
+              randomness: await gen_circom_randomness(),
+            };
+          })
+      );
       const tree = await gen_merkle_tree(
         circom_dags,
         Math.log2(N_MIND_STATES) + 1
@@ -78,7 +80,7 @@ describe('TypeScript merkle tree evaluation', () => {
 
       // Test that the circuit rejects an invalid root
       const circ_input = {
-        elem: gen_circom_randomness(),
+        elem: await gen_circom_randomness(),
         root: tree[1],
         siblings: Array(3).fill(0n),
         sibling_positions: Array(3).fill(0),
