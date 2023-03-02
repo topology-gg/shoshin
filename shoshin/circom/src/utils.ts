@@ -1,6 +1,7 @@
 //@ts-ignore
 import { buildPoseidonReference } from 'circomlibjs';
-import { DagNode, IndexedNode, LeafNode, OpCodes } from './types';
+import { CIRCOM_PRIME, DagNode, IndexedNode, LeafNode, OpCodes } from './types';
+import crypto from 'crypto';
 
 export const deepcopy = (obj: any) => JSON.parse(JSON.stringify(obj));
 
@@ -53,8 +54,24 @@ export const pad_array_to_len = <T>(arr: T[], len: number, fill: T | T[]) =>
         .slice(0, len)
     : arr;
 
-// TODO:!!!!
-export const gen_circom_randomness = () => 0n;
+export const gen_circom_randomness = async () => {
+  while (true) {
+    // The CIRCOM Prime has at most 254 bits, so we can sample 32 bytes ==  256 bits
+    // We can then accept anything 2 * CIRCOM prime and modulo the prime.
+    // Otherwise, we reject. We thus avoid modulo bias as per
+    // https://research.kudelskisecurity.com/2020/07/28/the-definitive-guide-to-modulo-bias-and-how-to-avoid-it/
+    const rand_bytes: Buffer = await new Promise((res, rej) => {
+      crypto.randomBytes(32, (e, buff) => {
+        if (e) rej(e);
+        res(buff);
+      });
+    });
+    const samp = BigInt(`0x${rand_bytes.toString('hex')}`).valueOf();
+    if (samp < CIRCOM_PRIME * 2n && samp >= 0n) {
+      return samp % CIRCOM_PRIME;
+    }
+  }
+};
 
 let poseidon: any = null;
 export const poseidon_hash = async (elems: any[]): Promise<bigint> => {

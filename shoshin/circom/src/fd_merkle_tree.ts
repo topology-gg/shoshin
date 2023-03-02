@@ -1,5 +1,5 @@
 //@ts-ignore
-import { buildPoseidonReference } from 'circomlibjs';
+import { buildPoseidonReference, buildMimc7 } from 'circomlibjs';
 import {
   CircomCanonicalFD,
   MerkleProof,
@@ -8,11 +8,11 @@ import {
 } from './types';
 import { poseidon_hash } from './utils';
 
-// TODO: update
+let mimc7: any = null;
+
 const multi_hash = async (child_nodes: any[]): Promise<bigint> => {
-  const p = await buildPoseidonReference();
-  const reduced = child_nodes.reduce((prev, a) => p([prev, a]), 0n);
-  return BigInt(p.F.toString(reduced)).valueOf();
+  if (mimc7 === null) mimc7 = await buildMimc7();
+  return BigInt(mimc7.F.toString(mimc7.multiHash(child_nodes))).valueOf();
 };
 
 export const get_mind_fd_hash = async (
@@ -33,12 +33,6 @@ export const gen_merkle_tree = async (
   mind_to_fd: { fd: CircomCanonicalFD; randomness: bigint }[],
   n_levels: number
 ): Promise<MerkleTree> => {
-  // Big number hashes.
-  // const mind_fd_comms = await Promise.all(
-  //   mind_to_fd.map((o, mind) => {
-  //     return get_mind_fd_hash(o.fd, o.randomness, mind);
-  //   })
-  // );
   const mind_fd_comms = Array(mind_to_fd.length).fill(new Uint8Array());
   for (let i = 0; i < mind_to_fd.length; i++) {
     mind_fd_comms[i] = await get_mind_fd_hash(

@@ -113,7 +113,7 @@ describe('random DAG tests for only FD Emulator', () => {
   );
 });
 
-describe.only('random DAG tests for FD Emulator and Wrapper', () => {
+describe('random DAG tests for FD Emulator and Wrapper', () => {
   it(
     'Should test all FDs for a given mind',
     async () => {
@@ -133,9 +133,11 @@ describe.only('random DAG tests for FD Emulator and Wrapper', () => {
         dag_to_circom(f.dag, f.dict, MAX_CONSTANTS, MAX_DICT, MAX_TRACE)
       );
 
-      const fds_circom_with_randomness = fds_circom.map(fd => {
-        return { fd, randomness: gen_circom_randomness() };
-      });
+      const fds_circom_with_randomness = await Promise.all(
+        fds_circom.map(async fd => {
+          return { fd, randomness: await gen_circom_randomness() };
+        })
+      );
 
       const n_levels = Math.ceil(Math.log2(N_MIND_STATES)) + 1;
       const merkle_tree = await gen_merkle_tree(
@@ -146,7 +148,7 @@ describe.only('random DAG tests for FD Emulator and Wrapper', () => {
       for (let i = 0; i < N_MIND_STATES; i++) {
         const { dag, dict } = fds[i];
         const mind = i;
-        const mind_randomness = gen_circom_randomness();
+        const mind_randomness = await gen_circom_randomness();
         const fd_randomness = fds_circom_with_randomness[i].randomness;
         const circom_inp = await gen_fd_proof_inputs(
           merkle_tree,
