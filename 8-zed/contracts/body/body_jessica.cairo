@@ -403,12 +403,11 @@ func _body_jessica {range_check_ptr}(
 
         // continue the dashing if not interrupted by an attack
         if (counter == ns_jessica_body_state_duration.DASH_FORWARD - 1) {
-            if(enough_stamina == TRUE){
+            if(enough_stamina == TRUE and intent == ns_jessica_body_state_duration.DASH_FORWARD){
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
-            }else {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
-            }
+            } 
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
         } 
         // increment counter
         return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, counter + 1, integrity, stamina, dir, FALSE) );
@@ -438,12 +437,11 @@ func _body_jessica {range_check_ptr}(
 
         // continue the dashing if not interrupted by an attack
         if (counter == ns_jessica_body_state_duration.DASH_BACKWARD - 1) {
-            if(enough_stamina == TRUE) {
+            if(enough_stamina == TRUE and intent == ns_jessica_body_state_duration.DASH_BACKWARD) {
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
-            } else {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
-            }
+            } 
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
         }
         // increment counter
         return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, counter + 1, integrity, stamina, dir, FALSE) );
