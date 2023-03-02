@@ -7,13 +7,7 @@ import {
   leaf_index_of,
 } from './fd_merkle_tree';
 import { ts_dag_evaluator } from './ts_evaluator';
-import {
-  CircomCanonicalFD,
-  CircomCompilerOutInfo,
-  Dag,
-  MerkleProof,
-  MerkleTree,
-} from './types';
+import { CircomCompilerOutInfo, Dag, MerkleTree } from './types';
 import { gen_circom_randomness } from './utils';
 
 interface FDProofInputs {

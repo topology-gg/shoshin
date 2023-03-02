@@ -146,6 +146,9 @@ template FD_Wrapper(
 	signal input mt_siblings[MT_N_LEVELS];
 	signal input mt_sibling_positions[MT_N_LEVELS];
 
+	// 1 if all checks pass, 0 otherwise
+	signal output out;
+
 	// signal input out;
 	/***************** Setup the FD_Emulator *****************/
 	component fd_emulator = FD_Emulator(DICT_SIZE + CONSTANTS_SIZE, N_TRACES, WORD_SIZE);
@@ -202,6 +205,10 @@ template FD_Wrapper(
 
 	// Assert that all three conditions are met
 	3 === comm_next_state.out + comm_current_mind.out + mt_verif.out;
+
+	component is_out_3 =  IsZero()
+	is_out_3.in <== comm_next_state.out + comm_current_mind.out + mt_verif.out - 3;
+	is_out_3.out ==> out;
 }
 
 
