@@ -179,6 +179,8 @@ export const OPERATOR_VALUE = {
     'FUNC': 15,
 }
 
+export const VALUE_OPERATOR = Object.fromEntries(Object.entries(OPERATOR_VALUE).map(a => a.reverse()))
+
 export const MAX_COMBO_SIZE = 10;
 
 export const INITIAL_MENTAL_STATES: MentalState[] = [
@@ -356,6 +358,11 @@ export const INITIAL_FUNCTIONS: Function[] = [
             { value: Perceptible.SelfBodyCounter, type: ElementType.Perceptible },
             { value: Operator.Lte, type: ElementType.Operator },
             { value: 4, type: ElementType.Constant },
+        ]
+    },
+    {
+        elements: [
+            { value: 1, type: ElementType.Constant },
         ]
     },
     {

@@ -70,7 +70,7 @@ export function unflattenLeaf(n: SimpleLeaf[]): Leaf {
     return {value: leaf.value, left: unflattenLeaf(n.slice(leaf.left)), right: unflattenLeaf(n.slice(leaf.right))}
 }
 
-// Unwraps the leaf representation of a funtion into an array of function elements
+// Unwraps the leaf representation of a function into an array of function elements
 export function unwrapLeafToFunction(f: Leaf): FunctionElement[] {
     if(f.left == -1 && f.right == -1) {
         return [{value: f.value, type: ElementType.Constant}]
@@ -95,6 +95,9 @@ function isPerceptible(value: number) {
     return value == OPERATOR_VALUE['DICT']
 }
 
+// Unwraps the leaf representation of a mental state state machine into an array of nodes
+// Leaf will always be in the form FUNCTION_EVALUATION * STATE_LEFT + ((1 - FUNCTION_MEM) * RECURSIVE_CALL()) 
+// (see parseTreeInner in MentalState.ts)
 export function unwrapLeafToTree(f: Leaf, len: number): Node[] {
     if(f.left == -1 && f.right == -1) {
         return [{id: 'MS ' + f.value, isChild: true, branch: Direction.Right}]

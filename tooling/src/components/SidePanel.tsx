@@ -78,6 +78,7 @@ const SidePanel = ({
                     setMentalStates={setMentalStates}
                     setCombos={setCombos}
                     setTrees={setTrees}
+                    functions={functions}
                     setFunctions={setFunctions}
                 />;
             }

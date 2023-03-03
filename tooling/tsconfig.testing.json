@@ -2,7 +2,8 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es6",
-        "jsx": "preserve"
+        "jsx": "preserve",
+        "esModuleInterop": true,
     },
     "include": ["src/test/**/*.test.ts"],
     "exclude": [
