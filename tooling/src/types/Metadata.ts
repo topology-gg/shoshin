@@ -49,9 +49,9 @@ export function splitAgents(a: Metadata): [Agent, Agent] {
         return i%2 != 0
     })
     smOffset0.forEach((o) => {
-        let mentalState = a.state_machine_0.slice(start, o)
+        let mentalState = a.state_machine_0.slice(start, start + o)
         sm0 = sm0.concat(unflattenLeaf(mentalState))
-        start = o
+        start += o 
     })
     let states0 = sm0.map((_, i) => {
         return "MS " + i
@@ -62,9 +62,9 @@ export function splitAgents(a: Metadata): [Agent, Agent] {
         return i%2 != 0
     })
     smOffset1.forEach((o) => {
-        let mentalState = a.state_machine_1.slice(start, o)
+        let mentalState = a.state_machine_1.slice(start, start + o)
         sm1 = sm1.concat(unflattenLeaf(mentalState))
-        start = o
+        start += o
     })
     let states1 = sm1.map((_, i) => {
         return "MS " + i
@@ -76,17 +76,17 @@ export function splitAgents(a: Metadata): [Agent, Agent] {
     let gp0: Leaf[] = []
     let gpOffset0 = a.functions_offset_0
     gpOffset0.forEach((o) => {
-        let func = a.functions_0.slice(start, o)
+        let func = a.functions_0.slice(start, start + o)
         gp0 = gp0.concat(unflattenLeaf(func))
-        start = o
+        start += o
     })
     start = 0
     let gp1: Leaf[] = []
     let gpOffset1 = a.functions_offset_1
     gpOffset1.forEach((o) => {
-        let func = a.functions_1.slice(start, o)
+        let func = a.functions_1.slice(start, start + o)
         gp1 = gp1.concat(unflattenLeaf(func))
-        start = o
+        start += o
     })
 
     return [
