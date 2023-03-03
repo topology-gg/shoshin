@@ -3,6 +3,7 @@ import Leaf, { flattenLeaf } from "./Leaf"
 import { MentalState, parseTree } from "./MentalState"
 import { Tree } from "./Tree"
 import { Function } from "./Function"
+import { PRIME } from "../constants/constants"
 
 export default interface Agent {
     states?: string[],
@@ -85,13 +86,77 @@ export function flattenAgent(agent: Agent) {
     })
 
     return [
-        new Int32Array(combosOffset), 
-        new Int32Array(combos), 
-        new Int32Array(mentalStatesOffset), 
-        new Int32Array(mentalStates), 
-        new Int32Array(functionsOffset), 
-        new Int32Array(functions),
+        combosOffset, 
+        combos,
+        mentalStatesOffset, 
+        mentalStates, 
+        functionsOffset, 
+        functions,
     ]
+}
+
+// Convert the two agents into an array of calldata
+export function agentsToArray(agent:Agent, opponent: Agent): number[] {
+    // flatten the user input agent
+    let [
+        combosOffset,
+        combos,
+        mentalStatesOffset,
+        mentalStates,
+        functionsOffset,
+        functions,
+    ] = flattenAgent(agent);
+    // flatten the dummy agent
+    let [
+        opponentCombosOffset,
+        opponentCombos,
+        opponentMentalStatesOffset,
+        opponentMentalStates,
+        opponentFunctionsOffset,
+        opponentFunctions,
+    ] = flattenAgent(opponent);
+
+    return [
+        combosOffset.length,
+        ...combosOffset,
+        combos.length,
+        ...combos,
+        opponentCombosOffset.length,
+        ...opponentCombosOffset,
+        opponentCombos.length,
+        ...opponentCombos,
+        mentalStatesOffset.length,
+        ...mentalStatesOffset,
+        mentalStates.length / 3,
+        ...mentalStates,
+        agent.initialState,
+        opponentMentalStatesOffset.length,
+        ...opponentMentalStatesOffset,
+        opponentMentalStates.length / 3,
+        ...opponentMentalStates,
+        opponent.initialState,
+        functionsOffset.length,
+        ...functionsOffset,
+        functions.length / 3,
+        ...functions,
+        opponentFunctionsOffset.length,
+        ...opponentFunctionsOffset,
+        opponentFunctions.length / 3,
+        ...opponentFunctions,
+        agent.actions.length,
+        ...agent.actions,
+        opponent.actions.length,
+        ...opponent.actions,
+        agent.character,
+        opponent.character,
+        ];
+}
+
+export function agentsToCalldata(agent: Agent, opponent: Agent): string[] {
+    let args = agentsToArray(agent, opponent)
+    return args.map((a) => {
+        return '' + (a < 0? (PRIME + BigInt(a)).toString(): a)
+    })
 }
 
 export function equals(agent_1: Agent, agent_2: Agent) {

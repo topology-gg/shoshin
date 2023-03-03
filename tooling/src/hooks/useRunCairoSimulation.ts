@@ -1,7 +1,7 @@
 import { useCallback, useContext, useState } from "react";
 import { WASMContext } from "../context/WASM";
 import cairoOutputToFrameScene from "../helpers/cairoOutputToFrameScene";
-import Agent, { flattenAgent } from "../types/Agent";
+import Agent, { agentsToArray } from "../types/Agent";
 import { FrameScene } from "../types/Frame";
 
 /**
@@ -22,60 +22,8 @@ const useRunCairoSimulation = (
             console.warn("WASM not initialized");
             return;
         }
-        // flatten the user input agent
-        let [
-            combosOffset,
-            combos,
-            mentalStatesOffset,
-            mentalStates,
-            functionsOffset,
-            functions,
-        ] = flattenAgent(agent);
-        // flatten the dummy agent
-        let [
-            opponentCombosOffset,
-            opponentCombos,
-            opponentMentalStatesOffset,
-            opponentMentalStates,
-            opponentFunctionsOffset,
-            opponentFunctions,
-        ] = flattenAgent(opponent);
-
         try {
-            let shoshinInput = new Int32Array([
-                combosOffset.length,
-                ...combosOffset,
-                combos.length,
-                ...combos,
-                opponentCombosOffset.length,
-                ...opponentCombosOffset,
-                opponentCombos.length,
-                ...opponentCombos,
-                mentalStatesOffset.length,
-                ...mentalStatesOffset,
-                mentalStates.length / 3,
-                ...mentalStates,
-                agent.initialState,
-                opponentMentalStatesOffset.length,
-                ...opponentMentalStatesOffset,
-                opponentMentalStates.length / 3,
-                ...opponentMentalStates,
-                0,
-                functionsOffset.length,
-                ...functionsOffset,
-                functions.length / 3,
-                ...functions,
-                opponentFunctionsOffset.length,
-                ...opponentFunctionsOffset,
-                opponentFunctions.length / 3,
-                ...opponentFunctions,
-                agent.actions.length,
-                ...agent.actions,
-                opponent.actions.length,
-                ...opponent.actions,
-                agent.character,
-                opponent.character,
-            ]);
+            let shoshinInput = new Int32Array(agentsToArray(agent, opponent)) 
             let output = ctx.wasm.runCairoProgram(shoshinInput);
             setOutput(cairoOutputToFrameScene(output));
         } catch (e) {

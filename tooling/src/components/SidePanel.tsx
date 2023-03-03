@@ -14,7 +14,7 @@ const SidePanel = ({
     character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor, 
     trees, setTrees, handleUpdateTree, functions, setFunctions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction, 
     functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText, 
-    handleRemoveElementGeneralFunction, runCairoSimulationWarning, adversary, setAdversary, onComboChange, fighterSelection, setFighterSelection, 
+    handleRemoveElementGeneralFunction, runCairoSimulationWarning, adversary, setAdversary, setOpponent, onComboChange, fighterSelection, setFighterSelection, 
     agents
 }) => {
     const content = (workingTab: number) => {
@@ -67,6 +67,7 @@ const SidePanel = ({
                     warning={runCairoSimulationWarning}
                     adversary={adversary}
                     setAdversary={setAdversary}
+                    setOpponent={setOpponent}
                     onComboChange={onComboChange}
                 />;
             }

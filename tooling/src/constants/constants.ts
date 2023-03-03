@@ -6,6 +6,11 @@ import { Direction, Tree } from "../types/Tree"
 // Mongo db name and collection
 export const DB_NAME = 'shoshin_indexer_0'
 export const COLLECTION_NAME = 'shoshin-dogfooding-metadata'
+export const PRIME = BigInt(2**251) + BigInt(17) * BigInt(2**192) + BigInt(1)
+
+// Contract entrypoint and address
+export const CONTRACT_ADDRESS = "0x055e96c07b3d7fc78c0ec0ae83bb9d5208e339895c5d348b781a28a3c0353149"
+export const ENTRYPOINT = "loop"
 
 export const SIMULATOR_W = 1000
 export const SIMULATOR_H = 300

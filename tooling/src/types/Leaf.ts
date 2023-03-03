@@ -17,16 +17,19 @@ export interface SimpleLeaf {
 // flatten a leaf by recursing all the values 
 // if is a unique operator type (see isUniqueOperator) then left value is -1
 export function flattenLeaf(n: Leaf) {
-    if (typeof n.left === 'number' && typeof n.right == 'number') {
+    if (!n) {
+        return
+    }
+    if (typeof n?.left === 'number' && typeof n?.right == 'number') {
         return isUniqueOperator(n.value) ? [n.value, -1, 1, n.right, -1, -1]: [n.value, 1, 2, n.left, -1, -1, n.right, -1, -1]
     }
-    if (typeof n.left === 'number') {
+    if (typeof n?.left === 'number') {
         return isUniqueOperator(n.value)? [n.value, -1, 1, ...flattenLeaf(n.right as Leaf)]: [n.value, 1, 2, n.left, -1, -1, ...flattenLeaf(n.right as Leaf)]
     }
-    if (typeof n.right === 'number') {
+    if (typeof n?.right === 'number') {
         return [n.value, 1, brancheSize(n.left) + 1, ...flattenLeaf(n.left), n.right, -1, -1]
     }
-    return [n.value, 1, brancheSize(n.left) + 1, ...flattenLeaf(n.left), ...flattenLeaf(n.right)]
+    return [n?.value, 1, brancheSize(n?.left) + 1, ...flattenLeaf(n?.left), ...flattenLeaf(n?.right)]
 }
 
 function isUniqueOperator(x: number) {
