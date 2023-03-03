@@ -1,7 +1,8 @@
 import "mocha";
 import { expect } from "chai";
-import Leaf, { SimpleLeaf, flattenLeaf, unflattenLeaf, unwrapLeaf } from "../types/Leaf";
+import Leaf, { SimpleLeaf, flattenLeaf, unflattenLeaf, unwrapLeafToFunction, unwrapLeafToTree } from "../types/Leaf";
 import { ElementType, FunctionElement, functionToStr, Operator, Perceptible } from "../types/Function";
+import { Direction } from "../types/Tree";
 
 
 describe("flatten", () => {
@@ -53,7 +54,7 @@ describe("unflatten", () => {
 
 describe("unwrap", () => {
     describe("leaf", () => {
-        it("should unwrap the leaf ", () => {
+        it("should unwrap the leaf into the expected function", () => {
             // Given
             let leaf: Leaf = {
                 value: 1, 
@@ -76,7 +77,7 @@ describe("unwrap", () => {
                     },
                 }}
             // When
-            let got = unwrapLeaf(leaf).slice(1, -1)
+            let got = unwrapLeafToFunction(leaf).slice(1, -1)
             // Then
             let expected: FunctionElement[] = [
                 { value: Operator.OpenParenthesis, type: ElementType.Operator },
@@ -101,5 +102,47 @@ describe("unwrap", () => {
             ]
             expect(got).deep.equal(expected)
         });
+        it("should unwrap the leaf into the expected tree", () => {
+            // Given
+            let leaf: Leaf = {
+                value: 1,
+                left: {
+                    value: 3,
+                    left: {
+                        value: 15,
+                        left: -1,
+                        right: {value: 0, left: -1, right: -1},
+                    },
+                    right: {value: 0, left: -1, right: -1},
+                },
+                right: {
+                    value: 3,
+                    left: {
+                        value: 2,
+                        left: 1,
+                        right: {
+                            value: 13, 
+                            left: -1, 
+                            right: {value: 0, left: -1, right: -1},
+                        }
+                    },
+                    right: {
+                        value: 1,
+                        left: -1,
+                        right: -1,
+                    }
+                }
+            }
+            // When
+            let got = unwrapLeafToTree(leaf, 9)
+            // Then
+            let expected = [
+                    { id: 'if F9', isChild: false },
+                    { id: 'MS 0', isChild: true, branch: Direction.Left },
+                    { id: 'MS 1', isChild: true, branch: Direction.Right },
+            ]
+            
+            expect(got).deep.equal(expected)
+        }) 
     });
 });

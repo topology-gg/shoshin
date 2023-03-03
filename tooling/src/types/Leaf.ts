@@ -1,5 +1,6 @@
 import { OPERATOR_VALUE, VALUE_OPERATOR } from "../constants/constants"
-import { ElementType, FunctionElement, Operator, Perceptible } from "./Function"
+import { ElementType, FunctionElement, Operator } from "./Function"
+import { Direction, Node } from "./Tree"
 
 export default interface Leaf {
     value: number,
@@ -70,26 +71,53 @@ export function unflattenLeaf(n: SimpleLeaf[]): Leaf {
 }
 
 // Unwraps the leaf representation of a funtion into an array of function elements
-export function unwrapLeaf(f: Leaf): FunctionElement[] {
+export function unwrapLeafToFunction(f: Leaf): FunctionElement[] {
     if(f.left == -1 && f.right == -1) {
         return [{value: f.value, type: ElementType.Constant}]
     }
     if (f.left == -1) {
         // if perceptible, f.right.value contains the perceptible value
         // else convert value to operator and keep unwrapping
-        return isPerceptible(f.value)? [{value: (f.right as Leaf).value, type: ElementType.Perceptible}]: [{value: VALUE_OPERATOR[f.value], type: ElementType.Operator}, ...unwrapLeaf(f.right as Leaf)]
+        return isPerceptible(f.value)? [{value: (f.right as Leaf).value, type: ElementType.Perceptible}]: [{value: VALUE_OPERATOR[f.value], type: ElementType.Operator}, ...unwrapLeafToFunction(f.right as Leaf)]
     }
     // if f.left != -1 and f.right != -1, surround with parenthesis
     // and keep unwrapping
     return [
         {value: Operator.OpenParenthesis, type: ElementType.Operator},
-        ...unwrapLeaf(f.left as Leaf),
+        ...unwrapLeafToFunction(f.left as Leaf),
         {value: VALUE_OPERATOR[f.value], type: ElementType.Operator},
-        ...unwrapLeaf(f.right as Leaf),
+        ...unwrapLeafToFunction(f.right as Leaf),
         {value: Operator.CloseParenthesis, type: ElementType.Operator},
     ]
 }
 
 function isPerceptible(value: number) {
     return value == OPERATOR_VALUE['DICT']
+}
+
+export function unwrapLeafToTree(f: Leaf, len: number): Node[] {
+    if(f.left == -1 && f.right == -1) {
+        return [{id: 'MS ' + f.value, isChild: true, branch: Direction.Right}]
+    }
+    let func = getFunction(f) ?? 0
+    let recurse = getRecurse(f) ?? {value: 0, left: -1, right: -1}
+    let ms = getMS(f) ?? 0
+
+    return [
+        {id: 'if F' + (func + len), isChild: false}, 
+        {id: 'MS ' + ms, isChild: true, branch: Direction.Left}, 
+        ...unwrapLeafToTree(recurse, len)
+    ]
+}
+
+function getFunction(l: Leaf): number {
+    return (((l.left as Leaf)?.left as Leaf)?.right as Leaf)?.value
+}
+
+function getRecurse(l: Leaf): Leaf {
+    return (l.right as Leaf).right as Leaf
+}
+
+function getMS(l: Leaf): number {
+    return ((l.left as Leaf).right as Leaf).value 
 }
