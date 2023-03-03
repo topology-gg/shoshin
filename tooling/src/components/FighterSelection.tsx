@@ -1,5 +1,6 @@
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { Button } from "@mui/material";
+import { Character } from "../constants/constants";
 import Agent from "../types/Agent";
 import { Function } from "../types/Function";
 import { unwrapLeafToFunction, unwrapLeafToTree } from "../types/Leaf";
@@ -8,7 +9,7 @@ import { Direction, Tree } from "../types/Tree";
 
 
 export const FighterSelection = ({
-  fighterSelection, setFighterSelection, agents, setMentalStates, setCombos, setTrees, functions, setFunctions
+  fighterSelection, setFighterSelection, setOpponent, agents, setMentalStates, setCombos, setTrees, functions, setFunctions
 }) => {
   const handleClose = (a: string) => {
     setFighterSelection(a)
@@ -39,6 +40,11 @@ export const FighterSelection = ({
                 return {nodes: t.length == 1? [{id: 'if F9', isChild: false}, {id: t[0].id, isChild: true, branch: Direction.Left}, ...t]: t}
             })
             setTrees(trees)
+            break
+        }
+        case 'opponent': {
+          setOpponent(agents[i])
+          break
         }
     }
   }
@@ -54,8 +60,8 @@ export const FighterSelection = ({
         }}
     >
       <ToggleButtonGroup value={fighterSelection} exclusive onChange={(e, value) => handleClose(value)}>
-        <ToggleButton value="adversary">Adversary</ToggleButton>
-        <ToggleButton value="self">Self</ToggleButton>
+        <ToggleButton value="opponent">Set Opponent</ToggleButton>
+        <ToggleButton value="self">Set Self</ToggleButton>
       </ToggleButtonGroup>
 
         <div
@@ -68,8 +74,8 @@ export const FighterSelection = ({
             }}
         >   
             {
-                agents?.map((_, i) => {
-                    return <Button key={`agent-button-${i}`} variant="outlined" sx={{marginLeft: '0.5rem'}} onClick={() => handleClickAgent(i)}>Agent{i}</Button>
+                agents?.map((a: Agent, i:number) => {
+                    return <Button key={`agent-button-${i}`} variant="outlined" sx={{marginLeft: '0.5rem'}} onClick={() => handleClickAgent(i)}>{Character[a.character]} Agent{i}</Button>
                 })
             }
         </div>

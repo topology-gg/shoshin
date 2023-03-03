@@ -20,6 +20,9 @@ export function flattenLeaf(n: Leaf) {
     if (!n) {
         return
     }
+    if (n?.left == -1 && n?.right == -1) {
+        return [n.value, -1, -1]
+    }
     if (typeof n?.left === 'number' && typeof n?.right == 'number') {
         return isUniqueOperator(n.value) ? [n.value, -1, 1, n.right, -1, -1]: [n.value, 1, 2, n.left, -1, -1, n.right, -1, -1]
     }

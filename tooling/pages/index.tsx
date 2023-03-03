@@ -77,7 +77,7 @@ export default function Home() {
     const [character, setCharacter] = useState<Character>(Character.Jessica)
     const [adversary, setAdversary] = useState<string>('defensive')
     const [opponent, setOpponent] = useState<Agent>(DEFENSIVE_AGENT)
-    const [fighterSelection, setFighterSelection] = useState<string>('adversary')
+    const [fighterSelection, setFighterSelection] = useState<string>('opponent')
     const [adversaryCombo, setAdversaryCombo] = useState<number[]>([])
 
     // Warnings
@@ -102,7 +102,7 @@ export default function Home() {
     useEffect(() => {
         if (output) {
             setTestJson((_) => {
-                return { agent_0: { frames: output.agent_0, type: agent.character }, agent_1: { frames: output.agent_1, type: 1 } }
+                return { agent_0: { frames: output.agent_0, type: agent.character }, agent_1: { frames: output.agent_1, type: opponent.character } }
             })
         }
     }, [output])
@@ -297,6 +297,7 @@ export default function Home() {
         setTreeEditor(index)
     }
 
+    // TODO: comment
     function handleUpdateTree(index: number, input: string) {
         let new_tree = {nodes: []}
         let regex_branches = /if *([a-zA-Z0-9_ ]*)\? *([a-zA-Z0-9_ ]*) *\:/g
