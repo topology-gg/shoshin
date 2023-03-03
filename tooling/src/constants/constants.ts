@@ -368,6 +368,8 @@ export const INITIAL_FUNCTIONS: Function[] = [
     {
         elements: [
             { value: 1, type: ElementType.Constant },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 1, type: ElementType.Constant },
         ]
     },
     {

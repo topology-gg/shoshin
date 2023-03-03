@@ -9,11 +9,12 @@ import { Direction, Tree } from "../types/Tree";
 
 
 export const FighterSelection = ({
-  fighterSelection, setFighterSelection, setOpponent, agents, setMentalStates, setCombos, setTrees, functions, setFunctions
+  fighterSelection, setFighterSelection, setOpponent, agents, setMentalStates, setCombos, setTrees, functions, setFunctions, setCharacter
 }) => {
   const handleClose = (a: string) => {
     setFighterSelection(a)
   }
+  const characters = Object.keys(Character)
 
   const handleClickAgent = (i: number) => {
     // reconstruct mentalStates, Combos, Trees and Functions from the agent
@@ -40,6 +41,8 @@ export const FighterSelection = ({
                 return {nodes: t.length == 1? [{id: 'if F9', isChild: false}, {id: t[0].id, isChild: true, branch: Direction.Left}, ...t]: t}
             })
             setTrees(trees)
+            // set the character
+            setCharacter(characters[agent.character])
             break
         }
         case 'opponent': {
@@ -75,7 +78,7 @@ export const FighterSelection = ({
         >   
             {
                 agents?.map((a: Agent, i:number) => {
-                    return <Button key={`agent-button-${i}`} variant="outlined" sx={{marginLeft: '0.5rem'}} onClick={() => handleClickAgent(i)}>{Character[a.character]} Agent{i}</Button>
+                    return <Button key={`agent-button-${i}`} variant="outlined" sx={{marginLeft: '0.5rem'}} onClick={() => handleClickAgent(i)}>{characters[a.character]} Agent {i}</Button>
                 })
             }
         </div>

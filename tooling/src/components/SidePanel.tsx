@@ -82,6 +82,7 @@ const SidePanel = ({
                     setTrees={setTrees}
                     functions={functions}
                     setFunctions={setFunctions}
+                    setCharacter={setCharacter}
                 />;
             }
         }
