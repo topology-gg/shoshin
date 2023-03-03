@@ -1,3 +1,6 @@
+import { OPERATOR_VALUE, VALUE_OPERATOR } from "../constants/constants"
+import { ElementType, FunctionElement, Operator, Perceptible } from "./Function"
+
 export default interface Leaf {
     value: number,
     left: Leaf|number,
@@ -64,4 +67,29 @@ export function unflattenLeaf(n: SimpleLeaf[]): Leaf {
         return {value: leaf.value, left: leaf.left, right: unflattenLeaf(n.slice(leaf.right))}
     }
     return {value: leaf.value, left: unflattenLeaf(n.slice(leaf.left)), right: unflattenLeaf(n.slice(leaf.right))}
+}
+
+// Unwraps the leaf representation of a funtion into an array of function elements
+export function unwrapLeaf(f: Leaf): FunctionElement[] {
+    if(f.left == -1 && f.right == -1) {
+        return [{value: f.value, type: ElementType.Constant}]
+    }
+    if (f.left == -1) {
+        // if perceptible, f.right.value contains the perceptible value
+        // else convert value to operator and keep unwrapping
+        return isPerceptible(f.value)? [{value: (f.right as Leaf).value, type: ElementType.Perceptible}]: [{value: VALUE_OPERATOR[f.value], type: ElementType.Operator}, ...unwrapLeaf(f.right as Leaf)]
+    }
+    // if f.left != -1 and f.right != -1, surround with parenthesis
+    // and keep unwrapping
+    return [
+        {value: Operator.OpenParenthesis, type: ElementType.Operator},
+        ...unwrapLeaf(f.left as Leaf),
+        {value: VALUE_OPERATOR[f.value], type: ElementType.Operator},
+        ...unwrapLeaf(f.right as Leaf),
+        {value: Operator.CloseParenthesis, type: ElementType.Operator},
+    ]
+}
+
+function isPerceptible(value: number) {
+    return value == OPERATOR_VALUE['DICT']
 }
