@@ -32,6 +32,19 @@ input {
     cursor: pointer;
 }
 
+#submit-button{
+  /* background: #FFFFFF url('../public/rsz_1starknet_icon.png') no-repeat; */
+  background: #FFFFFF;
+  /* background-position: 85% 50%; */
+  border: 1px solid #333333;
+  border-radius: 3px;
+}
+#submit-button:hover{
+  /* background-color: #FFFE71; */
+  background-color: #fedfb0;
+  cursor: pointer;
+}
+
 .grid {
     display: flex;
     font-size: 0.2em;

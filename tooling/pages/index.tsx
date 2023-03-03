@@ -10,42 +10,43 @@ import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, verifyValidFunction } from '../src/types/Function'
 import { MentalState } from '../src/types/MentalState';
-import { Character, INITIAL_COMBOS, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
-import Agent, { buildAgent } from '../src/types/Agent';
+import { Character, CONTRACT_ADDRESS, DEFENSIVE_AGENT, ENTRYPOINT, INITIAL_COMBOS, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
+import Agent, { agentsToCalldata, buildAgent } from '../src/types/Agent';
 import ImagePreloader from '../src/components/ImagePreloader';
 import StatusBarPanel from '../src/components/StatusBar';
 import FrameInspector from '../src/components/FrameInspector';
 import useRunCairoSimulation from '../src/hooks/useRunCairoSimulation';
 import { useAgents } from '../lib/api'
 import { Metadata, splitAgents } from '../src/types/Metadata';
+import { useAccount, useConnectors, useStarknetExecute } from '@starknet-react/core';
 
 const theme = createTheme({
     typography: {
-        fontFamily: "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;",
+        fontFamily: 'Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;',
         fontSize: 12,
     },
     palette: {
         primary: {
-            main: "#000000",
+            main: '#000000',
         },
         secondary: {
-            main: "#2d4249",
+            main: '#2d4249',
         },
         info: {
-            main: "#848f98",
+            main: '#848f98',
         },
     },
     components: {
         MuiButton: {
             styleOverrides: {
                 outlinedPrimary: {
-                    color: "black",
-                    backgroundColor: "white",
-                    ":hover": {
+                    color: 'black',
+                    backgroundColor: 'white',
+                    ':hover': {
                       backgroundColor: '#2EE59D',
                     //   boxShadow: '0px 15px 20px rgba(46, 229, 157, 0.4)',
                       color: '#fff',
-                      transition: "background 0.2s, color 0.2s",
+                      transition: 'background 0.2s, color 0.2s',
                     }
                 }
             }
@@ -75,6 +76,7 @@ export default function Home() {
     const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
     const [character, setCharacter] = useState<Character>(Character.Jessica)
     const [adversary, setAdversary] = useState<string>('defensive')
+    const [opponent, setOpponent] = useState<Agent>(DEFENSIVE_AGENT)
     const [fighterSelection, setFighterSelection] = useState<string>('adversary')
     const [adversaryCombo, setAdversaryCombo] = useState<number[]>([])
 
@@ -95,7 +97,7 @@ export default function Home() {
         return handleBuildAgent()
     }, [character, mentalStates, combos, trees, functions, initialMentalState])
 
-    const { runCairoSimulation, output, error: simulationError, wasmReady } = useRunCairoSimulation(agent, adversary, adversaryCombo)
+    const { runCairoSimulation, output, error: simulationError, wasmReady } = useRunCairoSimulation(agent, opponent, adversaryCombo)
 
     useEffect(() => {
         if (output) {
@@ -112,31 +114,68 @@ export default function Home() {
         setTimeout(() => setCairoSimulationWarning(''), 5000)
     }, [simulationError])
 
+    // Starknet states
+    const { account, address, status } = useAccount();
+    const [hash, setHash] = useState<string>();
+    const callData = useMemo(() => {
+        let args = agentsToCalldata(agent, opponent)
+        // add the frame duration
+        args = ["120"].concat(args)
+        const tx = {
+            contractAddress: CONTRACT_ADDRESS,
+            entrypoint: ENTRYPOINT,
+            calldata: args,
+        };
+        return [tx]
+    }, [agent, opponent])
+    const { execute } = useStarknetExecute({ calls: callData });
+    const { available, connect } = useConnectors()
+    const [connectors, setConnectors] = useState([])
+    // Connectors are not available server-side therefore we
+    // set the state in a useEffect hook
+    useEffect(() => {
+        if (available) setConnectors(available)
+    }, [available])
+
+    useEffect(() => {
+        if (hash) {
+            account
+                .waitForTransaction(hash)
+                .then(() => console.log("Success!"))
+                .catch((err) => {
+                    console.log("Error! Please try again.");
+                    console.error(err);
+                })
+        }
+    }, [hash]);
+
+
+
     // Decode from React states
     if (testJson !== null) { console.log('testJson:',testJson); }
     const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length
 
     function handleMidScreenControlClick (operation: string) {
 
-        if (operation == "NextFrame" && animationState != "Run") {
+        if (operation == 'NextFrame' && animationState != 'Run') {
             animationStepForward ()
 
-        } else if (operation == "PrevFrame" && animationState != "Run") {
+        } else if (operation == 'PrevFrame' && animationState != 'Run') {
             animationStepBackward ()
         }
 
-        else if (operation == "ToggleRun") {
+        else if (operation == 'ToggleRun') {
 
             // If in Run => go to Pause
-            if (animationState == "Run") {
+            if (animationState == 'Run') {
                 clearInterval(loop); // kill the timer
-                setAnimationState("Pause");
+                setAnimationState('Pause');
             }
 
             // If in Pause => resume Run without simulation
-            else if (animationState == "Pause") {
+            else if (animationState == 'Pause') {
                 // Begin animation
-                setAnimationState("Run");
+                setAnimationState('Run');
                 setLoop(
                     setInterval(() => {
                         animationStepForward();
@@ -145,12 +184,12 @@ export default function Home() {
             }
 
             // If in Stop => perform simulation then go to Run
-            else if (animationState == "Stop" && runnable) {
+            else if (animationState == 'Stop' && runnable) {
 
                 runCairoSimulation()
 
                 // Begin animation
-                setAnimationState("Run");
+                setAnimationState('Run');
 
                 setLoop(
                     setInterval(() => {
@@ -163,7 +202,7 @@ export default function Home() {
 
             // Stop
             clearInterval(loop); // kill the timer
-            setAnimationState("Stop");
+            setAnimationState('Stop');
             setAnimationFrame((_) => 0);
 
         }
@@ -193,6 +232,27 @@ export default function Home() {
         const preloadedJson = JSON.parse(testJson)
         console.log ('preloaded json:', preloadedJson)
         setTestJson ((_) => preloadedJson);
+    }
+
+    async function handleClickSubmit() {
+        if (!account) {
+            console.log('> wallet not connected yet');
+            connect(connectors[0])
+        }
+
+        console.log('> connected address:', String(address));
+
+        // submit tx
+        console.log('> submitting args to loop() on StarkNet:', callData);
+        try {
+            setHash('');
+
+            const response = await execute();
+            setHash(response.transaction_hash);
+        } catch (err) {
+            console.error(err);
+        }
+        return;
     }
 
     function handleSetMentalStateAction(index: number, action: number) {
@@ -397,8 +457,8 @@ export default function Home() {
         <div className={styles.container}>
                 <Head>
                     <title>Shoshin Tooling</title>
-                    <meta name="shoshin-tooling" content="Generated by create next app" />
-                    <link rel="icon" href="/favicon.ico" />
+                    <meta name='shoshin-tooling' content='Generated by create next app' />
+                    <link rel='icon' href='/favicon.ico' />
                 </Head>
 
                 <ThemeProvider theme={theme}>
@@ -408,11 +468,11 @@ export default function Home() {
                             <div className={styles.main} style={{display:'flex', flexDirection:'column'}}>
                                 <ImagePreloader
                                     onComplete={() => {
-                                        console.log("completed images");
+                                        console.log('completed images');
                                     }}
                                 />
                                 {
-                                    !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant="outlined" disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
+                                    !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant='outlined' disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
                                     <div style={{display:'flex', flexDirection:'column'}}>
                                         <Simulator
                                             characterType0={testJson.agent_0.type}
@@ -435,7 +495,7 @@ export default function Home() {
                                             handleClick = {handleMidScreenControlClick}
                                             handleSlideChange = {
                                                 evt => {
-                                                    if (animationState == "Run") return;
+                                                    if (animationState == 'Run') return;
                                                     const slide_val: number = parseInt(evt.target.value);
                                                     setAnimationFrame(slide_val);
                                                 }
@@ -444,6 +504,7 @@ export default function Home() {
                                             handleChangeDebugInfo = {() => setCheckedShowDebugInfo(
                                                 (_) => !checkedShowDebugInfo
                                             )}
+                                            handleClickSubmit={handleClickSubmit}
                                         />
                                         <FrameInspector
                                             characterLeftType={testJson.agent_0.type}
@@ -500,6 +561,7 @@ export default function Home() {
                                 onComboChange={setAdversaryCombo}
                                 fighterSelection={fighterSelection}
                                 setFighterSelection={setFighterSelection}
+                                setOpponent={setOpponent}
                                 agents={agents}
                             />
                         </Grid>
