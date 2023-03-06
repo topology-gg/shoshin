@@ -160,23 +160,30 @@ function parseInner(f: FunctionElement[]): Leaf {
     }
     // Check if operator is parenthesis
     if (elem.type === ElementType.Operator && elem.value === Operator.OpenParenthesis) {
+        // get the index of operator after parenthesis closing
         let i = getNextOpIndex(f)
         if (f[i]) {
+            // if operator, apply operator, parse inner and outer of parenthesis
             let operator = operatorToNumber(f[i].value as Operator)
             return { value: operator, left: parseInner(f.slice(1, i - 1)), right: parseInner(f.slice(i + 1))}
         }
+        // if no operator, parse the interior of the parenthesis
         return parseInner(f.slice(1, -1))
     }
     // Check if operator is Abs
     if (elem.type === ElementType.Operator && elem.value === Operator.OpenAbs) {
+        // get the index of operator after abs closing
         let i = getNextOpIndex(f)
         if (f[i]) {
+            // if operator, apply operator, parse inner and outer of abs
             let operator = operatorToNumber(f[i].value as Operator)
             let abs = operatorToNumber(Operator.OpenAbs)
             return { value: operator, left: {value: abs, left: -1, right: parseInner(f.slice(1, i - 1))}, right: parseInner(f.slice(i + 1)) }
         }
+        // if no operator, parse the interior of the abs
         return parseInner(f.slice(1, -1))
     }
+    // if no parenthesis, abs or !, parse the expression as X OPERATOR Y
     return parseOperation(elem, f[1], f[2])
 }
 
