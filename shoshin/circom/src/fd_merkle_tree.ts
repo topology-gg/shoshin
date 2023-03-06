@@ -10,11 +10,20 @@ import { poseidon_hash } from './utils';
 
 let mimc7: any = null;
 
+/**
+ * @brief A one way hash function for an array of field elements
+ */
 const multi_hash = async (child_nodes: any[]): Promise<bigint> => {
   if (mimc7 === null) mimc7 = await buildMimc7();
   return BigInt(mimc7.F.toString(mimc7.multiHash(child_nodes))).valueOf();
 };
 
+/**
+ * @brief Use multi hash to get a commitment for a mind fd.
+ *
+ * Take in all elements describing a mind fd: the mind, the input constants, and the trace information
+ * as well as randomness to create a commitment to the mind.
+ */
 export const get_mind_fd_hash = async (
   fd: CircomCanonicalFD,
   randomness: bigint,
@@ -29,6 +38,9 @@ export const get_mind_fd_hash = async (
   return await multi_hash(hash_arr);
 };
 
+/**
+ * @brief Generate a Merkle tree with `n_levels` for all mind FDs
+ */
 export const gen_merkle_tree = async (
   mind_to_fd: { fd: CircomCanonicalFD; randomness: bigint }[],
   n_levels: number
@@ -62,9 +74,15 @@ export const gen_merkle_tree = async (
   return tree;
 };
 
+/**
+ * @brief Find the index of `leaf` in `tree`
+ */
 export const leaf_index_of = (tree: MerkleTree, leaf: bigint) =>
   tree.includes(leaf) ? tree.indexOf(leaf) - tree.length / 2 : -1;
 
+/**
+ * @brief Given the index of a leaf in a merkle tree, generate the merkle tree
+ */
 export const get_merkle_tree_proof = (
   tree: MerkleTree,
   leaf_idx: number
