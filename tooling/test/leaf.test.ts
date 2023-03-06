@@ -7,6 +7,7 @@ describe("flatten", () => {
     describe("leaf", () => {
         it("should flatten the leaf to an array", () => {
             // Given
+            // f = (OPPONENT_BODY_STATE == 10) OR (OPPONENT_BODY_STATE == 20) OR (OPPONENT_BODY_STATE == 30)
             let f: Function = {
                 elements: [
                     { value: Operator.OpenParenthesis, type: ElementType.Operator },
@@ -41,6 +42,7 @@ describe("flatten", () => {
         });
         it("should flatten the ABS function to the expected value", ()=> {
             // Given
+            // f = Abs(SELF_X - OPPONENT_X) <= 80
             let f: Function = {
                 elements: [
                     { value: Operator.OpenAbs, type: ElementType.Operator},
@@ -63,6 +65,7 @@ describe("flatten", () => {
         });
         it("should flatten the single ABS function to the correct value", () => {
             // Given
+            // f = Abs(OPPONENT_VEL_X) <= 10
             let f: Function = {
                 elements: [
                     { value: Operator.OpenAbs, type: ElementType.Operator},
@@ -83,6 +86,7 @@ describe("flatten", () => {
         })
         it("should flatten the combined ABS and AND functions to the correct value", () => {
             // Given
+            // f = (OPPONENT_INT <= 300) AND (Abs(SELF_X - OPPONENT_X) <= 80)
             let f: Function = {
                 elements: [
                     { value: Operator.OpenParenthesis, type: ElementType.Operator},
