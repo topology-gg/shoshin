@@ -33,16 +33,21 @@ input {
 }
 
 #submit-button{
-  /* background: #FFFFFF url('../public/rsz_1starknet_icon.png') no-repeat; */
-  background: #FFFFFF;
-  /* background-position: 85% 50%; */
-  border: 1px solid #333333;
-  border-radius: 3px;
+    font-family: menlo;
+    font-size: 0.75rem;
+    margin-right: 3px;
+    height: 1.75rem;
+    border: 1px solid #333333;
+    border-radius: 3px;
+    background: #FFFFFF url('../public/rsz_1starknet_icon.png') no-repeat;
+    background-position: 93% 50%;
+    padding-right: 1.6rem;
 }
 #submit-button:hover{
-  /* background-color: #FFFE71; */
-  background-color: #fedfb0;
-  cursor: pointer;
+    background-color: #2EE59D;
+    cursor: pointer;
+    color: '#fff';
+    transition: 'background 0.2s, color 0.2s';
 }
 
 .grid {
@@ -127,21 +132,6 @@ li {
 
 table {
     border-collapse:collapse;
-}
-
-#submit-button{
-    background: #EFEFEF url('../public/rsz_1starknet_icon.png') no-repeat;
-    background-position: 93% 50%;
-    margin-left: 0.2rem;
-    margin-right: 0.2rem;
-    height: 1.5rem;
-    padding-right: 1.6rem;
-    border: 1px solid #333333;
-    border-radius: 3px;
-}
-#submit-button:hover{
-    background-color: #FFFE71;
-    cursor: pointer;
 }
 
 /* source for styling range input below:

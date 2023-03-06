@@ -19,6 +19,7 @@ import useRunCairoSimulation from '../src/hooks/useRunCairoSimulation';
 import { useAgents } from '../lib/api'
 import { Metadata, splitAgents } from '../src/types/Metadata';
 import { useAccount, useConnectors, useStarknetExecute } from '@starknet-react/core';
+import ConnectWallet from '../src/components/ConnectWallet';
 
 const theme = createTheme({
     typography: {
@@ -86,6 +87,9 @@ export default function Home() {
     const [isTreeEditorWarningTextOn, setTreeEditorWarningTextOn] = useState<boolean>(false)
     const [treeEditorWarningText, setTreeEditorWarningText] = useState<string>('')
     const [runCairoSimulationWarning, setCairoSimulationWarning] = useState<string>('')
+
+    // Setting
+    const [settingOpen, setSettingOpen] = useState<boolean>(true);
 
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents()
@@ -237,7 +241,8 @@ export default function Home() {
     async function handleClickSubmit() {
         if (!account) {
             console.log('> wallet not connected yet');
-            connect(connectors[0])
+            alert('Wallet not connected yet, please reload page and select connector')
+            return
         }
 
         console.log('> connected address:', String(address));
@@ -517,6 +522,7 @@ export default function Home() {
                                         />
                                     </div>
                                 }
+                                <ConnectWallet open={settingOpen} setSettingOpen={setSettingOpen}/>
                                 {/* <LoadTestJson
                                     handleLoadTestJson={handleLoadTestJson}
                                     handleClickPreloadedTestJson={handleClickPreloadedTestJson}
