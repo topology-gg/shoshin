@@ -183,17 +183,20 @@ function parseInner(f: FunctionElement[]): Leaf {
         // if no operator, parse the interior of the abs
         return parseInner(f.slice(1, -1))
     }
-    // if no parenthesis, abs or !, parse the expression as X OPERATOR Y
-    return parseOperation(elem, f[1], f[2])
+    // if no parenthesis, abs or !, parse the expression as X OPERATOR REST
+    return parseOperation(elem, f[1], f.slice(2))
 }
 
-function parseOperation(val1: FunctionElement, operator: FunctionElement, val2: FunctionElement): Leaf {
-    let value = val1.value as number
-    let operand1 = parseElement(val1)
+function parseOperation(val: FunctionElement, operator: FunctionElement, rest: FunctionElement[]): Leaf {
+    let value = val.value as number
+    let operand1 = parseElement(val)
     let op = operatorToNumber(operator.value as Operator)
-    value = val2.value as number
-    let operand2 = parseElement(val2)
-    return {value: op, left: operand1, right: operand2}
+    if (rest.length == 1) {
+        value = rest[0].value as number
+        let operand2 = parseElement(rest[0])
+        return {value: op, left: operand1, right: operand2}
+    }
+    return { value: op, left: operand1, right: parseInner(rest) }
 }
 
 // Parse the element to a leaf. In case the element is a perceptible,

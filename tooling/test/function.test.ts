@@ -161,4 +161,66 @@ describe("parse", () => {
             expect(got).deep.equal(expected)
         })
     });
+    it("should parse the three level parenthesis example into the expected result", () => {
+        // Given
+        //f = 10 * (Abs(OPPONENT_ACC_X) + 3 * (SELF_X + SELF_Y * (10 + OPPONENT_INT)))
+        let f: Function = {
+            elements: [
+                { value: 10, type: ElementType.Constant},
+                { value: Operator.Mul, type: ElementType.Operator},
+                { value: Operator.OpenParenthesis, type: ElementType.Operator},
+                { value: Operator.OpenAbs, type: ElementType.Operator},
+                { value: Perceptible.OpponentAccX, type: ElementType.Perceptible},
+                { value: Operator.CloseAbs, type: ElementType.Operator},
+                { value: Operator.Add, type: ElementType.Operator},
+                { value: 3, type: ElementType.Constant},
+                { value: Operator.Mul, type: ElementType.Operator},
+                { value: Operator.OpenParenthesis, type: ElementType.Operator},
+                { value: Perceptible.SelfX, type: ElementType.Perceptible},
+                { value: Operator.Add, type: ElementType.Operator},
+                { value: Perceptible.SelfY, type: ElementType.Perceptible},
+                { value: Operator.Mul, type: ElementType.Operator},
+                { value: Operator.OpenParenthesis, type: ElementType.Operator},
+                { value: 10, type: ElementType.Constant},
+                { value: Operator.Add, type: ElementType.Operator},
+                { value: Perceptible.OpponentInt, type: ElementType.Perceptible},
+                { value: Operator.CloseParenthesis, type: ElementType.Operator},
+                { value: Operator.CloseParenthesis, type: ElementType.Operator},
+                { value: Operator.CloseParenthesis, type: ElementType.Operator},
+            ]
+        }
+        // When
+        let got = parseFunction(f)
+        // Then
+        let expected = {
+            value: 3,
+            left: {value: 10, left: -1, right: -1},
+            right: {
+                value: 1,
+                left: {
+                    value: 6,
+                    left: -1,
+                    right: {value: 14, left: -1, right: {value: 105, left: -1, right: -1}}
+                },
+                right: {
+                    value: 3,
+                    left: {value: 3, left: -1, right: -1},
+                    right: {
+                        value: 1,
+                        left: {value: 14, left: -1, right: {value: 1, left: -1, right: -1}},
+                        right: {
+                            value: 3,
+                            left: {value: 14, left: -1, right: {value: 2, left: -1, right: -1}},
+                            right: {
+                                value: 1, 
+                                left: {value: 10, left: -1, right: -1},
+                                right: {value: 14, left: -1, right: {value: 108, left: -1, right: -1}}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        expect(got).deep.equal(expected)
+    })
 });
