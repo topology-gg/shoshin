@@ -73,3 +73,31 @@ To understand how to get to the Cairo code, lets look at a sample DAG:
 We can see each `leaf` as referencing a value (a value in a dictionary/ lookup table or a constant). Each node represents some computation. We can then translate the above into the language of input wires, mux selectors, and trace cells by ordering all nodes according to their depth. Nodes deeper in the DAG get associated to lower index trace cells. Thus, the ancestors of any node have _higher_ trace index than that node. Thus, the ancestors can access the node's computed output. So, for example, `node 6` in the above may be assigned to `trace cell 3` in the Circom. `node 4` may be assigned to `trace cell 4`. And, `node 3` can go to `trace cell 5`. The root gets assigned to the highest indexing trace cell.
 
 For more details, `src/json_compiler.ts`.
+
+### Running tests
+
+To run the tests, first make sure to have Circom installed as well as the subfolder's NPM packages.
+
+Then, after modifying any circuit or before running a suite of tests, run
+
+```
+npm run build-test-circuits
+```
+
+to build the testing circuits.
+
+To run all the tests, run
+
+```
+npm run test
+```
+
+To run a specific test file, run
+
+```
+npm run test -- <PATH TO TEST FILE>
+```
+
+##### :warning: Word of Caution
+
+`src/__tests__/fuzzing/random_program.spec.ts` takes around 20 minutes to run (at least on a 2021 Thinkpad with a Ryzen 7). The test creates random programs (100) and checks that they ran correctly. It also takes time to check that all the mind states committed to within a Merkle tree ran correctly.
