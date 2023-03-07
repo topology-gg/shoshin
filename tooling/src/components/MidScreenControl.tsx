@@ -4,7 +4,7 @@ import { FastForward, FastRewind, Pause, PlayArrow, Stop } from "@mui/icons-mate
 
 const MidScreenControl = ({
     runnable = true, animationFrame, n_cycles, animationState, handleClick, handleSlideChange,
-    checkedShowDebugInfo, handleChangeDebugInfo, handleClickSubmit
+    checkedShowDebugInfo, handleChangeDebugInfo
 
 }) => {
     const BLANK_COLOR = '#EFEFEF'
@@ -17,7 +17,7 @@ const MidScreenControl = ({
                 justifyContent: "center",
                 alignItems: "center",
                 backgroundColor: BLANK_COLOR,
-                p: "1rem",
+                p: "0.5rem",
                 mb: 2,
                 border: 1,
                 borderRadius: 4,
@@ -63,9 +63,14 @@ const MidScreenControl = ({
                     disabled={animationState == 'Run'}
                 />
 
-                <Button size="small" variant="outlined" onClick={() => handleClick("ToggleRun")}>
+                <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => handleClick("ToggleRun")}
+                >
                     {animationState != "Run" ? <PlayArrow /> : <Pause />}
                 </Button>
+
                 <Button
                     size="small"
                     variant="outlined"
@@ -73,6 +78,7 @@ const MidScreenControl = ({
                 >
                     <Stop />
                 </Button>
+
                 <Button
                     size="small"
                     variant="outlined"
@@ -80,6 +86,7 @@ const MidScreenControl = ({
                 >
                     <FastRewind />
                 </Button>
+
                 <Button
                     size="small"
                     variant="outlined"
@@ -87,7 +94,8 @@ const MidScreenControl = ({
                 >
                     <FastForward />
                 </Button>
-                <Button
+
+                {/* <Button
                     id={"submit-button"}
                     size="small"
                     variant="outlined"
@@ -96,12 +104,17 @@ const MidScreenControl = ({
                     <i className="material-icons" style={{ fontSize: "1.25rem"}}>
                         send
                     </i>
-                </Button>
+                </Button> */}
+
                 <FormControlLabel
                     control={
                         <Switch size="small" defaultChecked onChange={handleChangeDebugInfo} checked={checkedShowDebugInfo} />
                     }
-                    label="Debug"
+                    label={
+                        <Box component="div" fontSize={'0.75rem'}>
+                            Debug
+                        </Box>
+                    }
                     sx={{ml: 1}}
                 />
             </Box>

@@ -238,27 +238,27 @@ export default function Home() {
         setTestJson ((_) => preloadedJson);
     }
 
-    async function handleClickSubmit() {
-        if (!account) {
-            console.log('> wallet not connected yet');
-            alert('Wallet not connected yet, please reload page and select connector')
-            return
-        }
+    // async function handleClickSubmit() {
+    //     if (!account) {
+    //         console.log('> wallet not connected yet');
+    //         alert('Wallet not connected yet, please reload page and select connector')
+    //         return
+    //     }
 
-        console.log('> connected address:', String(address));
+    //     console.log('> connected address:', String(address));
 
-        // submit tx
-        console.log('> submitting args to loop() on StarkNet:', callData);
-        try {
-            setHash('');
+    //     // submit tx
+    //     console.log('> submitting args to loop() on StarkNet:', callData);
+    //     try {
+    //         setHash('');
 
-            const response = await execute();
-            setHash(response.transaction_hash);
-        } catch (err) {
-            console.error(err);
-        }
-        return;
-    }
+    //         const response = await execute();
+    //         setHash(response.transaction_hash);
+    //     } catch (err) {
+    //         console.error(err);
+    //     }
+    //     return;
+    // }
 
     function handleSetMentalStateAction(index: number, action: number) {
         setMentalStates((prev) => {
@@ -480,15 +480,17 @@ export default function Home() {
                                 {
                                     // !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant='outlined' disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
                                     <div style={{display:'flex', flexDirection:'column'}}>
+
+                                        <StatusBarPanel
+                                            testJson={testJson}
+                                            animationFrame={animationFrame}
+                                        />
                                         <Simulator
                                             testJson={testJson}
                                             animationFrame={animationFrame}
                                             showDebug={checkedShowDebugInfo}
                                         />
-                                        <StatusBarPanel
-                                            testJson={testJson}
-                                            animationFrame={animationFrame}
-                                        />
+
                                         <MidScreenControl
                                             runnable = {true}
                                             animationFrame = {animationFrame}
@@ -506,7 +508,6 @@ export default function Home() {
                                             handleChangeDebugInfo = {() => setCheckedShowDebugInfo(
                                                 (_) => !checkedShowDebugInfo
                                             )}
-                                            handleClickSubmit={handleClickSubmit}
                                         />
                                         <FrameInspector
                                             testJson={testJson}

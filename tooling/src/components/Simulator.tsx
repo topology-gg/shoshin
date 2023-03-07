@@ -74,15 +74,14 @@ export default function Simulator( {
             <Character agentIndex={0} viewWidth={componentWidth} characterName={characterName0} agentFrame={agentFrame0} />
             <Character agentIndex={1} viewWidth={componentWidth} characterName={characterName1} agentFrame={agentFrame1} />
 
-
             <Hitbox show={showDebug} viewWidth={componentWidth} agentFrame={agentFrame0} hitboxType={'body'} />
             <Hitbox show={showDebug} viewWidth={componentWidth} agentFrame={agentFrame0} hitboxType={'action'} />
 
             <Hitbox show={showDebug} viewWidth={componentWidth} agentFrame={agentFrame1} hitboxType={'body'} />
             <Hitbox show={showDebug} viewWidth={componentWidth} agentFrame={agentFrame1} hitboxType={'action'} />
 
-            <Debug show={showDebug} viewWidth={componentWidth} agentIndex={0} agentFrame={agentFrame0} characterName={characterName0} />
-            <Debug show={showDebug} viewWidth={componentWidth} agentIndex={1} agentFrame={agentFrame1} characterName={characterName1} />
+            {/* <Debug show={showDebug} viewWidth={componentWidth} agentIndex={0} agentFrame={agentFrame0} characterName={characterName0} />
+            <Debug show={showDebug} viewWidth={componentWidth} agentIndex={1} agentFrame={agentFrame1} characterName={characterName1} /> */}
         </Box>
     )
 }
