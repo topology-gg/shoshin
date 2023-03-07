@@ -89,7 +89,7 @@ export default function Home() {
     const [runCairoSimulationWarning, setCairoSimulationWarning] = useState<string>('')
 
     // Setting
-    const [settingOpen, setSettingOpen] = useState<boolean>(true);
+    const [settingOpen, setSettingOpen] = useState<boolean>(false);
 
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents()
