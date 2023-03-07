@@ -272,3 +272,48 @@ class EventMetadata:
             character_0,
             character_1,
         )
+
+
+@dataclass
+class EventSingleMetadata:
+    combos_offset: list[int]
+    combos: list[int]
+    state_machine_offset: list[int]
+    state_machine: list[Tree]
+    initial_state: int
+    functions_offset: list[int]
+    functions: list[Tree]
+    actions: list[int]
+    character: int
+
+    @staticmethod
+    def from_iter(it: Iterator[FieldElement]):
+        combos_offset_len = felt_to_int(it)
+        combos_offset = [felt_to_int(it) for _ in range(combos_offset_len)]
+        combos_len = felt_to_int(it)
+        combos = [felt_to_int(it) for _ in range(combos_len)]
+        state_machine_offset_len = felt_to_int(it)
+        state_machine_offset = [
+            felt_to_int(it) for _ in range(state_machine_offset_len)
+        ]
+        state_machine_len = felt_to_int(it)
+        state_machine = [Tree.from_iter(it) for _ in range(state_machine_len)]
+        initial_state = felt_to_int(it)
+        functions_offset_len = felt_to_int(it)
+        functions_offset = [felt_to_int(it) for _ in range(functions_offset_len)]
+        functions_len = felt_to_int(it)
+        functions = [Tree.from_iter(it) for _ in range(functions_len)]
+        action_len = felt_to_int(it)
+        actions = [felt_to_int(it) for _ in range(action_len)]
+        character = felt_to_int(it)
+        return EventSingleMetadata(
+            combos_offset,
+            combos,
+            state_machine_offset,
+            state_machine,
+            initial_state,
+            functions_offset,
+            functions,
+            actions,
+            character,
+        )
