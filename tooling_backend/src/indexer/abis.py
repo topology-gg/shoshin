@@ -3,7 +3,7 @@ event_metadata_abi = {
     "type": "event",
     "keys": [],
     "outputs": [
-        {"name": "combos_offset_0_len", "type": "felt" },
+        {"name": "combos_offset_0_len", "type": "felt"},
         {"name": "combos_offset_0", "type": "felt*"},
         {"name": "combos_0_len", "type": "felt"},
         {"name": "combos_0", "type": "felt*"},
@@ -38,6 +38,30 @@ event_metadata_abi = {
     ],
 }
 
+event_single_metadata_abi = {
+    "name": "event_single_metadata",
+    "type": "event",
+    "keys": [],
+    "outputs": [
+        {"name": "combos_offset_len", "type": "felt"},
+        {"name": "combos_offset", "type": "felt*"},
+        {"name": "combos_len", "type": "felt"},
+        {"name": "combos", "type": "felt*"},
+        {"name": "agent_state_machine_offset_len", "type": "felt"},
+        {"name": "agent_state_machine_offset", "type": "felt*"},
+        {"name": "agent_state_machine_len", "type": "felt"},
+        {"name": "agent_state_machine", "type": "Tree*"},
+        {"name": "agent_initial_state", "type": "felt"},
+        {"name": "agent_functions_offset_len", "type": "felt"},
+        {"name": "agent_functions_offset", "type": "felt*"},
+        {"name": "agent_functions_len", "type": "felt"},
+        {"name": "agent_functions", "type": "Tree*"},
+        {"name": "actions_len", "type": "felt"},
+        {"name": "actions", "type": "felt*"},
+        {"name": "character_type", "type": "felt"},
+    ],
+}
+
 tree_abi = {
     "name": "Tree",
     "type": "struct",
@@ -45,7 +69,7 @@ tree_abi = {
     "members": [
         {"name": "value", "offset": 0, "type": "felt"},
         {"name": "left", "offset": 1, "type": "felt"},
-        {"name": "right", "offset": 2, "type": "felt"}
+        {"name": "right", "offset": 2, "type": "felt"},
     ],
 }
 
@@ -93,7 +117,7 @@ body_state_abi = {
         {"name": "integrity", "offset": 2, "type": "felt"},
         {"name": "stamina", "offset": 3, "type": "felt"},
         {"name": "dir", "offset": 4, "type": "felt"},
-        {"name": "fatigued", "offset": 5, "type": "felt"}
+        {"name": "fatigued", "offset": 5, "type": "felt"},
     ],
 }
 
@@ -104,7 +128,7 @@ physics_state_abi = {
     "members": [
         {"name": "pos", "offset": 0, "type": "Vec2"},
         {"name": "vel_fp", "offset": 2, "type": "Vec2"},
-        {"name": "acc_fp", "offset": 4, "type": "Vec2"}
+        {"name": "acc_fp", "offset": 4, "type": "Vec2"},
     ],
 }
 
@@ -114,7 +138,7 @@ hitboxes_abi = {
     "size": 8,
     "members": [
         {"name": "action", "offset": 0, "type": "Rectangle"},
-        {"name": "body", "offset": 4, "type": "Rectangle"}
+        {"name": "body", "offset": 4, "type": "Rectangle"},
     ],
 }
 
@@ -124,7 +148,7 @@ rectangle_abi = {
     "size": 4,
     "members": [
         {"name": "origin", "offset": 0, "type": "Vec2"},
-        {"name": "dimension", "offset": 2, "type": "Vec2"}
+        {"name": "dimension", "offset": 2, "type": "Vec2"},
     ],
 }
 
@@ -134,6 +158,6 @@ vec2_abi = {
     "size": 2,
     "members": [
         {"name": "x", "offset": 0, "type": "felt"},
-        {"name": "y", "offset": 1, "type": "felt"}
+        {"name": "y", "offset": 1, "type": "felt"},
     ],
 }
