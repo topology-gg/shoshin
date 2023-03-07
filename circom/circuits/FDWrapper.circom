@@ -49,6 +49,27 @@ template FD_Merkle_Tree(MT_N_LEVELS) {
 	check_eq.out ==> out;
 }
 
+/**
+ * @brief check that the mind's position in the merkle tree matches that of the
+ * sibling positions
+ */
+template FD_MT_Position_Check(MT_N_LEVELS) {
+	// Determines if the siblings are on the left or right, 0 for left and 1 for right
+	signal input sibling_positions[MT_N_LEVELS - 1];
+	signal input mind;
+	signal output out;
+
+	signal tmp[MT_N_LEVELS - 1];
+	// Set to 1 if the node itself is on the right and 0 if on the left
+	tmp[0] <== 1 - sibling_positions[0];
+	for (var i = 1; i < MT_N_LEVELS - 1; i++) {
+		tmp[i] <== tmp[i - 1] + (2 ** i) * (1 - sibling_positions[i]);
+	}
+	component is_zero = IsZero();
+	is_zero.in <== tmp[MT_N_LEVELS - 2] - mind;
+	out <== is_zero.out;
+}
+
 template FD_Hasher(CONSTANTS_SIZE, N_TRACES) {
 	var n_inps = CONSTANTS_SIZE + N_TRACES * 3 + 2;
 
@@ -170,14 +191,20 @@ template FD_Wrapper(
 	comm_next_state.comm <== next_state_comm;
 	/***************** End check that the next state commitment holds up ************/
 
+	/*************** Check that the position of the mind is correct **************/
+	component check_mind_pos = FD_MT_Position_Check(MT_N_LEVELS);
+	for (var i = 0; i < MT_N_LEVELS - 1; i++)
+		check_mind_pos.sibling_positions[i] <== mt_sibling_positions[i];
+	check_mind_pos.mind <== current_mind;
+	/*************** End Check that the position of the mind is correct *********/
+
+
 	// Assert that all three conditions are met
-	3 === comm_next_state.out + comm_current_mind.out + mt_verif.out;
+	4 === comm_next_state.out + comm_current_mind.out + mt_verif.out + check_mind_pos.out;
 
-	// out <== comm_next_state.out + comm_current_mind.out + mt_verif.out;
-
-	component is_out_3 =  IsZero();
-	is_out_3.in <== comm_next_state.out + comm_current_mind.out + mt_verif.out - 3;
-	is_out_3.out ==> out;
+	component is_out_4 =  IsZero();
+	is_out_4.in <== comm_next_state.out + comm_current_mind.out + mt_verif.out + check_mind_pos.out - 4;
+	is_out_4.out ==> out;
 }
 
 

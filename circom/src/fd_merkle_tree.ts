@@ -13,7 +13,7 @@ let mimc7: any = null;
 /**
  * @brief A one way hash function for an array of field elements
  */
-const multi_hash = async (child_nodes: any[]): Promise<bigint> => {
+const array_hash = async (child_nodes: any[]): Promise<bigint> => {
   if (mimc7 === null) mimc7 = await buildMimc7();
   return BigInt(mimc7.F.toString(mimc7.multiHash(child_nodes))).valueOf();
 };
@@ -35,7 +35,7 @@ export const get_mind_fd_hash = async (
     mind,
     randomness,
   ].map(b => BigInt(b).valueOf());
-  return await multi_hash(hash_arr);
+  return await array_hash(hash_arr);
 };
 
 /**
