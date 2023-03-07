@@ -478,21 +478,17 @@ export default function Home() {
                                     }}
                                 />
                                 {
-                                    !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant='outlined' disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
+                                    // !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant='outlined' disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
                                     <div style={{display:'flex', flexDirection:'column'}}>
                                         <Simulator
-                                            characterType0={testJson.agent_0.type}
-                                            characterType1={testJson.agent_1.type}
-                                            agentFrame0={testJson.agent_0.frames[animationFrame]}
-                                            agentFrame1={testJson.agent_1.frames[animationFrame]}
+                                            testJson={testJson}
+                                            animationFrame={animationFrame}
                                             showDebug={checkedShowDebugInfo}
                                         />
                                         <StatusBarPanel
-                                            integrity_0={testJson.agent_0.frames[animationFrame].body_state.integrity}
-                                            integrity_1={testJson.agent_1.frames[animationFrame].body_state.integrity}
-                                            stamina_0={testJson.agent_0.frames[animationFrame].body_state.stamina}
-                                            stamina_1={testJson.agent_1.frames[animationFrame].body_state.stamina}
-                                         />
+                                            testJson={testJson}
+                                            animationFrame={animationFrame}
+                                        />
                                         <MidScreenControl
                                             runnable = {true}
                                             animationFrame = {animationFrame}
@@ -513,10 +509,8 @@ export default function Home() {
                                             handleClickSubmit={handleClickSubmit}
                                         />
                                         <FrameInspector
-                                            characterLeftType={testJson.agent_0.type}
-                                            characterRightType={testJson.agent_1.type}
-                                            frameLeft={testJson.agent_0.frames[animationFrame]}
-                                            frameRight={testJson.agent_1.frames[animationFrame]}
+                                            testJson={testJson}
+                                            animationFrame={animationFrame}
                                             adversaryType={adversary}
                                             onAdversaryEdit={() => setWorkingTab(3)}
                                         />

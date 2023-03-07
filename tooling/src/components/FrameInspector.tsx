@@ -11,26 +11,29 @@ import {
 import { Box } from "@mui/system";
 import React from "react";
 import { bodyStateNumberToName } from "../constants/constants";
-import { Frame } from "../types/Frame";
+import { Frame, TestJson } from "../types/Frame";
 
 type FrameInspectorProps = {
-    characterLeftType: number;
-    characterRightType: number;
-    frameLeft: Frame;
-    frameRight: Frame;
+    testJson: TestJson;
+    animationFrame: number;
     adversaryType: string;
     onAdversaryEdit: () => void;
 };
 
 const FrameInspector = ({
-    characterLeftType,
-    characterRightType,
-    frameLeft,
-    frameRight,
+    testJson,
+    animationFrame,
     adversaryType,
     onAdversaryEdit,
 }: FrameInspectorProps) => {
+
+    const characterLeftType = testJson?.agent_0.type
+    const characterRightType = testJson?.agent_1.type
+    const frameLeft = testJson?.agent_0.frames[animationFrame]
+    const frameRight= testJson?.agent_1.frames[animationFrame]
+
     if (!frameLeft || !frameRight) return;
+
     const frames = [frameLeft, frameRight];
     const characterNames = [
         characterLeftType === 0 ? "jessica" : "antoc",
@@ -53,8 +56,9 @@ const FrameInspector = ({
                                             <>
                                                 Opponent: {adversaryType}{" "}
                                                 <IconButton
+                                                    disabled
                                                     size="small"
-                                                    onClick={onAdversaryEdit}
+                                                    // onClick={onAdversaryEdit}
                                                 >
                                                     <Edit />
                                                 </IconButton>

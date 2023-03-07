@@ -8,6 +8,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 import LinearProgress from "@mui/material/LinearProgress";
+import { TestJson } from "../types/Frame";
 
 const StyledRating = styled(Rating)({
     "& .MuiRating-iconFilled": {
@@ -78,18 +79,24 @@ const StaminaBar = (props: statusBarProps) => {
 };
 
 interface StatusBarPanelProps {
-    integrity_0: number;
-    integrity_1: number;
-    stamina_0: number;
-    stamina_1: number;
+    // integrity_0: number;
+    // integrity_1: number;
+    // stamina_0: number;
+    // stamina_1: number;
+    testJson: TestJson;
+    animationFrame: number;
 }
 
 const StatusBarPanel = ({
-    integrity_0,
-    integrity_1,
-    stamina_0,
-    stamina_1,
+    testJson,
+    animationFrame,
 }: StatusBarPanelProps) => {
+
+    const integrity_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.integrity : 0
+    const integrity_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.integrity : 0
+    const stamina_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.stamina : 0
+    const stamina_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.stamina : 0
+
     return (
         <div>
             <div className={styles.statusBarRow}>
