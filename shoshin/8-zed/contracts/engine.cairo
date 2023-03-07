@@ -31,7 +31,51 @@ from contracts.perceptibles import update_perceptibles
 from lib.bto_cairo_git.lib.tree import Tree, BinaryOperatorTree
 from contracts.utils import fill_dictionary_offsets, fill_dictionary
 
-@view
+@external
+func submit_agent{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    combos_offset_len: felt,
+    combos_offset: felt*,
+    combos_len: felt,
+    combos: felt*,
+    agent_state_machine_offset_len: felt,
+    agent_state_machine_offset: felt*,
+    agent_state_machine_len: felt,
+    agent_state_machine: Tree*,
+    agent_initial_state: felt,
+    agent_functions_offset_len: felt,
+    agent_functions_offset: felt*,
+    agent_functions_len: felt,
+    agent_functions: Tree*,
+    actions_len: felt,
+    actions: felt*,
+    character_type: felt,
+){
+    //
+    // Emit metadata
+    //
+    // cairo -D 1
+    event_single_metadata.emit(
+        combos_offset_len,
+        combos_offset,
+        combos_len,
+        combos,
+        agent_state_machine_offset_len,
+        agent_state_machine_offset,
+        agent_state_machine_len,
+        agent_state_machine,
+        agent_initial_state,
+        agent_functions_offset_len,
+        agent_functions_offset,
+        agent_functions_len,
+        agent_functions,
+        actions_len,
+        actions,
+        character_type,
+    );
+    return();
+}
+
+@external
 func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     len: felt,
     combos_offset_0_len: felt,
@@ -489,5 +533,27 @@ func event_metadata(
     actions_1: felt*,
     character_type_0: felt,
     character_type_1: felt,
+) {
+}
+
+// emit a single agent's metadata
+@event
+func event_single_metadata(
+    combos_offset_len: felt,
+    combos_offset: felt*,
+    combos_len: felt,
+    combos: felt*,
+    agent_state_machine_offset_len: felt,
+    agent_state_machine_offset: felt*,
+    agent_state_machine_len: felt,
+    agent_state_machine: Tree*,
+    agent_initial_state: felt,
+    agent_functions_offset_len: felt,
+    agent_functions_offset: felt*,
+    agent_functions_len: felt,
+    agent_functions: Tree*,
+    actions_len: felt,
+    actions: felt*,
+    character_type: felt,
 ) {
 }
