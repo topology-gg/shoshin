@@ -88,7 +88,7 @@ export function unwrapLeafToFunction(f: Leaf): FunctionElement[] {
 }
 
 function isPerceptible(value: number) {
-    return value == OPERATOR_VALUE['DICT']
+    return value == OPERATOR_VALUE.get('DICT')
 }
 
 // Unwraps the leaf representation of a mental state state machine into an array of nodes
