@@ -1,12 +1,9 @@
 import React from 'react';
-import styles from '../../styles/Home.module.css'
 import { Box, Button, Chip, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BackspaceIcon from '@mui/icons-material/Backspace';
-import CardContent from '@mui/material/CardContent';
 import TextField from '@mui/material/TextField';
 import { FunctionElement, Operator, Function, ElementType, Perceptible } from '../types/Function'
 import BasicMenu from './Menu'

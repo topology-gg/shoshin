@@ -1,24 +1,41 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Typography, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import ComboEditor from './ComboEditor';
+import { DECISION_TREE_COMBO_AGENT, DEFENSIVE_AGENT, INITIAL_FUNCTIONS, MENTAL_STATES_COMBO_AGENT, OFFENSIVE_AGENT } from '../constants/constants';
+import Agent, { buildAgent } from '../types/Agent';
 
 
 export const AdversarySelection = ({
-  warning, adversary, setAdversary, onComboChange
+  warning, adversary, setAdversary, setOpponent, onComboChange
 }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [_, setAnchorEl] = useState<null | HTMLElement>(null)
   const [editingCombo, setEditingCombo] = useState<number[]>([])
 
-  const opened = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
   const handleClose = (a: string) => {
       setAdversary(a)
+      switch (a) {
+        case 'offensive': {
+          setOpponent(OFFENSIVE_AGENT)
+          break
+        }
+        case 'defensive': {
+          setOpponent(DEFENSIVE_AGENT)
+          break
+        }
+      }
       setAnchorEl(null)
   }
 
   const handleComboChange = (combo) => {
+    let agent: Agent = buildAgent(
+      MENTAL_STATES_COMBO_AGENT,
+      [editingCombo],
+      DECISION_TREE_COMBO_AGENT,
+      INITIAL_FUNCTIONS,
+      0,
+      1
+    );
+    setOpponent(agent)
     setEditingCombo(combo)
     onComboChange(combo)
   }

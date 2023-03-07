@@ -6,14 +6,16 @@ import TreeEditor from './TreeEditor';
 import GeneralFunctions from './GeneralFunctions';
 import Combos from './Combos';
 import { AdversarySelection } from './AdversarySelection';
+import { FighterSelection } from './FighterSelection';
 
 
 const SidePanel = ({
-    workingTab, handleClickTab, mentalStates, initialMentalState, handleSetInitialMentalState, combos, handleValidateCombo, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState,
-    handleSetMentalStateAction, treeEditor, handleClickTreeEditor, trees, handleUpdateTree, functions, handleUpdateGeneralFunction,
-    handleConfirmFunction, handleClickDeleteFunction, functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText,
-    isTreeEditorWarningTextOn, treeEditorWarningText, handleRemoveElementGeneralFunction,
-    runCairoSimulationWarning, adversary, setAdversary, onComboChange
+    workingTab, handleClickTab, mentalStates, setMentalStates, initialMentalState, handleSetInitialMentalState, combos, setCombos, handleValidateCombo, 
+    character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor, 
+    trees, setTrees, handleUpdateTree, functions, setFunctions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction, 
+    functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText, 
+    handleRemoveElementGeneralFunction, runCairoSimulationWarning, adversary, setAdversary, onComboChange, fighterSelection, setFighterSelection, setOpponent, 
+    agents
 }) => {
     const content = (workingTab: number) => {
         switch (workingTab) {
@@ -65,7 +67,22 @@ const SidePanel = ({
                     warning={runCairoSimulationWarning}
                     adversary={adversary}
                     setAdversary={setAdversary}
+                    setOpponent={setOpponent}
                     onComboChange={onComboChange}
+                />;
+            }
+            case 4: {
+                return <FighterSelection
+                    fighterSelection={fighterSelection}
+                    setFighterSelection={setFighterSelection}
+                    setOpponent={setOpponent}
+                    agents={agents}
+                    setMentalStates={setMentalStates}
+                    setCombos={setCombos}
+                    setTrees={setTrees}
+                    functions={functions}
+                    setFunctions={setFunctions}
+                    setCharacter={setCharacter}
                 />;
             }
         }

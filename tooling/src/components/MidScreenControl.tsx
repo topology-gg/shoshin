@@ -4,7 +4,7 @@ import { FastForward, FastRewind, Pause, PlayArrow, Stop } from "@mui/icons-mate
 
 const MidScreenControl = ({
     runnable = true, animationFrame, n_cycles, animationState, handleClick, handleSlideChange,
-    checkedShowDebugInfo, handleChangeDebugInfo
+    checkedShowDebugInfo, handleChangeDebugInfo, handleClickSubmit
 
 }) => {
     const BLANK_COLOR = '#EFEFEF'
@@ -86,6 +86,16 @@ const MidScreenControl = ({
                     onClick={() => handleClick("NextFrame")}
                 >
                     <FastForward />
+                </Button>
+                <Button
+                    id={"submit-button"}
+                    size="small"
+                    variant="outlined"
+                    onClick={() => handleClickSubmit()}
+                >
+                    <i className="material-icons" style={{ fontSize: "1.25rem"}}>
+                        send
+                    </i>
                 </Button>
                 <FormControlLabel
                     control={

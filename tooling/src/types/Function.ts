@@ -52,6 +52,9 @@ export const OPERATOR_VALUE: Map<string, number> = new Map(Object.entries({
     'FUNC': 15,
 }))
 
+export const VALUE_OPERATOR: Map<number, string> = new Map()
+OPERATOR_VALUE.forEach((v, k) => VALUE_OPERATOR[v] = k)
+
 export enum Perceptible {
     SelfX = 1,
     SelfY = 2,
