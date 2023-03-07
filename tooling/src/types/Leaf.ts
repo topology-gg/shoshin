@@ -1,5 +1,4 @@
-import { OPERATOR_VALUE, VALUE_OPERATOR } from "../constants/constants"
-import { ElementType, FunctionElement, Operator } from "./Function"
+import { ElementType, FunctionElement, Operator, OPERATOR_VALUE, VALUE_OPERATOR } from "./Function"
 import { Direction, Node } from "./Tree"
 
 export default interface Leaf {
@@ -14,33 +13,24 @@ export interface SimpleLeaf {
     right: number,
 }
 
-// flatten a leaf by recursing all the values 
-// if is a unique operator type (see isUniqueOperator) then left value is -1
-export function flattenLeaf(n: Leaf) {
-    if (!n) {
-        return
-    }
-    if (n?.left == -1 && n?.right == -1) {
-        return [n.value, -1, -1]
-    }
-    if (typeof n?.left === 'number' && typeof n?.right == 'number') {
-        return isUniqueOperator(n.value) ? [n.value, -1, 1, n.right, -1, -1]: [n.value, 1, 2, n.left, -1, -1, n.right, -1, -1]
-    }
-    if (typeof n?.left === 'number') {
-        return isUniqueOperator(n.value)? [n.value, -1, 1, ...flattenLeaf(n.right as Leaf)]: [n.value, 1, 2, n.left, -1, -1, ...flattenLeaf(n.right as Leaf)]
-    }
-    if (typeof n?.right === 'number') {
-        return [n.value, 1, brancheSize(n.left) + 1, ...flattenLeaf(n.left), n.right, -1, -1]
-    }
-    return [n?.value, 1, brancheSize(n?.left) + 1, ...flattenLeaf(n?.left), ...flattenLeaf(n?.right)]
+export function wrapToLeaf(x: number): Leaf {
+    return { value: x, left: -1, right: -1 }
 }
 
-function isUniqueOperator(x: number) {
-    return x == 6 || x == 7 || x == 11 || x == 13 || x == 14 || x == 15
+// flatten a leaf by recursing all the values 
+// if is a unique operator type (see isUniqueOperator) then left value is -1
+export function flattenLeaf(n: Leaf): number[] {
+    if (n.left == -1 && n.right == -1) {
+        return [n.value, -1, -1]
+    }
+    if (n.left == -1) {
+        return [n.value, -1, 1, ...flattenLeaf(n.right as Leaf)]
+    }
+    return [n.value, 1, brancheSize(n.left as Leaf) + 1, ...flattenLeaf(n.left as Leaf), ...flattenLeaf(n.right as Leaf)]
 }
 
 // counts the size of a branch by recursing it
-function brancheSize(n: Leaf) {
+function brancheSize(n: Leaf): number {
     if (typeof n.left === 'number' && typeof n.right == 'number') {
         // two -1 indicates that the value is a constant: return 1
         // one -1 indicates a unique operator: return 2

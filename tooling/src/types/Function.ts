@@ -1,6 +1,4 @@
-import XRegExp, { MatchRecursiveValueNameMatch } from 'xregexp'
-import { OPERATOR_VALUE } from '../constants/constants'
-import Leaf from './Leaf'
+import Leaf, { wrapToLeaf } from './Leaf'
 
 export interface Function {
     elements: FunctionElement[],
@@ -33,6 +31,26 @@ export enum Operator {
     Equal = '==',
     Not = '!'
 }
+
+export const OPERATOR_VALUE: Map<string, number> = new Map(Object.entries({
+    '+': 1,
+    'OR': 1,
+    '-': 2,
+    '*': 3,
+    'AND': 3,
+    '/': 4,
+    '%': 5,
+    'ABS(': 6,
+    'SQRT': 7,
+    'POW': 8,
+    'IS_NN': 9,
+    '<=': 10,
+    '!': 11,
+    '==': 12,
+    'MEM': 13,
+    'DICT': 14,
+    'FUNC': 15,
+}))
 
 export enum Perceptible {
     SelfX = 1,
@@ -123,91 +141,111 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
     return true
 }
 
-export function parseFunction(f: Function) {
-    let operator: Leaf = parseFunctionInner(functionToStr(f))
+// Parse the elements of the function into a folded Leaf type
+export function parseFunction(f: Function): Leaf {
+    let operator: Leaf = parseInner(f.elements)
     return operator
 }
 
-// TODO: change parseFunctionInner to accept elements: FunctionElement[]
-// easier to parse than string
-// TODO: update the way functions are encoded -> OPP_STATE == 10 OR (OPP_STATE == 20 OR (OPP_STATE == 30))
-// in place of (OPP_STATE == 10) OR (OPP_STATE == 20) OR (OPP_STATE == 30)
-function parseFunctionInner(f: string) {
-    f = f.trim()
+function parseInner(f: FunctionElement[]): Leaf {
+    let elem: FunctionElement = f[0]
+    // Check if f.length > 1
+    if (f.length < 2) {
+        return parseElement(elem)
+    }
     // Check if the first value is not a ! operator
-    if (f[0] === '!') {
-        return { value: OPERATOR_VALUE['!'], left: -1, right: parseFunctionInner(f.slice(1)) }
+    if (elem.type === ElementType.Operator && elem.value === Operator.Not) {
+        let value = OPERATOR_VALUE.get('!') ?? 0
+        return { value: value, left: -1, right: parseInner(f.slice(1)) }
     }
-    // Allows to match the parenthesis and extract inner and outer values
-    let branches = XRegExp.matchRecursive(f, '\\(', '\\)', 'g', {
-            valueNames: ['between', null, 'match', null],
-            unbalanced: 'skip',
-    });
-    // If multiple operators at top level, match branches
-    if (branches.length >= 2) {
-        return matchBranches(branches)
-    }
-    if (branches.length > 0) {
-        f = branches[0].value
-    }
-    // End regex in the case we have X OP Y where X and Y are either a string value or a number
-    // or if we just have X
-    let end = / *([a-zA-Z0-9]+)/g
-    let matches = []
-    let m = end.exec(f)
-    while(m) {
-        matches.push(m)
-        m = end.exec(f)
-    }
-    let regexOp = /  *([<=]+|AND|OR|\*|\/|%|-|\+) */g
-    m = regexOp.exec(f)
-    if (matches.length < 2) {
-        return getParsedValue(matches[0][1])
-    }
-    let valueOne = getParsedValue(matches[0][1])
-    let valueTwo = getParsedValue(matches[1][1])
-    return {value: operatorToNumber(m[1]), left: valueOne, right: valueTwo}
-}
-
-function matchBranches(branches: MatchRecursiveValueNameMatch[]) {
-    // If multiple operators at top level, extract left and right side then continue parsing
-    // Handle the case where one of the branches are in the form Abs() OP X
-    if (branches.length > 2) {
-        if (branches[0].value === 'Abs') {
-            let split = branches[2].value.trim().split(' ')
-            let parsed = getParsedValue(split[1])
-            return {value: operatorToNumber(split[0]), left: parseFunctionInner('Abs('+branches[1].value+')'), right: parsed}
+    // Check if operator is parenthesis
+    if (elem.type === ElementType.Operator && elem.value === Operator.OpenParenthesis) {
+        // get the index of operator after parenthesis closing
+        let i = getNextOpIndex(f)
+        if (f[i]) {
+            // if operator, apply operator, parse inner and outer of parenthesis
+            let operator = operatorToNumber(f[i].value as Operator)
+            return { value: operator, left: parseInner(f.slice(1, i - 1)), right: parseInner(f.slice(i + 1))}
         }
-        let unparsedBranches = branches.slice(2)
-        let recomposed = unparsedBranches.map((b) => {if(b.name === 'match'){return '('+b.value.trim()+')'} else{return b.value.trim()}}).join(' ')
-        let trimmedRecomposed = unparsedBranches.length == 1? recomposed.replace(/^\(/g, '').replace(/$\)/g, ''): recomposed
-        return {value: operatorToNumber(branches[1].value.trim()), left: parseFunctionInner(branches[0].value), right: parseFunctionInner(trimmedRecomposed)}
+        // if no operator, parse the interior of the parenthesis
+        return parseInner(f.slice(1, -1))
     }
-    // If only two branches, f is in the form () OP X or X OP () or Abs()
-    if (branches.length == 2 ) {
-        if (branches[0].value.includes('Abs')) {
-            return {value: operatorToNumber('Abs'), left: -1, right: parseFunctionInner(branches[1].value)}
+    // Check if operator is Abs
+    if (elem.type === ElementType.Operator && elem.value === Operator.OpenAbs) {
+        // get the index of operator after abs closing
+        let i = getNextOpIndex(f)
+        if (f[i]) {
+            // if operator, apply operator, parse inner and outer of abs
+            let operator = operatorToNumber(f[i].value as Operator)
+            let abs = operatorToNumber(Operator.OpenAbs)
+            return { value: operator, left: {value: abs, left: -1, right: parseInner(f.slice(1, i - 1))}, right: parseInner(f.slice(i + 1)) }
         }
-        let [parenthesisIndex, restIndex] = branches[0].name === 'match'? [0,1] : [1, 0]
-        let split = branches[restIndex].value.trim().split(' ')
-        let parsed = getParsedValue(split[restIndex])
-        return {value: operatorToNumber(split[parenthesisIndex]), left: parsed, right: parseFunctionInner(branches[parenthesisIndex].value)}
+        // if no operator, parse the interior of the abs
+        return parseInner(f.slice(1, -1))
     }
+    // if no parenthesis, abs or !, parse the expression as X OPERATOR REST
+    return parseOperation(elem, f[1], f.slice(2))
 }
 
-function operatorToNumber(x: string) {
-    return OPERATOR_VALUE[x.toUpperCase()]
+function parseOperation(val: FunctionElement, operator: FunctionElement, rest: FunctionElement[]): Leaf {
+    let value = val.value as number
+    let operand1 = parseElement(val)
+    let op = operatorToNumber(operator.value as Operator)
+    if (rest.length == 1) {
+        value = rest[0].value as number
+        let operand2 = parseElement(rest[0])
+        return {value: op, left: operand1, right: operand2}
+    }
+    return { value: op, left: operand1, right: parseInner(rest) }
 }
 
-function getParsedValue(x: string) {
-    let parsedOne = parseInt(x)
-    return isNaN(parsedOne) ? {value: 14, left:-1, right: Perceptible[x]}: parsedOne
+// Parse the element to a leaf. In case the element is a perceptible,
+// add {value: 14, left: -1, right{...}} in order to access the 
+// perceptibles dictionnary
+function parseElement(val: FunctionElement): Leaf {
+    let value = val.value as number
+    return val.type === ElementType.Perceptible? { value: 14, left:-1, right: wrapToLeaf(value) }: wrapToLeaf(value)
 }
 
+// Returns the index of the next operator exterior to the parenthesis
+// ex: ((X OR Y) AND 10) OR Z would return 9
+function getNextOpIndex(f: FunctionElement[]): number {
+    let elem = f[0]
+    let count = 0
+    let isParenthesis = elem.value === Operator.OpenParenthesis
+    for (let i =0; i< f.length; i++) {
+        if (isParenthesis && f[i].value === Operator.OpenParenthesis) {
+            count += 1
+        }
+        if (isParenthesis && f[i].value === Operator.CloseParenthesis) {
+            count -= 1
+        }
+        if (!isParenthesis && f[i].value === Operator.OpenAbs) {
+            count += 1
+        }
+        if (!isParenthesis && f[i].value === Operator.CloseAbs) {
+            count -= 1
+        }
+        // if we hit count == 0, next operator is out of the parenthesis
+        if (count == 0) {
+            return i + 1
+        }
+    }
+    return count
+}
+
+// Converts the operator in string into the corresponding
+// opcode number
+function operatorToNumber(x: string): number {
+    return OPERATOR_VALUE.get(x.toUpperCase()) ?? 0
+}
+
+// Converts the current function into its string representation
 export function functionToStr(f: Function) {
     let str = ''
     f.elements.forEach((e) => {
-        let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
+        let v = e.value as number
+        let value = e.type === ElementType.Perceptible ? Perceptible[v] : e.value
         value = value === '|'? ')' : value
         str += value + ' '
     })

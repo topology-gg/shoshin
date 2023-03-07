@@ -164,28 +164,6 @@ export const ACTIONS_ICON_MAP = {
     DashBackward : 'keyboard_double_arrow_left',
 }
 
-export const OPERATOR_VALUE = {
-    '+': 1,
-    'OR': 1,
-    '-': 2,
-    '*': 3,
-    'AND': 3,
-    '/': 4,
-    '%': 5,
-    'ABS': 6,
-    'SQRT': 7,
-    'POW': 8,
-    'IS_NN': 9,
-    '<=': 10,
-    '!': 11,
-    '==': 12,
-    'MEM': 13,
-    'DICT': 14,
-    'FUNC': 15,
-}
-
-export const VALUE_OPERATOR = Object.fromEntries(Object.entries(OPERATOR_VALUE).map(a => a.reverse()))
-
 export const MAX_COMBO_SIZE = 10;
 
 export const INITIAL_MENTAL_STATES: MentalState[] = [
