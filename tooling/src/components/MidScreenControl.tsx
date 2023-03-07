@@ -87,15 +87,16 @@ const MidScreenControl = ({
                 >
                     <FastForward />
                 </Button>
-                <button
+                <Button
                     id={"submit-button"}
+                    size="small"
+                    variant="outlined"
                     onClick={() => handleClickSubmit()}
-                    className={"big-button"}
                 >
-                    <i className="material-icons" style={{ fontSize: "1rem", paddingTop: "0.12rem" }}>
+                    <i className="material-icons" style={{ fontSize: "1.25rem"}}>
                         send
                     </i>
-                </button>
+                </Button>
                 <FormControlLabel
                     control={
                         <Switch size="small" defaultChecked onChange={handleChangeDebugInfo} checked={checkedShowDebugInfo} />
