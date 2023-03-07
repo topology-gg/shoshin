@@ -348,23 +348,15 @@ func _body_antoc {range_check_ptr}(
 
         // note: not cancellable into attack because of sword's heaviness
         // note: not able to reverse to the opposite dash immediately
-
-        // if intent remains DASH_FORWARD
-        if (intent == ns_antoc_action.DASH_FORWARD) {
-            if (counter == ns_antoc_body_state_duration.DASH_FORWARD - 1) {
-                // reset counter
-                if(enough_stamina == TRUE) {
-                    return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
-                } else {
-                    return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
-                }
-            }
-            // increment counter
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, counter + 1, integrity, stamina, dir, FALSE) );
+        if (counter == ns_antoc_body_state_duration.DASH_FORWARD - 1) {
+            // reset counter
+            if(enough_stamina == TRUE and intent == ns_antoc_body_state.DASH_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            } 
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
         }
-
-        // otherwise return to IDLE
-        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        // increment counter
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     //
@@ -374,23 +366,15 @@ func _body_antoc {range_check_ptr}(
 
         // note: not cancellable into attack because of sword's heaviness
         // note: not able to reverse to the opposite dash immediately
-
-        // if intent remains DASH_BACKWARD
-        if (intent == ns_antoc_action.DASH_BACKWARD) {
-            if (counter == ns_antoc_body_state_duration.DASH_BACKWARD - 1) {
-                // reset counter
-                if(enough_stamina == TRUE) {
-                    return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
-                } else {
-                    return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
-                }   
-            }
-            // increment counter
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, counter + 1, integrity, stamina, dir, FALSE) );
+        if (counter == ns_antoc_body_state_duration.DASH_BACKWARD - 1) {
+            // reset counter
+            if(enough_stamina == TRUE and intent == ns_antoc_body_state.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            } 
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
         }
-
-        // otherwise return to IDLE
-        return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        // increment counter
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     with_attr error_message("Input body state is not recognized.") {
