@@ -119,7 +119,7 @@ const GeneralFunctions = ({
                     setDisabled((_) => true)
                     return (
                         <div style={{ display: 'flex' }}>
-                            <Typography key={`${e.type}-${e.value}-${i}`} variant='caption'>
+                            <Typography style={{marginRight: '4px'}} key={`${e.type}-${e.value}-${i}`} variant='caption'>
                                 <span key={`${e.type}-${e.value}-${i}`}>{value} </span>
                             </Typography>
                             <Autocomplete
@@ -151,7 +151,7 @@ const GeneralFunctions = ({
                         </div>
                     )
                 }
-                return <Typography key={`${e.type}-${e.value}-${i}`} variant='caption'>
+                return <Typography style={{marginRight: '4px'}} key={`${e.type}-${e.value}-${i}`} variant='caption'>
                     <span key={`${e.type}-${e.value}-${i}`}>{value} </span>
                 </Typography>
             })
