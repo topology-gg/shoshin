@@ -38,19 +38,19 @@ export const spriteData: Record<string, Record<string, SpriteData[]>> = {
         knocked: [
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-39,24], right: [-278,25] },
+                hitboxOffset: { left: [-39,24], right: [-265,24] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-45,50], right: [-150,0] },
+                hitboxOffset: { left: [-45,50], right: [-235,50] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-70,70], right: [-150,0] },
+                hitboxOffset: { left: [-70,70], right: [-220,70] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-110,87], right: [-144,73] },
+                hitboxOffset: { left: [-110,87], right: [-144,87] },
             },
             {
                 size: [363, 217],
