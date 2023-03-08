@@ -520,7 +520,7 @@ export default function Home() {
                                         />
 
                                         <MidScreenControl
-                                            runnable = {true}
+                                            runnable={!(p1 == null || p2 == null)}
                                             testJsonAvailable={testJson ? true : false}
                                             animationFrame = {animationFrame}
                                             n_cycles = {N_FRAMES}

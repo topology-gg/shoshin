@@ -3,7 +3,7 @@ import { Box, Button, FormControlLabel, Switch } from "@mui/material";
 import { FastForward, FastRewind, Pause, PlayArrow, Stop } from "@mui/icons-material";
 
 const MidScreenControl = ({
-    runnable = true, testJsonAvailable, animationFrame, n_cycles, animationState, handleClick, handleSlideChange,
+    runnable, testJsonAvailable, animationFrame, n_cycles, animationState, handleClick, handleSlideChange,
     checkedShowDebugInfo, handleChangeDebugInfo
 
 }) => {
@@ -60,13 +60,14 @@ const MidScreenControl = ({
                     onChange={handleSlideChange}
                     step="1"
                     style={{ flex: 1, width: "auto" }}
-                    disabled={animationState == 'Run' || !testJsonAvailable}
+                    disabled={animationState == 'Run' || !runnable || !testJsonAvailable}
                 />
 
                 <Button
                     size="small"
                     variant="outlined"
                     onClick={() => handleClick("ToggleRun")}
+                    disabled={!runnable}
                 >
                     {animationState != "Run" ? <PlayArrow /> : <Pause />}
                 </Button>
@@ -75,7 +76,7 @@ const MidScreenControl = ({
                     size="small"
                     variant="outlined"
                     onClick={() => handleClick("Stop")}
-                    disabled={!testJsonAvailable}
+                    disabled={!runnable || !testJsonAvailable}
                 >
                     <Stop />
                 </Button>
@@ -84,7 +85,7 @@ const MidScreenControl = ({
                     size="small"
                     variant="outlined"
                     onClick={() => handleClick("PrevFrame")}
-                    disabled={!testJsonAvailable}
+                    disabled={!runnable || !testJsonAvailable}
                 >
                     <FastRewind />
                 </Button>
@@ -93,7 +94,7 @@ const MidScreenControl = ({
                     size="small"
                     variant="outlined"
                     onClick={() => handleClick("NextFrame")}
-                    disabled={!testJsonAvailable}
+                    disabled={!runnable || !testJsonAvailable}
                 >
                     <FastForward />
                 </Button>
@@ -116,7 +117,7 @@ const MidScreenControl = ({
                             defaultChecked
                             onChange={handleChangeDebugInfo}
                             checked={checkedShowDebugInfo}
-                            disabled={!testJsonAvailable}
+                            disabled={!runnable || !testJsonAvailable}
                         />
                     }
                     label={
