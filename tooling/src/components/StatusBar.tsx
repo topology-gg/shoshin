@@ -7,7 +7,8 @@ import "../../styles/StatusBar.module.css";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
-import LinearProgress from "@mui/material/LinearProgress";
+import LinearProgress, { linearProgressClasses } from "@mui/material/LinearProgress";
+import { TestJson } from "../types/Frame";
 
 const StyledRating = styled(Rating)({
     "& .MuiRating-iconFilled": {
@@ -44,6 +45,7 @@ const IntegrityBar = (props: statusBarProps) => {
 const StaminaBar = (props: statusBarProps) => {
     let { value } = props;
 
+    const BarHeight = 5;
     let staminaBarValues = [];
 
     for (let i = 1; i < 10; i++) {
@@ -55,7 +57,7 @@ const StaminaBar = (props: statusBarProps) => {
                     left: 20 * i,
                     zIndex: 200,
                     width: 2,
-                    height: 5,
+                    height: BarHeight,
                     backgroundColor: "white",
                 }}
                 key={`status-bar-value-${i}`}
@@ -63,14 +65,29 @@ const StaminaBar = (props: statusBarProps) => {
         );
     }
 
+    // Reference
+    // https://github.com/topology-gg/shoshin-tooling/pull/50
+    // https://www.colorsexplained.com/shades-of-blue-color-names/ - Maya blue
+    const CustomLinearProgress = styled(LinearProgress)(({ datatype }) => ({
+        height: BarHeight,
+        borderRadius: 5,
+        [`&.${linearProgressClasses.colorPrimary}`]: {
+          backgroundColor: '#DDDDDD',
+        },
+        [`& .${linearProgressClasses.bar}`]: {
+          borderRadius: 5,
+          backgroundColor:'#73C2FB'
+        },
+    }));
+
+
     return (
         <div>
-            <LinearProgress
+            <CustomLinearProgress
+                datatype="stamina"
                 variant="determinate"
                 value={value / 10}
-                sx={{
-                    width: 200,
-                }}
+                sx = {{ width: 200 }}
             />
             {staminaBarValues}
         </div>
@@ -78,25 +95,31 @@ const StaminaBar = (props: statusBarProps) => {
 };
 
 interface StatusBarPanelProps {
-    integrity_0: number;
-    integrity_1: number;
-    stamina_0: number;
-    stamina_1: number;
+    // integrity_0: number;
+    // integrity_1: number;
+    // stamina_0: number;
+    // stamina_1: number;
+    testJson: TestJson;
+    animationFrame: number;
 }
 
 const StatusBarPanel = ({
-    integrity_0,
-    integrity_1,
-    stamina_0,
-    stamina_1,
+    testJson,
+    animationFrame,
 }: StatusBarPanelProps) => {
+
+    const integrity_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.integrity : 0
+    const integrity_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.integrity : 0
+    const stamina_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.stamina : 0
+    const stamina_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.stamina : 0
+
     return (
         <div>
             <div className={styles.statusBarRow}>
                 <IntegrityBar value={integrity_0} />
                 <IntegrityBar value={integrity_1} />
             </div>
-            <div className={styles.statusBarRow}>
+            <div className={styles.statusBarRow} style={{height:'1rem'}}>
                 <StaminaBar value={stamina_0} />
                 <StaminaBar value={stamina_1} />
             </div>

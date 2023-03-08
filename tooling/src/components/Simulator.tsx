@@ -10,21 +10,41 @@ import { useResize } from '../hooks/useResize';
 import { Box } from '@mui/material';
 
 interface SimulatorProps {
-    characterType0: number;
-    characterType1: number;
-    agentFrame0: Frame;
-    agentFrame1: Frame;
+    testJson: TestJson;
+    animationFrame: number;
     showDebug: boolean;
 }
 
 export default function Simulator( {
-    characterType0, characterType1,
-    agentFrame0, agentFrame1,
+    testJson,
+    animationFrame,
     showDebug = true,
 }: SimulatorProps ) {
 
     const componentRef = useRef()
     const { width: componentWidth, height: componentHeight } = useResize(componentRef)
+    if (!testJson){
+        return (
+            <Box
+                ref={componentRef}
+                sx={{
+                border: 1,
+                borderRadius: 4,
+                display: 'flex',
+                height: SIMULATOR_H,
+                flexDirection: "row",
+                position: "relative",
+                mb: 2
+                }}
+                id={'simulator-background'}
+            />
+        );
+    }
+
+    const characterType0 = testJson?.agent_0.type
+    const characterType1 = testJson?.agent_1.type
+    const agentFrame0 = testJson?.agent_0.frames[animationFrame]
+    const agentFrame1 = testJson?.agent_1.frames[animationFrame]
 
     // const [recordJson, setRecordJson] = useState<TestJson>();
     // useEffect(() => {
@@ -54,15 +74,14 @@ export default function Simulator( {
             <Character agentIndex={0} viewWidth={componentWidth} characterName={characterName0} agentFrame={agentFrame0} />
             <Character agentIndex={1} viewWidth={componentWidth} characterName={characterName1} agentFrame={agentFrame1} />
 
-
             <Hitbox show={showDebug} viewWidth={componentWidth} agentFrame={agentFrame0} hitboxType={'body'} />
             <Hitbox show={showDebug} viewWidth={componentWidth} agentFrame={agentFrame0} hitboxType={'action'} />
 
             <Hitbox show={showDebug} viewWidth={componentWidth} agentFrame={agentFrame1} hitboxType={'body'} />
             <Hitbox show={showDebug} viewWidth={componentWidth} agentFrame={agentFrame1} hitboxType={'action'} />
 
-            <Debug show={showDebug} viewWidth={componentWidth} agentIndex={0} agentFrame={agentFrame0} characterName={characterName0} />
-            <Debug show={showDebug} viewWidth={componentWidth} agentIndex={1} agentFrame={agentFrame1} characterName={characterName1} />
+            {/* <Debug show={showDebug} viewWidth={componentWidth} agentIndex={0} agentFrame={agentFrame0} characterName={characterName0} />
+            <Debug show={showDebug} viewWidth={componentWidth} agentIndex={1} agentFrame={agentFrame1} characterName={characterName1} /> */}
         </Box>
     )
 }

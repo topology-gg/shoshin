@@ -15,7 +15,7 @@ const Tabs = ({ workingTab, handleClickTab }) => {
             <Tab icon={<PsychologyAlt />} value={0} label="Mental States" />
             <Tab icon={<Psychology />} value={1} label="Combos" />
             <Tab icon={<Functions />} value={2} label="Functions" />
-            <Tab icon={<SportsMartialArts />} value={3} label="Opponent" />
+            {/* <Tab icon={<SportsMartialArts />} value={3} label="Opponent" /> */}
             <Tab icon={<SelfImprovement />} value={4} label="Set Fighters" />
         </MuiTabs>
     );

@@ -89,7 +89,7 @@ export default function Home() {
     const [runCairoSimulationWarning, setCairoSimulationWarning] = useState<string>('')
 
     // Setting
-    const [settingOpen, setSettingOpen] = useState<boolean>(true);
+    const [settingOpen, setSettingOpen] = useState<boolean>(false);
 
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents()
@@ -238,27 +238,27 @@ export default function Home() {
         setTestJson ((_) => preloadedJson);
     }
 
-    async function handleClickSubmit() {
-        if (!account) {
-            console.log('> wallet not connected yet');
-            alert('Wallet not connected yet, please reload page and select connector')
-            return
-        }
+    // async function handleClickSubmit() {
+    //     if (!account) {
+    //         console.log('> wallet not connected yet');
+    //         alert('Wallet not connected yet, please reload page and select connector')
+    //         return
+    //     }
 
-        console.log('> connected address:', String(address));
+    //     console.log('> connected address:', String(address));
 
-        // submit tx
-        console.log('> submitting args to loop() on StarkNet:', callData);
-        try {
-            setHash('');
+    //     // submit tx
+    //     console.log('> submitting args to loop() on StarkNet:', callData);
+    //     try {
+    //         setHash('');
 
-            const response = await execute();
-            setHash(response.transaction_hash);
-        } catch (err) {
-            console.error(err);
-        }
-        return;
-    }
+    //         const response = await execute();
+    //         setHash(response.transaction_hash);
+    //     } catch (err) {
+    //         console.error(err);
+    //     }
+    //     return;
+    // }
 
     function handleSetMentalStateAction(index: number, action: number) {
         setMentalStates((prev) => {
@@ -478,21 +478,19 @@ export default function Home() {
                                     }}
                                 />
                                 {
-                                    !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant='outlined' disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
+                                    // !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant='outlined' disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
                                     <div style={{display:'flex', flexDirection:'column'}}>
+
+                                        <StatusBarPanel
+                                            testJson={testJson}
+                                            animationFrame={animationFrame}
+                                        />
                                         <Simulator
-                                            characterType0={testJson.agent_0.type}
-                                            characterType1={testJson.agent_1.type}
-                                            agentFrame0={testJson.agent_0.frames[animationFrame]}
-                                            agentFrame1={testJson.agent_1.frames[animationFrame]}
+                                            testJson={testJson}
+                                            animationFrame={animationFrame}
                                             showDebug={checkedShowDebugInfo}
                                         />
-                                        <StatusBarPanel
-                                            integrity_0={testJson.agent_0.frames[animationFrame].body_state.integrity}
-                                            integrity_1={testJson.agent_1.frames[animationFrame].body_state.integrity}
-                                            stamina_0={testJson.agent_0.frames[animationFrame].body_state.stamina}
-                                            stamina_1={testJson.agent_1.frames[animationFrame].body_state.stamina}
-                                         />
+
                                         <MidScreenControl
                                             runnable = {true}
                                             animationFrame = {animationFrame}
@@ -510,13 +508,10 @@ export default function Home() {
                                             handleChangeDebugInfo = {() => setCheckedShowDebugInfo(
                                                 (_) => !checkedShowDebugInfo
                                             )}
-                                            handleClickSubmit={handleClickSubmit}
                                         />
                                         <FrameInspector
-                                            characterLeftType={testJson.agent_0.type}
-                                            characterRightType={testJson.agent_1.type}
-                                            frameLeft={testJson.agent_0.frames[animationFrame]}
-                                            frameRight={testJson.agent_1.frames[animationFrame]}
+                                            testJson={testJson}
+                                            animationFrame={animationFrame}
                                             adversaryType={adversary}
                                             onAdversaryEdit={() => setWorkingTab(3)}
                                         />
