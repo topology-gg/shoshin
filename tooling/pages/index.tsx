@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import MidScreenControl from '../src/components/MidScreenControl';
 import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
-import { TestJson } from '../src/types/Frame';
+import { FrameScene, TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, verifyValidFunction } from '../src/types/Function'
 import { MentalState } from '../src/types/MentalState';
@@ -81,6 +81,8 @@ export default function Home() {
     const [opponent, setOpponent] = useState<Agent>(DEFENSIVE_AGENT)
     const [fighterSelection, setFighterSelection] = useState<string>('opponent')
     const [adversaryCombo, setAdversaryCombo] = useState<number[]>([])
+    const [output, setOuput] = useState<FrameScene>();
+    const [simulationError, setSimulationError] = useState();
     const [p1, setP1] = useState<Agent>();
     const [p2, setP2] = useState<Agent>();
 
@@ -104,7 +106,7 @@ export default function Home() {
         return handleBuildAgent()
     }, [character, mentalStates, combos, trees, functions, initialMentalState])
 
-    const { runCairoSimulation, output, error: simulationError, wasmReady } = useRunCairoSimulation(p1, p2)
+    const { runCairoSimulation, wasmReady } = useRunCairoSimulation(p1, p2)
 
     useEffect(() => {
         if (output) {
@@ -166,7 +168,7 @@ export default function Home() {
     function handleMidScreenControlClick (operation: string) {
 
         if (operation == 'NextFrame' && animationState != 'Run') {
-            animationStepForward ()
+            animationStepForward (N_FRAMES)
 
         } else if (operation == 'PrevFrame' && animationState != 'Run') {
             animationStepBackward ()
@@ -186,7 +188,7 @@ export default function Home() {
                 setAnimationState('Run');
                 setLoop(
                     setInterval(() => {
-                        animationStepForward();
+                        animationStepForward(N_FRAMES);
                     }, LATENCY)
                 );
             }
@@ -194,14 +196,19 @@ export default function Home() {
             // If in Stop => perform simulation then go to Run
             else if (animationState == 'Stop' && runnable) {
 
-                runCairoSimulation()
+                const [out, err] = runCairoSimulation()
+                if (err != null) {
+                    setSimulationError(err)
+                    return
+                }
+                setOuput(out)
 
                 // Begin animation
                 setAnimationState('Run');
 
                 setLoop(
                     setInterval(() => {
-                        animationStepForward();
+                        animationStepForward(out.agent_0.length);
                     }, LATENCY)
                 );
 
@@ -216,8 +223,8 @@ export default function Home() {
         }
     }
 
-    const animationStepForward = () => {
-        setAnimationFrame((prev) => (prev == N_FRAMES-1 ? prev : prev + 1));
+    const animationStepForward = (frames) => {
+        setAnimationFrame((prev) => (prev == frames-1 ? prev : prev + 1));
     };
     const animationStepBackward = () => {
         setAnimationFrame((prev) => (prev > 0 ? prev - 1 : prev));
