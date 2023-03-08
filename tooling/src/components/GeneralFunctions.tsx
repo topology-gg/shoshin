@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Button, Chip, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import React, { useMemo, useState } from 'react';
+import { Box, Button, Chip, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Autocomplete } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -8,6 +8,13 @@ import TextField from '@mui/material/TextField';
 import { FunctionElement, Operator, Function, ElementType, Perceptible } from '../types/Function'
 import BasicMenu from './Menu'
 import { ChevronRight } from '@mui/icons-material';
+import { BodystatesAntoc, BodystatesJessica } from '../constants/constants';
+
+interface BodyStateOption {
+    group: string
+    name: string
+    bodystate: number
+}
 
 const gridItemStyle = {
     border: 1,
@@ -15,6 +22,19 @@ const gridItemStyle = {
     borderRadius: 2,
     p: '5px',
 }
+
+const BodyStates: BodyStateOption[] = (Object.entries(BodystatesAntoc)
+.map(([k, v]) => {
+    return {group: 'antoc', name: k, bodystate: v}
+})
+.filter((v) => !isNaN(parseInt(v.bodystate as string))) as BodyStateOption[])
+.concat(
+    Object.entries(BodystatesJessica)
+    .map(([k, v]) => {
+        return {group: 'jessica', name: k, bodystate: v} 
+    })
+    .filter((v) => !isNaN(parseInt(v.bodystate as string))) as BodyStateOption[]
+)
 
 const functionsTitle = [
     { id: 'Operators', width: 5 },
@@ -48,18 +68,24 @@ const handleDisplayText = (isWarningTextOn, warningText, index) => {
         </Grid>
 }
 
-const functionToDiv = (f: Function) => {
-    if (!f || !f.elements.length) {
-        return <Typography variant='caption' color={ '#CCCCCC' } >Drop your operators, constants and perceptibles here</Typography>
-    }
+const checkPerceptible = (elem: FunctionElement) => {
+    let value = elem?.value
     return (
-        f.elements.map((e, i) => {
-            let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
-            value = value === '|' ? ')' : value
-            return <Typography key={`${e.type}-${e.value}-${i}`} variant='caption'>
-                <span key={`${e.type}-${e.value}-${i}`}>{value} </span>
-            </Typography>
-        })
+        elem?.type === ElementType.Perceptible &&
+        (value == Perceptible.OpponentBodyState || 
+        value == Perceptible.SelfBodyState) 
+    )
+}
+
+const checkOperator = (elem: FunctionElement) => {
+    let value = elem?.value
+    return (
+        elem?.type == ElementType.Operator && 
+        value != Operator.OpenAbs && 
+        value != Operator.OpenParenthesis && 
+        value != Operator.CloseAbs && 
+        value != Operator.CloseParenthesis 
+        && value != Operator.Not
     )
 }
 
@@ -67,7 +93,7 @@ let currentConstant = 0
 
 const GeneralFunctions = ({
     functions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction,
-    functionsIndex, setFunctionsIndex, isWarningTextOn, warningText, handleRemoveElementGeneralFunction
+    functionsIndex, setFunctionsIndex, isWarningTextOn, warningText, handleRemoveElementGeneralFunction 
 }) => {
     let f = functions[functionsIndex]
 
@@ -75,6 +101,61 @@ const GeneralFunctions = ({
         const element = elementFromEvent(e)
         handleUpdateGeneralFunction(functionsIndex, element)
     }
+    const [disabled, setDisabled] = useState<boolean>(false)
+    const displayFunction = useMemo<React.ReactElement>(() => {
+        if (!f || !f.elements.length) {
+            return <Typography variant='caption' color={ '#CCCCCC' } >Drop your operators, constants and perceptibles here</Typography>
+        }
+        let elements = f.elements
+        return (
+            f.elements.map((e, i) => {
+                let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
+                // convert a close abs to a closed parenthesis
+                value = value === '|' ? ')' : value
+                // if current element is a X OP Y operator and X is SelfBodyState or 
+                // OpponentBodyState -> set drop down list
+                if (i == f.elements.length - 1 && checkPerceptible(elements[i-1]) && checkOperator(elements[i])) {
+                    // disable all other button
+                    setDisabled((_) => true)
+                    return (
+                        <div style={{ display: 'flex' }}>
+                            <Typography key={`${e.type}-${e.value}-${i}`} variant='caption'>
+                                <span key={`${e.type}-${e.value}-${i}`}>{value} </span>
+                            </Typography>
+                            <Autocomplete
+                                disablePortal
+                                key={`autocomplete-perceptible-${e.value}-${i}`}
+                                options={BodyStates}
+                                getOptionLabel={(option: BodyStateOption) => option.name}
+                                groupBy={(option: BodyStateOption) => option.group}
+                                renderInput={(params) => (
+                                    <TextField
+                                    {...params}
+                                    variant="outlined"
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        style: { 
+                                            height: '10px', 
+                                            width: 150,
+                                            alignContent: 'space-around', 
+                                        }, 
+                                    }}
+                                    />
+                                )}
+                                // on change, update with the selected value and remove disabled
+                                onChange={(_, bs: BodyStateOption) => {
+                                    setDisabled(false)
+                                    handleUpdateGeneralFunction(functionsIndex, {value: bs.bodystate, type: ElementType.Constant})
+                                }}
+                            />
+                        </div>
+                    )
+                }
+                return <Typography key={`${e.type}-${e.value}-${i}`} variant='caption'>
+                    <span key={`${e.type}-${e.value}-${i}`}>{value} </span>
+                </Typography>
+            })
+    )}, [f])
 
     return (
         <Box
@@ -157,6 +238,7 @@ const GeneralFunctions = ({
                                         key={ `operator-${o}` }
                                         id={ `operator.${o}` }
                                         onClick={ handleAddElement }
+                                        disabled={disabled}
                                         variant='outlined'
                                         size='small'
                                         label={o}
@@ -182,6 +264,7 @@ const GeneralFunctions = ({
                             id='constant'
                             variant="outlined"
                             onClick={handleAddElement}
+                            disabled={disabled}
                             sx={{marginTop:'0.5rem'}}
                         >
                                 Add
@@ -194,19 +277,22 @@ const GeneralFunctions = ({
                         id='perceptible'
                         sx={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }}
                     >
-                        <BasicMenu perceptibles={perceptibles} functionsIndex={functionsIndex} handleUpdateGeneralFunction={handleUpdateGeneralFunction}></BasicMenu>
+                        <BasicMenu perceptibles={perceptibles} functionsIndex={functionsIndex} handleUpdateGeneralFunction={handleUpdateGeneralFunction} disabled={disabled} ></BasicMenu>
                     </Box>
                 </Grid>
                 { handleDisplayText(isWarningTextOn, warningText, functionsIndex) }
                 <Grid xs={ 9 } item className='function-creator'>
                     <Box
-                        sx={{ ...gridItemStyle }}
+                        sx={{ ...gridItemStyle, display: 'flex' }}
                     >
-                        { functionToDiv(f) }
+                        { displayFunction }
                     </Box>
                 </Grid>
-                <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none' }} xs={ 2 } item className='delete-interface'>
-                    <IconButton sx={{ mt: '1rem', alignItems: 'flex-end'}} onClick={(_) => {handleRemoveElementGeneralFunction(functionsIndex)}}><BackspaceIcon/></IconButton>
+                <Grid sx={{paddingTop: '0!important'}} xs={ 2 } item className='delete-interface'>
+                    <IconButton sx={{marginTop: '0.2rem'}} onClick={(_) => {
+                        setDisabled(false)
+                        handleRemoveElementGeneralFunction(functionsIndex)
+                    }}><BackspaceIcon/></IconButton>
                 </Grid>
 
                 <Grid item>

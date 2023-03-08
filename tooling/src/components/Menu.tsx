@@ -4,7 +4,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { ElementType, FunctionElement, Perceptible } from '../types/Function'
 
-const BasicMenu = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction }) => {
+const BasicMenu = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction, disabled }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -37,7 +37,7 @@ const BasicMenu = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction }
         onClose={handleClose}
       >
         {perceptibles.map((p, i) => {
-          return <MenuItem id={ `perceptible-${p}` } key={ `perceptible-${i}` } onClick={handleClose}>{p}</MenuItem>
+          return <MenuItem id={ `perceptible-${p}` } key={ `perceptible-${i}` } onClick={handleClose} disabled={disabled} >{p}</MenuItem>
         })}
       </Menu>
     </div>
