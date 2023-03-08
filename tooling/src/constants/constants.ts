@@ -384,6 +384,20 @@ export const INITIAL_FUNCTIONS: Function[] = [
 ]
 export const INITIAL_FUNCTIONS_INDEX: number = INITIAL_FUNCTIONS.length - 1
 
+const DECISION_TREE_IDLE_AGENT: Tree[] = [
+    {
+        nodes: [
+            { id: 'if F9', isChild: false },
+            { id: 'MS IDLE', isChild: true, branch: Direction.Left },
+            { id: 'MS IDLE', isChild: true, branch: Direction.Right },
+        ]
+    }
+]
+const MENTAL_STATES_IDLE_AGENT: MentalState[] = [
+    { state: 'MS IDLE', action: ActionsAntoc['Null'] },
+]
+export const IDLE_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_FUNCTIONS, 0, 1)
+
 const DECISION_TREE_OFFENSIVE_AGENT = INITIAL_DECISION_TREES
 const MENTAL_STATES_OFFENSIVE_AGENT: MentalState[] = [
     { state: 'MS IDLE', action: ActionsAntoc['Null'] },
