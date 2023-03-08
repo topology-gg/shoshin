@@ -54,18 +54,18 @@ const FrameInspector = ({
                                     <Box sx={{ whiteSpace: "nowrap" }}>
                                         {frame === frameRight ? (
                                             <>
-                                                Opponent: {adversaryType}{" "}
+                                                P2
                                                 <IconButton
                                                     disabled
                                                     size="small"
                                                     // onClick={onAdversaryEdit}
                                                 >
-                                                    <Edit />
+                                                    <Person />
                                                 </IconButton>
                                             </>
                                         ) : (
                                             <>
-                                                Player{" "}
+                                                P1
                                                 <IconButton
                                                     disabled
                                                     size="small"
