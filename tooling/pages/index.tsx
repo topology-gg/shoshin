@@ -482,7 +482,7 @@ export default function Home() {
                                     // !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant='outlined' disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
                                     <div style={{display:'flex', flexDirection:'column'}}>
 
-                                        < P1P2SettingPanel />
+                                        < P1P2SettingPanel agentsFromRegistry={agents}/>
 
                                         <StatusBarPanel
                                             testJson={testJson}
