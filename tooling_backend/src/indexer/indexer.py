@@ -32,6 +32,7 @@ scenes_coll = "shoshin-dogfooding-scenes"
 class ShoshinIndexer(StarkNetIndexer):
     def __init__(self):
         self.fight_id = 0
+        self.agent_id = 0
         super()
 
     def indexer_id(self) -> str:
@@ -57,7 +58,10 @@ class ShoshinIndexer(StarkNetIndexer):
         for e in data.events:
             key = felt.to_hex(e.event.keys[0])
             if key == submission_key:
-                submission_events.append(self.decode_submission(e.event))
+                submission = self.decode_submission(e.event)
+                submission["sender"] = felt.to_hex(e.transaction.invoke_v1.sender_address)  # fmt: skip
+                submission_events.append(submission)
+                self.agent_id += 1
             elif key == metadata_key:
                 fight_events.append(self.decode_metadata(e.event))
             elif key == scenes_key:
@@ -78,6 +82,7 @@ class ShoshinIndexer(StarkNetIndexer):
         # decode one single metadata event
         agent = EventSingleMetadata.from_iter(iter(event.data))
         return dict(
+            agent_id=self.agent_id,
             combos_offset=agent.combos_offset,
             combos=agent.combos,
             state_machine_offset=agent.state_machine_offset,
@@ -136,20 +141,27 @@ async def run_indexer(server_url=None, mongo_url=None, restart=None):
     # init the indexer and the storage
     indexer = ShoshinIndexer()
     storage = IndexerStorage(mongo_url, indexer.indexer_id())
-    id = 0
 
+    id = 0
     # filter both collections for the latest fight id, keep the highest id
-    meta_cursor = get_last_fight_id(storage, metadata_coll)
-    scenes_cursor = get_last_fight_id(storage, scenes_coll)
+    meta_cursor = get_last_id(storage, metadata_coll, "fight_id")
+    scenes_cursor = get_last_id(storage, scenes_coll, "fight_id")
     for (i, j) in zip(meta_cursor, scenes_cursor):
         id = max(id, i["fight_id"], j["fight_id"])
     indexer.fight_id = id
+
+    id = 0
+    # filter collection for the latest agent id
+    submission_cursor = get_last_id(storage, submission_coll, "agent_id")
+    for i in submission_cursor:
+        id = max(id, i["agent_id"])
+    indexer.agent_id = id
 
     # ctx can be accessed by the callbacks in `info`.
     await runner.run(indexer, ctx={"network": "starknet-goerli"})
 
 
-def get_last_fight_id(storage: IndexerStorage, collection: str) -> int:
+def get_last_id(storage: IndexerStorage, collection: str, id: str) -> int:
     return storage.db.get_collection(collection).find(
-        filter={}, projection={"fight_id": True}, limit=1, sort=[("fight_id", -1)]
+        filter={}, projection={id: True}, limit=1, sort=[(id, -1)]
     )
