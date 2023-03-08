@@ -10,7 +10,7 @@ import { TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Function, FunctionElement, verifyValidFunction } from '../src/types/Function'
 import { MentalState } from '../src/types/MentalState';
-import { Character, CONTRACT_ADDRESS, DEFENSIVE_AGENT, ENTRYPOINT, INITIAL_COMBOS, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES } from '../src/constants/constants';
+import { Character, CONTRACT_ADDRESS, DEFENSIVE_AGENT, ENTRYPOINT, IDLE_AGENT, INITIAL_COMBOS, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES, OFFENSIVE_AGENT } from '../src/constants/constants';
 import Agent, { agentsToCalldata, buildAgent } from '../src/types/Agent';
 import ImagePreloader from '../src/components/ImagePreloader';
 import StatusBarPanel from '../src/components/StatusBar';
@@ -460,7 +460,9 @@ export default function Home() {
     }
 
     function agentChange (whichPlayer: string, event: object, value: AgentOption) {
-        if (!value || value.group == 'Template') {
+        let setAgent: Agent
+
+        if (!value) {
             if (whichPlayer == 'P1') {
                 setP1(() => null)
             }
@@ -471,7 +473,15 @@ export default function Home() {
         }
 
         // get agent from value
-        let setAgent: Agent
+        if (value.label == 'idle agent') {
+            setAgent = IDLE_AGENT
+        }
+        if (value.label == 'defensive agent') {
+            setAgent = DEFENSIVE_AGENT
+        }
+        if (value.label == 'offensive agent') {
+            setAgent = OFFENSIVE_AGENT
+        }
         if (value.label == 'new agent') {
             setAgent = newAgent;
         }
