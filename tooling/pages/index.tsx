@@ -14,7 +14,7 @@ import { Character, CONTRACT_ADDRESS, DEFENSIVE_AGENT, ENTRYPOINT, INITIAL_COMBO
 import Agent, { agentsToCalldata, buildAgent } from '../src/types/Agent';
 import ImagePreloader from '../src/components/ImagePreloader';
 import StatusBarPanel from '../src/components/StatusBar';
-import P1P2SettingPanel from '../src/components/P1P2SettingPanel';
+import P1P2SettingPanel, { AgentOption } from '../src/components/P1P2SettingPanel';
 import FrameInspector from '../src/components/FrameInspector';
 import useRunCairoSimulation from '../src/hooks/useRunCairoSimulation';
 import { useAgents } from '../lib/api'
@@ -459,7 +459,17 @@ export default function Home() {
         return buildAgent(mentalStates, combos, trees, functions, initialMentalState, char)
     }
 
-    function agentChange (whichPlayer: string, event: object, value: any) {
+    function agentChange (whichPlayer: string, event: object, value: AgentOption) {
+        if (!value || value.group == 'Template') {
+            if (whichPlayer == 'P1') {
+                setP1(() => null)
+            }
+            else {
+                setP2(() => null)
+            }
+            return;
+        }
+
         // get agent from value
         let setAgent: Agent
         if (value.label == 'new agent') {

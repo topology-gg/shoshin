@@ -8,9 +8,9 @@ import Agent from "../types/Agent";
 
 interface P1P2SettingPanelProps {
     agentsFromRegistry: Agent[]
-    agentChange: (whichPlayer: string, event: object, value: any) => void
+    agentChange: (whichPlayer: string, event: object, value: AgentOption) => void
 }
-interface AgentOption {
+export interface AgentOption {
     group: string;
     label: string;
     index: number;
