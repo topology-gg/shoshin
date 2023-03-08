@@ -134,6 +134,21 @@ export enum ActionsJessica {
     DashBackward = 8,
 }
 
+export enum BodystatesJessica {
+    Idle = 0,
+    Slash = 10,
+    Upswing = 20,
+    Sidecut = 30,
+    Block = 40,
+    Clash = 50,
+    Hurt = 60,
+    Knocked = 70,
+    MoveForward  = 90,
+    MoveBackward = 100,
+    DashForward  = 110,
+    DashBackward = 120,
+}
+
 export enum ActionsAntoc {
     Null = 0,
     Hori = 1,
@@ -143,6 +158,19 @@ export enum ActionsAntoc {
     MoveBackward = 5,
     DashForward = 6,
     DashBackward = 7,
+}
+
+export enum BodystatesAntoc {
+    Idle = 0,
+    Hori = 10,
+    Vert = 20,
+    Block = 40,
+    Hurt = 50,
+    Knocked = 60,
+    MoveForward = 90,
+    MoveBackward = 100,
+    DashForward = 110,
+    DashBackward = 120,
 }
 
 export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc]
