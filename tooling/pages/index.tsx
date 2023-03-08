@@ -493,6 +493,7 @@ export default function Home() {
 
                                         <MidScreenControl
                                             runnable = {true}
+                                            testJsonAvailable={testJson ? true : false}
                                             animationFrame = {animationFrame}
                                             n_cycles = {N_FRAMES}
                                             animationState = {animationState}

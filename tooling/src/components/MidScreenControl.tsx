@@ -3,7 +3,7 @@ import { Box, Button, FormControlLabel, Switch } from "@mui/material";
 import { FastForward, FastRewind, Pause, PlayArrow, Stop } from "@mui/icons-material";
 
 const MidScreenControl = ({
-    runnable = true, animationFrame, n_cycles, animationState, handleClick, handleSlideChange,
+    runnable = true, testJsonAvailable, animationFrame, n_cycles, animationState, handleClick, handleSlideChange,
     checkedShowDebugInfo, handleChangeDebugInfo
 
 }) => {
@@ -48,7 +48,7 @@ const MidScreenControl = ({
                     }}
                 >
                     {" "}
-                    Frame {animationFrame+1} / {n_cycles}
+                    Frame {!testJsonAvailable ? '-' : animationFrame+1} / {!testJsonAvailable ? '-' : n_cycles}
                 </p>
 
                 <input
@@ -60,7 +60,7 @@ const MidScreenControl = ({
                     onChange={handleSlideChange}
                     step="1"
                     style={{ flex: 1, width: "auto" }}
-                    disabled={animationState == 'Run'}
+                    disabled={animationState == 'Run' || !testJsonAvailable}
                 />
 
                 <Button
@@ -75,6 +75,7 @@ const MidScreenControl = ({
                     size="small"
                     variant="outlined"
                     onClick={() => handleClick("Stop")}
+                    disabled={!testJsonAvailable}
                 >
                     <Stop />
                 </Button>
@@ -83,6 +84,7 @@ const MidScreenControl = ({
                     size="small"
                     variant="outlined"
                     onClick={() => handleClick("PrevFrame")}
+                    disabled={!testJsonAvailable}
                 >
                     <FastRewind />
                 </Button>
@@ -91,6 +93,7 @@ const MidScreenControl = ({
                     size="small"
                     variant="outlined"
                     onClick={() => handleClick("NextFrame")}
+                    disabled={!testJsonAvailable}
                 >
                     <FastForward />
                 </Button>
@@ -108,7 +111,13 @@ const MidScreenControl = ({
 
                 <FormControlLabel
                     control={
-                        <Switch size="small" defaultChecked onChange={handleChangeDebugInfo} checked={checkedShowDebugInfo} />
+                        <Switch
+                            size="small"
+                            defaultChecked
+                            onChange={handleChangeDebugInfo}
+                            checked={checkedShowDebugInfo}
+                            disabled={!testJsonAvailable}
+                        />
                     }
                     label={
                         <Box component="div" fontSize={'0.75rem'}>
