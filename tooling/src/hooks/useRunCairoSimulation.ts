@@ -8,9 +8,8 @@ import { FrameScene } from "../types/Frame";
  * Hook to run the Cairo simulation using provided agent and adversary
  */
 const useRunCairoSimulation = (
-    agent: Agent,
-    opponent: Agent,
-    combo: number[]
+    p1: Agent,
+    p2: Agent,
 ) => {
     const ctx = useContext(WASMContext);
 
@@ -23,14 +22,14 @@ const useRunCairoSimulation = (
             return;
         }
         try {
-            let shoshinInput = new Int32Array(agentsToArray(agent, opponent)) 
+            let shoshinInput = new Int32Array(agentsToArray(p1, p2))
             let output = ctx.wasm.runCairoProgram(shoshinInput);
             setOutput(cairoOutputToFrameScene(output));
         } catch (e) {
             console.log("Got an error running wasm", e);
             setError(e);
         }
-    }, [ctx, agent, opponent, combo]);
+    }, [ctx, p1, p2]);
 
     return {
         wasmReady: ctx.wasm,

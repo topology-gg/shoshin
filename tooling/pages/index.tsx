@@ -81,6 +81,8 @@ export default function Home() {
     const [opponent, setOpponent] = useState<Agent>(DEFENSIVE_AGENT)
     const [fighterSelection, setFighterSelection] = useState<string>('opponent')
     const [adversaryCombo, setAdversaryCombo] = useState<number[]>([])
+    const [p1, setP1] = useState<Agent>();
+    const [p2, setP2] = useState<Agent>();
 
     // Warnings
     const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
@@ -98,16 +100,16 @@ export default function Home() {
     const agents: Agent[] = t?.map(splitAgents).flat()
 
 
-    const agent: Agent = useMemo(() => {
+    const newAgent: Agent = useMemo(() => {
         return handleBuildAgent()
     }, [character, mentalStates, combos, trees, functions, initialMentalState])
 
-    const { runCairoSimulation, output, error: simulationError, wasmReady } = useRunCairoSimulation(agent, opponent, adversaryCombo)
+    const { runCairoSimulation, output, error: simulationError, wasmReady } = useRunCairoSimulation(p1, p2)
 
     useEffect(() => {
         if (output) {
             setTestJson((_) => {
-                return { agent_0: { frames: output.agent_0, type: agent.character }, agent_1: { frames: output.agent_1, type: opponent.character } }
+                return { agent_0: { frames: output.agent_0, type: p1.character }, agent_1: { frames: output.agent_1, type: p2.character } }
             })
         }
     }, [output])
@@ -122,17 +124,18 @@ export default function Home() {
     // Starknet states
     const { account, address, status } = useAccount();
     const [hash, setHash] = useState<string>();
-    const callData = useMemo(() => {
-        let args = agentsToCalldata(agent, opponent)
-        // add the frame duration
-        args = ["120"].concat(args)
-        const tx = {
-            contractAddress: CONTRACT_ADDRESS,
-            entrypoint: ENTRYPOINT,
-            calldata: args,
-        };
-        return [tx]
-    }, [agent, opponent])
+    // const callData = useMemo(() => {
+    //     let args = agentsToCalldata(agent, opponent)
+    //     // add the frame duration
+    //     args = ["120"].concat(args)
+    //     const tx = {
+    //         contractAddress: CONTRACT_ADDRESS,
+    //         entrypoint: ENTRYPOINT,
+    //         calldata: args,
+    //     };
+    //     return [tx]
+    // }, [agent, opponent])
+    const callData = []
     const { execute } = useStarknetExecute({ calls: callData });
     const { available, connect } = useConnectors()
     const [connectors, setConnectors] = useState([])
@@ -456,6 +459,25 @@ export default function Home() {
         return buildAgent(mentalStates, combos, trees, functions, initialMentalState, char)
     }
 
+    function agentChange (whichPlayer: string, event: object, value: any) {
+        // get agent from value
+        let setAgent: Agent
+        if (value.label == 'new agent') {
+            setAgent = newAgent;
+        }
+        else if (value.group == 'Registry') {
+            setAgent = agents[value.index]
+        }
+
+        // setP1 / setP2 depending on whichPlayer
+        if (whichPlayer == 'P1') {
+            setP1(() => setAgent)
+        }
+        else {
+            setP2(() => setAgent)
+        }
+    }
+
     //
     // Render
     //
@@ -482,7 +504,10 @@ export default function Home() {
                                     // !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant='outlined' disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
                                     <div style={{display:'flex', flexDirection:'column'}}>
 
-                                        < P1P2SettingPanel agentsFromRegistry={agents}/>
+                                        <P1P2SettingPanel
+                                            agentsFromRegistry={agents}
+                                            agentChange={agentChange}
+                                        />
 
                                         <StatusBarPanel
                                             testJson={testJson}
