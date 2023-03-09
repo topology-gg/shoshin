@@ -1,9 +1,5 @@
-import {useAccount, useConnectors} from '@starknet-react/core'
-import { useEffect, useState } from 'react'
-import styles from "../../styles/Character.module.css";
-import testJsonStr from '../json/test_engine.json';
-import { SIMULATOR_H, SIMULATOR_W, bodyStateNumberToName, SpriteTopAdjustmentToBg } from '../constants/constants';
-import { TestJson, Frame, Rectangle } from '../types/Frame';
+import { SIMULATOR_H, SpriteTopAdjustmentToBg } from '../constants/constants';
+import { Frame, Rectangle } from '../types/Frame';
 
 interface HitboxProps {
     show: boolean;

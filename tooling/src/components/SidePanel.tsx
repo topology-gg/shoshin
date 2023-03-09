@@ -5,7 +5,6 @@ import MentalStates from './MentalStates';
 import TreeEditor from './TreeEditor';
 import Conditions from './Conditions';
 import Combos from './Combos';
-import { AdversarySelection } from './AdversarySelection';
 import { MentalState } from '../types/MentalState';
 import { Character } from '../constants/constants';
 import { Tree } from '../types/Tree';
