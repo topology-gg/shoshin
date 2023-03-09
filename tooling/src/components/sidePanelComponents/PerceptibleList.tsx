@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { ElementType, FunctionElement, Perceptible } from '../../types/Function'
 
 const PerceptibleList = ({
-    disabled, perceptibles, functionsIndex, handleUpdateGeneralFunction
+    disabled, perceptibles, functionUnderEditIndex, handleUpdateGeneralFunction
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -15,7 +15,7 @@ const PerceptibleList = ({
   const handleClose = (event) => {
     if (event.target.id) {
       let perceptible = Perceptible[event.target.id.split('-')[1]]
-      handleUpdateGeneralFunction(functionsIndex, { value: perceptible, type: ElementType.Perceptible } as FunctionElement)
+      handleUpdateGeneralFunction(functionUnderEditIndex, { value: perceptible, type: ElementType.Perceptible } as FunctionElement)
     }
     setAnchorEl(null)
   }

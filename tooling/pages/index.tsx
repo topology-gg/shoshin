@@ -77,15 +77,15 @@ export default function Home() {
     // React states for UI
     const [workingTab, setWorkingTab] = useState<EditorTabName>(EditorTabName.Profile);
     const [walletSelectOpen, setWalletSelectOpen] = useState<boolean>(false);
+    const [treeEditor, setTreeEditor] = useState<number>(0);
+    const [functionUnderEditIndex, setFunctionUnderEditIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
 
     // React states for tracking the New Agent being edited in the right panel
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
     const [combos, setCombos] = useState<number[][]>(INITIAL_COMBOS)
     const [mentalStates, setMentalStates] = useState<MentalState[]>(INITIAL_MENTAL_STATES);
-    const [treeEditor, setTreeEditor] = useState<number>(0);
     const [trees, setTrees] = useState<Tree[]>(INITIAL_DECISION_TREES)
     const [functions, setFunctions] = useState<Function[]>(INITIAL_FUNCTIONS)
-    const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
     const [agentName, setAgentName] = useState<String>('')
     const [character, setCharacter] = useState<Character>(Character.Jessica)
     const [fighterSelection, setFighterSelection] = useState<string>('opponent')
@@ -406,21 +406,21 @@ export default function Home() {
 
     function handleConfirmFunction() {
         let length = functions.length
-        let f = functions[functionsIndex]
+        let f = functions[functionUnderEditIndex]
         if(!f?.elements || !verifyValidFunction(f, true)) {
             setGeneralFunctionWarningTextOn(true)
             setGeneralFunctionWarningText(`Invalid function, please update`)
             setTimeout(() => setGeneralFunctionWarningTextOn(false), 2000)
             return
         }
-        if (functionsIndex < length - 1){
-            setFunctionsIndex(() => {
+        if (functionUnderEditIndex < length - 1){
+            setFunctionUnderEditIndex(() => {
                 return length - 1
             })
             return
         }
         if (functions[length - 1]?.elements.length > 0) {
-            setFunctionsIndex((prev) => {
+            setFunctionUnderEditIndex((prev) => {
                 return prev + 1
             })
             setFunctions((prev) => {
@@ -432,7 +432,7 @@ export default function Home() {
     }
 
     function handleClickDeleteFunction(index: number) {
-        setFunctionsIndex((prev) => {
+        setFunctionUnderEditIndex((prev) => {
             if (index == prev) {
                 return prev - 1
             }
@@ -468,9 +468,13 @@ export default function Home() {
         return buildAgent(mentalStates, combos, trees, functions, initialMentalState, char)
     }
 
+    //
+    // Function that sets either P1 or P2 to a specified Agent
+    //
     function agentChange (whichPlayer: string, event: object, value: AgentOption) {
         let setAgent: Agent
 
+        // if Agent is not specified with the function call, set P1 or P2 to null
         if (!value) {
             if (whichPlayer == 'P1') {
                 setP1(() => null)
@@ -508,9 +512,21 @@ export default function Home() {
     }
 
     //
+    // Set Agent in the side panel to blank agent
+    //
+    function setAgentInPanelToBlank () {
+        setCombos(() => []);
+        setMentalStates(() => []);
+        setTrees(() => []);
+        setFunctions(() => []);
+        setAgentName(() => '');
+        setCharacter(() => Character.Jessica);
+        setFunctionUnderEditIndex(() => null);
+    }
+
+    //
     // Render
     //
-    // console.log(`animationFrame: ${animationFrame}/${N_FRAMES-1}`);
     return (
         <div className={styles.container}>
                 <Head>
@@ -583,6 +599,7 @@ export default function Home() {
                         <Grid item xs={4} sx={{ bgcolor: 'grey.50' }}>
                             <SidePanel
                                 isReadOnly={true}
+                                createNewAgentFromBlank={setAgentInPanelToBlank}
                                 agentName={agentName}
                                 setAgentName={setAgentName}
                                 workingTab={workingTab}
@@ -612,8 +629,8 @@ export default function Home() {
                                 handleUpdateGeneralFunction={handleUpdateGeneralFunction}
                                 handleConfirmFunction={handleConfirmFunction}
                                 handleClickDeleteFunction={handleClickDeleteFunction}
-                                functionsIndex={functionsIndex}
-                                setFunctionsIndex={setFunctionsIndex}
+                                functionUnderEditIndex={functionUnderEditIndex}
+                                setFunctionUnderEditIndex={setFunctionUnderEditIndex}
                                 isGeneralFunctionWarningTextOn={isGeneralFunctionWarningTextOn}
                                 generalFunctionWarningText={generalFunctionWarningText}
                                 isTreeEditorWarningTextOn={isTreeEditorWarningTextOn}

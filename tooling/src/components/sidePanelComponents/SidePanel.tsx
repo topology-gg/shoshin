@@ -11,12 +11,13 @@ import ButtonOptionList from './ButtonOptionList';
 
 const SidePanel = ({
     isReadOnly,
+    createNewAgentFromBlank,
     agentName,setAgentName,
     workingTab, handleClickTab,
     mentalStates, setMentalStates, initialMentalState, handleSetInitialMentalState, combos, setCombos, handleValidateCombo,
     character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor,
     trees, setTrees, handleUpdateTree, functions, setFunctions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction,
-    functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText,
+    functionUnderEditIndex, setFunctionUnderEditIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText,
     handleRemoveElementGeneralFunction, runCairoSimulationWarning, onComboChange, fighterSelection, setFighterSelection, agents
 }) => {
 
@@ -84,8 +85,8 @@ const SidePanel = ({
                         handleUpdateGeneralFunction={handleUpdateGeneralFunction}
                         handleConfirmFunction={handleConfirmFunction}
                         handleClickDeleteFunction={handleClickDeleteFunction}
-                        functionsIndex={functionsIndex}
-                        setFunctionsIndex={setFunctionsIndex}
+                        functionUnderEditIndex={functionUnderEditIndex}
+                        setFunctionUnderEditIndex={setFunctionUnderEditIndex}
                         isWarningTextOn={isGeneralFunctionWarningTextOn}
                         warningText={generalFunctionWarningText}
                         handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
@@ -131,7 +132,10 @@ const SidePanel = ({
                 <div style={{marginBottom:'1rem'}}>
                     <Button
                         id='button-option-list-button'
-                        onClick={() => {console.log('Create new Agent from blank')}}
+                        onClick={() => {
+                            console.log('Create new Agent from blank');
+                            createNewAgentFromBlank()
+                        }}
                         variant="outlined"
                     >
                         Create new Agent from blank

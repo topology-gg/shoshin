@@ -40,10 +40,13 @@ const elementFromEvent = (e): FunctionElement => {
 }
 
 const handleDisplayText = (isReadOnly, isWarningTextOn, warningText, index) => {
+
+    const text = !index ? 'No conditions made' : `${isReadOnly ? 'Viewing' : 'Editing'} Condition ${index}`
+
     return <Grid sx={{ mt: '1rem' }} xs={ 12 } item className='warning-test'>
             {
                 isWarningTextOn && <Typography color={'red'} variant='overline'>{warningText}</Typography>
-                || !isWarningTextOn && <Typography variant='overline'>{isReadOnly ? 'Viewing' : 'Editing'} F{index}</Typography>
+                || !isWarningTextOn && <Typography variant='overline'>{text}</Typography>
             }
         </Grid>
 }
@@ -67,13 +70,13 @@ let currentConstant = 0
 
 const GeneralFunctions = ({
     isReadOnly, functions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction,
-    functionsIndex, setFunctionsIndex, isWarningTextOn, warningText, handleRemoveElementGeneralFunction
+    functionUnderEditIndex, setFunctionUnderEditIndex, isWarningTextOn, warningText, handleRemoveElementGeneralFunction
 }) => {
-    let f = functions[functionsIndex]
+    let f = functions[functionUnderEditIndex]
 
     const handleAddElement = (e) => {
         const element = elementFromEvent(e)
-        handleUpdateGeneralFunction(functionsIndex, element)
+        handleUpdateGeneralFunction(functionUnderEditIndex, element)
     }
 
     return (
@@ -110,11 +113,11 @@ const GeneralFunctions = ({
                                         }
                                     >
                                         <ListItemButton
-                                            onClick={() => setFunctionsIndex(i)}
-                                            selected={i === functionsIndex}
+                                            onClick={() => setFunctionUnderEditIndex(i)}
+                                            selected={i === functionUnderEditIndex}
                                         >
-                                            {i === functionsIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
-                                            <ListItemText inset={i !== functionsIndex} primary={`F${i}`} />
+                                            {i === functionUnderEditIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
+                                            <ListItemText inset={i !== functionUnderEditIndex} primary={`F${i}`} />
                                         </ListItemButton>
 
                                     </ListItem>
@@ -128,11 +131,11 @@ const GeneralFunctions = ({
                                     disablePadding
                                 >
                                     <ListItemButton
-                                        onClick={() => setFunctionsIndex(functions.length - 1)}
-                                        selected={functions.length - 1 === functionsIndex}
+                                        onClick={() => setFunctionUnderEditIndex(functions.length - 1)}
+                                        selected={functions.length - 1 === functionUnderEditIndex}
                                     >
-                                        {functions.length - 1 === functionsIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
-                                        <ListItemText inset={functions.length - 1 !== functionsIndex} primary="New Condition" />
+                                        {functions.length - 1 === functionUnderEditIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
+                                        <ListItemText inset={functions.length - 1 !== functionUnderEditIndex} primary="New Condition" />
                                     </ListItemButton>
                                 </ListItem>
                             ) : <></>
@@ -214,7 +217,7 @@ const GeneralFunctions = ({
                                     <PerceptibleList
                                         disabled={isReadOnly}
                                         perceptibles={perceptibles}
-                                        functionsIndex={functionsIndex}
+                                        functionUnderEditIndex={functionUnderEditIndex}
                                         handleUpdateGeneralFunction={handleUpdateGeneralFunction}
                                     />
                                 </Box>
@@ -223,7 +226,7 @@ const GeneralFunctions = ({
                     )
                 }
 
-                { handleDisplayText(isReadOnly, isWarningTextOn, warningText, functionsIndex) }
+                { handleDisplayText(isReadOnly, isWarningTextOn, warningText, functionUnderEditIndex) }
 
                 <Grid xs={ 9 } item className='function-creator'>
                     <Box
@@ -239,7 +242,7 @@ const GeneralFunctions = ({
                             <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none' }} xs={ 2 } item className='delete-interface'>
                                 <IconButton
                                     sx={{ mt: '1rem', alignItems: 'flex-end'}}
-                                    onClick={(_) => {handleRemoveElementGeneralFunction(functionsIndex)}}
+                                    onClick={(_) => {handleRemoveElementGeneralFunction(functionUnderEditIndex)}}
                                 >
                                     <BackspaceIcon/>
                                 </IconButton>
