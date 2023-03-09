@@ -15,7 +15,7 @@ const comboToStr = (combo: number[], characterIndex) => {
 }
 
 const Combos = ({
-    character, combos, handleValidateCombo
+    isReadOnly, character, combos, handleValidateCombo
 }) => {
     const [editingCombo, setEditingCombo] = useState<number[]>([])
     // If the selectedIndex is null, it means the "New Combo" is selected
@@ -66,28 +66,36 @@ const Combos = ({
                             )
                         })
                     }
-                    <ListItem
-                        disablePadding
-                    >
-                        <ListItemButton
-                            selected={selectedIndex === null}
-                            onClick={() => {
-                                setEditingCombo([])
-                                setSelectedIndex(null)
-                            }}
-                        >
-                            {selectedIndex === null &&
-                                <ListItemIcon>
-                                    <ChevronRight />
-                                </ListItemIcon>
-                            }
-                            <ListItemText inset={selectedIndex !== null}>
-                                New Combo
-                            </ListItemText>
-                        </ListItemButton>
-                    </ListItem>
+
+                    {
+                        !isReadOnly ? (
+                            <ListItem
+                                disablePadding
+                            >
+                                <ListItemButton
+                                    selected={selectedIndex === null}
+                                    onClick={() => {
+                                        setEditingCombo([])
+                                        setSelectedIndex(null)
+                                    }}
+                                >
+                                    {selectedIndex === null &&
+                                        <ListItemIcon>
+                                            <ChevronRight />
+                                        </ListItemIcon>
+                                    }
+                                    <ListItemText inset={selectedIndex !== null}>
+                                        New Combo
+                                    </ListItemText>
+
+                                </ListItemButton>
+                            </ListItem>
+                        ) : <></>
+                    }
+
                 </List>
                 <ComboEditor
+                    isReadOnly={isReadOnly}
                     editingCombo={editingCombo}
                     setEditingCombo={setEditingCombo}
                     characterIndex={characterIndex}

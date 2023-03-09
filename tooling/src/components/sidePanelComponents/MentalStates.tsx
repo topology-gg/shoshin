@@ -23,7 +23,9 @@ const actionToStr = (action: number, characterIndex) => {
 }
 
 const MentalStates = ({
-    mentalStates, initialMentalState, handleSetInitialMentalState, combos, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState,
+    isReadOnly,
+    mentalStates, initialMentalState, handleSetInitialMentalState,
+    combos, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState,
     handleSetMentalStateAction, handleClickTreeEditor
 }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -79,21 +81,39 @@ const MentalStates = ({
         >
             <Typography sx={{ fontSize: '17px' }} variant='overline'>Mind</Typography>
 
-            <Grid
-                xs={2}
-                item
-                sx={{
-                    display:"flex",
-                    alignItems:"flex-end",
-                    justifyContent:"space-around"
-                }}
-            >
-                <IconButton onClick={(_)=>{mentalState ? handleAddMentalState(mentalState) : 0}}><AddIcon/></IconButton>
-            </Grid>
-
-            <Grid xs={10} item>
-                <TextField color={"info"} fullWidth id="standard-basic" label="Input Mental State" variant="standard" onChange={(event) => {mentalState = event.target.value}}/>
-            </Grid>
+            {
+                isReadOnly ? <></> : (
+                    <>
+                        <Grid
+                            xs={2}
+                            item
+                            sx={{
+                                display:"flex",
+                                alignItems:"flex-end",
+                                justifyContent:"space-around"
+                            }}
+                        >
+                            <IconButton
+                                onClick={(_)=>{mentalState ? handleAddMentalState(mentalState) : 0}}
+                                disabled={isReadOnly}
+                            >
+                                <AddIcon/>
+                            </IconButton>
+                        </Grid>
+                        <Grid xs={10} item>
+                            <TextField
+                                color={"info"}
+                                fullWidth
+                                id="standard-basic"
+                                label="Input Mental State"
+                                variant="standard"
+                                onChange={(event) => {mentalState = event.target.value}}
+                                disabled={isReadOnly}
+                            />
+                        </Grid>
+                    </>
+                )
+            }
 
             <Grid
                 sx={{
@@ -113,14 +133,15 @@ const MentalStates = ({
                     aria-haspopup='true'
                     aria-expanded={openInitialState ? 'true' : undefined}
                     onClick={handleClickInitialState}
+                    disabled={isReadOnly}
                 >
                     <Typography variant='overline'>Starting state: {mentalStates.length > 0 ? mentalStates[initialMentalState].state: 'Create at least one mental state'}</Typography>
                 </Button>
                 <Menu
-                id={'initial-actions-menu'}
-                anchorEl={anchorElInitialState}
-                open={openInitialState}
-                onClose={handleCloseInitialState}
+                    id={'initial-actions-menu'}
+                    anchorEl={anchorElInitialState}
+                    open={openInitialState}
+                    onClose={handleCloseInitialState}
                 >
                     {
                         mentalStates.map((ms, i) => {
@@ -130,55 +151,67 @@ const MentalStates = ({
                 </Menu>
             </Grid>
             <Grid
-            item
-            xs={12}
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "left",
-                alignItems: "left",
-                mt: "1rem",
-            }}>
+                item
+                xs={12}
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "left",
+                    alignItems: "left",
+                    mt: "1rem",
+                }}
+            >
                 {
                     mentalStates.map((state: MentalState, i: number) => {
-                        return <Box
-                        key={`button-wrapper-${i}`}
-                        sx={{
-                            display:"flex",
-                            alignItems:"center",
-                            ml: "2rem"
-                        }}>
-                            <button
-                            style={{ ...buttonStyle }}
-                            key={`${i}`}
-                            onClick={() => handleClickTreeEditor(i+1)}>
-                                {`${state.state}`}
-                            </button>
-                            <IconButton onClick={(_)=>handleClickRemoveMentalState(i)}>
-                                <DeleteIcon sx={{fontSize:"small"}}/>
-                            </IconButton>
-                            <Button
-                                id={`actions-button-${i}`}
-                                aria-controls={open ? 'basic-menu' : undefined}
-                                aria-haspopup='true'
-                                aria-expanded={open ? 'true' : undefined}
-                                onClick={handleClick}
+                        return (
+                            <Box
+                                key={`button-wrapper-${i}`}
+                                sx={{
+                                    display:"flex",
+                                    alignItems:"center",
+                                    ml: "2rem"
+                                }}
                             >
-                                action {actionToStr(state.action, characterIndex)}
-                            </Button>
-                            <Menu
-                                id={`actions-menu-${i}`}
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={handleClose}
-                            >
-                                {
-                                    actions.map((action) => {
-                                        return <MenuItem id={ `action-${action}-${i}` } key={ `action-${action}-${i}` } onClick={handleClose}>{action.replaceAll('_', ' ')}</MenuItem>
-                                    })
-                                }
-                            </Menu>
-                        </Box>
+                                <button
+                                    style={{ ...buttonStyle }}
+                                    key={`${i}`}
+                                    onClick={() => handleClickTreeEditor(i+1)}
+                                >
+                                        {`${state.state}`}
+                                </button>
+
+                                <IconButton
+                                    onClick={(_)=>handleClickRemoveMentalState(i)}
+                                    disabled={isReadOnly}
+                                >
+                                    <DeleteIcon sx={{fontSize:"small"}}/>
+                                </IconButton>
+
+                                <Button
+                                    id={`actions-button-${i}`}
+                                    aria-controls={open ? 'basic-menu' : undefined}
+                                    aria-haspopup='true'
+                                    aria-expanded={open ? 'true' : undefined}
+                                    onClick={handleClick}
+                                    disabled={isReadOnly}
+                                >
+                                    action {actionToStr(state.action, characterIndex)}
+                                </Button>
+
+                                <Menu
+                                    id={`actions-menu-${i}`}
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={handleClose}
+                                >
+                                    {
+                                        actions.map((action) => {
+                                            return <MenuItem id={ `action-${action}-${i}` } key={ `action-${action}-${i}` } onClick={handleClose}>{action.replaceAll('_', ' ')}</MenuItem>
+                                        })
+                                    }
+                                </Menu>
+                            </Box>
+                        )
                     })
                 }
             </Grid>

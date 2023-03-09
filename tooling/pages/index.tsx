@@ -582,6 +582,7 @@ export default function Home() {
                         </Grid>
                         <Grid item xs={4} sx={{ bgcolor: 'grey.50' }}>
                             <SidePanel
+                                isReadOnly={true}
                                 agentName={agentName}
                                 setAgentName={setAgentName}
                                 workingTab={workingTab}

@@ -10,6 +10,7 @@ import ButtonOptionList from './ButtonOptionList';
 
 
 const SidePanel = ({
+    isReadOnly,
     agentName,setAgentName,
     workingTab, handleClickTab,
     mentalStates, setMentalStates, initialMentalState, handleSetInitialMentalState, combos, setCombos, handleValidateCombo,
@@ -18,11 +19,14 @@ const SidePanel = ({
     functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText,
     handleRemoveElementGeneralFunction, runCairoSimulationWarning, onComboChange, fighterSelection, setFighterSelection, agents
 }) => {
+
     const content = (workingTab: EditorTabName) => {
         switch (workingTab) {
+
             case EditorTabName.Profile: {
                 return (
                     <Profile
+                        isReadOnly={isReadOnly}
                         agentName={agentName}
                         setAgentName={setAgentName}
                         character={character}
@@ -30,9 +34,11 @@ const SidePanel = ({
                     />
                 )
             }
+
             case EditorTabName.Mind: {
                 return !treeEditor && (
                     <MentalStates
+                        isReadOnly={isReadOnly}
                         mentalStates={mentalStates}
                         initialMentalState={initialMentalState}
                         handleSetInitialMentalState={handleSetInitialMentalState}
@@ -46,6 +52,7 @@ const SidePanel = ({
                     />
                 ) || !!treeEditor && (
                     <TreeEditor
+                        isReadOnly={isReadOnly}
                         indexTree={ treeEditor - 1 }
                         tree={trees[treeEditor - 1]}
                         handleUpdateTree={handleUpdateTree}
@@ -57,18 +64,22 @@ const SidePanel = ({
                     />
                 )
             }
+
             case EditorTabName.Combos: {
                 return (
                     <Combos
+                        isReadOnly={isReadOnly}
                         character={character}
                         combos={combos}
                         handleValidateCombo={handleValidateCombo}
                     ></Combos>
                 )
             }
+
             case EditorTabName.Conditions: {
                 return (
                     <GeneralFunctions
+                        isReadOnly={isReadOnly}
                         functions={functions}
                         handleUpdateGeneralFunction={handleUpdateGeneralFunction}
                         handleConfirmFunction={handleConfirmFunction}
@@ -81,6 +92,7 @@ const SidePanel = ({
                     />
                 )
             }
+
         }
     }
     return (

@@ -39,11 +39,11 @@ const elementFromEvent = (e): FunctionElement => {
     }
 }
 
-const handleDisplayText = (isWarningTextOn, warningText, index) => {
+const handleDisplayText = (isReadOnly, isWarningTextOn, warningText, index) => {
     return <Grid sx={{ mt: '1rem' }} xs={ 12 } item className='warning-test'>
             {
                 isWarningTextOn && <Typography color={'red'} variant='overline'>{warningText}</Typography>
-                || !isWarningTextOn && <Typography variant='overline'>Editing F{index}</Typography>
+                || !isWarningTextOn && <Typography variant='overline'>{isReadOnly ? 'Viewing' : 'Editing'} F{index}</Typography>
             }
         </Grid>
 }
@@ -66,7 +66,7 @@ const functionToDiv = (f: Function) => {
 let currentConstant = 0
 
 const GeneralFunctions = ({
-    functions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction,
+    isReadOnly, functions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction,
     functionsIndex, setFunctionsIndex, isWarningTextOn, warningText, handleRemoveElementGeneralFunction
 }) => {
     let f = functions[functionsIndex]
@@ -88,6 +88,7 @@ const GeneralFunctions = ({
             }}
         >
             <Typography sx={{ fontSize: '17px' }} variant='overline'>Conditions</Typography>
+
             <Grid container spacing={1}>
                 <Grid
                     xs={ 12 }
@@ -120,86 +121,110 @@ const GeneralFunctions = ({
                                 )
                             })
                         }
-                        <ListItem
-                            disablePadding
-                        >
-                            <ListItemButton
-                                onClick={() => setFunctionsIndex(functions.length - 1)}
-                                selected={functions.length - 1 === functionsIndex}
-                            >
-                                {functions.length - 1 === functionsIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
-                                <ListItemText inset={functions.length - 1 !== functionsIndex} primary="New Condition" />
-                            </ListItemButton>
-                        </ListItem>
+
+                        {
+                            !isReadOnly ? (
+                                <ListItem
+                                    disablePadding
+                                >
+                                    <ListItemButton
+                                        onClick={() => setFunctionsIndex(functions.length - 1)}
+                                        selected={functions.length - 1 === functionsIndex}
+                                    >
+                                        {functions.length - 1 === functionsIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
+                                        <ListItemText inset={functions.length - 1 !== functionsIndex} primary="New Condition" />
+                                    </ListItemButton>
+                                </ListItem>
+                            ) : <></>
+                        }
+
                     </List>
                 </Grid>
-                <Grid item className='functions-title' xs={ 12 }>
-                    <Grid container spacing={1}>
-                        {
-                            functionsTitle.map((f) => {
-                                let style =  f.id == 'Const' ? { maxWidth: 'none', flexGrow: 1 } : {}
-                                return <Grid
-                                    key={ `function-${f.id}` }
-                                    style={ style }
-                                    sx={{ p: '5px' }}
-                                    item
-                                    xs={ f.width }>
-                                        <Typography variant='overline'>{ f.id }</Typography>
-                                    </Grid>
-                            })
-                        }
-                    </Grid>
-                </Grid>
-                <Grid xs={ functionsTitle[0].width } item>
-                    <Box sx={ {display: "flex", flexWrap: 'wrap', gap: 0.5} }>
-                        {
-                            operators.map((o) => {
-                                return (
-                                    <Chip
-                                        key={ `operator-${o}` }
-                                        id={ `operator.${o}` }
-                                        onClick={ handleAddElement }
-                                        variant='outlined'
-                                        size='small'
-                                        label={o}
-                                        sx={{
-                                            "&&:hover": {backgroundColor: "#E0B0FF"}
-                                        }}
+
+                {
+                    isReadOnly ? <></> : (
+                        <>
+                            <Grid item className='functions-title' xs={ 12 }>
+                                <Grid container spacing={1}>
+                                    {
+                                        functionsTitle.map((f) => {
+                                            let style =  f.id == 'Const' ? { maxWidth: 'none', flexGrow: 1 } : {}
+                                            return <Grid
+                                                key={ `function-${f.id}` }
+                                                style={ style }
+                                                sx={{ p: '5px' }}
+                                                item
+                                                xs={ f.width }>
+                                                    <Typography variant='overline'>{ f.id }</Typography>
+                                                </Grid>
+                                        })
+                                    }
+                                </Grid>
+                            </Grid>
+
+                            <Grid xs={ functionsTitle[0].width } item>
+                                <Box sx={ {display: "flex", flexWrap: 'wrap', gap: 0.5} }>
+                                    {
+                                        operators.map((o) => {
+                                            return (
+                                                <Chip
+                                                    key={ `operator-${o}` }
+                                                    id={ `operator.${o}` }
+                                                    onClick={ handleAddElement }
+                                                    variant='outlined'
+                                                    size='small'
+                                                    label={o}
+                                                    sx={{
+                                                        "&&:hover": {backgroundColor: "#E0B0FF"}
+                                                    }}
+                                                    disabled={isReadOnly}
+                                                />
+                                            )
+                                        })
+                                    }
+                                </Box>
+                            </Grid>
+
+                            <Grid xs={ functionsTitle[1].width } item>
+                                <Box>
+                                    <TextField
+                                        color={ "info" }
+                                        type="number"
+                                        defaultValue={currentConstant}
+                                        onChange={(e) => currentConstant=parseInt(e.target.value)}
+                                        disabled={isReadOnly}
                                     />
-                                )
-                            })
-                        }
-                    </Box>
-                </Grid>
+                                    <Button
+                                        id='constant'
+                                        variant="outlined"
+                                        onClick={handleAddElement}
+                                        sx={{marginTop:'0.5rem'}}
+                                        disabled={isReadOnly}
+                                    >
+                                            Add
+                                    </Button>
+                                </Box>
+                            </Grid>
 
-                <Grid xs={ functionsTitle[1].width } item>
-                    <Box>
-                        <TextField
-                            color={ "info" }
-                            type="number"
-                            defaultValue={currentConstant}
-                            onChange={(e) => currentConstant=parseInt(e.target.value)}
-                        />
-                        <Button
-                            id='constant'
-                            variant="outlined"
-                            onClick={handleAddElement}
-                            sx={{marginTop:'0.5rem'}}
-                        >
-                                Add
-                        </Button>
-                    </Box>
-                </Grid>
+                            <Grid xs={ functionsTitle[2].width } item>
+                                <Box
+                                    id='perceptible'
+                                    sx={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }}
+                                >
+                                    <PerceptibleList
+                                        disabled={isReadOnly}
+                                        perceptibles={perceptibles}
+                                        functionsIndex={functionsIndex}
+                                        handleUpdateGeneralFunction={handleUpdateGeneralFunction}
+                                    />
+                                </Box>
+                            </Grid>
+                        </>
+                    )
+                }
 
-                <Grid xs={ functionsTitle[2].width } item>
-                    <Box
-                        id='perceptible'
-                        sx={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }}
-                    >
-                        <PerceptibleList perceptibles={perceptibles} functionsIndex={functionsIndex} handleUpdateGeneralFunction={handleUpdateGeneralFunction}></PerceptibleList>
-                    </Box>
-                </Grid>
-                { handleDisplayText(isWarningTextOn, warningText, functionsIndex) }
+                { handleDisplayText(isReadOnly, isWarningTextOn, warningText, functionsIndex) }
+
                 <Grid xs={ 9 } item className='function-creator'>
                     <Box
                         sx={{ ...gridItemStyle }}
@@ -207,20 +232,32 @@ const GeneralFunctions = ({
                         { functionToDiv(f) }
                     </Box>
                 </Grid>
-                <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none' }} xs={ 2 } item className='delete-interface'>
-                    <IconButton sx={{ mt: '1rem', alignItems: 'flex-end'}} onClick={(_) => {handleRemoveElementGeneralFunction(functionsIndex)}}><BackspaceIcon/></IconButton>
-                </Grid>
 
-                <Grid item>
-                    <Button
-                        id={`confirm-gp-function`}
-                        variant="outlined"
-                        // className={ styles.confirm }
-                        onClick={() => handleConfirmFunction()}
-                    >
-                        Confirm
-                    </Button>
-                </Grid>
+                {
+                    isReadOnly ? <></> : (
+                        <>
+                            <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none' }} xs={ 2 } item className='delete-interface'>
+                                <IconButton
+                                    sx={{ mt: '1rem', alignItems: 'flex-end'}}
+                                    onClick={(_) => {handleRemoveElementGeneralFunction(functionsIndex)}}
+                                >
+                                    <BackspaceIcon/>
+                                </IconButton>
+                            </Grid>
+
+                            <Grid item>
+                                <Button
+                                    id={`confirm-gp-function`}
+                                    variant="outlined"
+                                    // className={ styles.confirm }
+                                    onClick={() => handleConfirmFunction()}
+                                >
+                                    Confirm
+                                </Button>
+                            </Grid>
+                        </>
+                    )
+                }
 
             </Grid>
         </Box>

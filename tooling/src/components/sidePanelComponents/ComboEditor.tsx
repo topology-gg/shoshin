@@ -6,7 +6,7 @@ import NewAction  from './NewAction'
 import { CHARACTERS_ACTIONS, ACTIONS_ICON_MAP, MAX_COMBO_SIZE } from '../../constants/constants';
 
 const ComboEditor = ({
-    editingCombo, setEditingCombo, characterIndex, selectedIndex, setSelectedIndex, handleValidateCombo,
+    isReadOnly, editingCombo, setEditingCombo, characterIndex, selectedIndex, setSelectedIndex, handleValidateCombo,
     displayButton
 }) => {
     const [selectedNewAction, setSelectedNewAction] = useState<boolean>(false);
@@ -101,30 +101,46 @@ const ComboEditor = ({
                         {editingCombo.map((action, index) => (
                             <SingleAction
                                 key={`action-${index}`}
+                                disabled={isReadOnly}
                                 action={action}
                                 characterIndex={characterIndex}
                             />
                         ))}
-                        <NewAction
-                            onInsert={handleInsertInstruction}
-                            onKeyDown={handleKeyDown}
-                            onSelect={() => {
-                                setSelectedNewAction(true)
-                            }}
-                            onBlur={() => {
-                                setSelectedNewAction(false)
-                            }}
-                            selected={selectedNewAction}
-                            characterIndex={characterIndex}
-                        />
+
                         {
-                            displayButton &&
-                            <Button variant="outlined" onClick={() => {
-                                handleValidateCombo(editingCombo, selectedIndex)
-                                setEditingCombo([])
-                                setSelectedIndex(null)
-                            }}>Confirm</Button>
+                            isReadOnly ? <></> : (
+                                <>
+                                    <NewAction
+                                        disabled={isReadOnly}
+                                        onInsert={handleInsertInstruction}
+                                        onKeyDown={handleKeyDown}
+                                        onSelect={() => {
+                                            setSelectedNewAction(true)
+                                        }}
+                                        onBlur={() => {
+                                            setSelectedNewAction(false)
+                                        }}
+                                        selected={selectedNewAction}
+                                        characterIndex={characterIndex}
+                                    />
+                                    {
+                                        displayButton &&
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() => {
+                                                handleValidateCombo(editingCombo, selectedIndex)
+                                                setEditingCombo([])
+                                                setSelectedIndex(null)
+                                            }}
+                                            disabled={isReadOnly}
+                                        >
+                                            Confirm
+                                        </Button>
+                                    }
+                                </>
+                            )
                         }
+
                     </div>
                 </Box>
             </Box>

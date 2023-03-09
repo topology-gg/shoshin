@@ -5,6 +5,7 @@ import { CHARACTERS_ACTIONS } from "../../constants/constants";
 import ActionToken from "./ActionToken";
 
 const NewAction = ({
+    disabled,
     onInsert,
     onKeyDown,
     selected,
@@ -17,6 +18,7 @@ const NewAction = ({
     const [invalid, setInvalid] = useState<boolean>(false);
 
     const handleClick = () => {
+        if (disabled) return;
         onSelect();
     };
 
@@ -49,6 +51,7 @@ const NewAction = ({
         <ActionToken
             onClick={handleClick}
             selected={selected}
+            disabled={disabled}
         >
             <InputBase
                 inputRef={inputRef}

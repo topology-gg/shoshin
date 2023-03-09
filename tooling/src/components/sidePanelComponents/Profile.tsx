@@ -12,6 +12,7 @@ import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
 const characters: Character[] = Object.values(Character);
 
 const Profile = ({
+    isReadOnly,
     agentName,
     setAgentName,
     character,
@@ -36,7 +37,12 @@ const Profile = ({
             <Box sx={{fontSize:'14px', mb:'2rem'}}>
                 <FormControl variant="standard">
                     <InputLabel htmlFor="component-simple">Agent Name</InputLabel>
-                    <Input id="component-simple" value={agentName} onChange={event => setAgentName(event.target.value)}/>
+                    <Input
+                        id="component-simple"
+                        value={agentName}
+                        onChange={event => setAgentName(event.target.value)}
+                        disabled={isReadOnly}
+                    />
                 </FormControl>
             </Box>
 
@@ -56,6 +62,7 @@ const Profile = ({
                 value={character}
                 onChange={(event) => setCharacter(event.target.value)}
                 label="Character"
+                disabled={isReadOnly}
             >
                 <MenuItem value={Character.Jessica}>Jessica</MenuItem>
                 <MenuItem value={Character.Antoc}>Antoc</MenuItem>

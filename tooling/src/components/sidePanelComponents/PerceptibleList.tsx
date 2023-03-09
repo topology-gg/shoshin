@@ -4,7 +4,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { ElementType, FunctionElement, Perceptible } from '../../types/Function'
 
-const PerceptibleList = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction }) => {
+const PerceptibleList = ({
+    disabled, perceptibles, functionsIndex, handleUpdateGeneralFunction
+}) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -22,12 +24,13 @@ const PerceptibleList = ({ perceptibles, functionsIndex, handleUpdateGeneralFunc
     <div>
 
         <Button
-        id='perceptibles-button'
-        aria-controls={open ? 'basic-menu' : undefined}
-        aria-haspopup='true'
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
-        variant="outlined"
+            id='perceptibles-button'
+            aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup='true'
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleClick}
+            variant="outlined"
+            disabled={disabled}
         >
             Perceptibles List
         </Button>
