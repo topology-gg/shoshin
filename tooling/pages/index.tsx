@@ -21,6 +21,7 @@ import { useAgents } from '../lib/api'
 import { Metadata, splitAgents } from '../src/types/Metadata';
 import { useAccount, useConnectors, useStarknetExecute } from '@starknet-react/core';
 import ConnectWallet from '../src/components/ConnectWallet';
+import { EditorTabName } from '../src/components/Tabs';
 
 const theme = createTheme({
     typography: {
@@ -68,7 +69,7 @@ export default function Home() {
     const [animationState, setAnimationState] = useState<string>('Stop');
     const [testJson, setTestJson] = useState<TestJson>(null);
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
-    const [workingTab, setWorkingTab] = useState<number>(0);
+    const [workingTab, setWorkingTab] = useState<EditorTabName>(EditorTabName.Profile);
     const [combos, setCombos] = useState<number[][]>(INITIAL_COMBOS)
     const [mentalStates, setMentalStates] = useState<MentalState[]>(INITIAL_MENTAL_STATES);
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
@@ -568,8 +569,6 @@ export default function Home() {
                                         <FrameInspector
                                             testJson={testJson}
                                             animationFrame={animationFrame}
-                                            adversaryType={adversary}
-                                            onAdversaryEdit={() => setWorkingTab(3)}
                                         />
                                     </div>
                                 }
