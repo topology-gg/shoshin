@@ -5,10 +5,13 @@ import MentalStates from './MentalStates';
 import TreeEditor from './TreeEditor';
 import GeneralFunctions from './GeneralFunctions';
 import Combos from './Combos';
+import Profile from './Profile';
 
 
 const SidePanel = ({
-    workingTab, handleClickTab, mentalStates, setMentalStates, initialMentalState, handleSetInitialMentalState, combos, setCombos, handleValidateCombo,
+    agentName,setAgentName,
+    workingTab, handleClickTab,
+    mentalStates, setMentalStates, initialMentalState, handleSetInitialMentalState, combos, setCombos, handleValidateCombo,
     character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor,
     trees, setTrees, handleUpdateTree, functions, setFunctions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction,
     functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText,
@@ -17,6 +20,16 @@ const SidePanel = ({
 }) => {
     const content = (workingTab: EditorTabName) => {
         switch (workingTab) {
+            case EditorTabName.Profile: {
+                return (
+                    <Profile
+                        agentName={agentName}
+                        setAgentName={setAgentName}
+                        character={character}
+                        setCharacter={setCharacter}
+                    />
+                )
+            }
             case EditorTabName.Mind: {
                 return !treeEditor && (
                     <MentalStates

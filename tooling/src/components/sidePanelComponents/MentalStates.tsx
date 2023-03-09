@@ -67,48 +67,46 @@ const MentalStates = ({
     })
 
     return (
-        <Grid
-        container
-        sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "left",
-            alignItems: "left",
-            mt: "1rem",
-        }}
-        >
-            <Grid item xs={12}>
-                <Box>
-                    <Button sx={{ ml: '2rem', border: 1, mb: '5px' }} onClick={() => setCharacter(characters[(characterIndex + 1)%characters.length])}>
-                        You are: {character}
-                    </Button>
-                </Box>
-            </Grid>
-            <Grid
-            xs={2}
-            item
+        <Box
             sx={{
-                display:"flex",
-                alignItems:"flex-end",
-                justifyContent:"space-around"
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "left",
+                pt: "2rem",
+                pl: "2rem",
             }}
+        >
+            <Typography sx={{ fontSize: '17px' }} variant='overline'>Mind</Typography>
+
+            <Grid
+                xs={2}
+                item
+                sx={{
+                    display:"flex",
+                    alignItems:"flex-end",
+                    justifyContent:"space-around"
+                }}
             >
                 <IconButton onClick={(_)=>{mentalState ? handleAddMentalState(mentalState) : 0}}><AddIcon/></IconButton>
             </Grid>
+
             <Grid xs={10} item>
                 <TextField color={"info"} fullWidth id="standard-basic" label="Input Mental State" variant="standard" onChange={(event) => {mentalState = event.target.value}}/>
             </Grid>
+
             <Grid
-            sx={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "left",
-                alignItems: "left",
-                mt: "1rem",
-                ml: '2rem',
-            }}
-            xs={10}
-            item>
+                sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "left",
+                    alignItems: "left",
+                    mt: "1rem",
+                    ml: '2rem',
+                }}
+                xs={10}
+                item
+            >
                 <Button
                     id={`initial-actions-menu-button`}
                     aria-controls={openInitialState ? 'basic-menu' : undefined}
@@ -185,7 +183,7 @@ const MentalStates = ({
                 }
             </Grid>
 
-        </Grid>
+        </Box>
     )
 }
 

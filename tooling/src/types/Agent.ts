@@ -1,5 +1,5 @@
 import { parseFunction } from "./Function"
-import Leaf, { flattenLeaf } from "./Leaf" 
+import Leaf, { flattenLeaf } from "./Leaf"
 import { MentalState, parseTree } from "./MentalState"
 import { Tree } from "./Tree"
 import { Function } from "./Function"
@@ -86,11 +86,11 @@ export function flattenAgent(agent: Agent) {
     })
 
     return [
-        combosOffset, 
+        combosOffset,
         combos,
-        mentalStatesOffset, 
-        mentalStates, 
-        functionsOffset, 
+        mentalStatesOffset,
+        mentalStates,
+        functionsOffset,
         functions,
     ]
 }

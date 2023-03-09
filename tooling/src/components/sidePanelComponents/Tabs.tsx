@@ -13,18 +13,7 @@ export enum EditorTabName {
 const Tabs = ({ workingTab, handleClickTab }) => {
 
     const handleTabChange = (e: React.SyntheticEvent<Element>, value: any) => {
-        if (value == 0) {
-            handleClickTab(EditorTabName.Profile);
-        }
-        else if (value == 1) {
-            handleClickTab(EditorTabName.Mind);
-        }
-        else if (value == 2) {
-            handleClickTab(EditorTabName.Combos);
-        }
-        else if (value == 3) {
-            handleClickTab(EditorTabName.Conditions);
-        }
+        handleClickTab(value);
     };
 
     return (
@@ -33,10 +22,10 @@ const Tabs = ({ workingTab, handleClickTab }) => {
             value={workingTab}
             onChange={handleTabChange}
         >
-            <Tab icon={<Person />} value = {0} label="Profile" />
-            <Tab icon={<Psychology />} value={1} label="Mind" />
-            <Tab icon={<ViewWeek />} value={2} label="Combos" />
-            <Tab icon={<Functions />} value={3} label="Conditions" />
+            <Tab icon={<Person />} value = {EditorTabName.Profile} label="Profile" />
+            <Tab icon={<Psychology />} value={EditorTabName.Mind} label="Mind" />
+            <Tab icon={<ViewWeek />} value={EditorTabName.Combos} label="Combos" />
+            <Tab icon={<Functions />} value={EditorTabName.Conditions} label="Conditions" />
         </MuiTabs>
     );
 };

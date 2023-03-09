@@ -24,13 +24,15 @@ const Combos = ({
     let characterIndex = Object.keys(Character).indexOf(character)
 
     return <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "left",
-                alignItems: "left",
-                mt: "2rem",
-            }}>
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "left",
+                    alignItems: "left",
+                    pt: "2rem",
+                    pl: "2rem",
+                }}
+            >
                 <Typography sx={{ fontSize: '17px' }} variant='overline'>Combos</Typography>
                 <List dense>
                     {

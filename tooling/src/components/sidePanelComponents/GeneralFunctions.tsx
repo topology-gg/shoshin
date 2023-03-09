@@ -78,14 +78,16 @@ const GeneralFunctions = ({
 
     return (
         <Box
-        sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "left",
-            mt: "2rem",
-        }}>
-            <Typography sx={{ fontSize: '17px' }} variant='overline'>Functions</Typography>
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "left",
+                pt: "2rem",
+                pl: "2rem",
+            }}
+        >
+            <Typography sx={{ fontSize: '17px' }} variant='overline'>Conditions</Typography>
             <Grid container spacing={1}>
                 <Grid
                     xs={ 12 }
@@ -126,7 +128,7 @@ const GeneralFunctions = ({
                                 selected={functions.length - 1 === functionsIndex}
                             >
                                 {functions.length - 1 === functionsIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
-                                <ListItemText inset={functions.length - 1 !== functionsIndex} primary="New Function" />
+                                <ListItemText inset={functions.length - 1 !== functionsIndex} primary="New Condition" />
                             </ListItemButton>
                         </ListItem>
                     </List>

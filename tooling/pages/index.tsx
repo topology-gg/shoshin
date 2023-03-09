@@ -77,6 +77,7 @@ export default function Home() {
     const [trees, setTrees] = useState<Tree[]>(INITIAL_DECISION_TREES)
     const [functions, setFunctions] = useState<Function[]>(INITIAL_FUNCTIONS)
     const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
+    const [agentName, setAgentName] = useState<String>('')
     const [character, setCharacter] = useState<Character>(Character.Jessica)
     const [adversary, setAdversary] = useState<string>('defensive')
     const [opponent, setOpponent] = useState<Agent>(DEFENSIVE_AGENT)
@@ -581,10 +582,15 @@ export default function Home() {
                         </Grid>
                         <Grid item xs={4} sx={{ bgcolor: 'grey.50' }}>
                             <SidePanel
+                                agentName={agentName}
+                                setAgentName={setAgentName}
                                 workingTab={workingTab}
                                 handleClickTab={setWorkingTab}
                                 character={character}
-                                setCharacter={setCharacter}
+                                setCharacter={(value) => {
+                                    console.log('setCharacter:', value)
+                                    setCharacter(value)
+                                }}
                                 mentalStates={mentalStates}
                                 setMentalStates={setMentalStates}
                                 initialMentalState={initialMentalState}
