@@ -57,6 +57,13 @@ const TreeEditor = ({
     isWarningTextOn, warningText
 }) => {
     let mentalState = mentalStates[indexTree]
+
+    if (!tree) {
+        // return to parent view
+        handleClickTreeEditor(0);
+        return;
+    }
+
     return(
         <Box
             sx={{
