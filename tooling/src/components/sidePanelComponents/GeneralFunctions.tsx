@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import TextField from '@mui/material/TextField';
-import { FunctionElement, Operator, Function, ElementType, Perceptible } from '../types/Function'
+import { FunctionElement, Operator, Function, ElementType, Perceptible } from '../../types/Function'
 import BasicMenu from './Menu'
 import { ChevronRight } from '@mui/icons-material';
 

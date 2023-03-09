@@ -6,8 +6,8 @@ import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { MentalState } from '../types/MentalState';
-import { Character, CHARACTERS_ACTIONS } from '../constants/constants';
+import { MentalState } from '../../types/MentalState';
+import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
 
 
 const buttonStyle = { marginBottom:"0.5rem", marginTop:"0.5rem", marginLeft: "0.2rem", marginRight: "0.2rem", height: "1.5rem"};

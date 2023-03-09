@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { ElementType, FunctionElement, Perceptible } from '../types/Function'
+import { ElementType, FunctionElement, Perceptible } from '../../types/Function'
 
 const BasicMenu = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)

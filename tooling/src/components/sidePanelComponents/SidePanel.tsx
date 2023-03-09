@@ -5,8 +5,6 @@ import MentalStates from './MentalStates';
 import TreeEditor from './TreeEditor';
 import GeneralFunctions from './GeneralFunctions';
 import Combos from './Combos';
-import { AdversarySelection } from './AdversarySelection';
-import { FighterSelection } from './FighterSelection';
 
 
 const SidePanel = ({
@@ -70,29 +68,6 @@ const SidePanel = ({
                     />
                 )
             }
-            // case 3: {
-            //     return <AdversarySelection
-            //         warning={runCairoSimulationWarning}
-            //         adversary={adversary}
-            //         setAdversary={setAdversary}
-            //         setOpponent={setOpponent}
-            //         onComboChange={onComboChange}
-            //     />;
-            // }
-            // case 4: {
-            //     return <FighterSelection
-            //         fighterSelection={fighterSelection}
-            //         setFighterSelection={setFighterSelection}
-            //         setOpponent={setOpponent}
-            //         agents={agents}
-            //         setMentalStates={setMentalStates}
-            //         setCombos={setCombos}
-            //         setTrees={setTrees}
-            //         functions={functions}
-            //         setFunctions={setFunctions}
-            //         setCharacter={setCharacter}
-            //     />;
-            // }
         }
     }
     return (

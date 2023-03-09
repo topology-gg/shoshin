@@ -4,8 +4,8 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DecisionTree from './DecisionTree'
-import { Tree } from '../types/Tree'
-import { functionToStr } from '../types/Function'
+import { Tree } from '../../types/Tree'
+import { functionToStr } from '../../types/Function'
 
 const treeToString = (tree: Tree) => {
     let str = ''

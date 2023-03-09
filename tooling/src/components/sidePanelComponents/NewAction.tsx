@@ -1,7 +1,7 @@
 import { Add } from "@mui/icons-material";
 import { InputBase } from "@mui/material";
 import React, { ChangeEventHandler, useEffect, useRef, useState } from "react";
-import { CHARACTERS_ACTIONS } from "../constants/constants";
+import { CHARACTERS_ACTIONS } from "../../constants/constants";
 import ActionToken from "./ActionToken";
 
 const NewAction = ({

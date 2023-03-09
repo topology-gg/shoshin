@@ -1,5 +1,5 @@
 import React from "react";
-import { ACTIONS_ICON_MAP, CHARACTERS_ACTIONS } from "../constants/constants";
+import { ACTIONS_ICON_MAP, CHARACTERS_ACTIONS } from "../../constants/constants";
 import ActionToken from "./ActionToken";
 
 const SingleAction = ({

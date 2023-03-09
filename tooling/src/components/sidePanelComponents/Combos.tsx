@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, ListItem, List, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
 import Tooltip from '@mui/material/Tooltip';
-import { Character, CHARACTERS_ACTIONS, MAX_COMBO_SIZE } from '../constants/constants';
+import { Character, CHARACTERS_ACTIONS, MAX_COMBO_SIZE } from '../../constants/constants';
 import { ChevronRight } from "@mui/icons-material";
 import ComboEditor from "./ComboEditor";
 
@@ -40,8 +40,8 @@ const Combos = ({
                                     <ListItem
                                         disablePadding
                                         key={`combo-${index}`}
-                                    >  
-                                        <ListItemButton 
+                                    >
+                                        <ListItemButton
                                             selected={selectedIndex === index}
                                             onClick={
                                                 () => {
@@ -50,48 +50,48 @@ const Combos = ({
                                                 }
                                             }
                                         >
-                                            {selectedIndex === index && 
+                                            {selectedIndex === index &&
                                                 <ListItemIcon>
                                                     <ChevronRight />
                                                 </ListItemIcon>
                                             }
                                             <ListItemText inset={selectedIndex !== index}>
                                                 Combo {index}
-                                            </ListItemText>    
+                                            </ListItemText>
                                         </ListItemButton>
                                     </ListItem>
                                 </Tooltip>
                             )
                         })
                     }
-                    <ListItem 
+                    <ListItem
                         disablePadding
-                    >  
-                        <ListItemButton 
+                    >
+                        <ListItemButton
                             selected={selectedIndex === null}
                             onClick={() => {
                                 setEditingCombo([])
                                 setSelectedIndex(null)
                             }}
                         >
-                            {selectedIndex === null && 
+                            {selectedIndex === null &&
                                 <ListItemIcon>
                                     <ChevronRight />
                                 </ListItemIcon>
                             }
                             <ListItemText inset={selectedIndex !== null}>
                                 New Combo
-                            </ListItemText>    
+                            </ListItemText>
                         </ListItemButton>
                     </ListItem>
                 </List>
-                <ComboEditor 
+                <ComboEditor
                     editingCombo={editingCombo}
                     setEditingCombo={setEditingCombo}
                     characterIndex={characterIndex}
                     selectedIndex={selectedIndex}
                     setSelectedIndex={setSelectedIndex}
-                    handleValidateCombo={handleValidateCombo} 
+                    handleValidateCombo={handleValidateCombo}
                     displayButton={true}
                 ></ComboEditor>
             </Box>

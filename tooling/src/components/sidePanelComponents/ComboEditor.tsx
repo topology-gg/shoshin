@@ -3,7 +3,7 @@ import { Box, Button, Typography } from "@mui/material";
 import Tooltip from '@mui/material/Tooltip';
 import SingleAction  from './SingleAction'
 import NewAction  from './NewAction'
-import { CHARACTERS_ACTIONS, ACTIONS_ICON_MAP, MAX_COMBO_SIZE } from '../constants/constants';
+import { CHARACTERS_ACTIONS, ACTIONS_ICON_MAP, MAX_COMBO_SIZE } from '../../constants/constants';
 
 const ComboEditor = ({
     editingCombo, setEditingCombo, characterIndex, selectedIndex, setSelectedIndex, handleValidateCombo,
@@ -34,7 +34,7 @@ const ComboEditor = ({
                 const new_program = prev.slice(0, -1);
                 return new_program
             })
-        }     
+        }
     };
 
     return <Box
@@ -96,8 +96,8 @@ const ComboEditor = ({
                             position: 'relative',
                             display: 'flex',
                         }}
-                    >    
-                        
+                    >
+
                         {editingCombo.map((action, index) => (
                             <SingleAction
                                 key={`action-${index}`}
@@ -118,8 +118,8 @@ const ComboEditor = ({
                             characterIndex={characterIndex}
                         />
                         {
-                            displayButton && 
-                            <Button variant="outlined" onClick={() => { 
+                            displayButton &&
+                            <Button variant="outlined" onClick={() => {
                                 handleValidateCombo(editingCombo, selectedIndex)
                                 setEditingCombo([])
                                 setSelectedIndex(null)
