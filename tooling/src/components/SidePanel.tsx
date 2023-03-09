@@ -11,7 +11,7 @@ import { Character } from '../constants/constants';
 import { Tree } from '../types/Tree';
 import { Condition, ConditionElement } from '../types/Condition';
 
-interface SidePanelPros {
+interface SidePanelProps {
     workingTab: number
     handleClickTab: (tab: number) => void
     mentalStates: MentalState[]
@@ -48,7 +48,7 @@ const SidePanel = ({
     trees, handleUpdateTree, conditions, handleUpdateCondition, handleConfirmCondition, handleClickDeleteCondition, 
     conditionUnderEditIndex, setConditionUnderEditIndex, isConditionWarningTextOn, conditionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText, 
     handleRemoveElement
-}: SidePanelPros) => {
+}: SidePanelProps) => {
     const content = (workingTab: number) => {
         switch (workingTab) {
             case 0: {

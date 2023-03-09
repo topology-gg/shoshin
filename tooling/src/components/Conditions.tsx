@@ -5,16 +5,32 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import TextField from '@mui/material/TextField';
-import { ConditionElement, Operator, ElementType, Perceptible } from '../types/Condition'
+import { ConditionElement, Operator, ElementType, Perceptible, Condition } from '../types/Condition'
 import BasicMenu from './Menu'
 import { ChevronRight } from '@mui/icons-material';
 import { BodystatesAntoc, BodystatesJessica } from '../constants/constants';
+
+// Interfaces
+
+interface ConditionsProps {
+    conditions: Condition[]
+    handleUpdateCondition: (index: number, element: ConditionElement) => void
+    handleConfirmCondition: () => void 
+    handleClickDeleteCondition: (index: number) => void
+    conditionUnderEditIndex: number
+    setConditionUnderEditIndex: (index: number) => void
+    isWarningTextOn: boolean 
+    warningText: string 
+    handleRemoveElement: (index: number) => void
+}
 
 interface BodyStateOption {
     group: string
     name: string
     bodystate: number
 }
+
+// Constants
 
 const gridItemStyle = {
     border: 1,
@@ -23,17 +39,17 @@ const gridItemStyle = {
     p: '5px',
 }
 
-const BodyStates: BodyStateOption[] = (Object.entries(BodystatesAntoc)
+const BodyStates: BodyStateOption[] = (Object.entries(BodystatesJessica)
 .map(([k, v]) => {
-    return {group: 'antoc', name: k, bodystate: v}
+    return {group: 'jessica', name: k, bodystate: v}
 })
 .filter((v) => !isNaN(parseInt(v.bodystate as string))) as BodyStateOption[])
 .concat(
-    Object.entries(BodystatesJessica)
+    Object.entries(BodystatesAntoc)
     .map(([k, v]) => {
-        return {group: 'jessica', name: k, bodystate: v} 
+        return {group: 'antoc', name: k, bodystate: parseInt(v as string) + 1000} 
     })
-    .filter((v) => !isNaN(parseInt(v.bodystate as string))) as BodyStateOption[]
+    .filter((v) => !isNaN(v.bodystate)) as BodyStateOption[]
 )
 
 const conditionElementTitles = [
@@ -44,7 +60,7 @@ const conditionElementTitles = [
 const operators = Object.values(Operator)
 const perceptibles = Object.keys(Perceptible).filter(x => isNaN(parseInt(x)))
 
-const elementFromEvent = (e): ConditionElement => {
+const elementFromEvent = (e, currentConstant: number): ConditionElement => {
     let source = e.currentTarget.id.split('.')
     switch (source[0]) {
         case 'operator': {
@@ -58,6 +74,24 @@ const elementFromEvent = (e): ConditionElement => {
         }
     }
 }
+
+const conditionElementToStr = (elem: ConditionElement) => {
+    let type = elem.type
+    let value = elem.value
+    if (type === ElementType.Perceptible) {
+        return Perceptible[value].toString()
+    }
+    if (type === ElementType.BodyState) {
+        value = value as number // can cast since type === BodyState
+        return value > 1000 ? 'Antoc ' + BodystatesAntoc[value - 1000]: 'Jessica ' + BodystatesJessica[value]
+    }
+    if (type === ElementType.Operator) {
+        // convert a close abs to a closed parenthesis
+        return value === '|' ? ')' : value
+    }
+    return value
+}
+
 
 const handleDisplayText = (isWarningTextOn, warningText, index) => {
     return <Grid sx={{ mt: '1rem' }} xs={ 12 } item className='warning-test'>
@@ -89,32 +123,29 @@ const isOperatorWithDoubleOperands = (elem: ConditionElement) => {
     )
 }
 
-let currentConstant = 0
-
 const Conditions = ({
     conditions, handleUpdateCondition, handleConfirmCondition, handleClickDeleteCondition,
     conditionUnderEditIndex, setConditionUnderEditIndex, isWarningTextOn, warningText, handleRemoveElement
-}) => {
+}: ConditionsProps) => {
     let f = conditions[conditionUnderEditIndex]
 
-    const handleAddElement = (e) => {
-        const element = elementFromEvent(e)
+    const [currentConstant, setCurrentConstant] = useState<number>()
+    const handleAddElement = (e: React.MouseEvent) => {
+        const element = elementFromEvent(e, currentConstant)
         handleUpdateCondition(conditionUnderEditIndex, element)
     }
     const [disabled, setDisabled] = useState<boolean>(false)
-    const displayCondition = useMemo<React.ReactElement>(() => {
+    const displayCondition = useMemo<JSX.Element[]>(() => {
         if (!f || !f.elements.length) {
-            return <Typography variant='caption' color={ '#CCCCCC' } >Drop your operators, constants and perceptibles here</Typography>
+            return [<Typography variant='caption' color={ '#CCCCCC' } >Drop your operators, constants and perceptibles here</Typography>]
         }
         let elements = f.elements
         return (
-            f.elements.map((e, i) => {
-                let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
-                // convert a close abs to a closed parenthesis
-                value = value === '|' ? ')' : value
+            elements.map((e, i) => {
+                let value = conditionElementToStr(e)
                 // if current element is a X OP Y operator and X is SelfBodyState or 
                 // OpponentBodyState -> set drop down list
-                if (i == f.elements.length - 1 && isPerceptibleBodyState(elements[i-1]) && isOperatorWithDoubleOperands(elements[i])) {
+                if (i == elements.length - 1 && isPerceptibleBodyState(elements[i-1]) && isOperatorWithDoubleOperands(elements[i])) {
                     // disable all other button
                     setDisabled((_) => true)
                     return (
@@ -145,7 +176,7 @@ const Conditions = ({
                                 // on change, update with the selected value and remove disabled
                                 onChange={(_, bs: BodyStateOption) => {
                                     setDisabled(false)
-                                    handleUpdateCondition(conditionUnderEditIndex, {value: bs.bodystate, type: ElementType.Constant})
+                                    handleUpdateCondition(conditionUnderEditIndex, {value: bs.bodystate, type: ElementType.BodyState})
                                 }}
                             />
                         </div>
@@ -258,7 +289,7 @@ const Conditions = ({
                             color={ "info" }
                             type="number"
                             defaultValue={currentConstant}
-                            onChange={(e) => currentConstant=parseInt(e.target.value)}
+                            onChange={(e) => setCurrentConstant(parseInt(e.target.value))}
                         />
                         <Button
                             id='constant'

@@ -5,7 +5,7 @@ export interface Condition {
 }
 
 export interface ConditionElement {
-    value?: Operator | number | Perceptible,
+    value?:  number | Operator | Perceptible,
     type?: ElementType,
 }
 
@@ -13,6 +13,7 @@ export enum ElementType {
     Operator = 'Operator',
     Constant = 'Constant',
     Perceptible = 'Perceptible',
+    BodyState = 'BodyState'
 }
 
 export enum Operator {
@@ -114,6 +115,7 @@ export function verifyValidCondition(c: Condition, confirm: boolean) {
                 }
                 if (prevElement.type !== ElementType.Perceptible &&
                     prevElement.type !== ElementType.Constant &&
+                    prevElement.type !== ElementType.BodyState &&
                     prevElement?.value !== Operator.CloseParenthesis &&
                     prevElement?.value !== Operator.CloseAbs &&
                     prevElement?.value !== Operator.Not) {
@@ -121,15 +123,10 @@ export function verifyValidCondition(c: Condition, confirm: boolean) {
                 }
                 break
             }
-            // constant must be preceded by an operator
-            case ElementType.Constant: {
-                if (prevElement.type !== ElementType.Operator) {
-                    return false
-                }
-                break
-            }
-            // perceptible must be preceded by an operator
-            case ElementType.Perceptible: {
+            // constant, perceptible and bodystate must be preceded by an operator
+            case ElementType.Constant:
+            case ElementType.Perceptible:
+            case ElementType.BodyState: {
                 if (prevElement.type !== ElementType.Operator) {
                     return false
                 }
@@ -191,11 +188,9 @@ function parseInner(c: ConditionElement[]): Leaf {
 }
 
 function parseOperation(val: ConditionElement, operator: ConditionElement, rest: ConditionElement[]): Leaf {
-    let value = val.value as number
     let operand1 = parseElement(val)
     let op = operatorToNumber(operator.value as Operator)
     if (rest.length == 1) {
-        value = rest[0].value as number
         let operand2 = parseElement(rest[0])
         return {value: op, left: operand1, right: operand2}
     }
