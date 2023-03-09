@@ -236,10 +236,10 @@ describe("unwrap", () => {
                 }
             }
             // When
-            let got = unwrapLeafToTree(leaf, 9)
+            let got = unwrapLeafToTree(leaf)
             // Then
             let expected = [
-                    { id: 'if F9', isChild: false },
+                    { id: 'if F0', isChild: false },
                     { id: 'MS 0', isChild: true, branch: Direction.Left },
                     { id: 'MS 1', isChild: true, branch: Direction.Right },
             ]
