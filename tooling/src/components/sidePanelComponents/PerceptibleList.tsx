@@ -4,7 +4,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { ElementType, FunctionElement, Perceptible } from '../../types/Function'
 
-const BasicMenu = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction }) => {
+const PerceptibleList = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -20,28 +20,31 @@ const BasicMenu = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction }
 
   return (
     <div>
-      <Button
+
+        <Button
         id='perceptibles-button'
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup='true'
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
         variant="outlined"
-      >
-        Perceptibles List
-      </Button>
-      <Menu
+        >
+            Perceptibles List
+        </Button>
+
+        <Menu
         id='perceptibles-menu'
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-      >
-        {perceptibles.map((p, i) => {
-          return <MenuItem id={ `perceptible-${p}` } key={ `perceptible-${i}` } onClick={handleClose}>{p}</MenuItem>
-        })}
-      </Menu>
+        >
+            {perceptibles.map((p, i) => {
+                return <MenuItem id={ `perceptible-${p}` } key={ `perceptible-${i}` } onClick={handleClose}>{p}</MenuItem>
+            })}
+        </Menu>
+
     </div>
   );
 }
 
-export default BasicMenu;
+export default PerceptibleList;

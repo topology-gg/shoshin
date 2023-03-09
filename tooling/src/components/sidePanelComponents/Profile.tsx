@@ -27,7 +27,7 @@ const Profile = ({
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "left",
-                pt: "2rem",
+                pt: "1rem",
                 pl: "2rem",
             }}
         >

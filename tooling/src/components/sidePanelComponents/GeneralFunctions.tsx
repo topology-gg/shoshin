@@ -6,7 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import TextField from '@mui/material/TextField';
 import { FunctionElement, Operator, Function, ElementType, Perceptible } from '../../types/Function'
-import BasicMenu from './Menu'
+import PerceptibleList from './PerceptibleList'
 import { ChevronRight } from '@mui/icons-material';
 
 const gridItemStyle = {
@@ -83,7 +83,7 @@ const GeneralFunctions = ({
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "left",
-                pt: "2rem",
+                pt: "1rem",
                 pl: "2rem",
             }}
         >
@@ -196,7 +196,7 @@ const GeneralFunctions = ({
                         id='perceptible'
                         sx={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }}
                     >
-                        <BasicMenu perceptibles={perceptibles} functionsIndex={functionsIndex} handleUpdateGeneralFunction={handleUpdateGeneralFunction}></BasicMenu>
+                        <PerceptibleList perceptibles={perceptibles} functionsIndex={functionsIndex} handleUpdateGeneralFunction={handleUpdateGeneralFunction}></PerceptibleList>
                     </Box>
                 </Grid>
                 { handleDisplayText(isWarningTextOn, warningText, functionsIndex) }

@@ -29,7 +29,7 @@ const Combos = ({
                     flexDirection: "column",
                     justifyContent: "left",
                     alignItems: "left",
-                    pt: "2rem",
+                    pt: "1rem",
                     pl: "2rem",
                 }}
             >
