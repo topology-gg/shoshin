@@ -91,20 +91,20 @@ export function splitAgents(a: Metadata): [Agent, Agent] {
 
     return [
         {
-            states: states0,
+            mentalStatesNames: states0,
             combos: combos0,
             mentalStates: sm0,
             initialState: a.initial_state_0,
-            generalPurposeFunctions: gp0,
+            conditions: gp0,
             actions: a.actions_0,
             character: a.character_0
         }, 
         {
-            states: states1,
+            mentalStatesNames: states1,
             combos: combos1,
             mentalStates: sm1,
             initialState: a.initial_state_1,
-            generalPurposeFunctions: gp1,
+            conditions: gp1,
             actions: a.actions_1,
             character: a.character_1
         }

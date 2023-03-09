@@ -1,13 +1,13 @@
 import "mocha"
 import { expect } from "chai"
-import { Operator, ElementType, Function, parseFunction, Perceptible } from '../src/types/Function'
+import { Operator, ElementType, Condition, parseConditionToLeaf, Perceptible } from '../src/types/Condition'
 
 describe("parse", () => {
     describe("function", () => {
         it("should parse the OR functions to the expected result", () => {
             // Given
             // f = (OPPONENT_BODY_STATE == 10) OR (OPPONENT_BODY_STATE == 20) OR (OPPONENT_BODY_STATE == 30)
-            let f: Function = {
+            let f: Condition = {
                 elements: [
                     { value: Operator.OpenParenthesis, type: ElementType.Operator },
                     { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
@@ -29,7 +29,7 @@ describe("parse", () => {
                 ]
             }
             // When 
-            let got = parseFunction(f)
+            let got = parseConditionToLeaf(f)
             // Then
             let expected = {
                 value: 1, 
@@ -57,7 +57,7 @@ describe("parse", () => {
         it("should parse the ABS function to the expected value", ()=> {
             // Given
             // f = Abs(SELF_X - OPPONENT_X) <= 80
-            let f: Function = {
+            let f: Condition = {
                 elements: [
                     { value: Operator.OpenAbs, type: ElementType.Operator},
                     { value: Perceptible.SelfX, type: ElementType.Perceptible},
@@ -69,7 +69,7 @@ describe("parse", () => {
                 ]
             }
             // When 
-            let got = parseFunction(f)
+            let got = parseConditionToLeaf(f)
             // Then
             let expected = {
                 value: 10,
@@ -89,7 +89,7 @@ describe("parse", () => {
         it("should parse the single ABS function to the correct value", () => {
             // Given
             // f = Abs(OPPONENT_VEL_X) <= 10
-            let f: Function = {
+            let f: Condition = {
                 elements: [
                     { value: Operator.OpenAbs, type: ElementType.Operator},
                     { value: Perceptible.OpponentVelX, type: ElementType.Perceptible},
@@ -99,7 +99,7 @@ describe("parse", () => {
                 ]
             }
             // When 
-            let got = parseFunction(f)
+            let got = parseConditionToLeaf(f)
             // Then
             let expected = {
                 value: 10,
@@ -115,7 +115,7 @@ describe("parse", () => {
         it("should parse the combined ABS and AND functions to the correct value", () => {
             // Given
             // f = (OPPONENT_INT <= 300) AND (Abs(SELF_X - OPPONENT_X) <= 80)
-            let f: Function = {
+            let f: Condition = {
                 elements: [
                     { value: Operator.OpenParenthesis, type: ElementType.Operator},
                     { value: Perceptible.OpponentInt, type: ElementType.Perceptible},
@@ -135,7 +135,7 @@ describe("parse", () => {
                 ]
             }
             // When
-            let got = parseFunction(f)
+            let got = parseConditionToLeaf(f)
             // Then
             let expected = {
                 value: 3, 
@@ -164,7 +164,7 @@ describe("parse", () => {
     it("should parse the three level parenthesis example into the expected result", () => {
         // Given
         //f = 10 * (Abs(OPPONENT_ACC_X) + 3 * (SELF_X + SELF_Y * (10 + OPPONENT_INT)))
-        let f: Function = {
+        let f: Condition = {
             elements: [
                 { value: 10, type: ElementType.Constant},
                 { value: Operator.Mul, type: ElementType.Operator},
@@ -190,7 +190,7 @@ describe("parse", () => {
             ]
         }
         // When
-        let got = parseFunction(f)
+        let got = parseConditionToLeaf(f)
         // Then
         let expected = {
             value: 3,

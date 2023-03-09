@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Typography, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import ComboEditor from './ComboEditor';
-import { DECISION_TREE_COMBO_AGENT, DEFENSIVE_AGENT, INITIAL_FUNCTIONS, MENTAL_STATES_COMBO_AGENT, OFFENSIVE_AGENT } from '../constants/constants';
+import { DECISION_TREE_COMBO_AGENT, DEFENSIVE_AGENT, INITIAL_CONDITIONS, MENTAL_STATES_COMBO_AGENT, OFFENSIVE_AGENT } from '../constants/constants';
 import Agent, { buildAgent } from '../types/Agent';
 
 
@@ -31,7 +31,7 @@ export const AdversarySelection = ({
       MENTAL_STATES_COMBO_AGENT,
       [editingCombo],
       DECISION_TREE_COMBO_AGENT,
-      INITIAL_FUNCTIONS,
+      INITIAL_CONDITIONS,
       0,
       1
     );

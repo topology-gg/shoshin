@@ -2,9 +2,9 @@ import React, {useState} from 'react'
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { ElementType, FunctionElement, Perceptible } from '../types/Function'
+import { ElementType, ConditionElement, Perceptible } from '../types/Condition'
 
-const BasicMenu = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction }) => {
+const BasicMenu = ({ perceptibles, conditionUnderEditIndex, handleUpdateCondition, disabled }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -13,7 +13,7 @@ const BasicMenu = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction }
   const handleClose = (event) => {
     if (event.target.id) {
       let perceptible = Perceptible[event.target.id.split('-')[1]]
-      handleUpdateGeneralFunction(functionsIndex, { value: perceptible, type: ElementType.Perceptible } as FunctionElement)
+      handleUpdateCondition(conditionUnderEditIndex, { value: perceptible, type: ElementType.Perceptible } as ConditionElement)
     }
     setAnchorEl(null)
   }
@@ -37,7 +37,7 @@ const BasicMenu = ({ perceptibles, functionsIndex, handleUpdateGeneralFunction }
         onClose={handleClose}
       >
         {perceptibles.map((p, i) => {
-          return <MenuItem id={ `perceptible-${p}` } key={ `perceptible-${i}` } onClick={handleClose}>{p}</MenuItem>
+          return <MenuItem id={ `perceptible-${p}` } key={ `perceptible-${i}` } onClick={handleClose} disabled={disabled} >{p}</MenuItem>
         })}
       </Menu>
     </div>

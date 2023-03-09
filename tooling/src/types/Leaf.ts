@@ -1,4 +1,4 @@
-import { ElementType, FunctionElement, Operator, OPERATOR_VALUE, VALUE_OPERATOR } from "./Function"
+import { ElementType, ConditionElement, Operator, OPERATOR_VALUE, VALUE_OPERATOR } from "./Condition"
 import { Direction, Node } from "./Tree"
 
 export default interface Leaf {
@@ -66,23 +66,23 @@ export function unflattenLeaf(n: SimpleLeaf[]): Leaf {
     return {value: leaf.value, left: unflattenLeaf(n.slice(leaf.left)), right: unflattenLeaf(n.slice(leaf.right))}
 }
 
-// Unwraps the leaf representation of a function into an array of function elements
-export function unwrapLeafToFunction(f: Leaf): FunctionElement[] {
+// Unwraps the leaf representation of a condition into an array of condition elements
+export function unwrapLeafToCondition(f: Leaf): ConditionElement[] {
     if(f.left == -1 && f.right == -1) {
         return [{value: f.value, type: ElementType.Constant}]
     }
     if (f.left == -1) {
         // if perceptible, f.right.value contains the perceptible value
         // else convert value to operator and keep unwrapping
-        return isPerceptible(f.value)? [{value: (f.right as Leaf).value, type: ElementType.Perceptible}]: [{value: VALUE_OPERATOR[f.value], type: ElementType.Operator}, ...unwrapLeafToFunction(f.right as Leaf)]
+        return isPerceptible(f.value)? [{value: (f.right as Leaf).value, type: ElementType.Perceptible}]: [{value: VALUE_OPERATOR[f.value], type: ElementType.Operator}, ...unwrapLeafToCondition(f.right as Leaf)]
     }
     // if f.left != -1 and f.right != -1, surround with parenthesis
     // and keep unwrapping
     return [
         {value: Operator.OpenParenthesis, type: ElementType.Operator},
-        ...unwrapLeafToFunction(f.left as Leaf),
+        ...unwrapLeafToCondition(f.left as Leaf),
         {value: VALUE_OPERATOR[f.value], type: ElementType.Operator},
-        ...unwrapLeafToFunction(f.right as Leaf),
+        ...unwrapLeafToCondition(f.right as Leaf),
         {value: Operator.CloseParenthesis, type: ElementType.Operator},
     ]
 }
@@ -92,13 +92,13 @@ function isPerceptible(value: number) {
 }
 
 // Unwraps the leaf representation of a mental state state machine into an array of nodes
-// Leaf will always be in the form FUNCTION_EVALUATION * STATE_LEFT + ((1 - FUNCTION_MEM) * RECURSIVE_CALL()) 
+// Leaf will always be in the form CONDITION_EVALUATION * STATE_LEFT + ((1 - CONDITION_MEM) * RECURSIVE_CALL()) 
 // (see parseTreeInner in MentalState.ts)
 export function unwrapLeafToTree(f: Leaf, len: number): Node[] {
     if(f.left == -1 && f.right == -1) {
         return [{id: 'MS ' + f.value, isChild: true, branch: Direction.Right}]
     }
-    let func = getFunction(f) ?? 0
+    let func = getCondition(f) ?? 0
     let recurse = getRecurse(f) ?? {value: 0, left: -1, right: -1}
     let ms = getMS(f) ?? 0
 
@@ -109,7 +109,7 @@ export function unwrapLeafToTree(f: Leaf, len: number): Node[] {
     ]
 }
 
-function getFunction(l: Leaf): number {
+function getCondition(l: Leaf): number {
     return (((l.left as Leaf)?.left as Leaf)?.right as Leaf)?.value
 }
 

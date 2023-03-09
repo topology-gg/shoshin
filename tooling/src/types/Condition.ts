@@ -1,11 +1,11 @@
 import Leaf, { wrapToLeaf } from './Leaf'
 
-export interface Function {
-    elements: FunctionElement[],
+export interface Condition {
+    elements: ConditionElement[],
 }
 
-export interface FunctionElement {
-    value?: Operator | number | Perceptible,
+export interface ConditionElement {
+    value?:  number | Operator | Perceptible,
     type?: ElementType,
 }
 
@@ -13,6 +13,7 @@ export enum ElementType {
     Operator = 'Operator',
     Constant = 'Constant',
     Perceptible = 'Perceptible',
+    BodyState = 'BodyState'
 }
 
 export enum Operator {
@@ -80,14 +81,14 @@ export enum Perceptible {
     OpponentBodyCounter = 111,
 }
 
-// Verify that the input function is valid
-export function verifyValidFunction(f: Function, confirm: boolean) {
+// Verify that the input condition is valid
+export function verifyValidCondition(c: Condition, confirm: boolean) {
     // count the open and close parenthesis
     let countParenthesis = 0
     // count the open and close absolute values
     let countAbs = 0
-    let prevElement = { type: ElementType.Operator } as FunctionElement
-    for (let e of f?.elements) {
+    let prevElement = { type: ElementType.Operator } as ConditionElement
+    for (let e of c?.elements) {
         // if count negative, exit early
         if (countParenthesis < 0 || countAbs < 0) {
             return false
@@ -114,6 +115,7 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
                 }
                 if (prevElement.type !== ElementType.Perceptible &&
                     prevElement.type !== ElementType.Constant &&
+                    prevElement.type !== ElementType.BodyState &&
                     prevElement?.value !== Operator.CloseParenthesis &&
                     prevElement?.value !== Operator.CloseAbs &&
                     prevElement?.value !== Operator.Not) {
@@ -121,15 +123,10 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
                 }
                 break
             }
-            // constant must be preceded by an operator
-            case ElementType.Constant: {
-                if (prevElement.type !== ElementType.Operator) {
-                    return false
-                }
-                break
-            }
-            // perceptible must be preceded by an operator
-            case ElementType.Perceptible: {
+            // constant, perceptible and bodystate must be preceded by an operator
+            case ElementType.Constant:
+            case ElementType.Perceptible:
+            case ElementType.BodyState: {
                 if (prevElement.type !== ElementType.Operator) {
                     return false
                 }
@@ -144,58 +141,56 @@ export function verifyValidFunction(f: Function, confirm: boolean) {
     return true
 }
 
-// Parse the elements of the function into a folded Leaf type
-export function parseFunction(f: Function): Leaf {
-    let operator: Leaf = parseInner(f.elements)
+// Parse the elements of the condition into a folded Leaf type
+export function parseConditionToLeaf(c: Condition): Leaf {
+    let operator: Leaf = parseInner(c.elements)
     return operator
 }
 
-function parseInner(f: FunctionElement[]): Leaf {
-    let elem: FunctionElement = f[0]
+function parseInner(c: ConditionElement[]): Leaf {
+    let elem: ConditionElement = c[0]
     // Check if f.length > 1
-    if (f.length < 2) {
+    if (c.length < 2) {
         return parseElement(elem)
     }
     // Check if the first value is not a ! operator
     if (elem.type === ElementType.Operator && elem.value === Operator.Not) {
         let value = OPERATOR_VALUE.get('!') ?? 0
-        return { value: value, left: -1, right: parseInner(f.slice(1)) }
+        return { value: value, left: -1, right: parseInner(c.slice(1)) }
     }
     // Check if operator is parenthesis
     if (elem.type === ElementType.Operator && elem.value === Operator.OpenParenthesis) {
         // get the index of operator after parenthesis closing
-        let i = getNextOpIndex(f)
-        if (f[i]) {
+        let i = getNextOpIndex(c)
+        if (c[i]) {
             // if operator, apply operator, parse inner and outer of parenthesis
-            let operator = operatorToNumber(f[i].value as Operator)
-            return { value: operator, left: parseInner(f.slice(1, i - 1)), right: parseInner(f.slice(i + 1))}
+            let operator = operatorToNumber(c[i].value as Operator)
+            return { value: operator, left: parseInner(c.slice(1, i - 1)), right: parseInner(c.slice(i + 1))}
         }
         // if no operator, parse the interior of the parenthesis
-        return parseInner(f.slice(1, -1))
+        return parseInner(c.slice(1, -1))
     }
     // Check if operator is Abs
     if (elem.type === ElementType.Operator && elem.value === Operator.OpenAbs) {
         // get the index of operator after abs closing
-        let i = getNextOpIndex(f)
-        if (f[i]) {
+        let i = getNextOpIndex(c)
+        if (c[i]) {
             // if operator, apply operator, parse inner and outer of abs
-            let operator = operatorToNumber(f[i].value as Operator)
+            let operator = operatorToNumber(c[i].value as Operator)
             let abs = operatorToNumber(Operator.OpenAbs)
-            return { value: operator, left: {value: abs, left: -1, right: parseInner(f.slice(1, i - 1))}, right: parseInner(f.slice(i + 1)) }
+            return { value: operator, left: {value: abs, left: -1, right: parseInner(c.slice(1, i - 1))}, right: parseInner(c.slice(i + 1)) }
         }
         // if no operator, parse the interior of the abs
-        return parseInner(f.slice(1, -1))
+        return parseInner(c.slice(1, -1))
     }
     // if no parenthesis, abs or !, parse the expression as X OPERATOR REST
-    return parseOperation(elem, f[1], f.slice(2))
+    return parseOperation(elem, c[1], c.slice(2))
 }
 
-function parseOperation(val: FunctionElement, operator: FunctionElement, rest: FunctionElement[]): Leaf {
-    let value = val.value as number
+function parseOperation(val: ConditionElement, operator: ConditionElement, rest: ConditionElement[]): Leaf {
     let operand1 = parseElement(val)
     let op = operatorToNumber(operator.value as Operator)
     if (rest.length == 1) {
-        value = rest[0].value as number
         let operand2 = parseElement(rest[0])
         return {value: op, left: operand1, right: operand2}
     }
@@ -205,28 +200,28 @@ function parseOperation(val: FunctionElement, operator: FunctionElement, rest: F
 // Parse the element to a leaf. In case the element is a perceptible,
 // add {value: 14, left: -1, right{...}} in order to access the 
 // perceptibles dictionnary
-function parseElement(val: FunctionElement): Leaf {
+function parseElement(val: ConditionElement): Leaf {
     let value = val.value as number
     return val.type === ElementType.Perceptible? { value: 14, left:-1, right: wrapToLeaf(value) }: wrapToLeaf(value)
 }
 
 // Returns the index of the next operator exterior to the parenthesis
 // ex: ((X OR Y) AND 10) OR Z would return 9
-function getNextOpIndex(f: FunctionElement[]): number {
-    let elem = f[0]
+function getNextOpIndex(c: ConditionElement[]): number {
+    let elem = c[0]
     let count = 0
     let isParenthesis = elem.value === Operator.OpenParenthesis
-    for (let i =0; i< f.length; i++) {
-        if (isParenthesis && f[i].value === Operator.OpenParenthesis) {
+    for (let i =0; i< c.length; i++) {
+        if (isParenthesis && c[i].value === Operator.OpenParenthesis) {
             count += 1
         }
-        if (isParenthesis && f[i].value === Operator.CloseParenthesis) {
+        if (isParenthesis && c[i].value === Operator.CloseParenthesis) {
             count -= 1
         }
-        if (!isParenthesis && f[i].value === Operator.OpenAbs) {
+        if (!isParenthesis && c[i].value === Operator.OpenAbs) {
             count += 1
         }
-        if (!isParenthesis && f[i].value === Operator.CloseAbs) {
+        if (!isParenthesis && c[i].value === Operator.CloseAbs) {
             count -= 1
         }
         // if we hit count == 0, next operator is out of the parenthesis
@@ -243,10 +238,10 @@ function operatorToNumber(x: string): number {
     return OPERATOR_VALUE.get(x.toUpperCase()) ?? 0
 }
 
-// Converts the current function into its string representation
-export function functionToStr(f: Function) {
+// Converts the current condition into its string representation
+export function conditionToStr(c: Condition) {
     let str = ''
-    f.elements.forEach((e) => {
+    c.elements.forEach((e) => {
         let v = e.value as number
         let value = e.type === ElementType.Perceptible ? Perceptible[v] : e.value
         value = value === '|'? ')' : value

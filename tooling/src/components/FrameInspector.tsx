@@ -1,4 +1,4 @@
-import { Edit, Person } from "@mui/icons-material";
+import { Person } from "@mui/icons-material";
 import {
     Grid,
     IconButton,
@@ -11,19 +11,17 @@ import {
 import { Box } from "@mui/system";
 import React from "react";
 import { bodyStateNumberToName } from "../constants/constants";
-import { Frame, TestJson } from "../types/Frame";
+import { TestJson } from "../types/Frame";
 
 type FrameInspectorProps = {
     testJson: TestJson;
     animationFrame: number;
-    adversaryType: string;
     onAdversaryEdit: () => void;
 };
 
 const FrameInspector = ({
     testJson,
     animationFrame,
-    adversaryType,
     onAdversaryEdit,
 }: FrameInspectorProps) => {
 
