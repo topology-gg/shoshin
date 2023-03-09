@@ -22,6 +22,7 @@ import { Metadata, splitMetadata } from '../src/types/Metadata';
 import { useAccount, useConnectors, useStarknetExecute } from '@starknet-react/core';
 import ConnectWallet from '../src/components/ConnectWallet';
 import { EditorTabName } from '../src/components/sidePanelComponents/Tabs';
+import { unwrapLeafToFunction, unwrapLeafToTree } from '../src/types/Leaf';
 
 const theme = createTheme({
     typography: {
@@ -529,9 +530,9 @@ export default function Home() {
         // parse the given agent into new values for the React states
         setInitialMentalState(() => agent.initialState);
         setCombos(() => agent.combos);
-        setMentalStates(() => []); // TODO
-        setTrees(() => []); // TODO
-        setFunctions(() => []); // TODO
+        setMentalStates(agent.states.map((s, i) => [s, agent.actions[i]] as [string, number]).map(x => {return {state: x[0], action: x[1]}})); 
+        setTrees(() => agent.mentalStates.map(x => {return {nodes: unwrapLeafToTree(x)}}));
+        setFunctions(() => agent.generalPurposeFunctions.map(x => {return {elements: unwrapLeafToFunction(x)}}));
         setAgentName(() => '');
         setCharacter(() => agent.character == 0 ? Character.Jessica : Character.Antoc);
         setFunctionUnderEditIndex(() => null);
