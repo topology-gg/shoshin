@@ -16,8 +16,7 @@ const SidePanel = ({
     character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor,
     trees, setTrees, handleUpdateTree, functions, setFunctions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction,
     functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText,
-    handleRemoveElementGeneralFunction, runCairoSimulationWarning, adversary, setAdversary, onComboChange, fighterSelection, setFighterSelection, setOpponent,
-    agents
+    handleRemoveElementGeneralFunction, runCairoSimulationWarning, onComboChange, fighterSelection, setFighterSelection, agents
 }) => {
     const content = (workingTab: EditorTabName) => {
         switch (workingTab) {

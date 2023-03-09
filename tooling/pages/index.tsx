@@ -63,40 +63,40 @@ export default function Home() {
     const LATENCY = 100;
     const runnable = true;
 
-    // React states
+    // React states for simulation / animation control
+    const [output, setOuput] = useState<FrameScene>();
+    const [simulationError, setSimulationError] = useState();
+    const [p1, setP1] = useState<Agent>();
+    const [p2, setP2] = useState<Agent>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
     const [animationFrame, setAnimationFrame] = useState<number>(0);
     const [animationState, setAnimationState] = useState<string>('Stop');
     const [testJson, setTestJson] = useState<TestJson>(null);
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
+
+    // React states for UI
     const [workingTab, setWorkingTab] = useState<EditorTabName>(EditorTabName.Profile);
+    const [walletSelectOpen, setWalletSelectOpen] = useState<boolean>(false);
+
+    // React states for tracking the New Agent being edited in the right panel
+    const [initialMentalState, setInitialMentalState] = useState<number>(0);
     const [combos, setCombos] = useState<number[][]>(INITIAL_COMBOS)
     const [mentalStates, setMentalStates] = useState<MentalState[]>(INITIAL_MENTAL_STATES);
-    const [initialMentalState, setInitialMentalState] = useState<number>(0);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [trees, setTrees] = useState<Tree[]>(INITIAL_DECISION_TREES)
     const [functions, setFunctions] = useState<Function[]>(INITIAL_FUNCTIONS)
     const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
     const [agentName, setAgentName] = useState<String>('')
     const [character, setCharacter] = useState<Character>(Character.Jessica)
-    const [adversary, setAdversary] = useState<string>('defensive')
-    const [opponent, setOpponent] = useState<Agent>(DEFENSIVE_AGENT)
     const [fighterSelection, setFighterSelection] = useState<string>('opponent')
     const [adversaryCombo, setAdversaryCombo] = useState<number[]>([])
-    const [output, setOuput] = useState<FrameScene>();
-    const [simulationError, setSimulationError] = useState();
-    const [p1, setP1] = useState<Agent>();
-    const [p2, setP2] = useState<Agent>();
 
-    // Warnings
+    // React states for warnings
     const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
     const [generalFunctionWarningText, setGeneralFunctionWarningText] = useState<string>('')
     const [isTreeEditorWarningTextOn, setTreeEditorWarningTextOn] = useState<boolean>(false)
     const [treeEditorWarningText, setTreeEditorWarningText] = useState<string>('')
     const [runCairoSimulationWarning, setCairoSimulationWarning] = useState<string>('')
-
-    // Setting
-    const [settingOpen, setSettingOpen] = useState<boolean>(false);
 
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents()
@@ -573,7 +573,7 @@ export default function Home() {
                                         />
                                     </div>
                                 }
-                                <ConnectWallet open={settingOpen} setSettingOpen={setSettingOpen}/>
+                                <ConnectWallet open={walletSelectOpen} setSettingOpen={setWalletSelectOpen}/>
                                 {/* <LoadTestJson
                                     handleLoadTestJson={handleLoadTestJson}
                                     handleClickPreloadedTestJson={handleClickPreloadedTestJson}
@@ -619,12 +619,9 @@ export default function Home() {
                                 treeEditorWarningText={treeEditorWarningText}
                                 handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
                                 runCairoSimulationWarning={runCairoSimulationWarning}
-                                adversary={adversary}
-                                setAdversary={setAdversary}
                                 onComboChange={setAdversaryCombo}
                                 fighterSelection={fighterSelection}
                                 setFighterSelection={setFighterSelection}
-                                setOpponent={setOpponent}
                                 agents={agents}
                             />
                         </Grid>
