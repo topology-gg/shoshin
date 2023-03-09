@@ -116,9 +116,11 @@ export interface SingleMetadata {
     combos: number[],
     state_machine_offset: number[],
     state_machine: SimpleLeaf[],
+    states_names: string[],
     initial_state: number,
-    functions_offset: number[],
-    functions: SimpleLeaf[],
+    conditions_offset: number[],
+    conditions: SimpleLeaf[],
+    conditions_names: string[],
     actions: number[],
     character: number,
 }
@@ -146,23 +148,20 @@ export function splitSingleMetadata(meta: SingleMetadata): Agent {
         sm = sm.concat(unflattenLeaf(mentalState))
         start += o 
     })
-    let states = sm.map((_, i) => {
-        return "MS " + i
-    })
 
     // extract the conditions
     // offset in the form [LEN_FUNC_1, LEN_FUNC_2, ...]
     start = 0
     let gp: Leaf[] = []
-    let gpOffset = meta.functions_offset
+    let gpOffset = meta.conditions_offset
     gpOffset.forEach((o) => {
-        let func = meta.functions.slice(start, start + o)
+        let func = meta.conditions.slice(start, start + o)
         gp = gp.concat(unflattenLeaf(func))
         start += o
     })
 
     return {
-            states: states,
+            states: meta.states_names,
             combos: combos,
             mentalStates: sm,
             initialState: meta.initial_state,
