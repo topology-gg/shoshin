@@ -116,7 +116,7 @@ export const spriteData: Record<string, Record<string, SpriteData[]>> = {
         clash: [
             {
                 size: [132, 141],
-                hitboxOffset: { left: [0,0], right: [0,0] },
+                hitboxOffset: { left: [-31,9], right: [-53,3] },
             }
         ],
         dash_backward: [
