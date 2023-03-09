@@ -79,6 +79,7 @@ export default function Home() {
     const [walletSelectOpen, setWalletSelectOpen] = useState<boolean>(false);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [functionUnderEditIndex, setFunctionUnderEditIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
+    const [editorIsReadOnly, setEditorIsReadOnly] = useState<boolean>(true);
 
     // React states for tracking the New Agent being edited in the right panel
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
@@ -515,12 +516,24 @@ export default function Home() {
     // Set Agent in the side panel to blank agent
     //
     function setAgentInPanelToBlank () {
+        setInitialMentalState(() => null);
         setCombos(() => []);
         setMentalStates(() => []);
         setTrees(() => []);
         setFunctions(() => []);
         setAgentName(() => '');
         setCharacter(() => Character.Jessica);
+        setFunctionUnderEditIndex(() => null);
+    }
+    function setAgentInPanelToAgent (agent: Agent) {
+        // parse the given agent into new values for the React states
+        setInitialMentalState(() => agent.initialState);
+        setCombos(() => agent.combos);
+        setMentalStates(() => []); // TODO
+        setTrees(() => []); // TODO
+        setFunctions(() => []); // TODO
+        setAgentName(() => '');
+        setCharacter(() => agent.character == 0 ? Character.Jessica : Character.Antoc);
         setFunctionUnderEditIndex(() => null);
     }
 
@@ -598,8 +611,19 @@ export default function Home() {
                         </Grid>
                         <Grid item xs={4} sx={{ bgcolor: 'grey.50' }}>
                             <SidePanel
-                                isReadOnly={true}
-                                createNewAgentFromBlank={setAgentInPanelToBlank}
+                                isReadOnly={editorIsReadOnly}
+                                studyAgent={(agent: Agent) => {
+                                    setEditorIsReadOnly(() => true);
+                                    setAgentInPanelToAgent(agent);
+                                }}
+                                buildNewAgentFromBlank={() => {
+                                    setEditorIsReadOnly(() => false);
+                                    setAgentInPanelToBlank();
+                                }}
+                                buildNewAgentFromAgent={(agent: Agent) => {
+                                    setEditorIsReadOnly(() => false);
+                                    setAgentInPanelToAgent(agent);
+                                }}
                                 agentName={agentName}
                                 setAgentName={setAgentName}
                                 workingTab={workingTab}

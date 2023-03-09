@@ -48,12 +48,12 @@ const ComboEditor = ({
                 <Typography variant='overline'>Combo Actions</Typography>
                 <Box>
                     <Box
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        margin: "0rem 0 2rem 0",
-                        justifyContent: "center",
-                    }}
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            margin: "0rem 0 2rem 0",
+                            justifyContent: "center",
+                        }}
                     >
                         {actions.map((key, key_i) => {
                             if (!key.includes('COMBO')){

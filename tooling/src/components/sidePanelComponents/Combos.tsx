@@ -38,31 +38,29 @@ const Combos = ({
                     {
                         combos.map((combo, index) => {
                             return (
-                                <Tooltip key={`combos-tooltip-${index}`} title={comboToStr(combo, characterIndex)}>
-                                    <ListItem
-                                        disablePadding
-                                        key={`combo-${index}`}
+                                <ListItem
+                                    disablePadding
+                                    key={`combo-${index}`}
+                                >
+                                    <ListItemButton
+                                        selected={selectedIndex === index}
+                                        onClick={
+                                            () => {
+                                                setEditingCombo(combo)
+                                                setSelectedIndex(index)
+                                            }
+                                        }
                                     >
-                                        <ListItemButton
-                                            selected={selectedIndex === index}
-                                            onClick={
-                                                () => {
-                                                    setEditingCombo(combo)
-                                                    setSelectedIndex(index)
-                                                }
-                                            }
-                                        >
-                                            {selectedIndex === index &&
-                                                <ListItemIcon>
-                                                    <ChevronRight />
-                                                </ListItemIcon>
-                                            }
-                                            <ListItemText inset={selectedIndex !== index}>
-                                                Combo {index}
-                                            </ListItemText>
-                                        </ListItemButton>
-                                    </ListItem>
-                                </Tooltip>
+                                        {selectedIndex === index &&
+                                            <ListItemIcon>
+                                                <ChevronRight />
+                                            </ListItemIcon>
+                                        }
+                                        <ListItemText inset={selectedIndex !== index}>
+                                            Combo {index}
+                                        </ListItemText>
+                                    </ListItemButton>
+                                </ListItem>
                             )
                         })
                     }

@@ -1,5 +1,7 @@
 import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
+import BuildIcon from '@mui/icons-material/Build';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import Tabs, { EditorTabName } from './Tabs';
 import MentalStates from './MentalStates';
 import TreeEditor from './TreeEditor';
@@ -7,11 +9,14 @@ import GeneralFunctions from './GeneralFunctions';
 import Combos from './Combos';
 import Profile from './Profile';
 import ButtonOptionList from './ButtonOptionList';
+import Agent from '../../types/Agent';
 
 
 const SidePanel = ({
     isReadOnly,
-    createNewAgentFromBlank,
+    studyAgent,
+    buildNewAgentFromBlank,
+    buildNewAgentFromAgent,
     agentName,setAgentName,
     workingTab, handleClickTab,
     mentalStates, setMentalStates, initialMentalState, handleSetInitialMentalState, combos, setCombos, handleValidateCombo,
@@ -96,6 +101,7 @@ const SidePanel = ({
 
         }
     }
+
     return (
         <Box
             sx={{
@@ -122,10 +128,13 @@ const SidePanel = ({
 
                 <div style={{marginBottom:'1rem'}}>
                     <ButtonOptionList
-                        buttonLabel='View available Agent (read-only)'
+                        buttonLabel={<><AutoStoriesIcon sx={{marginRight:'0.6rem'}} />Study available Agent (read-only)</>}
                         options={agents}
                         optionLabel={'agent'}
-                        optionSelected={(option) => {console.log('View available agent:', option)}}
+                        optionSelected={(option: Agent) => {
+                            console.log('View available agent:', option)
+                            studyAgent(option)
+                        }}
                     />
                 </div>
 
@@ -133,21 +142,24 @@ const SidePanel = ({
                     <Button
                         id='button-option-list-button'
                         onClick={() => {
-                            console.log('Create new Agent from blank');
-                            createNewAgentFromBlank()
+                            console.log('Build new Agent from blank');
+                            buildNewAgentFromBlank()
                         }}
                         variant="outlined"
                     >
-                        Create new Agent from blank
+                        <BuildIcon sx={{marginRight:'0.6rem'}} /> Build new Agent from blank
                     </Button>
                 </div>
 
                 <div style={{marginBottom:'1rem'}}>
                     <ButtonOptionList
-                        buttonLabel='Create new Agent from available Agent'
+                        buttonLabel={<><BuildIcon  sx={{marginRight:'0.6rem'}} />Build new Agent from an existing Agent</>}
                         options={agents}
                         optionLabel={'agent'}
-                        optionSelected={(option) => {console.log('Create new Agent from available Agent:', option)}}
+                        optionSelected={(option: Agent) => {
+                            console.log('Build new Agent from an existing Agent:', option)
+                            buildNewAgentFromAgent(option)
+                        }}
                     />
                 </div>
 
