@@ -3,20 +3,52 @@ import { Box } from '@mui/material';
 import Tabs from './Tabs';
 import MentalStates from './MentalStates';
 import TreeEditor from './TreeEditor';
-import GeneralFunctions from './GeneralFunctions';
+import Conditions from './Conditions';
 import Combos from './Combos';
 import { AdversarySelection } from './AdversarySelection';
-import { FighterSelection } from './FighterSelection';
+import { MentalState } from '../types/MentalState';
+import { Character } from '../constants/constants';
+import { Tree } from '../types/Tree';
+import { Condition, ConditionElement } from '../types/Condition';
+
+interface SidePanelPros {
+    workingTab: number
+    handleClickTab: (tab: number) => void
+    mentalStates: MentalState[]
+    initialMentalState: number
+    handleSetInitialMentalState: (initialMentalState: number) => void
+    combos: number[][]
+    handleValidateCombo: (combo: number[], index: number) => void
+    character: Character
+    setCharacter: (character: Character) => void
+    handleAddMentalState: (new_state: string) => void
+    handleClickRemoveMentalState: (index: number) => void
+    handleSetMentalStateAction: (index: number, action: number) => void
+    treeEditor: number
+    handleClickTreeEditor: (index: number) => void
+    trees: Tree[]
+    handleUpdateTree: (index: number, input: string) => void
+    conditions: Condition[]
+    handleUpdateCondition: (index: number, element: ConditionElement) => void
+    handleConfirmCondition: () => void
+    handleClickDeleteCondition: (index: number) => void
+    conditionUnderEditIndex: number 
+    setConditionUnderEditIndex: (index: number) => void
+    isConditionWarningTextOn: boolean
+    conditionWarningText: string 
+    isTreeEditorWarningTextOn: boolean
+    treeEditorWarningText: string
+    handleRemoveElement: (index: number) => void
+}
 
 
 const SidePanel = ({
-    workingTab, handleClickTab, mentalStates, setMentalStates, initialMentalState, handleSetInitialMentalState, combos, setCombos, handleValidateCombo, 
+    workingTab, handleClickTab, mentalStates, initialMentalState, handleSetInitialMentalState, combos, handleValidateCombo, 
     character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor, 
-    trees, setTrees, handleUpdateTree, functions, setFunctions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction, 
-    functionsIndex, setFunctionsIndex, isGeneralFunctionWarningTextOn, generalFunctionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText, 
-    handleRemoveElementGeneralFunction, runCairoSimulationWarning, adversary, setAdversary, onComboChange, fighterSelection, setFighterSelection, setOpponent, 
-    agents
-}) => {
+    trees, handleUpdateTree, conditions, handleUpdateCondition, handleConfirmCondition, handleClickDeleteCondition, 
+    conditionUnderEditIndex, setConditionUnderEditIndex, isConditionWarningTextOn, conditionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText, 
+    handleRemoveElement
+}: SidePanelPros) => {
     const content = (workingTab: number) => {
         switch (workingTab) {
             case 0: {
@@ -36,7 +68,7 @@ const SidePanel = ({
                     tree={trees[treeEditor - 1]}
                     handleUpdateTree={handleUpdateTree}
                     mentalStates={mentalStates}
-                    functions={functions}
+                    conditions={conditions}
                     handleClickTreeEditor={handleClickTreeEditor}
                     isWarningTextOn={isTreeEditorWarningTextOn}
                     warningText={treeEditorWarningText}
@@ -50,39 +82,16 @@ const SidePanel = ({
                         ></Combos>
             }
             case 2: {
-                return <GeneralFunctions
-                        functions={functions}
-                        handleUpdateGeneralFunction={handleUpdateGeneralFunction}
-                        handleConfirmFunction={handleConfirmFunction}
-                        handleClickDeleteFunction={handleClickDeleteFunction}
-                        functionsIndex={functionsIndex}
-                        setFunctionsIndex={setFunctionsIndex}
-                        isWarningTextOn={isGeneralFunctionWarningTextOn}
-                        warningText={generalFunctionWarningText}
-                        handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
-                />;
-            }
-            case 3: {
-                return <AdversarySelection
-                    warning={runCairoSimulationWarning}
-                    adversary={adversary}
-                    setAdversary={setAdversary}
-                    setOpponent={setOpponent}
-                    onComboChange={onComboChange}
-                />;
-            }
-            case 4: {
-                return <FighterSelection
-                    fighterSelection={fighterSelection}
-                    setFighterSelection={setFighterSelection}
-                    setOpponent={setOpponent}
-                    agents={agents}
-                    setMentalStates={setMentalStates}
-                    setCombos={setCombos}
-                    setTrees={setTrees}
-                    functions={functions}
-                    setFunctions={setFunctions}
-                    setCharacter={setCharacter}
+                return <Conditions
+                        conditions={conditions}
+                        handleUpdateCondition={handleUpdateCondition}
+                        handleConfirmCondition={handleConfirmCondition}
+                        handleClickDeleteCondition={handleClickDeleteCondition}
+                        conditionUnderEditIndex={conditionUnderEditIndex}
+                        setConditionUnderEditIndex={setConditionUnderEditIndex}
+                        isWarningTextOn={isConditionWarningTextOn}
+                        warningText={conditionWarningText}
+                        handleRemoveElement={handleRemoveElement}
                 />;
             }
         }

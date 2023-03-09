@@ -1,5 +1,5 @@
 import Agent, { buildAgent } from "../types/Agent"
-import { ElementType, Function, Operator, Perceptible } from "../types/Function"
+import { ElementType, Condition, Operator, Perceptible } from "../types/Condition"
 import { MentalState } from "../types/MentalState"
 import { Direction, Tree } from "../types/Tree"
 
@@ -240,7 +240,7 @@ export const INITIAL_DECISION_TREES: Tree[] = [
     }
 ]
 
-export const INITIAL_FUNCTIONS: Function[] = [
+export const INITIAL_CONDITIONS: Condition[] = [
     {
         elements: [
             { value: Operator.OpenParenthesis, type: ElementType.Operator },
@@ -382,7 +382,7 @@ export const INITIAL_FUNCTIONS: Function[] = [
         elements: []
     }
 ]
-export const INITIAL_FUNCTIONS_INDEX: number = INITIAL_FUNCTIONS.length - 1
+export const INITIAL_CONDITION_INDEX: number = INITIAL_CONDITIONS.length - 1
 
 const DECISION_TREE_IDLE_AGENT: Tree[] = [
     {
@@ -396,7 +396,7 @@ const DECISION_TREE_IDLE_AGENT: Tree[] = [
 const MENTAL_STATES_IDLE_AGENT: MentalState[] = [
     { state: 'MS IDLE', action: ActionsAntoc['Null'] },
 ]
-export const IDLE_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_FUNCTIONS, 0, 1)
+export const IDLE_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_CONDITIONS, 0, 1)
 
 const DECISION_TREE_OFFENSIVE_AGENT = INITIAL_DECISION_TREES
 const MENTAL_STATES_OFFENSIVE_AGENT: MentalState[] = [
@@ -406,7 +406,7 @@ const MENTAL_STATES_OFFENSIVE_AGENT: MentalState[] = [
     { state: 'MS CLOSER', action: ActionsAntoc['MoveForward'] },
 ]
 const COMBOS_OFFENSIVE_AGENT: number[][] = [[1, 1, 1, 1, 1, 1, 1]]
-export const OFFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_OFFENSIVE_AGENT, COMBOS_OFFENSIVE_AGENT, DECISION_TREE_OFFENSIVE_AGENT, INITIAL_FUNCTIONS, 0, 1)
+export const OFFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_OFFENSIVE_AGENT, COMBOS_OFFENSIVE_AGENT, DECISION_TREE_OFFENSIVE_AGENT, INITIAL_CONDITIONS, 0, 1)
 
 const DECISION_TREE_DEFENSIVE_AGENT = [
     {
@@ -439,7 +439,7 @@ const MENTAL_STATES_DEFENSIVE_AGENT: MentalState[] = [
     { state: 'MS RETRAIT', action: 102 },
 ]
 const COMBOS_DEFENSIVE_AGENT: number[][] = [[3, 3, 3, 3, 3, 3], [5, 5, 5, 5, 5, 5]]
-export const DEFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_DEFENSIVE_AGENT, COMBOS_DEFENSIVE_AGENT, DECISION_TREE_DEFENSIVE_AGENT, INITIAL_FUNCTIONS, 0, 1)
+export const DEFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_DEFENSIVE_AGENT, COMBOS_DEFENSIVE_AGENT, DECISION_TREE_DEFENSIVE_AGENT, INITIAL_CONDITIONS, 0, 1)
 
 export const DECISION_TREE_COMBO_AGENT = [
     {

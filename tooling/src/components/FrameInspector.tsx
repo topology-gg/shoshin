@@ -16,14 +16,12 @@ import { Frame, TestJson } from "../types/Frame";
 type FrameInspectorProps = {
     testJson: TestJson;
     animationFrame: number;
-    adversaryType: string;
     onAdversaryEdit: () => void;
 };
 
 const FrameInspector = ({
     testJson,
     animationFrame,
-    adversaryType,
     onAdversaryEdit,
 }: FrameInspectorProps) => {
 

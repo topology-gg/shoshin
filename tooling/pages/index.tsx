@@ -8,9 +8,21 @@ import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/SidePanel';
 import { FrameScene, TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
-import { Function, FunctionElement, verifyValidFunction } from '../src/types/Function'
+import { Condition, ConditionElement, verifyValidCondition } from '../src/types/Condition'
 import { MentalState } from '../src/types/MentalState';
-import { Character, CONTRACT_ADDRESS, DEFENSIVE_AGENT, ENTRYPOINT, IDLE_AGENT, INITIAL_COMBOS, INITIAL_DECISION_TREES, INITIAL_FUNCTIONS, INITIAL_FUNCTIONS_INDEX, INITIAL_MENTAL_STATES, OFFENSIVE_AGENT } from '../src/constants/constants';
+import { 
+    Character, 
+    CONTRACT_ADDRESS, 
+    DEFENSIVE_AGENT, 
+    ENTRYPOINT, 
+    IDLE_AGENT, 
+    INITIAL_COMBOS, 
+    INITIAL_DECISION_TREES, 
+    INITIAL_CONDITIONS, 
+    INITIAL_CONDITION_INDEX, 
+    INITIAL_MENTAL_STATES, 
+    OFFENSIVE_AGENT 
+} from '../src/constants/constants';
 import Agent, { agentsToCalldata, buildAgent } from '../src/types/Agent';
 import ImagePreloader from '../src/components/ImagePreloader';
 import StatusBarPanel from '../src/components/StatusBar';
@@ -74,21 +86,17 @@ export default function Home() {
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [trees, setTrees] = useState<Tree[]>(INITIAL_DECISION_TREES)
-    const [functions, setFunctions] = useState<Function[]>(INITIAL_FUNCTIONS)
-    const [functionsIndex, setFunctionsIndex] = useState<number>(INITIAL_FUNCTIONS_INDEX)
+    const [conditions, setConditions] = useState<Condition[]>(INITIAL_CONDITIONS)
+    const [conditionUnderEditIndex, setConditionUnderEditIndex] = useState<number>(INITIAL_CONDITION_INDEX)
     const [character, setCharacter] = useState<Character>(Character.Jessica)
-    const [adversary, setAdversary] = useState<string>('defensive')
-    const [opponent, setOpponent] = useState<Agent>(DEFENSIVE_AGENT)
-    const [fighterSelection, setFighterSelection] = useState<string>('opponent')
-    const [adversaryCombo, setAdversaryCombo] = useState<number[]>([])
     const [output, setOuput] = useState<FrameScene>();
     const [simulationError, setSimulationError] = useState();
     const [p1, setP1] = useState<Agent>();
     const [p2, setP2] = useState<Agent>();
 
     // Warnings
-    const [isGeneralFunctionWarningTextOn, setGeneralFunctionWarningTextOn] = useState<boolean>(false)
-    const [generalFunctionWarningText, setGeneralFunctionWarningText] = useState<string>('')
+    const [isConditionWarningTextOn, setConditionWarningTextOn] = useState<boolean>(false)
+    const [conditionWarningText, setConditionWarningText] = useState<string>('')
     const [isTreeEditorWarningTextOn, setTreeEditorWarningTextOn] = useState<boolean>(false)
     const [treeEditorWarningText, setTreeEditorWarningText] = useState<string>('')
     const [runCairoSimulationWarning, setCairoSimulationWarning] = useState<string>('')
@@ -104,7 +112,7 @@ export default function Home() {
 
     const newAgent: Agent = useMemo(() => {
         return handleBuildAgent()
-    }, [character, mentalStates, combos, trees, functions, initialMentalState])
+    }, [character, mentalStates, combos, trees, conditions, initialMentalState])
 
     const { runCairoSimulation, wasmReady } = useRunCairoSimulation(p1, p2)
 
@@ -321,7 +329,7 @@ export default function Home() {
         let regex_end = /: *\n([a-zA-z0-9_ ]*)/gm
 
         let exp = regex_branches.exec(input)
-        let f = functions.slice(0, functions.length - 1).map((_, i) => {return `F${i}`})
+        let f = conditions.slice(0, conditions.length - 1).map((_, i) => {return `F${i}`})
         let ms = mentalStates.map((m) => {return m.state})
         while (exp !== null && exp[1] !== '' && exp[2] !== '') {
             let fCondition = f.includes(exp[1].trim())
@@ -330,8 +338,8 @@ export default function Home() {
                 new_tree.nodes.push({id: 'if ' + exp[1].trim(), isChild: false }, { id: exp[2].trim(), isChild: true, branch: Direction.Left })
             } else {
                 let text = !fCondition ? !mCondition ?
-                                        `Function ${exp[1]} and mental state ${exp[2]} not included in currect build`:
-                                        `Function ${exp[1]} not included in current build` :
+                                        `Condition ${exp[1]} and mental state ${exp[2]} not included in currect build`:
+                                        `Condition ${exp[1]} not included in current build` :
                             `Mental state ${exp[2]} not included in current build`
                 setTreeEditorWarningTextOn(true)
                 setTreeEditorWarningText(text)
@@ -366,18 +374,18 @@ export default function Home() {
         })
     }
 
-    function handleUpdateGeneralFunction(index: number, element: FunctionElement) {
+    function handleUpdateCondition(index: number, element: ConditionElement) {
         if (element) {
-            setFunctions((prev) => {
+            setConditions((prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev));
                 if (index == 0 && !prev_copy[index]) {
                     prev_copy = [{ elements: [] }]
                 }
                 prev_copy[index].elements.push(element)
-                if (!verifyValidFunction(prev_copy[index], false)) {
-                    setGeneralFunctionWarningTextOn(true)
-                    setGeneralFunctionWarningText(`Invalid ${element.type}, please try again`)
-                    setTimeout(() => setGeneralFunctionWarningTextOn(false), 2000)
+                if (!verifyValidCondition(prev_copy[index], false)) {
+                    setConditionWarningTextOn(true)
+                    setConditionWarningText(`Invalid ${element.type}, please try again`)
+                    setTimeout(() => setConditionWarningTextOn(false), 2000)
                     prev_copy[index].elements.pop()
                     return prev_copy
                 }
@@ -386,8 +394,8 @@ export default function Home() {
         }
     }
 
-    function handleRemoveElementGeneralFunction(index: number) {
-        setFunctions((prev) => {
+    function handleRemoveElement(index: number) {
+        setConditions((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev))
             if (!prev_copy[index]) {
                 return prev_copy
@@ -402,26 +410,26 @@ export default function Home() {
         })
     }
 
-    function handleConfirmFunction() {
-        let length = functions.length
-        let f = functions[functionsIndex]
-        if(!f?.elements || !verifyValidFunction(f, true)) {
-            setGeneralFunctionWarningTextOn(true)
-            setGeneralFunctionWarningText(`Invalid function, please update`)
-            setTimeout(() => setGeneralFunctionWarningTextOn(false), 2000)
+    function handleConfirmCondition() {
+        let length = conditions.length
+        let f = conditions[conditionUnderEditIndex]
+        if(!f?.elements || !verifyValidCondition(f, true)) {
+            setConditionWarningTextOn(true)
+            setConditionWarningText(`Invalid function, please update`)
+            setTimeout(() => setConditionWarningTextOn(false), 2000)
             return
         }
-        if (functionsIndex < length - 1){
-            setFunctionsIndex(() => {
+        if (conditionUnderEditIndex < length - 1){
+            setConditionUnderEditIndex(() => {
                 return length - 1
             })
             return
         }
-        if (functions[length - 1]?.elements.length > 0) {
-            setFunctionsIndex((prev) => {
+        if (conditions[length - 1]?.elements.length > 0) {
+            setConditionUnderEditIndex((prev) => {
                 return prev + 1
             })
-            setFunctions((prev) => {
+            setConditions((prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev))
                 prev_copy.push({elements: []})
                 return prev_copy
@@ -429,14 +437,14 @@ export default function Home() {
         }
     }
 
-    function handleClickDeleteFunction(index: number) {
-        setFunctionsIndex((prev) => {
+    function handleClickDeleteCondition(index: number) {
+        setConditionUnderEditIndex((prev) => {
             if (index == prev) {
                 return prev - 1
             }
             return prev
         })
-        setFunctions((prev) => {
+        setConditions((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev))
             prev_copy.splice(index, 1)
             return prev_copy
@@ -463,7 +471,7 @@ export default function Home() {
 
     function handleBuildAgent() {
         let char = Object.keys(Character).indexOf(character)
-        return buildAgent(mentalStates, combos, trees, functions, initialMentalState, char)
+        return buildAgent(mentalStates, combos, trees, conditions, initialMentalState, char)
     }
 
     function agentChange (whichPlayer: string, event: object, value: AgentOption) {
@@ -568,7 +576,6 @@ export default function Home() {
                                         <FrameInspector
                                             testJson={testJson}
                                             animationFrame={animationFrame}
-                                            adversaryType={adversary}
                                             onAdversaryEdit={() => setWorkingTab(3)}
                                         />
                                     </div>
@@ -587,11 +594,9 @@ export default function Home() {
                                 character={character}
                                 setCharacter={setCharacter}
                                 mentalStates={mentalStates}
-                                setMentalStates={setMentalStates}
                                 initialMentalState={initialMentalState}
                                 handleSetInitialMentalState={setInitialMentalState}
                                 combos={combos}
-                                setCombos={setCombos}
                                 handleValidateCombo={handleValidateCombo}
                                 handleAddMentalState={handleAddMentalState}
                                 handleClickRemoveMentalState={handleClickRemoveMentalState}
@@ -599,28 +604,18 @@ export default function Home() {
                                 treeEditor={treeEditor}
                                 handleClickTreeEditor={handleClickTreeEditor}
                                 trees={trees}
-                                setTrees={setTrees}
                                 handleUpdateTree={handleUpdateTree}
-                                functions={functions}
-                                setFunctions={setFunctions}
-                                handleUpdateGeneralFunction={handleUpdateGeneralFunction}
-                                handleConfirmFunction={handleConfirmFunction}
-                                handleClickDeleteFunction={handleClickDeleteFunction}
-                                functionsIndex={functionsIndex}
-                                setFunctionsIndex={setFunctionsIndex}
-                                isGeneralFunctionWarningTextOn={isGeneralFunctionWarningTextOn}
-                                generalFunctionWarningText={generalFunctionWarningText}
+                                conditions={conditions}
+                                handleUpdateCondition={handleUpdateCondition}
+                                handleConfirmCondition={handleConfirmCondition}
+                                handleClickDeleteCondition={handleClickDeleteCondition}
+                                conditionUnderEditIndex={conditionUnderEditIndex}
+                                setConditionUnderEditIndex={setConditionUnderEditIndex}
+                                isConditionWarningTextOn={isConditionWarningTextOn}
+                                conditionWarningText={conditionWarningText}
                                 isTreeEditorWarningTextOn={isTreeEditorWarningTextOn}
                                 treeEditorWarningText={treeEditorWarningText}
-                                handleRemoveElementGeneralFunction={handleRemoveElementGeneralFunction}
-                                runCairoSimulationWarning={runCairoSimulationWarning}
-                                adversary={adversary}
-                                setAdversary={setAdversary}
-                                onComboChange={setAdversaryCombo}
-                                fighterSelection={fighterSelection}
-                                setFighterSelection={setFighterSelection}
-                                setOpponent={setOpponent}
-                                agents={agents}
+                                handleRemoveElement={handleRemoveElement}
                             />
                         </Grid>
                     </Grid>
