@@ -23,7 +23,7 @@ export interface Metadata {
 }
 
 // Split the metadata into the two corresponding agents
-export function splitAgents(a: Metadata): [Agent, Agent] {
+export function splitMetadata(a: Metadata): [Agent, Agent] {
     let combos0: number[][] = []
     // for offset = [0, 5, 10, 15], zip [(0, 5), (5, 10), (10, 15)]
     // extract the combos based on the zipped arrays
@@ -109,4 +109,65 @@ export function splitAgents(a: Metadata): [Agent, Agent] {
             character: a.character_1
         }
     ]
+}
+
+export interface SingleMetadata {
+    combos_offset: number[],
+    combos: number[],
+    state_machine_offset: number[],
+    state_machine: SimpleLeaf[],
+    initial_state: number,
+    functions_offset: number[],
+    functions: SimpleLeaf[],
+    actions: number[],
+    character: number,
+}
+
+export function splitSingleMetadata(meta: SingleMetadata): Agent {
+    let combos: number[][] = []
+    // for offset = [0, 5, 10, 15], zip [(0, 5), (5, 10), (10, 15)]
+    // extract the combos based on the zipped arrays
+    let cOffseta = meta.combos_offset.slice(0, -1)
+    let cOffsetb = meta.combos_offset.slice(1)
+    let cOffset = cOffseta.map((c, i) => [c, cOffsetb[i]])
+    cOffset.forEach((c) => {
+        combos.push(meta.combos.slice(c[0], c[1]))
+    })
+
+    let start = 0
+    let sm: Leaf[] = []
+    // offset are [MS_0_TREE_AMOUNT, LEN_MS_0_TREE_0, LEN_MS_0_TREE_1, ..., MS_1_TREE_AMOUNT, LEN_MS_1_TREE_0, ...]
+    // filter out MS_i_TREE_AMOUNT for now
+    let smOffset = meta.state_machine_offset.filter((_, i) => {
+        return i%2 != 0
+    })
+    smOffset.forEach((o) => {
+        let mentalState = meta.state_machine.slice(start, start + o)
+        sm = sm.concat(unflattenLeaf(mentalState))
+        start += o 
+    })
+    let states = sm.map((_, i) => {
+        return "MS " + i
+    })
+
+    // extract the conditions
+    // offset in the form [LEN_FUNC_1, LEN_FUNC_2, ...]
+    start = 0
+    let gp: Leaf[] = []
+    let gpOffset = meta.functions_offset
+    gpOffset.forEach((o) => {
+        let func = meta.functions.slice(start, start + o)
+        gp = gp.concat(unflattenLeaf(func))
+        start += o
+    })
+
+    return {
+            states: states,
+            combos: combos,
+            mentalStates: sm,
+            initialState: meta.initial_state,
+            generalPurposeFunctions: gp,
+            actions: meta.actions,
+            character: meta.character
+        }
 }

@@ -18,7 +18,7 @@ import P1P2SettingPanel, { AgentOption } from '../src/components/P1P2SettingPane
 import FrameInspector from '../src/components/FrameInspector';
 import useRunCairoSimulation from '../src/hooks/useRunCairoSimulation';
 import { useAgents } from '../lib/api'
-import { Metadata, splitAgents } from '../src/types/Metadata';
+import { Metadata, splitMetadata } from '../src/types/Metadata';
 import { useAccount, useConnectors, useStarknetExecute } from '@starknet-react/core';
 import ConnectWallet from '../src/components/ConnectWallet';
 import { EditorTabName } from '../src/components/sidePanelComponents/Tabs';
@@ -102,7 +102,7 @@ export default function Home() {
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents()
     const t: Metadata[] = data?.agents;
-    const agents: Agent[] = t?.map(splitAgents).flat()
+    const agents: Agent[] = t?.map(splitMetadata).flat()
 
 
     const newAgent: Agent = useMemo(() => {
