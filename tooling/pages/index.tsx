@@ -5,7 +5,7 @@ import { Button, createTheme, ThemeProvider } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import MidScreenControl from '../src/components/MidScreenControl';
 import Simulator from '../src/components/Simulator';
-import SidePanel from '../src/components/SidePanel';
+import SidePanel from '../src/components/sidePanelComponents/SidePanel';
 import { FrameScene, TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Condition, ConditionElement, verifyValidCondition } from '../src/types/Condition'
@@ -33,7 +33,7 @@ import { useAgents } from '../lib/api'
 import { Metadata, splitMetadata } from '../src/types/Metadata';
 import { useAccount, useConnectors, useStarknetExecute } from '@starknet-react/core';
 import ConnectWallet from '../src/components/ConnectWallet';
-import { EditorTabName } from '../src/components/Tabs';
+import { EditorTabName } from '../src/components/sidePanelComponents/Tabs';
 import { unwrapLeafToCondition, unwrapLeafToTree } from '../src/types/Leaf';
 
 const theme = createTheme({

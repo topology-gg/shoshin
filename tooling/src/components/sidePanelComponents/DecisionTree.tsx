@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 

@@ -5,11 +5,10 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import TextField from '@mui/material/TextField';
-import { ConditionElement, Operator, ElementType, Perceptible, Condition } from '../types/Condition'
-import BasicMenu from './Menu'
+import { ConditionElement, Operator, ElementType, Perceptible, Condition } from '../../types/Condition'
 import PerceptibleList from './PerceptibleList'
 import { ChevronRight } from '@mui/icons-material';
-import { BodystatesAntoc, BodystatesJessica } from '../constants/constants';
+import { BodystatesAntoc, BodystatesJessica } from '../../constants/constants';
 
 // Interfaces
 

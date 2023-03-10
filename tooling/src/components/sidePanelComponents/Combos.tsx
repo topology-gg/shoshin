@@ -1,18 +1,8 @@
 import React, { useState } from "react";
 import { Box, ListItem, List, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
-import Tooltip from '@mui/material/Tooltip';
-import { Character, CHARACTERS_ACTIONS, MAX_COMBO_SIZE } from '../../constants/constants';
+import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
 import { ChevronRight } from "@mui/icons-material";
 import ComboEditor from "./ComboEditor";
-
-const comboToStr = (combo: number[], characterIndex) => {
-    let str = ""
-    combo.forEach((action) => {
-        let a = CHARACTERS_ACTIONS[characterIndex][action].replace('_', ' ')
-        str += a + ' '
-    })
-    return str
-}
 
 const Combos = ({
     isReadOnly, character, combos, handleValidateCombo

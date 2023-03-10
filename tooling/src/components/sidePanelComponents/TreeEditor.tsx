@@ -5,8 +5,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DecisionTree from './DecisionTree'
-import { Tree } from '../types/Tree'
-import { conditionToStr } from '../types/Condition'
+import { Tree } from '../../types/Tree'
+import { conditionToStr } from '../../types/Condition'
 
 const treeToString = (tree: Tree) => {
     let str = ''

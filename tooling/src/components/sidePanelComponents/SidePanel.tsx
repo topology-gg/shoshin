@@ -9,11 +9,11 @@ import Conditions from './Conditions';
 import Combos from './Combos';
 import Profile from './Profile';
 import ButtonOptionList from './ButtonOptionList';
-import Agent from '../types/Agent';
-import { MentalState } from '../types/MentalState';
-import { Character } from '../constants/constants';
-import { Tree } from '../types/Tree';
-import { Condition, ConditionElement } from '../types/Condition';
+import Agent from '../../types/Agent';
+import { MentalState } from '../../types/MentalState';
+import { Character } from '../../constants/constants';
+import { Tree } from '../../types/Tree';
+import { Condition, ConditionElement } from '../../types/Condition';
 
 interface SidePanelProps {
     isReadOnly: boolean

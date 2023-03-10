@@ -1,13 +1,7 @@
-import React, { useState } from 'react';
-import { Box, Button, FormControl, Grid, Input, InputLabel, OutlinedInput, Select, Typography } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
-import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Menu from '@mui/material/Menu';
+import React from 'react';
+import { Box, FormControl, Input, InputLabel, Select, Typography } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
-import { MentalState } from '../../types/MentalState';
-import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
+import { Character } from '../../constants/constants';
 
 const characters: Character[] = Object.values(Character);
 
@@ -18,8 +12,6 @@ const Profile = ({
     character,
     setCharacter,
 }) => {
-
-    let characterIndex = Object.keys(Character).indexOf(character)
 
     return (
         <Box
