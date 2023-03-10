@@ -41,11 +41,15 @@ func submit_agent{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
     agent_state_machine_offset: felt*,
     agent_state_machine_len: felt,
     agent_state_machine: Tree*,
+    agent_states_names_len: felt,
+    agent_states_names: felt*,
     agent_initial_state: felt,
-    agent_functions_offset_len: felt,
-    agent_functions_offset: felt*,
-    agent_functions_len: felt,
-    agent_functions: Tree*,
+    agent_conditions_offset_len: felt,
+    agent_conditions_offset: felt*,
+    agent_conditions_len: felt,
+    agent_conditions: Tree*,
+    agent_conditions_names_len: felt,
+    agent_conditions_names: felt*,
     actions_len: felt,
     actions: felt*,
     character_type: felt,
@@ -63,11 +67,15 @@ func submit_agent{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         agent_state_machine_offset,
         agent_state_machine_len,
         agent_state_machine,
+        agent_states_names_len,
+        agent_states_names,
         agent_initial_state,
-        agent_functions_offset_len,
-        agent_functions_offset,
-        agent_functions_len,
-        agent_functions,
+        agent_conditions_offset_len,
+        agent_conditions_offset,
+        agent_conditions_len,
+        agent_conditions,
+        agent_conditions_names_len,
+        agent_conditions_names,
         actions_len,
         actions,
         character_type,
@@ -96,14 +104,14 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     agent_1_state_machine_len: felt,
     agent_1_state_machine: Tree*,
     agent_1_initial_state: felt,
-    agent_0_functions_offset_len: felt,
-    agent_0_functions_offset: felt*,
-    agent_0_functions_len: felt,
-    agent_0_functions: Tree*,
-    agent_1_functions_offset_len: felt,
-    agent_1_functions_offset: felt*,
-    agent_1_functions_len: felt,
-    agent_1_functions: Tree*,
+    agent_0_conditions_offset_len: felt,
+    agent_0_conditions_offset: felt*,
+    agent_0_conditions_len: felt,
+    agent_0_conditions: Tree*,
+    agent_1_conditions_offset_len: felt,
+    agent_1_conditions_offset: felt*,
+    agent_1_conditions_len: felt,
+    agent_1_conditions: Tree*,
     actions_0_len: felt,
     actions_0: felt*,
     actions_1_len: felt,
@@ -137,14 +145,14 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         agent_1_state_machine_len,
         agent_1_state_machine,
         agent_1_initial_state,
-        agent_0_functions_offset_len,
-        agent_0_functions_offset,
-        agent_0_functions_len,
-        agent_0_functions,
-        agent_1_functions_offset_len,
-        agent_1_functions_offset,
-        agent_1_functions_len,
-        agent_1_functions,
+        agent_0_conditions_offset_len,
+        agent_0_conditions_offset,
+        agent_0_conditions_len,
+        agent_0_conditions,
+        agent_1_conditions_offset_len,
+        agent_1_conditions_offset,
+        agent_1_conditions_len,
+        agent_1_conditions,
         actions_0_len,
         actions_0,
         actions_1_len,
@@ -227,20 +235,20 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         i=0,
     );
 
-    let (functions_0) = default_dict_new(default_value=0);
-    let (functions_0_new) = fill_dictionary(
-        dict=functions_0,
-        offsets_len=agent_0_functions_offset_len,
-        offsets=agent_0_functions_offset,
-        tree=agent_0_functions,
+    let (conditions_0) = default_dict_new(default_value=0);
+    let (conditions_0_new) = fill_dictionary(
+        dict=conditions_0,
+        offsets_len=agent_0_conditions_offset_len,
+        offsets=agent_0_conditions_offset,
+        tree=agent_0_conditions,
         i=0,
     );
-    let (functions_1) = default_dict_new(default_value=0);
-    let (functions_1_new) = fill_dictionary(
-        dict=functions_1,
-        offsets_len=agent_1_functions_offset_len,
-        offsets=agent_1_functions_offset,
-        tree=agent_1_functions,
+    let (conditions_1) = default_dict_new(default_value=0);
+    let (conditions_1_new) = fill_dictionary(
+        dict=conditions_1,
+        offsets_len=agent_1_conditions_offset_len,
+        offsets=agent_1_conditions_offset,
+        tree=agent_1_conditions,
         i=0,
     );
 
@@ -255,10 +263,10 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         combos_1 = ComboBuffer(combos_offset_1_len, combos_offset_1, combos_1, 0, 0),
         mental_state_0 = mental_state_0_new,
         mental_state_offsets_0 = mental_state_offsets_0_new,
-        functions_0 = functions_0_new,
+        conditions_0 = conditions_0_new,
         mental_state_1 = mental_state_1_new,
         mental_state_offsets_1 = mental_state_offsets_1_new,
-        functions_1 = functions_1_new,
+        conditions_1 = conditions_1_new,
         actions_0 = actions_0,
         actions_1 = actions_1,
         character_type_0 = character_type_0,
@@ -278,10 +286,10 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     combos_1: ComboBuffer,
     mental_state_0: DictAccess*,
     mental_state_offsets_0: DictAccess*,
-    functions_0: DictAccess*,
+    conditions_0: DictAccess*,
     mental_state_1: DictAccess*,
     mental_state_offsets_1: DictAccess*,
-    functions_1: DictAccess*,
+    conditions_1: DictAccess*,
     actions_0: felt*,
     actions_1: felt*,
     character_type_0: felt,
@@ -354,8 +362,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         key=last_frame.agent_0.mental_state
     );
     tempvar offsets = cast(ptr_offsets, felt*);
-    let (agent_state_0, functions_0_new, dict_new) = BinaryOperatorTree.execute_tree_chain(
-        [offsets], offsets + 1, tree, 0, mem, functions_0, perceptibles_0
+    let (agent_state_0, conditions_0_new, dict_new) = BinaryOperatorTree.execute_tree_chain(
+        [offsets], offsets + 1, tree, 0, mem, conditions_0, perceptibles_0
     );
     default_dict_finalize(
         dict_accesses_start=dict_new, dict_accesses_end=dict_new, default_value=0
@@ -368,8 +376,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         key=last_frame.agent_1.mental_state
     );
     tempvar offsets = cast(ptr_offsets, felt*);
-    let (agent_state_1, functions_1_new, dict_new) = BinaryOperatorTree.execute_tree_chain(
-        [offsets], offsets + 1, tree, 0, mem, functions_1, perceptibles_1
+    let (agent_state_1, conditions_1_new, dict_new) = BinaryOperatorTree.execute_tree_chain(
+        [offsets], offsets + 1, tree, 0, mem, conditions_1, perceptibles_1
     );
     default_dict_finalize(
         dict_accesses_start=dict_new, dict_accesses_end=dict_new, default_value=0
@@ -483,10 +491,10 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         combos_1 = combos_1_new,
         mental_state_0 = mental_state_0,
         mental_state_offsets_0 = mental_state_offsets_0,
-        functions_0 = functions_0_new,
+        conditions_0 = conditions_0_new,
         mental_state_1 = mental_state_1,
         mental_state_offsets_1 = mental_state_offsets_1,
-        functions_1 = functions_1_new,
+        conditions_1 = conditions_1_new,
         actions_0 = actions_0,
         actions_1 = actions_1,
         character_type_0 = character_type_0,
@@ -519,14 +527,14 @@ func event_metadata(
     agent_1_state_machine_len: felt,
     agent_1_state_machine: Tree*,
     agent_1_initial_state: felt,
-    agent_0_functions_offset_len: felt,
-    agent_0_functions_offset: felt*,
-    agent_0_functions_len: felt,
-    agent_0_functions: Tree*,
-    agent_1_functions_offset_len: felt,
-    agent_1_functions_offset: felt*,
-    agent_1_functions_len: felt,
-    agent_1_functions: Tree*,
+    agent_0_conditions_offset_len: felt,
+    agent_0_conditions_offset: felt*,
+    agent_0_conditions_len: felt,
+    agent_0_conditions: Tree*,
+    agent_1_conditions_offset_len: felt,
+    agent_1_conditions_offset: felt*,
+    agent_1_conditions_len: felt,
+    agent_1_conditions: Tree*,
     actions_0_len: felt,
     actions_0: felt*,
     actions_1_len: felt,
@@ -547,11 +555,15 @@ func event_single_metadata(
     agent_state_machine_offset: felt*,
     agent_state_machine_len: felt,
     agent_state_machine: Tree*,
+    agent_states_names_len: felt,
+    agent_states_names: felt*,
     agent_initial_state: felt,
-    agent_functions_offset_len: felt,
-    agent_functions_offset: felt*,
-    agent_functions_len: felt,
-    agent_functions: Tree*,
+    agent_conditions_offset_len: felt,
+    agent_conditions_offset: felt*,
+    agent_conditions_len: felt,
+    agent_conditions: Tree*,
+    agent_conditions_names_len: felt,
+    agent_conditions_names: felt*,
     actions_len: felt,
     actions: felt*,
     character_type: felt,
