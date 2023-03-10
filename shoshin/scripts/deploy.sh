@@ -27,7 +27,7 @@ sleep 120
 
 # deploy the declared contract
 echo "Deploying the contract"
-TRANSACTION_HASH=$(starknet deploy --class_hash $CONTRACT_CLASS_HASH | grep "Transaction hash:" | sed 's/^.*\: \(.*\)/\1/'))
+TRANSACTION_HASH=$(starknet deploy --class_hash $CONTRACT_CLASS_HASH | grep "Transaction hash:" | sed 's/^.*\: \(.*\)/\1/')
 echo "Contract deployed with transaction hash: $TRANSACTION_HASH"
 
 exit 0
