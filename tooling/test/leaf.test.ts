@@ -1,7 +1,7 @@
 import "mocha"
 import { expect } from "chai"
-import { Operator, ElementType, Function, parseFunction, Perceptible, FunctionElement } from '../src/types/Function'
-import Leaf, { flattenLeaf, SimpleLeaf, unflattenLeaf, unwrapLeafToFunction, unwrapLeafToTree } from "../src/types/Leaf"
+import { Operator, ElementType, Condition, parseConditionToLeaf, Perceptible, ConditionElement } from '../src/types/Condition'
+import Leaf, { flattenLeaf, SimpleLeaf, unflattenLeaf, unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf"
 import { Direction } from "../src/types/Tree";
 
 describe("flatten", () => {
@@ -9,7 +9,7 @@ describe("flatten", () => {
         it("should flatten the leaf to an array", () => {
             // Given
             // f = (OPPONENT_BODY_STATE == 10) OR (OPPONENT_BODY_STATE == 20) OR (OPPONENT_BODY_STATE == 30)
-            let f: Function = {
+            let f: Condition = {
                 elements: [
                     { value: Operator.OpenParenthesis, type: ElementType.Operator },
                     { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
@@ -30,7 +30,7 @@ describe("flatten", () => {
                     { value: Operator.CloseParenthesis, type: ElementType.Operator },
                 ]
             }
-            let leaf = parseFunction(f)
+            let leaf = parseConditionToLeaf(f)
             // When 
             let got = flattenLeaf(leaf)
             // Then
@@ -44,7 +44,7 @@ describe("flatten", () => {
         it("should flatten the ABS function to the expected value", ()=> {
             // Given
             // f = Abs(SELF_X - OPPONENT_X) <= 80
-            let f: Function = {
+            let f: Condition = {
                 elements: [
                     { value: Operator.OpenAbs, type: ElementType.Operator},
                     { value: Perceptible.SelfX, type: ElementType.Perceptible},
@@ -55,7 +55,7 @@ describe("flatten", () => {
                     { value: 80, type: ElementType.Constant},
                 ]
             }
-            let leaf = parseFunction(f)
+            let leaf = parseConditionToLeaf(f)
             // When 
             let got = flattenLeaf(leaf)
             // Then
@@ -67,7 +67,7 @@ describe("flatten", () => {
         it("should flatten the single ABS function to the correct value", () => {
             // Given
             // f = Abs(OPPONENT_VEL_X) <= 10
-            let f: Function = {
+            let f: Condition = {
                 elements: [
                     { value: Operator.OpenAbs, type: ElementType.Operator},
                     { value: Perceptible.OpponentVelX, type: ElementType.Perceptible},
@@ -76,7 +76,7 @@ describe("flatten", () => {
                     { value: 10, type: ElementType.Constant},
                 ]
             }
-            let leaf = parseFunction(f)
+            let leaf = parseConditionToLeaf(f)
             // When 
             let got = flattenLeaf(leaf)
             // Then
@@ -88,7 +88,7 @@ describe("flatten", () => {
         it("should flatten the combined ABS and AND functions to the correct value", () => {
             // Given
             // f = (OPPONENT_INT <= 300) AND (Abs(SELF_X - OPPONENT_X) <= 80)
-            let f: Function = {
+            let f: Condition = {
                 elements: [
                     { value: Operator.OpenParenthesis, type: ElementType.Operator},
                     { value: Perceptible.OpponentInt, type: ElementType.Perceptible},
@@ -107,7 +107,7 @@ describe("flatten", () => {
                     { value: Operator.CloseParenthesis, type: ElementType.Operator},
                 ]
             }
-            let leaf = parseFunction(f)
+            let leaf = parseConditionToLeaf(f)
             // When 
             let got = flattenLeaf(leaf)
             // Then
@@ -179,9 +179,9 @@ describe("unwrap", () => {
                     },
                 }}
             // When
-            let got = unwrapLeafToFunction(leaf).slice(1, -1)
+            let got = unwrapLeafToCondition(leaf).slice(1, -1)
             // Then
-            let expected: FunctionElement[] = [
+            let expected: ConditionElement[] = [
                 { value: Operator.OpenParenthesis, type: ElementType.Operator },
                 { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
                 { value: Operator.Equal, type: ElementType.Operator },

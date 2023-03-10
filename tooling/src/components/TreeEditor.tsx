@@ -5,8 +5,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DecisionTree from './DecisionTree'
-import { Tree } from '../../types/Tree'
-import { functionToStr } from '../../types/Function'
+import { Tree } from '../types/Tree'
+import { conditionToStr } from '../types/Condition'
 
 const treeToString = (tree: Tree) => {
     let str = ''
@@ -53,7 +53,7 @@ const treeToDecisionTree = (tree: Tree) => {
 
 
 const TreeEditor = ({
-    isReadOnly, indexTree, tree, handleUpdateTree, mentalStates, functions, handleClickTreeEditor,
+    isReadOnly, indexTree, tree, handleUpdateTree, mentalStates, conditions, handleClickTreeEditor,
     isWarningTextOn, warningText
 }) => {
     let mentalState = mentalStates[indexTree]
@@ -111,18 +111,18 @@ const TreeEditor = ({
                         marginLeft: '0.5rem',
                     }}
                     >
-                        <Typography padding={'0.1rem'} fontSize={'11px'} variant='overline'>Available functions:</Typography>
-                        {(functions.length == 0) && <Typography padding={'0.1rem'} fontSize={'11px'} color='red' variant='overline'>No functions available, go to General Functions tab to create some</Typography>}
+                        <Typography padding={'0.1rem'} fontSize={'11px'} variant='overline'>Available conditions:</Typography>
+                        {(conditions.length == 0) && <Typography padding={'0.1rem'} fontSize={'11px'} color='red' variant='overline'>No conditions available, go to Conditions tab to create some</Typography>}
                         {
-                            functions.slice(0, functions.length - 1).map((f, i) => {
+                            conditions.slice(0, conditions.length - 1).map((f, i) => {
                                 return (
-                                    <Tooltip key={`tooltip-function-${i}`} title={`${functionToStr(f)}`}>
+                                    <Tooltip key={`tooltip-condition-${i}`} title={`${conditionToStr(f)}`}>
                                         <Card
                                         sx={{
                                             margin: '0.2rem 0.2rem 0.3rem 0.2rem',
                                             padding: '0.1rem',
                                         }}
-                                        key={`card-function-${i}`}
+                                        key={`card-condition-${i}`}
                                         >F{i}</Card>
                                     </Tooltip>
                                 )

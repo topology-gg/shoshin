@@ -1,11 +1,8 @@
-import {useAccount, useConnectors} from '@starknet-react/core'
-import { useEffect, useState, useRef } from 'react'
+import { useRef } from 'react'
 import Character from './Character';
 import Hitbox from './Hitbox';
-import Debug from './Debug';
-import { SIMULATOR_H, SIMULATOR_W } from '../constants/constants';
-import testJsonStr from '../json/test_engine.json';
-import { TestJson, Frame } from '../types/Frame';
+import { SIMULATOR_H } from '../constants/constants';
+import { TestJson } from '../types/Frame';
 import { useResize } from '../hooks/useResize';
 import { Box } from '@mui/material';
 

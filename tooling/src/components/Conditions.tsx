@@ -1,13 +1,38 @@
-import React from 'react';
-import { Box, Button, Chip, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import React, { useMemo, useState } from 'react';
+import { Box, Button, Chip, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Autocomplete } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import TextField from '@mui/material/TextField';
-import { FunctionElement, Operator, Function, ElementType, Perceptible } from '../../types/Function'
+import { ConditionElement, Operator, ElementType, Perceptible, Condition } from '../types/Condition'
+import BasicMenu from './Menu'
 import PerceptibleList from './PerceptibleList'
 import { ChevronRight } from '@mui/icons-material';
+import { BodystatesAntoc, BodystatesJessica } from '../constants/constants';
+
+// Interfaces
+
+interface ConditionsProps {
+    conditions: Condition[]
+    handleUpdateCondition: (index: number, element: ConditionElement) => void
+    handleConfirmCondition: () => void 
+    handleClickDeleteCondition: (index: number) => void
+    conditionUnderEditIndex: number
+    setConditionUnderEditIndex: (index: number) => void
+    isWarningTextOn: boolean 
+    warningText: string 
+    handleRemoveConditionElement: (index: number) => void
+    isReadOnly: boolean
+}
+
+interface BodyStateOption {
+    group: string
+    name: string
+    bodystate: number
+}
+
+// Constants
 
 const gridItemStyle = {
     border: 1,
@@ -16,7 +41,20 @@ const gridItemStyle = {
     p: '5px',
 }
 
-const functionsTitle = [
+const BodyStates: BodyStateOption[] = (Object.entries(BodystatesJessica)
+.map(([k, v]) => {
+    return {group: 'jessica', name: k, bodystate: v}
+})
+.filter((v) => !isNaN(parseInt(v.bodystate as string))) as BodyStateOption[])
+.concat(
+    Object.entries(BodystatesAntoc)
+    .map(([k, v]) => {
+        return {group: 'antoc', name: k, bodystate: parseInt(v as string) + 1000} 
+    })
+    .filter((v) => !isNaN(v.bodystate)) as BodyStateOption[]
+)
+
+const conditionElementTitles = [
     { id: 'Operators', width: 5 },
     { id: 'Const', width: 3 },
     { id: 'Perceptibles', width: 4 }
@@ -24,7 +62,7 @@ const functionsTitle = [
 const operators = Object.values(Operator)
 const perceptibles = Object.keys(Perceptible).filter(x => isNaN(parseInt(x)))
 
-const elementFromEvent = (e): FunctionElement => {
+const elementFromEvent = (e, currentConstant: number): ConditionElement => {
     let source = e.currentTarget.id.split('.')
     switch (source[0]) {
         case 'operator': {
@@ -39,6 +77,24 @@ const elementFromEvent = (e): FunctionElement => {
     }
 }
 
+const conditionElementToStr = (elem: ConditionElement) => {
+    let type = elem.type
+    let value = elem.value
+    if (type === ElementType.Perceptible) {
+        return Perceptible[value].toString()
+    }
+    if (type === ElementType.BodyState) {
+        value = value as number // can cast since type === BodyState
+        return value > 1000 ? 'Antoc ' + BodystatesAntoc[value - 1000]: 'Jessica ' + BodystatesJessica[value]
+    }
+    if (type === ElementType.Operator) {
+        // convert a close abs to a closed parenthesis
+        return value === '|' ? ')' : value
+    }
+    return value
+}
+
+
 const handleDisplayText = (isReadOnly, isWarningTextOn, warningText, index) => {
 
     const text = !index ? 'No conditions made' : `${isReadOnly ? 'Viewing' : 'Editing'} Condition ${index}`
@@ -51,73 +107,128 @@ const handleDisplayText = (isReadOnly, isWarningTextOn, warningText, index) => {
         </Grid>
 }
 
-const functionToDiv = (f: Function) => {
-    if (!f || !f.elements.length) {
-        return <Typography variant='caption' color={ '#CCCCCC' } >Drop your operators, constants and perceptibles here</Typography>
-    }
+const isPerceptibleBodyState = (elem: ConditionElement) => {
+    let value = elem?.value
     return (
-        f.elements.map((e, i) => {
-            let value = e.type === ElementType.Perceptible ? Perceptible[e.value] : e.value
-            value = value === '|' ? ')' : value
-            return <Typography key={`${e.type}-${e.value}-${i}`} variant='caption'>
-                <span key={`${e.type}-${e.value}-${i}`}>{value} </span>
-            </Typography>
-        })
+        elem?.type === ElementType.Perceptible &&
+        (value == Perceptible.OpponentBodyState || 
+        value == Perceptible.SelfBodyState) 
     )
 }
 
-let currentConstant = 0
+const isOperatorWithDoubleOperands = (elem: ConditionElement) => {
+    let value = elem?.value
+    return (
+        elem?.type == ElementType.Operator && 
+        value != Operator.OpenAbs && 
+        value != Operator.OpenParenthesis && 
+        value != Operator.CloseAbs && 
+        value != Operator.CloseParenthesis 
+        && value != Operator.Not
+    )
+}
 
-const GeneralFunctions = ({
-    isReadOnly, functions, handleUpdateGeneralFunction, handleConfirmFunction, handleClickDeleteFunction,
-    functionUnderEditIndex, setFunctionUnderEditIndex, isWarningTextOn, warningText, handleRemoveElementGeneralFunction
-}) => {
-    let f = functions[functionUnderEditIndex]
+const Conditions = ({
+    isReadOnly, conditions, handleUpdateCondition, handleConfirmCondition, handleClickDeleteCondition,
+    conditionUnderEditIndex, setConditionUnderEditIndex, isWarningTextOn, warningText, handleRemoveConditionElement
+}: ConditionsProps) => {
+    let f = conditions[conditionUnderEditIndex]
 
-    const handleAddElement = (e) => {
-        const element = elementFromEvent(e)
-        handleUpdateGeneralFunction(functionUnderEditIndex, element)
+    const [currentConstant, setCurrentConstant] = useState<number>()
+    const handleAddElement = (e: React.MouseEvent) => {
+        const element = elementFromEvent(e, currentConstant)
+        handleUpdateCondition(conditionUnderEditIndex, element)
     }
+    const [disabled, setDisabled] = useState<boolean>(false)
+    const displayCondition = useMemo<JSX.Element[]>(() => {
+        if (!f || !f.elements.length) {
+            return [<Typography variant='caption' color={ '#CCCCCC' } >Drop your operators, constants and perceptibles here</Typography>]
+        }
+        let elements = f.elements
+        return (
+            elements.map((e, i) => {
+                let value = conditionElementToStr(e)
+                // if current element is a X OP Y operator and X is SelfBodyState or 
+                // OpponentBodyState -> set drop down list
+                if (i == elements.length - 1 && isPerceptibleBodyState(elements[i-1]) && isOperatorWithDoubleOperands(elements[i])) {
+                    // disable all other button
+                    setDisabled((_) => true)
+                    return (
+                        <div style={{ display: 'flex' }}>
+                            <Typography style={{marginRight: '4px'}} key={`${e.type}-${e.value}-${i}`} variant='caption'>
+                                <span key={`${e.type}-${e.value}-${i}`}>{value} </span>
+                            </Typography>
+                            <Autocomplete
+                                disablePortal
+                                key={`autocomplete-perceptible-${e.value}-${i}`}
+                                options={BodyStates}
+                                getOptionLabel={(option: BodyStateOption) => option.name}
+                                groupBy={(option: BodyStateOption) => option.group}
+                                renderInput={(params) => (
+                                    <TextField
+                                    {...params}
+                                    variant="outlined"
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        style: { 
+                                            height: '10px', 
+                                            width: 150,
+                                            alignContent: 'space-around', 
+                                        }, 
+                                    }}
+                                    />
+                                )}
+                                // on change, update with the selected value and remove disabled
+                                onChange={(_, bs: BodyStateOption) => {
+                                    setDisabled(false)
+                                    handleUpdateCondition(conditionUnderEditIndex, {value: bs.bodystate, type: ElementType.BodyState})
+                                }}
+                            />
+                        </div>
+                    )
+                }
+                return <Typography style={{marginRight: '4px'}} key={`${e.type}-${e.value}-${i}`} variant='caption'>
+                    <span key={`${e.type}-${e.value}-${i}`}>{value} </span>
+                </Typography>
+            })
+    )}, [f])
 
     return (
         <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "left",
-                pt: "1rem",
-                pl: "2rem",
-            }}
-        >
+        sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "left",
+            mt: "2rem",
+        }}>
             <Typography sx={{ fontSize: '17px' }} variant='overline'>Conditions</Typography>
-
             <Grid container spacing={1}>
                 <Grid
                     xs={ 12 }
                     item
-                    className='available-functions'
+                    className='available-conditions'
                 >
                     <List dense sx={{ flex: 1 }}>
                         {
-                            functions.slice(0, functions.length - 1).map((_, i) => {
+                            conditions.slice(0, conditions.length - 1).map((_, i) => {
                                 return (
                                     <ListItem
                                         disablePadding
-                                        id={`function-${i}`}
-                                        key={`function-${i}`}
+                                        id={`condition-${i}`}
+                                        key={`condition-${i}`}
                                         secondaryAction={
-                                            <IconButton edge="end" aria-label="delete" onClick={() => handleClickDeleteFunction(i)}>
+                                            <IconButton edge="end" aria-label="delete" onClick={() => handleClickDeleteCondition(i)}>
                                                 <DeleteIcon />
                                             </IconButton>
                                         }
                                     >
                                         <ListItemButton
-                                            onClick={() => setFunctionUnderEditIndex(i)}
-                                            selected={i === functionUnderEditIndex}
+                                            onClick={() => setConditionUnderEditIndex(i)}
+                                            selected={i === conditionUnderEditIndex}
                                         >
-                                            {i === functionUnderEditIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
-                                            <ListItemText inset={i !== functionUnderEditIndex} primary={`F${i}`} />
+                                            {i === conditionUnderEditIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
+                                            <ListItemText inset={i !== conditionUnderEditIndex} primary={`Condition ${i}`} />
                                         </ListItemButton>
 
                                     </ListItem>
@@ -131,11 +242,11 @@ const GeneralFunctions = ({
                                     disablePadding
                                 >
                                     <ListItemButton
-                                        onClick={() => setFunctionUnderEditIndex(functions.length - 1)}
-                                        selected={functions.length - 1 === functionUnderEditIndex}
+                                        onClick={() => setConditionUnderEditIndex(conditions.length - 1)}
+                                        selected={conditions.length - 1 === conditionUnderEditIndex}
                                     >
-                                        {functions.length - 1 === functionUnderEditIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
-                                        <ListItemText inset={functions.length - 1 !== functionUnderEditIndex} primary="New Condition" />
+                                        {conditions.length - 1 === conditionUnderEditIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
+                                        <ListItemText inset={conditions.length - 1 !== conditionUnderEditIndex} primary="New Condition" />
                                     </ListItemButton>
                                 </ListItem>
                             ) : <></>
@@ -150,7 +261,7 @@ const GeneralFunctions = ({
                             <Grid item className='functions-title' xs={ 12 }>
                                 <Grid container spacing={1}>
                                     {
-                                        functionsTitle.map((f) => {
+                                        conditionElementTitles.map((f) => {
                                             let style =  f.id == 'Const' ? { maxWidth: 'none', flexGrow: 1 } : {}
                                             return <Grid
                                                 key={ `function-${f.id}` }
@@ -165,7 +276,7 @@ const GeneralFunctions = ({
                                 </Grid>
                             </Grid>
 
-                            <Grid xs={ functionsTitle[0].width } item>
+                            <Grid xs={ conditionElementTitles[0].width } item>
                                 <Box sx={ {display: "flex", flexWrap: 'wrap', gap: 0.5} }>
                                     {
                                         operators.map((o) => {
@@ -188,13 +299,13 @@ const GeneralFunctions = ({
                                 </Box>
                             </Grid>
 
-                            <Grid xs={ functionsTitle[1].width } item>
+                            <Grid xs={ conditionElementTitles[1].width } item>
                                 <Box>
                                     <TextField
                                         color={ "info" }
                                         type="number"
                                         defaultValue={currentConstant}
-                                        onChange={(e) => currentConstant=parseInt(e.target.value)}
+                                        onChange={(e) => setCurrentConstant(parseInt(e.target.value))}
                                         disabled={isReadOnly}
                                     />
                                     <Button
@@ -209,7 +320,7 @@ const GeneralFunctions = ({
                                 </Box>
                             </Grid>
 
-                            <Grid xs={ functionsTitle[2].width } item>
+                            <Grid xs={ conditionElementTitles[2].width } item>
                                 <Box
                                     id='perceptible'
                                     sx={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }}
@@ -217,8 +328,8 @@ const GeneralFunctions = ({
                                     <PerceptibleList
                                         disabled={isReadOnly}
                                         perceptibles={perceptibles}
-                                        functionUnderEditIndex={functionUnderEditIndex}
-                                        handleUpdateGeneralFunction={handleUpdateGeneralFunction}
+                                        conditionUnderEditIndex={conditionUnderEditIndex}
+                                        handleUpdateCondition={handleUpdateCondition}
                                     />
                                 </Box>
                             </Grid>
@@ -226,13 +337,13 @@ const GeneralFunctions = ({
                     )
                 }
 
-                { handleDisplayText(isReadOnly, isWarningTextOn, warningText, functionUnderEditIndex) }
+                { handleDisplayText(isReadOnly, isWarningTextOn, warningText, conditionUnderEditIndex) }
 
                 <Grid xs={ 9 } item className='function-creator'>
                     <Box
                         sx={{ ...gridItemStyle }}
                     >
-                        { functionToDiv(f) }
+                        { displayCondition }
                     </Box>
                 </Grid>
 
@@ -242,7 +353,7 @@ const GeneralFunctions = ({
                             <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none' }} xs={ 2 } item className='delete-interface'>
                                 <IconButton
                                     sx={{ mt: '1rem', alignItems: 'flex-end'}}
-                                    onClick={(_) => {handleRemoveElementGeneralFunction(functionUnderEditIndex)}}
+                                    onClick={(_) => {handleRemoveConditionElement(conditionUnderEditIndex)}}
                                 >
                                     <BackspaceIcon/>
                                 </IconButton>
@@ -253,7 +364,7 @@ const GeneralFunctions = ({
                                     id={`confirm-gp-function`}
                                     variant="outlined"
                                     // className={ styles.confirm }
-                                    onClick={() => handleConfirmFunction()}
+                                    onClick={() => handleConfirmCondition()}
                                 >
                                     Confirm
                                 </Button>
@@ -267,4 +378,4 @@ const GeneralFunctions = ({
     )
 }
 
-export default GeneralFunctions;
+export default Conditions;
