@@ -14,7 +14,8 @@ import {
     Character,
     CONTRACT_ADDRESS,
     DEFENSIVE_AGENT,
-    ENTRYPOINT,
+    ENTRYPOINT_FIGHT,
+    ENTRYPOINT_AGENT_SUBMISSION,
     IDLE_AGENT,
     INITIAL_COMBOS,
     INITIAL_DECISION_TREES,
@@ -102,8 +103,6 @@ export default function Home() {
     const [conditions, setConditions] = useState<Condition[]>(INITIAL_CONDITIONS)
     const [agentName, setAgentName] = useState<string>('')
     const [character, setCharacter] = useState<Character>(Character.Jessica)
-    const [fighterSelection, setFighterSelection] = useState<string>('opponent')
-    const [adversaryCombo, setAdversaryCombo] = useState<number[]>([])
 
     // React states for warnings
     const [isConditionWarningTextOn, setConditionWarningTextOn] = useState<boolean>(false)
@@ -115,6 +114,7 @@ export default function Home() {
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents()
     const t: Metadata[] = data?.agents;
+    console.log("metadata", t)
     const agents: Agent[] = t?.map(splitMetadata).flat()
 
 

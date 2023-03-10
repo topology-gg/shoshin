@@ -3,6 +3,7 @@ import Leaf, { flattenLeaf } from "./Leaf"
 import { MentalState, parseTree } from "./MentalState"
 import { Tree } from "./Tree"
 import { PRIME } from "../constants/constants"
+import { encodeStringToFelt } from "./utils"
 
 export default interface Agent {
     mentalStatesNames?: string[],
@@ -151,8 +152,49 @@ export function agentsToArray(agent:Agent, opponent: Agent): number[] {
         ];
 }
 
+export function agentToArray(agent: Agent): number[] {
+    // flatten the agent
+    let [
+        combosOffset,
+        combos,
+        mentalStatesOffset,
+        mentalStates,
+        conditionsOffset,
+        conditions,
+    ] = flattenAgent(agent);
+    return [
+        combosOffset.length,
+        ...combosOffset,
+        combos.length,
+        ...combos,
+        mentalStatesOffset.length,
+        ...mentalStatesOffset,
+        mentalStates.length / 3,
+        ...mentalStates,
+        agent.mentalStatesNames.length,
+        ...agent.mentalStatesNames.map(encodeStringToFelt),
+        agent.initialState,
+        conditionsOffset.length,
+        ...conditionsOffset,
+        conditions.length / 3,
+        ...conditions,
+        conditionsOffset.length, // conditions names length
+        conditionsOffset.map((_) => 0),
+        agent.actions.length,
+        ...agent.actions,
+        agent.character,
+    ]
+}
+
 export function agentsToCalldata(agent: Agent, opponent: Agent): string[] {
     let args = agentsToArray(agent, opponent)
+    return args.map((a) => {
+        return '' + (a < 0? (PRIME + BigInt(a)).toString(): a)
+    })
+}
+
+export function agentToCalldata(agent: Agent): string[] {
+    let args = agentToArray(agent)
     return args.map((a) => {
         return '' + (a < 0? (PRIME + BigInt(a)).toString(): a)
     })

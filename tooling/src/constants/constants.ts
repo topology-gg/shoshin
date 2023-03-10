@@ -9,8 +9,9 @@ export const COLLECTION_NAME = 'shoshin-dogfooding-metadata'
 export const PRIME = BigInt(2**251) + BigInt(17) * BigInt(2**192) + BigInt(1)
 
 // Contract entrypoint and address
-export const CONTRACT_ADDRESS = "0x055e96c07b3d7fc78c0ec0ae83bb9d5208e339895c5d348b781a28a3c0353149"
-export const ENTRYPOINT = "loop"
+export const CONTRACT_ADDRESS = "0x049b7fe119b83249595a0b1f3abb892b8201bedc7db64b9928f6ed450d484d64"
+export const ENTRYPOINT_FIGHT = "loop"
+export const ENTRYPOINT_AGENT_SUBMISSION = "submit_agent"
 
 // UI-related sizes and enums
 export const SIMULATOR_W = 1000
