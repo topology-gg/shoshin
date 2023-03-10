@@ -15,9 +15,12 @@ import { MentalState } from '../../types/MentalState';
 import { Character, EditorMode } from '../../constants/constants';
 import { Tree } from '../../types/Tree';
 import { Condition, ConditionElement } from '../../types/Condition';
+import SettingModal from './SettingModal';
 
 interface SidePanelProps {
     editorMode: EditorMode
+    settingModalOpen: boolean
+    setSettingModalOpen: (bool: boolean) => void
     studyAgent: (agent: Agent) => void
     buildNewAgentFromBlank: () => void
     buildNewAgentFromAgent: (agent: Agent) => void
@@ -50,12 +53,14 @@ interface SidePanelProps {
     isTreeEditorWarningTextOn: boolean
     treeEditorWarningText: string
     handleRemoveConditionElement: (index: number) => void
+    handleSubmitAgent: () => void
     agents: Agent[]
 }
 
 
 const SidePanel = ({
     editorMode,
+    settingModalOpen, setSettingModalOpen,
     studyAgent,
     buildNewAgentFromBlank,
     buildNewAgentFromAgent,
@@ -64,7 +69,7 @@ const SidePanel = ({
     character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor,
     trees, handleUpdateTree, conditions, handleUpdateCondition, handleConfirmCondition, handleClickDeleteCondition,
     conditionUnderEditIndex, setConditionUnderEditIndex, isConditionWarningTextOn, conditionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText,
-    handleRemoveConditionElement, agents
+    handleRemoveConditionElement, handleSubmitAgent, agents
 }: SidePanelProps) => {
 
     const isReadOnly = editorMode == EditorMode.ReadOnly
@@ -162,7 +167,7 @@ const SidePanel = ({
             >
 
                 {/* for vertically align icon: https://stackoverflow.com/questions/43360526/align-material-icon-vertically */}
-                <div style={{marginBottom:'1rem'}}>
+                <div style={{marginBottom:'1rem', display:'flex', flexDirection:'row', justifyContent: 'space-between'}}>
                     <p style={{fontSize:'1rem', lineHeight:'1rem'}}>
                         Editor status: {editorMode == EditorMode.ReadOnly ? (
                             <><AutoStoriesIcon sx={{marginLeft: '0.2rem', marginRight:'0.6rem', verticalAlign:'middle'}} />Read Only</>
@@ -170,6 +175,12 @@ const SidePanel = ({
                             <><BuildIcon sx={{marginLeft: '0.2rem', marginRight:'0.6rem', verticalAlign:'middle'}} />Edit Agent</>
                         )}
                     </p>
+                    <SettingModal
+                        modalMode={'connect'}
+                        handleSetModalMode={() => {}}
+                        open={settingModalOpen}
+                        handleSetOpen={setSettingModalOpen}
+                    />
                 </div>
 
                 <div style={{marginBottom:'1rem'}}>
@@ -214,8 +225,10 @@ const SidePanel = ({
                         id='button-option-list-button'
                         onClick={() => {
                             console.log('Submit Agent onchain');
+                            handleSubmitAgent();
                         }}
                         variant="outlined"
+                        disabled={editorMode==EditorMode.ReadOnly}
                     >
                         <PublishIcon sx={{marginRight:'0.6rem'}} /> Submit Agent onchain
                     </Button>

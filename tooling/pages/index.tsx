@@ -25,7 +25,7 @@ import {
     OFFENSIVE_AGENT,
     EditorMode,
 } from '../src/constants/constants';
-import Agent, { agentsToCalldata, buildAgent } from '../src/types/Agent';
+import Agent, { agentToCalldata, buildAgent } from '../src/types/Agent';
 import ImagePreloader from '../src/components/ImagePreloader';
 import StatusBarPanel from '../src/components/StatusBar';
 import P1P2SettingPanel, { AgentOption } from '../src/components/P1P2SettingPanel';
@@ -90,7 +90,7 @@ export default function Home() {
 
     // React states for UI
     const [workingTab, setWorkingTab] = useState<EditorTabName>(EditorTabName.Profile);
-    const [walletSelectOpen, setWalletSelectOpen] = useState<boolean>(false);
+    const [settingModalOpen, setSettingModalOpen] = useState<boolean>(false);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [conditionUnderEditIndex, setConditionUnderEditIndex] = useState<number>(INITIAL_CONDITION_INDEX)
     const [editorMode, setEditorMode] = useState<EditorMode>(EditorMode.ReadOnly);
@@ -142,18 +142,17 @@ export default function Home() {
     // Starknet states
     const { account, address, status } = useAccount();
     const [hash, setHash] = useState<string>();
-    // const callData = useMemo(() => {
-    //     let args = agentsToCalldata(agent, opponent)
-    //     // add the frame duration
-    //     args = ["120"].concat(args)
-    //     const tx = {
-    //         contractAddress: CONTRACT_ADDRESS,
-    //         entrypoint: ENTRYPOINT,
-    //         calldata: args,
-    //     };
-    //     return [tx]
-    // }, [agent, opponent])
-    const callData = []
+    const callData = useMemo(() => {
+        let args = agentToCalldata(newAgent)
+        // add the frame duration
+        args = ["120"].concat(args)
+        const tx = {
+            contractAddress: CONTRACT_ADDRESS,
+            entrypoint: ENTRYPOINT_AGENT_SUBMISSION,
+            calldata: args,
+        };
+        return [tx]
+    }, [newAgent])
     const { execute } = useStarknetExecute({ calls: callData });
     const { available, connect } = useConnectors()
     const [connectors, setConnectors] = useState([])
@@ -265,27 +264,27 @@ export default function Home() {
         setTestJson ((_) => preloadedJson);
     }
 
-    // async function handleClickSubmit() {
-    //     if (!account) {
-    //         console.log('> wallet not connected yet');
-    //         alert('Wallet not connected yet, please reload page and select connector')
-    //         return
-    //     }
+    async function handleSubmitAgent() {
+        if (!account) {
+            console.log('> wallet not connected yet');
+            setSettingModalOpen((_) => true);
+            return;
+        }
 
-    //     console.log('> connected address:', String(address));
+        console.log('> connected address:', String(address));
 
-    //     // submit tx
-    //     console.log('> submitting args to loop() on StarkNet:', callData);
-    //     try {
-    //         setHash('');
+        // submit tx
+        console.log('> submitting args:', callData);
+        try {
+            setHash('');
 
-    //         const response = await execute();
-    //         setHash(response.transaction_hash);
-    //     } catch (err) {
-    //         console.error(err);
-    //     }
-    //     return;
-    // }
+            const response = await execute();
+            setHash(response.transaction_hash);
+        } catch (err) {
+            console.error(err);
+        }
+        return;
+    }
 
     function handleSetMentalStateAction(index: number, action: number) {
         setMentalStates((prev) => {
@@ -615,16 +614,13 @@ export default function Home() {
                                         />
                                     </div>
                                 }
-                                <ConnectWallet open={walletSelectOpen} setSettingOpen={setWalletSelectOpen}/>
-                                {/* <LoadTestJson
-                                    handleLoadTestJson={handleLoadTestJson}
-                                    handleClickPreloadedTestJson={handleClickPreloadedTestJson}
-                                /> */}
                             </div>
                         </Grid>
                         <Grid item xs={4} sx={{ bgcolor: 'grey.50' }}>
                             <SidePanel
                                 editorMode={editorMode}
+                                settingModalOpen={settingModalOpen}
+                                setSettingModalOpen={(bool) => setSettingModalOpen(() => bool)}
                                 studyAgent={(agent: Agent) => {
                                     setEditorMode(() => EditorMode.ReadOnly);
                                     setAgentInPanelToAgent(agent);
@@ -669,6 +665,7 @@ export default function Home() {
                                 isTreeEditorWarningTextOn={isTreeEditorWarningTextOn}
                                 treeEditorWarningText={treeEditorWarningText}
                                 handleRemoveConditionElement={handleRemoveConditionElement}
+                                handleSubmitAgent={handleSubmitAgent}
                                 agents={agents}
                             />
                         </Grid>
