@@ -122,7 +122,8 @@ const MentalStates = ({
                     justifyContent: "left",
                     alignItems: "left",
                     mt: "1rem",
-                    ml: '2rem',
+                    pl: '2rem',
+                    pr: '2rem',
                 }}
                 xs={10}
                 item

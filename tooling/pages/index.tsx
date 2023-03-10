@@ -10,18 +10,19 @@ import { FrameScene, TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
 import { Condition, ConditionElement, verifyValidCondition } from '../src/types/Condition'
 import { MentalState } from '../src/types/MentalState';
-import { 
-    Character, 
-    CONTRACT_ADDRESS, 
-    DEFENSIVE_AGENT, 
-    ENTRYPOINT, 
-    IDLE_AGENT, 
-    INITIAL_COMBOS, 
-    INITIAL_DECISION_TREES, 
-    INITIAL_CONDITIONS, 
-    INITIAL_CONDITION_INDEX, 
-    INITIAL_MENTAL_STATES, 
-    OFFENSIVE_AGENT 
+import {
+    Character,
+    CONTRACT_ADDRESS,
+    DEFENSIVE_AGENT,
+    ENTRYPOINT,
+    IDLE_AGENT,
+    INITIAL_COMBOS,
+    INITIAL_DECISION_TREES,
+    INITIAL_CONDITIONS,
+    INITIAL_CONDITION_INDEX,
+    INITIAL_MENTAL_STATES,
+    OFFENSIVE_AGENT,
+    EditorMode,
 } from '../src/constants/constants';
 import Agent, { agentsToCalldata, buildAgent } from '../src/types/Agent';
 import ImagePreloader from '../src/components/ImagePreloader';
@@ -60,7 +61,6 @@ const theme = createTheme({
                     backgroundColor: 'white',
                     ':hover': {
                       backgroundColor: '#2EE59D',
-                    //   boxShadow: '0px 15px 20px rgba(46, 229, 157, 0.4)',
                       color: '#fff',
                       transition: 'background 0.2s, color 0.2s',
                     }
@@ -92,7 +92,7 @@ export default function Home() {
     const [walletSelectOpen, setWalletSelectOpen] = useState<boolean>(false);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [conditionUnderEditIndex, setConditionUnderEditIndex] = useState<number>(INITIAL_CONDITION_INDEX)
-    const [editorIsReadOnly, setEditorIsReadOnly] = useState<boolean>(true);
+    const [editorMode, setEditorMode] = useState<EditorMode>(EditorMode.ReadOnly);
 
     // React states for tracking the New Agent being edited in the right panel
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
@@ -542,7 +542,7 @@ export default function Home() {
         // parse the given agent into new values for the React states
         setInitialMentalState(() => agent.initialState);
         setCombos(() => agent.combos);
-        setMentalStates(agent.mentalStatesNames.map((s, i) => [s, agent.actions[i]] as [string, number]).map(x => {return {state: x[0], action: x[1]}})); 
+        setMentalStates(agent.mentalStatesNames.map((s, i) => [s, agent.actions[i]] as [string, number]).map(x => {return {state: x[0], action: x[1]}}));
         setTrees(() => agent.mentalStates.map(x => {return {nodes: unwrapLeafToTree(x)}}));
         setConditions(() => agent.conditions.map(x => {return {elements: unwrapLeafToCondition(x)}}));
         setAgentName(() => '');
@@ -624,17 +624,17 @@ export default function Home() {
                         </Grid>
                         <Grid item xs={4} sx={{ bgcolor: 'grey.50' }}>
                             <SidePanel
-                                isReadOnly={editorIsReadOnly}
+                                editorMode={editorMode}
                                 studyAgent={(agent: Agent) => {
-                                    setEditorIsReadOnly(() => true);
+                                    setEditorMode(() => EditorMode.ReadOnly);
                                     setAgentInPanelToAgent(agent);
                                 }}
                                 buildNewAgentFromBlank={() => {
-                                    setEditorIsReadOnly(() => false);
+                                    setEditorMode(() => EditorMode.Edit);
                                     setAgentInPanelToBlank();
                                 }}
                                 buildNewAgentFromAgent={(agent: Agent) => {
-                                    setEditorIsReadOnly(() => false);
+                                    setEditorMode(() => EditorMode.Edit);
                                     setAgentInPanelToAgent(agent);
                                 }}
                                 agentName={agentName}

@@ -15,12 +15,12 @@ import { BodystatesAntoc, BodystatesJessica } from '../../constants/constants';
 interface ConditionsProps {
     conditions: Condition[]
     handleUpdateCondition: (index: number, element: ConditionElement) => void
-    handleConfirmCondition: () => void 
+    handleConfirmCondition: () => void
     handleClickDeleteCondition: (index: number) => void
     conditionUnderEditIndex: number
     setConditionUnderEditIndex: (index: number) => void
-    isWarningTextOn: boolean 
-    warningText: string 
+    isWarningTextOn: boolean
+    warningText: string
     handleRemoveConditionElement: (index: number) => void
     isReadOnly: boolean
 }
@@ -48,7 +48,7 @@ const BodyStates: BodyStateOption[] = (Object.entries(BodystatesJessica)
 .concat(
     Object.entries(BodystatesAntoc)
     .map(([k, v]) => {
-        return {group: 'antoc', name: k, bodystate: parseInt(v as string) + 1000} 
+        return {group: 'antoc', name: k, bodystate: parseInt(v as string) + 1000}
     })
     .filter((v) => !isNaN(v.bodystate)) as BodyStateOption[]
 )
@@ -110,19 +110,19 @@ const isPerceptibleBodyState = (elem: ConditionElement) => {
     let value = elem?.value
     return (
         elem?.type === ElementType.Perceptible &&
-        (value == Perceptible.OpponentBodyState || 
-        value == Perceptible.SelfBodyState) 
+        (value == Perceptible.OpponentBodyState ||
+        value == Perceptible.SelfBodyState)
     )
 }
 
 const isOperatorWithDoubleOperands = (elem: ConditionElement) => {
     let value = elem?.value
     return (
-        elem?.type == ElementType.Operator && 
-        value != Operator.OpenAbs && 
-        value != Operator.OpenParenthesis && 
-        value != Operator.CloseAbs && 
-        value != Operator.CloseParenthesis 
+        elem?.type == ElementType.Operator &&
+        value != Operator.OpenAbs &&
+        value != Operator.OpenParenthesis &&
+        value != Operator.CloseAbs &&
+        value != Operator.CloseParenthesis
         && value != Operator.Not
     )
 }
@@ -147,7 +147,7 @@ const Conditions = ({
         return (
             elements.map((e, i) => {
                 let value = conditionElementToStr(e)
-                // if current element is a X OP Y operator and X is SelfBodyState or 
+                // if current element is a X OP Y operator and X is SelfBodyState or
                 // OpponentBodyState -> set drop down list
                 if (i == elements.length - 1 && isPerceptibleBodyState(elements[i-1]) && isOperatorWithDoubleOperands(elements[i])) {
                     // disable all other button
@@ -169,11 +169,11 @@ const Conditions = ({
                                     variant="outlined"
                                     InputProps={{
                                         ...params.InputProps,
-                                        style: { 
-                                            height: '10px', 
+                                        style: {
+                                            height: '10px',
                                             width: 150,
-                                            alignContent: 'space-around', 
-                                        }, 
+                                            alignContent: 'space-around',
+                                        },
                                     }}
                                     />
                                 )}
@@ -199,7 +199,9 @@ const Conditions = ({
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "left",
-            mt: "2rem",
+            pt: "1rem",
+            pl: '2rem',
+            pr: '2rem',
         }}>
             <Typography sx={{ fontSize: '17px' }} variant='overline'>Conditions</Typography>
             <Grid container spacing={1}>

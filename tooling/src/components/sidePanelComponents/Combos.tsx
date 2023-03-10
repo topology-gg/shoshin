@@ -21,6 +21,7 @@ const Combos = ({
                     alignItems: "left",
                     pt: "1rem",
                     pl: "2rem",
+                    pr: "2rem",
                 }}
             >
                 <Typography sx={{ fontSize: '17px' }} variant='overline'>Combos</Typography>

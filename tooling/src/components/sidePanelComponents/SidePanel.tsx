@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import BuildIcon from '@mui/icons-material/Build';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import PublishIcon from '@mui/icons-material/Publish';
 import Tabs, { EditorTabName } from './Tabs';
 import MentalStates from './MentalStates';
 import TreeEditor from './TreeEditor';
@@ -11,12 +12,12 @@ import Profile from './Profile';
 import ButtonOptionList from './ButtonOptionList';
 import Agent from '../../types/Agent';
 import { MentalState } from '../../types/MentalState';
-import { Character } from '../../constants/constants';
+import { Character, EditorMode } from '../../constants/constants';
 import { Tree } from '../../types/Tree';
 import { Condition, ConditionElement } from '../../types/Condition';
 
 interface SidePanelProps {
-    isReadOnly: boolean
+    editorMode: EditorMode
     studyAgent: (agent: Agent) => void
     buildNewAgentFromBlank: () => void
     buildNewAgentFromAgent: (agent: Agent) => void
@@ -42,10 +43,10 @@ interface SidePanelProps {
     handleUpdateCondition: (index: number, element: ConditionElement) => void
     handleConfirmCondition: () => void
     handleClickDeleteCondition: (index: number) => void
-    conditionUnderEditIndex: number 
+    conditionUnderEditIndex: number
     setConditionUnderEditIndex: (index: number) => void
     isConditionWarningTextOn: boolean
-    conditionWarningText: string 
+    conditionWarningText: string
     isTreeEditorWarningTextOn: boolean
     treeEditorWarningText: string
     handleRemoveConditionElement: (index: number) => void
@@ -54,17 +55,20 @@ interface SidePanelProps {
 
 
 const SidePanel = ({
-    isReadOnly,
+    editorMode,
     studyAgent,
     buildNewAgentFromBlank,
     buildNewAgentFromAgent,
     agentName,setAgentName,
-    workingTab, handleClickTab, mentalStates, initialMentalState, handleSetInitialMentalState, combos, handleValidateCombo, 
-    character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor, 
-    trees, handleUpdateTree, conditions, handleUpdateCondition, handleConfirmCondition, handleClickDeleteCondition, 
-    conditionUnderEditIndex, setConditionUnderEditIndex, isConditionWarningTextOn, conditionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText, 
+    workingTab, handleClickTab, mentalStates, initialMentalState, handleSetInitialMentalState, combos, handleValidateCombo,
+    character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor,
+    trees, handleUpdateTree, conditions, handleUpdateCondition, handleConfirmCondition, handleClickDeleteCondition,
+    conditionUnderEditIndex, setConditionUnderEditIndex, isConditionWarningTextOn, conditionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText,
     handleRemoveConditionElement, agents
 }: SidePanelProps) => {
+
+    const isReadOnly = editorMode == EditorMode.ReadOnly
+
     const content = (workingTab: EditorTabName) => {
         switch (workingTab) {
             case EditorTabName.Profile: {
@@ -157,8 +161,15 @@ const SidePanel = ({
                 }}
             >
 
+                {/* for vertically align icon: https://stackoverflow.com/questions/43360526/align-material-icon-vertically */}
                 <div style={{marginBottom:'1rem'}}>
-                    <p>TODO: Implement status bar e.g. "Editing new Agent" or "Viewing agent __agent name__"</p>
+                    <p style={{fontSize:'1rem', lineHeight:'1rem'}}>
+                        Editor status: {editorMode == EditorMode.ReadOnly ? (
+                            <><AutoStoriesIcon sx={{marginLeft: '0.2rem', marginRight:'0.6rem', verticalAlign:'middle'}} />Read Only</>
+                        ) : (
+                            <><BuildIcon sx={{marginLeft: '0.2rem', marginRight:'0.6rem', verticalAlign:'middle'}} />Edit Agent</>
+                        )}
+                    </p>
                 </div>
 
                 <div style={{marginBottom:'1rem'}}>
@@ -182,13 +193,13 @@ const SidePanel = ({
                         }}
                         variant="outlined"
                     >
-                        <BuildIcon sx={{marginRight:'0.6rem'}} /> Build new Agent from blank
+                        <BuildIcon sx={{marginRight:'0.6rem'}} /> Build Agent from blank
                     </Button>
                 </div>
 
                 <div style={{marginBottom:'1rem'}}>
                     <ButtonOptionList
-                        buttonLabel={<><BuildIcon  sx={{marginRight:'0.6rem'}} />Build new Agent from an existing Agent</>}
+                        buttonLabel={<><BuildIcon  sx={{marginRight:'0.6rem'}} />Build Agent from an existing Agent</>}
                         options={agents}
                         optionLabel={'agent'}
                         optionSelected={(option: Agent) => {
@@ -196,6 +207,18 @@ const SidePanel = ({
                             buildNewAgentFromAgent(option)
                         }}
                     />
+                </div>
+
+                <div style={{marginBottom:'1rem'}}>
+                    <Button
+                        id='button-option-list-button'
+                        onClick={() => {
+                            console.log('Submit Agent onchain');
+                        }}
+                        variant="outlined"
+                    >
+                        <PublishIcon sx={{marginRight:'0.6rem'}} /> Submit Agent onchain
+                    </Button>
                 </div>
 
             </Box>
@@ -218,7 +241,7 @@ const SidePanel = ({
                         borderRadius: '0px 20px 20px 20px',
                         border: '1px solid #999999',
                         padding: '0.5rem 0.5rem 2rem 0.5rem',
-                        height: '30rem',
+                        height: '28rem',
                         overflow: 'auto',
                     }}
                 >
