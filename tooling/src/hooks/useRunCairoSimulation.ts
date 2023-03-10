@@ -2,7 +2,6 @@ import { useCallback, useContext, useState } from "react";
 import { WASMContext } from "../context/WASM";
 import cairoOutputToFrameScene from "../helpers/cairoOutputToFrameScene";
 import Agent, { agentsToArray } from "../types/Agent";
-import { FrameScene } from "../types/Frame";
 
 /**
  * Hook to run the Cairo simulation using provided p1 and p2 agents
