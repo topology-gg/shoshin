@@ -17,7 +17,7 @@ root_logger.setLevel(logging.INFO)
 root_logger.addHandler(logging.StreamHandler())
 
 shoshin_address = felt.from_hex(
-    "0x0612001037414be58f0828e370897093be6a39bd4d77774ce72eb97e73c1461c"
+    "0x049b7fe119b83249595a0b1f3abb892b8201bedc7db64b9928f6ed450d484d64"
 )
 
 submission_key = "0x03a4a594e9b3ae15762aec67ca82f720f08ea5b663db0e29835ca136faf96346"
@@ -42,7 +42,7 @@ class ShoshinIndexer(StarkNetIndexer):
         # Return initial configuration of the indexer.
         return IndexerConfiguration(
             filter=Filter().add_event(EventFilter().with_from_address(shoshin_address)),
-            starting_cursor=starknet_cursor(777_719),
+            starting_cursor=starknet_cursor(778_443),
             finality=DataFinality.DATA_STATUS_ACCEPTED,
         )
 
@@ -87,9 +87,11 @@ class ShoshinIndexer(StarkNetIndexer):
             combos=agent.combos,
             state_machine_offset=agent.state_machine_offset,
             state_machine=[meta.to_json() for meta in agent.state_machine],
+            state_machine_names=agent.states_names,
             initial_state=agent.initial_state,
-            functions_offset=agent.functions_offset,
-            functions=[meta.to_json() for meta in agent.functions],
+            conditions_offset=agent.conditions_offset,
+            conditions=[meta.to_json() for meta in agent.conditions],
+            conditions_names=agent.conditions_names,
             actions=agent.actions,
             character=agent.character,
         )
@@ -110,10 +112,10 @@ class ShoshinIndexer(StarkNetIndexer):
             state_machine_offset_1=metadata.state_machine_offset_1,
             state_machine_1=[meta.to_json() for meta in metadata.state_machine_1],
             initial_state_1=metadata.initial_state_1,
-            functions_offset_0=metadata.functions_offset_0,
-            functions_0=[meta.to_json() for meta in metadata.functions_0],
-            functions_offset_1=metadata.functions_offset_1,
-            functions_1=[meta.to_json() for meta in metadata.functions_1],
+            conditions_offset_0=metadata.conditions_offset_0,
+            conditions_0=[meta.to_json() for meta in metadata.conditions_0],
+            conditions_offset_1=metadata.conditions_offset_1,
+            conditions_1=[meta.to_json() for meta in metadata.conditions_1],
             actions_0=metadata.actions_0,
             actions_1=metadata.actions_1,
             character_0=metadata.character_0,

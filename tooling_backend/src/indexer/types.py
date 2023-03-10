@@ -205,10 +205,10 @@ class EventMetadata:
     state_machine_offset_1: list[int]
     state_machine_1: list[Tree]
     initial_state_1: int
-    functions_offset_0: list[int]
-    functions_0: list[Tree]
-    functions_offset_1: list[int]
-    functions_1: list[Tree]
+    conditions_offset_0: list[int]
+    conditions_0: list[Tree]
+    conditions_offset_1: list[int]
+    conditions_1: list[Tree]
     actions_0: list[int]
     actions_1: list[int]
     character_0: int
@@ -238,14 +238,14 @@ class EventMetadata:
         state_machine_1_len = felt_to_int(it)
         state_machine_1 = [Tree.from_iter(it) for _ in range(state_machine_1_len)]
         initial_state_1 = felt_to_int(it)
-        functions_offset_0_len = felt_to_int(it)
-        functions_offset_0 = [felt_to_int(it) for _ in range(functions_offset_0_len)]
-        functions_0_len = felt_to_int(it)
-        functions_0 = [Tree.from_iter(it) for _ in range(functions_0_len)]
-        functions_offset_1_len = felt_to_int(it)
-        functions_offset_1 = [felt_to_int(it) for _ in range(functions_offset_1_len)]
-        functions_1_len = felt_to_int(it)
-        functions_1 = [Tree.from_iter(it) for _ in range(functions_1_len)]
+        conditions_offset_0_len = felt_to_int(it)
+        conditions_offset_0 = [felt_to_int(it) for _ in range(conditions_offset_0_len)]
+        conditions_0_len = felt_to_int(it)
+        conditions_0 = [Tree.from_iter(it) for _ in range(conditions_0_len)]
+        conditions_offset_1_len = felt_to_int(it)
+        conditions_offset_1 = [felt_to_int(it) for _ in range(conditions_offset_1_len)]
+        conditions_1_len = felt_to_int(it)
+        conditions_1 = [Tree.from_iter(it) for _ in range(conditions_1_len)]
         action_0_len = felt_to_int(it)
         actions_0 = [felt_to_int(it) for _ in range(action_0_len)]
         action_1_len = felt_to_int(it)
@@ -263,10 +263,10 @@ class EventMetadata:
             state_machine_offset_1,
             state_machine_1,
             initial_state_1,
-            functions_offset_0,
-            functions_0,
-            functions_offset_1,
-            functions_1,
+            conditions_offset_0,
+            conditions_0,
+            conditions_offset_1,
+            conditions_1,
             actions_0,
             actions_1,
             character_0,
@@ -280,9 +280,11 @@ class EventSingleMetadata:
     combos: list[int]
     state_machine_offset: list[int]
     state_machine: list[Tree]
+    states_names: list[str]
     initial_state: int
-    functions_offset: list[int]
-    functions: list[Tree]
+    conditions_offset: list[int]
+    conditions: list[Tree]
+    conditions_names: list[str]
     actions: list[int]
     character: int
 
@@ -298,11 +300,21 @@ class EventSingleMetadata:
         ]
         state_machine_len = felt_to_int(it)
         state_machine = [Tree.from_iter(it) for _ in range(state_machine_len)]
+        states_names_len = felt_to_int(it)
+        states_names = [
+            felt_to_int(it).to_bytes(32, "big").decode("utf-8")
+            for _ in range(states_names_len)
+        ]
         initial_state = felt_to_int(it)
-        functions_offset_len = felt_to_int(it)
-        functions_offset = [felt_to_int(it) for _ in range(functions_offset_len)]
-        functions_len = felt_to_int(it)
-        functions = [Tree.from_iter(it) for _ in range(functions_len)]
+        conditions_offset_len = felt_to_int(it)
+        conditions_offset = [felt_to_int(it) for _ in range(conditions_offset_len)]
+        conditions_len = felt_to_int(it)
+        conditions = [Tree.from_iter(it) for _ in range(conditions_len)]
+        conditions_names_len = felt_to_int(it)
+        conditions_names = [
+            felt_to_int(it).to_bytes(32, "big").decode("utf-8")
+            for _ in range(conditions_names_len)
+        ]
         action_len = felt_to_int(it)
         actions = [felt_to_int(it) for _ in range(action_len)]
         character = felt_to_int(it)
@@ -311,9 +323,11 @@ class EventSingleMetadata:
             combos,
             state_machine_offset,
             state_machine,
+            states_names,
             initial_state,
-            functions_offset,
-            functions,
+            conditions_offset,
+            conditions,
+            conditions_names,
             actions,
             character,
         )
