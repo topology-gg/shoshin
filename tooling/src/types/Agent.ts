@@ -179,7 +179,7 @@ export function agentToArray(agent: Agent): number[] {
         conditions.length / 3,
         ...conditions,
         conditionsOffset.length, // conditions names length
-        conditionsOffset.map((_) => 0),
+        ...conditionsOffset.map((_) => 0),
         agent.actions.length,
         ...agent.actions,
         agent.character,

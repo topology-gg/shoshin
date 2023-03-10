@@ -144,8 +144,6 @@ export default function Home() {
     const [hash, setHash] = useState<string>();
     const callData = useMemo(() => {
         let args = agentToCalldata(newAgent)
-        // add the frame duration
-        args = ["120"].concat(args)
         const tx = {
             contractAddress: CONTRACT_ADDRESS,
             entrypoint: ENTRYPOINT_AGENT_SUBMISSION,
@@ -528,7 +526,7 @@ export default function Home() {
     // Set Agent in the side panel to blank agent
     //
     function setAgentInPanelToBlank () {
-        setInitialMentalState(() => null);
+        setInitialMentalState(() => 0);
         setCombos(() => []);
         setMentalStates(() => []);
         setTrees(() => []);
