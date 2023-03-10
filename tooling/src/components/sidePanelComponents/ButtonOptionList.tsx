@@ -22,7 +22,9 @@ const ButtonOptionList = ({
     }
 
     const handleClose = (event) => {
-        optionSelected( options[event.target.id] );
+        if (event.target.id) {
+            optionSelected( options[event.target.id] );
+        }
         setAnchorEl(null)
     }
 
@@ -56,7 +58,16 @@ const ButtonOptionList = ({
                                 {optionLabel ? `${optionLabel}-${option_i}` : option}
                             </MenuItem>
                         );
-                    }) : []
+                    }) : (
+                        <MenuItem
+                            id={ `empty` }
+                            key={ `button-option-list-menu-item-empty` }
+                            // onClick={handleClose}
+                            disabled={true}
+                        >
+                            no option available
+                        </MenuItem>
+                    )
                 }
             </Menu>
         </div>
