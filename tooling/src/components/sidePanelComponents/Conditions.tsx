@@ -141,7 +141,7 @@ const Conditions = ({
     const [disabled, setDisabled] = useState<boolean>(false)
     const displayCondition = useMemo<JSX.Element[]>(() => {
         if (!f || !f.elements.length) {
-            return [<Typography variant='caption' color={ '#CCCCCC' } >Drop your operators, constants and perceptibles here</Typography>]
+            return [<Typography variant='caption' color={ '#CCCCCC' } >Let's start making Conditions!</Typography>]
         }
         let elements = f.elements
         return (
@@ -201,7 +201,7 @@ const Conditions = ({
             alignItems: "left",
             pt: "1rem",
             pl: '2rem',
-            pr: '2rem',
+            pr: '1rem',
         }}>
             <Typography sx={{ fontSize: '17px' }} variant='overline'>Conditions</Typography>
             <Grid container spacing={1}>
@@ -209,6 +209,7 @@ const Conditions = ({
                     xs={ 12 }
                     item
                     className='available-conditions'
+                    sx={{mb:2}}
                 >
                     <List dense sx={{ flex: 1 }}>
                         {
@@ -219,7 +220,10 @@ const Conditions = ({
                                         id={`condition-${i}`}
                                         key={`condition-${i}`}
                                         secondaryAction={
-                                            <IconButton edge="end" aria-label="delete" onClick={() => handleClickDeleteCondition(i)}>
+                                            <IconButton
+                                                edge="end" aria-label="delete" onClick={() => handleClickDeleteCondition(i)}
+                                                disabled={isReadOnly}
+                                            >
                                                 <DeleteIcon />
                                             </IconButton>
                                         }
@@ -258,7 +262,7 @@ const Conditions = ({
 
                 {
                     isReadOnly ? <></> : (
-                        <>
+                        <Grid container spacing={1} sx={{pt:0, pl:1, pr:1, pb:1.5, border:'1px solid #999999', borderRadius:'10px'}}>
                             <Grid item className='functions-title' xs={ 12 }>
                                 <Grid container spacing={1}>
                                     {
@@ -278,7 +282,7 @@ const Conditions = ({
                             </Grid>
 
                             <Grid xs={ conditionElementTitles[0].width } item>
-                                <Box sx={ {display: "flex", flexWrap: 'wrap', gap: 0.5} }>
+                                <Box sx={ {display: "flex", flexWrap: 'wrap', gap: 0.5, pr:2} }>
                                     {
                                         operators.map((o) => {
                                             return (
@@ -307,6 +311,7 @@ const Conditions = ({
                                         type="number"
                                         defaultValue={currentConstant}
                                         onChange={(e) => setCurrentConstant(parseInt(e.target.value))}
+                                        style={{width:'4rem'}}
                                         disabled={isReadOnly}
                                     />
                                     <Button
@@ -334,7 +339,7 @@ const Conditions = ({
                                     />
                                 </Box>
                             </Grid>
-                        </>
+                        </Grid>
                     )
                 }
 

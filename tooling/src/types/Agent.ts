@@ -1,5 +1,5 @@
 import { parseConditionToLeaf, Condition } from "./Condition"
-import Leaf, { flattenLeaf } from "./Leaf" 
+import Leaf, { flattenLeaf } from "./Leaf"
 import { MentalState, parseTree } from "./MentalState"
 import { Tree } from "./Tree"
 import { PRIME } from "../constants/constants"
@@ -59,6 +59,7 @@ export interface Operations {
 // conditionsOffsets should be in the form
 // [LEN_TREE_0, LEN_TREE_1, LEN_TREE_2, ...]
 export function flattenAgent(agent: Agent) {
+    console.log('flattenAgent:', agent)
     // flatten combos
     let combosOffset = [0]
     let combos = []
@@ -88,9 +89,9 @@ export function flattenAgent(agent: Agent) {
     return [
         combosOffset,
         combos,
-        mentalStatesOffset, 
-        mentalStates, 
-        conditionsOffset, 
+        mentalStatesOffset,
+        mentalStates,
+        conditionsOffset,
         conditions,
     ]
 }

@@ -51,7 +51,7 @@ export function splitMetadata(a: Metadata): [Agent, Agent] {
     smOffset0.forEach((o) => {
         let mentalState = a.state_machine_0.slice(start, start + o)
         sm0 = sm0.concat(unflattenLeaf(mentalState))
-        start += o 
+        start += o
     })
     let states0 = sm0.map((_, i) => {
         return "MS " + i
@@ -98,7 +98,7 @@ export function splitMetadata(a: Metadata): [Agent, Agent] {
             conditions: conditions0,
             actions: a.actions_0,
             character: a.character_0
-        }, 
+        },
         {
             mentalStatesNames: states1,
             combos: combos1,
@@ -116,7 +116,7 @@ export interface SingleMetadata {
     combos: number[],
     state_machine_offset: number[],
     state_machine: SimpleLeaf[],
-    states_names: string[],
+    state_machine_names: string[],
     initial_state: number,
     conditions_offset: number[],
     conditions: SimpleLeaf[],
@@ -146,7 +146,7 @@ export function splitSingleMetadata(meta: SingleMetadata): Agent {
     smOffset.forEach((o) => {
         let mentalState = meta.state_machine.slice(start, start + o)
         sm = sm.concat(unflattenLeaf(mentalState))
-        start += o 
+        start += o
     })
 
     // extract the conditions
@@ -161,7 +161,7 @@ export function splitSingleMetadata(meta: SingleMetadata): Agent {
     })
 
     return {
-            mentalStatesNames: meta.states_names,
+            mentalStatesNames: meta.state_machine_names,
             combos: combos,
             mentalStates: sm,
             initialState: meta.initial_state,

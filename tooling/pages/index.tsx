@@ -32,7 +32,7 @@ import P1P2SettingPanel, { AgentOption } from '../src/components/P1P2SettingPane
 import FrameInspector from '../src/components/FrameInspector';
 import useRunCairoSimulation from '../src/hooks/useRunCairoSimulation';
 import { useAgents } from '../lib/api'
-import { Metadata, splitMetadata } from '../src/types/Metadata';
+import { Metadata, SingleMetadata, splitMetadata, splitSingleMetadata } from '../src/types/Metadata';
 import { useAccount, useConnectors, useStarknetExecute } from '@starknet-react/core';
 import ConnectWallet from '../src/components/ConnectWallet';
 import { EditorTabName } from '../src/components/sidePanelComponents/Tabs';
@@ -113,10 +113,10 @@ export default function Home() {
 
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents()
-    const t: Metadata[] = data?.agents;
-    console.log("metadata", t)
-    const agents: Agent[] = t?.map(splitMetadata).flat()
-
+    const t: SingleMetadata[] = data?.agents;
+    // console.log("metadata", t)
+    const agents: Agent[] = t?.map(splitSingleMetadata).flat()
+    console.log("agents", agents)
 
     const newAgent: Agent = useMemo(() => {
         return handleBuildAgent()
@@ -533,7 +533,7 @@ export default function Home() {
         setConditions(() => []);
         setAgentName(() => '');
         setCharacter(() => Character.Jessica);
-        setConditionUnderEditIndex(() => null);
+        setConditionUnderEditIndex(() => 0);
     }
     function setAgentInPanelToAgent (agent: Agent) {
         // parse the given agent into new values for the React states
@@ -544,7 +544,7 @@ export default function Home() {
         setConditions(() => agent.conditions.map(x => {return {elements: unwrapLeafToCondition(x)}}));
         setAgentName(() => '');
         setCharacter(() => agent.character == 0 ? Character.Jessica : Character.Antoc);
-        setConditionUnderEditIndex(() => null);
+        setConditionUnderEditIndex(() => 0);
     }
 
     //
