@@ -202,8 +202,8 @@ function parseOperation(val: ConditionElement, operator: ConditionElement, rest:
 // add {value: 14, left: -1, right{...}} in order to access the 
 // perceptibles dictionnary
 function parseElement(val: ConditionElement): Leaf {
-    let value = val.value as number
-    return val.type === ElementType.Perceptible? { value: 14, left:-1, right: wrapToLeaf(value) }: wrapToLeaf(value)
+    let value = val?.value as number
+    return val?.type === ElementType.Perceptible? { value: 14, left:-1, right: wrapToLeaf(value) }: wrapToLeaf(value)
 }
 
 // Returns the index of the next operator exterior to the parenthesis
@@ -293,10 +293,11 @@ export const conditionElementToStr = (elem: ConditionElement) => {
     if (type === ElementType.Perceptible) {
         return Perceptible[value].toString()
     }
-    // TODO needs to be updated: change contract values for bodystate to differentiate between antoc and jessica
+    // TODO udpate once change contract values for bodystate to differentiate between antoc and jessica
     if (type === ElementType.BodyState) {
         value = value as number // can cast since type === BodyState
-        return value > 1000 ? 'Antoc ' + BodystatesAntoc[value - 1000]: 'Jessica ' + BodystatesJessica[value]
+        // TODO update to match values once contract is updated
+        return 'Jessica ' + BodystatesJessica[value]
     }
     if (type === ElementType.Operator) {
         // convert a close abs to a closed parenthesis

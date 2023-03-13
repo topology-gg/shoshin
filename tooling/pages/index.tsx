@@ -539,7 +539,11 @@ export default function Home() {
         setCombos(() => agent.combos);
         setMentalStates(agent.mentalStatesNames.map((s, i) => [s, agent.actions[i]] as [string, number]).map(x => {return {state: x[0], action: x[1]}}));
         setTrees(() => agent.mentalStates.map(x => {return {nodes: unwrapLeafToTree(x, agent.mentalStatesNames)}}));
-        setConditions(() => agent.conditions.map(x => {return {elements: includeBodyState(unwrapLeafToCondition(x))}}));
+        setConditions(() => {
+            let cond = agent.conditions.map(x => {return {elements: includeBodyState(unwrapLeafToCondition(x))}})
+            cond.push({elements: []}) // add an empty condition for editing
+            return cond
+        });
         setAgentName(() => '');
         setCharacter(() => agent.character == 0 ? Character.Jessica : Character.Antoc);
         setConditionUnderEditIndex(() => 0);

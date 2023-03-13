@@ -161,7 +161,7 @@ export function splitSingleMetadata(meta: SingleMetadata): Agent {
     })
 
     return {
-            mentalStatesNames: meta.state_machine_names,
+            mentalStatesNames: meta.state_machine_names.map((s) => s.replaceAll('\x00', '')), // delete all 0x00
             combos: combos,
             mentalStates: sm,
             initialState: meta.initial_state,

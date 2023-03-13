@@ -42,13 +42,13 @@ const gridItemStyle = {
 
 const BodyStates: BodyStateOption[] = (Object.entries(BodystatesJessica)
 .map(([k, v]) => {
-    return {group: 'jessica', name: k, bodystate: v}
+    return {group: 'jessica', name: k, bodystate: parseInt(v as string)}
 })
-.filter((v) => !isNaN(parseInt(v.bodystate as string))) as BodyStateOption[])
+.filter((v) => !isNaN(v.bodystate)) as BodyStateOption[])
 .concat(
     Object.entries(BodystatesAntoc)
     .map(([k, v]) => {
-        return {group: 'antoc', name: k, bodystate: parseInt(v as string) + 1000}
+        return {group: 'antoc', name: k, bodystate: parseInt(v as string)}
     })
     .filter((v) => !isNaN(v.bodystate)) as BodyStateOption[]
 )
