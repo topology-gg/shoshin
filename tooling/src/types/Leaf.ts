@@ -102,7 +102,7 @@ function isAbs(value: number) {
 // (see parseTreeInner in MentalState.ts)
 export function unwrapLeafToTree(f: Leaf, msNames: string[]): Node[] {
     if(f.left == -1 && f.right == -1) {
-        return [{id: 'MS ' + f.value, isChild: true, branch: Direction.Right}]
+        return [{id: msNames[f.value], isChild: true, branch: Direction.Right}]
     }
     let func = getCondition(f) ?? 0
     let recurse = getRecurse(f) ?? {value: 0, left: -1, right: -1}

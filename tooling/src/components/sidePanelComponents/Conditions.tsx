@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import TextField from '@mui/material/TextField';
-import { ConditionElement, Operator, ElementType, Perceptible, Condition } from '../../types/Condition'
+import { ConditionElement, Operator, ElementType, Perceptible, Condition, isPerceptibleBodyState, isOperatorWithDoubleOperands, conditionElementToStr } from '../../types/Condition'
 import PerceptibleList from './PerceptibleList'
 import { ChevronRight } from '@mui/icons-material';
 import { BodystatesAntoc, BodystatesJessica } from '../../constants/constants';
@@ -76,24 +76,6 @@ const elementFromEvent = (e, currentConstant: number): ConditionElement => {
     }
 }
 
-const conditionElementToStr = (elem: ConditionElement) => {
-    let type = elem.type
-    let value = elem.value
-    if (type === ElementType.Perceptible) {
-        return Perceptible[value].toString()
-    }
-    if (type === ElementType.BodyState) {
-        value = value as number // can cast since type === BodyState
-        return value > 1000 ? 'Antoc ' + BodystatesAntoc[value - 1000]: 'Jessica ' + BodystatesJessica[value]
-    }
-    if (type === ElementType.Operator) {
-        // convert a close abs to a closed parenthesis
-        return value === '|' ? ')' : value
-    }
-    return value
-}
-
-
 const handleDisplayText = (isReadOnly, isWarningTextOn, warningText, index) => {
 
     const text = !index ? 'No conditions made' : `${isReadOnly ? 'Viewing' : 'Editing'} Condition ${index}`
@@ -104,27 +86,6 @@ const handleDisplayText = (isReadOnly, isWarningTextOn, warningText, index) => {
                 || !isWarningTextOn && <Typography variant='overline'>{text}</Typography>
             }
         </Grid>
-}
-
-const isPerceptibleBodyState = (elem: ConditionElement) => {
-    let value = elem?.value
-    return (
-        elem?.type === ElementType.Perceptible &&
-        (value == Perceptible.OpponentBodyState ||
-        value == Perceptible.SelfBodyState)
-    )
-}
-
-const isOperatorWithDoubleOperands = (elem: ConditionElement) => {
-    let value = elem?.value
-    return (
-        elem?.type == ElementType.Operator &&
-        value != Operator.OpenAbs &&
-        value != Operator.OpenParenthesis &&
-        value != Operator.CloseAbs &&
-        value != Operator.CloseParenthesis
-        && value != Operator.Not
-    )
 }
 
 const Conditions = ({

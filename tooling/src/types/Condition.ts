@@ -1,3 +1,4 @@
+import { BodystatesAntoc, BodystatesJessica } from '../constants/constants'
 import Leaf, { wrapToLeaf } from './Leaf'
 
 export interface Condition {
@@ -238,14 +239,68 @@ function operatorToNumber(x: string): number {
     return OPERATOR_VALUE.get(x) ?? 0
 }
 
+// Parse the condition in order to add any bodystate
+export function includeBodyState(c: ConditionElement[]): ConditionElement[] {
+    let prev = false
+    for (var elem of c) {
+        if (isPerceptibleBodyState(elem)) {
+            prev = true
+        }
+        if (elem.type === ElementType.Constant && prev) {
+            elem.type = ElementType.BodyState
+            prev = false
+        }
+    }
+    return c
+}
+
+// True if the element is a perceptible and is a bodystate
+export const isPerceptibleBodyState = (elem: ConditionElement) => {
+    let value = elem?.value
+    return (
+        elem?.type === ElementType.Perceptible &&
+        (value == Perceptible.OpponentBodyState ||
+        value == Perceptible.SelfBodyState)
+    )
+}
+
+// True if the element is an operator with double operands
+export const isOperatorWithDoubleOperands = (elem: ConditionElement) => {
+    let value = elem?.value
+    return (
+        elem?.type == ElementType.Operator &&
+        value != Operator.OpenAbs &&
+        value != Operator.OpenParenthesis &&
+        value != Operator.CloseAbs &&
+        value != Operator.CloseParenthesis
+        && value != Operator.Not
+    )
+}
+
 // Converts the current condition into its string representation
 export function conditionToStr(c: Condition) {
     let str = ''
     c.elements.forEach((e) => {
-        let v = e.value as number
-        let value = e.type === ElementType.Perceptible ? Perceptible[v] : e.value
-        value = value === '|'? ')' : value
-        str += value + ' '
+        str += conditionElementToStr(e) + ' '
     })
     return str
+}
+
+// Converts the condition elemtn into its string representation
+export const conditionElementToStr = (elem: ConditionElement) => {
+    let type = elem.type
+    let value = elem.value
+    if (type === ElementType.Perceptible) {
+        return Perceptible[value].toString()
+    }
+    // TODO needs to be updated: change contract values for bodystate to differentiate between antoc and jessica
+    if (type === ElementType.BodyState) {
+        value = value as number // can cast since type === BodyState
+        return value > 1000 ? 'Antoc ' + BodystatesAntoc[value - 1000]: 'Jessica ' + BodystatesJessica[value]
+    }
+    if (type === ElementType.Operator) {
+        // convert a close abs to a closed parenthesis
+        return value === '|' ? ')' : value
+    }
+    return value
 }

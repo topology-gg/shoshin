@@ -8,7 +8,7 @@ import Simulator from '../src/components/Simulator';
 import SidePanel from '../src/components/sidePanelComponents/SidePanel';
 import { FrameScene, TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
-import { Condition, ConditionElement, verifyValidCondition } from '../src/types/Condition'
+import { Condition, ConditionElement, includeBodyState, verifyValidCondition } from '../src/types/Condition'
 import { MentalState } from '../src/types/MentalState';
 import {
     Character,
@@ -539,7 +539,7 @@ export default function Home() {
         setCombos(() => agent.combos);
         setMentalStates(agent.mentalStatesNames.map((s, i) => [s, agent.actions[i]] as [string, number]).map(x => {return {state: x[0], action: x[1]}}));
         setTrees(() => agent.mentalStates.map(x => {return {nodes: unwrapLeafToTree(x, agent.mentalStatesNames)}}));
-        setConditions(() => agent.conditions.map(x => {return {elements: unwrapLeafToCondition(x)}}));
+        setConditions(() => agent.conditions.map(x => {return {elements: includeBodyState(unwrapLeafToCondition(x))}}));
         setAgentName(() => '');
         setCharacter(() => agent.character == 0 ? Character.Jessica : Character.Antoc);
         setConditionUnderEditIndex(() => 0);
