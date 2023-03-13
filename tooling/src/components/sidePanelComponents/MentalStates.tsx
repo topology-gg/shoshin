@@ -71,48 +71,53 @@ const MentalStates = ({
             sx={{
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "center",
+                justifyContent: "left",
                 alignItems: "left",
                 pt: "1rem",
                 pl: "2rem",
             }}
         >
             <Typography sx={{ fontSize: '17px' }} variant='overline'>Mind</Typography>
-
-            {
-                isReadOnly ? <></> : (
-                    <>
-                        <Grid
-                            xs={2}
-                            item
-                            sx={{
-                                display:"flex",
-                                alignItems:"flex-end",
-                                justifyContent:"space-around"
-                            }}
-                        >
-                            <IconButton
-                                onClick={(_)=>{mentalState ? handleAddMentalState(mentalState) : 0}}
-                                disabled={isReadOnly}
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                }}
+            >
+                {
+                    isReadOnly ? <></> : (
+                        <>
+                            <Grid
+                                xs={1}
+                                item
+                                sx={{
+                                    display:"flex",
+                                    alignItems:"flex-end",
+                                    justifyContent:"flex-start"
+                                }}
                             >
-                                <AddIcon/>
-                            </IconButton>
-                        </Grid>
-                        <Grid xs={10} item>
-                            <TextField
-                                color={"info"}
-                                fullWidth
-                                id="standard-basic"
-                                label="Input Mental State"
-                                variant="standard"
-                                onChange={(event) => setMentalState(event.target.value)}
-                                disabled={isReadOnly}
-                            />
-                        </Grid>
-                    </>
-                )
-            }
-
+                                <IconButton
+                                    onClick={(_)=>{mentalState ? handleAddMentalState(mentalState) : 0}}
+                                    disabled={isReadOnly}
+                                >
+                                    <AddIcon/>
+                                </IconButton>
+                            </Grid>
+                            <Grid xs={10} item>
+                                <TextField
+                                    color={"info"}
+                                    fullWidth
+                                    id="standard-basic"
+                                    label="Input Mental State"
+                                    variant="standard"
+                                    onChange={(event) => setMentalState(event.target.value)}
+                                    disabled={isReadOnly}
+                                />
+                            </Grid>
+                        </>
+                    )
+                }
+            </div>
             <Grid
                 sx={{
                     display: "flex",

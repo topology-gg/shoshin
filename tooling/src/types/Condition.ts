@@ -41,7 +41,7 @@ export const OPERATOR_VALUE: Map<string, number> = new Map(Object.entries({
     'AND': 3,
     '/': 4,
     '%': 5,
-    'ABS(': 6,
+    'Abs(': 6,
     'SQRT': 7,
     'POW': 8,
     'IS_NN': 9,
@@ -235,7 +235,7 @@ function getNextOpIndex(c: ConditionElement[]): number {
 // Converts the operator in string into the corresponding
 // opcode number
 function operatorToNumber(x: string): number {
-    return OPERATOR_VALUE.get(x.toUpperCase()) ?? 0
+    return OPERATOR_VALUE.get(x) ?? 0
 }
 
 // Converts the current condition into its string representation

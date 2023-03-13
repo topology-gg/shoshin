@@ -153,8 +153,8 @@ export function splitSingleMetadata(meta: SingleMetadata): Agent {
     // offset in the form [LEN_FUNC_1, LEN_FUNC_2, ...]
     start = 0
     let conditions: Leaf[] = []
-    let gpOffset = meta.conditions_offset
-    gpOffset.forEach((o) => {
+    let conditionOffset = meta.conditions_offset
+    conditionOffset.forEach((o) => {
         let func = meta.conditions.slice(start, start + o)
         conditions = conditions.concat(unflattenLeaf(func))
         start += o

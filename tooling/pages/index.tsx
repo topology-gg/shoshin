@@ -114,7 +114,6 @@ export default function Home() {
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents()
     const t: SingleMetadata[] = data?.agents;
-    // console.log("metadata", t)
     const agents: Agent[] = t?.map(splitSingleMetadata).flat()
 
     const newAgent: Agent = useMemo(() => {
