@@ -26,8 +26,8 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     let agentMentalStates = []
     // used to only extract the conditions used in the mental states
     let indexes: Map<number, boolean> = new Map()
-    mentalStates.forEach((_, i) => {
-        let [parsedMentalState, usedConditions] = parseTree(trees[i], mentalStates)
+    trees.forEach((t: Tree) => {
+        let [parsedMentalState, usedConditions] = parseTree(t, mentalStates)
         usedConditions.forEach((_, k) => {
             indexes.set(k, true)
         })

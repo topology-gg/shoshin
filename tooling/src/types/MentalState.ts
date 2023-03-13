@@ -16,7 +16,7 @@ export function parseTree(t: Tree, ms: MentalState[]): [Leaf, Map<number, number
 // parse the mental states of the user input
 function parseTreeInner(t: Tree, ms: MentalState[], usedFunctions: Map<number, number>, usedIndex: number): Leaf {
     if (t.nodes.length == 0) {
-        return
+        return { value: 0, left: -1, right: -1}
     }
     // condition always located in first node
     let condition = t.nodes[0]

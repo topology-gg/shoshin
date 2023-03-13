@@ -97,7 +97,6 @@ const SidePanel = ({
                         handleSetInitialMentalState={handleSetInitialMentalState}
                         combos={combos}
                         character={character}
-                        setCharacter={setCharacter}
                         handleAddMentalState={handleAddMentalState}
                         handleClickRemoveMentalState={handleClickRemoveMentalState}
                         handleSetMentalStateAction={handleSetMentalStateAction}

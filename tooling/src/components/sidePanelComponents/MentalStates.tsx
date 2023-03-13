@@ -11,9 +11,7 @@ import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
 
 
 const buttonStyle = { marginBottom:"0.5rem", marginTop:"0.5rem", marginLeft: "0.2rem", marginRight: "0.2rem", height: "1.5rem"};
-let mentalState = "";
 let currentMenu = 0
-const characters: string[] = Object.keys(Character);
 
 const actionToStr = (action: number, characterIndex) => {
     if (action < 100) {
@@ -23,13 +21,13 @@ const actionToStr = (action: number, characterIndex) => {
 }
 
 const MentalStates = ({
-    isReadOnly,
-    mentalStates, initialMentalState, handleSetInitialMentalState,
-    combos, character, setCharacter, handleAddMentalState, handleClickRemoveMentalState,
+    isReadOnly, mentalStates, initialMentalState, handleSetInitialMentalState,
+    combos, character, handleAddMentalState, handleClickRemoveMentalState,
     handleSetMentalStateAction, handleClickTreeEditor
 }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const [anchorElInitialState, setAnchorElInitialState] = useState<null | HTMLElement>(null)
+    const [mentalState, setMentalState] = useState<string>(null);
 
     const open = Boolean(anchorEl)
     const openInitialState = Boolean(anchorElInitialState)
@@ -107,7 +105,7 @@ const MentalStates = ({
                                 id="standard-basic"
                                 label="Input Mental State"
                                 variant="standard"
-                                onChange={(event) => {mentalState = event.target.value}}
+                                onChange={(event) => setMentalState(event.target.value)}
                                 disabled={isReadOnly}
                             />
                         </Grid>

@@ -116,7 +116,6 @@ export default function Home() {
     const t: SingleMetadata[] = data?.agents;
     // console.log("metadata", t)
     const agents: Agent[] = t?.map(splitSingleMetadata).flat()
-    console.log("agents", agents)
 
     const newAgent: Agent = useMemo(() => {
         return handleBuildAgent()
