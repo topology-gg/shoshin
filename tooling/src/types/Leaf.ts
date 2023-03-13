@@ -74,7 +74,9 @@ export function unwrapLeafToCondition(f: Leaf): ConditionElement[] {
     if (f.left == -1) {
         // if perceptible, f.right.value contains the perceptible value
         // else convert value to operator and keep unwrapping
-        return isPerceptible(f.value)? [{value: (f.right as Leaf).value, type: ElementType.Perceptible}]: [{value: VALUE_OPERATOR[f.value], type: ElementType.Operator}, ...unwrapLeafToCondition(f.right as Leaf)]
+        return isPerceptible(f.value)? [{value: (f.right as Leaf).value, type: ElementType.Perceptible}]: 
+               isAbs(f.value) ? [{value: VALUE_OPERATOR[f.value], type: ElementType.Operator}, ...unwrapLeafToCondition(f.right as Leaf), {value: Operator.CloseAbs, type: ElementType.Operator}]: 
+               [{value: VALUE_OPERATOR[f.value], type: ElementType.Operator}, ...unwrapLeafToCondition(f.right as Leaf)]
     }
     // if f.left != -1 and f.right != -1, surround with parenthesis
     // and keep unwrapping
@@ -89,6 +91,10 @@ export function unwrapLeafToCondition(f: Leaf): ConditionElement[] {
 
 function isPerceptible(value: number) {
     return value == OPERATOR_VALUE.get('DICT')
+}
+
+function isAbs(value: number) {
+    return value == OPERATOR_VALUE.get('Abs(')
 }
 
 // Unwraps the leaf representation of a mental state state machine into an array of nodes

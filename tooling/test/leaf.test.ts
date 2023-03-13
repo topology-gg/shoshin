@@ -204,6 +204,40 @@ describe("unwrap", () => {
             ]
             expect(got).deep.equal(expected)
         });
+        it("should unwrap the ABS leaf into the expected function", () => {
+            // Given
+            // f = (Abs(OPPONENT_VEL_X) <= 80)
+            let leaf: Leaf = {
+                value: 10,
+                left: {
+                    value: 6, 
+                    left: -1,
+                    right: {
+                        value: 2,
+                        left: {value: 14, left: -1, right: {value: 1, left: -1, right: -1}},
+                        right: {value: 14, left: -1, right: {value: 101, left: -1, right: -1}}
+                    }
+                },
+                right: {value: 80, left: -1, right: -1},
+            }
+            // When
+            let got = unwrapLeafToCondition(leaf)
+            // Then
+            let expected: ConditionElement[] = [
+                    { value: Operator.OpenParenthesis, type: ElementType.Operator},
+                    { value: Operator.OpenAbs, type: ElementType.Operator},
+                    { value: Operator.OpenParenthesis, type: ElementType.Operator},
+                    { value: Perceptible.SelfX, type: ElementType.Perceptible},
+                    { value: Operator.Sub, type: ElementType.Operator},
+                    { value: Perceptible.OpponentX, type: ElementType.Perceptible},
+                    { value: Operator.CloseParenthesis, type: ElementType.Operator},
+                    { value: Operator.CloseAbs, type: ElementType.Operator},
+                    { value: Operator.Lte, type: ElementType.Operator},
+                    { value: 80, type: ElementType.Constant},
+                    { value: Operator.CloseParenthesis, type: ElementType.Operator},
+                ]
+            expect(got).deep.equal(expected)
+        })
         it("should unwrap the leaf into the expected tree", () => {
             // Given
             let leaf: Leaf = {
