@@ -132,6 +132,7 @@ const Conditions = ({
     conditionUnderEditIndex, setConditionUnderEditIndex, isWarningTextOn, warningText, handleRemoveConditionElement
 }: ConditionsProps) => {
     let f = conditions[conditionUnderEditIndex]
+    let sliceLength = isReadOnly ? conditions.length : conditions.length - 1
 
     const [currentConstant, setCurrentConstant] = useState<number>()
     const handleAddElement = (e: React.MouseEvent) => {
@@ -213,7 +214,7 @@ const Conditions = ({
                 >
                     <List dense sx={{ flex: 1 }}>
                         {
-                            conditions.slice(0, conditions.length - 1).map((_, i) => {
+                            conditions.slice(0, sliceLength).map((_, i) => {
                                 return (
                                     <ListItem
                                         disablePadding
@@ -296,7 +297,7 @@ const Conditions = ({
                                                     sx={{
                                                         "&&:hover": {backgroundColor: "#E0B0FF"}
                                                     }}
-                                                    disabled={isReadOnly}
+                                                    disabled={isReadOnly || disabled}
                                                 />
                                             )
                                         })
@@ -319,7 +320,7 @@ const Conditions = ({
                                         variant="outlined"
                                         onClick={handleAddElement}
                                         sx={{marginTop:'0.5rem'}}
-                                        disabled={isReadOnly}
+                                        disabled={isReadOnly || disabled}
                                     >
                                             Add
                                     </Button>
@@ -332,7 +333,7 @@ const Conditions = ({
                                     sx={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }}
                                 >
                                     <PerceptibleList
-                                        disabled={isReadOnly}
+                                        disabled={isReadOnly || disabled}
                                         perceptibles={perceptibles}
                                         conditionUnderEditIndex={conditionUnderEditIndex}
                                         handleUpdateCondition={handleUpdateCondition}

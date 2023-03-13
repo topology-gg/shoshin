@@ -57,6 +57,7 @@ const TreeEditor = ({
     isWarningTextOn, warningText
 }) => {
     let mentalState = mentalStates[indexTree]
+    let sliceLength = isReadOnly ? conditions.length : conditions.length - 1
 
     if (!tree) {
         // return to parent view
@@ -114,7 +115,7 @@ const TreeEditor = ({
                         <Typography padding={'0.1rem'} fontSize={'11px'} variant='overline'>Available conditions:</Typography>
                         {(conditions.length == 0) && <Typography padding={'0.1rem'} fontSize={'11px'} color='red' variant='overline'>No conditions available, go to Conditions tab to create some</Typography>}
                         {
-                            conditions.slice(0, conditions.length - 1).map((f, i) => {
+                            conditions.slice(0, sliceLength).map((f, i) => {
                                 return (
                                     <Tooltip key={`tooltip-condition-${i}`} title={`${conditionToStr(f)}`}>
                                         <Card
