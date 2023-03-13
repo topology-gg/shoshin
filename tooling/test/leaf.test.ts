@@ -269,8 +269,9 @@ describe("unwrap", () => {
                     }
                 }
             }
+            let msNames = ['MS 0', 'MS 1']
             // When
-            let got = unwrapLeafToTree(leaf)
+            let got = unwrapLeafToTree(leaf, msNames)
             // Then
             let expected = [
                     { id: 'if F0', isChild: false },

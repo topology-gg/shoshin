@@ -100,7 +100,7 @@ function isAbs(value: number) {
 // Unwraps the leaf representation of a mental state state machine into an array of nodes
 // Leaf will always be in the form CONDITION_EVALUATION * STATE_LEFT + ((1 - CONDITION_MEM) * RECURSIVE_CALL()) 
 // (see parseTreeInner in MentalState.ts)
-export function unwrapLeafToTree(f: Leaf): Node[] {
+export function unwrapLeafToTree(f: Leaf, msNames: string[]): Node[] {
     if(f.left == -1 && f.right == -1) {
         return [{id: 'MS ' + f.value, isChild: true, branch: Direction.Right}]
     }
@@ -110,8 +110,8 @@ export function unwrapLeafToTree(f: Leaf): Node[] {
 
     return [
         {id: 'if F' + func, isChild: false}, 
-        {id: 'MS ' + ms, isChild: true, branch: Direction.Left}, 
-        ...unwrapLeafToTree(recurse)
+        {id: msNames[ms], isChild: true, branch: Direction.Left}, 
+        ...unwrapLeafToTree(recurse, msNames)
     ]
 }
 
