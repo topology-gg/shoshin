@@ -78,15 +78,15 @@ namespace ns_antoc_body_state_duration {
 
 namespace ns_antoc_body_state {
     const IDLE = 0;      // 5 frames
-    const HORI = 10;     // 7 frames
-    const VERT = 20;  // 10 frames
-    const BLOCK = 40;    // 6 frames
-    const HURT = 50;     // 3 frames
-    const KNOCKED = 60;  // 11 frames
-    const MOVE_FORWARD = 90;  // 7 frames
-    const MOVE_BACKWARD = 100;  // 6 frames
-    const DASH_FORWARD = 110;  // 9 frames
-    const DASH_BACKWARD = 120;  // 9 frames
+    const HORI = 1010;     // 7 frames
+    const VERT = 1020;  // 10 frames
+    const BLOCK = 1040;    // 6 frames
+    const HURT = 1050;     // 3 frames
+    const KNOCKED = 1060;  // 11 frames
+    const MOVE_FORWARD = 1090;  // 7 frames
+    const MOVE_BACKWARD = 1100;  // 6 frames
+    const DASH_FORWARD = 1110;  // 9 frames
+    const DASH_BACKWARD = 1120;  // 9 frames
 }
 
 namespace ns_antoc_body_state_qualifiers {
