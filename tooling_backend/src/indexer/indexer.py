@@ -17,7 +17,7 @@ root_logger.setLevel(logging.INFO)
 root_logger.addHandler(logging.StreamHandler())
 
 shoshin_address = felt.from_hex(
-    "0x049b7fe119b83249595a0b1f3abb892b8201bedc7db64b9928f6ed450d484d64"
+    "0x00af7e265795a2ae66664463079c19baa31eb6275a981502b3923df482c64c21"
 )
 
 submission_key = "0x03a4a594e9b3ae15762aec67ca82f720f08ea5b663db0e29835ca136faf96346"
@@ -42,7 +42,7 @@ class ShoshinIndexer(StarkNetIndexer):
         # Return initial configuration of the indexer.
         return IndexerConfiguration(
             filter=Filter().add_event(EventFilter().with_from_address(shoshin_address)),
-            starting_cursor=starknet_cursor(778_443),
+            starting_cursor=starknet_cursor(780_153),
             finality=DataFinality.DATA_STATUS_ACCEPTED,
         )
 
