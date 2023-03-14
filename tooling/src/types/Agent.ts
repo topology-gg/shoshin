@@ -1,8 +1,9 @@
 import { parseConditionToLeaf, Condition } from "./Condition"
-import Leaf, { flattenLeaf } from "./Leaf" 
+import Leaf, { flattenLeaf } from "./Leaf"
 import { MentalState, parseTree } from "./MentalState"
 import { Tree } from "./Tree"
 import { PRIME } from "../constants/constants"
+import { encodeStringToFelt } from "./utils"
 
 export default interface Agent {
     mentalStatesNames?: string[],
@@ -25,8 +26,8 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     let agentMentalStates = []
     // used to only extract the conditions used in the mental states
     let indexes: Map<number, boolean> = new Map()
-    mentalStates.forEach((_, i) => {
-        let [parsedMentalState, usedConditions] = parseTree(trees[i], mentalStates)
+    trees.forEach((t: Tree) => {
+        let [parsedMentalState, usedConditions] = parseTree(t, mentalStates)
         usedConditions.forEach((_, k) => {
             indexes.set(k, true)
         })
@@ -58,6 +59,7 @@ export interface Operations {
 // conditionsOffsets should be in the form
 // [LEN_TREE_0, LEN_TREE_1, LEN_TREE_2, ...]
 export function flattenAgent(agent: Agent) {
+    console.log('flattenAgent:', agent)
     // flatten combos
     let combosOffset = [0]
     let combos = []
@@ -85,11 +87,11 @@ export function flattenAgent(agent: Agent) {
     })
 
     return [
-        combosOffset, 
+        combosOffset,
         combos,
-        mentalStatesOffset, 
-        mentalStates, 
-        conditionsOffset, 
+        mentalStatesOffset,
+        mentalStates,
+        conditionsOffset,
         conditions,
     ]
 }
@@ -151,8 +153,49 @@ export function agentsToArray(agent:Agent, opponent: Agent): number[] {
         ];
 }
 
+export function agentToArray(agent: Agent): number[] {
+    // flatten the agent
+    let [
+        combosOffset,
+        combos,
+        mentalStatesOffset,
+        mentalStates,
+        conditionsOffset,
+        conditions,
+    ] = flattenAgent(agent);
+    return [
+        combosOffset.length,
+        ...combosOffset,
+        combos.length,
+        ...combos,
+        mentalStatesOffset.length,
+        ...mentalStatesOffset,
+        mentalStates.length / 3,
+        ...mentalStates,
+        agent.mentalStatesNames.length,
+        ...agent.mentalStatesNames.map(encodeStringToFelt),
+        agent.initialState,
+        conditionsOffset.length,
+        ...conditionsOffset,
+        conditions.length / 3,
+        ...conditions,
+        conditionsOffset.length, // conditions names length
+        ...conditionsOffset.map((_) => 0),
+        agent.actions.length,
+        ...agent.actions,
+        agent.character,
+    ]
+}
+
 export function agentsToCalldata(agent: Agent, opponent: Agent): string[] {
     let args = agentsToArray(agent, opponent)
+    return args.map((a) => {
+        return '' + (a < 0? (PRIME + BigInt(a)).toString(): a)
+    })
+}
+
+export function agentToCalldata(agent: Agent): string[] {
+    let args = agentToArray(agent)
     return args.map((a) => {
         return '' + (a < 0? (PRIME + BigInt(a)).toString(): a)
     })

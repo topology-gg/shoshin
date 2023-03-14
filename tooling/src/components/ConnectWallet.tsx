@@ -1,16 +1,27 @@
 import React, { useState, useEffect } from "react";
 import {useAccount, useConnectors} from '@starknet-react/core'
-
-import Modal from "../ui_common/Modal";
+import { useTranslation } from "react-i18next";
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 
-export default function ConnectWallet ({open, setSettingOpen}) {
-    const { available, connect } = useConnectors()
+import Modal from "../ui_common/Modal";
+import styles from './ConnectWallet.module.css'
+
+// export default function ConnectWallet ({ modalOpen, handleOnOpen, handleOnClose }) {
+export default function ConnectWallet () {
+    const { t } = useTranslation();
+
+    // const [open, setOpen] = useState<boolean>(false);
+    // const handleOpen = () => {setOpen(true);};
+    // const handleClose = () => {setOpen(false);};
+
+    const { account, address, status } = useAccount()
+    const { available, connect, disconnect } = useConnectors()
+
+    // React states
     const [connectors, setConnectors] = useState([])
     const [walletNotFound, setWalletNotFound] = useState(false)
 
-    const { account, address } = useAccount()
 
     let modalRender;
 
@@ -20,7 +31,36 @@ export default function ConnectWallet ({open, setSettingOpen}) {
         if (available) setConnectors(available)
     }, [available])
 
-    if (!account) {
+    const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem', height:'1.5rem'}
+
+    const BUTTON_STYLE = {
+        height: '1.5rem',
+        width: 'auto',
+        cursor: 'pointer',
+        fontSize : '12px',
+        borderRadius : '3px',
+        border: '1px solid #000',
+        marginRight: '10px'
+    }
+    if (account) {
+
+        let rendered_account = <>Connected: {String(address).slice(0,6) + '...' + String(address).slice(-4)}</>
+
+        modalRender = (
+            <div className={styles.wrapper} style={{paddingTop:'1rem'}}>
+
+                <p style={{margin:'0', fontSize:'14px'}}>{rendered_account}</p>
+
+                <MenuItem
+                    sx={{width:'100%', mt:2, justifyContent: 'center'}}
+                    onClick={() => disconnect()}
+                >
+                    Disconnect
+                </MenuItem>
+            </div>
+        )
+    }
+    else {
         const menu_items_sorted = [].concat(connectors)
         .sort ((a,b) => {
             if(a.name() < b.name()) { return -1; }
@@ -30,12 +70,10 @@ export default function ConnectWallet ({open, setSettingOpen}) {
         .map ((connector) => (
             <MenuItem
                 key={connector.id()}
-                onClick={() => {
-                    connect(connector)
-                    setSettingOpen(false)
-                }}
+                onClick={() => connect(connector)}
                 sx={{justifyContent: 'center'}}
             >
+                {/* {t("Connect")}{connector.name()} */}
                 {connector.name()}
             </MenuItem>
         ))
@@ -53,13 +91,33 @@ export default function ConnectWallet ({open, setSettingOpen}) {
             </MenuList>
         )
     }
-    
-    return (
-        <Modal 
-            open={open} width={450} onClose={() => {setSettingOpen(false)}} 
-            maxWidth={false}
-        >
-            {modalRender}
-        </Modal>
-    )
+
+    return modalRender
 };
+
+
+// reference: https://stackoverflow.com/a/66228871
+function feltLiteralToString (felt: string) {
+
+    const tester = felt.split('');
+
+    let currentChar = '';
+    let result = "";
+    const minVal = 25;
+    const maxval = 255;
+
+    for (let i = 0; i < tester.length; i++) {
+        currentChar += tester[i];
+        if (parseInt(currentChar) > minVal) {
+            // console.log(currentChar, String.fromCharCode(currentChar));
+            result += String.fromCharCode( parseInt(currentChar) );
+            currentChar = "";
+        }
+        if (parseInt(currentChar) > maxval) {
+            currentChar = '';
+        }
+    }
+
+    return result
+}
+

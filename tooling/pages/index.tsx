@@ -5,34 +5,38 @@ import { Button, createTheme, ThemeProvider } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import MidScreenControl from '../src/components/MidScreenControl';
 import Simulator from '../src/components/Simulator';
-import SidePanel from '../src/components/SidePanel';
+import SidePanel from '../src/components/sidePanelComponents/SidePanel';
 import { FrameScene, TestJson } from '../src/types/Frame';
 import { Tree, Direction} from '../src/types/Tree'
-import { Condition, ConditionElement, verifyValidCondition } from '../src/types/Condition'
+import { Condition, ConditionElement, includeBodyState, verifyValidCondition } from '../src/types/Condition'
 import { MentalState } from '../src/types/MentalState';
-import { 
-    Character, 
-    CONTRACT_ADDRESS, 
-    DEFENSIVE_AGENT, 
-    ENTRYPOINT, 
-    IDLE_AGENT, 
-    INITIAL_COMBOS, 
-    INITIAL_DECISION_TREES, 
-    INITIAL_CONDITIONS, 
-    INITIAL_CONDITION_INDEX, 
-    INITIAL_MENTAL_STATES, 
-    OFFENSIVE_AGENT 
+import {
+    Character,
+    CONTRACT_ADDRESS,
+    DEFENSIVE_AGENT,
+    ENTRYPOINT_FIGHT,
+    ENTRYPOINT_AGENT_SUBMISSION,
+    IDLE_AGENT,
+    INITIAL_COMBOS,
+    INITIAL_DECISION_TREES,
+    INITIAL_CONDITIONS,
+    INITIAL_CONDITION_INDEX,
+    INITIAL_MENTAL_STATES,
+    OFFENSIVE_AGENT,
+    EditorMode,
 } from '../src/constants/constants';
-import Agent, { agentsToCalldata, buildAgent } from '../src/types/Agent';
+import Agent, { agentToCalldata, buildAgent } from '../src/types/Agent';
 import ImagePreloader from '../src/components/ImagePreloader';
 import StatusBarPanel from '../src/components/StatusBar';
 import P1P2SettingPanel, { AgentOption } from '../src/components/P1P2SettingPanel';
 import FrameInspector from '../src/components/FrameInspector';
 import useRunCairoSimulation from '../src/hooks/useRunCairoSimulation';
 import { useAgents } from '../lib/api'
-import { Metadata, splitAgents } from '../src/types/Metadata';
+import { Metadata, SingleMetadata, splitMetadata, splitSingleMetadata } from '../src/types/Metadata';
 import { useAccount, useConnectors, useStarknetExecute } from '@starknet-react/core';
 import ConnectWallet from '../src/components/ConnectWallet';
+import { EditorTabName } from '../src/components/sidePanelComponents/Tabs';
+import { unwrapLeafToCondition, unwrapLeafToTree } from '../src/types/Leaf';
 
 const theme = createTheme({
     typography: {
@@ -58,7 +62,6 @@ const theme = createTheme({
                     backgroundColor: 'white',
                     ':hover': {
                       backgroundColor: '#2EE59D',
-                    //   boxShadow: '0px 15px 20px rgba(46, 229, 157, 0.4)',
                       color: '#fff',
                       transition: 'background 0.2s, color 0.2s',
                     }
@@ -74,41 +77,44 @@ export default function Home() {
     const LATENCY = 100;
     const runnable = true;
 
-    // React states
+    // React states for simulation / animation control
+    const [output, setOuput] = useState<FrameScene>();
+    const [simulationError, setSimulationError] = useState();
+    const [p1, setP1] = useState<Agent>();
+    const [p2, setP2] = useState<Agent>();
     const [loop, setLoop] = useState<NodeJS.Timer>();
     const [animationFrame, setAnimationFrame] = useState<number>(0);
     const [animationState, setAnimationState] = useState<string>('Stop');
     const [testJson, setTestJson] = useState<TestJson>(null);
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] = useState<boolean>(false);
-    const [workingTab, setWorkingTab] = useState<number>(0);
+
+    // React states for UI
+    const [workingTab, setWorkingTab] = useState<EditorTabName>(EditorTabName.Profile);
+    const [settingModalOpen, setSettingModalOpen] = useState<boolean>(false);
+    const [treeEditor, setTreeEditor] = useState<number>(0);
+    const [conditionUnderEditIndex, setConditionUnderEditIndex] = useState<number>(INITIAL_CONDITION_INDEX)
+    const [editorMode, setEditorMode] = useState<EditorMode>(EditorMode.ReadOnly);
+
+    // React states for tracking the New Agent being edited in the right panel
+    const [initialMentalState, setInitialMentalState] = useState<number>(0);
     const [combos, setCombos] = useState<number[][]>(INITIAL_COMBOS)
     const [mentalStates, setMentalStates] = useState<MentalState[]>(INITIAL_MENTAL_STATES);
-    const [initialMentalState, setInitialMentalState] = useState<number>(0);
-    const [treeEditor, setTreeEditor] = useState<number>(0);
     const [trees, setTrees] = useState<Tree[]>(INITIAL_DECISION_TREES)
     const [conditions, setConditions] = useState<Condition[]>(INITIAL_CONDITIONS)
-    const [conditionUnderEditIndex, setConditionUnderEditIndex] = useState<number>(INITIAL_CONDITION_INDEX)
+    const [agentName, setAgentName] = useState<string>('')
     const [character, setCharacter] = useState<Character>(Character.Jessica)
-    const [output, setOuput] = useState<FrameScene>();
-    const [simulationError, setSimulationError] = useState();
-    const [p1, setP1] = useState<Agent>();
-    const [p2, setP2] = useState<Agent>();
 
-    // Warnings
+    // React states for warnings
     const [isConditionWarningTextOn, setConditionWarningTextOn] = useState<boolean>(false)
     const [conditionWarningText, setConditionWarningText] = useState<string>('')
     const [isTreeEditorWarningTextOn, setTreeEditorWarningTextOn] = useState<boolean>(false)
     const [treeEditorWarningText, setTreeEditorWarningText] = useState<string>('')
     const [runCairoSimulationWarning, setCairoSimulationWarning] = useState<string>('')
 
-    // Setting
-    const [settingOpen, setSettingOpen] = useState<boolean>(false);
-
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents()
-    const t: Metadata[] = data?.agents;
-    const agents: Agent[] = t?.map(splitAgents).flat()
-
+    const t: SingleMetadata[] = data?.agents;
+    const agents: Agent[] = t?.map(splitSingleMetadata).flat()
 
     const newAgent: Agent = useMemo(() => {
         return handleBuildAgent()
@@ -134,18 +140,15 @@ export default function Home() {
     // Starknet states
     const { account, address, status } = useAccount();
     const [hash, setHash] = useState<string>();
-    // const callData = useMemo(() => {
-    //     let args = agentsToCalldata(agent, opponent)
-    //     // add the frame duration
-    //     args = ["120"].concat(args)
-    //     const tx = {
-    //         contractAddress: CONTRACT_ADDRESS,
-    //         entrypoint: ENTRYPOINT,
-    //         calldata: args,
-    //     };
-    //     return [tx]
-    // }, [agent, opponent])
-    const callData = []
+    const callData = useMemo(() => {
+        let args = agentToCalldata(newAgent)
+        const tx = {
+            contractAddress: CONTRACT_ADDRESS,
+            entrypoint: ENTRYPOINT_AGENT_SUBMISSION,
+            calldata: args,
+        };
+        return [tx]
+    }, [newAgent])
     const { execute } = useStarknetExecute({ calls: callData });
     const { available, connect } = useConnectors()
     const [connectors, setConnectors] = useState([])
@@ -257,27 +260,27 @@ export default function Home() {
         setTestJson ((_) => preloadedJson);
     }
 
-    // async function handleClickSubmit() {
-    //     if (!account) {
-    //         console.log('> wallet not connected yet');
-    //         alert('Wallet not connected yet, please reload page and select connector')
-    //         return
-    //     }
+    async function handleSubmitAgent() {
+        if (!account) {
+            console.log('> wallet not connected yet');
+            setSettingModalOpen((_) => true);
+            return;
+        }
 
-    //     console.log('> connected address:', String(address));
+        console.log('> connected address:', String(address));
 
-    //     // submit tx
-    //     console.log('> submitting args to loop() on StarkNet:', callData);
-    //     try {
-    //         setHash('');
+        // submit tx
+        console.log('> submitting args:', callData);
+        try {
+            setHash('');
 
-    //         const response = await execute();
-    //         setHash(response.transaction_hash);
-    //     } catch (err) {
-    //         console.error(err);
-    //     }
-    //     return;
-    // }
+            const response = await execute();
+            setHash(response.transaction_hash);
+        } catch (err) {
+            console.error(err);
+        }
+        return;
+    }
 
     function handleSetMentalStateAction(index: number, action: number) {
         setMentalStates((prev) => {
@@ -394,7 +397,7 @@ export default function Home() {
         }
     }
 
-    function handleRemoveElement(index: number) {
+    function handleRemoveConditionElement(index: number) {
         setConditions((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev))
             if (!prev_copy[index]) {
@@ -474,9 +477,13 @@ export default function Home() {
         return buildAgent(mentalStates, combos, trees, conditions, initialMentalState, char)
     }
 
+    //
+    // Function that sets either P1 or P2 to a specified Agent
+    //
     function agentChange (whichPlayer: string, event: object, value: AgentOption) {
         let setAgent: Agent
 
+        // if Agent is not specified with the function call, set P1 or P2 to null
         if (!value) {
             if (whichPlayer == 'P1') {
                 setP1(() => null)
@@ -514,9 +521,43 @@ export default function Home() {
     }
 
     //
+    // Set Agent in the side panel to blank agent
+    //
+    function setAgentInPanelToBlank () {
+        setInitialMentalState(() => 0);
+        setCombos(() => []);
+        setMentalStates(() => []);
+        setTrees(() => []);
+        setConditions(() => []);
+        setAgentName(() => '');
+        setCharacter(() => Character.Jessica);
+        setConditionUnderEditIndex(() => 0);
+    }
+    function setAgentInPanelToAgent (agent: Agent) {
+        // parse the given agent into new values for the React states
+        setInitialMentalState(() => agent.initialState);
+        setCombos(() => agent.combos);
+        setMentalStates(agent.mentalStatesNames.map((s, i) => [s, agent.actions[i]] as [string, number]).map(x => {return {state: x[0], action: x[1]}}));
+        setTrees(() => {
+            let tree = agent.mentalStates.map(x => {return {nodes: unwrapLeafToTree(x, agent.mentalStatesNames)}})
+            tree.push({nodes: []}) // add an empty tree for editing
+            return tree
+        });
+        setConditions(() => {
+            let cond = agent.conditions.map(x => {
+                return {elements: includeBodyState(unwrapLeafToCondition(x))}
+            })
+            cond.push({elements: []}) // add an empty condition for editing
+            return cond
+        });
+        setAgentName(() => '');
+        setCharacter(() => agent.character == 0 ? Character.Jessica : Character.Antoc);
+        setConditionUnderEditIndex(() => 0);
+    }
+
+    //
     // Render
     //
-    // console.log(`animationFrame: ${animationFrame}/${N_FRAMES-1}`);
     return (
         <div className={styles.container}>
                 <Head>
@@ -576,23 +617,37 @@ export default function Home() {
                                         <FrameInspector
                                             testJson={testJson}
                                             animationFrame={animationFrame}
-                                            onAdversaryEdit={() => setWorkingTab(3)}
                                         />
                                     </div>
                                 }
-                                <ConnectWallet open={settingOpen} setSettingOpen={setSettingOpen}/>
-                                {/* <LoadTestJson
-                                    handleLoadTestJson={handleLoadTestJson}
-                                    handleClickPreloadedTestJson={handleClickPreloadedTestJson}
-                                /> */}
                             </div>
                         </Grid>
                         <Grid item xs={4} sx={{ bgcolor: 'grey.50' }}>
                             <SidePanel
+                                editorMode={editorMode}
+                                settingModalOpen={settingModalOpen}
+                                setSettingModalOpen={(bool) => setSettingModalOpen(() => bool)}
+                                studyAgent={(agent: Agent) => {
+                                    setEditorMode(() => EditorMode.ReadOnly);
+                                    setAgentInPanelToAgent(agent);
+                                }}
+                                buildNewAgentFromBlank={() => {
+                                    setEditorMode(() => EditorMode.Edit);
+                                    setAgentInPanelToBlank();
+                                }}
+                                buildNewAgentFromAgent={(agent: Agent) => {
+                                    setEditorMode(() => EditorMode.Edit);
+                                    setAgentInPanelToAgent(agent);
+                                }}
+                                agentName={agentName}
+                                setAgentName={setAgentName}
                                 workingTab={workingTab}
                                 handleClickTab={setWorkingTab}
                                 character={character}
-                                setCharacter={setCharacter}
+                                setCharacter={(value) => {
+                                    console.log('setCharacter:', value)
+                                    setCharacter(value)
+                                }}
                                 mentalStates={mentalStates}
                                 initialMentalState={initialMentalState}
                                 handleSetInitialMentalState={setInitialMentalState}
@@ -615,7 +670,9 @@ export default function Home() {
                                 conditionWarningText={conditionWarningText}
                                 isTreeEditorWarningTextOn={isTreeEditorWarningTextOn}
                                 treeEditorWarningText={treeEditorWarningText}
-                                handleRemoveElement={handleRemoveElement}
+                                handleRemoveConditionElement={handleRemoveConditionElement}
+                                handleSubmitAgent={handleSubmitAgent}
+                                agents={agents}
                             />
                         </Grid>
                     </Grid>

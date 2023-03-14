@@ -74,7 +74,9 @@ export function unwrapLeafToCondition(f: Leaf): ConditionElement[] {
     if (f.left == -1) {
         // if perceptible, f.right.value contains the perceptible value
         // else convert value to operator and keep unwrapping
-        return isPerceptible(f.value)? [{value: (f.right as Leaf).value, type: ElementType.Perceptible}]: [{value: VALUE_OPERATOR[f.value], type: ElementType.Operator}, ...unwrapLeafToCondition(f.right as Leaf)]
+        return isPerceptible(f.value)? [{value: (f.right as Leaf).value, type: ElementType.Perceptible}]: 
+               isAbs(f.value) ? [{value: VALUE_OPERATOR[f.value], type: ElementType.Operator}, ...unwrapLeafToCondition(f.right as Leaf), {value: Operator.CloseAbs, type: ElementType.Operator}]: 
+               [{value: VALUE_OPERATOR[f.value], type: ElementType.Operator}, ...unwrapLeafToCondition(f.right as Leaf)]
     }
     // if f.left != -1 and f.right != -1, surround with parenthesis
     // and keep unwrapping
@@ -91,21 +93,25 @@ function isPerceptible(value: number) {
     return value == OPERATOR_VALUE.get('DICT')
 }
 
+function isAbs(value: number) {
+    return value == OPERATOR_VALUE.get('Abs(')
+}
+
 // Unwraps the leaf representation of a mental state state machine into an array of nodes
 // Leaf will always be in the form CONDITION_EVALUATION * STATE_LEFT + ((1 - CONDITION_MEM) * RECURSIVE_CALL()) 
 // (see parseTreeInner in MentalState.ts)
-export function unwrapLeafToTree(f: Leaf, len: number): Node[] {
+export function unwrapLeafToTree(f: Leaf, msNames: string[]): Node[] {
     if(f.left == -1 && f.right == -1) {
-        return [{id: 'MS ' + f.value, isChild: true, branch: Direction.Right}]
+        return [{id: msNames[f.value], isChild: true, branch: Direction.Right}]
     }
     let func = getCondition(f) ?? 0
     let recurse = getRecurse(f) ?? {value: 0, left: -1, right: -1}
     let ms = getMS(f) ?? 0
 
     return [
-        {id: 'if F' + (func + len), isChild: false}, 
-        {id: 'MS ' + ms, isChild: true, branch: Direction.Left}, 
-        ...unwrapLeafToTree(recurse, len)
+        {id: 'if F' + func, isChild: false}, 
+        {id: msNames[ms], isChild: true, branch: Direction.Left}, 
+        ...unwrapLeafToTree(recurse, msNames)
     ]
 }
 

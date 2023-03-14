@@ -5,20 +5,24 @@ import { Direction, Tree } from "../types/Tree"
 
 // Mongo db name and collection
 export const DB_NAME = 'shoshin_indexer_0'
-export const COLLECTION_NAME = 'shoshin-dogfooding-metadata'
+export const COLLECTION_NAME = 'shoshin-dogfooding-submission'
 export const PRIME = BigInt(2**251) + BigInt(17) * BigInt(2**192) + BigInt(1)
 
 // Contract entrypoint and address
-export const CONTRACT_ADDRESS = "0x055e96c07b3d7fc78c0ec0ae83bb9d5208e339895c5d348b781a28a3c0353149"
-export const ENTRYPOINT = "loop"
+export const CONTRACT_ADDRESS = "0x00af7e265795a2ae66664463079c19baa31eb6275a981502b3923df482c64c21"
+export const ENTRYPOINT_FIGHT = "loop"
+export const ENTRYPOINT_AGENT_SUBMISSION = "submit_agent"
 
+// UI-related sizes and enums
 export const SIMULATOR_W = 1000
 export const SIMULATOR_H = 300
-
 export const CharacterComponentW = 600
 export const CharacterComponentH = 300
-
 export const SpriteTopAdjustmentToBg = -10
+export enum EditorMode {
+    ReadOnly = 'ReadOnly',
+    Edit = 'Edit',
+}
 
 export const bodyStateNumberToName = {
     'jessica':{
@@ -34,21 +38,6 @@ export const bodyStateNumberToName = {
         100: 'walk_backward',
         110: 'dash_forward',
         120: 'dash_backward',
-
-        // namespace ns_jessica_body_state {
-        //     const IDLE = 0; // 5 frames
-        //     const SLASH = 10; // 5 frames
-        //     const UPSWING = 20;  // 5 frames
-        //     const SIDECUT = 30;  // 5 frames
-        //     const BLOCK = 40; // 3 frames
-        //     const CLASH = 50; // 4 frames;
-        //     const HURT = 60; // 3 frames
-        //     const KNOCKED = 70; // 11 frames
-        //     const MOVE_FORWARD = 90;  // 8 frames
-        //     const MOVE_BACKWARD = 100;  // 6 frames
-        //     const DASH_FORWARD = 110;  // 5 frames
-        //     const DASH_BACKWARD = 120;  // 5 frames
-        // }
     },
     'antoc': {
         0: 'idle',
@@ -61,19 +50,6 @@ export const bodyStateNumberToName = {
         100: 'walk_backward',
         110: 'dash_forward',
         120: 'dash_backward',
-
-        // namespace ns_antoc_body_state {
-        //     const IDLE = 0;      // 5 frames
-        //     const HORI = 10;     // 7 frames
-        //     const VERT = 20;  // 10 frames
-        //     const BLOCK = 40;    // 6 frames
-        //     const HURT = 50;     // 3 frames
-        //     const KNOCKED = 60;  // 20 frames
-        //     const MOVE_FORWARD = 90;  // 7 frames
-        //     const MOVE_BACKWARD = 100;  // 6 frames
-        //     const DASH_FORWARD = 110;  // 9 frames
-        //     const DASH_BACKWARD = 120;  // 9 frames
-        // }
     }
 
 }
@@ -134,21 +110,6 @@ export enum ActionsJessica {
     DashBackward = 8,
 }
 
-export enum BodystatesJessica {
-    Idle = 0,
-    Slash = 10,
-    Upswing = 20,
-    Sidecut = 30,
-    Block = 40,
-    Clash = 50,
-    Hurt = 60,
-    Knocked = 70,
-    MoveForward  = 90,
-    MoveBackward = 100,
-    DashForward  = 110,
-    DashBackward = 120,
-}
-
 export enum ActionsAntoc {
     Null = 0,
     Hori = 1,
@@ -158,19 +119,6 @@ export enum ActionsAntoc {
     MoveBackward = 5,
     DashForward = 6,
     DashBackward = 7,
-}
-
-export enum BodystatesAntoc {
-    Idle = 0,
-    Hori = 10,
-    Vert = 20,
-    Block = 40,
-    Hurt = 50,
-    Knocked = 60,
-    MoveForward = 90,
-    MoveBackward = 100,
-    DashForward = 110,
-    DashBackward = 120,
 }
 
 export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc]

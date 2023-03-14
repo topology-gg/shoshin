@@ -1,11 +1,12 @@
 import React from 'react';
 import { Box, Card, Tooltip, Typography } from "@mui/material";
 import CancelIcon from '@mui/icons-material/Cancel';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DecisionTree from './DecisionTree'
-import { Tree } from '../types/Tree'
-import { conditionToStr } from '../types/Condition'
+import { Tree } from '../../types/Tree'
+import { conditionToStr } from '../../types/Condition'
 
 const treeToString = (tree: Tree) => {
     let str = ''
@@ -52,21 +53,29 @@ const treeToDecisionTree = (tree: Tree) => {
 
 
 const TreeEditor = ({
-    indexTree, tree, handleUpdateTree, mentalStates, conditions, handleClickTreeEditor,
+    isReadOnly, indexTree, tree, handleUpdateTree, mentalStates, conditions, handleClickTreeEditor,
     isWarningTextOn, warningText
 }) => {
     let mentalState = mentalStates[indexTree]
+
+    if (!tree) {
+        // return to parent view
+        handleClickTreeEditor(0);
+        return;
+    }
+
     return(
         <Box
-        sx={{
-            display: 'flex',
-            flexGrow: 1,
-            flexDirection: 'column',
-            justifyContent: 'left',
-            alignItems: 'flex-start',
-            mt: '1rem',
-        }}>
-            <IconButton onClick={(_)=>{handleClickTreeEditor(0)}}><CancelIcon/></IconButton>
+            sx={{
+                display: 'flex',
+                flexGrow: 1,
+                flexDirection: 'column',
+                justifyContent: 'left',
+                alignItems: 'flex-start',
+                mt: '1rem',
+            }}
+        >
+            <IconButton onClick={(_)=>{handleClickTreeEditor(0)}}><ArrowBackIcon/></IconButton>
             <Box
             sx={{
                 mt: '1rem',
@@ -83,6 +92,7 @@ const TreeEditor = ({
                     fullWidth
                     multiline
                     rows={10}
+                    disabled={isReadOnly}
                 />
                 <Box
                 sx={{

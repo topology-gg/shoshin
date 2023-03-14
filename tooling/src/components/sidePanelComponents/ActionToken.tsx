@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "@mui/material";
 
-const ActionToken = ({ children, selected, onClick }) => {
+const ActionToken = ({ children, disabled, selected, onClick }) => {
     return <Card
         sx={{
             border: "1px!important solid #ffffff00",
@@ -10,21 +10,21 @@ const ActionToken = ({ children, selected, onClick }) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            cursor: "pointer",
+            cursor: disabled ? "default" : "pointer",
             bgcolor: selected
                     ? "info.light"
                     : "info.contrastText",
             color: selected
                 ? "info.light"
                 : "primary.main",
-            ":hover": {
+            ":hover": disabled ? {} : {
                 color: "#85898A",
                 border: "1px!important solid #ffffff00",
             },
         }}
-        onClick={onClick}
+        onClick={disabled ? ()=>{} : onClick}
         variant="outlined"
     >{children}</Card>
-}    
+}
 
 export default ActionToken;

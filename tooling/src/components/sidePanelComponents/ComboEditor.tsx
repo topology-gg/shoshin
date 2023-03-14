@@ -3,10 +3,10 @@ import { Box, Button, Typography } from "@mui/material";
 import Tooltip from '@mui/material/Tooltip';
 import SingleAction  from './SingleAction'
 import NewAction  from './NewAction'
-import { CHARACTERS_ACTIONS, ACTIONS_ICON_MAP, MAX_COMBO_SIZE } from '../constants/constants';
+import { CHARACTERS_ACTIONS, ACTIONS_ICON_MAP, MAX_COMBO_SIZE } from '../../constants/constants';
 
 const ComboEditor = ({
-    editingCombo, setEditingCombo, characterIndex, selectedIndex, setSelectedIndex, handleValidateCombo,
+    isReadOnly, editingCombo, setEditingCombo, characterIndex, selectedIndex, setSelectedIndex, handleValidateCombo,
     displayButton
 }) => {
     const [selectedNewAction, setSelectedNewAction] = useState<boolean>(false);
@@ -34,7 +34,7 @@ const ComboEditor = ({
                 const new_program = prev.slice(0, -1);
                 return new_program
             })
-        }     
+        }
     };
 
     return <Box
@@ -48,12 +48,12 @@ const ComboEditor = ({
                 <Typography variant='overline'>Combo Actions</Typography>
                 <Box>
                     <Box
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        margin: "0rem 0 2rem 0",
-                        justifyContent: "center",
-                    }}
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            margin: "0rem 0 2rem 0",
+                            justifyContent: "center",
+                        }}
                     >
                         {actions.map((key, key_i) => {
                             if (!key.includes('COMBO')){
@@ -96,35 +96,51 @@ const ComboEditor = ({
                             position: 'relative',
                             display: 'flex',
                         }}
-                    >    
-                        
+                    >
+
                         {editingCombo.map((action, index) => (
                             <SingleAction
                                 key={`action-${index}`}
+                                disabled={isReadOnly}
                                 action={action}
                                 characterIndex={characterIndex}
                             />
                         ))}
-                        <NewAction
-                            onInsert={handleInsertInstruction}
-                            onKeyDown={handleKeyDown}
-                            onSelect={() => {
-                                setSelectedNewAction(true)
-                            }}
-                            onBlur={() => {
-                                setSelectedNewAction(false)
-                            }}
-                            selected={selectedNewAction}
-                            characterIndex={characterIndex}
-                        />
+
                         {
-                            displayButton && 
-                            <Button variant="outlined" onClick={() => { 
-                                handleValidateCombo(editingCombo, selectedIndex)
-                                setEditingCombo([])
-                                setSelectedIndex(null)
-                            }}>Confirm</Button>
+                            isReadOnly ? <></> : (
+                                <>
+                                    <NewAction
+                                        disabled={isReadOnly}
+                                        onInsert={handleInsertInstruction}
+                                        onKeyDown={handleKeyDown}
+                                        onSelect={() => {
+                                            setSelectedNewAction(true)
+                                        }}
+                                        onBlur={() => {
+                                            setSelectedNewAction(false)
+                                        }}
+                                        selected={selectedNewAction}
+                                        characterIndex={characterIndex}
+                                    />
+                                    {
+                                        displayButton &&
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() => {
+                                                handleValidateCombo(editingCombo, selectedIndex)
+                                                setEditingCombo([])
+                                                setSelectedIndex(null)
+                                            }}
+                                            disabled={isReadOnly}
+                                        >
+                                            Confirm
+                                        </Button>
+                                    }
+                                </>
+                            )
                         }
+
                     </div>
                 </Box>
             </Box>

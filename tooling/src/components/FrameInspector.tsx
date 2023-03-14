@@ -16,13 +16,11 @@ import { TestJson } from "../types/Frame";
 type FrameInspectorProps = {
     testJson: TestJson;
     animationFrame: number;
-    onAdversaryEdit: () => void;
 };
 
 const FrameInspector = ({
     testJson,
     animationFrame,
-    onAdversaryEdit,
 }: FrameInspectorProps) => {
 
     const characterLeftType = testJson?.agent_0.type
@@ -56,7 +54,6 @@ const FrameInspector = ({
                                                 <IconButton
                                                     disabled
                                                     size="small"
-                                                    // onClick={onAdversaryEdit}
                                                 >
                                                     <Person />
                                                 </IconButton>
