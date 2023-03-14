@@ -19,11 +19,10 @@ echo "Compiled the contract"
 cd ../ 
 echo "Declaring the contract"
 CONTRACT_CLASS_HASH=$(starknet declare --contract compiled.json | grep "Contract class hash:" | sed 's/^.*\: \(.*\)/\1/')
-rm compiled.json
 echo "Declared contract with class hash: $CONTRACT_CLASS_HASH" 
 
 # sleep for 2 minutes to allow the nonce to increase on the acccount
-sleep 120
+sleep 240
 
 # deploy the declared contract
 echo "Deploying the contract"
