@@ -148,7 +148,7 @@ async def test(starknet):
     record_array = ret.main_call_events[1].arr
     record = {
         "agent_0": {
-            "type": ret.main_call_events[0].metadata[0],
+            "type": ret.main_call_events[0].character_type_0,
             "frames": [
                 {
                     "agent_action": r.agent_0.action,
@@ -176,8 +176,12 @@ async def test(starknet):
                     "hitboxes": {
                         "action": {
                             "origin": {
-                                "x": adjust_from_felt(r.agent_0.hitboxes.action.origin.x),
-                                "y": adjust_from_felt(r.agent_0.hitboxes.action.origin.y),
+                                "x": adjust_from_felt(
+                                    r.agent_0.hitboxes.action.origin.x
+                                ),
+                                "y": adjust_from_felt(
+                                    r.agent_0.hitboxes.action.origin.y
+                                ),
                             },
                             "dimension": {
                                 "x": r.agent_0.hitboxes.action.dimension.x,
@@ -201,7 +205,7 @@ async def test(starknet):
             ],
         },
         "agent_1": {
-            "type": ret.main_call_events[0].metadata[1],
+            "type": ret.main_call_events[0].character_type_1,
             "frames": [
                 {
                     "agent_action": r.agent_1.action,
@@ -229,8 +233,12 @@ async def test(starknet):
                     "hitboxes": {
                         "action": {
                             "origin": {
-                                "x": adjust_from_felt(r.agent_1.hitboxes.action.origin.x),
-                                "y": adjust_from_felt(r.agent_1.hitboxes.action.origin.y),
+                                "x": adjust_from_felt(
+                                    r.agent_1.hitboxes.action.origin.x
+                                ),
+                                "y": adjust_from_felt(
+                                    r.agent_1.hitboxes.action.origin.y
+                                ),
                             },
                             "dimension": {
                                 "x": r.agent_1.hitboxes.action.dimension.x,
