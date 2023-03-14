@@ -538,9 +538,15 @@ export default function Home() {
         setInitialMentalState(() => agent.initialState);
         setCombos(() => agent.combos);
         setMentalStates(agent.mentalStatesNames.map((s, i) => [s, agent.actions[i]] as [string, number]).map(x => {return {state: x[0], action: x[1]}}));
-        setTrees(() => agent.mentalStates.map(x => {return {nodes: unwrapLeafToTree(x, agent.mentalStatesNames)}}));
+        setTrees(() => {
+            let tree = agent.mentalStates.map(x => {return {nodes: unwrapLeafToTree(x, agent.mentalStatesNames)}})
+            tree.push({nodes: []}) // add an empty tree for editing
+            return tree
+        });
         setConditions(() => {
-            let cond = agent.conditions.map(x => {return {elements: includeBodyState(unwrapLeafToCondition(x))}})
+            let cond = agent.conditions.map(x => {
+                return {elements: includeBodyState(unwrapLeafToCondition(x))}
+            })
             cond.push({elements: []}) // add an empty condition for editing
             return cond
         });

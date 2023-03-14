@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import { ConditionElement, Operator, ElementType, Perceptible, Condition, isPerceptibleBodyState, isOperatorWithDoubleOperands, conditionElementToStr } from '../../types/Condition'
 import PerceptibleList from './PerceptibleList'
 import { ChevronRight } from '@mui/icons-material';
-import { BodystatesAntoc, BodystatesJessica } from '../../constants/constants';
+import { BodystatesAntoc, BodystatesJessica } from '../../types/Condition';
 
 // Interfaces
 
@@ -93,7 +93,6 @@ const Conditions = ({
     conditionUnderEditIndex, setConditionUnderEditIndex, isWarningTextOn, warningText, handleRemoveConditionElement
 }: ConditionsProps) => {
     let f = conditions[conditionUnderEditIndex]
-    let sliceLength = isReadOnly ? conditions.length : conditions.length - 1
 
     const [currentConstant, setCurrentConstant] = useState<number>()
     const handleAddElement = (e: React.MouseEvent) => {
@@ -147,6 +146,8 @@ const Conditions = ({
                             />
                         </div>
                     )
+                } else {
+                    setDisabled(false)
                 }
                 return <Typography style={{marginRight: '4px'}} key={`${e.type}-${e.value}-${i}`} variant='caption'>
                     <span key={`${e.type}-${e.value}-${i}`}>{value} </span>
@@ -175,7 +176,7 @@ const Conditions = ({
                 >
                     <List dense sx={{ flex: 1 }}>
                         {
-                            conditions.slice(0, sliceLength).map((_, i) => {
+                            conditions.slice(0, conditions.length - 1).map((_, i) => {
                                 return (
                                     <ListItem
                                         disablePadding

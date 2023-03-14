@@ -1,4 +1,3 @@
-import { BodystatesAntoc, BodystatesJessica } from '../constants/constants'
 import Leaf, { wrapToLeaf } from './Leaf'
 
 export interface Condition {
@@ -56,6 +55,35 @@ export const OPERATOR_VALUE: Map<string, number> = new Map(Object.entries({
 
 export const VALUE_OPERATOR: Map<number, string> = new Map()
 OPERATOR_VALUE.forEach((v, k) => VALUE_OPERATOR[v] = k)
+
+
+export enum BodystatesJessica {
+    Idle = 0,
+    Slash = 10,
+    Upswing = 20,
+    Sidecut = 30,
+    Block = 40,
+    Clash = 50,
+    Hurt = 60,
+    Knocked = 70,
+    MoveForward  = 90,
+    MoveBackward = 100,
+    DashForward  = 110,
+    DashBackward = 120,
+}
+
+export enum BodystatesAntoc {
+    Idle = 0,
+    Hori = 1010,
+    Vert = 1020,
+    Block = 1040,
+    Hurt = 1050,
+    Knocked = 1060,
+    MoveForward = 1090,
+    MoveBackward = 1100,
+    DashForward = 1110,
+    DashBackward = 1120,
+}
 
 export enum Perceptible {
     SelfX = 1,
@@ -175,14 +203,14 @@ function parseInner(c: ConditionElement[]): Leaf {
     if (elem.type === ElementType.Operator && elem.value === Operator.OpenAbs) {
         // get the index of operator after abs closing
         let i = getNextOpIndex(c)
+        let abs = operatorToNumber(Operator.OpenAbs)
         if (c[i]) {
             // if operator, apply operator, parse inner and outer of abs
             let operator = operatorToNumber(c[i].value as Operator)
-            let abs = operatorToNumber(Operator.OpenAbs)
             return { value: operator, left: {value: abs, left: -1, right: parseInner(c.slice(1, i - 1))}, right: parseInner(c.slice(i + 1)) }
         }
         // if no operator, parse the interior of the abs
-        return parseInner(c.slice(1, -1))
+        return { value: abs, left: -1, right: parseInner(c.slice(1, -1))} 
     }
     // if no parenthesis, abs or !, parse the expression as X OPERATOR REST
     return parseOperation(elem, c[1], c.slice(2))
@@ -293,11 +321,12 @@ export const conditionElementToStr = (elem: ConditionElement) => {
     if (type === ElementType.Perceptible) {
         return Perceptible[value].toString()
     }
-    // TODO udpate once change contract values for bodystate to differentiate between antoc and jessica
     if (type === ElementType.BodyState) {
+        if (value === 0) {
+            return 'Idle'
+        }
         value = value as number // can cast since type === BodyState
-        // TODO update to match values once contract is updated
-        return 'Jessica ' + BodystatesJessica[value]
+        return value > 1000 ? 'Antoc ' + BodystatesAntoc[value] : 'Jessica ' + BodystatesJessica[value]
     }
     if (type === ElementType.Operator) {
         // convert a close abs to a closed parenthesis
