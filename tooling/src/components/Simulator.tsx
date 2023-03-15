@@ -68,8 +68,8 @@ export default function Simulator( {
             }}
             id={'simulator-background'}
         >
-            <Character agentIndex={0} viewWidth={componentWidth} characterName={characterName0} agentFrame={agentFrame0} />
-            <Character agentIndex={1} viewWidth={componentWidth} characterName={characterName1} agentFrame={agentFrame1} />
+            <Character viewWidth={componentWidth} characterName={characterName0} agentFrame={agentFrame0} />
+            <Character viewWidth={componentWidth} characterName={characterName1} agentFrame={agentFrame1} />
 
             <Hitbox show={showDebug} viewWidth={componentWidth} agentFrame={agentFrame0} hitboxType={'body'} />
             <Hitbox show={showDebug} viewWidth={componentWidth} agentFrame={agentFrame0} hitboxType={'action'} />
