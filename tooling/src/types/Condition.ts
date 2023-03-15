@@ -142,6 +142,9 @@ export function verifyValidCondition(c: Condition, confirm: boolean) {
                     countAbs -= 1
                     break
                 }
+                if (e?.value == Operator.Not) {
+                    break
+                }
                 if (prevElement.type !== ElementType.Perceptible &&
                     prevElement.type !== ElementType.Constant &&
                     prevElement.type !== ElementType.BodyState &&

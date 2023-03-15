@@ -32,7 +32,7 @@ function parseTreeInner(t: Tree, ms: MentalState[], usedFunctions: Map<number, n
             fEval = { value: 13, left: -1, right: wrapToLeaf(usedFunctions.get(f)) }
         // else add a FUNC operator and add the function to the used functions (maps functions used to their index)
         } else {
-            fEval = { value: 15, left: -1, right: wrapToLeaf(usedIndex) }
+            fEval = { value: 15, left: -1, right: wrapToLeaf(f) }
             usedFunctions.set(f, usedIndex)
             usedIndex += 1
         }
