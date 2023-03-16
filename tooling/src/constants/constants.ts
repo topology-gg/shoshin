@@ -4,7 +4,7 @@ import { MentalState } from "../types/MentalState"
 import { Direction, Tree } from "../types/Tree"
 
 // Mongo db name and collection
-export const DB_NAME = 'shoshin_indexer_0'
+export const DB_NAME = 'shoshin_indexer_2'
 export const COLLECTION_NAME = 'shoshin-dogfooding-submission'
 export const PRIME = BigInt(2**251) + BigInt(17) * BigInt(2**192) + BigInt(1)
 
@@ -41,15 +41,15 @@ export const bodyStateNumberToName = {
     },
     'antoc': {
         0: 'idle',
-        10: 'hori',
-        20: 'vert',
-        40: 'block',
-        50: 'hurt',
-        60: 'knocked',
-        90: 'walk_forward',
-        100: 'walk_backward',
-        110: 'dash_forward',
-        120: 'dash_backward',
+        1010: 'hori',
+        1020: 'vert',
+        1040: 'block',
+        1050: 'hurt',
+        1060: 'knocked',
+        1090: 'walk_forward',
+        1100: 'walk_backward',
+        1110: 'dash_forward',
+        1120: 'dash_backward',
     }
 
 }

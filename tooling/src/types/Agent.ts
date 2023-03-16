@@ -59,7 +59,6 @@ export interface Operations {
 // conditionsOffsets should be in the form
 // [LEN_TREE_0, LEN_TREE_1, LEN_TREE_2, ...]
 export function flattenAgent(agent: Agent) {
-    console.log('flattenAgent:', agent)
     // flatten combos
     let combosOffset = [0]
     let combos = []
@@ -97,60 +96,60 @@ export function flattenAgent(agent: Agent) {
 }
 
 // Convert the two agents into an array of calldata
-export function agentsToArray(agent:Agent, opponent: Agent): number[] {
-    // flatten the user input agent
+export function agentsToArray(p1: Agent, p2: Agent): number[] {
+    // flatten the first agent
     let [
-        combosOffset,
-        combos,
-        mentalStatesOffset,
-        mentalStates,
-        conditionsOffset,
-        conditions,
-    ] = flattenAgent(agent);
-    // flatten the dummy agent
+        p1CombosOffset,
+        p1Combos,
+        p1MentalStatesOffset,
+        p1MentalStates,
+        p1ConditionsOffset,
+        p1Conditions,
+    ] = flattenAgent(p1);
+    // flatten the second agent
     let [
-        opponentCombosOffset,
-        opponentCombos,
-        opponentMentalStatesOffset,
-        opponentMentalStates,
-        opponentConditionsOffset,
-        opponentConditions,
-    ] = flattenAgent(opponent);
+        p2CombosOffset,
+        p2Combos,
+        p2MentalStatesOffset,
+        p2MentalStates,
+        p2ConditionsOffset,
+        p2Conditions,
+    ] = flattenAgent(p2);
 
     return [
-        combosOffset.length,
-        ...combosOffset,
-        combos.length,
-        ...combos,
-        opponentCombosOffset.length,
-        ...opponentCombosOffset,
-        opponentCombos.length,
-        ...opponentCombos,
-        mentalStatesOffset.length,
-        ...mentalStatesOffset,
-        mentalStates.length / 3,
-        ...mentalStates,
-        agent.initialState,
-        opponentMentalStatesOffset.length,
-        ...opponentMentalStatesOffset,
-        opponentMentalStates.length / 3,
-        ...opponentMentalStates,
-        opponent.initialState,
-        conditionsOffset.length,
-        ...conditionsOffset,
-        conditions.length / 3,
-        ...conditions,
-        opponentConditionsOffset.length,
-        ...opponentConditionsOffset,
-        opponentConditions.length / 3,
-        ...opponentConditions,
-        agent.actions.length,
-        ...agent.actions,
-        opponent.actions.length,
-        ...opponent.actions,
-        agent.character,
-        opponent.character,
-        ];
+        p1CombosOffset.length,
+        ...p1CombosOffset,
+        p1Combos.length,
+        ...p1Combos,
+        p2CombosOffset.length,
+        ...p2CombosOffset,
+        p2Combos.length,
+        ...p2Combos,
+        p1MentalStatesOffset.length,
+        ...p1MentalStatesOffset,
+        p1MentalStates.length / 3,
+        ...p1MentalStates,
+        p1.initialState,
+        p2MentalStatesOffset.length,
+        ...p2MentalStatesOffset,
+        p2MentalStates.length / 3,
+        ...p2MentalStates,
+        p2.initialState,
+        p1ConditionsOffset.length,
+        ...p1ConditionsOffset,
+        p1Conditions.length / 3,
+        ...p1Conditions,
+        p2ConditionsOffset.length,
+        ...p2ConditionsOffset,
+        p2Conditions.length / 3,
+        ...p2Conditions,
+        p1.actions.length,
+        ...p1.actions,
+        p2.actions.length,
+        ...p2.actions,
+        p1.character,
+        p2.character,
+    ];
 }
 
 export function agentToArray(agent: Agent): number[] {
