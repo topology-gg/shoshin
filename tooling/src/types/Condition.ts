@@ -111,16 +111,37 @@ export enum Perceptible {
 }
 
 // Verify that the input condition is valid
-export function verifyValidCondition(c: Condition, confirm: boolean) {
+export function verifyValidCondition(c: Condition, confirm: boolean): [boolean, string] {
     // count the open and close parenthesis
     let countParenthesis = 0
     // count the open and close absolute values
     let countAbs = 0
     let prevElement = { type: ElementType.Operator } as ConditionElement
     for (let e of c?.elements) {
+        // Check that these rules are followed: 
+        //  - numeric value must not be followed by a opening parenthesis or abs
+        //  - close parenthesis or abs must be preceded by a numeric value or a closing parenthesis
+        //  - not operator cannot be preceded by a numeric value
+        //  - not operator must be followed by open parenthesis or open abs
+        let isCurrentSyntaxOpen = e?.value == Operator.OpenParenthesis || e?.value == Operator.OpenAbs
+        let isCurrentSyntaxClose = e?.value == Operator.CloseParenthesis || e?.value == Operator.CloseAbs
+        let isPrevNumeric = prevElement?.type === ElementType.Perceptible || prevElement.type === ElementType.Constant || prevElement.type === ElementType.BodyState 
+        if (isPrevNumeric && isCurrentSyntaxOpen) {
+            return [false, `Operator "${e?.value}" must be preceded by an operator`]
+        }
+        if ((!isPrevNumeric && prevElement?.value !== Operator.CloseParenthesis) && isCurrentSyntaxClose) {
+            return [false, `Operator "${e?.value}" must be preceded by a constant, perceptible or bodystate`]
+        }
+        if (e?.value == Operator.Not && isPrevNumeric) {
+            return [false, `Operator "${e?.value}" must be preceded by operator`]
+        }
+        if (prevElement?.value == Operator.Not && !isCurrentSyntaxOpen) {
+            return [false, `Operator "${prevElement?.value}" must be followed by ( or Abs(`]
+        }
+
         // if count negative, exit early
         if (countParenthesis < 0 || countAbs < 0) {
-            return false
+            return [false, 'Unbalanced parenthesis or absolute value']
         }
         // check the following rules are applied: operator must be preceded by
         // constant, perceptible, not operator, or closing of absolute/parenthesis
@@ -145,13 +166,10 @@ export function verifyValidCondition(c: Condition, confirm: boolean) {
                 if (e?.value == Operator.Not) {
                     break
                 }
-                if (prevElement.type !== ElementType.Perceptible &&
-                    prevElement.type !== ElementType.Constant &&
-                    prevElement.type !== ElementType.BodyState &&
+                if (!isPrevNumeric &&
                     prevElement?.value !== Operator.CloseParenthesis &&
-                    prevElement?.value !== Operator.CloseAbs &&
-                    prevElement?.value !== Operator.Not) {
-                    return false
+                    prevElement?.value !== Operator.CloseAbs) {
+                        return [false, `Operator "${e?.value}" must be preceded by a constant, perceptible or closing of absolute/parenthesis`]
                 }
                 break
             }
@@ -160,7 +178,7 @@ export function verifyValidCondition(c: Condition, confirm: boolean) {
             case ElementType.Perceptible:
             case ElementType.BodyState: {
                 if (prevElement.type !== ElementType.Operator) {
-                    return false
+                    return [false, `${e?.type} must be preceded by an operator`]
                 }
                 break
             }
@@ -168,9 +186,9 @@ export function verifyValidCondition(c: Condition, confirm: boolean) {
         prevElement = e
     }
     if (confirm) {
-        return countParenthesis == 0 && countAbs == 0
+        return [countParenthesis == 0 && countAbs == 0, 'Unbalanced parenthesis or absolute value']
     }
-    return true
+    return [true, '']
 }
 
 // Parse the elements of the condition into a folded Leaf type
@@ -317,7 +335,7 @@ export function conditionToStr(c: Condition) {
     return str
 }
 
-// Converts the condition elemtn into its string representation
+// Converts the condition element into its string representation
 export const conditionElementToStr = (elem: ConditionElement) => {
     let type = elem.type
     let value = elem.value

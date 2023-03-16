@@ -384,10 +384,11 @@ export default function Home() {
                     prev_copy = [{ elements: [] }]
                 }
                 prev_copy[index].elements.push(element)
-                if (!verifyValidCondition(prev_copy[index], false)) {
+                let [isValidFunction, error] = verifyValidCondition(prev_copy[index], false)
+                if (!isValidFunction) {
                     setConditionWarningTextOn(true)
-                    setConditionWarningText(`Invalid ${element.type}, please try again`)
-                    setTimeout(() => setConditionWarningTextOn(false), 2000)
+                    setConditionWarningText(`Invalid ${element.type}, got: ${error}`)
+                    setTimeout(() => setConditionWarningTextOn(false), 5000)
                     prev_copy[index].elements.pop()
                     return prev_copy
                 }
@@ -415,10 +416,11 @@ export default function Home() {
     function handleConfirmCondition() {
         let length = conditions.length
         let f = conditions[conditionUnderEditIndex]
-        if(!f?.elements || !verifyValidCondition(f, true)) {
+        let [isValidFunction, error] = verifyValidCondition(f, true)
+        if(!f?.elements || !isValidFunction) {
             setConditionWarningTextOn(true)
-            setConditionWarningText(`Invalid function, please update`)
-            setTimeout(() => setConditionWarningTextOn(false), 2000)
+            setConditionWarningText(`Invalid function, got: ${error}`)
+            setTimeout(() => setConditionWarningTextOn(false), 5000)
             return
         }
         if (conditionUnderEditIndex < length - 1){

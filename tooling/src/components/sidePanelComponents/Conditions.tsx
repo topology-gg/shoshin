@@ -58,6 +58,11 @@ const conditionElementTitles = [
     { id: 'Const', width: 3 },
     { id: 'Perceptibles', width: 4 }
 ]
+const operatorColor = (s: string): string => {
+    if (s === '(' || s === ')') return '#c4ffb4'
+    if (s === 'Abs(' || s === '|') return '#ffe38e'
+    return '#ea9999'
+}
 const operators = Object.values(Operator)
 const perceptibles = Object.keys(Perceptible).filter(x => isNaN(parseInt(x)))
 
@@ -248,6 +253,7 @@ const Conditions = ({
                                 <Box sx={ {display: "flex", flexWrap: 'wrap', gap: 0.5, pr:2} }>
                                     {
                                         operators.map((o) => {
+                                            let color = operatorColor(o)
                                             return (
                                                 <Chip
                                                     key={ `operator-${o}` }
@@ -257,6 +263,7 @@ const Conditions = ({
                                                     size='small'
                                                     label={o}
                                                     sx={{
+                                                        backgroundColor: color,
                                                         "&&:hover": {backgroundColor: "#E0B0FF"}
                                                     }}
                                                     disabled={isReadOnly || disabled}
