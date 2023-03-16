@@ -20,7 +20,7 @@ export const spriteData: Record<string, Record<string, SpriteData[]>> = {
         dash_forward: [
             {
                 size: [193, 142],
-                hitboxOffset: { left: [-32,17], right: [0,0] },
+                hitboxOffset: { left: [-32,17], right: [-111,18] },
             }
         ],
         hori: [
