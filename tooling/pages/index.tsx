@@ -473,7 +473,7 @@ export default function Home() {
 
     function handleBuildAgent() {
         let char = Object.keys(Character).indexOf(character)
-        return buildAgent(mentalStates, combos, trees, conditions, initialMentalState, char)
+        return buildAgent(mentalStates, combos, trees.slice(0, -1), conditions.slice(0, -1), initialMentalState, char)
     }
 
     //
