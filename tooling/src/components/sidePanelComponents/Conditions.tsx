@@ -59,9 +59,9 @@ const conditionElementTitles = [
     { id: 'Perceptibles', width: 4 }
 ]
 const operatorColor = (s: string): string => {
-    if (s === '(' || s === ')') return '#c4ffb4'
-    if (s === 'Abs(' || s === '|') return '#ffe38e'
-    return '#ea9999'
+    if (s === '(' || s === ')') return '#66FF66' //'#c4ffb4'
+    if (s === 'Abs(' || s === '|') return '#FFFE71' //'#ffe38e'
+    return '#ffffff'
 }
 const operators = Object.values(Operator)
 const perceptibles = Object.keys(Perceptible).filter(x => isNaN(parseInt(x)))
@@ -263,9 +263,13 @@ const Conditions = ({
                                                     size='small'
                                                     label={o}
                                                     sx={{
-                                                        backgroundColor: color,
-                                                        "&&:hover": {backgroundColor: "#E0B0FF"}
+                                                        backgroundColor: color + '55',
+                                                        "&&:hover": {backgroundColor: color, borderColor:'#333333'},
+                                                        // box-sizing: border-box',
+                                                        // -moz-box-sizing: 'border-box',
+                                                        // -webkit-box-sizing: border-box;
                                                     }}
+                                                    className={'operator-chip'}
                                                     disabled={isReadOnly || disabled}
                                                 />
                                             )

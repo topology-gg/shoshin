@@ -24,13 +24,13 @@ export enum Operator {
     Mod = '%',
     Add = '+',
     Sub = '-',
+    Lte = '<=',
+    Equal = '==',
+    Not = '!',
     OpenParenthesis = '(',
     CloseParenthesis = ')',
     OpenAbs = 'Abs(',
     CloseAbs = '|',
-    Lte = '<=',
-    Equal = '==',
-    Not = '!'
 }
 
 export const OPERATOR_VALUE: Map<string, number> = new Map(Object.entries({
@@ -118,14 +118,14 @@ export function verifyValidCondition(c: Condition, confirm: boolean): [boolean, 
     let countAbs = 0
     let prevElement = { type: ElementType.Operator } as ConditionElement
     for (let e of c?.elements) {
-        // Check that these rules are followed: 
+        // Check that these rules are followed:
         //  - numeric value must not be followed by a opening parenthesis or abs
         //  - close parenthesis or abs must be preceded by a numeric value or a closing parenthesis
         //  - not operator cannot be preceded by a numeric value
         //  - not operator must be followed by open parenthesis or open abs
         let isCurrentSyntaxOpen = e?.value == Operator.OpenParenthesis || e?.value == Operator.OpenAbs
         let isCurrentSyntaxClose = e?.value == Operator.CloseParenthesis || e?.value == Operator.CloseAbs
-        let isPrevNumeric = prevElement?.type === ElementType.Perceptible || prevElement.type === ElementType.Constant || prevElement.type === ElementType.BodyState 
+        let isPrevNumeric = prevElement?.type === ElementType.Perceptible || prevElement.type === ElementType.Constant || prevElement.type === ElementType.BodyState
         if (isPrevNumeric && isCurrentSyntaxOpen) {
             return [false, `Operator "${e?.value}" must be preceded by an operator`]
         }
@@ -231,7 +231,7 @@ function parseInner(c: ConditionElement[]): Leaf {
             return { value: operator, left: {value: abs, left: -1, right: parseInner(c.slice(1, i - 1))}, right: parseInner(c.slice(i + 1)) }
         }
         // if no operator, parse the interior of the abs
-        return { value: abs, left: -1, right: parseInner(c.slice(1, -1))} 
+        return { value: abs, left: -1, right: parseInner(c.slice(1, -1))}
     }
     // if no parenthesis, abs or !, parse the expression as X OPERATOR REST
     return parseOperation(elem, c[1], c.slice(2))
@@ -248,7 +248,7 @@ function parseOperation(val: ConditionElement, operator: ConditionElement, rest:
 }
 
 // Parse the element to a leaf. In case the element is a perceptible,
-// add {value: 14, left: -1, right{...}} in order to access the 
+// add {value: 14, left: -1, right{...}} in order to access the
 // perceptibles dictionnary
 function parseElement(val: ConditionElement): Leaf {
     let value = val?.value as number
