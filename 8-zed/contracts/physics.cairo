@@ -115,8 +115,10 @@ func _physicality{range_check_ptr}(
 
     local action_origin_0: Vec2;
     local action_dimension_0: Vec2;
+    local is_action_0_attack: felt;
     local action_origin_1: Vec2;
     local action_dimension_1: Vec2;
+    local is_action_1_attack: felt;
 
     // TODO: hitbox dimensions should be decoded from attack type per character type!!
 
@@ -136,6 +138,7 @@ func _physicality{range_check_ptr}(
                 );
             }
             assert action_dimension_0 = Vec2 (ns_jessica_character_dimension.SLASH_HITBOX_W, ns_jessica_character_dimension.SLASH_HITBOX_H);
+            assert is_action_0_attack = 1;
         }
         if (bool_body_in_block_0 == 1) {
             if (curr_body_state_0.dir == 1) {
@@ -152,10 +155,12 @@ func _physicality{range_check_ptr}(
                 );
             }
             assert action_dimension_0 = Vec2 (ns_jessica_character_dimension.BLOCK_HITBOX_W, ns_jessica_character_dimension.BLOCK_HITBOX_H);
+            assert is_action_0_attack = 0;
         }
     } else {
         assert action_origin_0 = Vec2 (ns_scene.BIGNUM, ns_scene.BIGNUM);
         assert action_dimension_0 = Vec2 (0, 0);
+        assert is_action_0_attack = 0;
     }
 
     if (bool_body_in_active_1 == 1) {
@@ -174,6 +179,7 @@ func _physicality{range_check_ptr}(
                 );
             }
             assert action_dimension_1 = Vec2 (ns_jessica_character_dimension.SLASH_HITBOX_W, ns_jessica_character_dimension.SLASH_HITBOX_H);
+            assert is_action_1_attack = 1;
         }
         if (bool_body_in_block_1 == 1) {
             if (curr_body_state_1.dir == 1) {
@@ -190,10 +196,12 @@ func _physicality{range_check_ptr}(
                 );
             }
             assert action_dimension_1 = Vec2 (ns_jessica_character_dimension.BLOCK_HITBOX_W, ns_jessica_character_dimension.BLOCK_HITBOX_H);
+            assert is_action_1_attack = 0;
         }
     } else {
         assert action_origin_1 = Vec2 (ns_scene.BIGNUM, ns_scene.BIGNUM);
         assert action_dimension_1 = Vec2 (0, 0);
+        assert is_action_1_attack = 0;
     }
 
     // # determine body dimension (knocked state has a wider hitbox)
@@ -234,9 +242,11 @@ func _physicality{range_check_ptr}(
 
     // Agent 1 hit:  action 0 against body 1
     let (bool_agent_1_hit) = _test_rectangle_overlap(hitboxes_0.action, hitboxes_1.body);
+    tempvar bool_agent_1_hit = bool_agent_1_hit * is_action_0_attack;
 
     // Agent 0 hit:  action 1 against body 0
     let (bool_agent_0_hit) = _test_rectangle_overlap(hitboxes_1.action, hitboxes_0.body);
+    tempvar bool_agent_0_hit = bool_agent_0_hit * is_action_1_attack;
 
     // Action clash / block: action 0 against action 1
     let (bool_action_overlap) = _test_rectangle_overlap(hitboxes_0.action, hitboxes_1.action);
