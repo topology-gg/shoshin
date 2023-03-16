@@ -80,7 +80,9 @@ export default function Home() {
     const [output, setOuput] = useState<FrameScene>();
     const [simulationError, setSimulationError] = useState();
     const [p1, setP1] = useState<Agent>();
+    const [p1Label, setP1Label] = useState<string>('');
     const [p2, setP2] = useState<Agent>();
+    const [p2Label, setP2Label] = useState<string>('');
     const [loop, setLoop] = useState<NodeJS.Timer>();
     const [animationFrame, setAnimationFrame] = useState<number>(0);
     const [animationState, setAnimationState] = useState<string>('Stop');
@@ -116,7 +118,14 @@ export default function Home() {
     const agents: Agent[] = t?.map(splitSingleMetadata).flat()
 
     const newAgent: Agent = useMemo(() => {
-        return handleBuildAgent()
+        let builtAgent = handleBuildAgent()
+        if (p1Label === 'new agent') {
+            setP1(builtAgent)
+        }
+        if (p2Label === 'new agent') {
+            setP2(builtAgent)
+        }
+        return builtAgent
     }, [character, mentalStates, combos, trees, conditions, initialMentalState])
 
     const { runCairoSimulation, wasmReady } = useRunCairoSimulation(p1, p2)
@@ -512,9 +521,11 @@ export default function Home() {
 
         // setP1 / setP2 depending on whichPlayer
         if (whichPlayer == 'P1') {
+            setP1Label(value.label)
             setP1(() => setAgent)
         }
         else {
+            setP2Label(value.label)
             setP2(() => setAgent)
         }
     }
