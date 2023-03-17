@@ -150,7 +150,7 @@ struct Frame {
     action: felt,
     stimulus: felt,
     hitboxes: Hitboxes,
-    combos: Combo,
+    combo: Combo,
 }
 
 struct FrameScene {

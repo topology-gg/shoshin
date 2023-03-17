@@ -198,6 +198,10 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 action = null_rect,
                 body   = agent_0_body
                 ),
+            combo         = Combo(
+                combo_index   = 0,
+                action_index = 0,
+                ),
             ),
         agent_1 = Frame(
             mental_state  = agent_1_initial_state,
@@ -208,6 +212,10 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             hitboxes      = Hitboxes(
                 action = null_rect,
                 body   = agent_1_body
+                ),
+            combo         = Combo(
+                combo_index   = 0,
+                action_index = 0,
                 ),
             ),
         );
@@ -470,9 +478,9 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             stimulus      = stimulus_0,
             hitboxes      = hitboxes_0,
             combo         = Combo(
-                                combo_index   = combos_0_new.current_combo, 
-                                action_index  = combos_0_new.combo_counter
-                            ),
+                combo_index   = combos_0_new.current_combo, 
+                action_index  = combos_0_new.combo_counter
+                ),
         ),
         agent_1 = Frame (
             mental_state  = agent_state_1,
@@ -482,9 +490,9 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             stimulus      = stimulus_1,
             hitboxes      = hitboxes_1,
             combo         = Combo(
-                                combo_index   = combos_1_new.current_combo, 
-                                action_index  = combos_1_new.combo_counter
-                            ),
+                combo_index   = combos_1_new.current_combo, 
+                action_index  = combos_1_new.combo_counter
+                ),
         )
     );
 
