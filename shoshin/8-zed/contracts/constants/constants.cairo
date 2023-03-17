@@ -138,6 +138,11 @@ namespace ns_perceptibles {
 //
 // Frame
 //
+struct Combo {
+    combo_index: felt,
+    action_index: felt,
+}
+
 struct Frame {
     mental_state: felt,
     body_state: BodyState,
@@ -145,6 +150,7 @@ struct Frame {
     action: felt,
     stimulus: felt,
     hitboxes: Hitboxes,
+    combos: Combo,
 }
 
 struct FrameScene {

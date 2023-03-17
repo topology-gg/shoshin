@@ -17,6 +17,7 @@ from contracts.constants.constants import (
     BodyState,
     Frame,
     FrameScene,
+    Combo,
     Metadata,
     Rectangle,
     Hitboxes,
@@ -468,6 +469,10 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             action        = a_0,
             stimulus      = stimulus_0,
             hitboxes      = hitboxes_0,
+            combo         = Combo(
+                                combo_index   = combos_0_new.current_combo, 
+                                action_index  = combos_0_new.combo_counter
+                            ),
         ),
         agent_1 = Frame (
             mental_state  = agent_state_1,
@@ -476,13 +481,16 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             action        = a_1,
             stimulus      = stimulus_1,
             hitboxes      = hitboxes_1,
+            combo         = Combo(
+                                combo_index   = combos_1_new.current_combo, 
+                                action_index  = combos_1_new.combo_counter
+                            ),
         )
     );
 
     //
     // Tail recursion
     //
-    tempvar arr_empty: felt* = new ();
     return _loop(
         idx = idx + 1,
         len = len,
