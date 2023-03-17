@@ -44,8 +44,7 @@ export default function SettingModal({
                 onClose={handleClose} onBack={handleBack} maxWidth={false}
             >
                 <Box sx={{
-                    pt: 3, pb: 0, pl: 0, pr: 0, fontFamily: "var(--font-family-secondary)",
-                    backgroundColor: '#DDDDDD'
+                    pt: 3, pb: 0, pl: 0, pr: 0, fontFamily: "var(--font-family-secondary)"
                 }}>
                     {
                         (modalMode == 'connect') ? (

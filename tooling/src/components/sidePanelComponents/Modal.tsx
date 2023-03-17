@@ -5,7 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CloseIcon from "@mui/icons-material/Close";
 
-import { Breakpoint } from "@mui/material";
+import { Breakpoint, DialogContent } from "@mui/material";
 
 interface ModalProps {
     children: React.ReactNode;
@@ -64,8 +64,9 @@ const Modal = ({ children, open, onClose, onBack, isRoot, maxWidth = "sm", paddi
                     </IconButton>
                 )
             }
-
-            {children}
+            <DialogContent>
+                {children}
+            </DialogContent>
         </Dialog>
     );
 };

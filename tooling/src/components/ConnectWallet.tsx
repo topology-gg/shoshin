@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next";
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 
-import Modal from "../ui_common/Modal";
 import styles from './ConnectWallet.module.css'
+import { Button } from "@mui/material";
 
 // export default function ConnectWallet ({ modalOpen, handleOnOpen, handleOnClose }) {
 export default function ConnectWallet () {
@@ -31,17 +31,6 @@ export default function ConnectWallet () {
         if (available) setConnectors(available)
     }, [available])
 
-    const makeshift_button_style = {marginLeft:'0.2rem', marginRight:'0.2rem', height:'1.5rem'}
-
-    const BUTTON_STYLE = {
-        height: '1.5rem',
-        width: 'auto',
-        cursor: 'pointer',
-        fontSize : '12px',
-        borderRadius : '3px',
-        border: '1px solid #000',
-        marginRight: '10px'
-    }
     if (account) {
 
         let rendered_account = <>Connected: {String(address).slice(0,6) + '...' + String(address).slice(-4)}</>
@@ -83,7 +72,7 @@ export default function ConnectWallet () {
 
                 {connectors.length > 0 ? menu_items_sorted : (
                     <>
-                        <button onClick={() => setWalletNotFound(true)}>Connect</button>
+                        <Button variant="outlined" onClick={() => setWalletNotFound(true)}>Connect</Button>
                         {walletNotFound && <p className='error-text'>Wallet not found. Please install ArgentX or Braavos.</p>}
                     </>
                 )}
