@@ -38,6 +38,10 @@ const cairoOutputToFrameScene = (output: any[]): FrameScene => {
             }
           }
         },
+        combo: {
+          combo_index: f.agent_0.combo.combo_index[0] ? f.agent_0.combo.combo_index[0] * f.agent_0.combo.combo_index[1][0] : 0,
+          action_index: f.agent_0.combo.action_index[0] ? f.agent_0.combo.action_index[0] * f.agent_0.combo.action_index[1][0] : 0,
+        },
         physics_state: {
           pos: {
             x: f.agent_0.physics_state.pos.x[0] ? f.agent_0.physics_state.pos.x[0] * f.agent_0.physics_state.pos.x[1][0] : 0,
@@ -54,8 +58,6 @@ const cairoOutputToFrameScene = (output: any[]): FrameScene => {
         },
         mental_state: f.agent_0.mental_state[0] ? f.agent_0.mental_state[0] * f.agent_0.mental_state[1][0] : 0,
         stimulus: f.agent_0.stimulus[0] ? f.agent_0.stimulus[0] * f.agent_0.stimulus[1][0] : 0,
-        stamina: DEFAULT_STAMINA,
-        integrity: DEFAULT_INTEGRITY
       })
       scene.agent_1.push({
         action: f.agent_1.action[0] ? f.agent_1.action[0] * f.agent_1.action[1][0] : 0,
@@ -89,6 +91,10 @@ const cairoOutputToFrameScene = (output: any[]): FrameScene => {
             }
           }
         },
+        combo: {
+          combo_index: f.agent_1.combo.combo_index[0] ? f.agent_1.combo.combo_index[0] * f.agent_1.combo.combo_index[1][0] : 0,
+          action_index: f.agent_1.combo.action_index[0] ? f.agent_1.combo.action_index[0] * f.agent_1.combo.action_index[1][0] : 0,
+        },
         physics_state: {
           pos: {
             x: f.agent_1.physics_state.pos.x[0] ? f.agent_1.physics_state.pos.x[0] * f.agent_1.physics_state.pos.x[1][0] : 0,
@@ -105,8 +111,6 @@ const cairoOutputToFrameScene = (output: any[]): FrameScene => {
         },
         mental_state: f.agent_1.mental_state[0] ? f.agent_1.mental_state[0] * f.agent_1.mental_state[1][0] : 0,
         stimulus: f.agent_1.stimulus[0] ? f.agent_1.stimulus[0] * f.agent_1.stimulus[1][0] : 0,
-        stamina: DEFAULT_STAMINA,
-        integrity: DEFAULT_INTEGRITY
       })
   })
   return scene
