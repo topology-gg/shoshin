@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import BuildIcon from '@mui/icons-material/Build';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import PublishIcon from '@mui/icons-material/Publish';
@@ -16,6 +16,7 @@ import { Character, EditorMode } from '../../constants/constants';
 import { Tree } from '../../types/Tree';
 import { Condition, ConditionElement } from '../../types/Condition';
 import SettingModal from './SettingModal';
+import ContractInformation from './ContractInformation';
 
 interface SidePanelProps {
     editorMode: EditorMode
@@ -73,6 +74,7 @@ const SidePanel = ({
 }: SidePanelProps) => {
 
     const isReadOnly = editorMode == EditorMode.ReadOnly
+    const [openContractInformation, setOpenContractInformation] = React.useState(false);
 
     const content = (workingTab: EditorTabName) => {
         switch (workingTab) {
@@ -155,6 +157,11 @@ const SidePanel = ({
                 padding: 2,
             }}
         >
+            <ContractInformation
+                title={'Contract Information'}
+                onClose={() => setOpenContractInformation(false)}
+                open={openContractInformation}
+            />
             <Box
                 sx={{
                     display: 'flex',
@@ -180,6 +187,18 @@ const SidePanel = ({
                         open={settingModalOpen}
                         handleSetOpen={setSettingModalOpen}
                     />
+                </div>
+
+                <div style={{marginBottom:'1rem'}}>
+                    <Button
+                        id='button-contract-info-button'
+                        onClick={() => {
+                            setOpenContractInformation(true)
+                        }}
+                        variant="outlined"
+                    >
+                        <AutoStoriesIcon sx={{marginRight:'0.6rem'}} /> Display contract information 
+                    </Button>
                 </div>
 
                 <div style={{marginBottom:'1rem'}}>
