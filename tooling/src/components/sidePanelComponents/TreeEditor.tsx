@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Card, Tooltip, Typography } from "@mui/material";
-import CancelIcon from '@mui/icons-material/Cancel';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
@@ -12,11 +11,11 @@ const treeToString = (tree: Tree) => {
     let str = ''
     tree.nodes.forEach((n) => {
         if (n?.branch === 'left' && n.isChild) {
-            str += n.id + `:\n`
+            str += n.id + `,\n`
         } else if (n?.branch === 'right' && n.isChild) {
-            str += n.id
+            str += '_ => ' + n.id
         } else {
-            str += n.id + ' ? '
+            str += n.id + ' => '
         }
     })
     return str
@@ -85,7 +84,7 @@ const TreeEditor = ({
                 <TextField
                     color={'info'}
                     id='outlined-textarea'
-                    placeholder={`if F1? MS IDLE:\nif F2? MS ATTACK:\nMS DEFEND`}
+                    placeholder={`F1 => MS IDLE,\nF2 => MS ATTACK,\n_ => MS DEFEND`}
                     defaultValue={treeToString(tree)}
                     label={`Decision Tree for ${mentalState.state}`}
                     onChange={ (event) => handleUpdateTree(indexTree, event.target.value) }

@@ -109,7 +109,7 @@ export function unwrapLeafToTree(f: Leaf, msNames: string[]): Node[] {
     let ms = getMS(f) ?? 0
 
     return [
-        {id: 'if F' + func, isChild: false}, 
+        {id: 'F' + func, isChild: false}, 
         {id: msNames[ms], isChild: true, branch: Direction.Left}, 
         ...unwrapLeafToTree(recurse, msNames)
     ]

@@ -24,8 +24,8 @@ function parseTreeInner(t: Tree, ms: MentalState[], usedFunctions: Map<number, n
     if (!condition?.isChild) {
         // t.nodes[1].id is the left branch of the tree
         let stateLeft = wrapToLeaf(ms.findIndex((mental) => t.nodes[1].id === mental.state))
-        // condition is in the form 'if F0'
-        let f = parseInt(condition.id.split(' ')[1][1])
+        // condition is in the form 'F0'
+        let f = parseInt(condition.id[1])
         let fEval: Leaf
         // if function has already been used, add a MEM operator
         if (usedFunctions.has(f)) {
