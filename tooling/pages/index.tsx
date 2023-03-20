@@ -332,47 +332,33 @@ export default function Home() {
         setTreeEditor(index)
     }
 
-    // TODO: comment
+    // Parses the user input into a tree. If the input is invalid,
+    // the warning text is displayed and the tree is not updated.
     function handleUpdateTree(index: number, input: string) {
         let new_tree = {nodes: []}
-        let regex_branches = /if *([a-zA-Z0-9_ ]*)\? *([a-zA-Z0-9_ ]*) *\:/g
+        // regexp string for matching pattern matching expressions
+        let pattern = /^(\S+)\s*=>\s*(.+?)(?:\n|$)/gm
 
-        let regex_end = /: *\n([a-zA-z0-9_ ]*)/gm
-
-        let exp = regex_branches.exec(input)
         let f = conditions.slice(0, conditions.length - 1).map((_, i) => {return `F${i}`})
         let ms = mentalStates.map((m) => {return m.state})
-        while (exp !== null && exp[1] !== '' && exp[2] !== '') {
-            let fCondition = f.includes(exp[1].trim())
-            let mCondition = ms.includes(exp[2].trim())
+        let match;
+        // match condition and mental state: add the node to the tree
+        // match mental state and _ : add the node to the tree
+        // otherwise display warning text
+        while ((match = pattern.exec(input))) {
+            let fCondition = f.includes(match[1])
+            let mCondition = ms.includes(match[2])
             if (fCondition && mCondition) {
-                new_tree.nodes.push({id: 'if ' + exp[1].trim(), isChild: false }, { id: exp[2].trim(), isChild: true, branch: Direction.Left })
+                new_tree.nodes.push({id: match[1], isChild: false }, { id: match[2], isChild: true, branch: Direction.Left })
+            } else if (mCondition && match[1] === '_') {
+                new_tree.nodes.push({ id: match[2], isChild: true, branch: Direction.Right })
             } else {
                 let text = !fCondition ? !mCondition ?
-                                        `Condition ${exp[1]} and mental state ${exp[2]} not included in currect build`:
-                                        `Condition ${exp[1]} not included in current build` :
-                            `Mental state ${exp[2]} not included in current build`
+                                        `Condition ${match[1]} and mental state ${match[2]} not included in currect build`:
+                                        `Condition ${match[1]} not included in current build` :
+                            `Mental state ${match[2]} not included in current build`
                 setTreeEditorWarningTextOn(true)
                 setTreeEditorWarningText(text)
-                return
-            }
-            exp = regex_branches.exec(input)
-        }
-        setTreeEditorWarningTextOn(false)
-
-        let exp_end = regex_end.exec(input)
-        let end_node;
-        while (exp_end !== null) {
-            end_node = {id: exp_end[1].trim(), isChild: true, branch: Direction.Right }
-            exp_end = regex_end.exec(input)
-        }
-        if (end_node !== undefined && end_node.id !== '') {
-            let mCondition = ms.includes(end_node.id)
-            if (mCondition) {
-                new_tree.nodes.push(end_node)
-            } else {
-                setTreeEditorWarningTextOn(true)
-                setTreeEditorWarningText(`Mental state ${end_node.id} not included in current build`)
                 return
             }
         }

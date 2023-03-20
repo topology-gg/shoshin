@@ -154,34 +154,34 @@ export const INITIAL_COMBOS: number[][] = [[7, 7, 2, 2, 2, 2, 2]]
 export const INITIAL_DECISION_TREES: Tree[] = [
     {
         nodes: [
-            { id: 'if F0', isChild: false },
+            { id: 'F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
-            { id: 'if F1', isChild: false, branch: Direction.Right },
+            { id: 'F1', isChild: false, branch: Direction.Right },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'if F0', isChild: false },
+            { id: 'F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
-            { id: 'if F1', isChild: false, branch: Direction.Right },
+            { id: 'F1', isChild: false, branch: Direction.Right },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'if F0', isChild: false },
+            { id: 'F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'if F0', isChild: false },
+            { id: 'F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
-            { id: 'if F1', isChild: false, branch: Direction.Right },
+            { id: 'F1', isChild: false, branch: Direction.Right },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
         ]
@@ -207,6 +207,18 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
             { value: Operator.Equal, type: ElementType.Operator },
             { value: 30, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
+            { value: Operator.Or, type: ElementType.Operator },
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 1010, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
+            { value: Operator.Or, type: ElementType.Operator },
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 1020, type: ElementType.Constant },
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
         ]
     },
@@ -272,6 +284,18 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.Equal, type: ElementType.Operator},
             { value: 110, type: ElementType.Constant},
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
+            { value: Operator.Or, type: ElementType.Operator},
+            { value: Operator.OpenParenthesis, type: ElementType.Operator},
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible},
+            { value: Operator.Equal, type: ElementType.Operator},
+            { value: 1090, type: ElementType.Constant},
+            { value: Operator.CloseParenthesis, type: ElementType.Operator},
+            { value: Operator.Or, type: ElementType.Operator},
+            { value: Operator.OpenParenthesis, type: ElementType.Operator},
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible},
+            { value: Operator.Equal, type: ElementType.Operator},
+            { value: 1110, type: ElementType.Constant},
+            { value: Operator.CloseParenthesis, type: ElementType.Operator},
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
             { value: Operator.And, type: ElementType.Operator},
             { value: Operator.OpenParenthesis, type: ElementType.Operator},
@@ -309,6 +333,18 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.Equal, type: ElementType.Operator },
             { value: 30, type: ElementType.Constant },
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
+            { value: Operator.Or, type: ElementType.Operator },
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 1010, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
+            { value: Operator.Or, type: ElementType.Operator },
+            { value: Operator.OpenParenthesis, type: ElementType.Operator },
+            { value: Perceptible.OpponentBodyState, type: ElementType.Perceptible },
+            { value: Operator.Equal, type: ElementType.Operator },
+            { value: 1020, type: ElementType.Constant },
+            { value: Operator.CloseParenthesis, type: ElementType.Operator },
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
         ]
     },
@@ -335,7 +371,7 @@ export const INITIAL_CONDITION_INDEX: number = INITIAL_CONDITIONS.length - 1
 const DECISION_TREE_IDLE_AGENT: Tree[] = [
     {
         nodes: [
-            { id: 'if F9', isChild: false },
+            { id: 'F9', isChild: false },
             { id: 'MS IDLE', isChild: true, branch: Direction.Left },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
         ]
@@ -359,23 +395,23 @@ export const OFFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_OFFENSIVE_AGENT, 
 const DECISION_TREE_DEFENSIVE_AGENT = [
     {
         nodes: [
-            { id: 'if F0', isChild: false },
+            { id: 'F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'if F0', isChild: false },
+            { id: 'F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'MS RETRAIT', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'if F0', isChild: false },
+            { id: 'F0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
-            { id: 'if F8', isChild: false },
+            { id: 'F8', isChild: false },
             { id: 'MS RETRAIT', isChild: true, branch: Direction.Right },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
         ]
@@ -392,7 +428,7 @@ export const DEFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_DEFENSIVE_AGENT, 
 export const DECISION_TREE_COMBO_AGENT = [
     {
         nodes: [
-            { id: 'if F0', isChild: false },
+            { id: 'F0', isChild: false },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS COMBO', isChild: true, branch: Direction.Right },
         ]
