@@ -337,7 +337,7 @@ export default function Home() {
     function handleUpdateTree(index: number, input: string) {
         let new_tree = {nodes: []}
         // regexp string for matching pattern matching expressions
-        let pattern = /^(\S+)\s*=>\s*(.+?)(?:,\n|\n|$)/gm
+        let pattern = /^(\S+)\s*=>\s*(.+?)(?:\n|$)/gm
 
         let f = conditions.slice(0, conditions.length - 1).map((_, i) => {return `F${i}`})
         let ms = mentalStates.map((m) => {return m.state})

@@ -11,7 +11,7 @@ const treeToString = (tree: Tree) => {
     let str = ''
     tree.nodes.forEach((n) => {
         if (n?.branch === 'left' && n.isChild) {
-            str += n.id + `,\n`
+            str += n.id + `\n`
         } else if (n?.branch === 'right' && n.isChild) {
             str += '_ => ' + n.id
         } else {
