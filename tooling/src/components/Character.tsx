@@ -12,7 +12,7 @@ interface CharacterProps {
 
 export default function Character( {viewWidth, characterName, agentFrame}: CharacterProps ) {
 
-    console.log(characterName, 'agentFrame:', agentFrame)
+    // console.log(characterName, 'agentFrame:', agentFrame)
 
     // Extract from frame
     const bodyState = agentFrame.body_state.state
@@ -25,7 +25,7 @@ export default function Character( {viewWidth, characterName, agentFrame}: Chara
     const bodyStateName = bodyStateNumberToName [characterName][bodyState]
     const direction = (bodyStateDir == 1) ? 'right' : 'left'
 
-    console.log('characterName:', characterName, 'bodyStateName', bodyStateName)
+    // console.log('characterName:', characterName, 'bodyStateName', bodyStateName)
     const spriteAdjustments = spriteData[characterName][bodyStateName]
     const spriteAdjustment = spriteAdjustments.length == 1 ? spriteAdjustments[0] : spriteAdjustments[bodyStateCounter] // if having more than one adjustments, use body counter to index the adjustments
     const spriteSize = spriteAdjustment?.size || [0, 0]

@@ -121,6 +121,22 @@ const FrameInspector = ({
                             </TableRow>
                             <TableRow>
                                 <TableCell colSpan={2}>
+                                    combo.index
+                                </TableCell>
+                                <TableCell align="right">
+                                    {frame.combo.combo_index - 1}
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell colSpan={2}>
+                                    combo.action_index
+                                </TableCell>
+                                <TableCell align="right">
+                                    {frame.combo.action_index - 1}
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell colSpan={2}>
                                     hitboxes.body.origin (x, y)
                                 </TableCell>
                                 <TableCell align="right">

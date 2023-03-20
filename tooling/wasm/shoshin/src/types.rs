@@ -159,6 +159,7 @@ pub struct Agent {
     pub action: BigInt,
     pub stimulus: BigInt,
     pub hitboxes: Hitboxes,
+    pub combo: Combo,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]
@@ -196,9 +197,15 @@ pub struct Vector {
     pub y: BigInt,
 }
 
+#[derive(Default, Debug, Serialize, Deserialize)]
+pub struct Combo {
+    pub combo_index: BigInt,
+    pub action_index: BigInt,
+}
+
 impl Sizeable for FrameScene {
     fn size(&self) -> usize {
-        46
+        50
     }
 }
 
@@ -254,6 +261,10 @@ impl From<Vec<BigInt>> for FrameScene {
                     },
                 },
             },
+            combo: Combo {
+                combo_index: value_mod.pop().unwrap(),
+                action_index: value_mod.pop().unwrap(),
+            },
         };
         let agent_1 = Agent {
             mental_state: value_mod.pop().unwrap(),
@@ -302,6 +313,10 @@ impl From<Vec<BigInt>> for FrameScene {
                         y: value_mod.pop().unwrap(),
                     },
                 },
+            },
+            combo: Combo {
+                combo_index: value_mod.pop().unwrap(),
+                action_index: value_mod.pop().unwrap(),
             },
         };
         FrameScene { agent_0, agent_1 }

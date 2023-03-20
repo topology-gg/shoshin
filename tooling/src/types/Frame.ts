@@ -29,6 +29,11 @@ export interface Hitboxes {
     body: Rectangle,
 }
 
+export interface Combo {
+    combo_index: number,
+    action_index: number,
+}
+
 export interface FrameScene {
     agent_0: Frame[],
     agent_1: Frame[],
@@ -41,8 +46,7 @@ export interface Frame {
     action: number,
     stimulus: number,
     hitboxes: Hitboxes,
-    stamina : number | undefined,
-    integrity : number | undefined
+    combo: Combo
 }
 
 export interface TestJson {
