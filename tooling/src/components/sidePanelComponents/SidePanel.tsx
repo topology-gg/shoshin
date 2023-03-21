@@ -1,5 +1,7 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import BuildIcon from '@mui/icons-material/Build';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import PublishIcon from '@mui/icons-material/Publish';
@@ -158,7 +160,7 @@ const SidePanel = ({
             }}
         >
             <ContractInformation
-                title={'Contract Information'}
+                title={'Reference'}
                 onClose={() => setOpenContractInformation(false)}
                 open={openContractInformation}
             />
@@ -197,13 +199,13 @@ const SidePanel = ({
                         }}
                         variant="outlined"
                     >
-                        <AutoStoriesIcon sx={{marginRight:'0.6rem'}} /> Display contract information 
+                        <AutoStoriesIcon sx={{marginRight:'0.6rem'}} /> Reference
                     </Button>
                 </div>
 
                 <div style={{marginBottom:'1rem'}}>
                     <ButtonOptionList
-                        buttonLabel={<><AutoStoriesIcon sx={{marginRight:'0.6rem'}} />Study available Agent (read-only)</>}
+                        buttonLabel={<><PersonSearchIcon sx={{marginRight:'0.6rem'}} />Available Agent (read-only)</>}
                         options={agents}
                         optionLabel={'agent'}
                         optionSelected={(option: Agent) => {
@@ -222,13 +224,13 @@ const SidePanel = ({
                         }}
                         variant="outlined"
                     >
-                        <BuildIcon sx={{marginRight:'0.6rem'}} /> Build Agent from blank
+                        <PersonAddAlt1Icon sx={{marginRight:'0.6rem'}} /> Build Agent from blank
                     </Button>
                 </div>
 
                 <div style={{marginBottom:'1rem'}}>
                     <ButtonOptionList
-                        buttonLabel={<><BuildIcon  sx={{marginRight:'0.6rem'}} />Build Agent from an existing Agent</>}
+                        buttonLabel={<><PersonAddAlt1Icon  sx={{marginRight:'0.6rem'}} />Build Agent from an existing Agent</>}
                         options={agents}
                         optionLabel={'agent'}
                         optionSelected={(option: Agent) => {

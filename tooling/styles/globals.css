@@ -293,3 +293,9 @@ input::placeholder {
     /* Render the bg image and the sprites as pixelated images */
     image-rendering: pixelated;
 }
+
+th, td {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+  }
