@@ -35,7 +35,6 @@ const SetPlayerBar = ({ label, agentsFromRegistry, agentChange }) => {
     // ref: https://stackoverflow.com/questions/73095037/how-to-have-an-option-be-a-part-of-multiple-groups-with-mui-autocomplete
     let agentOptions = [{group:'Local', label:'new agent', index: -1}]
     agentOptions = agentOptions.concat (!agentsFromRegistry ? [] : agentsFromRegistry.map((a: SingleMetadata, a_i: number) => {
-        console.log(a.sender)
         return {
             group: 'Registry',
             label: `agent-${a_i} by ${lookupSenderAddress(a.sender)}`,
