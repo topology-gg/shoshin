@@ -123,6 +123,7 @@ export interface SingleMetadata {
     conditions_names: string[],
     actions: number[],
     character: number,
+    sender : string
 }
 
 export function splitSingleMetadata(meta: SingleMetadata): Agent {

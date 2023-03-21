@@ -5,9 +5,10 @@ import styles from "../../styles/StatusBar.module.css";
 import "../../styles/StatusBar.module.css";
 import { Autocomplete, TextField } from "@mui/material";
 import Agent from "../types/Agent";
+import { SingleMetadata } from "../types/Metadata";
 
 interface P1P2SettingPanelProps {
-    agentsFromRegistry: Agent[]
+    agentsFromRegistry: SingleMetadata[]
     agentChange: (whichPlayer: string, event: object, value: AgentOption) => void
 }
 export interface AgentOption {
@@ -22,14 +23,22 @@ const AutoComplete = styled(Autocomplete)`
   }
 `;
 
+
+const senders = {
+    "0x07ff2c85c7b1de1808ddf8897bc729feefa71ba269ea1015d1fd7a18c9918cc3" : "Greg"
+}
+const lookupSenderAddress = (address : string) =>{
+    return senders[address] ? senders[address] : "GG"
+}
 const SetPlayerBar = ({ label, agentsFromRegistry, agentChange }) => {
 
     // ref: https://stackoverflow.com/questions/73095037/how-to-have-an-option-be-a-part-of-multiple-groups-with-mui-autocomplete
     let agentOptions = [{group:'Local', label:'new agent', index: -1}]
-    agentOptions = agentOptions.concat (!agentsFromRegistry ? [] : agentsFromRegistry.map((a: Agent, a_i: number) => {
+    agentOptions = agentOptions.concat (!agentsFromRegistry ? [] : agentsFromRegistry.map((a: SingleMetadata, a_i: number) => {
+        console.log(a.sender)
         return {
             group: 'Registry',
-            label: `agent-${a_i}`,
+            label: `agent-${a_i} by ${lookupSenderAddress(a.sender)}`,
             index: a_i,
         } as AgentOption
     }))
@@ -46,7 +55,7 @@ const SetPlayerBar = ({ label, agentsFromRegistry, agentChange }) => {
             options={agentOptions}
             groupBy={(option: AgentOption) => option.group}
             getOptionLabel={(option: AgentOption) => option.label}
-            sx={{ width: 160 }}
+            sx={{ width: 220 }}
             renderInput={(params) => <TextField {...params} label={label} />}
             onChange={agentChange}
         />
