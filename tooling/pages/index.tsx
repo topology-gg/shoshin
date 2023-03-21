@@ -580,7 +580,7 @@ export default function Home() {
                                     <div style={{display:'flex', flexDirection:'column'}}>
 
                                         <P1P2SettingPanel
-                                            agentsFromRegistry={agents}
+                                            agentsFromRegistry={t}
                                             agentChange={agentChange}
                                         />
 
