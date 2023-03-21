@@ -23,6 +23,7 @@ import {
     INITIAL_MENTAL_STATES,
     OFFENSIVE_AGENT,
     EditorMode,
+    BLANK_AGENT,
 } from '../src/constants/constants';
 import Agent, { agentToCalldata, buildAgent } from '../src/types/Agent';
 import ImagePreloader from '../src/components/ImagePreloader';
@@ -631,7 +632,7 @@ export default function Home() {
                                 }}
                                 buildNewAgentFromBlank={() => {
                                     setEditorMode(() => EditorMode.Edit);
-                                    setAgentInPanelToBlank();
+                                    setAgentInPanelToAgent(BLANK_AGENT)
                                 }}
                                 buildNewAgentFromAgent={(agent: Agent) => {
                                     setEditorMode(() => EditorMode.Edit);
