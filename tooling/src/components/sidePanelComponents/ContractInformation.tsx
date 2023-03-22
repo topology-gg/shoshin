@@ -49,11 +49,11 @@ const JessicaInfo = `
 | Move forward | +20 | stamina replenishes per frame |
 | Move backward | +20 | stamina replenishes per frame |
 | Block | +10 | stamina replenishes per frame |
-| Dash forward | -50 | .. |
-| Dash backward | -50 | .. |
-| Upswing | -100 | .. |
-| Sidecut | -100 | .. |
-| Slash | -100 | .. |
+| Dash forward | -50 | stamina consumed once when body enters the state |
+| Dash backward | -50 | stamina consumed once when body enters the state |
+| Upswing | -100 | stamina consumed once when body enters the state |
+| Sidecut | -100 | stamina consumed once when body enters the state |
+| Slash | -100 | stamina consumed once when body enters the state |
 
 ### Hitbox dimensions
 (to be added)
@@ -80,10 +80,10 @@ const AntocInfo = `
 | Move forward | +20 | stamina replenishes per frame |
 | Move backward | +20 | stamina replenishes per frame |
 | Block | +10 | stamina replenishes per frame |
-| Dash forward | -50 | .. |
-| Dash backward | -50 | .. |
-| Hori | -100 | .. |
-| Vert | -100 | .. |
+| Dash forward | -50 | stamina consumed once when body enters the state |
+| Dash backward | -50 | stamina consumed once when body enters the state |
+| Hori | -100 | stamina consumed once when body enters the state |
+| Vert | -100 | stamina consumed once when body enters the state |
 
 ### Hitbox dimensions
 (to be added)
