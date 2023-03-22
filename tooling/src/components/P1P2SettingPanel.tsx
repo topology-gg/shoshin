@@ -25,10 +25,12 @@ const AutoComplete = styled(Autocomplete)`
 
 
 const senders = {
-    "0x07ff2c85c7b1de1808ddf8897bc729feefa71ba269ea1015d1fd7a18c9918cc3" : "Greg"
+    "0x07ff2c85c7b1de1808ddf8897bc729feefa71ba269ea1015d1fd7a18c9918cc3" : "Greg",
+    "0x0266eD55Be7054c74Db3F8Ec2E79C728056C802a11481fAD0E91220139B8916A" : "NonCents",
+    "0x02f880133db4f533bDbC10C3d02fbC9b264dAC2Ff52EAE4E0cec0CE794bAD898" : "GG",
 }
 const lookupSenderAddress = (address : string) =>{
-    return senders[address] ? senders[address] : "GG"
+    return senders[address] ? senders[address] : "anon"
 }
 const SetPlayerBar = ({ label, agentsFromRegistry, agentChange }) => {
 
