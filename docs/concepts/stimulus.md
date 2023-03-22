@@ -1,6 +1,6 @@
 # Stimulus
 
-The list of stimulus type:
+The list of possible stimuli:
 - `NULL`: no stimulus received
 - `HURT`: hurt by the opponent's attack
 - `KNOCKED`: knocked by the opponent's attack

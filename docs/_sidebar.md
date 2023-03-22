@@ -2,16 +2,16 @@
 
 - Welcome
   - [Introduction](overview/introduction.md)
-  - [Design Philosophy](overview/philosophy.md)
+  <!-- - [Design Philosophy](overview/philosophy.md) -->
 
 - Concepts
   - [Mind-Body Separation](concepts/mbs.md)
-  - [Glossary & Pseudocode](concepts/glossary_code.md)
-  - [Character Type](concepts/character-type.md)
+  <!-- - [Glossary & Pseudocode](concepts/glossary_code.md) -->
+  - [Playable Character](concepts/playable-character.md)
   - [Observables](concepts/observables.md)
   - [Conditions](concepts/conditions.md)
   - [Mind](concepts/mind.md)
-  - [Action](concepts/action.md)
+  - [Intent](concepts/intent.md)
   - [Stimulus](concepts/stimulus.md)
   - [Body](concepts/body.md)
   - [Physics](concepts/physics.md)

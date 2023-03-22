@@ -1,6 +1,6 @@
 # Physics
 
-Depending on body state, the character's dynanmics is computed.
+Depending on body state, the character's dynamics is computed.
 
 Dynamics includes position, velocity, and acceleration.
 

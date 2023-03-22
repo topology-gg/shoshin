@@ -14,8 +14,7 @@ SelfSta < 15
 ( ABS(SelfX - OpponentX) > 60 ) AND (OpponentInt > 50)
 ```
 
-Below is the list of available constants
-- ...
+Available constants are the names of the body states for all playable characters, so that players can craft Conditions that detect which body state the player's agent or the opponent agent is in, and act accordingly.
 
 Below is the list of supported operators:
 - `+`, `-`, `×`, `÷`
