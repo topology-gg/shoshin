@@ -1,4 +1,4 @@
-# Proposal
+# Double Blinding Proposal
 
 ### Simplified Notations
 
