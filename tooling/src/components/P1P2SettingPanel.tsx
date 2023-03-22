@@ -29,7 +29,7 @@ const senders = {
     "0x0266eD55Be7054c74Db3F8Ec2E79C728056C802a11481fAD0E91220139B8916A" : "Non"
 }
 const lookupSenderAddress = (address : string) =>{
-    return senders[address] ? senders[address] : "Non"
+    return senders[address] ? senders[address] : "Anon"
 }
 const SetPlayerBar = ({ label, agentsFromRegistry, agentChange }) => {
 
