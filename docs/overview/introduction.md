@@ -1,5 +1,7 @@
 # Introduction
 
+<img src="/assets/images/shoshin-demo.gif" width="80%"/>
+
 Shoshin is a 2D fighting game for UGAI: user-generated AI.
 
 Player designs Agents and submits them to fight other submitted Agents.

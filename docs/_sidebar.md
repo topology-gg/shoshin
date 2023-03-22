@@ -16,11 +16,7 @@
   - [Body](concepts/body.md)
   - [Physics](concepts/physics.md)
 
-- Technical Design
-  - [Flow](technical/flow.md)
-
-- Double Blinding
-  - [Proposal](dbo/proposal.md)
-
 - Appendix
+  - [Technical Design](technical/flow.md)
   - [Agent Json Spec](appendix/agent.md)
+  - [Double Blinding Proposal](dbo/proposal.md)

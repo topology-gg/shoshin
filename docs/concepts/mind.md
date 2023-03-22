@@ -9,11 +9,14 @@ More technically:
 - The Mind is structured as a [finite state machine](https://en.wikipedia.org/wiki/Finite-state_machine), where the state transition function - Transition in short - at each state is implemented as a [binary tree](https://en.wikipedia.org/wiki/Binary_tree) built from Conditions.
 - The player designs the Mind by designing this finite state machine - defining the states as well as the Transitions.
 
-Examples of a Transition:
+Examples of a Transition, expressed via a [*Rust-like pattern matching syntax*](https://doc.rust-lang.org/book/ch18-03-pattern-syntax.html):
 ```
-if Condition F1 is true => the next state of mind is MS_BLOCK
-else =>
-    if Condition F2 is true => the next state of mind is MS_COMBO
-    else => the next of mind is MS_CLOSER
+The next state of mind is:
+    If Condition 1 (C1) is true => BLOCKING
+    If Condition 2 (C2) is true => SIGNATURE_COMBO
+    Else => FINISHER
 ```
+
+The above pseudocode can be visualized as (**TODO**: update figure to match the pseudocode above):
+
 <img src="/assets/images/transition_example.png" width="40%"/>

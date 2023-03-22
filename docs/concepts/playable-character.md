@@ -1,6 +1,9 @@
 # Playable Character
 
 ### Jessica
+
+<img src="/assets/images/jessica-idle.gif" width="12%"/>
+
 #### Body transition rules
 | Body state | Duration in frames | Description | Entry Rules | Interruption |
 | - | - | - | - | - |
@@ -27,7 +30,11 @@
 | Sidecut | -100 | stamina consumed once when body enters the state |
 | Slash | -100 | stamina consumed once when body enters the state |
 
+---
+
 ### Antoc
+
+<img src="/assets/images/antoc-idle.gif" width="23%"/>
 
 #### Body transition rules
 | Body state | Duration in frames | Description | Entry Rules | Interruption |
