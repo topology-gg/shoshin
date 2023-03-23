@@ -37,6 +37,13 @@ import { useAccount, useConnectors, useStarknetExecute } from '@starknet-react/c
 import ConnectWallet from '../src/components/ConnectWallet';
 import { EditorTabName } from '../src/components/sidePanelComponents/Tabs';
 import { unwrapLeafToCondition, unwrapLeafToTree } from '../src/types/Leaf';
+import dynamic from 'next/dynamic';
+
+const Game = dynamic(() => import('../src/Game/PhaserGame.tsx'), {
+    ssr: false,
+  });
+
+
 
 const theme = createTheme({
     typography: {
@@ -182,7 +189,7 @@ export default function Home() {
 
 
     // Decode from React states
-    if (testJson !== null) { console.log('testJson:',testJson); }
+    //if (testJson !== null) { console.log('testJson:',testJson); }
     const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length
 
     function handleMidScreenControlClick (operation: string) {
@@ -565,6 +572,7 @@ export default function Home() {
                     <link rel='icon' href='/favicon.ico' />
                 </Head>
 
+                
                 <ThemeProvider theme={theme}>
                     <Grid container spacing={1}>
                         {/* <Grid item xs={2}></Grid> */}
@@ -593,6 +601,8 @@ export default function Home() {
                                             animationFrame={animationFrame}
                                             showDebug={checkedShowDebugInfo}
                                         />
+
+                                        <Game />
 
                                         <MidScreenControl
                                             runnable={!(p1 == null || p2 == null)}
