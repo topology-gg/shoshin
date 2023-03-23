@@ -5,6 +5,7 @@ import { SIMULATOR_H } from '../constants/constants';
 import { TestJson } from '../types/Frame';
 import { useResize } from '../hooks/useResize';
 import { Box } from '@mui/material';
+import SpriteCache from './spriteCache';
 
 interface SimulatorProps {
     testJson: TestJson;
@@ -68,6 +69,7 @@ export default function Simulator( {
             }}
             id={'simulator-background'}
         >
+            <SpriteCache firstCharacter={characterName0} secondCharacter={characterName0} />
             <Character viewWidth={componentWidth} characterName={characterName0} agentFrame={agentFrame0} />
             <Character viewWidth={componentWidth} characterName={characterName1} agentFrame={agentFrame1} />
 
