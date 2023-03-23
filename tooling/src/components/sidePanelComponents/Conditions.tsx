@@ -201,7 +201,7 @@ const Conditions = ({
                                             selected={i === conditionUnderEditIndex}
                                         >
                                             {i === conditionUnderEditIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
-                                            <ListItemText inset={i !== conditionUnderEditIndex} primary={`Condition ${i}`} />
+                                            <ListItemText inset={i !== conditionUnderEditIndex} primary={`F${i}`} />
                                         </ListItemButton>
 
                                     </ListItem>
