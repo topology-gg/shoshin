@@ -152,7 +152,7 @@ const TreeEditor = ({
                     </Box>
                 </Box>
             </Box>
-            <Box
+            {/* <Box
             sx={{
                 mt: '1rem',
                 ml: '1rem',
@@ -162,7 +162,7 @@ const TreeEditor = ({
                 minWidth: '30vw',
             }}>
                 <DecisionTree data={treeToDecisionTree(tree)} height={300} width={593}></DecisionTree>
-            </Box>
+            </Box> */}
         </Box>
     )
 }
