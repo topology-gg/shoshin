@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Button, Chip, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Autocomplete } from "@mui/material";
+import { Box, Button, Chip, Grid, Autocomplete, Select, MenuItem } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -7,7 +7,6 @@ import BackspaceIcon from '@mui/icons-material/Backspace';
 import TextField from '@mui/material/TextField';
 import { ConditionElement, Operator, ElementType, Perceptible, Condition, isPerceptibleBodyState, isOperatorWithDoubleOperands, conditionElementToStr } from '../../types/Condition'
 import PerceptibleList from './PerceptibleList'
-import { ChevronRight } from '@mui/icons-material';
 import { BodystatesAntoc, BodystatesJessica } from '../../types/Condition';
 
 // Interfaces
@@ -32,13 +31,6 @@ interface BodyStateOption {
 }
 
 // Constants
-
-const gridItemStyle = {
-    border: 1,
-    borderColor: "grey.500",
-    borderRadius: 2,
-    p: '5px',
-}
 
 const BodyStates: BodyStateOption[] = (Object.entries(BodystatesJessica)
 .map(([k, v]) => {
@@ -83,9 +75,9 @@ const elementFromEvent = (e, currentConstant: number): ConditionElement => {
 
 const handleDisplayText = (isReadOnly, isWarningTextOn, warningText, index) => {
 
-    const text = !index ? 'No conditions made' : `${isReadOnly ? 'Viewing' : 'Editing'} Condition ${index}`
+    const text = index == null ? 'No conditions made' : `${isReadOnly ? 'Viewing' : 'Editing'} Condition ${index}`
 
-    return <Grid sx={{ mt: '1rem' }} xs={ 12 } item className='warning-test'>
+    return <Grid xs={ 12 } item className='warning-test'>
             {
                 isWarningTextOn && <Typography color={'red'} variant='overline'>{warningText}</Typography>
                 || !isWarningTextOn && <Typography variant='overline'>{text}</Typography>
@@ -168,7 +160,7 @@ const Conditions = ({
             justifyContent: "center",
             alignItems: "left",
             pt: "1rem",
-            pl: '2rem',
+            pl: '1rem',
             pr: '1rem',
         }}>
             <Typography sx={{ fontSize: '17px' }} variant='overline'>Conditions</Typography>
@@ -177,79 +169,65 @@ const Conditions = ({
                     xs={ 12 }
                     item
                     className='available-conditions'
-                    sx={{mb:2}}
                 >
-                    <List dense sx={{ flex: 1 }}>
-                        {
-                            conditions.slice(0, conditions.length - 1).map((_, i) => {
-                                return (
-                                    <ListItem
-                                        disablePadding
-                                        id={`condition-${i}`}
-                                        key={`condition-${i}`}
-                                        secondaryAction={
-                                            <IconButton
-                                                edge="end" aria-label="delete" onClick={() => handleClickDeleteCondition(i)}
-                                                disabled={isReadOnly}
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        }
-                                    >
-                                        <ListItemButton
-                                            onClick={() => setConditionUnderEditIndex(i)}
-                                            selected={i === conditionUnderEditIndex}
-                                        >
-                                            {i === conditionUnderEditIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
-                                            <ListItemText inset={i !== conditionUnderEditIndex} primary={`F${i}`} />
-                                        </ListItemButton>
+                    <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
+                        <Select
+                            value={conditionUnderEditIndex}
+                            size="small"
+                            fullWidth
+                            onChange={(event) => setConditionUnderEditIndex(event.target.value)}
+                        >
+                            {conditions.slice(0, conditions.length - 1).map((_, i) =>
+                                <MenuItem value={i}>F{i}</MenuItem>
+                            )}
+                            {!isReadOnly &&
+                                <MenuItem value={conditions.length - 1}>New Condition</MenuItem>
+                            }
+                        </Select>
 
-                                    </ListItem>
-                                )
-                            })
-                        }
-
-                        {
-                            !isReadOnly ? (
-                                <ListItem
-                                    disablePadding
-                                >
-                                    <ListItemButton
-                                        onClick={() => setConditionUnderEditIndex(conditions.length - 1)}
-                                        selected={conditions.length - 1 === conditionUnderEditIndex}
-                                    >
-                                        {conditions.length - 1 === conditionUnderEditIndex && <ListItemIcon><ChevronRight /></ListItemIcon>}
-                                        <ListItemText inset={conditions.length - 1 !== conditionUnderEditIndex} primary="New Condition" />
-                                    </ListItemButton>
-                                </ListItem>
-                            ) : <></>
-                        }
-
-                    </List>
+                        <div>
+                            <IconButton
+                                aria-label="delete" onClick={() => handleClickDeleteCondition(conditionUnderEditIndex)}
+                                disabled={isReadOnly || conditionUnderEditIndex === conditions.length - 1 || conditions.length < 3}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </div>
+                    </Box>
                 </Grid>
+
+                { handleDisplayText(isReadOnly, isWarningTextOn, warningText, conditionUnderEditIndex) }
+
+                <Grid xs={ 10 } item className='function-creator'>
+                    <Box
+                        sx={{
+                                // border: 1,
+                                backgroundColor: "white",
+                                borderColor: "grey.500",
+                                borderRadius: 2,
+                                p: '5px'
+                            }}
+                    >
+                        { displayCondition }
+                    </Box>
+                </Grid>
+
+                { !isReadOnly &&
+                    <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none' }} xs={ 2 } item className='delete-interface'>
+                        <IconButton
+                            sx={{ alignItems: 'flex-end'}}
+                            onClick={(_) => {handleRemoveConditionElement(conditionUnderEditIndex)}}
+                        >
+                            <BackspaceIcon/>
+                        </IconButton>
+                    </Grid> }
 
                 {
                     isReadOnly ? <></> : (
-                        <Grid container spacing={1} sx={{pt:0, pl:1, pr:1, pb:1.5, border:'1px solid #999999', borderRadius:'10px'}}>
-                            <Grid item className='functions-title' xs={ 12 }>
-                                <Grid container spacing={1}>
-                                    {
-                                        conditionElementTitles.map((f) => {
-                                            let style =  f.id == 'Const' ? { maxWidth: 'none', flexGrow: 1 } : {}
-                                            return <Grid
-                                                key={ `function-${f.id}` }
-                                                style={ style }
-                                                sx={{ p: '5px' }}
-                                                item
-                                                xs={ f.width }>
-                                                    <Typography variant='overline'>{ f.id }</Typography>
-                                                </Grid>
-                                        })
-                                    }
-                                </Grid>
-                            </Grid>
+                        <>
 
-                            <Grid xs={ conditionElementTitles[0].width } item>
+                            <Grid xs={ 12 } item>
+                                <Typography variant='overline'>{ conditionElementTitles[0].id }</Typography>
                                 <Box sx={ {display: "flex", flexWrap: 'wrap', gap: 0.5, pr:2} }>
                                     {
                                         operators.map((o) => {
@@ -278,29 +256,31 @@ const Conditions = ({
                                 </Box>
                             </Grid>
 
-                            <Grid xs={ conditionElementTitles[1].width } item>
-                                <Box>
+                            <Grid xs={ 6 } item>
+                                <Typography variant='overline'>{ conditionElementTitles[1].id }</Typography>
+                                <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
                                     <TextField
                                         color={ "info" }
                                         type="number"
+                                        size="small"
                                         defaultValue={currentConstant}
                                         onChange={(e) => setCurrentConstant(parseInt(e.target.value))}
-                                        style={{width:'4rem'}}
+                                        sx={{flex: 1}}
                                         disabled={isReadOnly}
                                     />
                                     <Button
                                         id='constant'
                                         variant="outlined"
                                         onClick={handleAddElement}
-                                        sx={{marginTop:'0.5rem'}}
                                         disabled={isReadOnly || disabled}
                                     >
-                                            Add
+                                        Add
                                     </Button>
                                 </Box>
                             </Grid>
 
-                            <Grid xs={ conditionElementTitles[2].width } item>
+                            <Grid xs={ 6 } item>
+                                <Typography variant='overline'>{ conditionElementTitles[2].id }</Typography>
                                 <Box
                                     id='perceptible'
                                     sx={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }}
@@ -313,36 +293,20 @@ const Conditions = ({
                                     />
                                 </Box>
                             </Grid>
-                        </Grid>
+                        </>
                     )
                 }
 
-                { handleDisplayText(isReadOnly, isWarningTextOn, warningText, conditionUnderEditIndex) }
 
-                <Grid xs={ 9 } item className='function-creator'>
-                    <Box
-                        sx={{ ...gridItemStyle }}
-                    >
-                        { displayCondition }
-                    </Box>
-                </Grid>
 
                 {
                     isReadOnly ? <></> : (
                         <>
-                            <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none' }} xs={ 2 } item className='delete-interface'>
-                                <IconButton
-                                    sx={{ mt: '1rem', alignItems: 'flex-end'}}
-                                    onClick={(_) => {handleRemoveConditionElement(conditionUnderEditIndex)}}
-                                >
-                                    <BackspaceIcon/>
-                                </IconButton>
-                            </Grid>
-
                             <Grid item>
                                 <Button
                                     id={`confirm-gp-function`}
                                     variant="outlined"
+                                    size="large"
                                     // className={ styles.confirm }
                                     onClick={() => handleConfirmCondition()}
                                 >
