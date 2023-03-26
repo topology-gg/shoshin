@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Box, ListItem, List, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
-import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
-import { ChevronRight } from "@mui/icons-material";
+import { Box, Typography, Select, MenuItem } from "@mui/material";
+import { Character } from '../../constants/constants';
 import ComboEditor from "./ComboEditor";
 
 const Combos = ({
@@ -20,69 +19,39 @@ const Combos = ({
                     justifyContent: "left",
                     alignItems: "left",
                     pt: "1rem",
-                    pl: "2rem",
-                    pr: "2rem",
+                    pl: "1rem",
+                    pr: "1rem",
                 }}
             >
                 <Typography sx={{ fontSize: '17px' }} variant='overline'>Combos</Typography>
-                <List dense>
-                    {
-                        combos.map((combo, index) => {
-                            return (
-                                <ListItem
-                                    disablePadding
-                                    key={`combo-${index}`}
-                                >
-                                    <ListItemButton
-                                        selected={selectedIndex === index}
-                                        onClick={
-                                            () => {
-                                                setEditingCombo(combo)
-                                                setSelectedIndex(index)
-                                            }
-                                        }
-                                    >
-                                        {selectedIndex === index &&
-                                            <ListItemIcon>
-                                                <ChevronRight />
-                                            </ListItemIcon>
-                                        }
-                                        <ListItemText inset={selectedIndex !== index}>
-                                            Combo {index}
-                                        </ListItemText>
-                                    </ListItemButton>
-                                </ListItem>
-                            )
-                        })
-                    }
+                <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
+                    <Select
+                        value={selectedIndex}
+                        size="small"
+                        fullWidth
+                        onChange={(event) => {
+                            const comboIndex: number | null = event.target.value
+                            setSelectedIndex(comboIndex)
+                            setEditingCombo(combos[comboIndex] || [])
+                        }}
+                    >
+                        {combos.map((combo, index) =>
+                            <MenuItem value={index}>Combo {index}</MenuItem>
+                        )}
+                        {!isReadOnly &&
+                            <MenuItem value={null}>New Combo</MenuItem>
+                        }
+                    </Select>
 
-                    {
-                        !isReadOnly ? (
-                            <ListItem
-                                disablePadding
-                            >
-                                <ListItemButton
-                                    selected={selectedIndex === null}
-                                    onClick={() => {
-                                        setEditingCombo([])
-                                        setSelectedIndex(null)
-                                    }}
-                                >
-                                    {selectedIndex === null &&
-                                        <ListItemIcon>
-                                            <ChevronRight />
-                                        </ListItemIcon>
-                                    }
-                                    <ListItemText inset={selectedIndex !== null}>
-                                        New Combo
-                                    </ListItemText>
-
-                                </ListItemButton>
-                            </ListItem>
-                        ) : <></>
-                    }
-
-                </List>
+                    {/* <div>
+                        <IconButton
+                            aria-label="delete" onClick={() => handleClickDeleteCondition(conditionUnderEditIndex)}
+                            disabled={isReadOnly || conditionUnderEditIndex === conditions.length - 1 || conditions.length < 3}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </div> */}
+                </Box>
                 <ComboEditor
                     isReadOnly={isReadOnly}
                     editingCombo={editingCombo}
