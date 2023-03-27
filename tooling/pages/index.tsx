@@ -438,6 +438,10 @@ export default function Home() {
     }
 
     function handleClickDeleteCondition(index: number) {
+        if (trees.some((tree)=> tree.nodes.some((node) => node.id === `F${index}`))) {
+            alert("The condition cannot be deleted. It is used in the decision tree")
+            return
+        }
         setConditionUnderEditIndex((prev) => {
             if (index !== 0 && index === prev) {
                 return prev - 1
