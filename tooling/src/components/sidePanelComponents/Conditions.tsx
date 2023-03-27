@@ -97,23 +97,29 @@ const Conditions = ({
         handleUpdateCondition(conditionUnderEditIndex, element)
     }
     const [disabled, setDisabled] = useState<boolean>(false)
+
     const displayCondition = useMemo<JSX.Element[]>(() => {
         if (!f || !f.elements.length) {
-            return [<Typography variant='caption' color={ '#CCCCCC' } >Let's start making Conditions!</Typography>]
+            return [<Typography variant='body1' color={ '#CCCCCC' } >Condition beep boop bop</Typography>]
         }
+
         let elements = f.elements
+
         return (
             elements.map((e, i) => {
-                let value = conditionElementToStr(e)
+                let value: string = conditionElementToStr(e)
                 // if current element is a X OP Y operator and X is SelfBodyState or
                 // OpponentBodyState -> set drop down list
+
                 if (i == elements.length - 1 && isPerceptibleBodyState(elements[i-1]) && isOperatorWithDoubleOperands(elements[i])) {
                     // disable all other button
                     setDisabled((_) => true)
+
                     return (
                         <div style={{ display: 'flex' }}>
-                            <Typography style={{marginRight: '4px'}} key={`${e.type}-${e.value}-${i}`} variant='caption'>
-                                <span key={`${e.type}-${e.value}-${i}`}>{value} </span>
+                            <Typography style={{marginRight: '4px'}} key={`${e.type}-${e.value}-${i}`} variant='body1'>
+                                {/* <span key={`${e.type}-${e.value}-${i}`}>{value} </span> */}
+                                {value}
                             </Typography>
                             <Autocomplete
                                 disablePortal
@@ -146,12 +152,16 @@ const Conditions = ({
                 } else {
                     setDisabled(false)
                 }
-                return <Typography style={{marginRight: '4px'}} key={`${e.type}-${e.value}-${i}`} variant='caption'>
-                    <span key={`${e.type}-${e.value}-${i}`}>{value} </span>
-                </Typography>
+                return (
+                    <Typography style={{marginRight: '0px'}} key={`${e.type}-${e.value}-${i}`} variant='body1'>
+                        {/* <span key={`${e.type}-${e.value}-${i}`}>{value} </span> */}
+                        {value}
+                    </Typography>
+                )
             })
     )}, [f])
 
+    console.log('displayCondition:', displayCondition)
     return (
         <Box
         sx={{
@@ -178,7 +188,9 @@ const Conditions = ({
                             onChange={(event) => setConditionUnderEditIndex(event.target.value)}
                         >
                             {conditions.slice(0, conditions.length - 1).map((_, i) =>
-                                <MenuItem value={i}>F{i}</MenuItem>
+                                <MenuItem value={i}>
+                                    F{i}
+                                </MenuItem>
                             )}
                             {!isReadOnly &&
                                 <MenuItem value={conditions.length - 1}>New Condition</MenuItem>
@@ -196,7 +208,7 @@ const Conditions = ({
                     </Box>
                 </Grid>
 
-                { handleDisplayText(isReadOnly, isWarningTextOn, warningText, conditionUnderEditIndex) }
+                {/* { handleDisplayText(isReadOnly, isWarningTextOn, warningText, conditionUnderEditIndex) } */}
 
                 <Grid xs={ 10 } item className='function-creator'>
                     <Box
@@ -205,7 +217,7 @@ const Conditions = ({
                                 backgroundColor: "white",
                                 borderColor: "grey.500",
                                 borderRadius: 2,
-                                p: '5px'
+                                p: '10px'
                             }}
                     >
                         { displayCondition }
@@ -226,7 +238,7 @@ const Conditions = ({
                     isReadOnly ? <></> : (
                         <>
 
-                            <Grid xs={ 12 } item>
+                            <Grid xs={ 12 } item sx={{border:'1px solid #BBBBBB', borderRadius:'10px', marginTop:'1rem', p:'0.5rem', pb:'1rem'}}>
                                 <Typography variant='overline'>{ conditionElementTitles[0].id }</Typography>
                                 <Box sx={ {display: "flex", flexWrap: 'wrap', gap: 0.5, pr:2} }>
                                     {
@@ -256,8 +268,8 @@ const Conditions = ({
                                 </Box>
                             </Grid>
 
-                            <Grid xs={ 6 } item>
-                                <Typography variant='overline'>{ conditionElementTitles[1].id }</Typography>
+                            <Grid xs={ 5.85 } item sx={{border:'1px solid #BBBBBB', borderRadius:'10px', marginTop:'1rem', marginRight:'0.5rem', p:'0.5rem', pb:'1rem'}}>
+                                <Typography variant='overline' sx={{m:0}}>{ conditionElementTitles[1].id }</Typography>
                                 <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
                                     <TextField
                                         color={ "info" }
@@ -279,7 +291,7 @@ const Conditions = ({
                                 </Box>
                             </Grid>
 
-                            <Grid xs={ 6 } item>
+                            <Grid xs={ 5.85 } item sx={{border:'1px solid #BBBBBB', borderRadius:'10px', marginTop:'1rem', p:'0.5rem', pb:'1rem'}}>
                                 <Typography variant='overline'>{ conditionElementTitles[2].id }</Typography>
                                 <Box
                                     id='perceptible'
