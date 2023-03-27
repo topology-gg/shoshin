@@ -29,8 +29,8 @@ namespace ns_common_stamina_effect {
     const BLOCK = 10;
     // These values are removed from the players stamina
     // These have an upfront cost that is paid in the first frame
-    const DASH_FORWARD = -50;
-    const DASH_BACKWARD = -50;
+    const DASH_FORWARD = -200;
+    const DASH_BACKWARD = -200;
 }
 
 namespace ns_integrity {
@@ -168,4 +168,4 @@ struct Metadata{
 
 
 const HURT_EFFECT = 100;
-const KNOCKED_EFFECT = 100;
+const KNOCKED_EFFECT = 200;
