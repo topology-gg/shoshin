@@ -4,7 +4,7 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.bool import (TRUE, FALSE)
 from contracts.constants.constants import (
-    BodyState, ns_stimulus, ns_stamina, ns_character_type
+    BodyState, ns_stimulus, ns_stamina, ns_character_type, HURT_EFFECT, KNOCKED_EFFECT
 )
 from contracts.constants.constants_jessica import (
     ns_jessica_action, ns_jessica_body_state, ns_jessica_body_state_duration, ns_jessica_body_state_qualifiers
@@ -29,8 +29,8 @@ func _body_jessica {range_check_ptr}(
     let stamina = body_state.stamina;
     let dir = body_state.dir;
 
-    let hurt_integrity = integrity - 100;
-    let knocked_integrity = integrity - 100;
+    let hurt_integrity = integrity - HURT_EFFECT;
+    let knocked_integrity = integrity - KNOCKED_EFFECT;
 
     let (updated_stamina, enough_stamina) = calculate_stamina_change(stamina, intent, ns_stamina.INIT_STAMINA, ns_character_type.JESSICA);
 

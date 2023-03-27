@@ -30,8 +30,8 @@ func _body_antoc {range_check_ptr}(
     let stamina = body_state.stamina;
     let dir = body_state.dir;
 
-    let hurt_integrity = integrity - 100;
-    let knocked_integrity = integrity - 100;
+    let hurt_integrity = integrity - HURT_EFFECT;
+    let knocked_integrity = integrity - KNOCKED_EFFECT;
 
     let (updated_stamina, enough_stamina) = calculate_stamina_change(stamina, intent, ns_stamina.INIT_STAMINA, ns_character_type.ANTOC);
 
