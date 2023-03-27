@@ -439,7 +439,7 @@ export default function Home() {
 
     function handleClickDeleteCondition(index: number) {
         setConditionUnderEditIndex((prev) => {
-            if (index == prev) {
+            if (index !== 0 && index === prev) {
                 return prev - 1
             }
             return prev
