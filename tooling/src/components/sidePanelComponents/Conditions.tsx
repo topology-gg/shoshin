@@ -185,16 +185,14 @@ const Conditions = ({
                             value={conditionUnderEditIndex}
                             size="small"
                             fullWidth
-                            onChange={(event) => setConditionUnderEditIndex(event.target.value)}
+                            onChange={(event) => setConditionUnderEditIndex(event.target.value as number)}
                         >
                             {conditions.slice(0, conditions.length - 1).map((_, i) =>
                                 <MenuItem value={i}>
                                     F{i}
                                 </MenuItem>
                             )}
-                            {!isReadOnly &&
-                                <MenuItem value={conditions.length - 1}>New Condition</MenuItem>
-                            }
+                            <MenuItem value={conditions.length - 1} disabled={isReadOnly}>New Condition</MenuItem>
                         </Select>
 
                         <div>

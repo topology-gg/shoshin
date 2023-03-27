@@ -30,7 +30,7 @@ const Combos = ({
                         size="small"
                         fullWidth
                         onChange={(event) => {
-                            const comboIndex: number | null = event.target.value
+                            const comboIndex: number | null = event.target.value as number
                             setSelectedIndex(comboIndex)
                             setEditingCombo(combos[comboIndex] || [])
                         }}
@@ -38,9 +38,7 @@ const Combos = ({
                         {combos.map((combo, index) =>
                             <MenuItem value={index}>Combo {index}</MenuItem>
                         )}
-                        {!isReadOnly &&
-                            <MenuItem value={null}>New Combo</MenuItem>
-                        }
+                        <MenuItem value={null} disabled={isReadOnly}>New Combo</MenuItem>
                     </Select>
 
                     {/* <div>
