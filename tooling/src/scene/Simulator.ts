@@ -1,10 +1,11 @@
 import Phaser from "phaser";
 import { bodyStateNumberToName } from "../constants/constants";
+import { spriteData, spriteDataPhaser } from "../constants/sprites";
 import { Frame } from "../types/Frame";
 
 export default class Platformer extends Phaser.Scene {
-    private player_one : Phaser.GameObjects.Sprite;
-    private player_two : Phaser.GameObjects.Sprite;
+    private player_one : Phaser.GameObjects.Image;
+    private player_two : Phaser.GameObjects.Image;
 
     private player_one_character : string;
     private player_two_character : string;
@@ -22,6 +23,7 @@ export default class Platformer extends Phaser.Scene {
     private player_two_action_hitbox_text : Phaser.GameObjects.Text
 
     preload(){
+
         this.load.atlas(`antoc-idle`, 'images/antoc/idle/spritesheet.png',  'images/antoc/idle/spritesheet.json');
         this.load.atlas(`antoc-walk_forward`, 'images/antoc/walk_forward/spritesheet.png',  'images/antoc/walk_forward/spritesheet.json');
         this.load.atlas(`antoc-walk_backward`, 'images/antoc/walk_backward/spritesheet.png',  'images/antoc/walk_backward/spritesheet.json');
@@ -109,11 +111,29 @@ export default class Platformer extends Phaser.Scene {
         const bodyStateName = bodyStateNumberToName [characterName][bodyState]
         const direction = (bodyStateDir == 1) ? 'right' : 'left'
 
-        this.player_one.setX(pos.x);
-        this.player_one.setY(pos.y);
+        //Calculating offsets for frame
+        const spriteAdjustments = spriteDataPhaser[characterName][bodyStateName]
+        const spriteAdjustment = spriteAdjustments.length == 1 ? spriteAdjustments[0] : spriteAdjustments[bodyStateCounter] // if having more than one adjustments, use body counter to index the adjustments
+        const spriteSize = spriteAdjustment?.size || [0, 0]
+        const spriteLeftAdjustment = spriteAdjustment?.hitboxOffset[direction][0] || 0
+        const spriteTopAdjustment = spriteAdjustment?.hitboxOffset[direction][1] || 0
+
+
+        console.log(`pos x ` + pos.x )
+        console.log(`pos y ` + pos.y )
+        console.log(`sprite left adjust ` , spriteLeftAdjustment)
+
+        console.log(`pos x + adjust ` + (pos.x + spriteLeftAdjustment))
+        console.log(`pos y + adjust ` + (pos.y + spriteTopAdjustment))
+        this.player_one.setX(pos.x + spriteLeftAdjustment);
+        this.player_one.setY(pos.y + spriteTopAdjustment);
 
         this.player_one.setTexture(`${characterName}-${bodyStateName}`, `frame_${bodyStateCounter}.png`)
-        
+        const imageKey = `${characterName}-${bodyStateName}-${direction}-${bodyStateCounter}`
+        console.log(imageKey)
+        //this.player_one = this.add.image(pos.x + spriteLeftAdjustment, pos.y + spriteTopAdjustment, imageKey);
+        //this.player_one.setTexture(`${characterName}-${bodyStateName}-${direction}-${bodyStateCounter}`)
+        //this.player_one.setSize(spriteSize[0], spriteSize[1])
         
     }
 
@@ -130,10 +150,17 @@ export default class Platformer extends Phaser.Scene {
         const bodyStateName = bodyStateNumberToName [characterName][bodyState]
         const direction = (bodyStateDir == 1) ? 'right' : 'left'
 
-        this.player_two.setX(pos.x);
-        this.player_two.setY(pos.y);
+        //Calculating offsets for frame
+        const spriteAdjustments = spriteDataPhaser[characterName][bodyStateName]
+        const spriteAdjustment = spriteAdjustments.length == 1 ? spriteAdjustments[0] : spriteAdjustments[bodyStateCounter] // if having more than one adjustments, use body counter to index the adjustments
+        const spriteSize = spriteAdjustment?.size || [0, 0]
+        const spriteLeftAdjustment = spriteAdjustment?.hitboxOffset[direction][0] || 0
+        const spriteTopAdjustment = spriteAdjustment?.hitboxOffset[direction][1] || 0
+        
+        this.player_two.setX(pos.x + spriteLeftAdjustment);
+        this.player_two.setY(pos.y + spriteTopAdjustment);
 
-        this.player_two.setTexture(`${characterName}-${bodyStateName}`, bodyStateCounter)
+        this.player_two.setTexture(`${characterName}-${bodyStateName}`, `frame_${bodyStateCounter}.png`)
         
     }
 
@@ -144,12 +171,19 @@ export default class Platformer extends Phaser.Scene {
         const hitboxX = hitbox.origin.x
         const hitboxY = hitbox.origin.y
 
+        console.log("hitboxX" + hitboxX)
+        console.log("hitboxY" + hitboxY)
+        console.log("hitboxW" + hitboxW)
+        console.log("hitboxH" + hitboxH)
+
 
         const centerX =  hitbox.origin.x + hitbox.dimension.x / 2
         const centerY = hitbox.origin.y - hitbox.dimension.y / 2
         //const left = viewWidth/2 + hitboxX
         //const top = SIMULATOR_H - hitboxY - hitboxH + SpriteTopAdjustmentToBg
 
+        console.log("center x" + centerX)
+        console.log("center y" + centerY)
         this.player_one_body_hitbox.setPosition(centerX, centerY)
         this.player_one_body_hitbox.setSize(hitboxW, hitboxH)
         this.player_one_body_hitbox_text.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
