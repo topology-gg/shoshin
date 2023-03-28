@@ -238,19 +238,19 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         dash_backward: [
             {
                 size: [193, 142],
-                hitboxOffset: { left: [-32,17], right: [11,0] },
+                hitboxOffset: { left: [90,0], right: [11,0] },
             }
         ],
         dash_forward: [
             {
                 size: [193, 142],
-                hitboxOffset: { left: [-32,17], right: [11,0] },
+                hitboxOffset: { left: [90,0], right: [11,0] },
             }
         ],
         hori: [
             {
                 size: [343, 239],
-                hitboxOffset: { left: [-187, 16], right: [90, -45] },
+                hitboxOffset: { left: [10, -40], right: [90, -45] },
             }
         ],
         idle: [
@@ -274,53 +274,53 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [100,-20], right: [40,-10] },
+                hitboxOffset: { left: [80,-20], right: [40,-10] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [20,-20], right: [60,-20] },
+                hitboxOffset: { left: [40,-20], right: [60,-20] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-160,18], right: [80, -26] },
+                hitboxOffset: { left: [-0,-20], right: [80, -26] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-209,17], right: [120,-20] },
+                hitboxOffset: { left: [-0,-20], right: [120,-20] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-202,17], right: [140,-20] },
+                hitboxOffset: { left: [-30,-20], right: [140,-20] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-203,17], right: [100, -20] },
+                hitboxOffset: { left: [10,-20], right: [100, -20] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-175,17], right: [70,-20] },
+                hitboxOffset: { left: [30,-20], right: [70,-20] },
             },
             {
                 size: [363, 217],
-                hitboxOffset: { left: [-166,15], right: [60,-30] },
+                hitboxOffset: { left: [40,-20], right: [60,-30] },
             }
         ],
         vert: [
             {
                 size: [343, 239],
-                hitboxOffset: { left: [-185,16], right: [90,-50] },
+                hitboxOffset: { left: [10,-40], right: [90,-50] },
             }
         ],
         walk_backward: [
             {
                 size: [185, 142],
-                hitboxOffset: { left: [-36,18], right: [20,5] },
+                hitboxOffset: { left: [80,5], right: [20,5] },
             }
         ],
         walk_forward: [
             {
                 size: [185, 142],
-                hitboxOffset: { left: [-36,18], right: [20,5] },
+                hitboxOffset: { left: [80,5], right: [20,5] },
             }
         ],
         hurt: [

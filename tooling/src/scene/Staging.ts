@@ -12,6 +12,7 @@ export default class Platformer extends Phaser.Scene {
 
     private player_one_body_hitbox: Phaser.GameObjects.Rectangle;
 
+    private keys : Phaser.Types.Input.Keyboard.CursorKeys;
 
     preload() {
         this.load.atlas(
@@ -113,25 +114,30 @@ export default class Platformer extends Phaser.Scene {
         console.log(rectY);
         let temp = this.add.rectangle(rectX, rectY, 50, 116);
         temp.setStrokeStyle(2, 0xcc3333ff);
-        this.cameras.main.startFollow(temp);
+
+            if(counter == 0 )
+            {
+                this.add.text(rectX - 300, rectY, `${characterName}-${bodyState}-${direction}`)
+            }
+        
     }
 
     create() {
         this.cameras.main.centerOn(0, -200);
-        this.cameras.main.setZoom(0.5)
+        this.cameras.main.setZoom(0.6)
         
 
         const antocBodyStates: BodyStateAndFrame[] = [
             { state: "idle", frames: 0 },
             { state: "block", frames: 0 },
             { state: "hurt", frames: 0 },
-            { state: "knocked", frames: 4},
-           // { state: "dash_backward", frames: 0},
-           // { state: "dash_forward", frames: 0},
-            //{ state: "vert", frames: 0},
-            //{ state: "hori", frames: 0},
-            //{ state: "walk_backward", frames: 0},
-           // { state: "walk_forward", frames: 0},                                
+            { state: "knocked", frames: 10},
+            { state: "dash_backward", frames: 0},
+            { state: "dash_forward", frames: 0},
+            { state: "vert", frames: 0},
+            { state: "hori", frames: 0},
+            { state: "walk_backward", frames: 0},
+            { state: "walk_forward", frames: 0},                                
         ];
 
         //Assume that x and y represent bottom left of hitbox and characters body position
@@ -144,10 +150,36 @@ export default class Platformer extends Phaser.Scene {
 
         antocBodyStates.forEach((bodyState, index) => {
             for(let i = 0; i <= bodyState.frames; i ++){
-                this.spawnImage(0 + 100 * i, -3000 + 200 * index, "antoc", bodyState.state, i, "left", true);
+                this.spawnImage(0 + 100 * i, -2200 + 200 * index, "antoc", bodyState.state, i, "left", true);
             }
             
         });
+
+        this.keys  = this.input.keyboard.createCursorKeys();
+
+    
+    }
+
+    update(){
+        
+        if(this.keys.down.isDown)
+        {
+            this.cameras.main.setScroll(this.cameras.main.scrollX, this.cameras.main.scrollY + 10)
+        }
+                
+        if(this.keys.up.isDown)
+        {
+            this.cameras.main.setScroll(this.cameras.main.scrollX, this.cameras.main.scrollY - 10)
+        }
+        if(this.keys.right.isDown)
+        {
+            this.cameras.main.setScroll(this.cameras.main.scrollX + 10, this.cameras.main.scrollY )
+        }
+                
+        if(this.keys.left.isDown)
+        {
+            this.cameras.main.setScroll(this.cameras.main.scrollX - 10, this.cameras.main.scrollY)
+        }
     }
 
 
