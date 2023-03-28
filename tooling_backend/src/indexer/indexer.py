@@ -1,14 +1,14 @@
 import logging
 
-from .types import EventMetadata, EventArray, EventSingleMetadata
-
 from apibara.indexer import IndexerRunner, IndexerRunnerConfiguration, Info
 from apibara.indexer.indexer import IndexerConfiguration
+from apibara.indexer.storage import IndexerStorage
 from apibara.protocol.proto.stream_pb2 import Cursor, DataFinality
 from apibara.starknet import EventFilter, Filter, StarkNetIndexer, felt
 from apibara.starknet.cursor import starknet_cursor
 from apibara.starknet.proto.starknet_pb2 import Block, Event
-from apibara.indexer.storage import IndexerStorage
+
+from .types import EventArray, EventMetadata, EventSingleMetadata
 
 # Print apibara logs
 root_logger = logging.getLogger("apibara")
@@ -17,7 +17,7 @@ root_logger.setLevel(logging.INFO)
 root_logger.addHandler(logging.StreamHandler())
 
 shoshin_address = felt.from_hex(
-    "0x00af7e265795a2ae66664463079c19baa31eb6275a981502b3923df482c64c21"
+    "0x02ffb109739fa411f8a2ef71f70e86ab630f3f133e93c7c1627117b46a80765a"
 )
 
 submission_key = "0x03a4a594e9b3ae15762aec67ca82f720f08ea5b663db0e29835ca136faf96346"
@@ -42,7 +42,7 @@ class ShoshinIndexer(StarkNetIndexer):
         # Return initial configuration of the indexer.
         return IndexerConfiguration(
             filter=Filter().add_event(EventFilter().with_from_address(shoshin_address)),
-            starting_cursor=starknet_cursor(780_153),
+            starting_cursor=starknet_cursor(785_379),
             finality=DataFinality.DATA_STATUS_ACCEPTED,
         )
 
