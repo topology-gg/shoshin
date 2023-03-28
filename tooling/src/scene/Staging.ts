@@ -67,13 +67,89 @@ export default class Platformer extends Phaser.Scene {
         );
 
         this.load.atlas(
-            `jessica-idle-right`,
-            "images/jessica/idle/right_spritesheet.png"
+            `jessica-knocked`,
+            "images/jessica/knocked/spritesheet.png",
+            "images/jessica/knocked/spritesheet.json"
         );
+
         this.load.atlas(
-            `jessica-idle-left`,
-            "images/jessica/idle/left_spritesheet.png"
+            `jessica-idle`,
+            "images/jessica/idle/spritesheet.png",
+            "images/jessica/idle/spritesheet.json"
         );
+
+        this.load.atlas(
+            `jessica-idle`,
+            "images/jessica/idle/spritesheet.png",
+            "images/jessica/idle/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-hurt`,
+            "images/jessica/hurt/spritesheet.png",
+            "images/jessica/hurt/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-dash_forward`,
+            "images/jessica/dash_forward/spritesheet.png",
+            "images/jessica/dash_forward/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-dash_backward`,
+            "images/jessica/dash_backward/spritesheet.png",
+            "images/jessica/dash_backward/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-idle`,
+            "images/jessica/idle/spritesheet.png",
+            "images/jessica/idle/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-clash`,
+            "images/jessica/clash/spritesheet.png",
+            "images/jessica/clash/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-block`,
+            "images/jessica/block/spritesheet.png",
+            "images/jessica/block/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-sidecut`,
+            "images/jessica/sidecut/spritesheet.png",
+            "images/jessica/sidecut/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-slash`,
+            "images/jessica/slash/spritesheet.png",
+            "images/jessica/slash/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-upswing`,
+            "images/jessica/upswing/spritesheet.png",
+            "images/jessica/upswing/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-walk_backward`,
+            "images/jessica/walk_backward/spritesheet.png",
+            "images/jessica/walk_backward/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-walk_forward`,
+            "images/jessica/walk_forward/spritesheet.png",
+            "images/jessica/walk_forward/spritesheet.json"
+        );
+
     }
 
     private spawnImage(
@@ -98,8 +174,6 @@ export default class Platformer extends Phaser.Scene {
         const spriteTopAdjustment =
             spriteAdjustment?.hitboxOffset[direction][1] || 0;
 
-        console.log(x);
-        console.log(y);
         let image = this.add.image(
             x + spriteLeftAdjustment,
             y + spriteTopAdjustment,
@@ -110,8 +184,6 @@ export default class Platformer extends Phaser.Scene {
         // Not sure why we need to draw the hitbox with +50 but it works!
         const rectX = x + 50;
         const rectY = y;
-        console.log(rectX);
-        console.log(rectY);
         let temp = this.add.rectangle(rectX, rectY, 50, 116);
         temp.setStrokeStyle(2, 0xcc3333ff);
 
@@ -120,11 +192,12 @@ export default class Platformer extends Phaser.Scene {
                 this.add.text(rectX - 300, rectY, `${characterName}-${bodyState}-${direction}`)
             }
         
+        //this.cameras.main.startFollow(temp)
     }
 
     create() {
         this.cameras.main.centerOn(0, -200);
-        this.cameras.main.setZoom(0.6)
+        this.cameras.main.setZoom(0.8)
         
 
         const antocBodyStates: BodyStateAndFrame[] = [
@@ -143,20 +216,49 @@ export default class Platformer extends Phaser.Scene {
         //Assume that x and y represent bottom left of hitbox and characters body position
         antocBodyStates.forEach((bodyState, index) => {
             for(let i = 0; i <= bodyState.frames; i ++){
-                this.spawnImage(0 + 100 * i, -100 + 200 * index, "antoc", bodyState.state, i, "right", false);
+               // this.spawnImage(0 + 100 * i, -100 + 200 * index, "antoc", bodyState.state, i, "right", false);
             }
             
         });
 
         antocBodyStates.forEach((bodyState, index) => {
             for(let i = 0; i <= bodyState.frames; i ++){
-                this.spawnImage(0 + 100 * i, -2200 + 200 * index, "antoc", bodyState.state, i, "left", true);
+               // this.spawnImage(0 + 100 * i, -2200 + 200 * index, "antoc", bodyState.state, i, "left", true);
             }
             
         });
 
         this.keys  = this.input.keyboard.createCursorKeys();
 
+        const jessicaBodyStates : BodyStateAndFrame[] = [
+            //{state : "knocked", frames : 10},
+           // { state: "idle", frames: 0},
+            //{ state: "block", frames: 0 },
+           // { state: "hurt", frames: 0 },
+            //{ state: "dash_backward", frames: 0},
+           //{ state: "dash_forward", frames: 0},
+            // { state: "walk_backward", frames: 0},
+           //{ state: "walk_forward", frames: 0},    
+            //{ state: "slash", frames: 0},    
+           //{ state: "upswing", frames: 0},    
+            //{ state: "clash", frames: 0},    
+           { state: "sidecut", frames: 0},    
+
+        ]
+
+        jessicaBodyStates.forEach((bodyState, index) => {
+            for(let i = 0; i <= bodyState.frames; i ++){
+                this.spawnImage(0 + 100 * i, 0 + 200 * index, "jessica", bodyState.state, i, "right", false);
+            }
+            
+        });
+
+        jessicaBodyStates.forEach((bodyState, index) => {
+            for(let i = 0; i <= bodyState.frames; i ++){
+            this.spawnImage(0 + 100 * i, -300 + 200 * index, "jessica", bodyState.state, i, "left", true);
+            }
+            
+        });
     
     }
 

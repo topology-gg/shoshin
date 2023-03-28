@@ -88,7 +88,7 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
                 parent: parent.current,
                 canvas: canvas.current,
                 width: 800,
-                height: 600,
+                height: 400,
                 // pixelArt: true,
                 autoCenter: true,
                 backgroundColor: "#000000",

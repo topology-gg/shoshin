@@ -37,12 +37,11 @@ import { useAccount, useConnectors, useStarknetExecute } from '@starknet-react/c
 import ConnectWallet from '../src/components/ConnectWallet';
 import { EditorTabName } from '../src/components/sidePanelComponents/Tabs';
 import { unwrapLeafToCondition, unwrapLeafToTree } from '../src/types/Leaf';
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 
-const Game = dynamic(() => import('../src/Game/PhaserGame.tsx'), {
+const Game = dynamic(() => import("../src/Game/PhaserGame.tsx"), {
     ssr: false,
-  });
-
+});
 
 
 const theme = createTheme({
@@ -189,7 +188,7 @@ export default function Home() {
 
 
     // Decode from React states
-    //if (testJson !== null) { console.log('testJson:',testJson); }
+    if (testJson !== null) { console.log('testJson:',testJson); }
     const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length
 
     function handleMidScreenControlClick (operation: string) {
@@ -445,8 +444,12 @@ export default function Home() {
     }
 
     function handleClickDeleteCondition(index: number) {
+        if (trees.some((tree)=> tree.nodes.some((node) => node.id === `F${index}`))) {
+            alert("The condition cannot be deleted. It is used in the decision tree")
+            return
+        }
         setConditionUnderEditIndex((prev) => {
-            if (index == prev) {
+            if (index !== 0 && index === prev) {
                 return prev - 1
             }
             return prev
@@ -572,7 +575,6 @@ export default function Home() {
                     <link rel='icon' href='/favicon.ico' />
                 </Head>
 
-                
                 <ThemeProvider theme={theme}>
                     <Grid container spacing={1}>
                         {/* <Grid item xs={2}></Grid> */}
@@ -602,8 +604,12 @@ export default function Home() {
                                             showDebug={checkedShowDebugInfo}
                                         />
 
-                                        <Game />
-
+                                        <Game
+                                        testJson={testJson}
+                                        animationFrame={animationFrame}
+                                        showDebug={checkedShowDebugInfo}
+                                        />
+                                        
                                         <MidScreenControl
                                             runnable={!(p1 == null || p2 == null)}
                                             testJsonAvailable={testJson ? true : false}

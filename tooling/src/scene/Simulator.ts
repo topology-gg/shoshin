@@ -35,12 +35,98 @@ export default class Platformer extends Phaser.Scene {
         this.load.atlas(`antoc-dash_backward`, 'images/antoc/dash_backward/spritesheet.png',  'images/antoc/dash_backward/spritesheet.json');
         this.load.atlas(`antoc-block`, 'images/antoc/block/spritesheet.png',  'images/antoc/block/spritesheet.json');
 
-        this.load.atlas(`jessica-idle-right`, 'images/jessica/idle/right_spritesheet.png');
-        this.load.atlas(`jessica-idle-left`, 'images/jessica/idle/left_spritesheet.png');
+        this.load.atlas(
+            `jessica-knocked`,
+            "images/jessica/knocked/spritesheet.png",
+            "images/jessica/knocked/spritesheet.json"
+        );
 
+        this.load.atlas(
+            `jessica-idle`,
+            "images/jessica/idle/spritesheet.png",
+            "images/jessica/idle/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-idle`,
+            "images/jessica/idle/spritesheet.png",
+            "images/jessica/idle/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-hurt`,
+            "images/jessica/hurt/spritesheet.png",
+            "images/jessica/hurt/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-dash_forward`,
+            "images/jessica/dash_forward/spritesheet.png",
+            "images/jessica/dash_forward/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-dash_backward`,
+            "images/jessica/dash_backward/spritesheet.png",
+            "images/jessica/dash_backward/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-idle`,
+            "images/jessica/idle/spritesheet.png",
+            "images/jessica/idle/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-clash`,
+            "images/jessica/clash/spritesheet.png",
+            "images/jessica/clash/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-block`,
+            "images/jessica/block/spritesheet.png",
+            "images/jessica/block/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-sidecut`,
+            "images/jessica/sidecut/spritesheet.png",
+            "images/jessica/sidecut/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-slash`,
+            "images/jessica/slash/spritesheet.png",
+            "images/jessica/slash/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-upswing`,
+            "images/jessica/upswing/spritesheet.png",
+            "images/jessica/upswing/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-walk_backward`,
+            "images/jessica/walk_backward/spritesheet.png",
+            "images/jessica/walk_backward/spritesheet.json"
+        );
+
+        this.load.atlas(
+            `jessica-walk_forward`,
+            "images/jessica/walk_forward/spritesheet.png",
+            "images/jessica/walk_forward/spritesheet.json"
+        );
+
+        this.load.image('arena_bg', "images/bg/shoshin-bg-white-long.png")
     }
 
-    create(){                
+    create(){       
+        
+        let bg = this.add.image(0,0,'arena_bg');
+        bg.setScale(2, 2).setPosition(0, bg.y - 120)
+
         this.player_one = this.add.sprite(-100,0,`antoc-idle`, 0)
         this.player_two = this.add.sprite(100,0,`antoc-idle`, 0)
         this.player_two.setFlipX(true)
@@ -64,6 +150,7 @@ export default class Platformer extends Phaser.Scene {
         this.player_one_body_hitbox_text.setFontSize(12)
 
         
+
         
         this.player_two_body_hitbox_text = this.add.text(-100,-100,"")
         this.player_two_body_hitbox_text.setFontSize(12)
@@ -81,8 +168,8 @@ export default class Platformer extends Phaser.Scene {
 
 
         //this.cameras.main.startFollow(this.player_one_body_hitbox, true);
-        //this.cameras.main.setScroll(-300, -300)
-        this.cameras.main.centerOn(0, -200)
+        this.cameras.main.centerOn(0, -120)
+        //this.cameras.main.setScroll(-500, -300)
 
         //this.cameras.main.setSize(this.cameras.main.width - 400, this.cameras.main.height - 400)
     }
@@ -118,23 +205,10 @@ export default class Platformer extends Phaser.Scene {
         const spriteLeftAdjustment = spriteAdjustment?.hitboxOffset[direction][0] || 0
         const spriteTopAdjustment = spriteAdjustment?.hitboxOffset[direction][1] || 0
 
-
-        console.log(`pos x ` + pos.x )
-        console.log(`pos y ` + pos.y )
-        console.log(`sprite left adjust ` , spriteLeftAdjustment)
-
-        console.log(`pos x + adjust ` + (pos.x + spriteLeftAdjustment))
-        console.log(`pos y + adjust ` + (pos.y + spriteTopAdjustment))
         this.player_one.setX(pos.x + spriteLeftAdjustment);
         this.player_one.setY(pos.y + spriteTopAdjustment);
 
-        this.player_one.setTexture(`${characterName}-${bodyStateName}`, `frame_${bodyStateCounter}.png`)
-        const imageKey = `${characterName}-${bodyStateName}-${direction}-${bodyStateCounter}`
-        console.log(imageKey)
-        //this.player_one = this.add.image(pos.x + spriteLeftAdjustment, pos.y + spriteTopAdjustment, imageKey);
-        //this.player_one.setTexture(`${characterName}-${bodyStateName}-${direction}-${bodyStateCounter}`)
-        //this.player_one.setSize(spriteSize[0], spriteSize[1])
-        
+        this.player_one.setTexture(`${characterName}-${bodyStateName}`, `frame_${bodyStateCounter}.png`)   
     }
 
     setPlayerTwoFrame(frame : Frame){
@@ -158,7 +232,7 @@ export default class Platformer extends Phaser.Scene {
         const spriteTopAdjustment = spriteAdjustment?.hitboxOffset[direction][1] || 0
         
         this.player_two.setX(pos.x + spriteLeftAdjustment);
-        this.player_two.setY(pos.y + spriteTopAdjustment);
+        this.player_two.setY(-pos.y + spriteTopAdjustment);
 
         this.player_two.setTexture(`${characterName}-${bodyStateName}`, `frame_${bodyStateCounter}.png`)
         
@@ -171,19 +245,11 @@ export default class Platformer extends Phaser.Scene {
         const hitboxX = hitbox.origin.x
         const hitboxY = hitbox.origin.y
 
-        console.log("hitboxX" + hitboxX)
-        console.log("hitboxY" + hitboxY)
-        console.log("hitboxW" + hitboxW)
-        console.log("hitboxH" + hitboxH)
-
-
         const centerX =  hitbox.origin.x + hitbox.dimension.x / 2
-        const centerY = hitbox.origin.y - hitbox.dimension.y / 2
+        const centerY = - hitbox.origin.y - hitbox.dimension.y / 2
         //const left = viewWidth/2 + hitboxX
         //const top = SIMULATOR_H - hitboxY - hitboxH + SpriteTopAdjustmentToBg
 
-        console.log("center x" + centerX)
-        console.log("center y" + centerY)
         this.player_one_body_hitbox.setPosition(centerX, centerY)
         this.player_one_body_hitbox.setSize(hitboxW, hitboxH)
         this.player_one_body_hitbox_text.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
@@ -199,7 +265,7 @@ export default class Platformer extends Phaser.Scene {
         const hitboxY = hitbox.origin.y
 
         const centerX =  hitbox.origin.x + hitbox.dimension.x / 2
-        const centerY = hitbox.origin.y - hitbox.dimension.y / 2
+        const centerY = - hitbox.origin.y - hitbox.dimension.y / 2
         //const left = viewWidth/2 + hitboxX
         //const top = SIMULATOR_H - hitboxY - hitboxH + SpriteTopAdjustmentToBg
 
@@ -244,5 +310,4 @@ export default class Platformer extends Phaser.Scene {
         this.player_two_action_hitbox_text.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
         Phaser.Display.Align.In.Center(this.player_two_action_hitbox_text, this.player_two_action_hitbox);
     }   
-
 }
