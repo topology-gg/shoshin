@@ -598,12 +598,6 @@ export default function Home() {
                                             testJson={testJson}
                                             animationFrame={animationFrame}
                                         />
-                                        <Simulator
-                                            testJson={testJson}
-                                            animationFrame={animationFrame}
-                                            showDebug={checkedShowDebugInfo}
-                                        />
-
                                         <Game
                                         testJson={testJson}
                                         animationFrame={animationFrame}
