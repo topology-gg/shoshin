@@ -128,16 +128,16 @@ export default class Platformer extends Phaser.Scene {
         
 
         const antocBodyStates: BodyStateAndFrame[] = [
-            { state: "idle", frames: 0 },
-            { state: "block", frames: 0 },
-            { state: "hurt", frames: 0 },
+            { state: "idle", frames: 5 },
+            { state: "block", frames: 6 },
+            { state: "hurt", frames: 3 },
             { state: "knocked", frames: 10},
-            { state: "dash_backward", frames: 0},
-            { state: "dash_forward", frames: 0},
-            { state: "vert", frames: 0},
-            { state: "hori", frames: 0},
-            { state: "walk_backward", frames: 0},
-            { state: "walk_forward", frames: 0},                                
+            { state: "dash_backward", frames: 6},
+            { state: "dash_forward", frames: 7},
+            { state: "vert", frames: 10},
+            { state: "hori", frames: 7},
+            { state: "walk_backward", frames: 6},
+            { state: "walk_forward", frames: 7},                                
         ];
 
         //Assume that x and y represent bottom left of hitbox and characters body position
