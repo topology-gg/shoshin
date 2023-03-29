@@ -310,4 +310,17 @@ export default class Platformer extends Phaser.Scene {
         this.player_two_action_hitbox_text.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
         Phaser.Display.Align.In.Center(this.player_two_action_hitbox_text, this.player_two_action_hitbox);
     }   
+
+    showDebug(){
+        this.player_one_body_hitbox.setVisible(true)
+        this.player_two_body_hitbox.setVisible(true)
+        this.player_one_action_hitbox.setVisible(true)
+        this.player_two_action_hitbox.setVisible(true)
+    }
+    hideDebug(){
+        this.player_one_body_hitbox.setVisible(false)
+        this.player_two_body_hitbox.setVisible(false)
+        this.player_one_action_hitbox.setVisible(false)
+        this.player_two_action_hitbox.setVisible(false)
+    }
 }

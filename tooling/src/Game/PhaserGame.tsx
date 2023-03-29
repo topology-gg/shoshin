@@ -100,16 +100,11 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
                 },
                 scene: {
                 },
-                // callbacks: {
-                //   preBoot: (game) => console.log('preBoot -> ', game),
-                //   postBoot: (game) => console.log('postBoot -> ', game),
-                // }
             };
             g = game.current = new Phaser.Game(config);
 
             g.scene.add('simulator', Simulator)
             g.scene.start('simulator')
-            console.log("game", game.current);
         }
         return () => g.destroy();
     }, [Phaser, create, preload, parent, canvas]);
@@ -138,10 +133,18 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
         scene.setPlayerTwoCharacter(characterType1)
         scene.setPlayerOneFrame(agentFrame0);
         scene.setPlayerTwoFrame(agentFrame1);
-        scene.setPlayerOneBodyHitbox(agentFrame0)
-        scene.setPlayerTwoBodyHitbox(agentFrame1)
-        scene.setPlayerOneActionHitbox(agentFrame0)
-        scene.setPlayerTwoActionHitbox(agentFrame1)
+
+        if(showDebug)
+        {
+            scene.showDebug()
+            scene.setPlayerOneBodyHitbox(agentFrame0)
+            scene.setPlayerTwoBodyHitbox(agentFrame1)
+            scene.setPlayerOneActionHitbox(agentFrame0)
+            scene.setPlayerTwoActionHitbox(agentFrame1)
+        }else{
+            scene.hideDebug()
+        }
+
         //render stuff
     }, [testJson, animationFrame, showDebug])
     
