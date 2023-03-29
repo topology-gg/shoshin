@@ -39,6 +39,7 @@ import { EditorTabName } from '../src/components/sidePanelComponents/Tabs';
 import { unwrapLeafToCondition, unwrapLeafToTree } from '../src/types/Leaf';
 import dynamic from "next/dynamic";
 
+//@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
     ssr: false,
 });
