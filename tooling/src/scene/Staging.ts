@@ -196,21 +196,21 @@ export default class Platformer extends Phaser.Scene {
     }
 
     create() {
-        this.cameras.main.centerOn(0, -200);
-        this.cameras.main.setZoom(0.8)
+        this.cameras.main.centerOn(0, -150);
+        this.cameras.main.setZoom(1.8)
         
 
         const antocBodyStates: BodyStateAndFrame[] = [
             { state: "idle", frames: 5 },
             { state: "block", frames: 6 },
-            { state: "hurt", frames: 3 },
-            { state: "knocked", frames: 10},
-            { state: "dash_backward", frames: 6},
-            { state: "dash_forward", frames: 7},
-            { state: "vert", frames: 10},
-            { state: "hori", frames: 7},
-            { state: "walk_backward", frames: 6},
-            { state: "walk_forward", frames: 7},                                
+            //{ state: "hurt", frames: 3 },
+            //{ state: "knocked", frames: 10},
+           // { state: "dash_backward", frames: 6},
+            //{ state: "dash_forward", frames: 7},
+            //{ state: "vert", frames: 10},
+            //{ state: "hori", frames: 7},
+            //{ state: "walk_backward", frames: 6},
+           // { state: "walk_forward", frames: 7},                                
         ];
 
         //Assume that x and y represent bottom left of hitbox and characters body position
@@ -231,31 +231,31 @@ export default class Platformer extends Phaser.Scene {
         this.keys  = this.input.keyboard.createCursorKeys();
 
         const jessicaBodyStates : BodyStateAndFrame[] = [
-            //{state : "knocked", frames : 10},
-           // { state: "idle", frames: 0},
+            {state : "knocked", frames : 10},
+            { state: "idle", frames: 0},
             //{ state: "block", frames: 0 },
-           // { state: "hurt", frames: 0 },
+            //{ state: "hurt", frames: 0 },
             //{ state: "dash_backward", frames: 0},
-           //{ state: "dash_forward", frames: 0},
-            // { state: "walk_backward", frames: 0},
-           //{ state: "walk_forward", frames: 0},    
+            //{ state: "dash_forward", frames: 0},
+            //{ state: "walk_backward", frames: 0},
+            //{ state: "walk_forward", frames: 0},    
             //{ state: "slash", frames: 0},    
-           //{ state: "upswing", frames: 0},    
+            //{ state: "upswing", frames: 0},    
             //{ state: "clash", frames: 0},    
-           { state: "sidecut", frames: 0},    
+           //{ state: "sidecut", frames: 0},    
 
         ]
 
         jessicaBodyStates.forEach((bodyState, index) => {
             for(let i = 0; i <= bodyState.frames; i ++){
-                this.spawnImage(0 + 100 * i, 0 + 200 * index, "jessica", bodyState.state, i, "right", false);
+                //this.spawnImage(0 + 100 * i, 0 + 200 * index, "jessica", bodyState.state, i, "right", false);
             }
             
         });
 
         jessicaBodyStates.forEach((bodyState, index) => {
             for(let i = 0; i <= bodyState.frames; i ++){
-            this.spawnImage(0 + 100 * i, -300 + 200 * index, "jessica", bodyState.state, i, "left", true);
+                this.spawnImage(0 + 100 * i, 0 + 300 * index, "jessica", bodyState.state, i, "left", true);
             }
             
         });

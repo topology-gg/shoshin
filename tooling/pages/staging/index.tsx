@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 
-const Staging = dynamic(() => import("../../src/Game/StagingGame.tsx"), {
+const Staging = dynamic(() => import("../../src/Game/StagingGame"), {
     ssr: false,
 });
 

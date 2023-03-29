@@ -334,37 +334,37 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         block: [
             {
                 size: [103, 126],
-                hitboxOffset: { left: [50, 0], right: [50,0] },
+                hitboxOffset: { left: [61, 5], right: [38,5] },
             }
         ],
         clash: [
             {
                 size: [132, 141],
-                hitboxOffset: { left: [60, -10], right: [40,-2] },
+                hitboxOffset: { left: [65, -5], right: [35,-5] },
             }
         ],
         dash_backward: [
             {
                 size: [147, 106],
-                hitboxOffset: { left: [20, 0], right: [80,0] },
+                hitboxOffset: { left: [25, 5], right: [80,0] },
             }
         ],
         dash_forward: [
             {
                 size: [113, 104],
-                hitboxOffset: { left: [50, 0], right: [50,0] },
+                hitboxOffset: { left: [40, 10], right: [60,5] },
             }
         ],
         hurt: [
             {
                 size: [105, 142],
-                hitboxOffset: { left: [50, 0], right: [50,0] },
+                hitboxOffset: { left: [55, 0], right: [40,0] },
             }
         ],
         idle: [
             {
                 size: [96, 126],
-                hitboxOffset: { left: [50, 0], right: [50,0] },
+                hitboxOffset: { left: [65, 5], right: [35,5] },
             }
         ],
         knocked: [
@@ -420,31 +420,31 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         sidecut: [
             {
                 size: [239, 141],
-                hitboxOffset: { left: [20, 0], right: [75,0] },
+                hitboxOffset: { left: [20, 0], right: [80,-5] },
             }
         ],
         slash: [
             {
                 size: [181, 183],
-                hitboxOffset: { left: [30, -20], right: [70,-20] },
+                hitboxOffset: { left: [25, -22], right: [80,-20] },
             }
         ],
         upswing: [
             {
                 size: [205, 167],
-                hitboxOffset: { left: [30, -10], right: [70,-10] },
+                hitboxOffset: { left: [28, -20], right: [70,-15] },
             }
         ],
         walk_backward: [
             {
                 size: [105, 142],
-                hitboxOffset: { left: [50, 0], right: [50,0] },
+                hitboxOffset: { left: [56, 0], right: [40,0] },
             }
         ],
         walk_forward: [
             {
                 size: [105, 142],
-                hitboxOffset: { left: [50, 0], right: [50,0] },
+                hitboxOffset: { left: [56, 0], right: [40,0] },
             }
         ],
     },
