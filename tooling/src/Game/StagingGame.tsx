@@ -34,6 +34,7 @@ const Game = () => {
 
     const preload = React.useCallback(() => {
         const g = game.current;
+        //@ts-ignore
         const _this = g.scene.keys.default;
         console.log("preload ->  preloading assets...", _this);
         //_this.load.setBaseURL('http://labs.phaser.io');
@@ -43,6 +44,7 @@ const Game = () => {
 
     const create = React.useCallback((e) => {
         const g = game.current;
+        //@ts-ignore
         const _this = g.scene.keys.default;
 
         console.log("create -> creating elements...", _this);
@@ -112,11 +114,5 @@ const Game = () => {
     ) : null;
 };
 
-Game.propTypes = {
-    tagName: PropTypes.string,
-    className: PropTypes.string,
-    variant: PropTypes.oneOf(["default"]),
-    children: PropTypes.node,
-};
 
 export default Game;

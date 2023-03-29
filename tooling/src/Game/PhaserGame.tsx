@@ -40,6 +40,7 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
 
     const preload = React.useCallback(() => {
         const g = game.current;
+        //@ts-ignore
         const _this = g.scene.keys.default;
         console.log("preload ->  preloading assets...", _this);
         //_this.load.setBaseURL('http://labs.phaser.io');
@@ -58,6 +59,7 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
 
     const create = React.useCallback((e) => {
         const g = game.current;
+        //@ts-ignore
         const _this = g.scene.keys.default;
 
         console.log("create -> creating elements...", _this);
@@ -114,11 +116,14 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
     React.useEffect(() => {
         //get current scene
 
-        if(game == undefined)
+        if(game == undefined || game.current == undefined)
         {
           return
         }
-        let scene = (game.current.scene.getScene('simulator') as Simulator);
+        
+        
+        //@ts-ignore
+        let scene = game.current?.scene.getScene('simulator') as Simulator;
 
         if(scene == undefined)
         {
