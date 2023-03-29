@@ -133,45 +133,34 @@ export default class Platformer extends Phaser.Scene {
         
         this.player_one_body_hitbox = this.add.rectangle(0, 0, 0, 0)
         this.player_one_body_hitbox.setStrokeStyle(2, 0xFCE205FF);
+        this.player_one_body_hitbox.setFillStyle(0, .3)
 
         this.player_two_body_hitbox = this.add.rectangle(0, 0, 0, 0)
         this.player_two_body_hitbox.setStrokeStyle(2, 0xFCE205FF);
+        this.player_two_body_hitbox.setFillStyle(0, .3)
 
         this.player_one_action_hitbox = this.add.rectangle(0, 0, 0, 0)
         this.player_one_action_hitbox.setStrokeStyle(2, 0xCC3333FF);
+        this.player_one_action_hitbox.setFillStyle(0, .3)
 
         this.player_two_action_hitbox = this.add.rectangle(0, 0, 0, 0)
         this.player_two_action_hitbox.setStrokeStyle(2, 0xCC3333FF);
+        this.player_two_action_hitbox.setFillStyle(0, .3)
 
         this.player_one_body_hitbox_text = this.add.text(0,0,"")
-
-
-        //this.player_one_body_hitbox_text.setAlign('center')
-        this.player_one_body_hitbox_text.setFontSize(12)
-
-        
-
-        
+        this.player_one_body_hitbox_text.setFontSize(12).setAlign("center")
+    
         this.player_two_body_hitbox_text = this.add.text(-100,-100,"")
-        this.player_two_body_hitbox_text.setFontSize(12)
-        //this.player_two_body_hitbox_text.setVisible(false)
-        this.player_one_action_hitbox_text = this.add.text(0,2,"")
-        this.player_one_action_hitbox_text.setFontSize(12)
-        //this.player_one_action_hitbox_text.setVisible(false)
-        this.player_two_action_hitbox_text = this.add.text(0,3,"")
-        this.player_two_action_hitbox_text.setFontSize(12)
-        //this.player_two_action_hitbox_text.setVisible(false)
-
+        this.player_two_body_hitbox_text.setFontSize(12).setAlign("center")
         
-        //Phaser.Display.Align.In.Center(this.player_one_action_hitbox_text, this.player_one_action_hitbox);
-        //Phaser.Display.Align.In.Center(this.player_two_action_hitbox_text, this.player_two_action_hitbox);
-
-
-        //this.cameras.main.startFollow(this.player_one_body_hitbox, true);
+        this.player_one_action_hitbox_text = this.add.text(0,2,"")
+        this.player_one_action_hitbox_text.setFontSize(12).setAlign("center")
+        
+        this.player_two_action_hitbox_text = this.add.text(0,3,"")
+        this.player_two_action_hitbox_text.setFontSize(12).setAlign("center")
+        
         this.cameras.main.centerOn(0, -120)
-        //this.cameras.main.setScroll(-500, -300)
 
-        //this.cameras.main.setSize(this.cameras.main.width - 400, this.cameras.main.height - 400)
     }
     setPlayerOneCharacter(characterType : number){
 
@@ -247,13 +236,14 @@ export default class Platformer extends Phaser.Scene {
 
         const centerX =  hitbox.origin.x + hitbox.dimension.x / 2
         const centerY = - hitbox.origin.y - hitbox.dimension.y / 2
-        //const left = viewWidth/2 + hitboxX
-        //const top = SIMULATOR_H - hitboxY - hitboxH + SpriteTopAdjustmentToBg
 
         this.player_one_body_hitbox.setPosition(centerX, centerY)
         this.player_one_body_hitbox.setSize(hitboxW, hitboxH)
+        
         this.player_one_body_hitbox_text.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
-        Phaser.Display.Align.In.BottomCenter(this.player_one_body_hitbox_text, this.player_one_body_hitbox);
+        Phaser.Display.Align.In.Center(this.player_one_body_hitbox_text, this.player_one_body_hitbox);
+        this.player_one_body_hitbox_text.setPosition(this.player_one_body_hitbox_text.x + hitbox.dimension.x / 2, 
+        this.player_one_body_hitbox_text.y +  hitbox.dimension.y / 2)
         
     }   
 
@@ -266,13 +256,13 @@ export default class Platformer extends Phaser.Scene {
 
         const centerX =  hitbox.origin.x + hitbox.dimension.x / 2
         const centerY = - hitbox.origin.y - hitbox.dimension.y / 2
-        //const left = viewWidth/2 + hitboxX
-        //const top = SIMULATOR_H - hitboxY - hitboxH + SpriteTopAdjustmentToBg
 
         this.player_two_body_hitbox.setPosition(centerX, centerY)
         this.player_two_body_hitbox.setSize(hitboxW, hitboxH)
         this.player_two_body_hitbox_text.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
-        Phaser.Display.Align.In.BottomRight(this.player_two_body_hitbox_text, this.player_two_body_hitbox);
+        Phaser.Display.Align.In.Center(this.player_two_body_hitbox_text, this.player_two_body_hitbox);
+        this.player_two_body_hitbox_text.setPosition(this.player_two_body_hitbox_text.x + hitbox.dimension.x / 2, 
+        this.player_two_body_hitbox_text.y +  hitbox.dimension.y / 2)
     }   
 
     setPlayerOneActionHitbox(frame : Frame) {
@@ -284,13 +274,13 @@ export default class Platformer extends Phaser.Scene {
 
         const centerX =  hitbox.origin.x + hitbox.dimension.x / 2
         const centerY = - hitbox.origin.y - hitbox.dimension.y / 2
-        //const left = viewWidth/2 + hitboxX
-        //const top = SIMULATOR_H - hitboxY - hitboxH + SpriteTopAdjustmentToBg
 
         this.player_one_action_hitbox.setPosition(centerX, centerY)
         this.player_one_action_hitbox.setSize(hitboxW, hitboxH)
         this.player_one_action_hitbox_text.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
-        Phaser.Display.Align.In.BottomRight(this.player_one_action_hitbox_text, this.player_one_action_hitbox);
+        Phaser.Display.Align.In.Center(this.player_one_action_hitbox_text, this.player_one_action_hitbox);
+        this.player_one_action_hitbox_text.setPosition(this.player_one_action_hitbox_text.x +  hitbox.dimension.x / 2, 
+        this.player_one_action_hitbox_text.y +  hitbox.dimension.y / 2)
     }   
 
     setPlayerTwoActionHitbox(frame : Frame) {
@@ -302,13 +292,13 @@ export default class Platformer extends Phaser.Scene {
 
         const centerX =  hitbox.origin.x + hitbox.dimension.x / 2
         const centerY = - hitbox.origin.y - hitbox.dimension.y / 2
-        //const left = viewWidth/2 + hitboxX
-        //const top = SIMULATOR_H - hitboxY - hitboxH + SpriteTopAdjustmentToBg
 
         this.player_two_action_hitbox.setPosition(centerX, centerY)
         this.player_two_action_hitbox.setSize(hitboxW, hitboxH)
         this.player_two_action_hitbox_text.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
         Phaser.Display.Align.In.Center(this.player_two_action_hitbox_text, this.player_two_action_hitbox);
+        this.player_two_action_hitbox_text.setPosition(this.player_two_action_hitbox_text.x +  hitbox.dimension.x / 2, 
+        this.player_two_action_hitbox_text.y +  hitbox.dimension.y / 2)
     }   
 
     showDebug(){
@@ -316,11 +306,21 @@ export default class Platformer extends Phaser.Scene {
         this.player_two_body_hitbox.setVisible(true)
         this.player_one_action_hitbox.setVisible(true)
         this.player_two_action_hitbox.setVisible(true)
+
+        this.player_one_body_hitbox_text.setVisible(true)
+        this.player_two_body_hitbox_text.setVisible(true)
+        this.player_one_action_hitbox_text.setVisible(true)
+        this.player_two_action_hitbox_text.setVisible(true)
     }
     hideDebug(){
         this.player_one_body_hitbox.setVisible(false)
         this.player_two_body_hitbox.setVisible(false)
         this.player_one_action_hitbox.setVisible(false)
         this.player_two_action_hitbox.setVisible(false)
+
+        this.player_one_body_hitbox_text.setVisible(false)
+        this.player_two_body_hitbox_text.setVisible(false)
+        this.player_one_action_hitbox_text.setVisible(false)
+        this.player_two_action_hitbox_text.setVisible(false)
     }
 }

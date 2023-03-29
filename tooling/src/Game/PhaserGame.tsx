@@ -48,15 +48,6 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
     }, []);
 
 
-    const characterType0 = testJson?.agent_0.type
-    const characterType1 = testJson?.agent_1.type
-    const agentFrame0 = testJson?.agent_0.frames[animationFrame]
-    const agentFrame1 = testJson?.agent_1.frames[animationFrame]
-
-    const characterName0 = characterType0 == 0 ? 'jessica' : 'antoc'
-    const characterName1 = characterType1 == 0 ? 'jessica' : 'antoc'
-
-
     const create = React.useCallback((e) => {
         const g = game.current;
         //@ts-ignore
