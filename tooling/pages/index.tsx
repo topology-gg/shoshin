@@ -372,14 +372,15 @@ export default function Home() {
         })
     }
 
-    function handleUpdateCondition(index: number, element: ConditionElement) {
+    function handleUpdateCondition(index: number, element: ConditionElement, name: string) {
         if (element) {
             setConditions((prev) => {
-                let prev_copy = JSON.parse(JSON.stringify(prev));
+                let prev_copy: Condition[] = JSON.parse(JSON.stringify(prev));
                 if (index == 0 && !prev_copy[index]) {
                     prev_copy = [{ elements: [] }]
                 }
                 prev_copy[index].elements.push(element)
+                prev_copy[index].name = name
                 let [isValidFunction, error] = verifyValidCondition(prev_copy[index], false)
                 if (!isValidFunction) {
                     setConditionWarningTextOn(true)

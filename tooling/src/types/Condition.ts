@@ -2,6 +2,7 @@ import Leaf, { wrapToLeaf } from './Leaf'
 
 export interface Condition {
     elements: ConditionElement[],
+    name?: string,
 }
 
 export interface ConditionElement {
