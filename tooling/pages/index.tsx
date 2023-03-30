@@ -1,10 +1,9 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, createTheme, ThemeProvider } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import MidScreenControl from "../src/components/MidScreenControl";
-import Simulator from "../src/components/Simulator";
 import SidePanel from "../src/components/sidePanelComponents/SidePanel";
 import { FrameScene, TestJson } from "../src/types/Frame";
 import { Tree, Direction } from "../src/types/Tree";
@@ -688,11 +687,6 @@ export default function Home() {
                                         animationFrame={animationFrame}
                                     />
 
-                                    <Simulator
-                                        testJson={testJson}
-                                        animationFrame={animationFrame}
-                                        showDebug={checkedShowDebugInfo}
-                                    />
                                     <Game
                                         testJson={testJson}
                                         animationFrame={animationFrame}
