@@ -30,6 +30,12 @@ pub fn run_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
     Result::Ok(serde_wasm_bindgen::to_value(&output)?)
 }
 
+/// Convert Vec<i32> to Vec<CairoArg>
+/// # Arguments
+/// * `inputs` - The flattened inputs to the shoshin loop
+///
+/// # Returns
+/// The inputs converted to CairoArgs
 fn prepare_args(inputs: Vec<i32>) -> Result<Vec<CairoArg>, Error> {
     let range_check_ptr = MaybeRelocatable::from((2, 0));
     let frames_count = mayberelocatable!(120);
@@ -67,6 +73,14 @@ fn get_output(vm: VirtualMachine) -> Result<Vec<FrameScene>, Error> {
     Result::Ok(output)
 }
 
+/// Loop over the frames and extract each frame scene
+/// # Arguments
+/// * `frames` - The pointer to the frames
+/// * `frames_len` - The number of frames
+/// * `vm` - The final VM state after the shoshin loop execution
+///
+/// # Returns
+/// The array of frame scenes
 fn get_frames(
     frames: Relocatable,
     frames_len: u32,
