@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { bodyStateNumberToName } from "../constants/constants";
-import { spriteData, spriteDataPhaser } from "../constants/sprites";
-import { Frame } from "../types/Frame";
+import { spriteDataPhaser } from "../constants/sprites";
+import { Frame, Rectangle } from "../types/Frame";
 
 export default class Platformer extends Phaser.Scene {
     private player_one : Phaser.GameObjects.Image;
@@ -21,6 +21,9 @@ export default class Platformer extends Phaser.Scene {
 
     private player_one_action_hitbox_text : Phaser.GameObjects.Text
     private player_two_action_hitbox_text : Phaser.GameObjects.Text
+
+    readonly STROKE_STYLE_BODY_HITBOX = 0xFCE205FF;
+    readonly STROKE_STYLE_ACTION_HITBOX = 0xCC3333FF;
 
     preload(){
 
@@ -131,84 +134,57 @@ export default class Platformer extends Phaser.Scene {
         this.player_two = this.add.sprite(100,0,`antoc-idle`, 0)
         this.player_two.setFlipX(true)
         
-        this.player_one_body_hitbox = this.add.rectangle(0, 0, 0, 0)
-        this.player_one_body_hitbox.setStrokeStyle(2, 0xFCE205FF);
-        this.player_one_body_hitbox.setFillStyle(0, .3)
+        this.player_one_body_hitbox = this.addRectangleHelper(this.STROKE_STYLE_BODY_HITBOX)
+        this.player_two_body_hitbox = this.addRectangleHelper(this.STROKE_STYLE_BODY_HITBOX)
+        this.player_one_action_hitbox = this.addRectangleHelper(this.STROKE_STYLE_ACTION_HITBOX)
+        this.player_two_action_hitbox = this.addRectangleHelper(this.STROKE_STYLE_ACTION_HITBOX)
 
-        this.player_two_body_hitbox = this.add.rectangle(0, 0, 0, 0)
-        this.player_two_body_hitbox.setStrokeStyle(2, 0xFCE205FF);
-        this.player_two_body_hitbox.setFillStyle(0, .3)
-
-        this.player_one_action_hitbox = this.add.rectangle(0, 0, 0, 0)
-        this.player_one_action_hitbox.setStrokeStyle(2, 0xCC3333FF);
-        this.player_one_action_hitbox.setFillStyle(0, .3)
-
-        this.player_two_action_hitbox = this.add.rectangle(0, 0, 0, 0)
-        this.player_two_action_hitbox.setStrokeStyle(2, 0xCC3333FF);
-        this.player_two_action_hitbox.setFillStyle(0, .3)
-
-        this.player_one_body_hitbox_text = this.add.text(0,0,"")
-        this.player_one_body_hitbox_text.setFontSize(12).setAlign("center")
-    
-        this.player_two_body_hitbox_text = this.add.text(-100,-100,"")
-        this.player_two_body_hitbox_text.setFontSize(12).setAlign("center")
-        
-        this.player_one_action_hitbox_text = this.add.text(0,2,"")
-        this.player_one_action_hitbox_text.setFontSize(12).setAlign("center")
-        
-        this.player_two_action_hitbox_text = this.add.text(0,3,"")
-        this.player_two_action_hitbox_text.setFontSize(12).setAlign("center")
+        this.player_one_body_hitbox_text = this.addTextHelper()
+        this.player_two_body_hitbox_text = this.addTextHelper()
+        this.player_one_action_hitbox_text = this.addTextHelper()
+        this.player_two_action_hitbox_text = this.addTextHelper()
         
         this.cameras.main.centerOn(0, -120)
-
     }
-    setPlayerOneCharacter(characterType : number){
 
+    addRectangleHelper(strokeStyle: number) {
+        const rect = this.add.rectangle(0, 0, 0, 0)
+        rect.setStrokeStyle(2, strokeStyle);
+        rect.setFillStyle(0, .3)
+        return rect
+    }
+
+    addTextHelper() {
+        const text = this.add.text(0,0,"")
+        text.setFontSize(12).setAlign("center")
+        return text
+    }
+
+    setPlayerOneCharacter(characterType : number){
         const characterName = characterType == 0 ? 'jessica' : 'antoc'    
         this.player_one_character = characterName
-        //this.player_one = this.add.sprite(0,0,`${characterName}-idle-right`)
     }
     setPlayerTwoCharacter(characterType : number){
         const characterName = characterType == 0 ? 'jessica' : 'antoc'    
         this.player_two_character = characterName
-        //this.player_two = this.add.sprite(0,0,`${characterName}-idle-left`)
     }
 
     setPlayerOneFrame(frame : Frame){
-        // Extract from frame
-        const bodyState = frame.body_state.state
-        const bodyStateCounter = frame.body_state.counter
-        const bodyStateDir = frame.body_state.dir
-        const physicsState = frame.physics_state
-        const pos = physicsState.pos
-
-        const characterName = this.player_one_character;
-
-        const bodyStateName = bodyStateNumberToName [characterName][bodyState]
-        const direction = (bodyStateDir == 1) ? 'right' : 'left'
-
-        //Calculating offsets for frame
-        const spriteAdjustments = spriteDataPhaser[characterName][bodyStateName]
-        const spriteAdjustment = spriteAdjustments.length == 1 ? spriteAdjustments[0] : spriteAdjustments[bodyStateCounter] // if having more than one adjustments, use body counter to index the adjustments
-        const spriteSize = spriteAdjustment?.size || [0, 0]
-        const spriteLeftAdjustment = spriteAdjustment?.hitboxOffset[direction][0] || 0
-        const spriteTopAdjustment = spriteAdjustment?.hitboxOffset[direction][1] || 0
-
-        this.player_one.setX(pos.x + spriteLeftAdjustment);
-        this.player_one.setY(pos.y + spriteTopAdjustment);
-
-        this.player_one.setTexture(`${characterName}-${bodyStateName}`, `frame_${bodyStateCounter}.png`)   
+        this.setPlayerFrameHelper(frame, this.player_one, this.player_one_character)
     }
 
     setPlayerTwoFrame(frame : Frame){
+        this.setPlayerFrameHelper(frame, this.player_two, this.player_two_character)
+    }
+
+    setPlayerFrameHelper(frame: Frame, player: Phaser.GameObjects.Image, characterName: string) { 
         // Extract from frame
         const bodyState = frame.body_state.state
         const bodyStateCounter = frame.body_state.counter
         const bodyStateDir = frame.body_state.dir
         const physicsState = frame.physics_state
         const pos = physicsState.pos
-
-        const characterName = this.player_two_character;
+        const hitboxW = frame.hitboxes.body.dimension.x
 
         const bodyStateName = bodyStateNumberToName [characterName][bodyState]
         const direction = (bodyStateDir == 1) ? 'right' : 'left'
@@ -220,86 +196,43 @@ export default class Platformer extends Phaser.Scene {
         const spriteLeftAdjustment = spriteAdjustment?.hitboxOffset[direction][0] || 0
         const spriteTopAdjustment = spriteAdjustment?.hitboxOffset[direction][1] || 0
         
-        this.player_two.setX(pos.x + spriteLeftAdjustment);
-        this.player_two.setY(-pos.y + spriteTopAdjustment);
+        player.setX(pos.x + spriteLeftAdjustment - hitboxW / 2);
+        player.setY(-pos.y + spriteTopAdjustment);
 
-        this.player_two.setTexture(`${characterName}-${bodyStateName}`, `frame_${bodyStateCounter}.png`)
-        
+        player.setTexture(`${characterName}-${bodyStateName}`, `frame_${bodyStateCounter}.png`)
     }
 
     setPlayerOneBodyHitbox(frame : Frame) {
-        const hitbox = frame.hitboxes.body;
-        const hitboxW = hitbox.dimension.x
-        const hitboxH = hitbox.dimension.y
-        const hitboxX = hitbox.origin.x
-        const hitboxY = hitbox.origin.y
-
-        const centerX =  hitbox.origin.x + hitbox.dimension.x / 2
-        const centerY = - hitbox.origin.y - hitbox.dimension.y / 2
-
-        this.player_one_body_hitbox.setPosition(centerX, centerY)
-        this.player_one_body_hitbox.setSize(hitboxW, hitboxH)
-        
-        this.player_one_body_hitbox_text.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
-        Phaser.Display.Align.In.Center(this.player_one_body_hitbox_text, this.player_one_body_hitbox);
-        this.player_one_body_hitbox_text.setPosition(this.player_one_body_hitbox_text.x + hitbox.dimension.x / 2, 
-        this.player_one_body_hitbox_text.y +  hitbox.dimension.y / 2)
-        
+        this.setHitboxHelper(frame.hitboxes.body, this.player_one_body_hitbox, this.player_one_body_hitbox_text, false)
     }   
 
     setPlayerTwoBodyHitbox(frame : Frame) {
-        const hitbox = frame.hitboxes.body;
-        const hitboxW = hitbox.dimension.x
-        const hitboxH = hitbox.dimension.y
-        const hitboxX = hitbox.origin.x
-        const hitboxY = hitbox.origin.y
-
-        const centerX =  hitbox.origin.x + hitbox.dimension.x / 2
-        const centerY = - hitbox.origin.y - hitbox.dimension.y / 2
-
-        this.player_two_body_hitbox.setPosition(centerX, centerY)
-        this.player_two_body_hitbox.setSize(hitboxW, hitboxH)
-        this.player_two_body_hitbox_text.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
-        Phaser.Display.Align.In.Center(this.player_two_body_hitbox_text, this.player_two_body_hitbox);
-        this.player_two_body_hitbox_text.setPosition(this.player_two_body_hitbox_text.x + hitbox.dimension.x / 2, 
-        this.player_two_body_hitbox_text.y +  hitbox.dimension.y / 2)
+        this.setHitboxHelper(frame.hitboxes.body, this.player_two_body_hitbox, this.player_two_body_hitbox_text, false)
     }   
 
     setPlayerOneActionHitbox(frame : Frame) {
-        const hitbox = frame.hitboxes.action;
-        const hitboxW = hitbox.dimension.x
-        const hitboxH = hitbox.dimension.y
-        const hitboxX = hitbox.origin.x
-        const hitboxY = hitbox.origin.y
-
-        const centerX =  hitbox.origin.x + hitbox.dimension.x / 2
-        const centerY = - hitbox.origin.y - hitbox.dimension.y / 2
-
-        this.player_one_action_hitbox.setPosition(centerX, centerY)
-        this.player_one_action_hitbox.setSize(hitboxW, hitboxH)
-        this.player_one_action_hitbox_text.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
-        Phaser.Display.Align.In.Center(this.player_one_action_hitbox_text, this.player_one_action_hitbox);
-        this.player_one_action_hitbox_text.setPosition(this.player_one_action_hitbox_text.x +  hitbox.dimension.x / 2, 
-        this.player_one_action_hitbox_text.y +  hitbox.dimension.y / 2)
+        this.setHitboxHelper(frame.hitboxes.action, this.player_one_action_hitbox, this.player_one_action_hitbox_text, true)
     }   
 
     setPlayerTwoActionHitbox(frame : Frame) {
-        const hitbox = frame.hitboxes.action;
+        this.setHitboxHelper(frame.hitboxes.action, this.player_two_action_hitbox, this.player_two_action_hitbox_text, true)
+    }   
+
+    setHitboxHelper(hitbox: Rectangle, phaserHitbox: Phaser.GameObjects.Rectangle, phaserText: Phaser.GameObjects.Text, is_action: boolean) {
         const hitboxW = hitbox.dimension.x
         const hitboxH = hitbox.dimension.y
         const hitboxX = hitbox.origin.x
         const hitboxY = hitbox.origin.y
 
-        const centerX =  hitbox.origin.x + hitbox.dimension.x / 2
-        const centerY = - hitbox.origin.y - hitbox.dimension.y / 2
+        const centerX =  hitboxX
+        const centerY = is_action ? - hitboxH : - hitboxY - hitbox.dimension.y / 2
 
-        this.player_two_action_hitbox.setPosition(centerX, centerY)
-        this.player_two_action_hitbox.setSize(hitboxW, hitboxH)
-        this.player_two_action_hitbox_text.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
-        Phaser.Display.Align.In.Center(this.player_two_action_hitbox_text, this.player_two_action_hitbox);
-        this.player_two_action_hitbox_text.setPosition(this.player_two_action_hitbox_text.x +  hitbox.dimension.x / 2, 
-        this.player_two_action_hitbox_text.y +  hitbox.dimension.y / 2)
-    }   
+        phaserHitbox.setPosition(centerX, centerY)
+        phaserHitbox.setSize(hitboxW, hitboxH)
+        phaserText.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
+        Phaser.Display.Align.In.Center(phaserText, phaserHitbox);
+        phaserText.setPosition(phaserText.x + hitbox.dimension.x / 2, phaserText.y + hitbox.dimension.y / 2)
+    }
 
     showDebug(){
         this.player_one_body_hitbox.setVisible(true)
