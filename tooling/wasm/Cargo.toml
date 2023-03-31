@@ -3,4 +3,5 @@
 members = [
     "shoshin",
     "shoshin_derive",
+    "cairo_execution",
 ]
