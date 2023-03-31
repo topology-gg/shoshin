@@ -358,7 +358,7 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         hurt: [
             {
                 size: [105, 142],
-                hitboxOffset: { left: [55, -50], right: [40,50] },
+                hitboxOffset: { left: [55, -60], right: [40,-60] },
             }
         ],
         idle: [
