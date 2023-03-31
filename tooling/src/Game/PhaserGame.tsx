@@ -111,8 +111,8 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
         {
           return
         }
-        
-        
+
+
         //@ts-ignore
         let scene = game.current?.scene.getScene('simulator') as Simulator;
 
@@ -143,7 +143,7 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
 
         //render stuff
     }, [testJson, animationFrame, showDebug])
-    
+
     return Phaser ? (
         <div
             className={`${styles.game} ${

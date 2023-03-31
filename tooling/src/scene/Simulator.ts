@@ -125,15 +125,17 @@ export default class Platformer extends Phaser.Scene {
         this.load.image('arena_bg', "images/bg/shoshin-bg-white-long.png")
     }
 
-    create(){       
-        
-        let bg = this.add.image(0,0,'arena_bg');
-        bg.setScale(2, 2).setPosition(0, bg.y - 120)
+    create(){
 
-        this.player_one = this.add.sprite(-100,0,`antoc-idle`, 0)
-        this.player_two = this.add.sprite(100,0,`antoc-idle`, 0)
+        const yDisplacementFromCenterToGround = -150;
+        let bg = this.add.image(0,0,'arena_bg');
+        bg.setScale(2, 2).setPosition(0, bg.y + yDisplacementFromCenterToGround)
+
+        const outOfBoundX = 2000
+        this.player_one = this.add.sprite(-outOfBoundX,0,`antoc-idle`, 0)
+        this.player_two = this.add.sprite(outOfBoundX,0,`antoc-idle`, 0)
         this.player_two.setFlipX(true)
-        
+
         this.player_one_body_hitbox = this.addRectangleHelper(this.STROKE_STYLE_BODY_HITBOX)
         this.player_two_body_hitbox = this.addRectangleHelper(this.STROKE_STYLE_BODY_HITBOX)
         this.player_one_action_hitbox = this.addRectangleHelper(this.STROKE_STYLE_ACTION_HITBOX)
@@ -143,8 +145,8 @@ export default class Platformer extends Phaser.Scene {
         this.player_two_body_hitbox_text = this.addTextHelper()
         this.player_one_action_hitbox_text = this.addTextHelper()
         this.player_two_action_hitbox_text = this.addTextHelper()
-        
-        this.cameras.main.centerOn(0, -120)
+
+        this.cameras.main.centerOn(0, yDisplacementFromCenterToGround)
     }
 
     addRectangleHelper(strokeStyle: number) {
@@ -161,11 +163,11 @@ export default class Platformer extends Phaser.Scene {
     }
 
     setPlayerOneCharacter(characterType : number){
-        const characterName = characterType == 0 ? 'jessica' : 'antoc'    
+        const characterName = characterType == 0 ? 'jessica' : 'antoc'
         this.player_one_character = characterName
     }
     setPlayerTwoCharacter(characterType : number){
-        const characterName = characterType == 0 ? 'jessica' : 'antoc'    
+        const characterName = characterType == 0 ? 'jessica' : 'antoc'
         this.player_two_character = characterName
     }
 
@@ -177,7 +179,7 @@ export default class Platformer extends Phaser.Scene {
         this.setPlayerFrameHelper(frame, this.player_two, this.player_two_character)
     }
 
-    setPlayerFrameHelper(frame: Frame, player: Phaser.GameObjects.Image, characterName: string) { 
+    setPlayerFrameHelper(frame: Frame, player: Phaser.GameObjects.Image, characterName: string) {
         // Extract from frame
         const bodyState = frame.body_state.state
         const bodyStateCounter = frame.body_state.counter
@@ -195,7 +197,7 @@ export default class Platformer extends Phaser.Scene {
         const spriteSize = spriteAdjustment?.size || [0, 0]
         const spriteLeftAdjustment = spriteAdjustment?.hitboxOffset[direction][0] || 0
         const spriteTopAdjustment = spriteAdjustment?.hitboxOffset[direction][1] || 0
-        
+
         player.setX(pos.x + spriteLeftAdjustment - hitboxW / 2);
         player.setY(-pos.y + spriteTopAdjustment);
 
@@ -204,19 +206,19 @@ export default class Platformer extends Phaser.Scene {
 
     setPlayerOneBodyHitbox(frame : Frame) {
         this.setHitboxHelper(frame.hitboxes.body, this.player_one_body_hitbox, this.player_one_body_hitbox_text, false)
-    }   
+    }
 
     setPlayerTwoBodyHitbox(frame : Frame) {
         this.setHitboxHelper(frame.hitboxes.body, this.player_two_body_hitbox, this.player_two_body_hitbox_text, false)
-    }   
+    }
 
     setPlayerOneActionHitbox(frame : Frame) {
         this.setHitboxHelper(frame.hitboxes.action, this.player_one_action_hitbox, this.player_one_action_hitbox_text, true)
-    }   
+    }
 
     setPlayerTwoActionHitbox(frame : Frame) {
         this.setHitboxHelper(frame.hitboxes.action, this.player_two_action_hitbox, this.player_two_action_hitbox_text, true)
-    }   
+    }
 
     setHitboxHelper(hitbox: Rectangle, phaserHitbox: Phaser.GameObjects.Rectangle, phaserText: Phaser.GameObjects.Text, is_action: boolean) {
         const hitboxW = hitbox.dimension.x
@@ -224,10 +226,14 @@ export default class Platformer extends Phaser.Scene {
         const hitboxX = hitbox.origin.x
         const hitboxY = hitbox.origin.y
 
-        const centerX =  hitboxX
-        const centerY = is_action ? - hitboxH : - hitboxY - hitbox.dimension.y / 2
+        // const centerX =  hitboxX
+        // const centerY = is_action ? - hitboxH : - hitboxY - hitbox.dimension.y / 2
+        const topLeftX = hitboxX
+        const topLeftY = -(hitboxY + hitboxH)
+        // const topLeftX = 0;
+        // const topLeftY = 0;
 
-        phaserHitbox.setPosition(centerX, centerY)
+        phaserHitbox.setPosition(topLeftX, topLeftY)
         phaserHitbox.setSize(hitboxW, hitboxH)
         phaserText.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
         Phaser.Display.Align.In.Center(phaserText, phaserHitbox);
