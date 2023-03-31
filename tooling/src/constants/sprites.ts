@@ -314,13 +314,13 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         walk_backward: [
             {
                 size: [185, 142],
-                hitboxOffset: { left: [80,5], right: [20,5] },
+                hitboxOffset: { left: [80,-50], right: [20,-50] },
             }
         ],
         walk_forward: [
             {
                 size: [185, 142],
-                hitboxOffset: { left: [80,5], right: [20,5] },
+                hitboxOffset: { left: [80,-52], right: [20,5] },
             }
         ],
         hurt: [
