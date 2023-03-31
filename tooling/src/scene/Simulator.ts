@@ -5,13 +5,14 @@ import { Frame, Rectangle } from "../types/Frame";
 import { SimulatorProps } from "../types/Simulator";
 
 const ARENA_WIDTH = 1000;
-const DEFAULT_ZOOM = 1.2
+const DEFAULT_ZOOM = 1.5
 
 const DEFAULT_CAMERA_HEIGHT = 400
 const DEFAULT_CAMERA_CENTER_X = 25
-const DEFAULT_CAMERA_CENTER_Y = -150
+const DEFAULT_CAMERA_CENTER_Y = -110
 const DEFAULT_CAMERA_LEFT = - ARENA_WIDTH / 2
 const DEFAULT_CAMERA_TOP = DEFAULT_CAMERA_CENTER_Y - DEFAULT_CAMERA_HEIGHT / 2
+const CAMERA_REACTION_TIME = 400
 
 export default class Platformer extends Phaser.Scene {
     private player_one : Phaser.GameObjects.Image;
@@ -207,8 +208,8 @@ export default class Platformer extends Phaser.Scene {
         this.player_one_action_hitbox_text.setVisible(true)
         this.player_two_action_hitbox_text.setVisible(true)
     }
-    
-    private hideDebug(){ 
+
+    private hideDebug(){
         this.player_one_body_hitbox.setVisible(false)
         this.player_two_body_hitbox.setVisible(false)
         this.player_one_action_hitbox.setVisible(false)
@@ -221,19 +222,19 @@ export default class Platformer extends Phaser.Scene {
     }
 
     private adjustCamera(charOneX : number, charTwoX : number){
-        
+
         const camera = this.cameras.main
 
-        const charDistance = charOneX < charTwoX ? Math.abs(charOneX - charTwoX)  : Math.abs(charTwoX - charOneX) 
+        const charDistance = charOneX < charTwoX ? Math.abs(charOneX - charTwoX)  : Math.abs(charTwoX - charOneX)
         const leftCharX = charOneX < charTwoX ? charOneX : charTwoX
-    
+
         // At the closest distance zoom is default, at further distances we zoom out till .9
         const calculatedZoom =  charDistance < 400 ? DEFAULT_ZOOM :  DEFAULT_ZOOM - .3 * (charDistance /  800 )
-        camera.zoomTo(calculatedZoom, 100);
- 
+        camera.zoomTo(calculatedZoom, CAMERA_REACTION_TIME);
+
         // pan to midpoint between characters
-        camera.pan( leftCharX + charDistance / 2 + DEFAULT_CAMERA_CENTER_X , DEFAULT_CAMERA_CENTER_Y, 100)
-        
+        camera.pan( leftCharX + charDistance / 2 + DEFAULT_CAMERA_CENTER_X , DEFAULT_CAMERA_CENTER_Y, CAMERA_REACTION_TIME)
+
     }
     updateScene({testJson, animationFrame, showDebug}: SimulatorProps){
                 const characterType0 = testJson?.agent_0.type
@@ -255,7 +256,7 @@ export default class Platformer extends Phaser.Scene {
                 {
                     this.adjustCamera(agentFrame0.physics_state.pos.x, agentFrame1.physics_state.pos.x)
                 }
-                
+
                 if(showDebug)
                 {
                     this.showDebug()
