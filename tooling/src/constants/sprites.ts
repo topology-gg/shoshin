@@ -244,7 +244,7 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         dash_forward: [
             {
                 size: [193, 142],
-                hitboxOffset: { left: [90,0], right: [11,0] },
+                hitboxOffset: { left: [90,-50], right: [11,-50] },
             }
         ],
         hori: [

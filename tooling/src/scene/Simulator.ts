@@ -147,6 +147,10 @@ export default class Platformer extends Phaser.Scene {
         this.player_two_action_hitbox_text = this.addTextHelper()
 
         this.cameras.main.centerOn(0, yDisplacementFromCenterToGround)
+
+        // initial camera setup
+        this.cameras.main.pan(0, -150, 500, 'Power2');
+        this.cameras.main.zoomTo(1.2, 500);
     }
 
     addRectangleHelper(strokeStyle: number) {
