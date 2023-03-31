@@ -26,8 +26,8 @@ const AutoComplete = styled(Autocomplete)`
 
 const senders = {
     "0x07ff2c85c7b1de1808ddf8897bc729feefa71ba269ea1015d1fd7a18c9918cc3" : "Greg",
-    "0x0266eD55Be7054c74Db3F8Ec2E79C728056C802a11481fAD0E91220139B8916A" : "NonCents",
-    "0x02f880133db4f533bDbC10C3d02fbC9b264dAC2Ff52EAE4E0cec0CE794bAD898" : "GG",
+    "0x0266ed55be7054c74db3f8ec2e79c728056c802a11481fad0e91220139b8916a" : "NonCents",
+    "0x02f880133db4f533bdbc10c3d02fbc9b264dac2ff52eae4e0cec0ce794bad898" : "GG",
 }
 const lookupSenderAddress = (address : string) =>{
     return senders[address] ? senders[address] : "anon"
