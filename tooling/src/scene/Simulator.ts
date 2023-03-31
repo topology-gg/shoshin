@@ -228,7 +228,7 @@ export default class Platformer extends Phaser.Scene {
         const leftCharX = charOneX < charTwoX ? charOneX : charTwoX
     
         // At the closest distance zoom is default, at further distances we zoom out till .9
-        const calculatedZoom =  DEFAULT_ZOOM - .3 * (charDistance /  800 )
+        const calculatedZoom =  charDistance < 400 ? DEFAULT_ZOOM :  DEFAULT_ZOOM - .3 * (charDistance /  800 )
         camera.zoomTo(calculatedZoom, 100);
  
         // pan to midpoint between characters
