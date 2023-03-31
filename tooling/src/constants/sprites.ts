@@ -238,7 +238,7 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         dash_backward: [
             {
                 size: [193, 142],
-                hitboxOffset: { left: [90,0], right: [11,0] },
+                hitboxOffset: { left: [90,-50], right: [11,-50] },
             }
         ],
         dash_forward: [
@@ -314,13 +314,13 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         walk_backward: [
             {
                 size: [185, 142],
-                hitboxOffset: { left: [80,-50], right: [20,-50] },
+                hitboxOffset: { left: [80,-52], right: [20,-52] },
             }
         ],
         walk_forward: [
             {
                 size: [185, 142],
-                hitboxOffset: { left: [80,-52], right: [20,5] },
+                hitboxOffset: { left: [80,-52], right: [20,-52] },
             }
         ],
         hurt: [
@@ -340,13 +340,13 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         clash: [
             {
                 size: [132, 141],
-                hitboxOffset: { left: [65, -5], right: [35,-5] },
+                hitboxOffset: { left: [65, -55], right: [35,-55] },
             }
         ],
         dash_backward: [
             {
                 size: [147, 106],
-                hitboxOffset: { left: [25, 5], right: [80,0] },
+                hitboxOffset: { left: [25, -45], right: [80,-50] },
             }
         ],
         dash_forward: [
@@ -358,7 +358,7 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         hurt: [
             {
                 size: [105, 142],
-                hitboxOffset: { left: [55, 0], right: [40,0] },
+                hitboxOffset: { left: [55, -50], right: [40,50] },
             }
         ],
         idle: [
@@ -420,7 +420,7 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         sidecut: [
             {
                 size: [239, 141],
-                hitboxOffset: { left: [20, 0], right: [80,-5] },
+                hitboxOffset: { left: [20, -50], right: [80,-55] },
             }
         ],
         slash: [
@@ -432,19 +432,19 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         upswing: [
             {
                 size: [205, 167],
-                hitboxOffset: { left: [28, -20], right: [70,-15] },
+                hitboxOffset: { left: [28, -70], right: [70,-65] },
             }
         ],
         walk_backward: [
             {
                 size: [105, 142],
-                hitboxOffset: { left: [56, 0], right: [40,0] },
+                hitboxOffset: { left: [56, -58], right: [40,-58] },
             }
         ],
         walk_forward: [
             {
                 size: [105, 142],
-                hitboxOffset: { left: [56, 0], right: [40,0] },
+                hitboxOffset: { left: [56, -58], right: [40,-58] },
             }
         ],
     },
