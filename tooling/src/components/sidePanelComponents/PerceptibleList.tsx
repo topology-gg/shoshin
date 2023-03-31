@@ -31,9 +31,8 @@ const PerceptibleList = ({
             onClick={handleClick}
             variant="outlined"
             disabled={disabled}
-            sx={{width:'3rem'}}
         >
-            Pick
+            Pick perceptible
         </Button>
 
         <Menu
