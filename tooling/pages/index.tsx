@@ -664,11 +664,11 @@ export default function Home() {
                             className={styles.main}
                             style={{ display: "flex", flexDirection: "column" }}
                         >
-                            <ImagePreloader
+                            {/* <ImagePreloader
                                 onComplete={() => {
                                     console.log("completed images");
                                 }}
-                            />
+                            /> */}
                             {
                                 // !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant='outlined' disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
                                 <div
