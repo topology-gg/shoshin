@@ -1,15 +1,16 @@
 ///! This crate allows to run the Shoshin loop written in Cairo on the cairo-rs VM.
 mod types;
+use crate::types::{FrameScene, ShoshinInput};
 use anyhow::Error;
 use cairo_execution::execute_cairo_program;
 use cairo_execution::{bigint, mayberelocatable};
 use cairo_felt::{self, Felt};
+use cairo_types::traits::Sizeable;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::vm_core::VirtualMachine;
 use cairo_vm::{types::relocatable::Relocatable, vm::runners::cairo_runner::CairoArg};
 use num_bigint::BigInt;
 use num_traits::ToPrimitive;
-use types::{FrameScene, ShoshinInput, Sizeable};
 use wasm_bindgen::prelude::*;
 
 /// Wasm binding to the input of the Shoshin loop

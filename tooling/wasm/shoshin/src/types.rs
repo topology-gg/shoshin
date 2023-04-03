@@ -1,32 +1,20 @@
 ///! Implements all traits and types required for running the shoshin cairo loop
+use cairo_derive::{CairoArgs, CairoStruct};
 use cairo_execution::{bigint, mayberelocatable};
 use cairo_felt::{Felt, FIELD_HIGH, FIELD_LOW};
+use cairo_types::{
+    traits::{FromSliceBase32, IntoCairoArgs, Sizeable},
+    types::{Base32, Tree},
+};
 use cairo_vm::{types::relocatable::MaybeRelocatable, vm::runners::cairo_runner::CairoArg};
 use lazy_static::lazy_static;
 use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
-use shoshin_derive::{CairoArgs, CairoStruct};
 use std::{convert::From, fmt::Debug};
 
 lazy_static! {
     pub static ref PRIME: BigInt = (BigInt::from(FIELD_HIGH) << 128) + BigInt::from(FIELD_LOW);
     pub static ref PRIME_HALF: BigInt = &*PRIME >> 1;
-}
-
-/// Trait defining how to convert a type to CairoArg
-trait IntoCairoArgs {
-    fn into(self) -> CairoArg;
-}
-
-/// Trait defining how to convert &[i32] into our type
-trait FromSliceBase32 {
-    fn from(input: &[i32]) -> Self;
-}
-
-/// Trait defining the size of a cairo struct (amount of felts
-/// required to represent the structure)
-pub trait Sizeable {
-    fn size(&self) -> usize;
 }
 
 #[derive(Debug, PartialEq, CairoArgs, CairoStruct)]
@@ -77,71 +65,6 @@ impl Default for ShoshinInput {
             char_0: Default::default(),
             char_1: Default::default(),
         }
-    }
-}
-
-/// Redefine i32 for trait definition on it
-type Base32 = i32;
-
-impl Sizeable for Base32 {
-    fn size(&self) -> usize {
-        1
-    }
-}
-
-impl FromSliceBase32 for Base32 {
-    fn from(value: &[i32]) -> Self {
-        value[0]
-    }
-}
-
-impl IntoCairoArgs for Vec<i32> {
-    fn into(self) -> CairoArg {
-        let mut temp = vec![];
-        for x in self {
-            temp.push(mayberelocatable!(x));
-        }
-        CairoArg::from(temp)
-    }
-}
-
-/// A value in the binary tree operator
-/// representation of the state machines and functions
-/// (see https://github.com/greged93/bto-cairo)
-#[derive(Debug, PartialEq, Default)]
-pub struct Tree {
-    pub opcode: i32,
-    pub first_value: i32,
-    pub second_value: i32,
-}
-
-impl FromSliceBase32 for Tree {
-    fn from(value: &[i32]) -> Self {
-        Tree {
-            opcode: value[0],
-            first_value: value[1],
-            second_value: value[2],
-        }
-    }
-}
-
-impl Sizeable for Tree {
-    fn size(&self) -> usize {
-        3
-    }
-}
-
-impl IntoCairoArgs for Vec<Tree> {
-    fn into(self) -> CairoArg {
-        let mut temp: Vec<MaybeRelocatable> = vec![];
-        for x in self {
-            temp.append(&mut vec![
-                mayberelocatable!(x.opcode),
-                mayberelocatable!(x.first_value),
-                mayberelocatable!(x.second_value),
-            ]);
-        }
-        CairoArg::from(temp)
     }
 }
 
