@@ -241,6 +241,13 @@ const Conditions = ({
                         </IconButton>
                     </Grid> }
 
+
+                {isWarningTextOn &&
+                    <Grid item xs={12}>
+                    <Typography color={'red'} variant='overline'>{warningText}</Typography>
+                    </Grid>
+                }
+
                 {
                     isReadOnly ? <></> : (
                         <>

@@ -192,6 +192,15 @@ export function verifyValidCondition(c: Condition, confirm: boolean): [boolean, 
     return [true, '']
 }
 
+export function validateConditionName(name: string): string | undefined {
+    if (name && /\s/.test(name)) {
+        return "Name contains whitespace"
+    }
+    if (name.length > 31) {
+        return "Name should be less than 31 characters long"
+    }
+}
+
 // Parse the elements of the condition into a folded Leaf type
 export function parseConditionToLeaf(c: Condition): Leaf {
     let operator: Leaf = parseInner(c.elements)

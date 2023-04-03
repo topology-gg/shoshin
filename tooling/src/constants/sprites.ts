@@ -225,3 +225,227 @@ export const spriteData: Record<string, Record<string, SpriteData[]>> = {
         ],
     },
 };
+
+
+export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
+    antoc: {
+        block: [
+            {
+                size: [343, 239],
+                hitboxOffset: { left: [20,-102], right: [80, -100] },
+            }
+        ],
+        dash_backward: [
+            {
+                size: [193, 142],
+                hitboxOffset: { left: [90,-50], right: [11,-50] },
+            }
+        ],
+        dash_forward: [
+            {
+                size: [193, 142],
+                hitboxOffset: { left: [90,-50], right: [11,-50] },
+            }
+        ],
+        hori: [
+            {
+                size: [343, 239],
+                hitboxOffset: { left: [10, -102], right: [90, -102] },
+            }
+        ],
+        idle: [
+            {
+                size: [180, 142],
+                hitboxOffset: { left: [92, -54], right: [10, -54] },
+            }
+        ],
+        knocked: [
+            {
+                size: [363, 217],
+                hitboxOffset: { left: [170,-82], right: [-55,-82] },
+            },
+            {
+                size: [363, 217],
+                hitboxOffset: { left: [190,-50], right: [30,-50] },
+            },
+            {
+                size: [363, 217],
+                hitboxOffset: { left: [170,-40], right: [50,-35] },
+            },
+            {
+                size: [363, 217],
+                hitboxOffset: { left: [130,-40], right: [90,-40] },
+            },
+            {
+                size: [363, 217],
+                hitboxOffset: { left: [100,-60], right: [110,-60] },
+            },
+            {
+                size: [363, 217],
+                hitboxOffset: { left: [80,-90], right: [135, -90] },
+            },
+            {
+                size: [363, 217],
+                hitboxOffset: { left: [40,-90], right: [185,-90] },
+            },
+            {
+                size: [363, 217],
+                hitboxOffset: { left: [40,-90], right: [200,-90] },
+            },
+            {
+                size: [363, 217],
+                hitboxOffset: { left: [10,-90], right: [120, -90] },
+            },
+            {
+                size: [363, 217],
+                hitboxOffset: { left: [30,-90], right: [70,-90] },
+            },
+            {
+                size: [363, 217],
+                hitboxOffset: { left: [40,-90], right: [65,-90] },
+            }
+        ],
+        vert: [
+            {
+                size: [343, 239],
+                hitboxOffset: { left: [10,-103], right: [90,-103] },
+            }
+        ],
+        walk_backward: [
+            {
+                size: [185, 142],
+                hitboxOffset: { left: [80,-52], right: [20,-52] },
+            }
+        ],
+        walk_forward: [
+            {
+                size: [185, 142],
+                hitboxOffset: { left: [80,-52], right: [20,-52] },
+            }
+        ],
+        hurt: [
+            {
+                size: [187, 140],
+                hitboxOffset: { left: [83,-69], right: [17,-70] },
+            }
+        ]
+    },
+    jessica: {
+        block: [
+            {
+                size: [103, 126],
+                hitboxOffset: { left: [52, -52], right: [52,-52] },
+            }
+        ],
+        clash: [
+            {
+                size: [132, 141],
+                hitboxOffset: { left: [65, -55], right: [35,-55] },
+            }
+        ],
+        dash_backward: [
+            {
+                size: [147, 106],
+                hitboxOffset: { left: [25, -45], right: [80,-50] },
+            }
+        ],
+        dash_forward: [
+            {
+                size: [113, 104],
+                hitboxOffset: { left: [40, -50], right: [60,-50] },
+            }
+        ],
+        hurt: [
+            {
+                size: [105, 142],
+                hitboxOffset: { left: [55, -60], right: [40,-60] },
+            }
+        ],
+        idle: [
+            {
+                size: [96, 126],
+                hitboxOffset: { left: [50, -53], right: [45,-53] },
+            }
+        ],
+        knocked: [
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [120,-55], right: [10,-55] },
+            },
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [75,-55], right: [50,-55] },
+            },
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [100,-20], right: [80,-20] },
+            },
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [90,-10], right: [85,-10] },
+            },
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [80,-10], right: [78,-10] },
+            },
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [80,-9], right: [80,-10] },
+            },
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [80,-9], right: [85,-9] },
+            },
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [40,-10], right: [40,-10] },
+            },
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [55,-20], right: [45,-20] },
+            },
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [45,-30], right: [45,-30] },
+            },
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [45,-47], right: [45,-47] },
+            },
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [0,0], right: [0,0] },
+            },
+        ],
+        sidecut: [
+            {
+                size: [239, 141],
+                hitboxOffset: { left: [20, -50], right: [80,-55] },
+            }
+        ],
+        slash: [
+            {
+                size: [181, 183],
+                hitboxOffset: { left: [25, -78], right: [80,-80] },
+            }
+        ],
+        upswing: [
+            {
+                size: [205, 167],
+                hitboxOffset: { left: [28, -70], right: [70,-65] },
+            }
+        ],
+        walk_backward: [
+            {
+                size: [105, 142],
+                hitboxOffset: { left: [56, -58], right: [40,-58] },
+            }
+        ],
+        walk_forward: [
+            {
+                size: [105, 142],
+                hitboxOffset: { left: [56, -58], right: [40,-58] },
+            }
+        ],
+    },
+};
