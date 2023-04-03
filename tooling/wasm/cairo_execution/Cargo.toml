@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-cairo-vm = {git = "https://github.com/lambdaclass/cairo-rs.git", default-features = false}
-cairo-felt = {git = "https://github.com/lambdaclass/cairo-rs.git", default-features = false}
+cairo-vm = {git = "https://github.com/lambdaclass/cairo-rs.git", default-features = false, rev = "abaf215" }
+cairo-felt = {git = "https://github.com/lambdaclass/cairo-rs.git", default-features = false, rev = "abaf215" }
 
 anyhow = "1.0.68"
 thiserror = "1.0.40"
