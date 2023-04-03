@@ -1,5 +1,5 @@
 ///! Implements all traits and types required for running the shoshin cairo loop
-use crate::{bigint, mayberelocatable};
+use cairo_execution::{bigint, mayberelocatable};
 use cairo_felt::{Felt, FIELD_HIGH, FIELD_LOW};
 use cairo_vm::{types::relocatable::MaybeRelocatable, vm::runners::cairo_runner::CairoArg};
 use lazy_static::lazy_static;

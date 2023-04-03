@@ -15,6 +15,7 @@ cairo-felt = {git = "https://github.com/lambdaclass/cairo-rs.git", default-featu
 serde_json = "1.0.87"
 wasm-bindgen = "0.2.83"
 num-bigint = { version = "0.4", features = ["serde"] }
+num-traits = "0.2.15"
 anyhow = "1.0.68"
 lazy_static = "1.4.0"
 serde = "1.0.152"
@@ -26,7 +27,6 @@ serde-wasm-bindgen = "0.4"
 wee_alloc = { version = "0.4.5", optional = true }
 shoshin_derive = { path = "../shoshin_derive" }
 cairo_execution = { path = "../cairo_execution" }
-num-traits = "0.2.15"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
