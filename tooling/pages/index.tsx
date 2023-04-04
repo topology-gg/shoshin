@@ -651,7 +651,7 @@ export default function Home() {
     let FightView = (
         <div
             className={styles.main}
-            style={{ display: "flex", flexDirection: "column" }}
+            style={{ display: "flex", flexDirection: "column", padding:0, alignItems:'center'}}
         >
             <div
                 style={{
@@ -783,7 +783,7 @@ export default function Home() {
     // Render
     //
     return (
-        <div className={styles.container}>
+        <div>
             <Head>
                 <title>Shoshin Tooling</title>
                 <meta
@@ -793,20 +793,31 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <Tabs value={swipeableViewIndex} onChange={(event, newValue) => setSwipeableViewIndex((_) => newValue)} aria-label="basic tabs example">
-                <Tab label={'FightView'}/>
-                <Tab label={'EditorView'}/>
-            </Tabs>
-
-            <ThemeProvider theme={theme}>
-                <SwipeableViews
-                    index={swipeableViewIndex}
-                    // onChangeIndex={(e) => console.log('swipeable:', e)}
+            <div style={{marginBottom:'3rem'}}>
+                <Tabs
+                    value={swipeableViewIndex}
+                    onChange={(event, newValue) => setSwipeableViewIndex((_) => newValue)}
+                    aria-label="basic tabs example"
+                    sx={{mt:2, mb:5}}
                 >
-                    <div>{FightView}</div>
-                    <div>{EditorView}</div>
-                </SwipeableViews>
-            </ThemeProvider>
+                    <Tab label={'FightView'}/>
+                    <Tab label={'EditorView'}/>
+                </Tabs>
+
+                <ThemeProvider theme={theme}>
+                    <SwipeableViews
+                        index={swipeableViewIndex}
+                        containerStyle={{
+                            transition: 'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s'
+                        }}
+                        // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
+                        // a fix for the issue: first index change doesn't animate (swipe)
+                    >
+                        <div>{FightView}</div>
+                        <div>{EditorView}</div>
+                    </SwipeableViews>
+                </ThemeProvider>
+            </div>
         </div>
     );
 }
