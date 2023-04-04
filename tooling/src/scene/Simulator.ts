@@ -83,8 +83,6 @@ export default class Platformer extends Phaser.Scene {
         const yDisplacementFromCenterToGround = -150;
         let bg = this.add.image(0,0,'arena_bg');
         bg.setScale(2.5, 2.5).setPosition(0, bg.y + yDisplacementFromCenterToGround)
-        console.log("bg x, ", bg.x)
-        console.log("bg y " , bg.y)
 
         const outOfBoundX = 2000
         this.player_one = this.add.sprite(-outOfBoundX,0,`antoc-idle`, 0)

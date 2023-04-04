@@ -94,7 +94,7 @@ const Conditions = ({
     const [currentConstant, setCurrentConstant] = useState<number>()
     const handleAddElement = (e: React.MouseEvent) => {
         const element = elementFromEvent(e, currentConstant)
-        handleUpdateCondition(conditionUnderEditIndex, element, f.name)
+        handleUpdateCondition(conditionUnderEditIndex, element, f.displayName)
     }
     const [disabled, setDisabled] = useState<boolean>(false)
 
@@ -144,7 +144,7 @@ const Conditions = ({
                                 // on change, update with the selected value and remove disabled
                                 onChange={(_, bs: BodyStateOption) => {
                                     setDisabled(false)
-                                    handleUpdateCondition(conditionUnderEditIndex, {value: bs.bodystate, type: ElementType.BodyState}, f.name)
+                                    handleUpdateCondition(conditionUnderEditIndex, {value: bs.bodystate, type: ElementType.BodyState}, f.displayName)
                                 }}
                             />
                         </div>
@@ -188,7 +188,7 @@ const Conditions = ({
                         >
                             {conditions.slice(0, conditions.length - 1).map((_, i) =>
                                 <MenuItem value={i}>
-                                    {conditions[i].name || `F${i}`}
+                                    {conditions[i].displayName || `F${i}`}
                                 </MenuItem>
                             )}
                             <MenuItem value={conditions.length - 1} disabled={isReadOnly}>New Condition</MenuItem>
@@ -212,8 +212,8 @@ const Conditions = ({
                       label="Give it a name"
                       size="small"
                       fullWidth
-                      value={f.name || ""}
-                      onChange={(e) => handleUpdateCondition(conditionUnderEditIndex, {}, e.target.value)}
+                      value={f.displayName || ""}
+                      onChange={(e) => handleUpdateCondition(conditionUnderEditIndex, undefined, e.target.value)}
                     />
                 </Grid>
 

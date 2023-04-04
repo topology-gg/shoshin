@@ -54,6 +54,7 @@ import ConnectWallet from "../src/components/ConnectWallet";
 import { EditorTabName } from "../src/components/sidePanelComponents/Tabs";
 import { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
 import dynamic from "next/dynamic";
+import crypto from "crypto";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -229,7 +230,7 @@ export default function Home() {
 
     // Decode from React states
     if (testJson !== null) {
-        console.log("testJson:", testJson);
+        //console.log("testJson:", testJson);
     }
     const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length;
 
@@ -382,8 +383,8 @@ export default function Home() {
         // regexp string for matching pattern matching expressions
         let pattern = /^(\S+)\s*=>\s*(.+?)(?:\n|$)/gm;
 
-        let f = conditions.slice(0, conditions.length - 1).map((_, i) => {
-            return `F${i}`;
+        let f = conditions.slice(0, conditions.length - 1).map((f, _) => {
+            return f;
         });
         let ms = mentalStates.map((m) => {
             return m.state;
@@ -393,11 +394,14 @@ export default function Home() {
         // match mental state and _ : add the node to the tree
         // otherwise display warning text
         while ((match = pattern.exec(input))) {
-            let fCondition = f.includes(match[1]);
+            let fCondition = f.find(
+                (condition) => condition.displayName == match[1]
+            );
+
             let mCondition = ms.includes(match[2]);
             if (fCondition && mCondition) {
                 new_tree.nodes.push(
-                    { id: match[1], isChild: false },
+                    { id: fCondition.key, isChild: false },
                     { id: match[2], isChild: true, branch: Direction.Left }
                 );
             } else if (mCondition && match[1] === "_") {
@@ -429,21 +433,30 @@ export default function Home() {
     function handleUpdateCondition(
         index: number,
         element: ConditionElement,
-        name: string
+        displayName: string
     ) {
         setConditions((prev) => {
             let prev_copy: Condition[] = JSON.parse(JSON.stringify(prev));
             if (index == 0 && !prev_copy[index]) {
                 prev_copy = [{ elements: [] }];
             }
-            const nameError = validateConditionName(name);
+            const nameError = validateConditionName(displayName);
             if (nameError) {
                 setConditionWarningTextOn(true);
                 setConditionWarningText(nameError);
                 setTimeout(() => setConditionWarningTextOn(false), 5000);
                 return prev_copy;
             }
-            prev_copy[index].name = name;
+            prev_copy[index].displayName = displayName;
+            console.log(prev_copy[index]);
+            if (!prev_copy[index].key) {
+                prev_copy[index].key = crypto
+                    .createHash("sha256")
+                    .update(Date.now().toString())
+                    .digest("hex")
+                    .toString();
+            }
+
             if (element) {
                 prev_copy[index].elements.push(element);
                 let [isValidFunction, error] = verifyValidCondition(
@@ -641,8 +654,12 @@ export default function Home() {
             return tree;
         });
         setConditions(() => {
-            let cond = agent.conditions.map((x) => {
-                return { elements: includeBodyState(unwrapLeafToCondition(x)) };
+            let cond: Condition[] = agent.conditions.map((x, i) => {
+                return {
+                    elements: includeBodyState(unwrapLeafToCondition(x)),
+                    key: `F${i}`,
+                    displayName: `F${i}`,
+                };
             });
             cond.push({ elements: [] }); // add an empty condition for editing
             return cond;
