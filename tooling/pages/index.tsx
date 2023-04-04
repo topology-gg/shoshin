@@ -53,6 +53,10 @@ import ConnectWallet from "../src/components/ConnectWallet";
 import { EditorTabName } from "../src/components/sidePanelComponents/Tabs";
 import { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
 import dynamic from "next/dynamic";
+import SwipeableViews from 'react-swipeable-views';
+import { bindKeyboard } from 'react-swipeable-views-utils';
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -642,6 +646,139 @@ export default function Home() {
         setConditionUnderEditIndex(() => 0);
     }
 
+    const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
+
+    let FightView = (
+        <div
+            className={styles.main}
+            style={{ display: "flex", flexDirection: "column" }}
+        >
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                }}
+            >
+                <P1P2SettingPanel
+                    agentsFromRegistry={t}
+                    agentChange={agentChange}
+                />
+
+                <StatusBarPanel
+                    testJson={testJson}
+                    animationFrame={animationFrame}
+                />
+
+                <Game
+                    testJson={testJson}
+                    animationFrame={animationFrame}
+                    showDebug={checkedShowDebugInfo}
+                />
+
+                <MidScreenControl
+                    runnable={!(p1 == null || p2 == null)}
+                    testJsonAvailable={
+                        testJson ? true : false
+                    }
+                    animationFrame={animationFrame}
+                    n_cycles={N_FRAMES}
+                    animationState={animationState}
+                    handleClick={
+                        handleMidScreenControlClick
+                    }
+                    handleSlideChange={(evt) => {
+                        if (animationState == "Run") return;
+                        const slide_val: number = parseInt(
+                            evt.target.value
+                        );
+                        setAnimationFrame(slide_val);
+                    }}
+                    checkedShowDebugInfo={
+                        checkedShowDebugInfo
+                    }
+                    handleChangeDebugInfo={() =>
+                        setCheckedShowDebugInfo(
+                            (_) => !checkedShowDebugInfo
+                        )
+                    }
+                />
+                <FrameInspector
+                    testJson={testJson}
+                    animationFrame={animationFrame}
+                />
+            </div>
+        </div>
+    )
+
+    let EditorView = (
+        <SidePanel
+            editorMode={editorMode}
+            settingModalOpen={settingModalOpen}
+            setSettingModalOpen={(bool) =>
+                setSettingModalOpen(() => bool)
+            }
+            studyAgent={(agent: Agent) => {
+                setEditorMode(() => EditorMode.ReadOnly);
+                setAgentInPanelToAgent(agent);
+            }}
+            buildNewAgentFromBlank={() => {
+                setEditorMode(() => EditorMode.Edit);
+                setAgentInPanelToAgent(BLANK_AGENT);
+            }}
+            buildNewAgentFromAgent={(agent: Agent) => {
+                setEditorMode(() => EditorMode.Edit);
+                setAgentInPanelToAgent(agent);
+            }}
+            agentName={agentName}
+            setAgentName={setAgentName}
+            workingTab={workingTab}
+            handleClickTab={setWorkingTab}
+            character={character}
+            setCharacter={(value) => {
+                console.log("setCharacter:", value);
+                setCharacter(value);
+            }}
+            mentalStates={mentalStates}
+            initialMentalState={initialMentalState}
+            handleSetInitialMentalState={setInitialMentalState}
+            combos={combos}
+            handleValidateCombo={handleValidateCombo}
+            handleAddMentalState={handleAddMentalState}
+            handleClickRemoveMentalState={
+                handleClickRemoveMentalState
+            }
+            handleSetMentalStateAction={
+                handleSetMentalStateAction
+            }
+            treeEditor={treeEditor}
+            handleClickTreeEditor={handleClickTreeEditor}
+            trees={trees}
+            handleUpdateTree={handleUpdateTree}
+            conditions={conditions}
+            handleUpdateCondition={handleUpdateCondition}
+            handleConfirmCondition={handleConfirmCondition}
+            handleClickDeleteCondition={
+                handleClickDeleteCondition
+            }
+            conditionUnderEditIndex={conditionUnderEditIndex}
+            setConditionUnderEditIndex={
+                setConditionUnderEditIndex
+            }
+            isConditionWarningTextOn={isConditionWarningTextOn}
+            conditionWarningText={conditionWarningText}
+            isTreeEditorWarningTextOn={
+                isTreeEditorWarningTextOn
+            }
+            treeEditorWarningText={treeEditorWarningText}
+            handleRemoveConditionElement={
+                handleRemoveConditionElement
+            }
+            handleSubmitAgent={handleSubmitAgent}
+            agents={agents}
+        />
+    )
+
+    const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
     //
     // Render
     //
@@ -656,146 +793,19 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
+            <Tabs value={swipeableViewIndex} onChange={(event, newValue) => setSwipeableViewIndex((_) => newValue)} aria-label="basic tabs example">
+                <Tab label={'FightView'}/>
+                <Tab label={'EditorView'}/>
+            </Tabs>
+
             <ThemeProvider theme={theme}>
-                <Grid container spacing={1}>
-                    {/* <Grid item xs={2}></Grid> */}
-                    <Grid item xs={8}>
-                        <div
-                            className={styles.main}
-                            style={{ display: "flex", flexDirection: "column" }}
-                        >
-                            {/* <ImagePreloader
-                                onComplete={() => {
-                                    console.log("completed images");
-                                }}
-                            /> */}
-                            {
-                                // !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant='outlined' disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                    }}
-                                >
-                                    <P1P2SettingPanel
-                                        agentsFromRegistry={t}
-                                        agentChange={agentChange}
-                                    />
-
-                                    <StatusBarPanel
-                                        testJson={testJson}
-                                        animationFrame={animationFrame}
-                                    />
-
-                                    <Game
-                                        testJson={testJson}
-                                        animationFrame={animationFrame}
-                                        showDebug={checkedShowDebugInfo}
-                                    />
-
-                                    <MidScreenControl
-                                        runnable={!(p1 == null || p2 == null)}
-                                        testJsonAvailable={
-                                            testJson ? true : false
-                                        }
-                                        animationFrame={animationFrame}
-                                        n_cycles={N_FRAMES}
-                                        animationState={animationState}
-                                        handleClick={
-                                            handleMidScreenControlClick
-                                        }
-                                        handleSlideChange={(evt) => {
-                                            if (animationState == "Run") return;
-                                            const slide_val: number = parseInt(
-                                                evt.target.value
-                                            );
-                                            setAnimationFrame(slide_val);
-                                        }}
-                                        checkedShowDebugInfo={
-                                            checkedShowDebugInfo
-                                        }
-                                        handleChangeDebugInfo={() =>
-                                            setCheckedShowDebugInfo(
-                                                (_) => !checkedShowDebugInfo
-                                            )
-                                        }
-                                    />
-                                    <FrameInspector
-                                        testJson={testJson}
-                                        animationFrame={animationFrame}
-                                    />
-                                </div>
-                            }
-                        </div>
-                    </Grid>
-                    <Grid item xs={4} sx={{ bgcolor: "grey.50" }}>
-                        <SidePanel
-                            editorMode={editorMode}
-                            settingModalOpen={settingModalOpen}
-                            setSettingModalOpen={(bool) =>
-                                setSettingModalOpen(() => bool)
-                            }
-                            studyAgent={(agent: Agent) => {
-                                setEditorMode(() => EditorMode.ReadOnly);
-                                setAgentInPanelToAgent(agent);
-                            }}
-                            buildNewAgentFromBlank={() => {
-                                setEditorMode(() => EditorMode.Edit);
-                                setAgentInPanelToAgent(BLANK_AGENT);
-                            }}
-                            buildNewAgentFromAgent={(agent: Agent) => {
-                                setEditorMode(() => EditorMode.Edit);
-                                setAgentInPanelToAgent(agent);
-                            }}
-                            agentName={agentName}
-                            setAgentName={setAgentName}
-                            workingTab={workingTab}
-                            handleClickTab={setWorkingTab}
-                            character={character}
-                            setCharacter={(value) => {
-                                console.log("setCharacter:", value);
-                                setCharacter(value);
-                            }}
-                            mentalStates={mentalStates}
-                            initialMentalState={initialMentalState}
-                            handleSetInitialMentalState={setInitialMentalState}
-                            combos={combos}
-                            handleValidateCombo={handleValidateCombo}
-                            handleAddMentalState={handleAddMentalState}
-                            handleClickRemoveMentalState={
-                                handleClickRemoveMentalState
-                            }
-                            handleSetMentalStateAction={
-                                handleSetMentalStateAction
-                            }
-                            treeEditor={treeEditor}
-                            handleClickTreeEditor={handleClickTreeEditor}
-                            trees={trees}
-                            handleUpdateTree={handleUpdateTree}
-                            conditions={conditions}
-                            handleUpdateCondition={handleUpdateCondition}
-                            handleConfirmCondition={handleConfirmCondition}
-                            handleClickDeleteCondition={
-                                handleClickDeleteCondition
-                            }
-                            conditionUnderEditIndex={conditionUnderEditIndex}
-                            setConditionUnderEditIndex={
-                                setConditionUnderEditIndex
-                            }
-                            isConditionWarningTextOn={isConditionWarningTextOn}
-                            conditionWarningText={conditionWarningText}
-                            isTreeEditorWarningTextOn={
-                                isTreeEditorWarningTextOn
-                            }
-                            treeEditorWarningText={treeEditorWarningText}
-                            handleRemoveConditionElement={
-                                handleRemoveConditionElement
-                            }
-                            handleSubmitAgent={handleSubmitAgent}
-                            agents={agents}
-                        />
-                    </Grid>
-                </Grid>
+                <SwipeableViews
+                    index={swipeableViewIndex}
+                    // onChangeIndex={(e) => console.log('swipeable:', e)}
+                >
+                    <div>{FightView}</div>
+                    <div>{EditorView}</div>
+                </SwipeableViews>
             </ThemeProvider>
         </div>
     );
