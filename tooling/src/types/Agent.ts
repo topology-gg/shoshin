@@ -28,7 +28,7 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     let indexes: Map<number, boolean> = new Map()
     trees.forEach((t: Tree) => {
         let [parsedMentalState, usedConditions] = parseTree(t, mentalStates)
-        usedConditions.forEach((_, k) => {
+        usedConditions.forEach((k, _) => {
             indexes.set(k, true)
         })
         agentMentalStates.push(parsedMentalState)
