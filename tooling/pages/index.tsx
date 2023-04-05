@@ -181,6 +181,7 @@ export default function Home() {
 
     useEffect(() => {
         if (output) {
+            console.log('caught output:', output)
             setTestJson((_) => {
                 return {
                     agent_0: { frames: output.agent_0, type: p1.character },
@@ -650,69 +651,6 @@ export default function Home() {
 
     const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 
-    let FightView = (
-        <div
-            className={styles.main}
-            style={{ display: "flex", flexDirection: "column", padding:0, alignItems:'center'}}
-        >
-            <div
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                }}
-            >
-                <P1P2SettingPanel
-                    agentsFromRegistry={t}
-                    agentChange={agentChange}
-                />
-
-                <StatusBarPanel
-                    testJson={testJson}
-                    animationFrame={animationFrame}
-                />
-
-                <Game
-                    testJson={testJson}
-                    animationFrame={animationFrame}
-                    animationState={animationState}
-                    showDebug={checkedShowDebugInfo}
-                />
-
-                <MidScreenControl
-                    runnable={!(p1 == null || p2 == null)}
-                    testJsonAvailable={
-                        testJson ? true : false
-                    }
-                    animationFrame={animationFrame}
-                    n_cycles={N_FRAMES}
-                    animationState={animationState}
-                    handleClick={
-                        handleMidScreenControlClick
-                    }
-                    handleSlideChange={(evt) => {
-                        if (animationState == "Run") return;
-                        const slide_val: number = parseInt(
-                            evt.target.value
-                        );
-                        setAnimationFrame(slide_val);
-                    }}
-                    checkedShowDebugInfo={
-                        checkedShowDebugInfo
-                    }
-                    handleChangeDebugInfo={() =>
-                        setCheckedShowDebugInfo(
-                            (_) => !checkedShowDebugInfo
-                        )
-                    }
-                />
-                <FrameInspector
-                    testJson={testJson}
-                    animationFrame={animationFrame}
-                />
-            </div>
-        </div>
-    )
-
     let EditorViewComponent = (
         <EditorView
             editorMode={editorMode}
@@ -781,6 +719,69 @@ export default function Home() {
         />
     )
 
+    let FightView = (
+        <div
+            className={styles.main}
+            style={{ display: "flex", flexDirection: "column", padding:0, alignItems:'center'}}
+        >
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                }}
+            >
+                <P1P2SettingPanel
+                    agentsFromRegistry={t}
+                    agentChange={agentChange}
+                />
+
+                <StatusBarPanel
+                    testJson={testJson}
+                    animationFrame={animationFrame}
+                />
+
+                <Game
+                    testJson={testJson}
+                    animationFrame={animationFrame}
+                    animationState={animationState}
+                    showDebug={checkedShowDebugInfo}
+                />
+
+                <MidScreenControl
+                    runnable={!(p1 == null || p2 == null)}
+                    testJsonAvailable={
+                        testJson ? true : false
+                    }
+                    animationFrame={animationFrame}
+                    n_cycles={N_FRAMES}
+                    animationState={animationState}
+                    handleClick={
+                        handleMidScreenControlClick
+                    }
+                    handleSlideChange={(evt) => {
+                        if (animationState == "Run") return;
+                        const slide_val: number = parseInt(
+                            evt.target.value
+                        );
+                        setAnimationFrame(slide_val);
+                    }}
+                    checkedShowDebugInfo={
+                        checkedShowDebugInfo
+                    }
+                    handleChangeDebugInfo={() =>
+                        setCheckedShowDebugInfo(
+                            (_) => !checkedShowDebugInfo
+                        )
+                    }
+                />
+                <FrameInspector
+                    testJson={testJson}
+                    animationFrame={animationFrame}
+                />
+            </div>
+        </div>
+    )
+
     const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
     //
     // Render
@@ -820,8 +821,8 @@ export default function Home() {
                         // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
                         // a fix for the issue: first index change doesn't animate (swipe)
                     >
-                        <div>{FightView}</div>
-                        <div>{EditorViewComponent}</div>
+                        <div>{ FightView }</div>
+                        <div>{ EditorViewComponent }</div>
                         <div style={{paddingLeft:'10rem', paddingRight:'10rem'}}><ContractInformationView /></div>
                         <div style={{paddingLeft:'10rem', paddingRight:'10rem'}}><WalletConnectView /></div>
                     </SwipeableViews>

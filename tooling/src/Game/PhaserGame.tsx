@@ -112,7 +112,7 @@ const Game = ({testJson, animationFrame, animationState, showDebug}: SimulatorPr
         //@ts-ignore
         let scene = game.current?.scene.getScene('simulator') as Simulator;
 
-        if(scene == undefined)
+        if(scene == undefined || !testJson)
         {
           return
         }

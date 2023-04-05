@@ -237,6 +237,7 @@ export default class Platformer extends Phaser.Scene {
 
     }
     updateScene({testJson, animationFrame, animationState, showDebug}: SimulatorProps){
+        console.log('updateScene::testJson', testJson)
                 const characterType0 = testJson?.agent_0.type
                 const characterType1 = testJson?.agent_1.type
                 const agentFrame0 = testJson?.agent_0.frames[animationFrame]
