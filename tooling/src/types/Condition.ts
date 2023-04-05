@@ -193,12 +193,19 @@ export function verifyValidCondition(c: Condition, confirm: boolean): [boolean, 
     return [true, '']
 }
 
-export function validateConditionName(name: string): string | undefined {
+export function validateConditionName(name: string, conditions : Condition[]): string | undefined {
     if (name && /\s/.test(name)) {
         return "Name contains whitespace"
     }
+
     if (name.length > 31) {
-        return "Name should be less than 31 characters long"
+        return "Name should be less than 31 characters long" + `\n String \"${name}\" is ${name.length} characters long!` 
+    }
+
+    const nameCollision = conditions.find(condition => condition.displayName == name)
+
+    if(nameCollision){
+        return "Duplicate condition name exists"
     }
 }
 

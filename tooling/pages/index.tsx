@@ -321,7 +321,6 @@ export default function Home() {
         console.log("> submitting args:", callData);
         try {
             setHash("");
-
             const response = await execute();
             setHash(response.transaction_hash);
         } catch (err) {
@@ -439,7 +438,7 @@ export default function Home() {
             if (index == 0 && !prev_copy[index]) {
                 prev_copy = [{ elements: [] }];
             }
-            const nameError = validateConditionName(displayName);
+            const nameError = validateConditionName(displayName, prev_copy);
             if (nameError) {
                 setConditionWarningTextOn(true);
                 setConditionWarningText(nameError);
@@ -653,11 +652,13 @@ export default function Home() {
             return tree;
         });
         setConditions(() => {
+            
             let cond: Condition[] = agent.conditions.map((x, i) => {
+                let conditionName = agent.conditionNames[i] ? agent.conditionNames[i] : `F${i}`
                 return {
                     elements: includeBodyState(unwrapLeafToCondition(x)),
                     key: `F${i}`,
-                    displayName: `F${i}`,
+                    displayName: conditionName,
                 };
             });
             cond.push({ elements: [] }); // add an empty condition for editing

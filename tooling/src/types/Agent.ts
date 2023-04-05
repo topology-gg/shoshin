@@ -11,6 +11,7 @@ export default interface Agent {
     mentalStates?: Leaf[],
     initialState?: number,
     conditions?: Leaf[],
+    conditionNames?: string[],
     actions?: number[],
     character?: number,
 }
@@ -36,10 +37,13 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     agent.mentalStates = agentMentalStates
 
     let agentConditions = []
+    let agentCondtionNames = []
     // makes use of indexes to only parse the necessary conditions
     Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => conditions[i]).forEach((f) => {
+        agentCondtionNames.push(f.displayName)
         agentConditions.push(parseConditionToLeaf(f))
     })
+    agent.conditionNames = agentCondtionNames
     agent.conditions = agentConditions
 
     agent.actions = mentalStates.map((ms) => ms.action)
@@ -162,6 +166,7 @@ export function agentToArray(agent: Agent): number[] {
         conditionsOffset,
         conditions,
     ] = flattenAgent(agent);
+
     return [
         combosOffset.length,
         ...combosOffset,
@@ -178,8 +183,8 @@ export function agentToArray(agent: Agent): number[] {
         ...conditionsOffset,
         conditions.length / 3,
         ...conditions,
-        conditionsOffset.length, // conditions names length
-        ...conditionsOffset.map((_) => 0),
+        agent.conditionNames.length,
+        ...agent.conditionNames.map(encodeStringToFelt),
         agent.actions.length,
         ...agent.actions,
         agent.character,
