@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createTheme, ThemeProvider } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import MidScreenControl from "../src/components/MidScreenControl";
-import SidePanel from "../src/components/sidePanelComponents/SidePanel";
+import EditorView from "../src/components/sidePanelComponents/EditorView";
 import { FrameScene, TestJson } from "../src/types/Frame";
 import { Tree, Direction } from "../src/types/Tree";
 import {
@@ -50,13 +50,15 @@ import {
     useStarknetExecute,
 } from "@starknet-react/core";
 import ConnectWallet from "../src/components/ConnectWallet";
-import { EditorTabName } from "../src/components/sidePanelComponents/Tabs";
+import { EditorTabName } from "../src/components/sidePanelComponents/EditorTabs";
 import { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
 import dynamic from "next/dynamic";
 import SwipeableViews from 'react-swipeable-views';
 import { bindKeyboard } from 'react-swipeable-views-utils';
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import ContractInformationView from "../src/components/sidePanelComponents/ContractInformationView"
+import WalletConnectView from "../src/components/sidePanelComponents/WalletConnectView"
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -710,8 +712,8 @@ export default function Home() {
         </div>
     )
 
-    let EditorView = (
-        <SidePanel
+    let EditorViewComponent = (
+        <EditorView
             editorMode={editorMode}
             settingModalOpen={settingModalOpen}
             setSettingModalOpen={(bool) =>
@@ -783,7 +785,7 @@ export default function Home() {
     // Render
     //
     return (
-        <div>
+        <div className={styles.container}>
             <Head>
                 <title>Shoshin Tooling</title>
                 <meta
@@ -793,20 +795,24 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <div style={{marginBottom:'3rem'}}>
+            <div style={{marginBottom:'3rem'}} className={styles.main}>
                 <Tabs
                     value={swipeableViewIndex}
                     onChange={(event, newValue) => setSwipeableViewIndex((_) => newValue)}
                     aria-label="basic tabs example"
                     sx={{mt:2, mb:5}}
+                    centered
                 >
-                    <Tab label={'FightView'}/>
-                    <Tab label={'EditorView'}/>
+                    <Tab label={'Fight'}/>
+                    <Tab label={'Edit'}/>
+                    <Tab label={'Reference'}/>
+                    <Tab label={'Wallet'}/>
                 </Tabs>
 
                 <ThemeProvider theme={theme}>
                     <SwipeableViews
                         index={swipeableViewIndex}
+                        sx={{zIndex:10}}
                         containerStyle={{
                             transition: 'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s'
                         }}
@@ -814,7 +820,9 @@ export default function Home() {
                         // a fix for the issue: first index change doesn't animate (swipe)
                     >
                         <div>{FightView}</div>
-                        <div>{EditorView}</div>
+                        <div>{EditorViewComponent}</div>
+                        <div style={{paddingLeft:'10rem', paddingRight:'10rem'}}><ContractInformationView /></div>
+                        <div style={{paddingLeft:'10rem', paddingRight:'10rem'}}><WalletConnectView /></div>
                     </SwipeableViews>
                 </ThemeProvider>
             </div>
