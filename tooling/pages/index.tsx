@@ -674,6 +674,7 @@ export default function Home() {
                 <Game
                     testJson={testJson}
                     animationFrame={animationFrame}
+                    animationState={animationState}
                     showDebug={checkedShowDebugInfo}
                 />
 
