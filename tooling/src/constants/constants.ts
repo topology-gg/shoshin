@@ -221,7 +221,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 1020, type: ElementType.Constant },
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
         ],
-        displayName : "Body state certain",
+        displayName : "oponent_is_attacking",
         key: "1"
     },
     {
@@ -234,7 +234,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.Lte, type: ElementType.Operator},
             { value: 80, type: ElementType.Constant},
         ],
-        displayName : "Oppenent closer than 80px",
+        displayName : "closer_than_80px",
         key: "2"
     },
     {
@@ -245,7 +245,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.Lte, type: ElementType.Operator},
             { value: 10, type: ElementType.Constant},
         ],
-        displayName : "Opponent vel < 10",
+        displayName : "oponent_velocity_lt_10",
         key: "3"
     },
     {
@@ -266,7 +266,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 80, type: ElementType.Constant},
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
         ],
-        displayName : "oponent low health and close",
+        displayName : "oponent_300_integrity_and_close",
         key: "4"
     },
     {
@@ -277,7 +277,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 200, type: ElementType.Constant},
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
         ],
-        displayName : "Self is low hp",
+        displayName : "self_lte_200_integrity",
         key: "5"
     },
     {
@@ -315,7 +315,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
         ],
         
-        displayName : "body state specific",
+        displayName : "oponent_approaching",
         key: "10"
     },
     {
@@ -324,7 +324,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.Equal, type: ElementType.Operator },
             { value: 0, type: ElementType.Constant },
         ],
-        displayName : "openent low hp and body state specific",
+        displayName : "self_idle",
         key: "6"
     },
     {
@@ -363,7 +363,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
         ],
         
-        displayName : "self idle",
+        displayName : "not_attacking",
         key: "7"
     },
     {
@@ -372,7 +372,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.Lte, type: ElementType.Operator },
             { value: 4, type: ElementType.Constant },
         ],
-        displayName : "more body states",
+        displayName : "self_lte_4_frames",
         key: "7"
     },
     {
@@ -382,7 +382,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 1, type: ElementType.Constant },
         ],
         
-        displayName : "less than 4 frames into attack",
+        displayName : "one_eq_one",
         key: "8"
     },
     {
