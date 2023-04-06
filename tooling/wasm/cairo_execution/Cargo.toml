@@ -11,3 +11,5 @@ cairo-felt = {git = "https://github.com/lambdaclass/cairo-rs.git", default-featu
 
 anyhow = "1.0.68"
 thiserror = "1.0.40"
+
+cairo_types = { path = "../cairo_types" }

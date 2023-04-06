@@ -178,9 +178,11 @@ dependencies = [
 name = "cairo_derive"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "proc-macro2",
  "quote",
  "syn 1.0.109",
+ "thiserror",
 ]
 
 [[package]]
@@ -190,6 +192,7 @@ dependencies = [
  "anyhow",
  "cairo-felt",
  "cairo-vm",
+ "cairo_types",
  "thiserror",
 ]
 
@@ -199,7 +202,6 @@ version = "0.1.0"
 dependencies = [
  "cairo-felt",
  "cairo-vm",
- "cairo_execution",
  "num-bigint",
 ]
 
@@ -263,6 +265,7 @@ dependencies = [
  "cairo-vm",
  "cairo_derive",
  "cairo_execution",
+ "cairo_types",
  "num-bigint",
  "num-traits",
  "serde-wasm-bindgen",
