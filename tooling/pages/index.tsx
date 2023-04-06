@@ -438,7 +438,9 @@ export default function Home() {
             if (index == 0 && !prev_copy[index]) {
                 prev_copy = [{ elements: [] }];
             }
-            const nameError = validateConditionName(displayName, prev_copy);
+
+            const excludingSelectedCondition = prev_copy.filter((_, i) => index != i)
+            const nameError = validateConditionName(displayName, excludingSelectedCondition);
             if (nameError) {
                 setConditionWarningTextOn(true);
                 setConditionWarningText(nameError);
