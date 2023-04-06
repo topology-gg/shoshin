@@ -10,5 +10,3 @@ cairo-vm = {git = "https://github.com/lambdaclass/cairo-rs.git", default-feature
 cairo-felt = {git = "https://github.com/lambdaclass/cairo-rs.git", default-features = false, rev = "abaf215" }
 
 num-bigint = { version = "0.4", features = ["serde"] }
-
-cairo_execution = { path = "../cairo_execution" }
