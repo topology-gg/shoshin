@@ -1,12 +1,18 @@
 extern crate proc_macro;
 use anyhow::Error;
 use proc_macro2::TokenStream;
-use quote::quote;
+use quote::{quote, ToTokens};
 use syn::{
     parse2, Data, DataStruct, DeriveInput, Fields, PathArguments, PathSegment, Type, TypePath,
 };
 
 static PRIMITIVES: [&str; 7] = ["u8", "u16", "u32", "i8", "i16", "i32", "Base32"];
+
+#[derive(thiserror::Error, Debug)]
+enum CairoDeriveError {
+    #[error("Error parsing the input: {0}")]
+    ParseError(String),
+}
 
 /// Macro allows to derive the implementation of Into<CairoArg> for Vec<i32> trait
 /// from a structure. The macro uses the structure to derive the implementation.
@@ -15,55 +21,61 @@ pub fn derive_into_cairo_args(input: proc_macro::TokenStream) -> proc_macro::Tok
     // Build the trait implementation
     let input = proc_macro2::TokenStream::from(input);
 
-    proc_macro::TokenStream::from(impl_into_cairo_args(input))
+    match impl_into_cairo_args(input) {
+        Ok(output) => proc_macro::TokenStream::from(output),
+        Err(e) => panic!("{}", e.to_string()),
+    }
 }
 
-fn impl_into_cairo_args(input: TokenStream) -> TokenStream {
+fn impl_into_cairo_args(input: TokenStream) -> Result<TokenStream, Error> {
     // Construct a representation of Rust code as a syntax tree
     // that we can manipulate
-    let ast = match parse2::<DeriveInput>(input) {
-        Ok(tree) => tree,
-        Err(e) => return e.to_compile_error(),
-    };
+    let ast = parse2::<DeriveInput>(input)?;
 
     let name = &ast.ident;
     let fields = match &ast.data {
         Data::Struct(DataStruct {
             fields: Fields::Named(fields),
             ..
-        }) => &fields.named,
-        _ => panic!("expected named field"), //TODO implement error handling
-    };
+        }) => Ok(&fields.named),
+        _ => Err(CairoDeriveError::ParseError(
+            "expected named field".to_string(),
+        )),
+    }?;
 
     let fields_typ = fields.iter().map(|f| &f.ty);
 
     let mut lines = vec![];
     for t in fields_typ {
         match t {
-            Type::Path(TypePath { path, .. }) => {
-                // TODO: split into two: first get the last segment, then check if it's a Vec
-                // This allows to reuse the last segment for the inner type
-                let has_vec = get_last_segment(t.clone()).unwrap().ident == "Vec"; // TODO remove unwrap
-                let has_primivite = path
-                    .segments
-                    .iter()
-                    .any(|x| PRIMITIVES.contains(&&*x.ident.to_string()));
-                if has_vec {
-                    let inner_type: Type = get_inner_type(t.clone()).unwrap();
+            Type::Path(TypePath { .. }) => {
+                let last_segment = get_last_segment(t)?;
+
+                let is_vec = last_segment.ident == "Vec";
+                let is_primivite = PRIMITIVES.contains(&last_segment.ident.to_string().as_str());
+
+                if is_vec {
+                    let inner_type: Type = get_inner_type(t)?;
                     lines.push(quote!(
                         let length = inputs[end];
                         (start, end) = get_new_indexes(end, &inputs[..], #inner_type::size());
                         cairo_args.push(CairoArg::from(mayberelocatable!(length)));
                         cairo_args.push(into_cairo_arg(&inputs[start..end]));
                     ));
-                } else if has_primivite {
+                } else if is_primivite {
                     lines.push(quote!(
                         cairo_args.push(CairoArg::from(mayberelocatable!(inputs[end])));
                         end += 1;
                     ))
                 }
             }
-            _ => panic!("unsupported type"), //TODO implement error handling
+            _ => {
+                return Err(CairoDeriveError::ParseError(format!(
+                    "unsupported type {}",
+                    t.to_token_stream()
+                ))
+                .into())
+            }
         }
     }
 
@@ -98,11 +110,11 @@ fn impl_into_cairo_args(input: TokenStream) -> TokenStream {
             (start, end)
         }
     };
-    gen
+
+    Ok(gen)
 }
 
-// TODO: add error handling
-fn get_inner_type(ty: Type) -> Result<Type, Error> {
+fn get_inner_type(ty: &Type) -> Result<Type, Error> {
     let last_segment = get_last_segment(ty)?;
     let PathSegment { arguments, .. } = last_segment;
     if let PathArguments::AngleBracketed(angle_bracketed_args) = arguments {
@@ -111,16 +123,18 @@ fn get_inner_type(ty: Type) -> Result<Type, Error> {
         }
     }
 
-    Err(Error::msg("unsupported type"))
+    Err(anyhow::anyhow!("unsupported type {}", ty.to_token_stream()))
 }
 
-fn get_last_segment(ty: Type) -> Result<PathSegment, Error> {
+fn get_last_segment(ty: &Type) -> Result<PathSegment, Error> {
     let last_segment = match ty {
-        Type::Path(type_path) => type_path.path.segments.last().unwrap().to_owned(), // TODO: remove the unwrap
-        _ => return Err(Error::msg("unsupported type")), // TODO: improve error
+        Type::Path(type_path) => type_path.path.segments.last().ok_or_else(|| {
+            anyhow::anyhow!("unsupported type {}, no last segment", ty.to_token_stream())
+        })?,
+        _ => return Err(anyhow::anyhow!("unsupported type {}", ty.to_token_stream())),
     };
 
-    Ok(last_segment)
+    Ok(last_segment.to_owned())
 }
 
 #[cfg(test)]
@@ -136,7 +150,7 @@ mod tests {
         let ty: Type = parse_quote!(Vec<Tree>);
 
         // When
-        let tree = get_inner_type(ty).unwrap();
+        let tree = get_inner_type(&ty).unwrap();
 
         // Then
         let expected: Type = parse_quote!(Tree);
@@ -191,7 +205,7 @@ mod tests {
             }
         );
 
-        assert_eq!(expected.to_string(), actual.to_string());
+        assert_eq!(expected.to_string(), actual.unwrap().to_string());
     }
 
     #[test]
@@ -316,6 +330,6 @@ mod tests {
             }
         );
 
-        assert_eq!(expected.to_string(), actual.to_string());
+        assert_eq!(expected.to_string(), actual.unwrap().to_string());
     }
 }
