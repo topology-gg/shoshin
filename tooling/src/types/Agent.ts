@@ -40,7 +40,8 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     let agentCondtionNames = []
     // makes use of indexes to only parse the necessary conditions
     Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => conditions[i]).forEach((f) => {
-        agentCondtionNames.push(f.displayName)
+        // Temporary code to deal with backend bug, can be removed in subsequent pr, April 6, 2023
+        agentCondtionNames.push(f.displayName.replaceAll("\u0000",""))
         agentConditions.push(parseConditionToLeaf(f))
     })
     agent.conditionNames = agentCondtionNames
