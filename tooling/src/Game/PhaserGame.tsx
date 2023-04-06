@@ -40,7 +40,7 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
         const _this = g.scene.keys.default;
         console.log("preload ->  preloading assets...", _this);
         //_this.load.setBaseURL('http://labs.phaser.io');
-        _this.load.image("sky", "images/bg/shoshin-bg-white-long.png");
+        _this.load.image("sky", "images/bg/shoshin-bg-large-transparent.png");
     }, []);
 
 
