@@ -53,6 +53,7 @@ import ConnectWallet from "../src/components/ConnectWallet";
 import { EditorTabName } from "../src/components/sidePanelComponents/Tabs";
 import { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
 import dynamic from "next/dynamic";
+import Editor from "../src/components/Editor";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -677,6 +678,7 @@ export default function Home() {
                                         flexDirection: "column",
                                     }}
                                 >
+                                    <Editor />
                                     <P1P2SettingPanel
                                         agentsFromRegistry={t}
                                         agentChange={agentChange}
