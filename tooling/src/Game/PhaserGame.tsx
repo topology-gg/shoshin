@@ -11,7 +11,7 @@ import Simulator from "../scene/Simulator";
 import { SimulatorProps } from "../types/Simulator";
 
 
-const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
+const Game = ({testJson, animationFrame, animationState, showDebug}: SimulatorProps) => {
     const tagName = "div";
     const className = "relative top-0 left-0 w-full h-full my-12";
     const variant = "default";
@@ -112,15 +112,15 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
         //@ts-ignore
         let scene = game.current?.scene.getScene('simulator') as Simulator;
 
-        if(scene == undefined)
+        if(scene == undefined || !testJson)
         {
           return
         }
 
-        scene.updateScene({ testJson, animationFrame, showDebug })
+        scene.updateScene({ testJson, animationFrame, animationState, showDebug })
 
         //render stuff
-    }, [testJson, animationFrame, showDebug])
+    }, [testJson, animationFrame, animationState, showDebug])
 
     return Phaser ? (
         <div

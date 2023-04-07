@@ -237,7 +237,8 @@ export default class Platformer extends Phaser.Scene {
         camera.pan( leftCharX + charDistance / 2 + DEFAULT_CAMERA_CENTER_X , DEFAULT_CAMERA_CENTER_Y, CAMERA_REACTION_TIME)
 
     }
-    updateScene({testJson, animationFrame, showDebug}: SimulatorProps){
+    updateScene({testJson, animationFrame, animationState, showDebug}: SimulatorProps){
+        console.log('updateScene::testJson', testJson)
                 const characterType0 = testJson?.agent_0.type
                 const characterType1 = testJson?.agent_1.type
                 const agentFrame0 = testJson?.agent_0.frames[animationFrame]
@@ -246,8 +247,6 @@ export default class Platformer extends Phaser.Scene {
                 this.setPlayerTwoCharacter(characterType1)
                 this.setPlayerOneFrame(agentFrame0);
                 this.setPlayerTwoFrame(agentFrame1);
-
-
 
                 if(animationFrame == 0)
                 {

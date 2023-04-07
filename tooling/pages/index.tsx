@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createTheme, ThemeProvider } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import MidScreenControl from "../src/components/MidScreenControl";
-import SidePanel from "../src/components/sidePanelComponents/SidePanel";
+import EditorView from "../src/components/sidePanelComponents/EditorView";
 import { FrameScene, TestJson } from "../src/types/Frame";
 import { Tree, Direction } from "../src/types/Tree";
 import {
@@ -51,10 +51,17 @@ import {
     useStarknetExecute,
 } from "@starknet-react/core";
 import ConnectWallet from "../src/components/ConnectWallet";
-import { EditorTabName } from "../src/components/sidePanelComponents/Tabs";
+import { EditorTabName } from "../src/components/sidePanelComponents/EditorTabs";
 import { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
 import dynamic from "next/dynamic";
+import SwipeableViews from 'react-swipeable-views';
+import { bindKeyboard } from 'react-swipeable-views-utils';
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import ContractInformationView from "../src/components/sidePanelComponents/ContractInformationView"
+import WalletConnectView from "../src/components/sidePanelComponents/WalletConnectView"
 import crypto from "crypto";
+
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
     ssr: false,
@@ -176,6 +183,7 @@ export default function Home() {
 
     useEffect(() => {
         if (output) {
+            console.log('caught output:', output)
             setTestJson((_) => {
                 return {
                     agent_0: { frames: output.agent_0, type: p1.character },
@@ -654,7 +662,7 @@ export default function Home() {
             return tree;
         });
         setConditions(() => {
-            
+
             let cond: Condition[] = agent.conditions.map((x, i) => {
                 let conditionName = agent.conditionNames[i] ? agent.conditionNames[i] : `F${i}`
                 return {
@@ -673,6 +681,140 @@ export default function Home() {
         setConditionUnderEditIndex(() => 0);
     }
 
+    const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
+
+    let EditorViewComponent = (
+        <EditorView
+            editorMode={editorMode}
+            settingModalOpen={settingModalOpen}
+            setSettingModalOpen={(bool) =>
+                setSettingModalOpen(() => bool)
+            }
+            studyAgent={(agent: Agent) => {
+                setEditorMode(() => EditorMode.ReadOnly);
+                setAgentInPanelToAgent(agent);
+            }}
+            buildNewAgentFromBlank={() => {
+                setEditorMode(() => EditorMode.Edit);
+                setAgentInPanelToAgent(BLANK_AGENT);
+            }}
+            buildNewAgentFromAgent={(agent: Agent) => {
+                setEditorMode(() => EditorMode.Edit);
+                setAgentInPanelToAgent(agent);
+            }}
+            agentName={agentName}
+            setAgentName={setAgentName}
+            workingTab={workingTab}
+            handleClickTab={setWorkingTab}
+            character={character}
+            setCharacter={(value) => {
+                console.log("setCharacter:", value);
+                setCharacter(value);
+            }}
+            mentalStates={mentalStates}
+            initialMentalState={initialMentalState}
+            handleSetInitialMentalState={setInitialMentalState}
+            combos={combos}
+            handleValidateCombo={handleValidateCombo}
+            handleAddMentalState={handleAddMentalState}
+            handleClickRemoveMentalState={
+                handleClickRemoveMentalState
+            }
+            handleSetMentalStateAction={
+                handleSetMentalStateAction
+            }
+            treeEditor={treeEditor}
+            handleClickTreeEditor={handleClickTreeEditor}
+            trees={trees}
+            handleUpdateTree={handleUpdateTree}
+            conditions={conditions}
+            handleUpdateCondition={handleUpdateCondition}
+            handleConfirmCondition={handleConfirmCondition}
+            handleClickDeleteCondition={
+                handleClickDeleteCondition
+            }
+            conditionUnderEditIndex={conditionUnderEditIndex}
+            setConditionUnderEditIndex={
+                setConditionUnderEditIndex
+            }
+            isConditionWarningTextOn={isConditionWarningTextOn}
+            conditionWarningText={conditionWarningText}
+            isTreeEditorWarningTextOn={
+                isTreeEditorWarningTextOn
+            }
+            treeEditorWarningText={treeEditorWarningText}
+            handleRemoveConditionElement={
+                handleRemoveConditionElement
+            }
+            handleSubmitAgent={handleSubmitAgent}
+            agents={agents}
+        />
+    )
+
+    let FightView = (
+        <div
+            className={styles.main}
+            style={{ display: "flex", flexDirection: "column", padding:0, alignItems:'center'}}
+        >
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                }}
+            >
+                <P1P2SettingPanel
+                    agentsFromRegistry={t}
+                    agentChange={agentChange}
+                />
+
+                <StatusBarPanel
+                    testJson={testJson}
+                    animationFrame={animationFrame}
+                />
+
+                <Game
+                    testJson={testJson}
+                    animationFrame={animationFrame}
+                    animationState={animationState}
+                    showDebug={checkedShowDebugInfo}
+                />
+
+                <MidScreenControl
+                    runnable={!(p1 == null || p2 == null)}
+                    testJsonAvailable={
+                        testJson ? true : false
+                    }
+                    animationFrame={animationFrame}
+                    n_cycles={N_FRAMES}
+                    animationState={animationState}
+                    handleClick={
+                        handleMidScreenControlClick
+                    }
+                    handleSlideChange={(evt) => {
+                        if (animationState == "Run") return;
+                        const slide_val: number = parseInt(
+                            evt.target.value
+                        );
+                        setAnimationFrame(slide_val);
+                    }}
+                    checkedShowDebugInfo={
+                        checkedShowDebugInfo
+                    }
+                    handleChangeDebugInfo={() =>
+                        setCheckedShowDebugInfo(
+                            (_) => !checkedShowDebugInfo
+                        )
+                    }
+                />
+                <FrameInspector
+                    testJson={testJson}
+                    animationFrame={animationFrame}
+                />
+            </div>
+        </div>
+    )
+
+    const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
     //
     // Render
     //
@@ -687,147 +829,37 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <ThemeProvider theme={theme}>
-                <Grid container spacing={1}>
-                    {/* <Grid item xs={2}></Grid> */}
-                    <Grid item xs={8}>
-                        <div
-                            className={styles.main}
-                            style={{ display: "flex", flexDirection: "column" }}
-                        >
-                            {/* <ImagePreloader
-                                onComplete={() => {
-                                    console.log("completed images");
-                                }}
-                            /> */}
-                            {
-                                // !testJson ? (wasmReady && <Button onClick={runCairoSimulation} variant='outlined' disabled={JSON.stringify(agent) === '{}'}>FIGHT</Button>) :
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                    }}
-                                >
-                                    <P1P2SettingPanel
-                                        agentsFromRegistry={t}
-                                        agentChange={agentChange}
-                                    />
+            <div style={{marginBottom:'3rem'}} className={styles.main}>
+                <Tabs
+                    value={swipeableViewIndex}
+                    onChange={(event, newValue) => setSwipeableViewIndex((_) => newValue)}
+                    aria-label="basic tabs example"
+                    sx={{mt:2, mb:5}}
+                    centered
+                >
+                    <Tab label={'Fight'}/>
+                    <Tab label={'Edit'}/>
+                    <Tab label={'Reference'}/>
+                    <Tab label={'Wallet'}/>
+                </Tabs>
 
-                                    <StatusBarPanel
-                                        testJson={testJson}
-                                        animationFrame={animationFrame}
-                                    />
-
-                                    <Game
-                                        testJson={testJson}
-                                        animationFrame={animationFrame}
-                                        showDebug={checkedShowDebugInfo}
-                                    />
-
-                                    <MidScreenControl
-                                        runnable={!(p1 == null || p2 == null)}
-                                        testJsonAvailable={
-                                            testJson ? true : false
-                                        }
-                                        animationFrame={animationFrame}
-                                        n_cycles={N_FRAMES}
-                                        animationState={animationState}
-                                        handleClick={
-                                            handleMidScreenControlClick
-                                        }
-                                        handleSlideChange={(evt) => {
-                                            if (animationState == "Run") return;
-                                            const slide_val: number = parseInt(
-                                                evt.target.value
-                                            );
-                                            setAnimationFrame(slide_val);
-                                        }}
-                                        checkedShowDebugInfo={
-                                            checkedShowDebugInfo
-                                        }
-                                        handleChangeDebugInfo={() =>
-                                            setCheckedShowDebugInfo(
-                                                (_) => !checkedShowDebugInfo
-                                            )
-                                        }
-                                    />
-                                    <FrameInspector
-                                        testJson={testJson}
-                                        animationFrame={animationFrame}
-                                    />
-                                </div>
-                            }
-                        </div>
-                    </Grid>
-                    <Grid item xs={4} sx={{ bgcolor: "grey.50" }}>
-                        <SidePanel
-                            editorMode={editorMode}
-                            settingModalOpen={settingModalOpen}
-                            setSettingModalOpen={(bool) =>
-                                setSettingModalOpen(() => bool)
-                            }
-                            studyAgent={(agent: Agent) => {
-                                setEditorMode(() => EditorMode.ReadOnly);
-                                setAgentInPanelToAgent(agent);
-                            }}
-                            buildNewAgentFromBlank={() => {
-                                setEditorMode(() => EditorMode.Edit);
-                                setAgentInPanelToAgent(BLANK_AGENT);
-                            }}
-                            buildNewAgentFromAgent={(agent: Agent) => {
-                                setEditorMode(() => EditorMode.Edit);
-                                setAgentInPanelToAgent(agent);
-                            }}
-                            agentName={agentName}
-                            setAgentName={setAgentName}
-                            workingTab={workingTab}
-                            handleClickTab={setWorkingTab}
-                            character={character}
-                            setCharacter={(value) => {
-                                console.log("setCharacter:", value);
-                                setCharacter(value);
-                            }}
-                            mentalStates={mentalStates}
-                            initialMentalState={initialMentalState}
-                            handleSetInitialMentalState={setInitialMentalState}
-                            combos={combos}
-                            handleValidateCombo={handleValidateCombo}
-                            handleAddMentalState={handleAddMentalState}
-                            handleClickRemoveMentalState={
-                                handleClickRemoveMentalState
-                            }
-                            handleSetMentalStateAction={
-                                handleSetMentalStateAction
-                            }
-                            treeEditor={treeEditor}
-                            handleClickTreeEditor={handleClickTreeEditor}
-                            trees={trees}
-                            handleUpdateTree={handleUpdateTree}
-                            conditions={conditions}
-                            handleUpdateCondition={handleUpdateCondition}
-                            handleConfirmCondition={handleConfirmCondition}
-                            handleClickDeleteCondition={
-                                handleClickDeleteCondition
-                            }
-                            conditionUnderEditIndex={conditionUnderEditIndex}
-                            setConditionUnderEditIndex={
-                                setConditionUnderEditIndex
-                            }
-                            isConditionWarningTextOn={isConditionWarningTextOn}
-                            conditionWarningText={conditionWarningText}
-                            isTreeEditorWarningTextOn={
-                                isTreeEditorWarningTextOn
-                            }
-                            treeEditorWarningText={treeEditorWarningText}
-                            handleRemoveConditionElement={
-                                handleRemoveConditionElement
-                            }
-                            handleSubmitAgent={handleSubmitAgent}
-                            agents={agents}
-                        />
-                    </Grid>
-                </Grid>
-            </ThemeProvider>
+                <ThemeProvider theme={theme}>
+                    <SwipeableViews
+                        index={swipeableViewIndex}
+                        sx={{zIndex:10}}
+                        containerStyle={{
+                            transition: 'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s'
+                        }}
+                        // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
+                        // a fix for the issue: first index change doesn't animate (swipe)
+                    >
+                        <div>{ FightView }</div>
+                        <div>{ EditorViewComponent }</div>
+                        <div style={{paddingLeft:'10rem', paddingRight:'10rem', height:'650px', overflowY:'scroll'}}><ContractInformationView /></div>
+                        <div style={{paddingLeft:'10rem', paddingRight:'10rem'}}><WalletConnectView /></div>
+                    </SwipeableViews>
+                </ThemeProvider>
+            </div>
         </div>
     );
 }

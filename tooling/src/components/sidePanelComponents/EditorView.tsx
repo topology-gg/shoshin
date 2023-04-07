@@ -1,11 +1,12 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import BuildIcon from '@mui/icons-material/Build';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import PublishIcon from '@mui/icons-material/Publish';
-import Tabs, { EditorTabName } from './Tabs';
+import Tabs, { EditorTabName } from './EditorTabs';
 import MentalStates from './MentalStates';
 import TreeEditor from './TreeEditor';
 import Conditions from './Conditions';
@@ -17,10 +18,8 @@ import { MentalState } from '../../types/MentalState';
 import { Character, EditorMode } from '../../constants/constants';
 import { Tree } from '../../types/Tree';
 import { Condition, ConditionElement } from '../../types/Condition';
-import SettingModal from './SettingModal';
-import ContractInformation from './ContractInformation';
 
-interface SidePanelProps {
+interface EditorViewProps {
     editorMode: EditorMode
     settingModalOpen: boolean
     setSettingModalOpen: (bool: boolean) => void
@@ -61,7 +60,7 @@ interface SidePanelProps {
 }
 
 
-const SidePanel = ({
+const EditorView = ({
     editorMode,
     settingModalOpen, setSettingModalOpen,
     studyAgent,
@@ -73,7 +72,7 @@ const SidePanel = ({
     trees, handleUpdateTree, conditions, handleUpdateCondition, handleConfirmCondition, handleClickDeleteCondition,
     conditionUnderEditIndex, setConditionUnderEditIndex, isConditionWarningTextOn, conditionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText,
     handleRemoveConditionElement, handleSubmitAgent, agents
-}: SidePanelProps) => {
+}: EditorViewProps) => {
 
     const isReadOnly = editorMode == EditorMode.ReadOnly
     const [openContractInformation, setOpenContractInformation] = React.useState(false);
@@ -155,22 +154,17 @@ const SidePanel = ({
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
-                alignItems: 'left',
-                padding: 2,
+                alignItems: 'center',
             }}
         >
-            <ContractInformation
-                title={'Reference'}
-                onClose={() => setOpenContractInformation(false)}
-                open={openContractInformation}
-            />
             <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
-                    alignItems: 'left',
-                    mb: '1rem'
+                    alignItems: 'center',
+                    mb: '1rem',
+                    width:'800px'
                 }}
             >
 
@@ -183,75 +177,59 @@ const SidePanel = ({
                             <><BuildIcon sx={{marginLeft: '0.2rem', marginRight:'0.6rem', verticalAlign:'middle'}} />Edit Agent</>
                         )}
                     </p>
-                    <SettingModal
-                        modalMode={'connect'}
-                        handleSetModalMode={() => {}}
-                        open={settingModalOpen}
-                        handleSetOpen={setSettingModalOpen}
-                    />
                 </div>
 
-                <div style={{marginBottom:'1rem'}}>
-                    <Button
-                        id='button-contract-info-button'
-                        onClick={() => {
-                            setOpenContractInformation(true)
-                        }}
-                        variant="outlined"
-                    >
-                        <AutoStoriesIcon sx={{marginRight:'0.6rem'}} /> Reference
-                    </Button>
-                </div>
+                <div style={{display:'flex', flexDirection:'row', gap:'10px'}}>
+                    <div style={{marginBottom:'1rem'}}>
+                        <ButtonOptionList
+                            buttonLabel={<><PersonSearchIcon sx={{}} /></>}
+                            options={agents}
+                            optionLabel={'agent'}
+                            optionSelected={(option: Agent) => {
+                                console.log('View available agent:', option)
+                                studyAgent(option)
+                            }}
+                        />
+                    </div>
 
-                <div style={{marginBottom:'1rem'}}>
-                    <ButtonOptionList
-                        buttonLabel={<><PersonSearchIcon sx={{marginRight:'0.6rem'}} />Available Agent (read-only)</>}
-                        options={agents}
-                        optionLabel={'agent'}
-                        optionSelected={(option: Agent) => {
-                            console.log('View available agent:', option)
-                            studyAgent(option)
-                        }}
-                    />
-                </div>
+                    <div style={{marginBottom:'1rem'}}>
+                        <Button
+                            id='button-option-list-button'
+                            onClick={() => {
+                                console.log('Build new Agent from blank');
+                                buildNewAgentFromBlank()
+                            }}
+                            variant="outlined"
+                        >
+                            <PersonAddAltIcon sx={{}} />
+                        </Button>
+                    </div>
 
-                <div style={{marginBottom:'1rem'}}>
-                    <Button
-                        id='button-option-list-button'
-                        onClick={() => {
-                            console.log('Build new Agent from blank');
-                            buildNewAgentFromBlank()
-                        }}
-                        variant="outlined"
-                    >
-                        <PersonAddAlt1Icon sx={{marginRight:'0.6rem'}} /> Build Agent from blank
-                    </Button>
-                </div>
+                    <div style={{marginBottom:'1rem'}}>
+                        <ButtonOptionList
+                            buttonLabel={<><PersonAddAlt1Icon  sx={{}} /></>}
+                            options={agents}
+                            optionLabel={'agent'}
+                            optionSelected={(option: Agent) => {
+                                console.log('Build new Agent from an existing Agent:', option)
+                                buildNewAgentFromAgent(option)
+                            }}
+                        />
+                    </div>
 
-                <div style={{marginBottom:'1rem'}}>
-                    <ButtonOptionList
-                        buttonLabel={<><PersonAddAlt1Icon  sx={{marginRight:'0.6rem'}} />Build Agent from an existing Agent</>}
-                        options={agents}
-                        optionLabel={'agent'}
-                        optionSelected={(option: Agent) => {
-                            console.log('Build new Agent from an existing Agent:', option)
-                            buildNewAgentFromAgent(option)
-                        }}
-                    />
-                </div>
-
-                <div style={{marginBottom:'1rem'}}>
-                    <Button
-                        id='button-option-list-button'
-                        onClick={() => {
-                            console.log('Submit Agent onchain');
-                            handleSubmitAgent();
-                        }}
-                        variant="outlined"
-                        disabled={editorMode==EditorMode.ReadOnly}
-                    >
-                        <PublishIcon sx={{marginRight:'0.6rem'}} /> Submit Agent onchain
-                    </Button>
+                    <div style={{marginBottom:'1rem'}}>
+                        <Button
+                            id='button-option-list-button'
+                            onClick={() => {
+                                console.log('Submit Agent onchain');
+                                handleSubmitAgent();
+                            }}
+                            variant="outlined"
+                            disabled={editorMode==EditorMode.ReadOnly}
+                        >
+                            <PublishIcon sx={{}} />
+                        </Button>
+                    </div>
                 </div>
 
             </Box>
@@ -262,6 +240,7 @@ const SidePanel = ({
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'left',
+                    width: '800px',
                 }}
             >
                 <Tabs workingTab={workingTab} handleClickTab={handleClickTab}></Tabs>
@@ -274,7 +253,7 @@ const SidePanel = ({
                         borderRadius: '0px 20px 20px 20px',
                         border: '1px solid #999999',
                         padding: '0.5rem 0.5rem 2rem 0.5rem',
-                        height: '28rem',
+                        height: '500px',
                         overflow: 'auto',
                     }}
                 >
@@ -287,4 +266,4 @@ const SidePanel = ({
     )
 }
 
-export default SidePanel;
+export default EditorView;
