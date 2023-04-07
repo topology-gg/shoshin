@@ -10,7 +10,7 @@ export enum EditorTabName {
     Conditions = 'Conditions'
 }
 
-const Tabs = ({ workingTab, handleClickTab }) => {
+const EditorTabs = ({ workingTab, handleClickTab }) => {
 
     const BLANK_COLOR = '#DDDDDD'
     const tabStyle = (value, target) => {
@@ -52,4 +52,4 @@ const Tabs = ({ workingTab, handleClickTab }) => {
     );
 };
 
-export default Tabs;
+export default EditorTabs;

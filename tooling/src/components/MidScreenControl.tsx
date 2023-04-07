@@ -22,6 +22,8 @@ const MidScreenControl = ({
                 border: 1,
                 borderRadius: 4,
                 boxShadow: 3,
+                maxWidth: 800,
+                width: 800,
             }}
         >
             <Box

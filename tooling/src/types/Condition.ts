@@ -2,6 +2,8 @@ import Leaf, { wrapToLeaf } from './Leaf'
 
 export interface Condition {
     elements: ConditionElement[],
+    key?: string,
+    displayName ?: string
 }
 
 export interface ConditionElement {
@@ -198,6 +200,22 @@ export function verifyValidCondition(c: Condition, confirm: boolean): ConditionV
         return { isValid : false, message : 'Unbalanced parenthesis or absolute value', conditionElementIndex : -1, is_bracket_error :  true }
     }
     return { isValid : true, message : '', conditionElementIndex : -1, is_bracket_error : false }
+}
+
+export function validateConditionName(name: string, conditions : Condition[]): string | undefined {
+    if (name && /\s/.test(name)) {
+        return "Name contains whitespace"
+    }
+
+    if (name.length > 31) {
+        return "Name should be less than 31 characters long" + `\n String \"${name}\" is ${name.length} characters long!` 
+    }
+
+    const nameCollision = conditions.find(condition => condition.displayName == name)
+
+    if(nameCollision){
+        return "Duplicate condition name exists"
+    }
 }
 
 // Parse the elements of the condition into a folded Leaf type
