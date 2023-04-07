@@ -311,6 +311,7 @@ const Editor = () => {
             height="500px"
             defaultLanguage="shoshin_condition"
             defaultValue="!(SelfX==1)AND(SelfX==2)"
+            //@ts-ignore
             onMount={handleEditorDidMount}
             onChange={handleChange}
         />
