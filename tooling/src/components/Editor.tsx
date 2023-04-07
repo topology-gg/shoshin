@@ -2,15 +2,20 @@ import React, { useRef } from "react";
 
 import EditorComponent, { Monaco, OnChange } from "@monaco-editor/react";
 import { EditorProps } from "@monaco-editor/react";
+import {
+    BodystatesAntoc,
+    BodystatesJessica,
+    ConditionElement,
+    ConditionVerificationResult,
+    ElementType,
+    verifyValidCondition,
+} from "../types/Condition";
 
 function removeSubstring(str: string, start: number, end: number) {
-    console.log(str, start, end);
-    console.log(str.length);
     if (start == 0 && end == str.length) {
         return "";
     }
     if (start == 0) {
-        console.log("in start");
         return str.substring(end);
     }
     if (end == str.length - 1) {
@@ -26,23 +31,46 @@ interface token {
     end: number;
 }
 
-
-const extractTokens = (expression : string , regex : RegExp) => {
+const extractTokens = (expression: string, regex: RegExp) => {
     var tokens: token[] = [];
-    console.log("extracting")
 
-    var match
+    var match;
     while ((match = regex.exec(expression)) !== null) {
         tokens.push({
             content: match[0],
             begin: match.index,
             end: match.index + match[0].length,
-        })
-        console.log("matching")
-      }
-    return tokens
-}
+        });
+    }
+    return tokens;
+};
 
+const perceptibles = [
+    `SelfX`,
+    "SelfY",
+    "SelfVelX",
+    "SelfVelY",
+    "SelfAccX",
+    "SelfAccY",
+    "SelfDir",
+    "SelfInt",
+    "SelfSta",
+    "SelfBodyState",
+    "SelfBodyCounter",
+    "OpponentX",
+    "OpponentY",
+    "OpponentVelX",
+    "OpponentVelY",
+    "OpponentAccX",
+    "OpponentAccY",
+    "OpponentDir",
+    "OpponentInt",
+    "OpponentSta",
+    "OpponentBodyState",
+    "OpponentBodyCounter",
+];
+
+const operators = ["==", "<=", "*", "/", "%", "+", "-", "!", "AND", "OR"];
 function tokenize(input: string) {
     // Remove any whitespace from the expression
     let expression = input.replace(/\s/g, "");
@@ -66,25 +94,14 @@ function tokenize(input: string) {
     // Define a regular expression to match identifiers
     var identifierRegex = /\w+/;
 
-
-    var totalRegex = new RegExp("(" + bracketOpenRegex + ")|(" + 
-    + bracketCloseRegex + ")|(" +
-     + negateRegex + ")|(" +
-     + operatorRegex + ")|(" +
-     + numberRegex + ")|(" + 
-     + identifierRegex + ")" )
-
     // Loop through the expression and tokenize it
     let i = 1;
-
-    //console.log(extractTokens(input, bracketOpenRegex))
 
     while (expression.length > 0) {
         var match;
 
         // Match negation regex
         if ((match = negateRegex.exec(expression)) !== null) {
-            console.log("total", match[0])
             tokens.push({
                 content: match[0],
                 begin: match.index,
@@ -96,9 +113,23 @@ function tokenize(input: string) {
                 match.index + match[0].length
             );
         }
-        
+
         // Match parentheses
         else if ((match = bracketOpenRegex.exec(expression)) !== null) {
+            tokens.push({
+                content: match[0],
+                begin: match.index,
+                end: match.index + match[0].length,
+            });
+            expression = removeSubstring(
+                expression,
+                match.index,
+                match.index + match[0].length
+            );
+        }
+
+        // Match arithmatic operators
+        else if ((match = operatorRegex.exec(expression)) !== null) {
             tokens.push({
                 content: match[0],
                 begin: match.index,
@@ -124,20 +155,6 @@ function tokenize(input: string) {
                 match.index + match[0].length
             );
         }
-        // Match arithmatic operators
-        else if ((match = operatorRegex.exec(expression)) !== null) {
-            tokens.push({
-                content: match[0],
-                begin: match.index,
-                end: match.index + match[0].length,
-            });
-            expression = removeSubstring(
-                expression,
-                match.index,
-                match.index + match[0].length
-            );
-        }
-
         // Match numbers
         else if ((match = numberRegex.exec(expression)) !== null) {
             tokens.push({
@@ -175,6 +192,7 @@ function tokenize(input: string) {
 
 const Editor = () => {
     const editorRef = useRef(null);
+    const monacoRef = useRef(null);
 
     function handleEditorDidMount(editor: EditorProps, monaco: Monaco) {
         // here is the editor instance
@@ -212,32 +230,9 @@ const Editor = () => {
         });
 
         monaco.languages.setMonarchTokensProvider("shoshin_condition", {
-            variables: [
-                `SelfX`,
-                "SelfY",
-                "SelfVelX",
-                "SelfVelY",
-                "SelfAccX",
-                "SelfAccY",
-                "SelfDir",
-                "SelfInt",
-                "SelfSta",
-                "SelfBodyState",
-                "SelfBodyCounter",
-                "OpponentX",
-                "OpponentY",
-                "OpponentVelX",
-                "OpponentVelY",
-                "OpponentAccX",
-                "OpponentAccY",
-                "OpponentDir",
-                "OpponentInt",
-                "OpponentSta",
-                "OpponentBodyState",
-                "OpponentBodyCounter",
-            ],
+            variables: perceptibles,
 
-            operators: ["==", "<=", "*", "/", "%", "+", "-", "!", "AND", "OR"],
+            operators,
             tokenizer: {
                 root: [
                     // identifiers and keywords
@@ -253,18 +248,59 @@ const Editor = () => {
         });
 
         editorRef.current = editor;
+        monacoRef.current = monaco
     }
 
+    const tokensToElements = (token) => {
+        if (operators.includes(token.content)) {
+            return {
+                value: token.content,
+                type: ElementType.Operator,
+            } as ConditionElement;
+        }
+        if (perceptibles.includes(token.content)) {
+            return {
+                value: token.content,
+                type: ElementType.Perceptible,
+            } as ConditionElement;
+        }
+
+        if (Object.keys(BodystatesJessica).includes(token.content)) {
+            return {
+                value: BodystatesJessica[token.content],
+                type: ElementType.BodyState,
+            } as ConditionElement;
+        }
+
+        if (Object.keys(BodystatesAntoc).includes(token.content)) {
+            return {
+                value: BodystatesAntoc[token.content],
+                type: ElementType.BodyState,
+            } as ConditionElement;
+        }
+        return {
+            value: token.content,
+            type: ElementType.Constant,
+        } as ConditionElement;
+    };
+
     const handleChange: OnChange = (text, ev) => {
-        //console.log(text);
-        tokenize(text);
+        //tokenize
+        const tokens = tokenize(text);
+        //transpile
+        const elements: ConditionElement[] = tokens.map(tokensToElements);
+        //verify
+        const result: ConditionVerificationResult = verifyValidCondition(
+            {
+                elements,
+            },
+            false
+        );
 
-        // look for parens round
-
-        // look for abs parens
-        // look for operators
-        // look for OpponentX
-        // TODO : mapping moves to body state number
+        if(!result.isValid)
+        {
+            
+        }
     };
 
     return (
@@ -277,5 +313,8 @@ const Editor = () => {
         />
     );
 };
+
+// sorting tokens in order
+// putting error back into the editor
 
 export default Editor;

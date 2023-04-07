@@ -10,6 +10,7 @@ import { Tree, Direction } from "../src/types/Tree";
 import {
     Condition,
     ConditionElement,
+    ConditionVerificationResult,
     includeBodyState,
     verifyValidCondition,
 } from "../src/types/Condition";
@@ -434,14 +435,14 @@ export default function Home() {
                     prev_copy = [{ elements: [] }];
                 }
                 prev_copy[index].elements.push(element);
-                let [isValidFunction, error] = verifyValidCondition(
+                let result : ConditionVerificationResult = verifyValidCondition(
                     prev_copy[index],
                     false
                 );
-                if (!isValidFunction) {
+                if (!result.isValid) {
                     setConditionWarningTextOn(true);
                     setConditionWarningText(
-                        `Invalid ${element.type}, got: ${error}`
+                        `Invalid ${element.type}, got: ${result.message}`
                     );
                     setTimeout(() => setConditionWarningTextOn(false), 5000);
                     prev_copy[index].elements.pop();
@@ -471,10 +472,10 @@ export default function Home() {
     function handleConfirmCondition() {
         let length = conditions.length;
         let f = conditions[conditionUnderEditIndex];
-        let [isValidFunction, error] = verifyValidCondition(f, true);
-        if (!f?.elements || !isValidFunction) {
+        let result : ConditionVerificationResult = verifyValidCondition(f, true);
+        if (!f?.elements || !result.isValid) {
             setConditionWarningTextOn(true);
-            setConditionWarningText(`Invalid function, got: ${error}`);
+            setConditionWarningText(`Invalid function, got: ${result.message}`);
             setTimeout(() => setConditionWarningTextOn(false), 5000);
             return;
         }
