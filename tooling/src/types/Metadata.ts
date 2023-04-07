@@ -160,7 +160,7 @@ export function splitSingleMetadata(meta: SingleMetadata): Agent {
         conditions = conditions.concat(unflattenLeaf(func))
         start += o
     })
-
+    
     return {
             mentalStatesNames: meta.state_machine_names.map((s) => s.replaceAll('\x00', '')), // delete all 0x00
             combos: combos,
@@ -168,6 +168,7 @@ export function splitSingleMetadata(meta: SingleMetadata): Agent {
             initialState: meta.initial_state,
             conditions: conditions,
             actions: meta.actions,
-            character: meta.character
+            character: meta.character,
+            conditionNames: meta.conditions_names
         }
 }

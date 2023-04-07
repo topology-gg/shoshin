@@ -46,7 +46,7 @@ interface SidePanelProps {
     trees: Tree[]
     handleUpdateTree: (index: number, input: string) => void
     conditions: Condition[]
-    handleUpdateCondition: (index: number, element: ConditionElement) => void
+    handleUpdateCondition: (index: number, element: ConditionElement, name: string) => void
     handleConfirmCondition: () => void
     handleClickDeleteCondition: (index: number) => void
     conditionUnderEditIndex: number
