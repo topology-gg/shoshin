@@ -62,6 +62,7 @@ import Tab from "@mui/material/Tab";
 import ContractInformationView from "../src/components/sidePanelComponents/ContractInformationView"
 import WalletConnectView from "../src/components/sidePanelComponents/WalletConnectView"
 import crypto from "crypto";
+import Editor from "../src/components/Editor";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -829,7 +830,7 @@ export default function Home() {
                 />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-
+            <Editor />
             <div style={{marginBottom:'3rem'}} className={styles.main}>
                 <Tabs
                     value={swipeableViewIndex}
