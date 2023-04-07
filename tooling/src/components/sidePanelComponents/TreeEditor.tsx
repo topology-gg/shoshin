@@ -5,9 +5,9 @@ import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DecisionTree from './DecisionTree'
 import { Tree } from '../../types/Tree'
-import { conditionToStr } from '../../types/Condition'
+import { Condition, conditionToStr } from '../../types/Condition'
 
-const treeToString = (tree: Tree) => {
+const treeToString = (tree: Tree, conditions : Condition[]) => {
     let str = ''
     tree.nodes.forEach((n) => {
         if (n?.branch === 'left' && n.isChild) {
@@ -15,8 +15,12 @@ const treeToString = (tree: Tree) => {
         } else if (n?.branch === 'right' && n.isChild) {
             str += '_ => ' + n.id
         } else {
-            str += n.id + ' => '
+            // Condition nodes
+            const matchingCondition = conditions.find(condition => n.id == condition.key)
+            str += matchingCondition != undefined ? matchingCondition.displayName : n.id
+            str += ' => '
         }
+        
     })
     return str
 }
@@ -85,7 +89,7 @@ const TreeEditor = ({
                     color={'info'}
                     id='outlined-textarea'
                     placeholder={`F1 => MS IDLE,\nF2 => MS ATTACK,\n_ => MS DEFEND`}
-                    defaultValue={treeToString(tree)}
+                    defaultValue={treeToString(tree, conditions)}
                     label={`Decision Tree for ${mentalState.state}`}
                     onChange={ (event) => handleUpdateTree(indexTree, event.target.value) }
                     fullWidth
@@ -115,14 +119,14 @@ const TreeEditor = ({
                         {
                             conditions.slice(0, conditions.length - 1).map((f, i) => {
                                 return (
-                                    <Tooltip key={`tooltip-condition-${i}`} title={`${conditionToStr(f)}`}>
+                                    <Tooltip key={`tooltip-condition-${i}`} title={`${f.displayName}`}>
                                         <Card
                                         sx={{
                                             margin: '0.2rem 0.2rem 0.3rem 0.2rem',
                                             padding: '0.1rem',
                                         }}
                                         key={`card-condition-${i}`}
-                                        >F{i}</Card>
+                                        >{f.displayName}</Card>
                                     </Tooltip>
                                 )
                             })

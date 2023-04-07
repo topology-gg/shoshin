@@ -64,7 +64,7 @@ export default class Platformer extends Phaser.Scene {
         this.load.atlas(`jessica-walk_backward`,"images/jessica/walk_backward/spritesheet.png","images/jessica/walk_backward/spritesheet.json");
         this.load.atlas(`jessica-walk_forward`,"images/jessica/walk_forward/spritesheet.png","images/jessica/walk_forward/spritesheet.json");
 
-        this.load.image('arena_bg', "images/bg/shoshin-bg-white-long.png")
+        this.load.image('arena_bg', "images/bg/shoshin-bg-large-transparent.png")
     }
 
     initializeCameraSettings(){
@@ -81,8 +81,8 @@ export default class Platformer extends Phaser.Scene {
     create(){
 
         const yDisplacementFromCenterToGround = -150;
-        let bg = this.add.image(0,0,'arena_bg');
-        bg.setScale(2.5, 2.5).setPosition(0, bg.y + yDisplacementFromCenterToGround)
+        let bg = this.add.image(0,20,'arena_bg');
+        bg.setScale(0.3, 0.2).setPosition(0, bg.y + yDisplacementFromCenterToGround);
         console.log("bg x, ", bg.x)
         console.log("bg y " , bg.y)
 
@@ -102,6 +102,7 @@ export default class Platformer extends Phaser.Scene {
         this.player_two_action_hitbox_text = this.addTextHelper()
 
         this.cameras.main.centerOn(0, yDisplacementFromCenterToGround)
+        this.cameras.main.setBackgroundColor('#FFFFFF')
         this.initializeCameraSettings()
 
     }

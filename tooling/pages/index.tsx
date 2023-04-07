@@ -11,6 +11,7 @@ import {
     Condition,
     ConditionElement,
     includeBodyState,
+    validateConditionName,
     verifyValidCondition,
 } from "../src/types/Condition";
 import { MentalState } from "../src/types/MentalState";
@@ -59,6 +60,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import ContractInformationView from "../src/components/sidePanelComponents/ContractInformationView"
 import WalletConnectView from "../src/components/sidePanelComponents/WalletConnectView"
+import crypto from "crypto";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -235,7 +237,7 @@ export default function Home() {
 
     // Decode from React states
     if (testJson !== null) {
-        console.log("testJson:", testJson);
+        //console.log("testJson:", testJson);
     }
     const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length;
 
@@ -327,7 +329,6 @@ export default function Home() {
         console.log("> submitting args:", callData);
         try {
             setHash("");
-
             const response = await execute();
             setHash(response.transaction_hash);
         } catch (err) {
@@ -388,8 +389,8 @@ export default function Home() {
         // regexp string for matching pattern matching expressions
         let pattern = /^(\S+)\s*=>\s*(.+?)(?:\n|$)/gm;
 
-        let f = conditions.slice(0, conditions.length - 1).map((_, i) => {
-            return `F${i}`;
+        let f = conditions.slice(0, conditions.length - 1).map((f, _) => {
+            return f;
         });
         let ms = mentalStates.map((m) => {
             return m.state;
@@ -399,11 +400,14 @@ export default function Home() {
         // match mental state and _ : add the node to the tree
         // otherwise display warning text
         while ((match = pattern.exec(input))) {
-            let fCondition = f.includes(match[1]);
+            let fCondition = f.find(
+                (condition) => condition.displayName == match[1]
+            );
+
             let mCondition = ms.includes(match[2]);
             if (fCondition && mCondition) {
                 new_tree.nodes.push(
-                    { id: match[1], isChild: false },
+                    { id: fCondition.key, isChild: false },
                     { id: match[2], isChild: true, branch: Direction.Left }
                 );
             } else if (mCondition && match[1] === "_") {
@@ -432,13 +436,36 @@ export default function Home() {
         });
     }
 
-    function handleUpdateCondition(index: number, element: ConditionElement) {
-        if (element) {
-            setConditions((prev) => {
-                let prev_copy = JSON.parse(JSON.stringify(prev));
-                if (index == 0 && !prev_copy[index]) {
-                    prev_copy = [{ elements: [] }];
-                }
+    function handleUpdateCondition(
+        index: number,
+        element: ConditionElement,
+        displayName: string
+    ) {
+        setConditions((prev) => {
+            let prev_copy: Condition[] = JSON.parse(JSON.stringify(prev));
+            if (index == 0 && !prev_copy[index]) {
+                prev_copy = [{ elements: [] }];
+            }
+
+            const excludingSelectedCondition = prev_copy.filter((_, i) => index != i)
+            const nameError = validateConditionName(displayName, excludingSelectedCondition);
+            if (nameError) {
+                setConditionWarningTextOn(true);
+                setConditionWarningText(nameError);
+                setTimeout(() => setConditionWarningTextOn(false), 5000);
+                return prev_copy;
+            }
+            prev_copy[index].displayName = displayName;
+            console.log(prev_copy[index]);
+            if (!prev_copy[index].key) {
+                prev_copy[index].key = crypto
+                    .createHash("sha256")
+                    .update(Date.now().toString())
+                    .digest("hex")
+                    .toString();
+            }
+
+            if (element) {
                 prev_copy[index].elements.push(element);
                 let [isValidFunction, error] = verifyValidCondition(
                     prev_copy[index],
@@ -451,11 +478,10 @@ export default function Home() {
                     );
                     setTimeout(() => setConditionWarningTextOn(false), 5000);
                     prev_copy[index].elements.pop();
-                    return prev_copy;
                 }
-                return prev_copy;
-            });
-        }
+            }
+            return prev_copy;
+        });
     }
 
     function handleRemoveConditionElement(index: number) {
@@ -636,8 +662,14 @@ export default function Home() {
             return tree;
         });
         setConditions(() => {
-            let cond = agent.conditions.map((x) => {
-                return { elements: includeBodyState(unwrapLeafToCondition(x)) };
+
+            let cond: Condition[] = agent.conditions.map((x, i) => {
+                let conditionName = agent.conditionNames[i] ? agent.conditionNames[i] : `F${i}`
+                return {
+                    elements: includeBodyState(unwrapLeafToCondition(x)),
+                    key: `F${i}`,
+                    displayName: conditionName,
+                };
             });
             cond.push({ elements: [] }); // add an empty condition for editing
             return cond;
