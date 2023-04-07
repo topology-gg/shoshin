@@ -213,7 +213,6 @@ const Editor = () => {
                 },
             ];
         }
-
         monaco.languages.registerCompletionItemProvider("shoshin_condition", {
             provideCompletionItems: function (model, position) {
                 var word = model.getWordUntilPosition(position);
@@ -228,7 +227,7 @@ const Editor = () => {
                 };
             },
         });
-
+        
         monaco.languages.setMonarchTokensProvider("shoshin_condition", {
             variables: perceptibles,
 
@@ -297,10 +296,14 @@ const Editor = () => {
             false
         );
 
+        
         if(!result.isValid)
         {
-            
+            //report errors to the editor screen and return
+            (monacoRef.current as Monaco).editor    
         }
+
+        //save condition changes?
     };
 
     return (
@@ -316,5 +319,9 @@ const Editor = () => {
 
 // sorting tokens in order
 // putting error back into the editor
+// complete autofill options
+// put into condition panel
+// have agent build only after succesfull confirm (not every update)
+// customize editor - remove scroll and the sidebar, rm line numbers
 
 export default Editor;
