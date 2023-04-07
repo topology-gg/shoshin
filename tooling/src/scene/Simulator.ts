@@ -14,6 +14,8 @@ const DEFAULT_CAMERA_LEFT = - ARENA_WIDTH / 2
 const DEFAULT_CAMERA_TOP = DEFAULT_CAMERA_CENTER_Y - DEFAULT_CAMERA_HEIGHT / 2
 const CAMERA_REACTION_TIME = 400
 
+const HITBOX_STROKE_WIDTH = 1.5
+
 export default class Platformer extends Phaser.Scene {
     private player_one : Phaser.GameObjects.Image;
     private player_two : Phaser.GameObjects.Image;
@@ -33,8 +35,8 @@ export default class Platformer extends Phaser.Scene {
     private player_one_action_hitbox_text : Phaser.GameObjects.Text
     private player_two_action_hitbox_text : Phaser.GameObjects.Text
 
-    readonly STROKE_STYLE_BODY_HITBOX = 0xFCE205FF;
-    readonly STROKE_STYLE_ACTION_HITBOX = 0xCC3333FF;
+    readonly STROKE_STYLE_BODY_HITBOX = 0x7CFC00; //0xFEBA4F;
+    readonly STROKE_STYLE_ACTION_HITBOX = 0xFF2400;//0xFB4D46;
 
     preload(){
 
@@ -91,10 +93,10 @@ export default class Platformer extends Phaser.Scene {
         this.player_two = this.add.sprite(outOfBoundX,0,`antoc-idle`, 0)
         this.player_two.setFlipX(true)
 
-        this.player_one_body_hitbox = this.addRectangleHelper(this.STROKE_STYLE_BODY_HITBOX)
-        this.player_two_body_hitbox = this.addRectangleHelper(this.STROKE_STYLE_BODY_HITBOX)
-        this.player_one_action_hitbox = this.addRectangleHelper(this.STROKE_STYLE_ACTION_HITBOX)
-        this.player_two_action_hitbox = this.addRectangleHelper(this.STROKE_STYLE_ACTION_HITBOX)
+        this.player_one_body_hitbox = this.addRectangleHelper(this.STROKE_STYLE_BODY_HITBOX, HITBOX_STROKE_WIDTH)
+        this.player_two_body_hitbox = this.addRectangleHelper(this.STROKE_STYLE_BODY_HITBOX, HITBOX_STROKE_WIDTH)
+        this.player_one_action_hitbox = this.addRectangleHelper(this.STROKE_STYLE_ACTION_HITBOX, HITBOX_STROKE_WIDTH)
+        this.player_two_action_hitbox = this.addRectangleHelper(this.STROKE_STYLE_ACTION_HITBOX, HITBOX_STROKE_WIDTH)
 
         this.player_one_body_hitbox_text = this.addTextHelper()
         this.player_two_body_hitbox_text = this.addTextHelper()
@@ -107,9 +109,9 @@ export default class Platformer extends Phaser.Scene {
 
     }
 
-    private addRectangleHelper(strokeStyle: number) {
+    private addRectangleHelper(strokeStyle: number, stokeWidth: number) {
         const rect = this.add.rectangle(0, 0, 0, 0)
-        rect.setStrokeStyle(2, strokeStyle);
+        rect.setStrokeStyle(stokeWidth, strokeStyle);
         rect.setFillStyle(0, .3)
         return rect
     }
@@ -195,7 +197,7 @@ export default class Platformer extends Phaser.Scene {
         phaserHitbox.setSize(hitboxW, hitboxH)
         phaserText.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
         Phaser.Display.Align.In.Center(phaserText, phaserHitbox);
-        phaserText.setPosition(phaserText.x + hitbox.dimension.x / 2, phaserText.y + hitbox.dimension.y / 2)
+        phaserText.setPosition( Math.floor(phaserText.x + hitbox.dimension.x / 2), Math.floor(phaserText.y + hitbox.dimension.y / 2) )
     }
 
     private showDebug(){
