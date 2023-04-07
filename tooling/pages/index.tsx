@@ -855,7 +855,7 @@ export default function Home() {
                     >
                         <div>{ FightView }</div>
                         <div>{ EditorViewComponent }</div>
-                        <div style={{paddingLeft:'10rem', paddingRight:'10rem'}}><ContractInformationView /></div>
+                        <div style={{paddingLeft:'10rem', paddingRight:'10rem', height:'650px', overflowY:'scroll'}}><ContractInformationView /></div>
                         <div style={{paddingLeft:'10rem', paddingRight:'10rem'}}><WalletConnectView /></div>
                     </SwipeableViews>
                 </ThemeProvider>

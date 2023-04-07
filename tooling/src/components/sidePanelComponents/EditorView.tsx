@@ -18,8 +18,6 @@ import { MentalState } from '../../types/MentalState';
 import { Character, EditorMode } from '../../constants/constants';
 import { Tree } from '../../types/Tree';
 import { Condition, ConditionElement } from '../../types/Condition';
-import SettingModal from './SettingModal';
-import ContractInformation from './ContractInformation';
 
 interface EditorViewProps {
     editorMode: EditorMode
@@ -47,7 +45,7 @@ interface EditorViewProps {
     trees: Tree[]
     handleUpdateTree: (index: number, input: string) => void
     conditions: Condition[]
-    handleUpdateCondition: (index: number, element: ConditionElement) => void
+    handleUpdateCondition: (index: number, element: ConditionElement, name: string) => void
     handleConfirmCondition: () => void
     handleClickDeleteCondition: (index: number) => void
     conditionUnderEditIndex: number
@@ -77,6 +75,7 @@ const EditorView = ({
 }: EditorViewProps) => {
 
     const isReadOnly = editorMode == EditorMode.ReadOnly
+    const [openContractInformation, setOpenContractInformation] = React.useState(false);
 
     const content = (workingTab: EditorTabName) => {
         switch (workingTab) {
@@ -232,6 +231,7 @@ const EditorView = ({
                         </Button>
                     </div>
                 </div>
+
             </Box>
 
             <Box
