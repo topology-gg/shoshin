@@ -197,7 +197,7 @@ export default class Platformer extends Phaser.Scene {
         phaserHitbox.setSize(hitboxW, hitboxH)
         phaserText.setText(`(${hitboxX},${hitboxY})\n${hitboxW}x${hitboxH}`)
         Phaser.Display.Align.In.Center(phaserText, phaserHitbox);
-        phaserText.setPosition(phaserText.x + hitbox.dimension.x / 2, phaserText.y + hitbox.dimension.y / 2)
+        phaserText.setPosition( Math.floor(phaserText.x + hitbox.dimension.x / 2), Math.floor(phaserText.y + hitbox.dimension.y / 2) )
     }
 
     private showDebug(){
