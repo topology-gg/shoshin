@@ -35,8 +35,8 @@ export default class Platformer extends Phaser.Scene {
     private player_one_action_hitbox_text : Phaser.GameObjects.Text
     private player_two_action_hitbox_text : Phaser.GameObjects.Text
 
-    readonly STROKE_STYLE_BODY_HITBOX = 0xFEBA4F;
-    readonly STROKE_STYLE_ACTION_HITBOX = 0xFB4D46;
+    readonly STROKE_STYLE_BODY_HITBOX = 0x7CFC00; //0xFEBA4F;
+    readonly STROKE_STYLE_ACTION_HITBOX = 0xFF2400;//0xFB4D46;
 
     preload(){
 
