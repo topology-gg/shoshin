@@ -3,6 +3,9 @@ import { Slider, styled } from "@mui/material";
 const Timeline = styled(Slider)(({ theme, color }) => ({
     color: color ? theme.palette[color].main : theme.palette.accent.main,
     height: 2,
+    "&.MuiSlider-marked": {
+        marginBottom: 0,
+    },
     "& .MuiSlider-rail": {
         backgroundColor: "#d8d8d8",
     },
@@ -10,17 +13,11 @@ const Timeline = styled(Slider)(({ theme, color }) => ({
         display: "none",
     },
     "& .MuiSlider-mark": {
-        width: 10,
-        height: 10,
-        borderRadius: 10,
-        transform: "translate(-50%, -50%)",
-        "&.MuiSlider-markActive": {
-            backgroundColor: "currentColor",
-            opacity: 1,
-        },
+        display: "none",
     },
     "& .MuiSlider-markLabel": {
-        top: 20,
+        top: "50%",
+        transform: "translate(-50%, -50%)",
     }
 }));
 

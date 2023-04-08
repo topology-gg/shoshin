@@ -5,6 +5,7 @@ import Slider from '@mui/material/Slider';
 import { Frame } from "../types/Frame";
 import { BodystatesAntoc, BodystatesJessica } from "../types/Condition";
 import Timeline from "./ui/Timeline";
+import EventSymbol from "./ui/EventSymbol";
 
 // Calculate key events to be displayed along the timeline slider
 function findFrameNumbersAtHurt (frames: Frame[]){
@@ -50,12 +51,12 @@ const MidScreenControl = ({
     const agent_1_frames = testJson?.agent_1.frames
 
     const marksP1 = useMemo(() => [
-        ...findFrameNumbersAtHurt(agent_0_frames)?.map((f) => ({ label: "🥊", value: f })) || [],
-        ...findFrameNumbersAtKnocked(agent_0_frames)?.map((f) => ({ label: "⚡️", value: f })) || [],
+        ...findFrameNumbersAtHurt(agent_0_frames)?.map((f) => ({ label: <EventSymbol type="hurt" />, value: f })) || [],
+        ...findFrameNumbersAtKnocked(agent_0_frames)?.map((f) => ({ label: <EventSymbol type="knocked" />, value: f })) || [],
     ], agent_0_frames)
     const marksP2 = useMemo(() => [
-        ...findFrameNumbersAtHurt(agent_1_frames)?.map((f) => ({ label: "🥊", value: f })) || [],
-        ...findFrameNumbersAtKnocked(agent_1_frames)?.map((f) => ({ label: "⚡️", value: f })) || [],
+        ...findFrameNumbersAtHurt(agent_1_frames)?.map((f) => ({ label: <EventSymbol type="hurt" />, value: f })) || [],
+        ...findFrameNumbersAtKnocked(agent_1_frames)?.map((f) => ({ label: <EventSymbol type="knocked" />, value: f })) || [],
     ], agent_1_frames)
 
     return (
