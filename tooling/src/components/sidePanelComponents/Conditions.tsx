@@ -164,14 +164,14 @@ const Conditions = ({
 
     return (
         <Box
-        sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "left",
-            pt: "1rem",
-            pl: '1rem',
-            pr: '1rem',
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "left",
+                pt: "1rem",
+                pl: '1rem',
+                pr: '1rem',
         }}>
             <Typography sx={{ fontSize: '17px' }} variant='overline'>Conditions</Typography>
             <Grid container spacing={1}>

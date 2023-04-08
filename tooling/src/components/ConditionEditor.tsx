@@ -204,15 +204,15 @@ const ConditionEditor = () => {
         function createDependencyProposals(range) {
             // returning a static list of proposals, not even looking at the prefix (filtering is done by the Monaco editor),
             // here you could do a server side lookup
-            return [
-                {
-                    label: "SelfX",
+            return perceptibles.map(p => {
+                return {
+                    label: p,
                     kind: monaco.languages.CompletionItemKind.Function,
-                    documentation: "The x position of your own character",
-                    insertText: "SelfX",
+                    documentation: "TBD",
+                    insertText: p,
                     range: range,
-                },
-            ];
+                };
+            })
         }
         monaco.languages.registerCompletionItemProvider("shoshin_condition", {
             provideCompletionItems: function (model, position) {
@@ -229,20 +229,33 @@ const ConditionEditor = () => {
             },
         });
 
+        // Reference for usage: https://microsoft.github.io/monaco-editor/monarch.html
         monaco.languages.setMonarchTokensProvider("shoshin_condition", {
             variables: perceptibles,
 
-            operators,
+            // define keywords here for our custom language
+            keywords: [
+                '==', 'AND', 'OR'
+            ],
+
             tokenizer: {
                 root: [
                     // identifiers and keywords
                     [
                         /[a-zA-Z_\$][\w$]*/,
-                        { cases: { "@variables": "constant" } },
+                        { cases: {
+                            "@variables": "constant",
+                            "@keywords": "keyword",
+                        } },
                     ],
 
                     // numbers
                     [/\d+/, "number"],
+
+                    // delimiters and operators
+                    // [/@symbols/, { cases: {
+                    //     '@operators': 'operator',
+                    //     '@default'  : '' } } ],
                 ],
             },
         });
