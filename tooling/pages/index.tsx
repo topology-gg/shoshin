@@ -782,6 +782,7 @@ export default function Home() {
                     testJsonAvailable={
                         testJson ? true : false
                     }
+                    testJson={testJson}
                     animationFrame={animationFrame}
                     n_cycles={N_FRAMES}
                     animationState={animationState}

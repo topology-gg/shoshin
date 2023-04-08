@@ -2,13 +2,52 @@ import React from "react";
 import { Box, Button, FormControlLabel, Switch } from "@mui/material";
 import { FastForward, FastRewind, Pause, PlayArrow, Stop } from "@mui/icons-material";
 import Slider from '@mui/material/Slider';
+import { Frame } from "../types/Frame";
+import { BodystatesAntoc, BodystatesJessica } from "../types/Condition";
 
 const MidScreenControl = ({
-    runnable, testJsonAvailable, animationFrame, n_cycles, animationState, handleClick, handleSlideChange,
+    runnable, testJsonAvailable, testJson, animationFrame, n_cycles, animationState, handleClick, handleSlideChange,
     checkedShowDebugInfo, handleChangeDebugInfo
 
 }) => {
     const BLANK_COLOR = '#EFEFEF'
+
+    // Calculate key events to be displayed along the timeline slider
+    function findFrameNumbersAtHurt (frames: Frame[]){
+        if (!frames) return;
+        // find the frame number at which the agent is at the first frame (counter == 0) for hurt state (currently need to iterate over all character types)
+        // and record that frame number minus one, which is the frame number where the agent is hurt by opponent
+        let frameNumbers = []
+        frames.forEach((frame, frame_i) => {
+            if (
+                (frame.body_state.state == BodystatesAntoc.Hurt || frame.body_state.state == BodystatesJessica.Hurt)
+                && (frame.body_state.counter == 0)
+            ){
+                frameNumbers.push(frame_i);
+            }
+        })
+        return frameNumbers
+    }
+    function findFrameNumbersAtKnocked (frames: Frame[]){
+        if (!frames) return
+        // find the frame number at which the agent is at the first frame (counter == 0) for hurt state (currently need to iterate over all character types)
+        // and record that frame number minus one, which is the frame number where the agent is knocked by opponent
+        let frameNumbers = []
+        frames.forEach((frame, frame_i) => {
+            if (
+                (frame.body_state.state == BodystatesAntoc.Knocked || frame.body_state.state == BodystatesJessica.Knocked)
+                && (frame.body_state.counter == 0)
+            ){
+                frameNumbers.push(frame_i);
+            }
+        })
+        return frameNumbers
+    }
+
+    const agent_0_frames = testJson?.agent_0.frames
+    const agent_1_frames = testJson?.agent_1.frames
+    console.log('agent 0: hurt at frame number', findFrameNumbersAtHurt(agent_0_frames), '; knocked at frame number', findFrameNumbersAtKnocked(agent_0_frames))
+    console.log('agent 1: hurt at frame number', findFrameNumbersAtHurt(agent_1_frames), '; knocked at frame number', findFrameNumbersAtKnocked(agent_1_frames))
 
     return (
         <Box
@@ -18,7 +57,7 @@ const MidScreenControl = ({
                 justifyContent: "center",
                 alignItems: "center",
                 backgroundColor: BLANK_COLOR,
-                p: "0.5rem",
+                p: 2,
                 mb: 2,
                 border: 1,
                 borderRadius: 4,
@@ -37,65 +76,6 @@ const MidScreenControl = ({
                     gap: 1,
                 }}
             >
-                {/* <input
-                    id="typeinp"
-                    type="range"
-                    min="0"
-                    max={n_cycles-1}
-                    value={animationFrame}
-                    onChange={handleSlideChange}
-                    step="1"
-                    style={{ flex: 1, width: "auto" }}
-                    disabled={animationState == 'Run' || !runnable || !testJsonAvailable}
-                /> */}
-
-                <Box sx={{ width: 300, mr:3 }}>
-                    <Slider
-                        aria-label="Always visible"
-                        value={animationFrame}
-                        onChange={handleSlideChange}
-                        min={0}
-                        max={n_cycles == 0 ? 0 : n_cycles-1}
-                        step={1}
-                        getAriaValueText={(value) => `${value}`}
-                        marks={[]}
-                        valueLabelDisplay="on"
-                        sx={{
-                            color: '#52af77',
-
-                            '& .MuiSlider-thumb': {
-                                width: '24px',
-                                height: '24px',
-                                borderRadius: '6px',
-                            },
-
-                            '& .MuiSlider-valueLabel': {
-                                fontSize: 11,
-                                fontWeight: 'normal',
-                                top:24,
-                                backgroundColor: 'unset',
-                                color: '#eee',
-                                '&:before': {
-                                    display: 'none',
-                                },
-                                '& *': {
-                                    background: 'transparent',
-                                    color: 'fff',
-                                },
-                            },
-
-                            '& .MuiSlider-rail': {
-                                color: '#d8d8d8',
-                                opacity: 1,
-                                height: 10,
-                            },
-
-                            '& .MuiSlider-track': {
-                                height: 10
-                            },
-                        }}
-                    />
-                </Box>
 
                 <Button
                     size="small"
@@ -132,17 +112,6 @@ const MidScreenControl = ({
                 >
                     <FastForward />
                 </Button>
-
-                {/* <Button
-                    id={"submit-button"}
-                    size="small"
-                    variant="outlined"
-                    onClick={() => handleClickSubmit()}
-                >
-                    <i className="material-icons" style={{ fontSize: "1.25rem"}}>
-                        send
-                    </i>
-                </Button> */}
 
                 <FormControlLabel
                     control={
@@ -203,6 +172,54 @@ const MidScreenControl = ({
                         </Box>
                     }
                     sx={{ml: 1}}
+                />
+            </Box>
+
+            <Box sx={{ width: 600, mt:3 }}>
+                <Slider
+                    aria-label="Always visible"
+                    value={animationFrame}
+                    onChange={handleSlideChange}
+                    min={0}
+                    max={n_cycles == 0 ? 0 : n_cycles-1}
+                    step={1}
+                    getAriaValueText={(value) => `${value}`}
+                    marks={[]}
+                    valueLabelDisplay="on"
+                    sx={{
+                        color: '#52af77',
+
+                        '& .MuiSlider-thumb': {
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '6px',
+                        },
+
+                        '& .MuiSlider-valueLabel': {
+                            fontSize: 11,
+                            fontWeight: 'normal',
+                            top:24,
+                            backgroundColor: 'unset',
+                            color: '#eee',
+                            '&:before': {
+                                display: 'none',
+                            },
+                            '& *': {
+                                background: 'transparent',
+                                color: 'fff',
+                            },
+                        },
+
+                        '& .MuiSlider-rail': {
+                            color: '#d8d8d8',
+                            opacity: 1,
+                            height: 10,
+                        },
+
+                        '& .MuiSlider-track': {
+                            height: 10
+                        },
+                    }}
                 />
             </Box>
         </Box>
