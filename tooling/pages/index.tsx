@@ -91,7 +91,7 @@ const theme = createTheme({
                     color: "black",
                     backgroundColor: "white",
                     ":hover": {
-                        backgroundColor: "#2EE59D",
+                        backgroundColor: "#52af77",
                         color: "#fff",
                         transition: "background 0.2s, color 0.2s",
                     },
@@ -792,6 +792,7 @@ export default function Home() {
                     }
                     handleSlideChange={(evt) => {
                         if (animationState == "Run") return;
+                        console.log('handleSlideChange::value', evt.target.value)
                         const slide_val: number = parseInt(
                             evt.target.value
                         );

@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Button, FormControlLabel, Switch } from "@mui/material";
 import { FastForward, FastRewind, Pause, PlayArrow, Stop } from "@mui/icons-material";
+import Slider from '@mui/material/Slider';
 
 const MidScreenControl = ({
     runnable, testJsonAvailable, animationFrame, n_cycles, animationState, handleClick, handleSlideChange,
@@ -36,24 +37,7 @@ const MidScreenControl = ({
                     gap: 1,
                 }}
             >
-                <p
-                    style={{
-                        padding: "0",
-                        textAlign: "center",
-                        verticalAlign: "middle",
-                        width: "7rem",
-                        margin: "0 0.5rem 0 0",
-                        // width: "100px" /* Make room for dynamic text */,
-                        height: "20px",
-                        lineHeight: "20px",
-                        fontSize: "0.75rem",
-                    }}
-                >
-                    {" "}
-                    Frame {!testJsonAvailable ? '-' : animationFrame+1} / {!testJsonAvailable ? '-' : n_cycles}
-                </p>
-
-                <input
+                {/* <input
                     id="typeinp"
                     type="range"
                     min="0"
@@ -63,7 +47,55 @@ const MidScreenControl = ({
                     step="1"
                     style={{ flex: 1, width: "auto" }}
                     disabled={animationState == 'Run' || !runnable || !testJsonAvailable}
-                />
+                /> */}
+
+                <Box sx={{ width: 300, mr:3 }}>
+                    <Slider
+                        aria-label="Always visible"
+                        value={animationFrame}
+                        onChange={handleSlideChange}
+                        min={0}
+                        max={n_cycles == 0 ? 0 : n_cycles-1}
+                        step={1}
+                        getAriaValueText={(value) => `${value}`}
+                        marks={[]}
+                        valueLabelDisplay="on"
+                        sx={{
+                            color: '#52af77',
+
+                            '& .MuiSlider-thumb': {
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '6px',
+                            },
+
+                            '& .MuiSlider-valueLabel': {
+                                fontSize: 11,
+                                fontWeight: 'normal',
+                                top:24,
+                                backgroundColor: 'unset',
+                                color: '#eee',
+                                '&:before': {
+                                    display: 'none',
+                                },
+                                '& *': {
+                                    background: 'transparent',
+                                    color: 'fff',
+                                },
+                            },
+
+                            '& .MuiSlider-rail': {
+                                color: '#d8d8d8',
+                                opacity: 1,
+                                height: 10,
+                            },
+
+                            '& .MuiSlider-track': {
+                                height: 10
+                            },
+                        }}
+                    />
+                </Box>
 
                 <Button
                     size="small"
@@ -120,10 +152,53 @@ const MidScreenControl = ({
                             onChange={handleChangeDebugInfo}
                             checked={checkedShowDebugInfo}
                             disabled={!runnable || !testJsonAvailable}
+                            sx={{
+                                width: 42,
+                                height: 26,
+                                padding: 0,
+                                '& .MuiSwitch-switchBase': {
+                                    padding: 0,
+                                    margin: '2px',
+                                    transitionDuration: '300ms',
+                                    '&.Mui-checked': {
+                                        transform: 'translateX(16px)',
+                                        color: '#fff',
+                                        '& + .MuiSwitch-track': {
+                                            backgroundColor: '#52af77',
+                                            opacity: 1,
+                                            border: 0,
+                                        },
+                                        '&.Mui-disabled + .MuiSwitch-track': {
+                                            opacity: 0.5,
+                                        },
+                                    },
+                                    '&.Mui-focusVisible .MuiSwitch-thumb': {
+                                        color: '#52af77',
+                                        border: '6px solid #fff',
+                                    },
+                                    '&.Mui-disabled .MuiSwitch-thumb': {
+                                        color:'#888'
+                                    },
+                                    '&.Mui-disabled + .MuiSwitch-track': {
+                                        opacity: 0.7,
+                                    },
+                                },
+                                '& .MuiSwitch-thumb': {
+                                    boxSizing: 'border-box',
+                                    width: 22,
+                                    height: 22,
+                                },
+                                '& .MuiSwitch-track': {
+                                    borderRadius: 26/2,
+                                    backgroundColor: '#E9E9EA',
+                                    opacity: 1,
+                                    transition: 500,
+                                },
+                            }}
                         />
                     }
                     label={
-                        <Box component="div" fontSize={'0.75rem'}>
+                        <Box component="div" fontSize={'0.75rem'} sx={{ml:0.5}}>
                             Debug
                         </Box>
                     }
