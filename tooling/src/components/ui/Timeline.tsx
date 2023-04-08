@@ -18,6 +18,11 @@ const Timeline = styled(Slider)(({ theme, color }) => ({
     "& .MuiSlider-markLabel": {
         top: "50%",
         transform: "translate(-50%, -50%)",
+        borderRadius: 100,
+        transition: theme.transitions.create("box-shadow", { duration: 150 }),
+        "&:hover": {
+            boxShadow: "0px 0px 0px 4px rgba(0, 0, 0, 0.16)"
+        }
     }
 }));
 
