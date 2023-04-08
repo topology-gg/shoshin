@@ -3,7 +3,13 @@ import React from "react";
 
 export type EventType = "hurt" | "knocked";
 
-const EventSymbol = ({ type }: { type: EventType }) => {
+const EventSymbol = ({
+    type,
+    active,
+}: {
+    type: EventType;
+    active?: boolean;
+}) => {
     const color =
         type === "hurt"
             ? "warning.main"
@@ -13,12 +19,12 @@ const EventSymbol = ({ type }: { type: EventType }) => {
     return (
         <Box
             sx={{
-                borderRadius: 10,
+                borderRadius: 100,
                 border: 2,
                 color,
-                width: 10,
-                height: 10,
-                backgroundColor: "white",
+                width: active ? 12 : 10,
+                height: active ? 12 : 10,
+                backgroundColor: active ? color : "white",
             }}
         />
     );

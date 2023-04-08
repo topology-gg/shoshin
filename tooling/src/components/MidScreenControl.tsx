@@ -50,14 +50,40 @@ const MidScreenControl = ({
     const agent_0_frames = testJson?.agent_0.frames
     const agent_1_frames = testJson?.agent_1.frames
 
-    const marksP1 = useMemo(() => [
-        ...findFrameNumbersAtHurt(agent_0_frames)?.map((f) => ({ label: <EventSymbol type="hurt" />, value: f })) || [],
-        ...findFrameNumbersAtKnocked(agent_0_frames)?.map((f) => ({ label: <EventSymbol type="knocked" />, value: f })) || [],
-    ], agent_0_frames)
-    const marksP2 = useMemo(() => [
-        ...findFrameNumbersAtHurt(agent_1_frames)?.map((f) => ({ label: <EventSymbol type="hurt" />, value: f })) || [],
-        ...findFrameNumbersAtKnocked(agent_1_frames)?.map((f) => ({ label: <EventSymbol type="knocked" />, value: f })) || [],
-    ], agent_1_frames)
+    const marksP1 = useMemo(
+        () => [
+            ...(findFrameNumbersAtHurt(agent_0_frames)?.map((f) => ({
+                label: (
+                    <EventSymbol type="hurt" active={animationFrame === f} />
+                ),
+                value: f,
+            })) || []),
+            ...(findFrameNumbersAtKnocked(agent_0_frames)?.map((f) => ({
+                label: (
+                    <EventSymbol type="knocked" active={animationFrame === f} />
+                ),
+                value: f,
+            })) || []),
+        ],
+        [agent_0_frames, animationFrame]
+    );
+    const marksP2 = useMemo(
+        () => [
+            ...(findFrameNumbersAtHurt(agent_1_frames)?.map((f) => ({
+                label: (
+                    <EventSymbol type="hurt" active={animationFrame === f} />
+                ),
+                value: f,
+            })) || []),
+            ...(findFrameNumbersAtKnocked(agent_1_frames)?.map((f) => ({
+                label: (
+                    <EventSymbol type="knocked" active={animationFrame === f} />
+                ),
+                value: f,
+            })) || []),
+        ],
+        [agent_1_frames, animationFrame]
+    );
 
     return (
         <Box
