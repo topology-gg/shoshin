@@ -1,9 +1,43 @@
-import React from "react";
-import { Box, Button, FormControlLabel, Switch } from "@mui/material";
+import React, { useMemo } from "react";
+import { Box, Button, Chip, FormControlLabel, Switch } from "@mui/material";
 import { FastForward, FastRewind, Pause, PlayArrow, Stop } from "@mui/icons-material";
 import Slider from '@mui/material/Slider';
 import { Frame } from "../types/Frame";
 import { BodystatesAntoc, BodystatesJessica } from "../types/Condition";
+import Timeline from "./ui/Timeline";
+
+// Calculate key events to be displayed along the timeline slider
+function findFrameNumbersAtHurt (frames: Frame[]){
+    if (!frames) return;
+    // find the frame number at which the agent is at the first frame (counter == 0) for hurt state (currently need to iterate over all character types)
+    // and record that frame number minus one, which is the frame number where the agent is hurt by opponent
+    let frameNumbers = []
+    frames.forEach((frame, frame_i) => {
+        if (
+            (frame.body_state.state == BodystatesAntoc.Hurt || frame.body_state.state == BodystatesJessica.Hurt)
+            && (frame.body_state.counter == 0)
+        ){
+            frameNumbers.push(frame_i);
+        }
+    })
+    return frameNumbers
+}
+
+function findFrameNumbersAtKnocked (frames: Frame[]){
+    if (!frames) return
+    // find the frame number at which the agent is at the first frame (counter == 0) for hurt state (currently need to iterate over all character types)
+    // and record that frame number minus one, which is the frame number where the agent is knocked by opponent
+    let frameNumbers = []
+    frames.forEach((frame, frame_i) => {
+        if (
+            (frame.body_state.state == BodystatesAntoc.Knocked || frame.body_state.state == BodystatesJessica.Knocked)
+            && (frame.body_state.counter == 0)
+        ){
+            frameNumbers.push(frame_i);
+        }
+    })
+    return frameNumbers
+}
 
 const MidScreenControl = ({
     runnable, testJsonAvailable, testJson, animationFrame, n_cycles, animationState, handleClick, handleSlideChange,
@@ -12,42 +46,17 @@ const MidScreenControl = ({
 }) => {
     const BLANK_COLOR = '#EFEFEF'
 
-    // Calculate key events to be displayed along the timeline slider
-    function findFrameNumbersAtHurt (frames: Frame[]){
-        if (!frames) return;
-        // find the frame number at which the agent is at the first frame (counter == 0) for hurt state (currently need to iterate over all character types)
-        // and record that frame number minus one, which is the frame number where the agent is hurt by opponent
-        let frameNumbers = []
-        frames.forEach((frame, frame_i) => {
-            if (
-                (frame.body_state.state == BodystatesAntoc.Hurt || frame.body_state.state == BodystatesJessica.Hurt)
-                && (frame.body_state.counter == 0)
-            ){
-                frameNumbers.push(frame_i);
-            }
-        })
-        return frameNumbers
-    }
-    function findFrameNumbersAtKnocked (frames: Frame[]){
-        if (!frames) return
-        // find the frame number at which the agent is at the first frame (counter == 0) for hurt state (currently need to iterate over all character types)
-        // and record that frame number minus one, which is the frame number where the agent is knocked by opponent
-        let frameNumbers = []
-        frames.forEach((frame, frame_i) => {
-            if (
-                (frame.body_state.state == BodystatesAntoc.Knocked || frame.body_state.state == BodystatesJessica.Knocked)
-                && (frame.body_state.counter == 0)
-            ){
-                frameNumbers.push(frame_i);
-            }
-        })
-        return frameNumbers
-    }
-
     const agent_0_frames = testJson?.agent_0.frames
     const agent_1_frames = testJson?.agent_1.frames
-    console.log('agent 0: hurt at frame number', findFrameNumbersAtHurt(agent_0_frames), '; knocked at frame number', findFrameNumbersAtKnocked(agent_0_frames))
-    console.log('agent 1: hurt at frame number', findFrameNumbersAtHurt(agent_1_frames), '; knocked at frame number', findFrameNumbersAtKnocked(agent_1_frames))
+
+    const marksP1 = useMemo(() => [
+        ...findFrameNumbersAtHurt(agent_0_frames)?.map((f) => ({ label: "🥊", value: f })) || [],
+        ...findFrameNumbersAtKnocked(agent_0_frames)?.map((f) => ({ label: "⚡️", value: f })) || [],
+    ], agent_0_frames)
+    const marksP2 = useMemo(() => [
+        ...findFrameNumbersAtHurt(agent_1_frames)?.map((f) => ({ label: "🥊", value: f })) || [],
+        ...findFrameNumbersAtKnocked(agent_1_frames)?.map((f) => ({ label: "⚡️", value: f })) || [],
+    ], agent_1_frames)
 
     return (
         <Box
@@ -184,7 +193,6 @@ const MidScreenControl = ({
                     max={n_cycles == 0 ? 0 : n_cycles-1}
                     step={1}
                     getAriaValueText={(value) => `${value}`}
-                    marks={[]}
                     valueLabelDisplay="on"
                     sx={{
                         color: '#52af77',
@@ -216,11 +224,39 @@ const MidScreenControl = ({
                             height: 10,
                         },
 
+                        '& .MuiSlider-mark': {
+                            width: 10,
+                            height: 10,
+                            borderRadius: 10,
+                        },
+
                         '& .MuiSlider-track': {
                             height: 10
                         },
                     }}
                 />
+                <Box sx={{ position: "relative" }}>
+                    <Chip label="P1" color="info" size="small" sx={{ position: "absolute", top: 0, left: -50 }} />
+                    <Timeline
+                        color="info"
+                        value={animationFrame}
+                        onChange={handleSlideChange}
+                        marks={marksP1}
+                        step={null}
+                        max={n_cycles == 0 ? 0 : n_cycles-1}
+                    />
+                </Box>
+                <Box sx={{ position: "relative" }}>
+                    <Chip label="P2" color="info" size="small" sx={{ position: "absolute", top: 0, left: -50 }} />
+                    <Timeline
+                        color="info"
+                        value={animationFrame}
+                        onChange={handleSlideChange}
+                        marks={marksP2}
+                        step={null}
+                        max={n_cycles == 0 ? 0 : n_cycles-1}
+                    />
+                </Box>
             </Box>
         </Box>
     );

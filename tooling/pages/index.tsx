@@ -1,8 +1,7 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import React, { useEffect, useMemo, useState } from "react";
-import { Box, createTheme, ThemeProvider } from "@mui/material";
-import Grid from "@mui/material/Grid";
+import { Box, ThemeProvider } from "@mui/material";
 import MidScreenControl from "../src/components/MidScreenControl";
 import EditorView from "../src/components/sidePanelComponents/EditorView";
 import { FrameScene, TestJson } from "../src/types/Frame";
@@ -31,7 +30,6 @@ import {
     BLANK_AGENT,
 } from "../src/constants/constants";
 import Agent, { agentToCalldata, buildAgent } from "../src/types/Agent";
-import ImagePreloader from "../src/components/ImagePreloader";
 import StatusBarPanel from "../src/components/StatusBar";
 import P1P2SettingPanel, {
     AgentOption,
@@ -62,44 +60,11 @@ import ContractInformationView from "../src/components/sidePanelComponents/Contr
 import WalletConnectView from "../src/components/sidePanelComponents/WalletConnectView"
 import crypto from "crypto";
 import SwipeableContent from "../src/components/layout/SwipeableContent";
+import theme from "../src/theme/theme";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
     ssr: false,
-});
-
-const theme = createTheme({
-    typography: {
-        fontFamily:
-            "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;",
-        fontSize: 12,
-    },
-    palette: {
-        primary: {
-            main: "#000000",
-        },
-        secondary: {
-            main: "#2d4249",
-        },
-        info: {
-            main: "#848f98",
-        },
-    },
-    components: {
-        MuiButton: {
-            styleOverrides: {
-                outlinedPrimary: {
-                    color: "black",
-                    backgroundColor: "white",
-                    ":hover": {
-                        backgroundColor: "#52af77",
-                        color: "#fff",
-                        transition: "background 0.2s, color 0.2s",
-                    },
-                },
-            },
-        },
-    },
 });
 
 export default function Home() {
