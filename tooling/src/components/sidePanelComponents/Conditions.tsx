@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField';
 import { ConditionElement, Operator, ElementType, Perceptible, Condition, isPerceptibleBodyState, isOperatorWithDoubleOperands, conditionElementToStr } from '../../types/Condition'
 import PerceptibleList from './PerceptibleList'
 import { BodystatesAntoc, BodystatesJessica } from '../../types/Condition';
+import ConditionEditor from '../ConditionEditor';
 
 // Interfaces
 
@@ -207,15 +208,18 @@ const Conditions = ({
 
                 {/* { handleDisplayText(isReadOnly, isWarningTextOn, warningText, conditionUnderEditIndex) } */}
 
-                <Grid xs={ 12 } item sx={{mt: 1}}>
+                <Grid xs={ 12 } item sx={{mt: 1, mb: 2}}>
                     <TextField
-                      label="Give it a name"
-                      size="small"
-                      fullWidth
-                      value={f.displayName || ""}
-                      onChange={(e) => handleUpdateCondition(conditionUnderEditIndex, undefined, e.target.value)}
+                        label="Give it a name"
+                        size="small"
+                        // fullWidth
+                        sx = {{width:'400px'}}
+                        value={f.displayName || ""}
+                        onChange={(e) => handleUpdateCondition(conditionUnderEditIndex, undefined, e.target.value)}
                     />
                 </Grid>
+
+                <ConditionEditor />
 
                 <Grid xs={ 10 } item className='function-creator'>
                     <Box

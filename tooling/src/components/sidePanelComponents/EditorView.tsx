@@ -254,7 +254,7 @@ const EditorView = ({
                         border: '1px solid #999999',
                         padding: '0.5rem 0.5rem 2rem 0.5rem',
                         height: '500px',
-                        overflow: 'auto',
+                        overflow: 'scroll',
                     }}
                 >
                     {content(workingTab)}

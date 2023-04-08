@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 
-import EditorComponent, { Monaco, OnChange } from "@monaco-editor/react";
+import EditorComponent, { useMonaco, Monaco, MonacoDiffEditor, OnChange } from "@monaco-editor/react";
 import { EditorProps } from "@monaco-editor/react";
 import {
     BodystatesAntoc,
@@ -10,6 +10,7 @@ import {
     ElementType,
     verifyValidCondition,
 } from "../types/Condition";
+import { Box } from "@mui/material";
 
 function removeSubstring(str: string, start: number, end: number) {
     if (start == 0 && end == str.length) {
@@ -190,7 +191,7 @@ function tokenize(input: string) {
     return tokens;
 }
 
-const Editor = () => {
+const ConditionEditor = () => {
     const editorRef = useRef(null);
     const monacoRef = useRef(null);
 
@@ -227,7 +228,7 @@ const Editor = () => {
                 };
             },
         });
-        
+
         monaco.languages.setMonarchTokensProvider("shoshin_condition", {
             variables: perceptibles,
 
@@ -296,25 +297,51 @@ const Editor = () => {
             false
         );
 
-        
+
         if(!result.isValid)
         {
             //report errors to the editor screen and return
-            (monacoRef.current as Monaco).editor    
+            (monacoRef.current as Monaco).editor
         }
 
         //save condition changes?
     };
 
+    const monaco = useMonaco();
+    monaco?.editor.defineTheme('editor-theme', {
+        base: 'vs',
+        inherit: true,
+        rules: [],
+        colors: {
+            'editor.background': '#ffffffff',
+            'editor.lineHighlightBackground': '#00000000',
+            'editor.lineHighlightBorder': '#00000000',
+            'scrollbar.shadow': '#00000000',
+        },
+    });
+
     return (
-        <EditorComponent
-            height="500px"
-            defaultLanguage="shoshin_condition"
-            defaultValue="!(SelfX==1)AND(SelfX==2)"
-            //@ts-ignore
-            onMount={handleEditorDidMount}
-            onChange={handleChange}
-        />
+        <Box style={{border:'1px solid #BBB', marginLeft:'8px'}}>
+            <EditorComponent
+                height="200px"
+                width="400px"
+                defaultLanguage="shoshin_condition"
+                defaultValue="!(SelfX == 1) AND (SelfX == 2)"
+                theme='editor-theme'
+                options={{
+                    minimap: {
+                      enabled: false,
+                    },
+                    wordWrap: "on",
+                    fontSize: 16,
+                    lineNumbers: 'off',
+                }}
+
+                //@ts-ignore
+                onMount={handleEditorDidMount}
+                onChange={handleChange}
+            />
+        </Box>
     );
 };
 
@@ -325,4 +352,4 @@ const Editor = () => {
 // have agent build only after succesfull confirm (not every update)
 // customize editor - remove scroll and the sidebar, rm line numbers
 
-export default Editor;
+export default ConditionEditor;
