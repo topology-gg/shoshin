@@ -72,10 +72,10 @@ const perceptibles = [
 ];
 
 const operators = ["==", "<=", "*", "/", "%", "+", "-", "!", "AND", "OR"];
-function tokenize(input: string) {
+function tokenize(input: string): token[] {
     // Remove any whitespace from the expression
     let expression = input.replace(/\s/g, "");
-
+    console.log('expression:', expression)
     // Define an array to store the tokens
     var tokens: token[] = [];
 
@@ -300,8 +300,12 @@ const ConditionEditor = () => {
     const handleChange: OnChange = (text, ev) => {
         //tokenize
         const tokens = tokenize(text);
+        console.log('tokenize():', tokens)
+
         //transpile
         const elements: ConditionElement[] = tokens.map(tokensToElements);
+        console.log('tokens.map(tokensToElements):', elements)
+
         //verify
         const result: ConditionVerificationResult = verifyValidCondition(
             {
@@ -310,9 +314,9 @@ const ConditionEditor = () => {
             false
         );
 
-
         if(!result.isValid)
         {
+            console.log('condition verification failed.');
             //report errors to the editor screen and return
             (monacoRef.current as Monaco).editor
         }
