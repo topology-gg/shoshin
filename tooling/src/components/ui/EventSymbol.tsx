@@ -12,7 +12,7 @@ const EventSymbol = ({
 }) => {
     const color =
         type === "hurt"
-            ? "warning.main"
+            ? "warning.light"
             : type === "knocked"
             ? "error.main"
             : null;
