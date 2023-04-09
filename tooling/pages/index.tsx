@@ -1,8 +1,7 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import React, { useEffect, useMemo, useState } from "react";
-import { createTheme, ThemeProvider } from "@mui/material";
-import Grid from "@mui/material/Grid";
+import { Box, ThemeProvider } from "@mui/material";
 import MidScreenControl from "../src/components/MidScreenControl";
 import EditorView from "../src/components/sidePanelComponents/EditorView";
 import { FrameScene, TestJson } from "../src/types/Frame";
@@ -32,7 +31,6 @@ import {
     BLANK_AGENT,
 } from "../src/constants/constants";
 import Agent, { agentToCalldata, buildAgent } from "../src/types/Agent";
-import ImagePreloader from "../src/components/ImagePreloader";
 import StatusBarPanel from "../src/components/StatusBar";
 import P1P2SettingPanel, {
     AgentOption,
@@ -62,44 +60,12 @@ import Tab from "@mui/material/Tab";
 import ContractInformationView from "../src/components/sidePanelComponents/ContractInformationView"
 import WalletConnectView from "../src/components/sidePanelComponents/WalletConnectView"
 import crypto from "crypto";
+import SwipeableContent from "../src/components/layout/SwipeableContent";
+import theme from "../src/theme/theme";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
     ssr: false,
-});
-
-const theme = createTheme({
-    typography: {
-        fontFamily:
-            "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;",
-        fontSize: 12,
-    },
-    palette: {
-        primary: {
-            main: "#000000",
-        },
-        secondary: {
-            main: "#2d4249",
-        },
-        info: {
-            main: "#848f98",
-        },
-    },
-    components: {
-        MuiButton: {
-            styleOverrides: {
-                outlinedPrimary: {
-                    color: "black",
-                    backgroundColor: "white",
-                    ":hover": {
-                        backgroundColor: "#52af77",
-                        color: "#fff",
-                        transition: "background 0.2s, color 0.2s",
-                    },
-                },
-            },
-        },
-    },
 });
 
 export default function Home() {
@@ -753,10 +719,7 @@ export default function Home() {
     )
 
     let FightView = (
-        <div
-            className={styles.main}
-            style={{ display: "flex", flexDirection: "column", padding:0, alignItems:'center'}}
-        >
+        <div className={styles.main}>
             <div
                 style={{
                     display: "flex",
@@ -785,6 +748,7 @@ export default function Home() {
                     testJsonAvailable={
                         testJson ? true : false
                     }
+                    testJson={testJson}
                     animationFrame={animationFrame}
                     n_cycles={N_FRAMES}
                     animationState={animationState}
@@ -831,12 +795,12 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <div style={{marginBottom:'3rem'}} className={styles.main}>
+
                 <Tabs
                     value={swipeableViewIndex}
                     onChange={(event, newValue) => setSwipeableViewIndex((_) => newValue)}
                     aria-label="basic tabs example"
-                    sx={{mt:2, mb:5}}
+                    sx={{mt:2}}
                     centered
                 >
                     <Tab label={'Fight'}/>
@@ -845,23 +809,24 @@ export default function Home() {
                     <Tab label={'Wallet'}/>
                 </Tabs>
 
-                <ThemeProvider theme={theme}>
-                    <SwipeableViews
-                        index={swipeableViewIndex}
-                        sx={{zIndex:10}}
-                        containerStyle={{
-                            transition: 'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s'
-                        }}
-                        // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
-                        // a fix for the issue: first index change doesn't animate (swipe)
-                    >
-                        <div>{ FightView }</div>
-                        <div>{ EditorViewComponent }</div>
-                        <div style={{paddingLeft:'10rem', paddingRight:'10rem', height:'650px', overflowY:'scroll'}}><ContractInformationView /></div>
-                        <div style={{paddingLeft:'10rem', paddingRight:'10rem'}}><WalletConnectView /></div>
-                    </SwipeableViews>
-                </ThemeProvider>
-            </div>
+                <Box sx={{flex: 1, pt: 5}}>
+                    <ThemeProvider theme={theme}>
+                        <SwipeableViews
+                            index={swipeableViewIndex}
+                            containerStyle={{
+                                transition: 'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s'
+                            }}
+                            // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
+                            // a fix for the issue: first index change doesn't animate (swipe)
+                        >
+                            <SwipeableContent>{ FightView }</SwipeableContent>
+                            <SwipeableContent>{ EditorViewComponent }</SwipeableContent>
+                            <SwipeableContent sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}><ContractInformationView /></SwipeableContent>
+                            <SwipeableContent sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}><WalletConnectView /></SwipeableContent>
+                        </SwipeableViews>
+                    </ThemeProvider>
+                </Box>
+
         </div>
     );
 }
