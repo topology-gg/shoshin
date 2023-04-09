@@ -146,7 +146,7 @@ func _body_jessica {range_check_ptr}(
                     return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 0, integrity, updated_stamina, dir, FALSE) );
                 } else {
                     return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
-                }                
+                }
             }
             // otherwise return to IDLE
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
@@ -181,7 +181,7 @@ func _body_jessica {range_check_ptr}(
                     return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, updated_stamina, dir, FALSE) );
                 } else {
                     return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
-                }            
+                }
             }
             // otherwise return to IDLE
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
@@ -223,17 +223,9 @@ func _body_jessica {range_check_ptr}(
 
     //
     // Clash
+    // note: uninterruptible
     //
     if (state == ns_jessica_body_state.CLASH) {
-        // check for interruption
-        if (stimulus == ns_stimulus.HURT) {
-            // hurt again while in hurt => stay in hurt but reset counter
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, hurt_integrity, stamina, dir, FALSE) );
-        }
-        if (stimulus == ns_stimulus.KNOCKED) {
-            // knocked while in hurt => worsen into knocked
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
-        }
 
         // if counter is full => return to IDLE
         if (counter == ns_jessica_body_state_duration.CLASH - 1) {
@@ -246,14 +238,9 @@ func _body_jessica {range_check_ptr}(
 
     //
     // Hurt
+    // note: uninterruptible
     //
     if (state == ns_jessica_body_state.HURT) {
-
-        // check for interruption
-        if (stimulus == ns_stimulus.KNOCKED) {
-            // knocked while in hurt => worsen into knocked
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
-        }
 
         // if counter is full => return to IDLE
         if (counter == ns_jessica_body_state_duration.HURT - 1) {
@@ -266,6 +253,7 @@ func _body_jessica {range_check_ptr}(
 
     //
     // Knocked
+    // note: uninterruptible
     //
     if (state == ns_jessica_body_state.KNOCKED) {
 
@@ -295,7 +283,7 @@ func _body_jessica {range_check_ptr}(
         if (intent == ns_jessica_action.BLOCK) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir, FALSE) );
         }
-        
+
         if(enough_stamina == TRUE){
             if (intent == ns_jessica_action.SLASH) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir, FALSE) );
@@ -307,7 +295,7 @@ func _body_jessica {range_check_ptr}(
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir, FALSE) );
             }
         }
-        
+
         // continue moving forward
         if (intent == ns_jessica_action.MOVE_FORWARD) {
             if (counter == ns_jessica_body_state_duration.MOVE_FORWARD - 1) {
@@ -406,9 +394,9 @@ func _body_jessica {range_check_ptr}(
             if(enough_stamina == TRUE and intent == ns_jessica_body_state_duration.DASH_FORWARD){
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
-            } 
+            }
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
-        } 
+        }
         // increment counter
         return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, counter + 1, integrity, stamina, dir, FALSE) );
     }
@@ -440,7 +428,7 @@ func _body_jessica {range_check_ptr}(
             if(enough_stamina == TRUE and intent == ns_jessica_body_state_duration.DASH_BACKWARD) {
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
-            } 
+            }
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, TRUE) );
         }
         // increment counter
