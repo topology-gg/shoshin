@@ -5,6 +5,7 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
+proc-macro = true
 
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = false
@@ -28,6 +29,7 @@ wee_alloc = { version = "0.4.5", optional = true }
 cairo_derive = { path = "../cairo_derive" }
 cairo_execution = { path = "../cairo_execution" }
 cairo_types = { path = "../cairo_types" }
+rand = "0.8.5"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
