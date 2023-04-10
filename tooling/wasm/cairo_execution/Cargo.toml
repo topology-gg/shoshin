@@ -13,3 +13,5 @@ anyhow = "1.0.68"
 thiserror = "1.0.40"
 
 cairo_types = { path = "../cairo_types" }
+num-bigint = "0.4.3"
+lazy_static = "1.4.0"

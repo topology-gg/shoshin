@@ -1,6 +1,7 @@
 ///! This crate allows to run Cairo bytecode on the cairo rust VM.
 #[macro_use]
 pub mod utils;
+pub mod constants;
 use anyhow::{Error, Ok};
 use cairo_vm::{
     hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor,
