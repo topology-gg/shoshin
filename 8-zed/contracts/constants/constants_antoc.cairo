@@ -74,6 +74,7 @@ namespace ns_antoc_body_state_duration {
     const MOVE_BACKWARD = 6;
     const DASH_FORWARD = 4;
     const DASH_BACKWARD = 4;
+    const CLASH = 5;
 }
 
 namespace ns_antoc_body_state {
@@ -87,6 +88,7 @@ namespace ns_antoc_body_state {
     const MOVE_BACKWARD = 1100;  // 6 frames
     const DASH_FORWARD = 1110;  // 9 frames
     const DASH_BACKWARD = 1120;  // 9 frames
+    const CLASH = 1130; // 5 frames
 }
 
 namespace ns_antoc_body_state_qualifiers {
