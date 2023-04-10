@@ -30,6 +30,7 @@ interface token {
     content: string;
     begin: number;
     end: number;
+    type : ElementType;
 }
 
 const extractTokens = (expression: string, regex: RegExp) => {
@@ -41,6 +42,7 @@ const extractTokens = (expression: string, regex: RegExp) => {
             content: match[0],
             begin: match.index,
             end: match.index + match[0].length,
+            type : ElementType.BodyState
         });
     }
     return tokens;
@@ -73,189 +75,98 @@ const perceptibles = [
 
 const operators = ["==", "<=", "*", "/", "%", "+", "-", "!", "AND", "OR"];
 
-function tokenizeInner(expression : string) : string[]{
-    expression = expression.trim()
-    
-    console.log(expression)
-    // Define an array to store the tokens
-    var tokens: string[] = [];
 
-    var match : RegExpExecArray;
-
-    var notWParens = /^!\((.*)\)/
-
-    if ((match = notWParens.exec(expression)) !== null) {
-        tokens.push('!');
-        tokens.push('(');
-        console.log(match[1])
-        tokenizeInner(match[1])
-        tokens.push(')');
-    }
-
-    var bracketRegex = /\((.*)\)/
-
-    if ((match = bracketRegex.exec(expression)) !== null) {
-        tokens.push('(');
-        tokens = tokens.concat(tokenizeInner(match[1]))
-        tokens.push(')');
-    }
-    
-    var notWIdentifier = /^!\w+\s+(.*)/
-
-    if ((match = notWIdentifier.exec(expression)) !== null) {
-        tokens.push('!');
-        tokens.push(match[1]);
-        tokens = tokens.concat(tokenizeInner(match[2]))
-    }
-
-    var operator = /^(==|<=|[*]|[\/]|[%]|[+]|[-]|AND|OR){1}\s+(.*)/
-
-    if ((match = operator.exec(expression)) !== null) {
-        tokens.push(match[1]);
-        tokens = tokens.concat(tokenizeInner(match[2]))
-    }
-
-    var constant = /^(\d+)\s+(.*)/
-
-    if ((match = constant.exec(expression)) !== null) {
-        tokens.push(match[1]);
-        tokens = tokens.concat(tokenizeInner(match[2]))
-    }
-    
-    var identifier = /^(\w+){1}\s+(.*)/
-
-    if ((match = identifier.exec(expression)) !== null) {
-        tokens.push(match[1]);
-        tokens = tokens.concat(tokenizeInner(match[2]))
-    }
-
-    var lastIdentifierOrConst = /^(\w+)$|^(\d+)$/
-
-    if ((match = lastIdentifierOrConst.exec(expression)) !== null) {
-        tokens.push(match[0]);
-    }
-
-    
-    return tokens;
-}
-function tokenize(input: string): string[] {
+function tokenize(input: string): token[] {
     // Remove any whitespace from the expression
     let expression = input.replace(/\n/g, "");
 
-    return tokenizeInner(expression)
     // Define an array to store the tokens
     var tokens: token[] = [];
 
-
-    var notRegex = /!(\w+)(.*)/
-    var notWParens = /!\((.*)\)/
-
-
-    var bracketRegex = /\((.*)\)/
-    var identifier = /\w+(.*)/
-
-
-    console.log(operators.map(e => `[${e}]|`).join(''))
-    var operator = /(==|<=|[*]|[/]|[%]|[+]|[-]|[!]|AND|OR)\w+(.*)/
-
-
-
     // Define a regular expression to match operators and parentheses
-    var bracketOpenRegex = /[(]|abs\|/;
-    var bracketCloseRegex = /[)]|\|/;
+    var bracketOpenRegex = /^(\(|abs\|)(.*)/;
+    var bracketCloseRegex = /^(\)|\|)(.*)/
 
     // Negate Regex
-    var negateRegex = /[!]/;
+    var negateRegex = /^(!)(.*)/;
 
     // Operator Regex
-    var operatorRegex = /[*/%+-]|==|<=|AND|OR/;
+    var operatorRegex = /^(\*|\/|%|\+|-|==|<=|AND|OR)(.*)/;
 
     // Define a regular expression to match numbers
-    var numberRegex = /\d+/;
+    var numberRegex = /^(\d+)(.*)/;
 
     // Define a regular expression to match identifiers
-    var identifierRegex = /\w+/;
+    var identifierRegex = /^([a-zA-Z]+)(.*)/;
 
     // Loop through the expression and tokenize it
     let i = 1;
 
-    while (expression.length > 0) {
+    while (expression && expression.length > 0) {
         var match;
+
+        expression = expression.trim()
 
         // Match negation regex
         if ((match = negateRegex.exec(expression)) !== null) {
             tokens.push({
-                content: match[0],
+                content: match[1],
                 begin: match.index,
                 end: match.index + match[0].length,
+                type : ElementType.Operator
             });
-            expression = removeSubstring(
-                expression,
-                match.index,
-                match.index + match[0].length
-            );
+            expression = match[2]
         }
 
         // Match parentheses
         else if ((match = bracketOpenRegex.exec(expression)) !== null) {
             tokens.push({
-                content: match[0],
+                content: match[1],
                 begin: match.index,
                 end: match.index + match[0].length,
+                type : ElementType.Operator
             });
-            expression = removeSubstring(
-                expression,
-                match.index,
-                match.index + match[0].length
-            );
+            expression = match[2]
         }
 
         // Match arithmatic operators
         else if ((match = operatorRegex.exec(expression)) !== null) {
             tokens.push({
-                content: match[0],
+                content: match[1],
                 begin: match.index,
                 end: match.index + match[0].length,
+                type : ElementType.Operator
             });
-            expression = removeSubstring(
-                expression,
-                match.index,
-                match.index + match[0].length
-            );
+            expression = match[2]
         }
 
         // Match identifiers and boolean literals
         else if ((match = identifierRegex.exec(expression)) !== null) {
             tokens.push({
-                content: match[0],
+                content: match[1],
                 begin: match.index,
                 end: match.index + match[0].length,
+                type : ElementType.BodyState
             });
-            expression = removeSubstring(
-                expression,
-                match.index,
-                match.index + match[0].length
-            );
+            expression = match[2]
         }
         // Match numbers
         else if ((match = numberRegex.exec(expression)) !== null) {
             tokens.push({
-                content: match[0],
+                content: match[1],
                 begin: match.index,
                 end: match.index + match[0].length,
+                type : ElementType.Constant
             });
-            expression = expression.slice(match.index + match[0].length);
+            expression = match[2]
         } else if ((match = bracketCloseRegex.exec(expression)) !== null) {
             tokens.push({
-                content: match[0],
+                content: match[1],
                 begin: match.index,
                 end: match.index + match[0].length,
+                type : ElementType.Operator
             });
-            expression = removeSubstring(
-                expression,
-                match.index,
-                match.index + match[0].length
-            );
+            expression = match[2]
         }
 
         // If we can't match anything, throw an error
@@ -267,6 +178,7 @@ function tokenize(input: string): string[] {
             throw new Error(`infinite recursion in tokenizer`);
         }
         i++;
+
     }
 
     return tokens;
@@ -384,7 +296,11 @@ const ConditionEditor = () => {
         console.log('tokenize():', tokens)
 
         //transpile
-        const elements: ConditionElement[] = tokens.map(tokensToElements);
+        const elements: ConditionElement[] = tokens.map(t => ({
+            value : t.content,
+            type : t.type
+        }))
+
         console.log('tokens.map(tokensToElements):', elements)
 
         //verify
@@ -395,6 +311,7 @@ const ConditionEditor = () => {
             false
         );
 
+        console.log(result)
         if(!result.isValid)
         {
             console.log('condition verification failed.');
