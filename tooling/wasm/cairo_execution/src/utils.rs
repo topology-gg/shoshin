@@ -1,5 +1,6 @@
 use crate::constants::{PRIME, PRIME_HALF};
 use anyhow::{Error, Ok};
+use cairo_felt::Felt;
 use cairo_types::Sizeable;
 use cairo_vm::{
     types::relocatable::{MaybeRelocatable, Relocatable},
@@ -25,23 +26,22 @@ pub fn prepare_args<T: Into<Vec<CairoArg>>>(inputs: T) -> Result<Vec<CairoArg>, 
 
 /// Convert a cairo_vm Relocatable to an array of structures
 /// # Arguments
-/// * `cairo_output` - The pointer to the output
+/// * `reloc` - The relocatable cairo data
 /// * `len` - The number of elements in the output
 /// * `vm` - The final VM state after the cairo program execution
 ///
 /// # Returns
 /// The extracted output from the cairo program
-pub fn get_output_arr<T: From<*mut Vec<BigInt>> + Sizeable>(
-    cairo_ptr: Relocatable,
+pub fn convert_to_structure_vector<T: From<*mut Vec<BigInt>> + Sizeable>(
+    reloc: Relocatable,
     len: u32,
     vm: VirtualMachine,
 ) -> Result<Vec<T>, Error> {
     let mut output = vec![];
 
     for i in 0..len {
-        let mut flattened_structure = relocatable_to_bigint::<T>(cairo_ptr, i, &vm)?;
-
-        unsigned_int_to_signed_int(&mut flattened_structure);
+        let mut flattened_structure = convert_to_bigint_vector::<T>(reloc, i, &vm)?;
+        convert_field_elements_to_bigints(&mut flattened_structure);
 
         let ptr = Box::into_raw(Box::new(flattened_structure));
         let structure: T = T::from(ptr);
@@ -51,8 +51,8 @@ pub fn get_output_arr<T: From<*mut Vec<BigInt>> + Sizeable>(
     Ok(output)
 }
 
-fn relocatable_to_bigint<T: Sizeable>(
-    cairo_ptr: Relocatable,
+fn convert_to_bigint_vector<T: Sizeable>(
+    reloc: Relocatable,
     initial_offset: u32,
     vm: &VirtualMachine,
 ) -> Result<Vec<BigInt>, Error> {
@@ -63,7 +63,7 @@ fn relocatable_to_bigint<T: Sizeable>(
     // the memory segment
     for j in (0..structure_size).rev() {
         let word_address = Relocatable {
-            segment_index: cairo_ptr.segment_index,
+            segment_index: reloc.segment_index,
             offset: (initial_offset * structure_size + j) as usize,
         };
         result.push(vm.get_integer(word_address).unwrap().to_bigint());
@@ -71,10 +71,40 @@ fn relocatable_to_bigint<T: Sizeable>(
     Ok(result)
 }
 
-fn unsigned_int_to_signed_int(output: &mut [BigInt]) {
-    output.iter_mut().for_each(sign_integer);
+/// Convert a cairo_vm MaybeRelocatable to number
+/// # Arguments
+/// * `maybe_reloc` - The maybe relocatable cairo data
+///
+/// # Returns
+/// The extracted number from the cairo program
+pub fn convert_to_felt(maybe_reloc: &MaybeRelocatable) -> Result<Felt, Error> {
+    let felt = maybe_reloc
+        .get_int_ref()
+        .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+    let mut output = felt.to_bigint();
+    sign_integer(&mut output);
+
+    Ok(output.into())
 }
 
+/// Convert a cairo_vm MaybeRelocatable to Relocatable
+/// # Arguments
+/// * `maybe_reloc` - The maybe relocatable cairo data
+///
+/// # Returns
+/// The extracted relocatable from the cairo program
+pub fn convert_to_relocatable(maybe_reloc: &MaybeRelocatable) -> Result<Relocatable, Error> {
+    Ok(maybe_reloc
+        .get_relocatable()
+        .map_err(|e| anyhow::anyhow!(e.to_string()))?)
+}
+
+fn convert_field_elements_to_bigints(x: &mut [BigInt]) {
+    x.iter_mut().for_each(sign_integer);
+}
+
+/// Convert a starknet bigint field element to a signed BigInt in place
 fn sign_integer(x: &mut BigInt) {
     if *x > *PRIME_HALF {
         *x = BigInt::new(

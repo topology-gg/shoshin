@@ -270,6 +270,7 @@ dependencies = [
  "cairo_types",
  "num-bigint",
  "num-traits",
+ "serde",
  "serde-wasm-bindgen",
  "serde_json",
  "wasm-bindgen",
