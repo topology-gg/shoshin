@@ -2,7 +2,9 @@
 mod types;
 use crate::types::{FrameScene, ShoshinInputVec};
 use anyhow::Error;
-use cairo_execution::utils::get_output_arr;
+use cairo_execution::utils::{
+    convert_to_felt, convert_to_relocatable, convert_to_structure_vector,
+};
 use cairo_execution::{execute_cairo_program, utils::prepare_args};
 use cairo_felt::{self, Felt};
 use cairo_vm::types::relocatable::Relocatable;
@@ -21,7 +23,7 @@ pub fn run_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
     let inputs = ShoshinInputVec(inputs);
     let inputs = prepare_args(inputs).map_err(|e| JsError::new(&e.to_string()))?;
 
-    let shoshin_bytecode = include_str!("./compiled_loop.json");
+    let shoshin_bytecode = include_str!("./bytecode.json");
     let vm = execute_cairo_program(shoshin_bytecode, "loop", inputs)
         .map_err(|e| JsError::new(&e.to_string()))?;
 
@@ -34,39 +36,20 @@ pub fn run_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
 /// * `vm` - The final VM state after the shoshin loop execution
 ///
 /// # Returns
-/// The array of frame scenes casted to a JsValue
+/// The array of frame scenes
 fn get_output(vm: VirtualMachine) -> Result<Vec<FrameScene>, Error> {
     // Handle return values: [frames_len: felt, frames: FrameScene*]
     let return_values = vm.get_return_values(2)?;
 
-    let frames_len = return_values[0]
-        .get_int_ref()
-        .map_err(|e| anyhow::anyhow!(e.to_string()))?;
-    let frames_len = Felt::to_u32(frames_len).expect("missing return value for frames_len");
+    let frames_len = convert_to_felt(&return_values[0])?;
+    let frames_len = Felt::to_u32(&frames_len)
+        .ok_or_else(|| anyhow::anyhow!("error converting frames length to u32"))?;
 
-    let frames = return_values[1]
-        .get_relocatable()
-        .expect("missing return value for frames");
+    let frames = convert_to_relocatable(&return_values[1])?;
 
-    let output = get_frames(frames, frames_len, vm)?;
+    let output = convert_to_structure_vector::<FrameScene>(frames, frames_len, vm)?;
 
     Result::Ok(output)
-}
-
-/// Loop over the frames and extract each frame scene
-/// # Arguments
-/// * `frames` - The pointer to the frames
-/// * `frames_len` - The number of frames
-/// * `vm` - The final VM state after the shoshin loop execution
-///
-/// # Returns
-/// The array of frame scenes
-fn get_frames(
-    frames: Relocatable,
-    frames_len: u32,
-    vm: VirtualMachine,
-) -> Result<Vec<FrameScene>, Error> {
-    get_output_arr::<FrameScene>(frames, frames_len, vm)
 }
 
 #[cfg(test)]
@@ -75,7 +58,7 @@ mod tests {
     use std::vec;
 
     fn get_shoshin_bytecode() -> String {
-        std::fs::read_to_string("./src/compiled_loop.json").unwrap()
+        std::fs::read_to_string("./src/bytecode.json").unwrap()
     }
 
     // returns a simple input for the shoshin loop (two idle agents)
