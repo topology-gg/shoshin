@@ -197,6 +197,10 @@ export function verifyValidCondition(c: Condition, confirm: boolean): ConditionV
     }
     if (confirm) {
 
+        if(countParenthesis == 0 && countAbs == 0)
+        {
+            return { isValid : true, message : '', conditionElementIndex : -1, is_bracket_error :  false }
+        }
         return { isValid : false, message : 'Unbalanced parenthesis or absolute value', conditionElementIndex : -1, is_bracket_error :  true }
     }
     return { isValid : true, message : '', conditionElementIndex : -1, is_bracket_error : false }

@@ -1,11 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Button, Chip, Grid, Autocomplete, Select, MenuItem } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import TextField from '@mui/material/TextField';
-import { ConditionElement, Operator, ElementType, Perceptible, Condition, isPerceptibleBodyState, isOperatorWithDoubleOperands, conditionElementToStr } from '../../types/Condition'
+import { ConditionElement, Operator, ElementType, Perceptible, Condition, isPerceptibleBodyState, isOperatorWithDoubleOperands, conditionElementToStr, validateConditionName } from '../../types/Condition'
 import PerceptibleList from './PerceptibleList'
 import { BodystatesAntoc, BodystatesJessica } from '../../types/Condition';
 import ConditionEditor from '../ConditionEditor';
@@ -22,7 +22,8 @@ interface ConditionsProps {
     isWarningTextOn: boolean
     warningText: string
     handleRemoveConditionElement: (index: number) => void
-    isReadOnly: boolean
+    isReadOnly: boolean,
+    handleSaveCondition: (index: number, conditionElements: ConditionElement[]) => void
 }
 
 interface BodyStateOption {
@@ -31,137 +32,62 @@ interface BodyStateOption {
     bodystate: number
 }
 
-// Constants
-
-const BodyStates: BodyStateOption[] = (Object.entries(BodystatesJessica)
-.map(([k, v]) => {
-    return {group: 'jessica', name: k, bodystate: parseInt(v as string)}
-})
-.filter((v) => !isNaN(v.bodystate)) as BodyStateOption[])
-.concat(
-    Object.entries(BodystatesAntoc)
-    .map(([k, v]) => {
-        return {group: 'antoc', name: k, bodystate: parseInt(v as string)}
-    })
-    .filter((v) => !isNaN(v.bodystate)) as BodyStateOption[]
-)
-
-const conditionElementTitles = [
-    { id: 'Operators', width: 5 },
-    { id: 'Const', width: 3 },
-    { id: 'Perceptibles', width: 4 }
-]
-const operatorColor = (s: string): string => {
-    if (s === '(' || s === ')') return '#66FF66' //'#c4ffb4'
-    if (s === 'Abs(' || s === '|') return '#FFFE71' //'#ffe38e'
-    return '#ffffff'
-}
-const operators = Object.values(Operator)
-const perceptibles = Object.keys(Perceptible).filter(x => isNaN(parseInt(x)))
-
-const elementFromEvent = (e, currentConstant: number): ConditionElement => {
-    let source = e.currentTarget.id.split('.')
-    switch (source[0]) {
-        case 'operator': {
-            return { value: source[1], type: ElementType.Operator }
-        }
-        case 'constant': {
-            return { value: currentConstant, type: ElementType.Constant }
-        }
-        case 'perceptible': {
-            return { value: source[1], type: ElementType.Perceptible }
-        }
-    }
-}
-
-const handleDisplayText = (isReadOnly, isWarningTextOn, warningText, index) => {
-
-    const text = index == null ? 'No conditions made' : `${isReadOnly ? 'Viewing' : 'Editing'} Condition ${index}`
-
-    return <Grid xs={ 12 } item className='warning-test'>
-            {
-                isWarningTextOn && <Typography color={'red'} variant='overline'>{warningText}</Typography>
-                || !isWarningTextOn && <Typography variant='overline'>{text}</Typography>
-            }
-        </Grid>
+interface ConditionEditErrors{
+    isValidCondition : boolean,
+    conditionErrorText : string,
+    isValidDisplayName : boolean,
+    namingErrorText : string
 }
 
 const Conditions = ({
-    isReadOnly, conditions, handleUpdateCondition, handleConfirmCondition, handleClickDeleteCondition,
-    conditionUnderEditIndex, setConditionUnderEditIndex, isWarningTextOn, warningText, handleRemoveConditionElement
+    isReadOnly, conditions, handleUpdateCondition, handleClickDeleteCondition,
+    conditionUnderEditIndex, setConditionUnderEditIndex, handleRemoveConditionElement, handleSaveCondition
 }: ConditionsProps) => {
     let f = conditions[conditionUnderEditIndex]
+    const [updatedConditionElements, setConditionElements] = useState<ConditionElement[]>(conditions[conditionUnderEditIndex].elements);
+    const [initialConditionElement, setInititalConditionElements] = useState<ConditionElement[]>(conditions[conditionUnderEditIndex].elements);
 
-    const [currentConstant, setCurrentConstant] = useState<number>()
-    const handleAddElement = (e: React.MouseEvent) => {
-        const element = elementFromEvent(e, currentConstant)
-        handleUpdateCondition(conditionUnderEditIndex, element, f.displayName)
-    }
-    const [disabled, setDisabled] = useState<boolean>(false)
+    const [conditionErrors, setConditionEditErrors] = useState<ConditionEditErrors>({
+        isValidCondition : false,
+        conditionErrorText : "",
+        isValidDisplayName : true,
+        namingErrorText : ""
+    })
 
-    const displayCondition = useMemo<JSX.Element[]>(() => {
-        if (!f || !f.elements.length) {
-            return [<Typography variant='body1' color={ '#CCCCCC' } >Condition beep boop bop</Typography>]
+    const isDisabled = conditionErrors.isValidCondition && conditionErrors.isValidDisplayName;
+
+    console.log( conditionErrors.isValidCondition)
+    console.log( conditionErrors.isValidDisplayName)
+
+    useEffect(() => {
+        setConditionElements(conditions[conditionUnderEditIndex].elements)
+        setInititalConditionElements(conditions[conditionUnderEditIndex].elements)
+    }, [conditionUnderEditIndex])
+    
+    const handleSetConditionElements = (is_valid : boolean, elements : ConditionElement[], warningText : string) => {
+        setConditionEditErrors({...conditionErrors, isValidCondition : is_valid, conditionErrorText : warningText})
+    
+        if(elements.length){
+            setConditionElements(elements)
         }
+    }
 
-        let elements = f.elements
+    const handleSaveClick = () => {
+        handleSaveCondition(conditionUnderEditIndex, updatedConditionElements)
+    }
 
-        return (
-            elements.map((e, i) => {
-                let value: string = conditionElementToStr(e)
-                // if current element is a X OP Y operator and X is SelfBodyState or
-                // OpponentBodyState -> set drop down list
-
-                if (i == elements.length - 1 && isPerceptibleBodyState(elements[i-1]) && isOperatorWithDoubleOperands(elements[i])) {
-                    // disable all other button
-                    setDisabled((_) => true)
-
-                    return (
-                        <div style={{ display: 'flex' }}>
-                            <Typography style={{marginRight: '4px'}} key={`${e.type}-${e.value}-${i}`} variant='body1'>
-                                {/* <span key={`${e.type}-${e.value}-${i}`}>{value} </span> */}
-                                {value}
-                            </Typography>
-                            <Autocomplete
-                                disablePortal
-                                key={`autocomplete-perceptible-${e.value}-${i}`}
-                                options={BodyStates}
-                                getOptionLabel={(option: BodyStateOption) => option.name}
-                                groupBy={(option: BodyStateOption) => option.group}
-                                renderInput={(params) => (
-                                    <TextField
-                                    {...params}
-                                    variant="outlined"
-                                    InputProps={{
-                                        ...params.InputProps,
-                                        style: {
-                                            height: '10px',
-                                            width: 150,
-                                            alignContent: 'space-around',
-                                        },
-                                    }}
-                                    />
-                                )}
-                                // on change, update with the selected value and remove disabled
-                                onChange={(_, bs: BodyStateOption) => {
-                                    setDisabled(false)
-                                    handleUpdateCondition(conditionUnderEditIndex, {value: bs.bodystate, type: ElementType.BodyState}, f.displayName)
-                                }}
-                            />
-                        </div>
-                    )
-                } else {
-                    setDisabled(false)
-                }
-                return (
-                    <Typography style={{marginRight: '0px'}} key={`${e.type}-${e.value}-${i}`} variant='body1'>
-                        {/* <span key={`${e.type}-${e.value}-${i}`}>{value} </span> */}
-                        {value}
-                    </Typography>
-                )
-            })
-    )}, [f])
-
+    const handleUpdateUsername = (e) => {
+        
+        handleUpdateCondition(conditionUnderEditIndex, undefined, e.target.value)
+        const excludingSelectedCondition = conditions.filter((_, i) => conditionUnderEditIndex != i)
+        const nameError = validateConditionName( e.target.value, excludingSelectedCondition);
+        setConditionEditErrors({...conditionErrors, isValidDisplayName : !nameError, namingErrorText : nameError ? nameError : ''})
+        if(!nameError){
+            handleUpdateCondition(conditionUnderEditIndex, undefined, e.target.value)
+        }
+    }
+        
+    
     return (
         <Box
             sx={{
@@ -210,124 +136,27 @@ const Conditions = ({
 
                 <Grid xs={ 12 } item sx={{mt: 1, mb: 2}}>
                     <TextField
-                        label="Give it a name"
+                        label="Condition Name"
                         size="small"
                         // fullWidth
                         sx = {{width:'400px'}}
                         value={f.displayName || ""}
-                        onChange={(e) => handleUpdateCondition(conditionUnderEditIndex, undefined, e.target.value)}
+                        onChange={handleUpdateUsername}
                     />
                 </Grid>
 
-                <ConditionEditor />
+                <ConditionEditor setConditionElements={handleSetConditionElements} initialConditionElements={initialConditionElement} />
 
-                <Grid xs={ 10 } item className='function-creator'>
-                    <Box
-                        sx={{
-                                // border: 1,
-                                backgroundColor: "white",
-                                borderColor: "grey.500",
-                                borderRadius: 2,
-                                p: '10px'
-                            }}
-                    >
-                        { displayCondition }
-                    </Box>
-                </Grid>
-
-                { !isReadOnly &&
-                    <Grid style={{ flexGrow: 1, display: 'flex', maxWidth: 'none' }} xs={ 2 } item className='delete-interface'>
-                        <IconButton
-                            sx={{ alignItems: 'flex-end'}}
-                            onClick={(_) => {handleRemoveConditionElement(conditionUnderEditIndex)}}
-                        >
-                            <BackspaceIcon/>
-                        </IconButton>
-                    </Grid> }
-
-
-                {isWarningTextOn &&
+                {conditionErrors.conditionErrorText.length &&
                     <Grid item xs={12}>
-                    <Typography color={'red'} variant='overline'>{warningText}</Typography>
+                    <Typography color={'red'} variant='overline'>{conditionErrors.conditionErrorText}</Typography>
                     </Grid>
                 }
-
-                {
-                    isReadOnly ? <></> : (
-                        <>
-
-                            <Grid xs={ 12 } item sx={{border:'1px solid #BBBBBB', borderRadius:'10px', marginTop:'1rem', p:'0.5rem', pb:'1rem'}}>
-                                <Typography variant='overline'>{ conditionElementTitles[0].id }</Typography>
-                                <Box sx={ {display: "flex", flexWrap: 'wrap', gap: 0.5, pr:2} }>
-                                    {
-                                        operators.map((o) => {
-                                            let color = operatorColor(o)
-                                            return (
-                                                <Chip
-                                                    key={ `operator-${o}` }
-                                                    id={ `operator.${o}` }
-                                                    onClick={ handleAddElement }
-                                                    variant='outlined'
-                                                    size='small'
-                                                    label={o}
-                                                    sx={{
-                                                        backgroundColor: color + '55',
-                                                        "&&:hover": {backgroundColor: color, borderColor:'#333333'},
-                                                        // box-sizing: border-box',
-                                                        // -moz-box-sizing: 'border-box',
-                                                        // -webkit-box-sizing: border-box;
-                                                    }}
-                                                    className={'operator-chip'}
-                                                    disabled={isReadOnly || disabled}
-                                                />
-                                            )
-                                        })
-                                    }
-                                </Box>
-                            </Grid>
-
-                            <Grid xs={ 5.85 } item sx={{border:'1px solid #BBBBBB', borderRadius:'10px', marginTop:'1rem', marginRight:'0.5rem', p:'0.5rem', pb:'1rem'}}>
-                                <Typography variant='overline' sx={{m:0}}>{ conditionElementTitles[1].id }</Typography>
-                                <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
-                                    <TextField
-                                        color={ "info" }
-                                        type="number"
-                                        size="small"
-                                        defaultValue={currentConstant}
-                                        onChange={(e) => setCurrentConstant(parseInt(e.target.value))}
-                                        sx={{flex: 1}}
-                                        disabled={isReadOnly}
-                                    />
-                                    <Button
-                                        id='constant'
-                                        variant="outlined"
-                                        onClick={handleAddElement}
-                                        disabled={isReadOnly || disabled}
-                                    >
-                                        Add
-                                    </Button>
-                                </Box>
-                            </Grid>
-
-                            <Grid xs={ 5.85 } item sx={{border:'1px solid #BBBBBB', borderRadius:'10px', marginTop:'1rem', p:'0.5rem', pb:'1rem'}}>
-                                <Typography variant='overline'>{ conditionElementTitles[2].id }</Typography>
-                                <Box
-                                    id='perceptible'
-                                    sx={{ flexGrow: 1, display: 'flex', maxWidth: 'none', alignItems: 'center' }}
-                                >
-                                    <PerceptibleList
-                                        disabled={isReadOnly || disabled}
-                                        perceptibles={perceptibles}
-                                        conditionUnderEditIndex={conditionUnderEditIndex}
-                                        handleUpdateCondition={handleUpdateCondition}
-                                    />
-                                </Box>
-                            </Grid>
-                        </>
-                    )
+                {conditionErrors.namingErrorText.length &&
+                    <Grid item xs={12}>
+                    <Typography color={'red'} variant='overline'>{conditionErrors.namingErrorText}</Typography>
+                    </Grid>
                 }
-
-
 
                 {
                     isReadOnly ? <></> : (
@@ -337,10 +166,11 @@ const Conditions = ({
                                     id={`confirm-gp-function`}
                                     variant="outlined"
                                     size="large"
+                                    disabled={!isDisabled}
                                     // className={ styles.confirm }
-                                    onClick={() => handleConfirmCondition()}
+                                    onClick={() => handleSaveClick()}
                                 >
-                                    Confirm
+                                    Save
                                 </Button>
                             </Grid>
                         </>

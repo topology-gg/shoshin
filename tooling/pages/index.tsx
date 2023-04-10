@@ -403,6 +403,37 @@ export default function Home() {
         });
     }
 
+    function saveCondition(
+        index: number,
+        conditionElements: ConditionElement[]
+    ){
+        setConditions((prev) => {
+        let prev_copy: Condition[] = JSON.parse(JSON.stringify(prev));
+        if (!prev_copy[index].key) {
+            prev_copy[index].key = crypto
+                .createHash("sha256")
+                .update(Date.now().toString())
+                .digest("hex")
+                .toString();
+        }
+
+            prev_copy[index].elements = conditionElements
+
+            if(prev_copy.length - 1 == index)
+            {
+                prev_copy.push({ elements: [] });
+            }
+            
+
+            console.log(prev_copy)
+
+
+            return prev_copy;
+
+        });
+
+    }
+
     function handleUpdateCondition(
         index: number,
         element: ConditionElement,
@@ -423,7 +454,6 @@ export default function Home() {
                 return prev_copy;
             }
             prev_copy[index].displayName = displayName;
-            console.log(prev_copy[index]);
             if (!prev_copy[index].key) {
                 prev_copy[index].key = crypto
                     .createHash("sha256")
@@ -695,6 +725,7 @@ export default function Home() {
             trees={trees}
             handleUpdateTree={handleUpdateTree}
             conditions={conditions}
+            handleSaveCondition={saveCondition}
             handleUpdateCondition={handleUpdateCondition}
             handleConfirmCondition={handleConfirmCondition}
             handleClickDeleteCondition={

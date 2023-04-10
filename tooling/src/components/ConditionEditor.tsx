@@ -1,30 +1,16 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-import EditorComponent, { useMonaco, Monaco, MonacoDiffEditor, OnChange } from "@monaco-editor/react";
+import EditorComponent, { useMonaco, Monaco, OnChange } from "@monaco-editor/react";
 import { EditorProps } from "@monaco-editor/react";
 import {
-    BodystatesAntoc,
-    BodystatesJessica,
     ConditionElement,
     ConditionVerificationResult,
     ElementType,
+    Operator,
     verifyValidCondition,
 } from "../types/Condition";
 import { Box } from "@mui/material";
 
-function removeSubstring(str: string, start: number, end: number) {
-    if (start == 0 && end == str.length) {
-        return "";
-    }
-    if (start == 0) {
-        return str.substring(end);
-    }
-    if (end == str.length - 1) {
-        return str.substring(0, start);
-    }
-    // Use the substring method to remove the portion of the string
-    return str.substring(0, start) + str.substring(end);
-}
 
 interface token {
     content: string;
@@ -33,20 +19,6 @@ interface token {
     type : ElementType;
 }
 
-const extractTokens = (expression: string, regex: RegExp) => {
-    var tokens: token[] = [];
-
-    var match;
-    while ((match = regex.exec(expression)) !== null) {
-        tokens.push({
-            content: match[0],
-            begin: match.index,
-            end: match.index + match[0].length,
-            type : ElementType.BodyState
-        });
-    }
-    return tokens;
-};
 
 const perceptibles = [
     `SelfX`,
@@ -184,9 +156,39 @@ function tokenize(input: string): token[] {
     return tokens;
 }
 
-const ConditionEditor = () => {
+
+const conditionElementsToDisplayText = (elements : ConditionElement[]) => {
+
+   return elements.map(e => {
+        if(e.value == Operator.OpenParenthesis || e.value == Operator.OpenAbs || Operator.Not){
+            return e.value             
+        } else  if (e.value == Operator.CloseParenthesis || e.value == Operator.CloseAbs)
+        {
+            return e.value
+        } else {
+            return e.value + " "
+        }
+    }).join("").trim()
+}
+
+
+interface ConditionEditorProps {
+    initialConditionElements : ConditionElement[],
+    setConditionElements : (is_valid : boolean, elements : ConditionElement[], warningText : string) => void
+}
+const ConditionEditor = ({initialConditionElements, setConditionElements} : ConditionEditorProps)   => {
     const editorRef = useRef(null);
     const monacoRef = useRef(null);
+
+    const initialValue = initialConditionElements ? conditionElementsToDisplayText(initialConditionElements) : ""
+    const [editorText, changeEditorText] = useState<string>(initialValue)
+
+    useEffect(() => {
+        changeEditorText(conditionElementsToDisplayText(initialConditionElements))
+    }, [initialConditionElements])
+
+   
+    
 
     function handleEditorDidMount(editor: EditorProps, monaco: Monaco) {
         // here is the editor instance
@@ -257,43 +259,17 @@ const ConditionEditor = () => {
         monacoRef.current = monaco
     }
 
-    const tokensToElements = (token : string) => {
-        if (operators.includes(token)) {
-            return {
-                value: token,
-                type: ElementType.Operator,
-            } as ConditionElement;
-        }
-        if (perceptibles.includes(token)) {
-            return {
-                value: token,
-                type: ElementType.Perceptible,
-            } as ConditionElement;
-        }
-
-        if (Object.keys(BodystatesJessica).includes(token)) {
-            return {
-                value: BodystatesJessica[token],
-                type: ElementType.BodyState,
-            } as ConditionElement;
-        }
-
-        if (Object.keys(BodystatesAntoc).includes(token)) {
-            return {
-                value: BodystatesAntoc[token],
-                type: ElementType.BodyState,
-            } as ConditionElement;
-        }
-        return {
-            value: token,
-            type: ElementType.Constant,
-        } as ConditionElement;
-    };
-
     const handleChange: OnChange = (text, ev) => {
+
+        changeEditorText(text)
         //tokenize
-        const tokens = tokenize(text);
-        console.log('tokenize():', tokens)
+        let tokens;
+        try{
+            tokens = tokenize(text);
+        }catch(e){
+            setConditionElements(false, [], e.message)
+            return
+        }
 
         //transpile
         const elements: ConditionElement[] = tokens.map(t => ({
@@ -301,25 +277,25 @@ const ConditionEditor = () => {
             type : t.type
         }))
 
-        console.log('tokens.map(tokensToElements):', elements)
-
         //verify
         const result: ConditionVerificationResult = verifyValidCondition(
             {
                 elements,
             },
-            false
+            true
         );
 
-        console.log(result)
+    
         if(!result.isValid)
         {
-            console.log('condition verification failed.');
             //report errors to the editor screen and return
-            (monacoRef.current as Monaco).editor
+            setConditionElements(false, elements, result.message)
+        }else
+        {
+            setConditionElements(true, elements,'')
         }
 
-        //save condition changes?
+
     };
 
     const monaco = useMonaco();
@@ -341,7 +317,8 @@ const ConditionEditor = () => {
                 height="200px"
                 width="400px"
                 defaultLanguage="shoshin_condition"
-                defaultValue="!(SelfX == 1) AND (SelfX == 2)"
+                defaultValue={editorText}
+                value={editorText}
                 theme='editor-theme'
                 options={{
                     minimap: {
@@ -360,11 +337,4 @@ const ConditionEditor = () => {
     );
 };
 
-// sorting tokens in order
-// putting error back into the editor
-// complete autofill options
-// put into condition panel
-// have agent build only after succesfull confirm (not every update)
-// customize editor - remove scroll and the sidebar, rm line numbers
-
-export default ConditionEditor;
+export default ConditionEditor
