@@ -7,7 +7,6 @@ use cairo_execution::utils::{
 };
 use cairo_execution::{execute_cairo_program, utils::prepare_args};
 use cairo_felt::{self, Felt};
-use cairo_vm::types::relocatable::Relocatable;
 use cairo_vm::vm::vm_core::VirtualMachine;
 use num_traits::ToPrimitive;
 use wasm_bindgen::prelude::*;
@@ -23,7 +22,7 @@ pub fn run_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
     let inputs = ShoshinInputVec(inputs);
     let inputs = prepare_args(inputs).map_err(|e| JsError::new(&e.to_string()))?;
 
-    let shoshin_bytecode = include_str!("./bytecode.json");
+    let shoshin_bytecode = include_str!("./bytecode_shoshin.json");
     let vm = execute_cairo_program(shoshin_bytecode, "loop", inputs)
         .map_err(|e| JsError::new(&e.to_string()))?;
 
@@ -58,7 +57,7 @@ mod tests {
     use std::vec;
 
     fn get_shoshin_bytecode() -> String {
-        std::fs::read_to_string("./src/bytecode.json").unwrap()
+        std::fs::read_to_string("./src/bytecode_shoshin.json").unwrap()
     }
 
     // returns a simple input for the shoshin loop (two idle agents)

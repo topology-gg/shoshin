@@ -1,7 +1,5 @@
 pub mod utils;
 
-// TODO: add some testing
-
 /// Trait defining the size of a cairo struct (amount of felts
 /// required to represent the structure)
 pub trait Sizeable {

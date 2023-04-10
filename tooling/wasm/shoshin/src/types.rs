@@ -31,60 +31,60 @@ pub struct ShoshinInput {
 }
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
 pub struct FrameScene {
-    pub _agent_0: Agent,
-    pub _agent_1: Agent,
+    pub agent_0: Agent,
+    pub agent_1: Agent,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
 pub struct Agent {
-    pub _mental_state: BigInt,
-    pub _body_state: BodyState,
-    pub _physics_state: PhysicsState,
-    pub _action: BigInt,
-    pub _stimulus: BigInt,
-    pub _hitboxes: Hitboxes,
-    pub _combo: Combo,
+    pub mental_state: BigInt,
+    pub body_state: BodyState,
+    pub physics_state: PhysicsState,
+    pub action: BigInt,
+    pub stimulus: BigInt,
+    pub hitboxes: Hitboxes,
+    pub combo: Combo,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
 pub struct BodyState {
-    pub _state: BigInt,
-    pub _counter: BigInt,
-    pub _integrity: BigInt,
-    pub _stamina: BigInt,
-    pub _dir: BigInt,
-    pub _fatigued: BigInt,
+    pub state: BigInt,
+    pub counter: BigInt,
+    pub integrity: BigInt,
+    pub stamina: BigInt,
+    pub dir: BigInt,
+    pub fatigued: BigInt,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
 pub struct PhysicsState {
-    pub _pos: Vector,
-    pub _vel_fp: Vector,
-    pub _acc_fp: Vector,
+    pub pos: Vector,
+    pub vel_fp: Vector,
+    pub acc_fp: Vector,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
 pub struct Hitboxes {
-    pub _action: Rectangle,
-    pub _body: Rectangle,
+    pub action: Rectangle,
+    pub body: Rectangle,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
 pub struct Rectangle {
-    pub _origin: Vector,
-    pub _dimension: Vector,
+    pub origin: Vector,
+    pub dimension: Vector,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
 pub struct Vector {
-    pub _x: BigInt,
-    pub _y: BigInt,
+    pub x: BigInt,
+    pub y: BigInt,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
 pub struct Combo {
-    pub _combo_index: BigInt,
-    pub _action_index: BigInt,
+    pub combo_index: BigInt,
+    pub action_index: BigInt,
 }
 
 impl Sizeable for FrameScene {
@@ -106,56 +106,56 @@ mod tests {
     impl Into<Vec<BigInt>> for FrameScene {
         fn into(self) -> Vec<BigInt> {
             vec![
-                self._agent_0._mental_state,
-                self._agent_0._body_state._state,
-                self._agent_0._body_state._counter,
-                self._agent_0._body_state._integrity,
-                self._agent_0._body_state._stamina,
-                self._agent_0._body_state._dir,
-                self._agent_0._body_state._fatigued,
-                self._agent_0._physics_state._pos._x,
-                self._agent_0._physics_state._pos._y,
-                self._agent_0._physics_state._vel_fp._x,
-                self._agent_0._physics_state._vel_fp._y,
-                self._agent_0._physics_state._acc_fp._x,
-                self._agent_0._physics_state._acc_fp._y,
-                self._agent_0._action,
-                self._agent_0._stimulus,
-                self._agent_0._hitboxes._action._origin._x,
-                self._agent_0._hitboxes._action._origin._y,
-                self._agent_0._hitboxes._action._dimension._x,
-                self._agent_0._hitboxes._action._dimension._y,
-                self._agent_0._hitboxes._body._origin._x,
-                self._agent_0._hitboxes._body._origin._y,
-                self._agent_0._hitboxes._body._dimension._x,
-                self._agent_0._hitboxes._body._dimension._y,
-                self._agent_0._combo._combo_index,
-                self._agent_0._combo._action_index,
-                self._agent_1._mental_state,
-                self._agent_1._body_state._state,
-                self._agent_1._body_state._counter,
-                self._agent_1._body_state._integrity,
-                self._agent_1._body_state._stamina,
-                self._agent_1._body_state._dir,
-                self._agent_1._body_state._fatigued,
-                self._agent_1._physics_state._pos._x,
-                self._agent_1._physics_state._pos._y,
-                self._agent_1._physics_state._vel_fp._x,
-                self._agent_1._physics_state._vel_fp._y,
-                self._agent_1._physics_state._acc_fp._x,
-                self._agent_1._physics_state._acc_fp._y,
-                self._agent_1._action,
-                self._agent_1._stimulus,
-                self._agent_1._hitboxes._action._origin._x,
-                self._agent_1._hitboxes._action._origin._y,
-                self._agent_1._hitboxes._action._dimension._x,
-                self._agent_1._hitboxes._action._dimension._y,
-                self._agent_1._hitboxes._body._origin._x,
-                self._agent_1._hitboxes._body._origin._y,
-                self._agent_1._hitboxes._body._dimension._x,
-                self._agent_1._hitboxes._body._dimension._y,
-                self._agent_1._combo._combo_index,
-                self._agent_1._combo._action_index,
+                self.agent_0.mental_state,
+                self.agent_0.body_state.state,
+                self.agent_0.body_state.counter,
+                self.agent_0.body_state.integrity,
+                self.agent_0.body_state.stamina,
+                self.agent_0.body_state.dir,
+                self.agent_0.body_state.fatigued,
+                self.agent_0.physics_state.pos.x,
+                self.agent_0.physics_state.pos.y,
+                self.agent_0.physics_state.vel_fp.x,
+                self.agent_0.physics_state.vel_fp.y,
+                self.agent_0.physics_state.acc_fp.x,
+                self.agent_0.physics_state.acc_fp.y,
+                self.agent_0.action,
+                self.agent_0.stimulus,
+                self.agent_0.hitboxes.action.origin.x,
+                self.agent_0.hitboxes.action.origin.y,
+                self.agent_0.hitboxes.action.dimension.x,
+                self.agent_0.hitboxes.action.dimension.y,
+                self.agent_0.hitboxes.body.origin.x,
+                self.agent_0.hitboxes.body.origin.y,
+                self.agent_0.hitboxes.body.dimension.x,
+                self.agent_0.hitboxes.body.dimension.y,
+                self.agent_0.combo.combo_index,
+                self.agent_0.combo.action_index,
+                self.agent_1.mental_state,
+                self.agent_1.body_state.state,
+                self.agent_1.body_state.counter,
+                self.agent_1.body_state.integrity,
+                self.agent_1.body_state.stamina,
+                self.agent_1.body_state.dir,
+                self.agent_1.body_state.fatigued,
+                self.agent_1.physics_state.pos.x,
+                self.agent_1.physics_state.pos.y,
+                self.agent_1.physics_state.vel_fp.x,
+                self.agent_1.physics_state.vel_fp.y,
+                self.agent_1.physics_state.acc_fp.x,
+                self.agent_1.physics_state.acc_fp.y,
+                self.agent_1.action,
+                self.agent_1.stimulus,
+                self.agent_1.hitboxes.action.origin.x,
+                self.agent_1.hitboxes.action.origin.y,
+                self.agent_1.hitboxes.action.dimension.x,
+                self.agent_1.hitboxes.action.dimension.y,
+                self.agent_1.hitboxes.body.origin.x,
+                self.agent_1.hitboxes.body.origin.y,
+                self.agent_1.hitboxes.body.dimension.x,
+                self.agent_1.hitboxes.body.dimension.y,
+                self.agent_1.combo.combo_index,
+                self.agent_1.combo.action_index,
             ]
         }
     }

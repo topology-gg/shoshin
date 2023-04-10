@@ -11,8 +11,6 @@ use num_traits::ToPrimitive;
 use types::{ConditionEvaluationInputsVec, ConditionEvaluationOutput, Memory};
 use wasm_bindgen::prelude::*;
 
-// TODO: review code duplication, clearness and clean up
-
 /// Wasm binding to the input the condition evaluation bytecode
 /// # Arguments
 /// * `inputs` - The flattened inputs to the condition evaluation bytecode
@@ -24,7 +22,7 @@ pub fn evaluate_condition(inputs: Vec<i32>) -> Result<JsValue, JsError> {
     let inputs = ConditionEvaluationInputsVec(inputs);
     let inputs = prepare_args(inputs).map_err(|e| JsError::new(&e.to_string()))?;
 
-    let condition_bytecode = include_str!("./bytecode.json");
+    let condition_bytecode = include_str!("./bytecode_condition.json");
     let vm = execute_cairo_program(condition_bytecode, "execute_tree_chain", inputs)
         .map_err(|e| JsError::new(&e.to_string()))?;
 
@@ -32,7 +30,7 @@ pub fn evaluate_condition(inputs: Vec<i32>) -> Result<JsValue, JsError> {
     Result::Ok(serde_wasm_bindgen::to_value(&output)?)
 }
 
-/// Extract the frame scene from the final VM state
+/// Extract the condition evaluation from the final VM state
 /// # Arguments
 /// * `vm` - The final VM state after the shoshin loop execution
 ///
@@ -62,7 +60,7 @@ mod tests {
     use std::vec;
 
     fn get_condition_eval_bytecode() -> String {
-        std::fs::read_to_string("./src/bytecode.json").unwrap()
+        std::fs::read_to_string("./src/bytecode_condition.json").unwrap()
     }
 
     // Evaluates to: Abs(Self_X - Opponent_X) <= 80
