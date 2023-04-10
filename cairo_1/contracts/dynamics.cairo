@@ -15,6 +15,7 @@ enum CharacterType {
     Jessica: (),
 }
 
+#[derive(Copy, Drop)]
 struct Vec2 {
     x: felt252,
     y: felt252,
@@ -24,16 +25,6 @@ struct PhysicsState {
     pos: Vec2,
     vel_fp: Vec2,
     acc_fp: Vec2,
-}
-
-#[derive(Copy, Drop)]
-struct BodyState {
-    state: felt252,
-    counter: felt252,
-    integrity: felt252,
-    stamina: felt252,
-    dir: felt252,
-    fatigued: felt252,
 }
 
 trait CharacterPhysics<T> {
@@ -78,6 +69,7 @@ trait CharacterPhysics<T> {
     fn counter(ref self: T) -> felt252;
 }
 
+#[derive(PartialEq, Copy, Drop)]
 enum AntocBodyState {
     Idle: (),
     Hori: (),
@@ -91,13 +83,14 @@ enum AntocBodyState {
     DashBackward: (),
 }
 
+#[derive(Copy, Drop)]
 struct Antoc {
     body_state: AntocBodyState,
     dir: felt252,
     counter: felt252,
 }
 
-impl AntocPhysics of CharacterPhysics<Antoc> {
+impl AntocPhysics of CharacterPhysics::<Antoc> {
     // Dynamics
     // Note: https://github.com/starkware-libs/cairo/pull/2563
     fn MAX_VEL_MOVE_FP() -> felt252 {
@@ -140,23 +133,26 @@ impl AntocPhysics of CharacterPhysics<Antoc> {
 
     // body state
     fn is_in_move_forward(ref self: Antoc) -> bool {
-        self.body_state == AntocBodyState::MoveForward
+        match self.body_state {
+            AntocBodyState::MoveForward(()) 
+        }
+        self.body_state == AntocBodyState::MoveForward(())
     }
 
     fn is_in_move_backward(ref self: Antoc) -> bool {
-        self.body_state == AntocBodyState::MoveBackward
+        self.body_state == AntocBodyState::MoveBackward(())
     }
 
     fn is_in_dash_forward(ref self: Antoc) -> bool {
-        self.body_state == AntocBodyState::DashForward
+        self.body_state == AntocBodyState::DashForward(())
     }
 
     fn is_in_dash_backward(ref self: Antoc) -> bool {
-        self.body_state == AntocBodyState::DashBackward
+        self.body_state == AntocBodyState::DashBackward(())
     }
 
     fn is_in_knocked(ref self: Antoc) -> bool {
-        self.body_state == AntocBodyState::Knocked
+        self.body_state == AntocBodyState::Knocked(())
     }
 
     fn dir(ref self: Antoc) -> felt252 {
@@ -168,7 +164,7 @@ impl AntocPhysics of CharacterPhysics<Antoc> {
     }
 }
 
-fn euler_forward_no_hitbox<C, impl T: CharacterPhysics<C>>(mut character: T, physics_state: PhysicsState) -> PhysicsState {
+fn euler_forward_no_hitbox<C, impl T: CharacterPhysics<C>>(mut character: C, physics_state: PhysicsState) -> PhysicsState {
     // TODO: using mut variables initialized may cause memory override instead of circuit assertion, which may cause significant overhead
     // find out cairo 1.0 syntax how to handle this(the compiler complains if no initial value is provided)
     let mut vel_fp_next: Vec2 = Vec2{x: 0, y: 0};
@@ -178,17 +174,17 @@ fn euler_forward_no_hitbox<C, impl T: CharacterPhysics<C>>(mut character: T, phy
     let mut vel_fp_y: felt252 = 0;
 
     if (character.is_in_move_forward()) {
-        acc_fp_x = character.dir() * T::MOVE_ACC_FP();
+        acc_fp_x = character.dir() * C::MOVE_ACC_FP();
         // jmp update_vel_move;
     }
     
     else if (character.is_in_move_backward()) {
-        acc_fp_x = character.dir() * T::MOVE_ACC_FP() * (-1);
+        acc_fp_x = character.dir() * C::MOVE_ACC_FP() * (-1);
         // jmp update_vel_move;
     } 
     
     else if (character.is_in_dash_forward()) {
-        let vel = character.dir() * T::DASH_VEL_FP();
+        let vel = character.dir() * C::DASH_VEL_FP();
         if (character.counter() == 1) {
             vel_fp_next = Vec2{x: vel, y: 0};
         } else {
@@ -271,7 +267,7 @@ fn is_cap_fp(x_fp: felt252, max_fp: felt252, min_fp: felt252) -> bool {
 
 fn euler_forward_consider_hitbox(
     physics_state_0: PhysicsState,
-    physics_state_cand_0 PhysicsState,
+    physics_state_cand_0: PhysicsState,
     physics_state_1: PhysicsState,
     physics_state_cand_1: PhysicsState,
     body_dim_0: Vec2,
@@ -282,10 +278,10 @@ fn euler_forward_consider_hitbox(
     agent_0_knocked: bool,
     agent_1_knocked: bool,
 ) -> (PhysicsState, PhysicsState) {
-    let mut y_0_ground_handled: felt252;
-    let mut y_1_ground_handled: felt252;
-    let mut vy_fp_0_ground_handled: felt252;
-    let mut vy_fp_1_ground_handled: felt252;
+    let mut y_0_ground_handled: felt252 = 0;
+    let mut y_1_ground_handled: felt252 = 0;
+    let mut vy_fp_0_ground_handled: felt252 = 0;
+    let mut vy_fp_1_ground_handled: felt252 = 0;
 
     if (agent_0_ground) {
         y_0_ground_handled = 0;
@@ -297,15 +293,15 @@ fn euler_forward_consider_hitbox(
 
     if (!body_overlap) {
         let physics_state_fwd_0 = PhysicsState {
-            pos: Vec2{x: physics_state_cand_0.x, y_0_ground_handled},
+            pos: Vec2{x: physics_state_cand_0.pos.x, y: y_0_ground_handled},
             vel_fp: Vec2{x: physics_state_cand_0.vel_fp.x, y: vy_fp_0_ground_handled},
-            acc_fp = physics_state_cand_0.acc_fp,
+            acc_fp :physics_state_cand_0.acc_fp,
         };
 
         let physics_state_fwd_1 = PhysicsState {
             pos: Vec2{x: physics_state_cand_1.pos.x, y: y_1_ground_handled},
             vec_fp: Vec2{x: physics_state_cand_1}
-        }
+        };
     }
 
     //
@@ -315,12 +311,13 @@ fn euler_forward_consider_hitbox(
 
     let mut move_0: felt252 = 0;
     let mut move_1: felt252 = 0;
+    let mut abs_relative_vx_fp: felt252 = 0;
 
-    if (is_cap_fp(physics_state_cand_0.pos.x, ns_scene.X_MAX, ns_scene.X_MIN)) {
+    if (is_cap_fp(physics_state_cand_0.pos.x, X_MAX, ns_scene.X_MIN)) {
         move_0 = 0;
         move_1 = 1;
         abs_relative_vx_fp = abs_value(physics_state_cand_1.vel_fp.x);
-    } else if (is_cap_fp(physics_state_cand_1.pos.x, ns_scene.X_MAX, ns_scene.X_MIN)) {
+    } else if (is_cap_fp(physics_state_cand_1.pos.x, X_MAX, X_MIN)) {
         move_0 = 1;
         move_1 = 0;
         abs_relative_vx_fp = abs_value(physics_state_cand_0.vel_fp.x);
@@ -347,7 +344,7 @@ fn euler_forward_consider_hitbox(
     // direction = -1 if 1 to the right of 0 else 1 
     let vx_fp_cand_reversed_0: felt252 = direction * sign_vx_cand_0 * physics_state_cand_0.vel_fp.x;
     let vx_fp_cand_reversed_1: felt252 = (-direction) * sign_vx_cand_1 * physics_state_cand_1.vel_fp.x;
-    let abs_distance_fp_fp = abs_distance * SCALE_FP * SCAPE_FP;
+    let abs_distance_fp_fp = abs_distance * SCALE_FP * SCALE_FP;
 
     let mut back_off_x_0_scaled: felt252 = 0;
     let mut back_off_x_1_scaled: felt252 = 0;
@@ -356,8 +353,8 @@ fn euler_forward_consider_hitbox(
     // use direction in order to set the sign for back_off_x_i_scaled
     if (abs_relative_vx_fp == 0) {
         let abs_distance_fp_half = abs_distance_fp_fp / 2;
-        back_off_x_0_scaled = (direction) * abs_distance_fp_half * (2 * move_0 - move_1)
-        let back_off_x_1_scaled(-direction) * abs_distance_fp_half * (2 * move_1 - move_0)
+        back_off_x_0_scaled = (direction) * abs_distance_fp_half * (2 * move_0 - move_1);
+        let back_off_x_1_scaled = (-direction) * abs_distance_fp_half * (2 * move_1 - move_0);
     } else {
         let time_required_to_separate_fp = unsigned_div_rem(abs_distance_fp_fp, abs_relative_vx_fp);
         back_off_x_0_scaled = vx_fp_cand_reversed_0 * time_required_to_separate_fp;
@@ -390,13 +387,13 @@ fn euler_forward_consider_hitbox(
     }
 
     let physics_state_fwd_0: PhysicsState = PhysicsState {
-        pos: Vec2{x: x_0, y_0_ground_handled},
-        vel_fp: Vec2{x: vx_fp_0_final, vy_fp_0_ground_handled},
+        pos: Vec2{x: x_0, y: y_0_ground_handled},
+        vel_fp: Vec2{x: vx_fp_0_final, y: vy_fp_0_ground_handled},
         acc_fp: physics_state_cand_0.acc_fp,
     };
     let physics_state_fwd_1: PhysicsState = PhysicsState {
         pos: Vec2{x: x_1, y: y_1_ground_handled},
-        vel_fp: Vec2{x: vx_fp_1_final, vy_fp_1_ground_handled},
+        vel_fp: Vec2{x: vx_fp_1_final, y: vy_fp_1_ground_handled},
         acc_fp: physics_state_cand_1.acc_fp,
     };
 
