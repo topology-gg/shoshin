@@ -352,9 +352,8 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     // 2. (block-attack) when jessica (self) attacks into antoc's block, self gets CLASH
     // 3. (block-attack) when antoc (self) attacks into antoc's block, self gets KNOCKED
     // 4. (block-attack) when jessica blocks antoc's attack, jessica gets CLASH, while antoc gets CLASH
-    // 5. (attack-attack) when two jessica attack into each other, both get CLASH
-    // 6. (attack-attack) when two antoc attack into each other, both get CLASH
-    // 7. (attack-attack) when jessica attack into antoc's attack, jessica gets KNOCKED, while antoc gets CLASH
+    // 5. (attack-attack) when two characters of the same type attack into each other, both get CLASH
+    // 6. (attack-attack) when jessica attack into antoc's attack, jessica gets KNOCKED, while antoc gets CLASH
 
     // 1. when hit, HURT if not in critical integrity, KNOCKED otherwise
     let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
@@ -395,21 +394,14 @@ func produce_stimulus_given_conditions {range_check_ptr} (
         }
     }
 
-    // 5. (attack-attack) when two jessica attack into each other, both get CLASH
+    // 5. (attack-attack) when two characters of the same type attack into each other, both get CLASH
     if (bool_self_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
-        if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.JESSICA) {
+        if (self_character_type == opp_character_type) {
             return ns_stimulus.CLASH;
         }
     }
 
-    // 6. (attack-attack) when two antoc attack into each other, both get CLASH
-    if (bool_self_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
-        if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.ANTOC) {
-            return ns_stimulus.CLASH;
-        }
-    }
-
-    // 7. (attack-attack) when jessica attack into antoc's attack, jessica gets KNOCKED, while antoc gets CLASH
+    // 6. (attack-attack) when jessica attack into antoc's attack, jessica gets KNOCKED, while antoc gets CLASH
     if (bool_self_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             return ns_stimulus.KNOCKED;
