@@ -72,12 +72,93 @@ const perceptibles = [
 ];
 
 const operators = ["==", "<=", "*", "/", "%", "+", "-", "!", "AND", "OR"];
-function tokenize(input: string): token[] {
+
+function tokenizeInner(expression : string) : string[]{
+    expression = expression.trim()
+    
+    console.log(expression)
+    // Define an array to store the tokens
+    var tokens: string[] = [];
+
+    var match : RegExpExecArray;
+
+    var notWParens = /^!\((.*)\)/
+
+    if ((match = notWParens.exec(expression)) !== null) {
+        tokens.push('!');
+        tokens.push('(');
+        console.log(match[1])
+        tokenizeInner(match[1])
+        tokens.push(')');
+    }
+
+    var bracketRegex = /\((.*)\)/
+
+    if ((match = bracketRegex.exec(expression)) !== null) {
+        tokens.push('(');
+        tokens = tokens.concat(tokenizeInner(match[1]))
+        tokens.push(')');
+    }
+    
+    var notWIdentifier = /^!\w+\s+(.*)/
+
+    if ((match = notWIdentifier.exec(expression)) !== null) {
+        tokens.push('!');
+        tokens.push(match[1]);
+        tokens = tokens.concat(tokenizeInner(match[2]))
+    }
+
+    var operator = /^(==|<=|[*]|[\/]|[%]|[+]|[-]|AND|OR){1}\s+(.*)/
+
+    if ((match = operator.exec(expression)) !== null) {
+        tokens.push(match[1]);
+        tokens = tokens.concat(tokenizeInner(match[2]))
+    }
+
+    var constant = /^(\d+)\s+(.*)/
+
+    if ((match = constant.exec(expression)) !== null) {
+        tokens.push(match[1]);
+        tokens = tokens.concat(tokenizeInner(match[2]))
+    }
+    
+    var identifier = /^(\w+){1}\s+(.*)/
+
+    if ((match = identifier.exec(expression)) !== null) {
+        tokens.push(match[1]);
+        tokens = tokens.concat(tokenizeInner(match[2]))
+    }
+
+    var lastIdentifierOrConst = /^(\w+)$|^(\d+)$/
+
+    if ((match = lastIdentifierOrConst.exec(expression)) !== null) {
+        tokens.push(match[0]);
+    }
+
+    
+    return tokens;
+}
+function tokenize(input: string): string[] {
     // Remove any whitespace from the expression
-    let expression = input.replace(/\s/g, "");
-    console.log('expression:', expression)
+    let expression = input.replace(/\n/g, "");
+
+    return tokenizeInner(expression)
     // Define an array to store the tokens
     var tokens: token[] = [];
+
+
+    var notRegex = /!(\w+)(.*)/
+    var notWParens = /!\((.*)\)/
+
+
+    var bracketRegex = /\((.*)\)/
+    var identifier = /\w+(.*)/
+
+
+    console.log(operators.map(e => `[${e}]|`).join(''))
+    var operator = /(==|<=|[*]|[/]|[%]|[+]|[-]|[!]|AND|OR)\w+(.*)/
+
+
 
     // Define a regular expression to match operators and parentheses
     var bracketOpenRegex = /[(]|abs\|/;
@@ -264,35 +345,35 @@ const ConditionEditor = () => {
         monacoRef.current = monaco
     }
 
-    const tokensToElements = (token) => {
-        if (operators.includes(token.content)) {
+    const tokensToElements = (token : string) => {
+        if (operators.includes(token)) {
             return {
-                value: token.content,
+                value: token,
                 type: ElementType.Operator,
             } as ConditionElement;
         }
-        if (perceptibles.includes(token.content)) {
+        if (perceptibles.includes(token)) {
             return {
-                value: token.content,
+                value: token,
                 type: ElementType.Perceptible,
             } as ConditionElement;
         }
 
-        if (Object.keys(BodystatesJessica).includes(token.content)) {
+        if (Object.keys(BodystatesJessica).includes(token)) {
             return {
-                value: BodystatesJessica[token.content],
+                value: BodystatesJessica[token],
                 type: ElementType.BodyState,
             } as ConditionElement;
         }
 
-        if (Object.keys(BodystatesAntoc).includes(token.content)) {
+        if (Object.keys(BodystatesAntoc).includes(token)) {
             return {
-                value: BodystatesAntoc[token.content],
+                value: BodystatesAntoc[token],
                 type: ElementType.BodyState,
             } as ConditionElement;
         }
         return {
-            value: token.content,
+            value: token,
             type: ElementType.Constant,
         } as ConditionElement;
     };
