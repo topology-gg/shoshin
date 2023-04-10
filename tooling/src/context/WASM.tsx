@@ -16,7 +16,7 @@ export const WASMContextProvider: React.FC<WASMContextProviderProps> = ({
   // That's why it must be limited to a single mount run
   useMountEffectOnce(() => {
     (async () => {
-      const wasm = await import("wasm");
+      const wasm = await import("wasm-shoshin");
       await wasm.default();
       setState({ wasm });
     })();
@@ -26,7 +26,7 @@ export const WASMContextProvider: React.FC<WASMContextProviderProps> = ({
 };
 
 interface IWASMContext {
-  wasm?: typeof import("wasm");
+  wasm?: typeof import("wasm-shosin");
 }
 
 interface WASMContextProviderProps {

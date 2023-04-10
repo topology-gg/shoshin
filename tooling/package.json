@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:wasm": "wasm-pack build wasm/shoshin --release --target web",
+    "build:wasm": "wasm-pack build wasm/shoshin --release --target web && wasm-pack build wasm/condition_eval --release --target web",
     "start": "next start",
     "lint": "next lint",
     "test": "cross-env TS_NODE_PROJECT=\"tsconfig.testing.json\" mocha"
@@ -38,7 +38,8 @@
     "starknet": "^4.22.0",
     "swr": "^1.3.0",
     "use-isomorphic-layout-effect": "^1.1.2",
-    "wasm": "file:wasm/shoshin/pkg"
+    "wasm-shoshin": "file:wasm/shoshin/pkg",
+    "wasm-condition-evaluation": "file:wasm/condition_eval/pkg"
   },
   "devDependencies": {
     "@types/chai": "^4.3.4",

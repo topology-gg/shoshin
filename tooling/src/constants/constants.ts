@@ -121,6 +121,9 @@ export enum ActionsAntoc {
     DashBackward = 7,
 }
 
+// Simulation related constants
+export const FRAME_COUNT = 120;
+
 export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc]
 
 export const ACTIONS_ICON_MAP = {
