@@ -138,7 +138,7 @@ fn get_last_segment(ty: &Type) -> Result<PathSegment, Error> {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests_into_cairo_args {
     use crate::impl_into_cairo_args;
     use quote::ToTokens;
     use syn::parse_quote;
@@ -331,5 +331,143 @@ mod tests {
         );
 
         assert_eq!(expected.to_string(), actual.unwrap().to_string());
+    }
+}
+
+/// Macro allows to derive the implementation of From<*mut Vec<BigInt>> from a structure.
+/// The macro uses the structure to derive the implementation.
+#[proc_macro_derive(CairoStruct)]
+pub fn derive_from_vec_bigint(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    // Build the trait implementation
+    let input = proc_macro2::TokenStream::from(input);
+
+    match impl_from_vec_bigint(input) {
+        Ok(output) => proc_macro::TokenStream::from(output),
+        Err(e) => panic!("{}", e.to_string()),
+    }
+}
+
+fn impl_from_vec_bigint(input: TokenStream) -> Result<TokenStream, Error> {
+    // Construct a representation of Rust code as a syntax tree
+    // that we can manipulate
+    let ast = parse2::<DeriveInput>(input)?;
+
+    let name = &ast.ident;
+    let fields = match &ast.data {
+        Data::Struct(DataStruct {
+            fields: Fields::Named(fields),
+            ..
+        }) => Ok(&fields.named),
+        _ => Err(CairoDeriveError::ParseError(
+            "expected named field".to_string(),
+        )),
+    }?;
+
+    let mut lines = vec![];
+
+    for field in fields.into_iter() {
+        let ty = &field.ty;
+        let name = field
+            .ident
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("missing ident for type {}", ty.to_token_stream()))?;
+
+        let last_segment = get_last_segment(ty)?;
+
+        if last_segment.ident != "BigInt" {
+            lines.push(quote!(
+                #name: #ty::from(value),
+            ));
+        } else {
+            lines.push(quote!(
+                #name: value_casted.pop().unwrap_or_else(|| bigint!(0)),
+            ));
+        }
+    }
+
+    let gen = quote! {
+        impl From<*mut Vec<BigInt>> for #name {
+            fn from(value: *mut Vec<BigInt>) -> Self {
+                let value_casted = unsafe { &mut *value };
+                Self {
+                    #(
+                        #lines
+                    )*
+                }
+            }
+        }
+    };
+
+    Ok(gen)
+}
+
+#[cfg(test)]
+mod tests_from_vec_bigint {
+    use super::*;
+
+    #[test]
+    fn test_cairo_struct_basic() {
+        // Given
+        let basic_structure = quote!(
+            struct Basic {
+                stimulus: BigInt,
+            }
+        );
+
+        // When
+        let actual = impl_from_vec_bigint(basic_structure).unwrap();
+
+        // Then
+        let expected = quote!(
+            impl From<*mut Vec<BigInt>> for Basic {
+                fn from(value: *mut Vec<BigInt>) -> Self {
+                    let value_casted = unsafe { &mut *value };
+                    Self {
+                        stimulus: value_casted.pop().unwrap_or_else(|| bigint!(0)),
+                    }
+                }
+            }
+        );
+
+        assert_eq!(expected.to_string(), actual.to_string());
+    }
+
+    #[test]
+    fn test_cairo_struct_complex() {
+        // Given
+        let basic_structure = quote!(
+            struct Complex {
+                pub mental_state: BigInt,
+                pub body_state: BodyState,
+                pub physics_state: PhysicsState,
+                pub action: BigInt,
+                pub stimulus: BigInt,
+                pub hitboxes: Hitboxes,
+                pub combo: Combo,
+            }
+        );
+
+        // When
+        let actual = impl_from_vec_bigint(basic_structure).unwrap();
+
+        // Then
+        let expected = quote!(
+            impl From<*mut Vec<BigInt>> for Complex {
+                fn from(value: *mut Vec<BigInt>) -> Self {
+                    let value_casted = unsafe { &mut *value };
+                    Self {
+                        mental_state: value_casted.pop().unwrap_or_else(|| bigint!(0)),
+                        body_state: BodyState::from(value),
+                        physics_state: PhysicsState::from(value),
+                        action: value_casted.pop().unwrap_or_else(|| bigint!(0)),
+                        stimulus: value_casted.pop().unwrap_or_else(|| bigint!(0)),
+                        hitboxes: Hitboxes::from(value),
+                        combo: Combo::from(value),
+                    }
+                }
+            }
+        );
+
+        assert_eq!(expected.to_string(), actual.to_string());
     }
 }
