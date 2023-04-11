@@ -19,7 +19,6 @@ interface token {
     type : ElementType;
 }
 
-
 const perceptibles = [
     `SelfX`,
     "SelfY",
@@ -44,6 +43,33 @@ const perceptibles = [
     "OpponentBodyState",
     "OpponentBodyCounter",
 ];
+
+const bodyStateNameMappings = {
+    'JessicaIdle' : 0,
+    'JessicaSlash' : 10,
+    'JessicaUpswing': 20,
+    'JessicaSidecut': 30,
+    'JessicaBlock':40,
+    'JessicaClash':50,
+    'JessicaHurt':60,
+    'JessicaKnocked':70,
+    'JessicaMoveForward':90,
+    'JessicaMoveBackward':100,
+    'JessicaDashForward':110,
+    'JessicaDashBackward':120,
+
+    'AntocIdle':0,
+    'AntocHorizontalSwing':1010,
+    'AntocVerticalSwing':1020,
+    'AntocHurt':1050,
+    'AntocKnocked':1060,
+    'AntocMoveForward':1090,
+    'AntocMoveBackward':1100,
+    'AntocDashForward':1110,
+    'AntocDashBackward':1120,
+}
+const bodyStateNames = Object.keys(bodyStateNameMappings)
+const allVariables = perceptibles.concat( bodyStateNames )
 
 const operators = ["==", "<=", "*", "/", "%", "+", "-", "!", "AND", "OR"];
 
@@ -162,7 +188,7 @@ const conditionElementsToDisplayText = (elements : ConditionElement[]) => {
     console.log(elements)
    return elements.map(e => {
         if(e.value == Operator.OpenParenthesis || e.value == Operator.OpenAbs || Operator.Not){
-            return e.value             
+            return e.value
         } else  if (e.value == Operator.CloseParenthesis || e.value == Operator.CloseAbs)
         {
             return e.value
@@ -188,8 +214,8 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
         changeEditorText(conditionElementsToDisplayText(initialConditionElements))
     }, [initialConditionElements])
 
-   
-    
+
+
 
     function handleEditorDidMount(editor: EditorProps, monaco: Monaco) {
         // here is the editor instance
@@ -200,15 +226,28 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
         function createDependencyProposals(range) {
             // returning a static list of proposals, not even looking at the prefix (filtering is done by the Monaco editor),
             // here you could do a server side lookup
-            return perceptibles.map(p => {
+
+            const perceptibleProposals = perceptibles.map(p => {
                 return {
                     label: p,
-                    kind: monaco.languages.CompletionItemKind.Function,
+                    kind: monaco.languages.CompletionItemKind.Variable,
                     documentation: "TBD",
                     insertText: p,
                     range: range,
                 };
             })
+
+            const bodyStateNameProposals = bodyStateNames.map(n => {
+                return {
+                    label: n,
+                    kind: monaco.languages.CompletionItemKind.Enum,
+                    documentation: "TBD",
+                    insertText: n,
+                    range: range,
+                };
+            })
+
+            return perceptibleProposals.concat(bodyStateNameProposals);
         }
         monaco.languages.registerCompletionItemProvider("shoshin_condition", {
             provideCompletionItems: function (model, position) {
@@ -227,12 +266,10 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
 
         // Reference for usage: https://microsoft.github.io/monaco-editor/monarch.html
         monaco.languages.setMonarchTokensProvider("shoshin_condition", {
-            variables: perceptibles,
 
-            // define keywords here for our custom language
-            keywords: [
-                '==', 'AND', 'OR'
-            ],
+            perceptibles: perceptibles,
+            bodyStateNames: bodyStateNames,
+            operators: operators,
 
             tokenizer: {
                 root: [
@@ -240,8 +277,9 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
                     [
                         /[a-zA-Z_\$][\w$]*/,
                         { cases: {
-                            "@variables": "constant",
-                            "@keywords": "keyword",
+                            "@perceptibles": "perceptibles",
+                            "@bodyStateNames": "bodyStateNames",
+                            "@operators": "operators",
                         } },
                     ],
 
@@ -286,7 +324,7 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
             true
         );
 
-    
+
         if(!result.isValid)
         {
             //report errors to the editor screen and return
@@ -303,7 +341,23 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
     monaco?.editor.defineTheme('editor-theme', {
         base: 'vs',
         inherit: true,
-        rules: [],
+        rules: [
+            {
+                token: 'bodyStateNames',
+                foreground: 'a47dcb',
+                fontStyle: 'bold'
+            },
+            {
+                token: 'perceptibles',
+                foreground: 'd46526',
+                fontStyle: 'bold'
+            },
+            {
+                token: 'operators',
+                foreground: '89a7a2',
+                fontStyle: ''
+            },
+        ],
         colors: {
             'editor.background': '#ffffffff',
             'editor.lineHighlightBackground': '#00000000',
