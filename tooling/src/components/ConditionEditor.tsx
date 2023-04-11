@@ -56,7 +56,7 @@ function tokenize(input: string): token[] {
     var tokens: token[] = [];
 
     // Define a regular expression to match operators and parentheses
-    var bracketOpenRegex = /^(\(|abs\|)(.*)/;
+    var bracketOpenRegex = /^(\(|Abs\()(.*)/;
     var bracketCloseRegex = /^(\)|\|)(.*)/
 
     // Negate Regex
@@ -159,6 +159,7 @@ function tokenize(input: string): token[] {
 
 const conditionElementsToDisplayText = (elements : ConditionElement[]) => {
 
+    console.log(elements)
    return elements.map(e => {
         if(e.value == Operator.OpenParenthesis || e.value == Operator.OpenAbs || Operator.Not){
             return e.value             
