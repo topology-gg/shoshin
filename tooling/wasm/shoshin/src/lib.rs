@@ -22,7 +22,7 @@ use wasm_bindgen::prelude::*;
 pub fn run_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
     let inputs = prepare_args(inputs).map_err(|e| JsError::new(&e.to_string()))?;
 
-    let shoshin_bytecode = include_str!("./compiled_loop.json");
+    let shoshin_bytecode = include_str!("./bytecode_shoshin.json");
     let vm = execute_cairo_program(shoshin_bytecode, "loop", inputs)
         .map_err(|e| JsError::new(&e.to_string()))?;
 
