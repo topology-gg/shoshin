@@ -2,6 +2,8 @@
 
 members = [
     "shoshin",
-    "shoshin_derive",
+    "cairo_derive",
     "cairo_execution",
+    "cairo_types",
+    "condition_eval",
 ]

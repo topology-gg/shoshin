@@ -2,7 +2,7 @@ import { parseConditionToLeaf, Condition } from "./Condition"
 import Leaf, { flattenLeaf } from "./Leaf"
 import { MentalState, parseTree } from "./MentalState"
 import { Tree } from "./Tree"
-import { PRIME } from "../constants/constants"
+import { FRAME_COUNT, PRIME } from "../constants/constants"
 import { encodeStringToFelt } from "./utils"
 
 export default interface Agent {
@@ -122,6 +122,7 @@ export function agentsToArray(p1: Agent, p2: Agent): number[] {
     ] = flattenAgent(p2);
 
     return [
+        FRAME_COUNT,
         p1CombosOffset.length,
         ...p1CombosOffset,
         p1Combos.length,

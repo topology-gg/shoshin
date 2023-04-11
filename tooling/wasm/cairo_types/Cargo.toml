@@ -1,5 +1,5 @@
 [package]
-name = "cairo_execution"
+name = "cairo_types"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,9 +9,4 @@ edition = "2021"
 cairo-vm = {git = "https://github.com/lambdaclass/cairo-rs.git", default-features = false, rev = "abaf215" }
 cairo-felt = {git = "https://github.com/lambdaclass/cairo-rs.git", default-features = false, rev = "abaf215" }
 
-anyhow = "1.0.68"
-thiserror = "1.0.40"
-
-cairo_types = { path = "../cairo_types" }
-num-bigint = "0.4.3"
-lazy_static = "1.4.0"
+num-bigint = { version = "0.4", features = ["serde"] }

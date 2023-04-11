@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext } from "react";
 import { WASMContext } from "../context/WASM";
 import cairoOutputToFrameScene from "../helpers/cairoOutputToFrameScene";
 import Agent, { agentsToArray } from "../types/Agent";
