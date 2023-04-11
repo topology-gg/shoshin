@@ -31,6 +31,7 @@ func _body_jessica {range_check_ptr}(
 
     let hurt_integrity = integrity - HURT_EFFECT;
     let knocked_integrity = integrity - KNOCKED_EFFECT;
+    let clash_integrity = integrity - CLASH_EFFECT;
 
     let (updated_stamina, enough_stamina) = calculate_stamina_change(stamina, intent, ns_stamina.INIT_STAMINA, ns_character_type.JESSICA);
 
@@ -99,7 +100,7 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
         }
         if (stimulus == ns_stimulus.CLASH) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, integrity, stamina, dir, FALSE) );
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, clash_integrity, stamina, dir, FALSE) );
         }
 
         // by default finishing the animation; go to frame 1 if intent is SLASH at last frame
@@ -135,7 +136,7 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
         }
         if (stimulus == ns_stimulus.CLASH) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, integrity, stamina, dir, FALSE) );
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, clash_integrity, stamina, dir, FALSE) );
         }
 
         // by default finishing the animation; go to frame 1 if intent is UPSWING at last frame
@@ -170,7 +171,7 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
         }
         if (stimulus == ns_stimulus.CLASH) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, integrity, stamina, dir, FALSE) );
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, clash_integrity, stamina, dir, FALSE) );
         }
 
         // by default finishing the animation; go to frame 1 if intent is SIDECUT at last frame

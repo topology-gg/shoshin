@@ -4,7 +4,7 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.bool import (TRUE, FALSE)
 from contracts.constants.constants import (
-    BodyState, ns_stimulus, ns_stamina, ns_character_type, HURT_EFFECT, KNOCKED_EFFECT
+    BodyState, ns_stimulus, ns_stamina, ns_character_type, HURT_EFFECT, KNOCKED_EFFECT, CLASH_EFFECT
 )
 from contracts.constants.constants_antoc import (
     ns_antoc_action, ns_antoc_body_state, ns_antoc_body_state_duration, ns_antoc_body_state_qualifiers
@@ -32,6 +32,7 @@ func _body_antoc {range_check_ptr}(
 
     let hurt_integrity = integrity - HURT_EFFECT;
     let knocked_integrity = integrity - KNOCKED_EFFECT;
+    let clash_integrity = integrity - CLASH_EFFECT;
 
     let (updated_stamina, enough_stamina) = calculate_stamina_change(stamina, intent, ns_stamina.INIT_STAMINA, ns_character_type.ANTOC);
 
@@ -95,6 +96,9 @@ func _body_antoc {range_check_ptr}(
         if (stimulus == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
         }
+        if (stimulus == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, clash_integrity, stamina, dir, FALSE) );
+        }
 
         // note: clash does not interrupt Antoc's attack because of sword's heaviness;
         //       need to balance this carefully
@@ -130,6 +134,9 @@ func _body_antoc {range_check_ptr}(
         }
         if (stimulus == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, clash_integrity, stamina, dir, FALSE) );
         }
 
         // note: clash does not interrupt Antoc's attack because of sword's heaviness;
