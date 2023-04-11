@@ -5,7 +5,7 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import MidScreenControl from "../src/components/MidScreenControl";
 import SidePanel from "../src/components/sidePanelComponents/SidePanel";
-import { FrameScene, TestJson } from "../src/types/Frame";
+import { Frame, FrameScene, TestJson, getFlattenedPerceptiblesFromFrame } from "../src/types/Frame";
 import { Tree, Direction } from "../src/types/Tree";
 import {
     Condition,
@@ -555,6 +555,7 @@ export default function Home() {
     //
     function agentChange(
         whichPlayer: string,
+        event: object,
         value: AgentOption
     ) {
         let setAgent: Agent;
@@ -625,6 +626,15 @@ export default function Home() {
             agent.character == 0 ? Character.Jessica : Character.Antoc
         );
         setConditionUnderEditIndex(() => 0);
+    }
+
+    function handleEvaluateCondition(condition: Condition, memory: number[] = [], selfAgentFrame: Frame, opponentAgentFrame: Frame) {
+        let perceptiblesSelf = getFlattenedPerceptiblesFromFrame(selfAgentFrame)
+        let perceptiblesOpponent = getFlattenedPerceptiblesFromFrame(opponentAgentFrame)
+        let perceptibles = perceptiblesSelf.concat(perceptiblesOpponent)
+
+        let result = runEvaluateCondition(condition, memory, perceptibles)
+        return result
     }
 
     //
