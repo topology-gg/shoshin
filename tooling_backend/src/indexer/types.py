@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from typing import Iterator, Any
-from apibara.starknet import felt, FieldElement
+from typing import Any, Iterator
+
+from apibara.starknet import FieldElement, felt
 
 PRIME = 2**251 + 17 * 2**192 + 1
 
@@ -11,6 +12,12 @@ PRIME = 2**251 + 17 * 2**192 + 1
 def felt_to_int(it: Iterator[FieldElement]):
     i = felt.to_int(next(it))
     return i if i < PRIME / 2 else -(PRIME - i)
+
+
+# Convert a int to a string.
+def int_to_string(i: int):
+    length = i.bit_length()
+    return i.to_bytes((length + 7) // 8, "big").decode("utf-8")
 
 
 @dataclass
@@ -301,10 +308,7 @@ class EventSingleMetadata:
         state_machine_len = felt_to_int(it)
         state_machine = [Tree.from_iter(it) for _ in range(state_machine_len)]
         states_names_len = felt_to_int(it)
-        states_names = [
-            felt_to_int(it).to_bytes(32, "big").decode("utf-8")
-            for _ in range(states_names_len)
-        ]
+        states_names = [int_to_string(felt_to_int(it)) for _ in range(states_names_len)]
         initial_state = felt_to_int(it)
         conditions_offset_len = felt_to_int(it)
         conditions_offset = [felt_to_int(it) for _ in range(conditions_offset_len)]
@@ -312,8 +316,7 @@ class EventSingleMetadata:
         conditions = [Tree.from_iter(it) for _ in range(conditions_len)]
         conditions_names_len = felt_to_int(it)
         conditions_names = [
-            felt_to_int(it).to_bytes(32, "big").decode("utf-8")
-            for _ in range(conditions_names_len)
+            int_to_string(felt_to_int(it)) for _ in range(conditions_names_len)
         ]
         action_len = felt_to_int(it)
         actions = [felt_to_int(it) for _ in range(action_len)]

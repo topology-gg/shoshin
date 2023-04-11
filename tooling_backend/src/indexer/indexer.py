@@ -19,7 +19,7 @@ root_logger.addHandler(logging.StreamHandler())
 shoshin_address = felt.from_hex(
     "0x047c967a0b47dc0cfe80450d3f4ef590d54745a98c789f4523078dcf22d22e40"
 )
-block_to_start_indexing = 791_538
+block_to_start_indexing = 791_911
 
 submission_key = "0x03a4a594e9b3ae15762aec67ca82f720f08ea5b663db0e29835ca136faf96346"
 metadata_key = "0x0364ea994a381e991dd8c15146830a602f0e489a22a5318a44458a423ba89888"
