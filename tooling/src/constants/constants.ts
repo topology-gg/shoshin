@@ -223,7 +223,9 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.Equal, type: ElementType.Operator },
             { value: 1020, type: ElementType.Constant },
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
-        ]
+        ],
+        displayName : "oponent_is_attacking",
+        key: "1"
     },
     {
         elements: [
@@ -234,7 +236,9 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.CloseAbs, type: ElementType.Operator},
             { value: Operator.Lte, type: ElementType.Operator},
             { value: 80, type: ElementType.Constant},
-        ]
+        ],
+        displayName : "closer_than_80px",
+        key: "2"
     },
     {
         elements: [
@@ -243,7 +247,9 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.CloseAbs, type: ElementType.Operator},
             { value: Operator.Lte, type: ElementType.Operator},
             { value: 10, type: ElementType.Constant},
-        ]
+        ],
+        displayName : "oponent_velocity_lt_10",
+        key: "3"
     },
     {
         elements: [
@@ -262,7 +268,9 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.Lte, type: ElementType.Operator},
             { value: 80, type: ElementType.Constant},
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
-        ]
+        ],
+        displayName : "oponent_300_integrity_and_close",
+        key: "4"
     },
     {
         elements: [
@@ -271,7 +279,9 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.Lte, type: ElementType.Operator},
             { value: 200, type: ElementType.Constant},
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
-        ]
+        ],
+        displayName : "self_lte_200_integrity",
+        key: "5"
     },
     {
         elements: [
@@ -306,14 +316,19 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.Lte, type: ElementType.Operator},
             { value: 300, type: ElementType.Constant},
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
-        ]
+        ],
+        
+        displayName : "oponent_approaching",
+        key: "10"
     },
     {
         elements: [
             { value: Perceptible.SelfBodyState, type: ElementType.Perceptible },
             { value: Operator.Equal, type: ElementType.Operator },
             { value: 0, type: ElementType.Constant },
-        ]
+        ],
+        displayName : "self_idle",
+        key: "6"
     },
     {
         elements: [
@@ -349,21 +364,29 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 1020, type: ElementType.Constant },
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
-        ]
+        ],
+        
+        displayName : "not_attacking",
+        key: "7"
     },
     {
         elements: [
             { value: Perceptible.SelfBodyCounter, type: ElementType.Perceptible },
             { value: Operator.Lte, type: ElementType.Operator },
             { value: 4, type: ElementType.Constant },
-        ]
+        ],
+        displayName : "self_lte_4_frames",
+        key: "7"
     },
     {
         elements: [
             { value: 1, type: ElementType.Constant },
             { value: Operator.Equal, type: ElementType.Operator },
             { value: 1, type: ElementType.Constant },
-        ]
+        ],
+        
+        displayName : "one_eq_one",
+        key: "8"
     },
     {
         elements: []

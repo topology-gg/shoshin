@@ -11,6 +11,7 @@ export default interface Agent {
     mentalStates?: Leaf[],
     initialState?: number,
     conditions?: Leaf[],
+    conditionNames?: string[],
     actions?: number[],
     character?: number,
 }
@@ -28,7 +29,7 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     let indexes: Map<number, boolean> = new Map()
     trees.forEach((t: Tree) => {
         let [parsedMentalState, usedConditions] = parseTree(t, mentalStates)
-        usedConditions.forEach((_, k) => {
+        usedConditions.forEach((k, _) => {
             indexes.set(k, true)
         })
         agentMentalStates.push(parsedMentalState)
@@ -36,10 +37,14 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     agent.mentalStates = agentMentalStates
 
     let agentConditions = []
+    let agentCondtionNames = []
     // makes use of indexes to only parse the necessary conditions
     Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => conditions[i]).forEach((f) => {
+        // Temporary code to deal with backend bug, can be removed in subsequent pr, April 6, 2023
+        agentCondtionNames.push(f.displayName.replaceAll("\u0000",""))
         agentConditions.push(parseConditionToLeaf(f))
     })
+    agent.conditionNames = agentCondtionNames
     agent.conditions = agentConditions
 
     agent.actions = mentalStates.map((ms) => ms.action)
@@ -163,6 +168,7 @@ export function agentToArray(agent: Agent): number[] {
         conditionsOffset,
         conditions,
     ] = flattenAgent(agent);
+
     return [
         combosOffset.length,
         ...combosOffset,
@@ -179,8 +185,8 @@ export function agentToArray(agent: Agent): number[] {
         ...conditionsOffset,
         conditions.length / 3,
         ...conditions,
-        conditionsOffset.length, // conditions names length
-        ...conditionsOffset.map((_) => 0),
+        agent.conditionNames.length,
+        ...agent.conditionNames.map(encodeStringToFelt),
         agent.actions.length,
         ...agent.actions,
         agent.character,

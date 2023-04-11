@@ -8,14 +8,10 @@ import { useLayoutEffect } from "../hooks/useIsomorphicLayoutEffect";
 import styles from "./Game.module.css";
 import { TestJson } from "../types/Frame";
 import Simulator from "../scene/Simulator";
+import { SimulatorProps } from "../types/Simulator";
 
-interface SimulatorProps {
-    testJson: TestJson;
-    animationFrame: number;
-    showDebug: boolean;
-}
 
-const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
+const Game = ({testJson, animationFrame, animationState, showDebug}: SimulatorProps) => {
     const tagName = "div";
     const className = "relative top-0 left-0 w-full h-full my-12";
     const variant = "default";
@@ -44,7 +40,7 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
         const _this = g.scene.keys.default;
         console.log("preload ->  preloading assets...", _this);
         //_this.load.setBaseURL('http://labs.phaser.io');
-        _this.load.image("sky", "images/bg/shoshin-bg-white-long.png");
+        _this.load.image("sky", "images/bg/shoshin-bg-large-transparent.png");
     }, []);
 
 
@@ -116,33 +112,15 @@ const Game = ({testJson, animationFrame, showDebug}: SimulatorProps) => {
         //@ts-ignore
         let scene = game.current?.scene.getScene('simulator') as Simulator;
 
-        if(scene == undefined)
+        if(scene == undefined || !testJson)
         {
           return
         }
-        //get sprite one and two
-        const characterType0 = testJson?.agent_0.type
-        const characterType1 = testJson?.agent_1.type
-        const agentFrame0 = testJson?.agent_0.frames[animationFrame]
-        const agentFrame1 = testJson?.agent_1.frames[animationFrame]
-        scene.setPlayerOneCharacter(characterType0)
-        scene.setPlayerTwoCharacter(characterType1)
-        scene.setPlayerOneFrame(agentFrame0);
-        scene.setPlayerTwoFrame(agentFrame1);
 
-        if(showDebug)
-        {
-            scene.showDebug()
-            scene.setPlayerOneBodyHitbox(agentFrame0)
-            scene.setPlayerTwoBodyHitbox(agentFrame1)
-            scene.setPlayerOneActionHitbox(agentFrame0)
-            scene.setPlayerTwoActionHitbox(agentFrame1)
-        }else{
-            scene.hideDebug()
-        }
+        scene.updateScene({ testJson, animationFrame, animationState, showDebug })
 
         //render stuff
-    }, [testJson, animationFrame, showDebug])
+    }, [testJson, animationFrame, animationState, showDebug])
 
     return Phaser ? (
         <div

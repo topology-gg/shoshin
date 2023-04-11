@@ -13,7 +13,7 @@ import { BodystatesAntoc, BodystatesJessica } from '../../types/Condition';
 
 interface ConditionsProps {
     conditions: Condition[]
-    handleUpdateCondition: (index: number, element: ConditionElement) => void
+    handleUpdateCondition: (index: number, element: ConditionElement, name: string) => void
     handleConfirmCondition: () => void
     handleClickDeleteCondition: (index: number) => void
     conditionUnderEditIndex: number
@@ -94,7 +94,7 @@ const Conditions = ({
     const [currentConstant, setCurrentConstant] = useState<number>()
     const handleAddElement = (e: React.MouseEvent) => {
         const element = elementFromEvent(e, currentConstant)
-        handleUpdateCondition(conditionUnderEditIndex, element)
+        handleUpdateCondition(conditionUnderEditIndex, element, f.displayName)
     }
     const [disabled, setDisabled] = useState<boolean>(false)
 
@@ -144,7 +144,7 @@ const Conditions = ({
                                 // on change, update with the selected value and remove disabled
                                 onChange={(_, bs: BodyStateOption) => {
                                     setDisabled(false)
-                                    handleUpdateCondition(conditionUnderEditIndex, {value: bs.bodystate, type: ElementType.BodyState})
+                                    handleUpdateCondition(conditionUnderEditIndex, {value: bs.bodystate, type: ElementType.BodyState}, f.displayName)
                                 }}
                             />
                         </div>
@@ -161,7 +161,6 @@ const Conditions = ({
             })
     )}, [f])
 
-    console.log('displayCondition:', displayCondition)
     return (
         <Box
         sx={{
@@ -189,7 +188,7 @@ const Conditions = ({
                         >
                             {conditions.slice(0, conditions.length - 1).map((_, i) =>
                                 <MenuItem value={i}>
-                                    F{i}
+                                    {conditions[i].displayName || `F${i}`}
                                 </MenuItem>
                             )}
                             <MenuItem value={conditions.length - 1} disabled={isReadOnly}>New Condition</MenuItem>
@@ -207,6 +206,16 @@ const Conditions = ({
                 </Grid>
 
                 {/* { handleDisplayText(isReadOnly, isWarningTextOn, warningText, conditionUnderEditIndex) } */}
+
+                <Grid xs={ 12 } item sx={{mt: 1}}>
+                    <TextField
+                      label="Give it a name"
+                      size="small"
+                      fullWidth
+                      value={f.displayName || ""}
+                      onChange={(e) => handleUpdateCondition(conditionUnderEditIndex, undefined, e.target.value)}
+                    />
+                </Grid>
 
                 <Grid xs={ 10 } item className='function-creator'>
                     <Box
@@ -231,6 +240,13 @@ const Conditions = ({
                             <BackspaceIcon/>
                         </IconButton>
                     </Grid> }
+
+
+                {isWarningTextOn &&
+                    <Grid item xs={12}>
+                    <Typography color={'red'} variant='overline'>{warningText}</Typography>
+                    </Grid>
+                }
 
                 {
                     isReadOnly ? <></> : (
