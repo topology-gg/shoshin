@@ -1,14 +1,14 @@
 import logging
 
-from .types import EventMetadata, EventArray, EventSingleMetadata
-
 from apibara.indexer import IndexerRunner, IndexerRunnerConfiguration, Info
 from apibara.indexer.indexer import IndexerConfiguration
+from apibara.indexer.storage import IndexerStorage
 from apibara.protocol.proto.stream_pb2 import Cursor, DataFinality
 from apibara.starknet import EventFilter, Filter, StarkNetIndexer, felt
 from apibara.starknet.cursor import starknet_cursor
 from apibara.starknet.proto.starknet_pb2 import Block, Event
-from apibara.indexer.storage import IndexerStorage
+
+from .types import EventArray, EventMetadata, EventSingleMetadata
 
 # Print apibara logs
 root_logger = logging.getLogger("apibara")
