@@ -56,9 +56,6 @@ const Conditions = ({
 
     const isDisabled = conditionErrors.isValidCondition && conditionErrors.isValidDisplayName;
 
-    console.log( conditionErrors.isValidCondition)
-    console.log( conditionErrors.isValidDisplayName)
-
     useEffect(() => {
         setConditionElements(conditions[conditionUnderEditIndex].elements)
         setInititalConditionElements(conditions[conditionUnderEditIndex].elements)
@@ -147,25 +144,27 @@ const Conditions = ({
 
                 <ConditionEditor setConditionElements={handleSetConditionElements} initialConditionElements={initialConditionElement} />
 
-                {conditionErrors.conditionErrorText.length &&
+                {conditionErrors.conditionErrorText.length ?
                     <Grid item xs={12}>
                     <Typography color={'red'} variant='overline'>{conditionErrors.conditionErrorText}</Typography>
                     </Grid>
+                    : null
                 }
-                {conditionErrors.namingErrorText.length &&
+                {conditionErrors.namingErrorText.length ?
                     <Grid item xs={12}>
                     <Typography color={'red'} variant='overline'>{conditionErrors.namingErrorText}</Typography>
                     </Grid>
+                    : null
                 }
 
                 {
                     isReadOnly ? <></> : (
                         <>
-                            <Grid item>
+                            <Grid item xs={12}>
                                 <Button
                                     id={`confirm-gp-function`}
                                     variant="outlined"
-                                    size="large"
+                                    size="medium"
                                     disabled={!isDisabled}
                                     // className={ styles.confirm }
                                     onClick={() => handleSaveClick()}
