@@ -160,7 +160,7 @@ const Conditions = ({
                                 : null
                             }
 
-                            <Grid item>
+                            <Grid item xs={12}>
                                 <Button
                                     id={`confirm-gp-function`}
                                     variant="outlined"
