@@ -23,7 +23,7 @@ pub fn evaluate_condition(inputs: Vec<i32>) -> Result<JsValue, JsError> {
     let inputs = prepare_args(inputs).map_err(|e| JsError::new(&e.to_string()))?;
 
     let condition_bytecode = include_str!("./bytecode_condition.json");
-    let vm = execute_cairo_program(condition_bytecode, "execute_tree_chain", inputs)
+    let vm = execute_cairo_program(condition_bytecode, "evaluate_condition", inputs)
         .map_err(|e| JsError::new(&e.to_string()))?;
 
     let output = get_output(vm).map_err(|e| JsError::new(&e.to_string()))?;
