@@ -1,7 +1,9 @@
 [package]
-name = "shoshin"
+name = "condition_eval"
 version = "0.1.0"
 edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
 crate-type = ["cdylib"]
@@ -12,23 +14,15 @@ wasm-opt = false
 [dependencies]
 cairo-vm = {git = "https://github.com/lambdaclass/cairo-rs.git", default-features = false, rev = "abaf215" }
 cairo-felt = {git = "https://github.com/lambdaclass/cairo-rs.git", default-features = false, rev = "abaf215" }
+
 serde_json = "1.0.87"
 wasm-bindgen = "0.2.83"
+anyhow = "1.0.68"
 num-bigint = { version = "0.4", features = ["serde"] }
 num-traits = "0.2.15"
-anyhow = "1.0.68"
-lazy_static = "1.4.0"
-serde = "1.0.152"
 serde-wasm-bindgen = "0.4"
 
-# `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
-# compared to the default allocator's ~10K. It is slower than the default
-# allocator, however.
-wee_alloc = { version = "0.4.5", optional = true }
-cairo_derive = { path = "../cairo_derive" }
 cairo_execution = { path = "../cairo_execution" }
+cairo_derive = { path = "../cairo_derive" }
 cairo_types = { path = "../cairo_types" }
-rand = "0.8.5"
-
-[dev-dependencies]
-wasm-bindgen-test = "0.3.13"
+serde = "1.0.159"
