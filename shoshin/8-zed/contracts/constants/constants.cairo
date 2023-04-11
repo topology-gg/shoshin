@@ -21,7 +21,7 @@ namespace ns_stamina {
 }
 
 namespace ns_common_stamina_effect {
-    // These values are added to the players stamina, 
+    // These values are added to the players stamina,
     // They are amortized across the entire animation
     const NULL = 20;
     const MOVE_FORWARD = 20;
@@ -169,3 +169,4 @@ struct Metadata{
 
 const HURT_EFFECT = 100;
 const KNOCKED_EFFECT = 200;
+const CLASH_EFFECT = 25;
