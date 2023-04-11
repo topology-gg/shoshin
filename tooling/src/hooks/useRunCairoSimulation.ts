@@ -1,5 +1,5 @@
 import { useCallback, useContext } from "react";
-import { WASMContext } from "../context/WASM";
+import { WASMContext } from "../context/wasm-shoshin";
 import cairoOutputToFrameScene from "../helpers/cairoOutputToFrameScene";
 import Agent, { agentsToArray } from "../types/Agent";
 

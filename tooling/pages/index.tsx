@@ -37,11 +37,10 @@ import P1P2SettingPanel, {
 } from "../src/components/P1P2SettingPanel";
 import FrameInspector from "../src/components/FrameInspector";
 import useRunCairoSimulation from "../src/hooks/useRunCairoSimulation";
+import useEvaluateCondition from "../src/hooks/useEvaluateCondition";
 import { useAgents } from "../lib/api";
 import {
-    Metadata,
     SingleMetadata,
-    splitMetadata,
     splitSingleMetadata,
 } from "../src/types/Metadata";
 import {
@@ -49,7 +48,6 @@ import {
     useConnectors,
     useStarknetExecute,
 } from "@starknet-react/core";
-import ConnectWallet from "../src/components/ConnectWallet";
 import { EditorTabName } from "../src/components/sidePanelComponents/Tabs";
 import { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
 import dynamic from "next/dynamic";
@@ -172,6 +170,7 @@ export default function Home() {
     ]);
 
     const { runCairoSimulation, wasmReady } = useRunCairoSimulation(p1, p2);
+    const { runEvaluateCondition } = useEvaluateCondition();
 
     useEffect(() => {
         if (output) {
@@ -556,7 +555,6 @@ export default function Home() {
     //
     function agentChange(
         whichPlayer: string,
-        event: object,
         value: AgentOption
     ) {
         let setAgent: Agent;
@@ -597,19 +595,6 @@ export default function Home() {
         }
     }
 
-    //
-    // Set Agent in the side panel to blank agent
-    //
-    function setAgentInPanelToBlank() {
-        setInitialMentalState(() => 0);
-        setCombos(() => []);
-        setMentalStates(() => []);
-        setTrees(() => []);
-        setConditions(() => []);
-        setAgentName(() => "");
-        setCharacter(() => Character.Jessica);
-        setConditionUnderEditIndex(() => 0);
-    }
     function setAgentInPanelToAgent(agent: Agent) {
         // parse the given agent into new values for the React states
         setInitialMentalState(() => agent.initialState);
