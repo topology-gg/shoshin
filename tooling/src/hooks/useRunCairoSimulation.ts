@@ -1,5 +1,5 @@
 import { useCallback, useContext } from "react";
-import { WASMContext } from "../context/wasm-shoshin";
+import { ShoshinWASMContext } from "../context/wasm-shoshin";
 import cairoOutputToFrameScene from "../helpers/cairoOutputToFrameScene";
 import Agent, { agentsToArray } from "../types/Agent";
 
@@ -10,7 +10,7 @@ const useRunCairoSimulation = (
     p1: Agent,
     p2: Agent,
 ) => {
-    const ctx = useContext(WASMContext);
+    const ctx = useContext(ShoshinWASMContext);
 
     const runCairoSimulation = useCallback(() => {
         if (!ctx.wasm) {
