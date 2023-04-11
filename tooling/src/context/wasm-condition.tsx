@@ -2,14 +2,14 @@ import { useState, createContext } from "react";
 import type { ReactNode } from "react";
 import { useMountEffectOnce } from "../hooks/useMountEffectOnce";
 
-const initial: IWASMContext = {};
+const initial: IConditionWASMContext = {};
 
-export const WASMContext = createContext(initial);
+export const ConditionWASMContext = createContext(initial);
 
-export const WASMContextProvider: React.FC<WASMContextProviderProps> = ({
+export const ConditionWASMContextProvider: React.FC<ConditionWASMContextProviderProps> = ({
   children,
 }) => {
-  const [state, setState] = useState<IWASMContext>(initial);
+  const [state, setState] = useState<IConditionWASMContext>(initial);
 
   // This has to run only once: https://github.com/rustwasm/wasm-bindgen/issues/3153
   // Though, in development React renders twice when Strict Mode is enabled: https://reactjs.org/docs/strict-mode.html
@@ -22,13 +22,13 @@ export const WASMContextProvider: React.FC<WASMContextProviderProps> = ({
     })();
   });
 
-  return <WASMContext.Provider value={state}>{children}</WASMContext.Provider>;
+  return <ConditionWASMContext.Provider value={state}>{children}</ConditionWASMContext.Provider>;
 };
 
-interface IWASMContext {
+interface IConditionWASMContext {
   wasm?: typeof import("wasm-condition-evaluation");
 }
 
-interface WASMContextProviderProps {
+interface ConditionWASMContextProviderProps {
   children: ReactNode;
 }

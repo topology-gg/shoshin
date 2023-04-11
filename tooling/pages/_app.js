@@ -1,7 +1,8 @@
 import '../styles/globals.css'
 import { StarknetConfig, InjectedConnector } from '@starknet-react/core'
 import { SequencerProvider } from 'starknet'
-import { WASMContextProvider } from '../src/context/WASM'
+import { ShoshinWASMContextProvider } from '../src/context/wasm-shoshin'
+import { ConditionWASMContextProvider } from '../src/context/wasm-condition'
 
 function MyApp({ Component, pageProps }) {
     const connectors = [
@@ -14,10 +15,12 @@ function MyApp({ Component, pageProps }) {
 
     return (
         <StarknetConfig connectors={connectors} defaultProvider={new SequencerProvider({baseUrl : testnet1})}>
-            <WASMContextProvider>
-                <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-                <Component {...pageProps} />
-            </WASMContextProvider>
+            <ConditionWASMContextProvider>
+                <ShoshinWASMContextProvider>
+                    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+                    <Component {...pageProps} />
+                </ShoshinWASMContextProvider>
+            </ConditionWASMContextProvider>
         </StarknetConfig>
     )
 }
