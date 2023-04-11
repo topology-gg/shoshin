@@ -147,15 +147,17 @@ const Conditions = ({
                         <Grid container spacing={1}>
                             <ConditionEditor setConditionElements={handleSetConditionElements} initialConditionElements={initialConditionElement} />
 
-                            {conditionErrors.conditionErrorText.length &&
+                            {conditionErrors.conditionErrorText.length ?
                                 <Grid item xs={12}>
                                 <Typography color={'red'} variant='overline'>{conditionErrors.conditionErrorText}</Typography>
                                 </Grid>
+                                : null
                             }
-                            {conditionErrors.namingErrorText.length &&
+                            {conditionErrors.namingErrorText.length ?
                                 <Grid item xs={12}>
                                 <Typography color={'red'} variant='overline'>{conditionErrors.namingErrorText}</Typography>
                                 </Grid>
+                                : null
                             }
 
                             <Grid item>
