@@ -1,7 +1,7 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import React, { useEffect, useMemo, useState } from "react";
-import { Box, ThemeProvider } from "@mui/material";
+import { Alert, Box, Snackbar, ThemeProvider } from "@mui/material";
 import MidScreenControl from "../src/components/MidScreenControl";
 import EditorView from "../src/components/sidePanelComponents/EditorView";
 import { FrameScene, TestJson } from "../src/types/Frame";
@@ -122,6 +122,16 @@ export default function Home() {
         useState<string>("");
     const [runCairoSimulationWarning, setCairoSimulationWarning] =
         useState<string>("");
+
+    const [successToastOpen, setToastOpen] = React.useState(false);
+
+    const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+        return;
+        }
+    
+        setToastOpen(false);
+    };
 
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents();
@@ -427,7 +437,7 @@ export default function Home() {
 
             console.log(prev_copy)
 
-
+            setToastOpen(true)
             return prev_copy;
 
         });
@@ -840,6 +850,11 @@ export default function Home() {
                     <Tab label={'Wallet'}/>
                 </Tabs>
 
+                <Snackbar open={successToastOpen} autoHideDuration={6000} onClose={handleToastClose}>
+                    <Alert onClose={handleToastClose} severity="success" sx={{ width: '100%' }}>
+                        Condition Successfully saved
+                    </Alert>
+                </Snackbar>
                 <Box sx={{flex: 1, pt: 5}}>
                     <ThemeProvider theme={theme}>
                         <SwipeableViews
