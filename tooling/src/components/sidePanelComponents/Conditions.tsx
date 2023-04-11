@@ -63,10 +63,10 @@ const Conditions = ({
         setConditionElements(conditions[conditionUnderEditIndex].elements)
         setInititalConditionElements(conditions[conditionUnderEditIndex].elements)
     }, [conditionUnderEditIndex])
-    
+
     const handleSetConditionElements = (is_valid : boolean, elements : ConditionElement[], warningText : string) => {
         setConditionEditErrors({...conditionErrors, isValidCondition : is_valid, conditionErrorText : warningText})
-    
+
         if(elements.length){
             setConditionElements(elements)
         }
@@ -77,7 +77,7 @@ const Conditions = ({
     }
 
     const handleUpdateUsername = (e) => {
-        
+
         handleUpdateCondition(conditionUnderEditIndex, undefined, e.target.value)
         const excludingSelectedCondition = conditions.filter((_, i) => conditionUnderEditIndex != i)
         const nameError = validateConditionName( e.target.value, excludingSelectedCondition);
@@ -86,8 +86,8 @@ const Conditions = ({
             handleUpdateCondition(conditionUnderEditIndex, undefined, e.target.value)
         }
     }
-        
-    
+
+
     return (
         <Box
             sx={{
@@ -145,22 +145,22 @@ const Conditions = ({
                     />
                 </Grid>
 
-                <ConditionEditor setConditionElements={handleSetConditionElements} initialConditionElements={initialConditionElement} />
-
-                {conditionErrors.conditionErrorText.length &&
-                    <Grid item xs={12}>
-                    <Typography color={'red'} variant='overline'>{conditionErrors.conditionErrorText}</Typography>
-                    </Grid>
-                }
-                {conditionErrors.namingErrorText.length &&
-                    <Grid item xs={12}>
-                    <Typography color={'red'} variant='overline'>{conditionErrors.namingErrorText}</Typography>
-                    </Grid>
-                }
-
                 {
                     isReadOnly ? <></> : (
-                        <>
+                        <Grid container spacing={1}>
+                            <ConditionEditor setConditionElements={handleSetConditionElements} initialConditionElements={initialConditionElement} />
+
+                            {conditionErrors.conditionErrorText.length &&
+                                <Grid item xs={12}>
+                                <Typography color={'red'} variant='overline'>{conditionErrors.conditionErrorText}</Typography>
+                                </Grid>
+                            }
+                            {conditionErrors.namingErrorText.length &&
+                                <Grid item xs={12}>
+                                <Typography color={'red'} variant='overline'>{conditionErrors.namingErrorText}</Typography>
+                                </Grid>
+                            }
+
                             <Grid item>
                                 <Button
                                     id={`confirm-gp-function`}
@@ -173,7 +173,7 @@ const Conditions = ({
                                     Save
                                 </Button>
                             </Grid>
-                        </>
+                        </Grid>
                     )
                 }
 
