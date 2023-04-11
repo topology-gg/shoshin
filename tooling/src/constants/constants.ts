@@ -9,7 +9,7 @@ export const COLLECTION_NAME = 'shoshin-dogfooding-submission'
 export const PRIME = BigInt(2**251) + BigInt(17) * BigInt(2**192) + BigInt(1)
 
 // Contract entrypoint and address
-export const CONTRACT_ADDRESS = "0x00af7e265795a2ae66664463079c19baa31eb6275a981502b3923df482c64c21"
+export const CONTRACT_ADDRESS = "0x047c967a0b47dc0cfe80450d3f4ef590d54745a98c789f4523078dcf22d22e40"
 export const ENTRYPOINT_FIGHT = "loop"
 export const ENTRYPOINT_AGENT_SUBMISSION = "submit_agent"
 
@@ -314,7 +314,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 300, type: ElementType.Constant},
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
         ],
-        
+
         displayName : "oponent_approaching",
         key: "10"
     },
@@ -362,7 +362,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
         ],
-        
+
         displayName : "not_attacking",
         key: "7"
     },
@@ -381,7 +381,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.Equal, type: ElementType.Operator },
             { value: 1, type: ElementType.Constant },
         ],
-        
+
         displayName : "one_eq_one",
         key: "8"
     },
