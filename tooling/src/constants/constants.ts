@@ -50,6 +50,7 @@ export const bodyStateNumberToName = {
         1100: 'walk_backward',
         1110: 'dash_forward',
         1120: 'dash_backward',
+        1130: 'clash',
     }
 
 }

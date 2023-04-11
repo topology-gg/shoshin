@@ -50,6 +50,7 @@ export default class Platformer extends Phaser.Scene {
         this.load.atlas(`antoc-dash_forward`, 'images/antoc/dash_forward/spritesheet.png',  'images/antoc/dash_forward/spritesheet.json');
         this.load.atlas(`antoc-dash_backward`, 'images/antoc/dash_backward/spritesheet.png',  'images/antoc/dash_backward/spritesheet.json');
         this.load.atlas(`antoc-block`, 'images/antoc/block/spritesheet.png',  'images/antoc/block/spritesheet.json');
+        this.load.atlas(`antoc-clash`, 'images/antoc/clash/spritesheet.png',  'images/antoc/clash/spritesheet.json');
 
         this.load.atlas(`jessica-knocked`,"images/jessica/knocked/spritesheet.png","images/jessica/knocked/spritesheet.json");
         this.load.atlas(`jessica-idle`,"images/jessica/idle/spritesheet.png","images/jessica/idle/spritesheet.json");
