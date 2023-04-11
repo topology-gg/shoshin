@@ -17,7 +17,7 @@ def felt_to_int(it: Iterator[FieldElement]):
 # Convert a int to a string.
 def int_to_string(i: int):
     length = i.bit_length()
-    return i.to_bytes(length, "big").decode("utf-8")
+    return i.to_bytes((length + 7) // 8, "big").decode("utf-8")
 
 
 @dataclass
