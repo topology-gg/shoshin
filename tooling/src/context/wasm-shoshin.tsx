@@ -2,14 +2,14 @@ import { useState, createContext } from "react";
 import type { ReactNode } from "react";
 import { useMountEffectOnce } from "../hooks/useMountEffectOnce";
 
-const initial: IWASMContext = {};
+const initial: IShoshinWASMContext = {};
 
-export const WASMContext = createContext(initial);
+export const ShoshinWASMContext = createContext(initial);
 
-export const WASMContextProvider: React.FC<WASMContextProviderProps> = ({
+export const ShoshinWASMContextProvider: React.FC<ShoshinWASMContextProviderProps> = ({
   children,
 }) => {
-  const [state, setState] = useState<IWASMContext>(initial);
+  const [state, setState] = useState<IShoshinWASMContext>(initial);
 
   // This has to run only once: https://github.com/rustwasm/wasm-bindgen/issues/3153
   // Though, in development React renders twice when Strict Mode is enabled: https://reactjs.org/docs/strict-mode.html
@@ -22,13 +22,13 @@ export const WASMContextProvider: React.FC<WASMContextProviderProps> = ({
     })();
   });
 
-  return <WASMContext.Provider value={state}>{children}</WASMContext.Provider>;
+  return <ShoshinWASMContext.Provider value={state}>{children}</ShoshinWASMContext.Provider>;
 };
 
-interface IWASMContext {
+interface IShoshinWASMContext {
   wasm?: typeof import("wasm-shoshin");
 }
 
-interface WASMContextProviderProps {
+interface ShoshinWASMContextProviderProps {
   children: ReactNode;
 }
