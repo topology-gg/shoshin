@@ -772,6 +772,8 @@ export default function Home() {
                     animationFrame={animationFrame}
                 />
                 <FrameDecisionPathViewer
+                    p1={p1}
+                    p2={p2}
                     testJson={testJson}
                     animationFrame={animationFrame}
                 />
@@ -780,7 +782,7 @@ export default function Home() {
     )
 
     const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
-    
+
     //
     // Render
     //
