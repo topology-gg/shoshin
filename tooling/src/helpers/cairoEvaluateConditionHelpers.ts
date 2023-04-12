@@ -1,11 +1,12 @@
-import { Condition, PERCEPTIBLE_KEYS, flattenCondition } from "../types/Condition";
+import { PERCEPTIBLE_KEYS } from "../types/Condition";
+import Leaf, { flattenLeaf } from "../types/Leaf";
 
 const FLAT_CONDITION_SIZE = 3 // (opcode, left, right)
 const FLAT_MEMORY_SIZE = 1 // (mem_value)
 const FLAT_PERCEPTIBLE_SIZE = 2 // (key, value)
 
-export function getEvaluateConditionInput(condition: Condition, memory: number[], perceptibles: number[]): Int32Array {
-    let flattenedCondition = flattenCondition(condition)
+export function getEvaluateConditionInput(condition: Leaf, memory: number[], perceptibles: number[]): Int32Array {
+    let flattenedCondition = flattenLeaf(condition)
     let flattenedConditionWithLength = prependArrayCorrectedLength(flattenedCondition, FLAT_CONDITION_SIZE)
 
     let flattenedMemoryWithLength = prependArrayCorrectedLength(memory, FLAT_MEMORY_SIZE)

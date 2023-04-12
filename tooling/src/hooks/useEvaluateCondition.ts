@@ -13,7 +13,7 @@ const useEvaluateCondition = () => {
     const ctx = useContext(ConditionWASMContext);
 
     const runEvaluateCondition = useCallback(
-        (condition: Condition, memory: number[], perceptibles: number[]) => {
+        (condition: Leaf, memory: number[], perceptibles: number[]) => {
         if (!ctx.wasm) {
             console.warn("WASM not initialized");
             return;
