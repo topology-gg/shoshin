@@ -84,8 +84,8 @@ export enum BodystatesJessica {
 
 export enum BodystatesAntoc {
     Idle = 0,
-    Hori = 1010,
-    Vert = 1020,
+    HorizontalSwing = 1010,
+    VerticalSwing = 1020,
     Block = 1040,
     Hurt = 1050,
     Knocked = 1060,
@@ -147,7 +147,7 @@ export function verifyValidCondition(c: Condition, confirm: boolean): ConditionV
         }
         if (prevElement?.value == Operator.Not && !isCurrentSyntaxOpen) {
             return { isValid : false, message :  `Operator "${prevElement?.value}" must be followed by ( or Abs(`, conditionElementIndex : index, is_bracket_error : false }
-            
+
         }
         // if count negative, exit early
         if (countParenthesis < 0 || countAbs < 0) {
@@ -212,7 +212,7 @@ export function validateConditionName(name: string, conditions : Condition[]): s
     }
 
     if (name.length > 31) {
-        return "Name should be less than 31 characters long" + `\n String \"${name}\" is ${name.length} characters long!` 
+        return "Name should be less than 31 characters long" + `\n String \"${name}\" is ${name.length} characters long!`
     }
 
     const nameCollision = conditions.find(condition => condition.displayName == name)
@@ -378,7 +378,7 @@ export const conditionElementToStr = (elem: ConditionElement) => {
             return 'Idle'
         }
         value = value as number // can cast since type === BodyState
-        return value > 1000 ? 'Antoc ' + BodystatesAntoc[value] : 'Jessica ' + BodystatesJessica[value]
+        return value > 1000 ? 'Antoc' + BodystatesAntoc[value] : 'Jessica' + BodystatesJessica[value]
     }
     if (type === ElementType.Operator) {
         // convert a close abs to a closed parenthesis

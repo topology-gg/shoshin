@@ -7,6 +7,7 @@ import {
     ConditionVerificationResult,
     ElementType,
     Operator,
+    conditionElementToStr,
     verifyValidCondition,
 } from "../types/Condition";
 import { Box } from "@mui/material";
@@ -185,15 +186,15 @@ function tokenize(input: string): token[] {
 
 const conditionElementsToDisplayText = (elements : ConditionElement[]) => {
 
-    console.log(elements)
-   return elements.map(e => {
-        if(e.value == Operator.OpenParenthesis || e.value == Operator.OpenAbs || Operator.Not){
+    return elements.map( (e: ConditionElement) => {
+        if (e.value == Operator.OpenParenthesis || e.value == Operator.OpenAbs || e.value == Operator.Not){
             return e.value
-        } else  if (e.value == Operator.CloseParenthesis || e.value == Operator.CloseAbs)
-        {
+        }
+        else if (e.value == Operator.CloseParenthesis || e.value == Operator.CloseAbs){
             return e.value
-        } else {
-            return e.value + " "
+        }
+        else {
+            return conditionElementToStr(e) + " "
         }
     }).join("").trim()
 }
@@ -367,10 +368,10 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
     });
 
     return (
-        <Box style={{border:'1px solid #BBB', marginLeft:'8px'}}>
+        <Box style={{border:'1px solid #BBB', marginLeft:'16px'}}>
             <EditorComponent
                 height="200px"
-                width="400px"
+                width="600px"
                 defaultLanguage="shoshin_condition"
                 defaultValue={editorText}
                 value={editorText}
