@@ -9,7 +9,7 @@ export const COLLECTION_NAME = 'shoshin-dogfooding-submission'
 export const PRIME = BigInt(2**251) + BigInt(17) * BigInt(2**192) + BigInt(1)
 
 // Contract entrypoint and address
-export const CONTRACT_ADDRESS = "0x047c967a0b47dc0cfe80450d3f4ef590d54745a98c789f4523078dcf22d22e40"
+export const CONTRACT_ADDRESS = "0x01cf7516698237ed0b41440d2849759b88e8a2ad66238ff1267e5143e3ada5b8"
 export const ENTRYPOINT_FIGHT = "loop"
 export const ENTRYPOINT_AGENT_SUBMISSION = "submit_agent"
 
