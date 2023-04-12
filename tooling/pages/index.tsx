@@ -784,6 +784,7 @@ export default function Home() {
                     p1={p1}
                     p2={p2}
                     testJson={testJson}
+                    conditions={conditions}
                     animationFrame={animationFrame}
                 />
             </div>

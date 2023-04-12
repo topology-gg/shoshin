@@ -13,13 +13,16 @@ import React from "react";
 import { bodyStateNumberToName } from "../constants/constants";
 import { Frame, TestJson, getFlattenedPerceptiblesFromFrame } from "../types/Frame";
 import useEvaluateCondition from "../hooks/useEvaluateCondition";
-import Agent from "../types/Agent";
+import Agent, { getMentalTrees } from "../types/Agent";
 import Leaf from "../types/Leaf";
+import { Tree, updateTreeToMatchConditions } from "../types/Tree";
+import { Condition } from "../types/Condition";
 
 type FrameDecisionPathViewerProps = {
     p1: Agent;
     p2: Agent;
     testJson: TestJson;
+    conditions: Condition[]
     animationFrame: number;
 };
 
@@ -27,6 +30,7 @@ const FrameDecisionPathViewer = ({
     p1,
     p2,
     testJson,
+    conditions,
     animationFrame,
 }: FrameDecisionPathViewerProps) => {
 
@@ -48,8 +52,8 @@ const FrameDecisionPathViewer = ({
     // A1: updated the signature of handleEvaluateCondition() to take condition: Leaf. p1 and p2 are both of type Agent, which
     //     has the field conditions: Leaf[]. Conditions contains all the conditions of the agent in order.
     // Q2: given an Agent (p1 or p2), how to get an array containing all the mental state names involved, in order i.e. [S1, S2, S3]
-    // A2: both p1 and p2 are of type Agent, which has the field mentalStatesNames: string[]. Added a helper function getMentalStatesNames()
-    //     to get the mental states names of an agent.
+    // A2: this can now be accessed in the variables mentalStatesNamesPerTree Left and Right for agent p1 and p2. The data is 
+    //     is stored in the form of string[][] where the first index is the tree index and the second index is the mental state index.
     // Q3: among the input args of handleEvaluateCondition(), what is `memory`? Is it required for the purpose of this component?
     // A3: I added memory because I thought it might be useful for the evaluation of conditions but should actually be removed.
 
@@ -74,6 +78,17 @@ const FrameDecisionPathViewer = ({
         characterLeftType === 0 ? "jessica" : "antoc",
         characterRightType === 0 ? "jessica" : "antoc",
     ];
+
+    const getMentalStatesNames = (agent: Agent) => {
+        let trees: Tree[] = getMentalTrees(agent)
+        trees.forEach(tree => updateTreeToMatchConditions(tree, conditions))
+
+        let mentalStatesNamesPerTree: string[][] = trees.map(tree => tree.nodes.filter(n => n.isChild).map(n => n.id))
+        return mentalStatesNamesPerTree
+    }
+
+    const mentalStatesNamesPerTreeLeft: string[][] = getMentalStatesNames(p1)
+    const mentalStatesNamesPerTreeRight: string[][] = getMentalStatesNames(p2)
 
     return (
         <div style={{padding:'10px', paddingBottom:'20px', border:'1px solid #777', borderRadius:'20px'}}>
