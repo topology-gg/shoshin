@@ -845,33 +845,38 @@
         "0x208b7fff7fff7ffe",
         "0x40780017fff7fff",
         "0x1",
+        "0x208b7fff7fff7ffe",
+        "0x40780017fff7fff",
+        "0x2",
         "0x480680017fff8000",
         "0x0",
         "0x1104800180018000",
         "0x800000000000010fffffffffffffffffffffffffffffffffffffffffffffffa",
         "0x40137fff7fff8000",
+        "0x1104800180018000",
+        "0x800000000000010fffffffffffffffffffffffffffffffffffffffffffffff4",
+        "0x40137fff7fff8001",
         "0x480680017fff8000",
         "0x0",
         "0x1104800180018000",
-        "0x800000000000010fffffffffffffffffffffffffffffffffffffffffffffff5",
-        "0x480a7ff77fff8000",
+        "0x800000000000010fffffffffffffffffffffffffffffffffffffffffffffff2",
+        "0x480a7ff97fff8000",
         "0x480a7ffc7fff8000",
         "0x480a7ffd7fff8000",
         "0x48127ffc7fff8000",
         "0x1104800180018000",
-        "0xf",
+        "0xe",
         "0x48127ffe7fff8000",
-        "0x480a7ff97fff8000",
-        "0x480a7ffa7fff8000",
         "0x480a7ffb7fff8000",
+        "0x480680017fff8000",
+        "0x0",
+        "0x480a80017fff8000",
         "0x480a80007fff8000",
         "0x48127ffa7fff8000",
         "0x1104800180018000",
-        "0x800000000000010fffffffffffffffffffffffffffffffffffffffffffffde2",
+        "0x800000000000010fffffffffffffffffffffffffffffffffffffffffffffddb",
         "0x48127ffb7fff8000",
         "0x48127ffb7fff8000",
-        "0x48127ffd7fff8000",
-        "0x480a7ffb7fff8000",
         "0x208b7fff7fff7ffe",
         "0x20780017fff7ffb",
         "0x5",
@@ -882,7 +887,7 @@
         "0x480280007ffc8000",
         "0x480280017ffc8000",
         "0x1104800180018000",
-        "0x800000000000010fffffffffffffffffffffffffffffffffffffffffffffdce",
+        "0x800000000000010fffffffffffffffffffffffffffffffffffffffffffffdc9",
         "0x480a7ffa7fff8000",
         "0x482680017ffb8000",
         "0x800000000000011000000000000000000000000000000000000000000000000",
@@ -29416,12 +29421,71 @@
             },
             "740": {
                 "accessible_scopes": [
+                    "starkware.cairo.common.alloc",
+                    "starkware.cairo.common.alloc.alloc"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 49,
+                        "offset": 0
+                    },
+                    "reference_ids": {}
+                },
+                "hints": [
+                    {
+                        "location": {
+                            "end_col": 38,
+                            "end_line": 3,
+                            "input_file": {
+                                "filename": "/Users/greg/.virtualenvs/shoshin/lib/python3.8/site-packages/starkware/cairo/common/alloc.cairo"
+                            },
+                            "start_col": 5,
+                            "start_line": 3
+                        },
+                        "n_prefix_newlines": 0
+                    }
+                ],
+                "inst": {
+                    "end_col": 12,
+                    "end_line": 4,
+                    "input_file": {
+                        "filename": "/Users/greg/.virtualenvs/shoshin/lib/python3.8/site-packages/starkware/cairo/common/alloc.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 4
+                }
+            },
+            "742": {
+                "accessible_scopes": [
+                    "starkware.cairo.common.alloc",
+                    "starkware.cairo.common.alloc.alloc"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 49,
+                        "offset": 1
+                    },
+                    "reference_ids": {}
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 40,
+                    "end_line": 5,
+                    "input_file": {
+                        "filename": "/Users/greg/.virtualenvs/shoshin/lib/python3.8/site-packages/starkware/cairo/common/alloc.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 5
+                }
+            },
+            "743": {
+                "accessible_scopes": [
                     "starkware.cairo.common.default_dict",
                     "starkware.cairo.common.default_dict.default_dict_new"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
-                        "group": 49,
+                        "group": 50,
                         "offset": 0
                     },
                     "reference_ids": {
@@ -29452,14 +29516,14 @@
                     "start_line": 16
                 }
             },
-            "742": {
+            "745": {
                 "accessible_scopes": [
                     "starkware.cairo.common.default_dict",
                     "starkware.cairo.common.default_dict.default_dict_new"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
-                        "group": 49,
+                        "group": 50,
                         "offset": 1
                     },
                     "reference_ids": {
@@ -29477,433 +29541,7 @@
                     "start_line": 17
                 }
             },
-            "743": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 50,
-                        "offset": 0
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 320
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 18,
-                    "end_line": 20,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 5,
-                    "start_line": 20
-                }
-            },
-            "745": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 50,
-                        "offset": 1
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 320
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 53,
-                    "end_line": 22,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 52,
-                    "start_line": 22
-                }
-            },
-            "747": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 50,
-                        "offset": 2
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 320
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 54,
-                    "end_line": 22,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 21,
-                    "start_line": 22
-                }
-            },
-            "749": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 50,
-                        "offset": 5
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 321,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 320
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 17,
-                    "end_line": 22,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 17,
-                            "end_line": 22,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "start_col": 10,
-                            "start_line": 22
-                        },
-                        "While auto generating local variable for '_unused'."
-                    ],
-                    "start_col": 10,
-                    "start_line": 22
-                }
-            },
-            "750": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 50,
-                        "offset": 5
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 320
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 57,
-                    "end_line": 24,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 56,
-                    "start_line": 24
-                }
-            },
-            "752": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 50,
-                        "offset": 6
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 320
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 58,
-                    "end_line": 24,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 25,
-                    "start_line": 24
-                }
-            },
-            "754": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 50,
-                        "offset": 9
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 320
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 40,
-                    "end_line": 12,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 31,
-                            "end_line": 32,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "parent_location": [
-                                {
-                                    "end_col": 67,
-                                    "end_line": 25,
-                                    "input_file": {
-                                        "filename": "cairo_test/lib/bto.cairo"
-                                    },
-                                    "start_col": 29,
-                                    "start_line": 25
-                                },
-                                "While trying to retrieve the implicit argument 'range_check_ptr' in:"
-                            ],
-                            "start_col": 16,
-                            "start_line": 32
-                        },
-                        "While expanding the reference 'range_check_ptr' in:"
-                    ],
-                    "start_col": 25,
-                    "start_line": 12
-                }
-            },
-            "755": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 50,
-                        "offset": 10
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 320
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 19,
-                    "end_line": 17,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 47,
-                            "end_line": 25,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "start_col": 39,
-                            "start_line": 25
-                        },
-                        "While expanding the reference 'dict_len' in:"
-                    ],
-                    "start_col": 5,
-                    "start_line": 17
-                }
-            },
-            "756": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 50,
-                        "offset": 11
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 320
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 24,
-                    "end_line": 18,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 53,
-                            "end_line": 25,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "start_col": 49,
-                            "start_line": 25
-                        },
-                        "While expanding the reference 'dict' in:"
-                    ],
-                    "start_col": 5,
-                    "start_line": 18
-                }
-            },
-            "757": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 50,
-                        "offset": 12
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 320
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 21,
-                    "end_line": 24,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 66,
-                            "end_line": 25,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "start_col": 55,
-                            "start_line": 25
-                        },
-                        "While expanding the reference 'loaded_dict' in:"
-                    ],
-                    "start_col": 10,
-                    "start_line": 24
-                }
-            },
-            "758": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 50,
-                        "offset": 13
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 320
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 67,
-                    "end_line": 25,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 29,
-                    "start_line": 25
-                }
-            },
-            "760": {
+            "746": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.evaluate_condition"
@@ -29914,29 +29552,512 @@
                         "offset": 0
                     },
                     "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
                         "__main__.evaluate_condition.condition": 315,
                         "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 18,
+                    "end_line": 16,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 16
+                }
+            },
+            "748": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 51,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 58,
+                    "end_line": 18,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 57,
+                    "start_line": 18
+                }
+            },
+            "750": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 51,
+                        "offset": 3
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 59,
+                    "end_line": 18,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 26,
+                    "start_line": 18
+                }
+            },
+            "752": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 51,
+                        "offset": 6
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 319,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 22,
+                    "end_line": 18,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 22,
+                            "end_line": 18,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "start_col": 10,
+                            "start_line": 18
+                        },
+                        "While auto generating local variable for '_unused_dict'."
+                    ],
+                    "start_col": 10,
+                    "start_line": 18
+                }
+            },
+            "753": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 51,
+                        "offset": 6
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 32,
+                    "end_line": 19,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 25,
+                    "start_line": 19
+                }
+            },
+            "755": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 51,
+                        "offset": 9
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 321,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 21,
+                    "end_line": 19,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 21,
+                            "end_line": 19,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "start_col": 10,
+                            "start_line": 19
+                        },
+                        "While auto generating local variable for '_unused_mem'."
+                    ],
+                    "start_col": 10,
+                    "start_line": 19
+                }
+            },
+            "756": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 51,
+                        "offset": 9
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 57,
+                    "end_line": 21,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 56,
+                    "start_line": 21
+                }
+            },
+            "758": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 51,
+                        "offset": 10
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 58,
+                    "end_line": 21,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 25,
+                    "start_line": 21
+                }
+            },
+            "760": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 51,
+                        "offset": 13
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.loaded_dict": 323,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 40,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 31,
+                            "end_line": 29,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 67,
+                                    "end_line": 22,
+                                    "input_file": {
+                                        "filename": "cairo_test/lib/bto.cairo"
+                                    },
+                                    "start_col": 29,
+                                    "start_line": 22
+                                },
+                                "While trying to retrieve the implicit argument 'range_check_ptr' in:"
+                            ],
+                            "start_col": 16,
+                            "start_line": 29
+                        },
+                        "While expanding the reference 'range_check_ptr' in:"
+                    ],
+                    "start_col": 25,
+                    "start_line": 13
+                }
+            },
+            "761": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 51,
+                        "offset": 14
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.loaded_dict": 323,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 58,
+                    "end_line": 14,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 47,
+                            "end_line": 22,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "start_col": 39,
+                            "start_line": 22
+                        },
+                        "While expanding the reference 'dict_len' in:"
+                    ],
+                    "start_col": 44,
+                    "start_line": 14
+                }
+            },
+            "762": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 51,
+                        "offset": 15
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.loaded_dict": 323,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 79,
+                    "end_line": 14,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 53,
+                            "end_line": 22,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "start_col": 49,
+                            "start_line": 22
+                        },
+                        "While expanding the reference 'dict' in:"
+                    ],
+                    "start_col": 60,
+                    "start_line": 14
+                }
+            },
+            "763": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 51,
+                        "offset": 16
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.loaded_dict": 323,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 21,
+                    "end_line": 21,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 66,
+                            "end_line": 22,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "start_col": 55,
+                            "start_line": 22
+                        },
+                        "While expanding the reference 'loaded_dict' in:"
+                    ],
+                    "start_col": 10,
+                    "start_line": 21
+                }
+            },
+            "764": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 51,
+                        "offset": 17
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.loaded_dict": 323,
+                        "__main__.evaluate_condition.range_check_ptr": 318
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 67,
+                    "end_line": 22,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 29,
+                    "start_line": 22
+                }
+            },
+            "766": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 52,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
                         "__main__.evaluate_condition.loaded_dict": 323,
                         "__main__.evaluate_condition.loaded_dict_new": 325,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
                         "__main__.evaluate_condition.range_check_ptr": 324
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 31,
-                    "end_line": 32,
+                    "end_line": 29,
                     "input_file": {
                         "filename": "cairo_test/lib/bto.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 67,
-                            "end_line": 25,
+                            "end_line": 22,
                             "input_file": {
                                 "filename": "cairo_test/lib/bto.cairo"
                             },
@@ -29950,12 +30071,12 @@
                                     "parent_location": [
                                         {
                                             "end_col": 6,
-                                            "end_line": 28,
+                                            "end_line": 25,
                                             "input_file": {
                                                 "filename": "cairo_test/lib/bto.cairo"
                                             },
-                                            "start_col": 39,
-                                            "start_line": 26
+                                            "start_col": 29,
+                                            "start_line": 23
                                         },
                                         "While trying to retrieve the implicit argument 'range_check_ptr' in:"
                                     ],
@@ -29965,40 +30086,39 @@
                                 "While expanding the reference 'range_check_ptr' in:"
                             ],
                             "start_col": 29,
-                            "start_line": 25
+                            "start_line": 22
                         },
                         "While trying to update the implicit return value 'range_check_ptr' in:"
                     ],
                     "start_col": 16,
-                    "start_line": 32
+                    "start_line": 29
                 }
             },
-            "761": {
+            "767": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.evaluate_condition"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
-                        "group": 51,
+                        "group": 52,
                         "offset": 1
                     },
                     "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
                         "__main__.evaluate_condition.condition": 315,
                         "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
                         "__main__.evaluate_condition.loaded_dict": 323,
                         "__main__.evaluate_condition.loaded_dict_new": 325,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
                         "__main__.evaluate_condition.range_check_ptr": 324
                     }
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 21,
+                    "end_col": 42,
                     "end_line": 14,
                     "input_file": {
                         "filename": "cairo_test/lib/bto.cairo"
@@ -30006,247 +30126,17 @@
                     "parent_location": [
                         {
                             "end_col": 18,
-                            "end_line": 27,
+                            "end_line": 24,
                             "input_file": {
                                 "filename": "cairo_test/lib/bto.cairo"
                             },
                             "start_col": 9,
-                            "start_line": 27
+                            "start_line": 24
                         },
                         "While expanding the reference 'condition' in:"
                     ],
-                    "start_col": 5,
+                    "start_col": 26,
                     "start_line": 14
-                }
-            },
-            "762": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 51,
-                        "offset": 2
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.loaded_dict_new": 325,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 324
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 18,
-                    "end_line": 15,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 27,
-                            "end_line": 27,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "start_col": 20,
-                            "start_line": 27
-                        },
-                        "While expanding the reference 'mem_len' in:"
-                    ],
-                    "start_col": 5,
-                    "start_line": 15
-                }
-            },
-            "763": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 51,
-                        "offset": 3
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.loaded_dict_new": 325,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 324
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 15,
-                    "end_line": 16,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 32,
-                            "end_line": 27,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "start_col": 29,
-                            "start_line": 27
-                        },
-                        "While expanding the reference 'mem' in:"
-                    ],
-                    "start_col": 5,
-                    "start_line": 16
-                }
-            },
-            "764": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 51,
-                        "offset": 4
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.loaded_dict_new": 325,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 324
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 17,
-                    "end_line": 22,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 17,
-                            "end_line": 22,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "parent_location": [
-                                {
-                                    "end_col": 41,
-                                    "end_line": 27,
-                                    "input_file": {
-                                        "filename": "cairo_test/lib/bto.cairo"
-                                    },
-                                    "start_col": 34,
-                                    "start_line": 27
-                                },
-                                "While expanding the reference '_unused' in:"
-                            ],
-                            "start_col": 10,
-                            "start_line": 22
-                        },
-                        "While auto generating local variable for '_unused'."
-                    ],
-                    "start_col": 10,
-                    "start_line": 22
-                }
-            },
-            "765": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 51,
-                        "offset": 5
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.loaded_dict_new": 325,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 324
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 25,
-                    "end_line": 25,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 58,
-                            "end_line": 27,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "start_col": 43,
-                            "start_line": 27
-                        },
-                        "While expanding the reference 'loaded_dict_new' in:"
-                    ],
-                    "start_col": 10,
-                    "start_line": 25
-                }
-            },
-            "766": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 51,
-                        "offset": 6
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.loaded_dict_new": 325,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.range_check_ptr": 324
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 6,
-                    "end_line": 28,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 39,
-                    "start_line": 26
                 }
             },
             "768": {
@@ -30257,19 +30147,242 @@
                 "flow_tracking_data": {
                     "ap_tracking": {
                         "group": 52,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.loaded_dict": 323,
+                        "__main__.evaluate_condition.loaded_dict_new": 325,
+                        "__main__.evaluate_condition.range_check_ptr": 324
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 21,
+                    "end_line": 24,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 20,
+                    "start_line": 24
+                }
+            },
+            "770": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 52,
+                        "offset": 3
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.loaded_dict": 323,
+                        "__main__.evaluate_condition.loaded_dict_new": 325,
+                        "__main__.evaluate_condition.range_check_ptr": 324
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 21,
+                    "end_line": 19,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 21,
+                            "end_line": 19,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 34,
+                                    "end_line": 24,
+                                    "input_file": {
+                                        "filename": "cairo_test/lib/bto.cairo"
+                                    },
+                                    "start_col": 23,
+                                    "start_line": 24
+                                },
+                                "While expanding the reference '_unused_mem' in:"
+                            ],
+                            "start_col": 10,
+                            "start_line": 19
+                        },
+                        "While auto generating local variable for '_unused_mem'."
+                    ],
+                    "start_col": 10,
+                    "start_line": 19
+                }
+            },
+            "771": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 52,
+                        "offset": 4
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.loaded_dict": 323,
+                        "__main__.evaluate_condition.loaded_dict_new": 325,
+                        "__main__.evaluate_condition.range_check_ptr": 324
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 22,
+                    "end_line": 18,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 22,
+                            "end_line": 18,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 48,
+                                    "end_line": 24,
+                                    "input_file": {
+                                        "filename": "cairo_test/lib/bto.cairo"
+                                    },
+                                    "start_col": 36,
+                                    "start_line": 24
+                                },
+                                "While expanding the reference '_unused_dict' in:"
+                            ],
+                            "start_col": 10,
+                            "start_line": 18
+                        },
+                        "While auto generating local variable for '_unused_dict'."
+                    ],
+                    "start_col": 10,
+                    "start_line": 18
+                }
+            },
+            "772": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 52,
+                        "offset": 5
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.loaded_dict": 323,
+                        "__main__.evaluate_condition.loaded_dict_new": 325,
+                        "__main__.evaluate_condition.range_check_ptr": 324
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 25,
+                    "end_line": 22,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 65,
+                            "end_line": 24,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "start_col": 50,
+                            "start_line": 24
+                        },
+                        "While expanding the reference 'loaded_dict_new' in:"
+                    ],
+                    "start_col": 10,
+                    "start_line": 22
+                }
+            },
+            "773": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 52,
+                        "offset": 6
+                    },
+                    "reference_ids": {
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.loaded_dict": 323,
+                        "__main__.evaluate_condition.loaded_dict_new": 325,
+                        "__main__.evaluate_condition.range_check_ptr": 324
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 6,
+                    "end_line": 25,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 29,
+                    "start_line": 23
+                }
+            },
+            "775": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.evaluate_condition"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 53,
                         "offset": 0
                     },
                     "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
                         "__main__.evaluate_condition.condition": 315,
                         "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
                         "__main__.evaluate_condition.loaded_dict": 323,
                         "__main__.evaluate_condition.loaded_dict_new": 325,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.mem_len_new": 328,
                         "__main__.evaluate_condition.output": 327,
                         "__main__.evaluate_condition.range_check_ptr": 326
                     }
@@ -30284,36 +30397,36 @@
                     "parent_location": [
                         {
                             "end_col": 6,
-                            "end_line": 28,
+                            "end_line": 25,
                             "input_file": {
                                 "filename": "cairo_test/lib/bto.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 40,
-                                    "end_line": 12,
+                                    "end_line": 13,
                                     "input_file": {
                                         "filename": "cairo_test/lib/bto.cairo"
                                     },
                                     "parent_location": [
                                         {
-                                            "end_col": 58,
-                                            "end_line": 29,
+                                            "end_col": 28,
+                                            "end_line": 26,
                                             "input_file": {
                                                 "filename": "cairo_test/lib/bto.cairo"
                                             },
                                             "start_col": 5,
-                                            "start_line": 29
+                                            "start_line": 26
                                         },
                                         "While trying to retrieve the implicit argument 'range_check_ptr' in:"
                                     ],
                                     "start_col": 25,
-                                    "start_line": 12
+                                    "start_line": 13
                                 },
                                 "While expanding the reference 'range_check_ptr' in:"
                             ],
-                            "start_col": 39,
-                            "start_line": 26
+                            "start_col": 29,
+                            "start_line": 23
                         },
                         "While trying to update the implicit return value 'range_check_ptr' in:"
                     ],
@@ -30321,27 +30434,25 @@
                     "start_line": 58
                 }
             },
-            "769": {
+            "776": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.evaluate_condition"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
-                        "group": 52,
+                        "group": 53,
                         "offset": 1
                     },
                     "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
                         "__main__.evaluate_condition.condition": 315,
                         "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
                         "__main__.evaluate_condition.loaded_dict": 323,
                         "__main__.evaluate_condition.loaded_dict_new": 325,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.mem_len_new": 328,
                         "__main__.evaluate_condition.output": 327,
                         "__main__.evaluate_condition.range_check_ptr": 326
                     }
@@ -30349,282 +30460,30 @@
                 "hints": [],
                 "inst": {
                     "end_col": 16,
-                    "end_line": 26,
+                    "end_line": 23,
                     "input_file": {
                         "filename": "cairo_test/lib/bto.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 26,
-                            "end_line": 29,
+                            "end_line": 26,
                             "input_file": {
                                 "filename": "cairo_test/lib/bto.cairo"
                             },
                             "start_col": 20,
-                            "start_line": 29
+                            "start_line": 26
                         },
                         "While expanding the reference 'output' in:"
                     ],
                     "start_col": 10,
-                    "start_line": 26
-                }
-            },
-            "770": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 52,
-                        "offset": 2
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.loaded_dict_new": 325,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.mem_len_new": 328,
-                        "__main__.evaluate_condition.output": 327,
-                        "__main__.evaluate_condition.range_check_ptr": 326
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 35,
-                    "end_line": 26,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 47,
-                            "end_line": 29,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "start_col": 36,
-                            "start_line": 29
-                        },
-                        "While expanding the reference 'mem_len_new' in:"
-                    ],
-                    "start_col": 24,
-                    "start_line": 26
-                }
-            },
-            "771": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 52,
-                        "offset": 3
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.loaded_dict_new": 325,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.mem_len_new": 328,
-                        "__main__.evaluate_condition.output": 327,
-                        "__main__.evaluate_condition.range_check_ptr": 326
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 15,
-                    "end_line": 16,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 56,
-                            "end_line": 29,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "start_col": 53,
-                            "start_line": 29
-                        },
-                        "While expanding the reference 'mem' in:"
-                    ],
-                    "start_col": 5,
-                    "start_line": 16
-                }
-            },
-            "772": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.evaluate_condition"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 52,
-                        "offset": 4
-                    },
-                    "reference_ids": {
-                        "__main__.evaluate_condition._unused": 322,
-                        "__main__.evaluate_condition.condition": 315,
-                        "__main__.evaluate_condition.condition_len": 314,
-                        "__main__.evaluate_condition.dict": 319,
-                        "__main__.evaluate_condition.dict_len": 318,
-                        "__main__.evaluate_condition.loaded_dict": 323,
-                        "__main__.evaluate_condition.loaded_dict_new": 325,
-                        "__main__.evaluate_condition.mem": 317,
-                        "__main__.evaluate_condition.mem_len": 316,
-                        "__main__.evaluate_condition.mem_len_new": 328,
-                        "__main__.evaluate_condition.output": 327,
-                        "__main__.evaluate_condition.range_check_ptr": 326
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 58,
-                    "end_line": 29,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 5,
-                    "start_line": 29
-                }
-            },
-            "773": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.load_dict"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 53,
-                        "offset": 0
-                    },
-                    "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 331,
-                        "__main__.load_dict.range_check_ptr": 332
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 7,
-                    "end_line": 35,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 5,
-                    "start_line": 35
-                }
-            },
-            "775": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.load_dict"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 53,
-                        "offset": 0
-                    },
-                    "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 331,
-                        "__main__.load_dict.range_check_ptr": 332
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 31,
-                    "end_line": 32,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 31,
-                            "end_line": 32,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "parent_location": [
-                                {
-                                    "end_col": 46,
-                                    "end_line": 36,
-                                    "input_file": {
-                                        "filename": "cairo_test/lib/bto.cairo"
-                                    },
-                                    "start_col": 9,
-                                    "start_line": 36
-                                },
-                                "While trying to retrieve the implicit argument 'range_check_ptr' in:"
-                            ],
-                            "start_col": 16,
-                            "start_line": 32
-                        },
-                        "While expanding the reference 'range_check_ptr' in:"
-                    ],
-                    "start_col": 16,
-                    "start_line": 32
-                }
-            },
-            "776": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.load_dict"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 53,
-                        "offset": 1
-                    },
-                    "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 331,
-                        "__main__.load_dict.range_check_ptr": 332
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 94,
-                    "end_line": 32,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 44,
-                            "end_line": 36,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "start_col": 33,
-                            "start_line": 36
-                        },
-                        "While expanding the reference 'loaded_dict' in:"
-                    ],
-                    "start_col": 70,
-                    "start_line": 32
+                    "start_line": 23
                 }
             },
             "777": {
                 "accessible_scopes": [
                     "__main__",
-                    "__main__.load_dict"
+                    "__main__.evaluate_condition"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
@@ -30632,324 +30491,30 @@
                         "offset": 2
                     },
                     "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 331,
-                        "__main__.load_dict.range_check_ptr": 332
+                        "__main__.evaluate_condition._unused_dict": 320,
+                        "__main__.evaluate_condition._unused_mem": 322,
+                        "__main__.evaluate_condition.condition": 315,
+                        "__main__.evaluate_condition.condition_len": 314,
+                        "__main__.evaluate_condition.dict": 317,
+                        "__main__.evaluate_condition.dict_len": 316,
+                        "__main__.evaluate_condition.loaded_dict": 323,
+                        "__main__.evaluate_condition.loaded_dict_new": 325,
+                        "__main__.evaluate_condition.output": 327,
+                        "__main__.evaluate_condition.range_check_ptr": 326
                     }
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 46,
-                    "end_line": 36,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 9,
-                    "start_line": 36
-                }
-            },
-            "778": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.load_dict"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 53,
-                        "offset": 0
-                    },
-                    "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 331,
-                        "__main__.load_dict.range_check_ptr": 332
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 94,
-                    "end_line": 32,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 36,
-                            "end_line": 38,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "start_col": 25,
-                            "start_line": 38
-                        },
-                        "While expanding the reference 'loaded_dict' in:"
-                    ],
-                    "start_col": 70,
-                    "start_line": 32
-                }
-            },
-            "779": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.load_dict"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 53,
-                        "offset": 1
-                    },
-                    "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 331,
-                        "__main__.load_dict.range_check_ptr": 332
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 50,
-                    "end_line": 38,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 42,
-                    "start_line": 38
-                }
-            },
-            "780": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.load_dict"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 53,
-                        "offset": 2
-                    },
-                    "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 331,
-                        "__main__.load_dict.range_check_ptr": 332
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 72,
-                    "end_line": 38,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 62,
-                    "start_line": 38
-                }
-            },
-            "781": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.load_dict"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 53,
-                        "offset": 3
-                    },
-                    "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 331,
-                        "__main__.load_dict.range_check_ptr": 332
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 73,
-                    "end_line": 38,
+                    "end_col": 28,
+                    "end_line": 26,
                     "input_file": {
                         "filename": "cairo_test/lib/bto.cairo"
                     },
                     "start_col": 5,
-                    "start_line": 38
+                    "start_line": 26
                 }
             },
-            "783": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.load_dict"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 53,
-                        "offset": 6
-                    },
-                    "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 333,
-                        "__main__.load_dict.range_check_ptr": 332
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 31,
-                    "end_line": 32,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 31,
-                            "end_line": 32,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "parent_location": [
-                                {
-                                    "end_col": 74,
-                                    "end_line": 39,
-                                    "input_file": {
-                                        "filename": "cairo_test/lib/bto.cairo"
-                                    },
-                                    "start_col": 12,
-                                    "start_line": 39
-                                },
-                                "While trying to retrieve the implicit argument 'range_check_ptr' in:"
-                            ],
-                            "start_col": 16,
-                            "start_line": 32
-                        },
-                        "While expanding the reference 'range_check_ptr' in:"
-                    ],
-                    "start_col": 16,
-                    "start_line": 32
-                }
-            },
-            "784": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.load_dict"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 53,
-                        "offset": 7
-                    },
-                    "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 333,
-                        "__main__.load_dict.range_check_ptr": 332
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 34,
-                    "end_line": 39,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 22,
-                    "start_line": 39
-                }
-            },
-            "786": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.load_dict"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 53,
-                        "offset": 8
-                    },
-                    "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 333,
-                        "__main__.load_dict.range_check_ptr": 332
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 60,
-                    "end_line": 39,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 36,
-                    "start_line": 39
-                }
-            },
-            "788": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.load_dict"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 53,
-                        "offset": 9
-                    },
-                    "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 333,
-                        "__main__.load_dict.range_check_ptr": 332
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 36,
-                    "end_line": 38,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "parent_location": [
-                        {
-                            "end_col": 73,
-                            "end_line": 39,
-                            "input_file": {
-                                "filename": "cairo_test/lib/bto.cairo"
-                            },
-                            "start_col": 62,
-                            "start_line": 39
-                        },
-                        "While expanding the reference 'loaded_dict' in:"
-                    ],
-                    "start_col": 25,
-                    "start_line": 38
-                }
-            },
-            "789": {
-                "accessible_scopes": [
-                    "__main__",
-                    "__main__.load_dict"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 53,
-                        "offset": 10
-                    },
-                    "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 333,
-                        "__main__.load_dict.range_check_ptr": 332
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 74,
-                    "end_line": 39,
-                    "input_file": {
-                        "filename": "cairo_test/lib/bto.cairo"
-                    },
-                    "start_col": 12,
-                    "start_line": 39
-                }
-            },
-            "791": {
+            "778": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.load_dict"
@@ -30960,21 +30525,469 @@
                         "offset": 0
                     },
                     "reference_ids": {
-                        "__main__.load_dict.dict": 330,
-                        "__main__.load_dict.dict_len": 329,
-                        "__main__.load_dict.loaded_dict": 333,
-                        "__main__.load_dict.range_check_ptr": 334
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 330,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 7,
+                    "end_line": 32,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 32
+                }
+            },
+            "780": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 54,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 330,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 31,
+                    "end_line": 29,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 31,
+                            "end_line": 29,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 46,
+                                    "end_line": 33,
+                                    "input_file": {
+                                        "filename": "cairo_test/lib/bto.cairo"
+                                    },
+                                    "start_col": 9,
+                                    "start_line": 33
+                                },
+                                "While trying to retrieve the implicit argument 'range_check_ptr' in:"
+                            ],
+                            "start_col": 16,
+                            "start_line": 29
+                        },
+                        "While expanding the reference 'range_check_ptr' in:"
+                    ],
+                    "start_col": 16,
+                    "start_line": 29
+                }
+            },
+            "781": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 54,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 330,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 94,
+                    "end_line": 29,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 44,
+                            "end_line": 33,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "start_col": 33,
+                            "start_line": 33
+                        },
+                        "While expanding the reference 'loaded_dict' in:"
+                    ],
+                    "start_col": 70,
+                    "start_line": 29
+                }
+            },
+            "782": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 54,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 330,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 46,
+                    "end_line": 33,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 9,
+                    "start_line": 33
+                }
+            },
+            "783": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 54,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 330,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 94,
+                    "end_line": 29,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 36,
+                            "end_line": 35,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "start_col": 25,
+                            "start_line": 35
+                        },
+                        "While expanding the reference 'loaded_dict' in:"
+                    ],
+                    "start_col": 70,
+                    "start_line": 29
+                }
+            },
+            "784": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 54,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 330,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 50,
+                    "end_line": 35,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 42,
+                    "start_line": 35
+                }
+            },
+            "785": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 54,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 330,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 72,
+                    "end_line": 35,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 62,
+                    "start_line": 35
+                }
+            },
+            "786": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 54,
+                        "offset": 3
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 330,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 73,
+                    "end_line": 35,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 35
+                }
+            },
+            "788": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 54,
+                        "offset": 6
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 332,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 31,
+                    "end_line": 29,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 31,
+                            "end_line": 29,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 74,
+                                    "end_line": 36,
+                                    "input_file": {
+                                        "filename": "cairo_test/lib/bto.cairo"
+                                    },
+                                    "start_col": 12,
+                                    "start_line": 36
+                                },
+                                "While trying to retrieve the implicit argument 'range_check_ptr' in:"
+                            ],
+                            "start_col": 16,
+                            "start_line": 29
+                        },
+                        "While expanding the reference 'range_check_ptr' in:"
+                    ],
+                    "start_col": 16,
+                    "start_line": 29
+                }
+            },
+            "789": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 54,
+                        "offset": 7
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 332,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 34,
+                    "end_line": 36,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 22,
+                    "start_line": 36
+                }
+            },
+            "791": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 54,
+                        "offset": 8
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 332,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 60,
+                    "end_line": 36,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 36,
+                    "start_line": 36
+                }
+            },
+            "793": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 54,
+                        "offset": 9
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 332,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 36,
+                    "end_line": 35,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 73,
+                            "end_line": 36,
+                            "input_file": {
+                                "filename": "cairo_test/lib/bto.cairo"
+                            },
+                            "start_col": 62,
+                            "start_line": 36
+                        },
+                        "While expanding the reference 'loaded_dict' in:"
+                    ],
+                    "start_col": 25,
+                    "start_line": 35
+                }
+            },
+            "794": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 54,
+                        "offset": 10
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 332,
+                        "__main__.load_dict.range_check_ptr": 331
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 74,
+                    "end_line": 36,
+                    "input_file": {
+                        "filename": "cairo_test/lib/bto.cairo"
+                    },
+                    "start_col": 12,
+                    "start_line": 36
+                }
+            },
+            "796": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.load_dict"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 55,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.load_dict.dict": 329,
+                        "__main__.load_dict.dict_len": 328,
+                        "__main__.load_dict.loaded_dict": 332,
+                        "__main__.load_dict.range_check_ptr": 333
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 75,
-                    "end_line": 39,
+                    "end_line": 36,
                     "input_file": {
                         "filename": "cairo_test/lib/bto.cairo"
                     },
                     "start_col": 5,
-                    "start_line": 39
+                    "start_line": 36
                 }
             }
         }
@@ -31275,13 +31288,29 @@
         "740": [
             {
                 "accessible_scopes": [
+                    "starkware.cairo.common.alloc",
+                    "starkware.cairo.common.alloc.alloc"
+                ],
+                "code": "memory[ap] = segments.add()",
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 49,
+                        "offset": 0
+                    },
+                    "reference_ids": {}
+                }
+            }
+        ],
+        "743": [
+            {
+                "accessible_scopes": [
                     "starkware.cairo.common.default_dict",
                     "starkware.cairo.common.default_dict.default_dict_new"
                 ],
                 "code": "if '__dict_manager' not in globals():\n    from starkware.cairo.common.dict import DictManager\n    __dict_manager = DictManager()\n\nmemory[ap] = __dict_manager.new_default_dict(segments, ids.default_value)",
                 "flow_tracking_data": {
                     "ap_tracking": {
-                        "group": 49,
+                        "group": 50,
                         "offset": 0
                     },
                     "reference_ids": {
@@ -31319,6 +31348,10 @@
             "destination": "cairo_test.lib.tree.Tree",
             "type": "alias"
         },
+        "__main__.alloc": {
+            "destination": "starkware.cairo.common.alloc.alloc",
+            "type": "alias"
+        },
         "__main__.default_dict_new": {
             "destination": "starkware.cairo.common.default_dict.default_dict_new",
             "type": "alias"
@@ -31329,7 +31362,7 @@
         },
         "__main__.evaluate_condition": {
             "decorators": [],
-            "pc": 743,
+            "pc": 746,
             "type": "function"
         },
         "__main__.evaluate_condition.Args": {
@@ -31345,22 +31378,14 @@
                 },
                 "dict": {
                     "cairo_type": "__main__.KeyValuePair*",
-                    "offset": 5
-                },
-                "dict_len": {
-                    "cairo_type": "felt",
-                    "offset": 4
-                },
-                "mem": {
-                    "cairo_type": "felt*",
                     "offset": 3
                 },
-                "mem_len": {
+                "dict_len": {
                     "cairo_type": "felt",
                     "offset": 2
                 }
             },
-            "size": 6,
+            "size": 4,
             "type": "struct"
         },
         "__main__.evaluate_condition.ImplicitArgs": {
@@ -31375,32 +31400,55 @@
             "type": "struct"
         },
         "__main__.evaluate_condition.Return": {
-            "cairo_type": "(output: felt, mem_len: felt, mem: felt*)",
+            "cairo_type": "(output: felt)",
             "type": "type_definition"
         },
         "__main__.evaluate_condition.SIZEOF_LOCALS": {
             "type": "const",
-            "value": 1
+            "value": 2
         },
-        "__main__.evaluate_condition._unused": {
+        "__main__.evaluate_condition._unused_dict": {
             "cairo_type": "starkware.cairo.common.dict_access.DictAccess*",
-            "full_name": "__main__.evaluate_condition._unused",
+            "full_name": "__main__.evaluate_condition._unused_dict",
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 50,
-                        "offset": 5
+                        "group": 51,
+                        "offset": 6
                     },
-                    "pc": 749,
+                    "pc": 752,
                     "value": "[cast(ap + (-1), starkware.cairo.common.dict_access.DictAccess**)]"
                 },
                 {
                     "ap_tracking_data": {
-                        "group": 50,
-                        "offset": 5
+                        "group": 51,
+                        "offset": 6
                     },
-                    "pc": 750,
+                    "pc": 753,
                     "value": "[cast(fp, starkware.cairo.common.dict_access.DictAccess**)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.evaluate_condition._unused_mem": {
+            "cairo_type": "felt*",
+            "full_name": "__main__.evaluate_condition._unused_mem",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 51,
+                        "offset": 9
+                    },
+                    "pc": 755,
+                    "value": "[cast(ap + (-1), felt**)]"
+                },
+                {
+                    "ap_tracking_data": {
+                        "group": 51,
+                        "offset": 9
+                    },
+                    "pc": 756,
+                    "value": "[cast(fp + 1, felt**)]"
                 }
             ],
             "type": "reference"
@@ -31411,11 +31459,11 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 50,
+                        "group": 51,
                         "offset": 0
                     },
-                    "pc": 743,
-                    "value": "[cast(fp + (-7), cairo_test.lib.tree.Tree**)]"
+                    "pc": 746,
+                    "value": "[cast(fp + (-5), cairo_test.lib.tree.Tree**)]"
                 }
             ],
             "type": "reference"
@@ -31426,11 +31474,11 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 50,
+                        "group": 51,
                         "offset": 0
                     },
-                    "pc": 743,
-                    "value": "[cast(fp + (-8), felt*)]"
+                    "pc": 746,
+                    "value": "[cast(fp + (-6), felt*)]"
                 }
             ],
             "type": "reference"
@@ -31441,10 +31489,10 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 50,
+                        "group": 51,
                         "offset": 0
                     },
-                    "pc": 743,
+                    "pc": 746,
                     "value": "[cast(fp + (-3), __main__.KeyValuePair**)]"
                 }
             ],
@@ -31456,10 +31504,10 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 50,
+                        "group": 51,
                         "offset": 0
                     },
-                    "pc": 743,
+                    "pc": 746,
                     "value": "[cast(fp + (-4), felt*)]"
                 }
             ],
@@ -31471,10 +31519,10 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 50,
-                        "offset": 9
+                        "group": 51,
+                        "offset": 13
                     },
-                    "pc": 754,
+                    "pc": 760,
                     "value": "[cast(ap + (-1), starkware.cairo.common.dict_access.DictAccess**)]"
                 }
             ],
@@ -31486,56 +31534,11 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 51,
-                        "offset": 0
-                    },
-                    "pc": 760,
-                    "value": "[cast(ap + (-1), starkware.cairo.common.dict_access.DictAccess**)]"
-                }
-            ],
-            "type": "reference"
-        },
-        "__main__.evaluate_condition.mem": {
-            "cairo_type": "felt*",
-            "full_name": "__main__.evaluate_condition.mem",
-            "references": [
-                {
-                    "ap_tracking_data": {
-                        "group": 50,
-                        "offset": 0
-                    },
-                    "pc": 743,
-                    "value": "[cast(fp + (-5), felt**)]"
-                }
-            ],
-            "type": "reference"
-        },
-        "__main__.evaluate_condition.mem_len": {
-            "cairo_type": "felt",
-            "full_name": "__main__.evaluate_condition.mem_len",
-            "references": [
-                {
-                    "ap_tracking_data": {
-                        "group": 50,
-                        "offset": 0
-                    },
-                    "pc": 743,
-                    "value": "[cast(fp + (-6), felt*)]"
-                }
-            ],
-            "type": "reference"
-        },
-        "__main__.evaluate_condition.mem_len_new": {
-            "cairo_type": "felt",
-            "full_name": "__main__.evaluate_condition.mem_len_new",
-            "references": [
-                {
-                    "ap_tracking_data": {
                         "group": 52,
                         "offset": 0
                     },
-                    "pc": 768,
-                    "value": "[cast(ap + (-1), felt*)]"
+                    "pc": 766,
+                    "value": "[cast(ap + (-1), starkware.cairo.common.dict_access.DictAccess**)]"
                 }
             ],
             "type": "reference"
@@ -31546,10 +31549,10 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 52,
+                        "group": 53,
                         "offset": 0
                     },
-                    "pc": 768,
+                    "pc": 775,
                     "value": "[cast(ap + (-4), felt*)]"
                 }
             ],
@@ -31561,42 +31564,42 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 50,
-                        "offset": 0
-                    },
-                    "pc": 743,
-                    "value": "[cast(fp + (-9), felt*)]"
-                },
-                {
-                    "ap_tracking_data": {
                         "group": 51,
                         "offset": 0
                     },
-                    "pc": 759,
-                    "value": "[cast(ap + (-2), felt*)]"
+                    "pc": 746,
+                    "value": "[cast(fp + (-7), felt*)]"
                 },
                 {
                     "ap_tracking_data": {
                         "group": 52,
                         "offset": 0
                     },
-                    "pc": 767,
+                    "pc": 764,
+                    "value": "[cast(ap + (-2), felt*)]"
+                },
+                {
+                    "ap_tracking_data": {
+                        "group": 53,
+                        "offset": 0
+                    },
+                    "pc": 773,
                     "value": "[cast(ap + (-5), felt*)]"
                 },
                 {
                     "ap_tracking_data": {
-                        "group": 51,
+                        "group": 52,
                         "offset": 0
                     },
-                    "pc": 760,
+                    "pc": 766,
                     "value": "[cast(ap + (-2), felt*)]"
                 },
                 {
                     "ap_tracking_data": {
-                        "group": 52,
+                        "group": 53,
                         "offset": 0
                     },
-                    "pc": 768,
+                    "pc": 775,
                     "value": "[cast(ap + (-5), felt*)]"
                 }
             ],
@@ -31604,7 +31607,7 @@
         },
         "__main__.load_dict": {
             "decorators": [],
-            "pc": 773,
+            "pc": 778,
             "type": "function"
         },
         "__main__.load_dict.Args": {
@@ -31651,10 +31654,10 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 53,
+                        "group": 54,
                         "offset": 0
                     },
-                    "pc": 773,
+                    "pc": 778,
                     "value": "[cast(fp + (-4), __main__.KeyValuePair**)]"
                 }
             ],
@@ -31666,10 +31669,10 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 53,
+                        "group": 54,
                         "offset": 0
                     },
-                    "pc": 773,
+                    "pc": 778,
                     "value": "[cast(fp + (-5), felt*)]"
                 }
             ],
@@ -31681,18 +31684,18 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 53,
+                        "group": 54,
                         "offset": 0
                     },
-                    "pc": 773,
+                    "pc": 778,
                     "value": "[cast(fp + (-3), starkware.cairo.common.dict_access.DictAccess**)]"
                 },
                 {
                     "ap_tracking_data": {
-                        "group": 53,
+                        "group": 54,
                         "offset": 6
                     },
-                    "pc": 783,
+                    "pc": 788,
                     "value": "[cast(ap + (-1), starkware.cairo.common.dict_access.DictAccess**)]"
                 }
             ],
@@ -31704,18 +31707,18 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 53,
+                        "group": 54,
                         "offset": 0
                     },
-                    "pc": 773,
+                    "pc": 778,
                     "value": "[cast(fp + (-6), felt*)]"
                 },
                 {
                     "ap_tracking_data": {
-                        "group": 54,
+                        "group": 55,
                         "offset": 0
                     },
-                    "pc": 791,
+                    "pc": 796,
                     "value": "[cast(ap + (-2), felt*)]"
                 }
             ],
@@ -34424,6 +34427,31 @@
             "destination": "starkware.cairo.common.math.unsigned_div_rem",
             "type": "alias"
         },
+        "starkware.cairo.common.alloc.alloc": {
+            "decorators": [],
+            "pc": 740,
+            "type": "function"
+        },
+        "starkware.cairo.common.alloc.alloc.Args": {
+            "full_name": "starkware.cairo.common.alloc.alloc.Args",
+            "members": {},
+            "size": 0,
+            "type": "struct"
+        },
+        "starkware.cairo.common.alloc.alloc.ImplicitArgs": {
+            "full_name": "starkware.cairo.common.alloc.alloc.ImplicitArgs",
+            "members": {},
+            "size": 0,
+            "type": "struct"
+        },
+        "starkware.cairo.common.alloc.alloc.Return": {
+            "cairo_type": "(ptr: felt*)",
+            "type": "type_definition"
+        },
+        "starkware.cairo.common.alloc.alloc.SIZEOF_LOCALS": {
+            "type": "const",
+            "value": 0
+        },
         "starkware.cairo.common.bool.FALSE": {
             "type": "const",
             "value": 0
@@ -34545,7 +34573,7 @@
         },
         "starkware.cairo.common.default_dict.default_dict_new": {
             "decorators": [],
-            "pc": 740,
+            "pc": 743,
             "type": "function"
         },
         "starkware.cairo.common.default_dict.default_dict_new.Args": {
@@ -34579,10 +34607,10 @@
             "references": [
                 {
                     "ap_tracking_data": {
-                        "group": 49,
+                        "group": 50,
                         "offset": 0
                     },
-                    "pc": 740,
+                    "pc": 743,
                     "value": "[cast(fp + (-3), felt*)]"
                 }
             ],
@@ -39208,178 +39236,170 @@
             },
             {
                 "ap_tracking_data": {
-                    "group": 49,
+                    "group": 50,
                     "offset": 0
                 },
-                "pc": 740,
+                "pc": 743,
                 "value": "[cast(fp + (-3), felt*)]"
             },
             {
                 "ap_tracking_data": {
-                    "group": 50,
+                    "group": 51,
                     "offset": 0
                 },
-                "pc": 743,
-                "value": "[cast(fp + (-8), felt*)]"
-            },
-            {
-                "ap_tracking_data": {
-                    "group": 50,
-                    "offset": 0
-                },
-                "pc": 743,
-                "value": "[cast(fp + (-7), cairo_test.lib.tree.Tree**)]"
-            },
-            {
-                "ap_tracking_data": {
-                    "group": 50,
-                    "offset": 0
-                },
-                "pc": 743,
+                "pc": 746,
                 "value": "[cast(fp + (-6), felt*)]"
             },
             {
                 "ap_tracking_data": {
-                    "group": 50,
+                    "group": 51,
                     "offset": 0
                 },
-                "pc": 743,
-                "value": "[cast(fp + (-5), felt**)]"
+                "pc": 746,
+                "value": "[cast(fp + (-5), cairo_test.lib.tree.Tree**)]"
             },
             {
                 "ap_tracking_data": {
-                    "group": 50,
+                    "group": 51,
                     "offset": 0
                 },
-                "pc": 743,
+                "pc": 746,
                 "value": "[cast(fp + (-4), felt*)]"
             },
             {
                 "ap_tracking_data": {
-                    "group": 50,
+                    "group": 51,
                     "offset": 0
                 },
-                "pc": 743,
+                "pc": 746,
                 "value": "[cast(fp + (-3), __main__.KeyValuePair**)]"
             },
             {
                 "ap_tracking_data": {
-                    "group": 50,
+                    "group": 51,
                     "offset": 0
                 },
-                "pc": 743,
-                "value": "[cast(fp + (-9), felt*)]"
+                "pc": 746,
+                "value": "[cast(fp + (-7), felt*)]"
             },
             {
                 "ap_tracking_data": {
-                    "group": 50,
-                    "offset": 5
+                    "group": 51,
+                    "offset": 6
                 },
-                "pc": 749,
+                "pc": 752,
                 "value": "[cast(ap + (-1), starkware.cairo.common.dict_access.DictAccess**)]"
             },
             {
                 "ap_tracking_data": {
-                    "group": 50,
-                    "offset": 5
+                    "group": 51,
+                    "offset": 6
                 },
-                "pc": 750,
+                "pc": 753,
                 "value": "[cast(fp, starkware.cairo.common.dict_access.DictAccess**)]"
             },
             {
                 "ap_tracking_data": {
-                    "group": 50,
+                    "group": 51,
                     "offset": 9
                 },
-                "pc": 754,
-                "value": "[cast(ap + (-1), starkware.cairo.common.dict_access.DictAccess**)]"
+                "pc": 755,
+                "value": "[cast(ap + (-1), felt**)]"
             },
             {
                 "ap_tracking_data": {
                     "group": 51,
-                    "offset": 0
+                    "offset": 9
+                },
+                "pc": 756,
+                "value": "[cast(fp + 1, felt**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 51,
+                    "offset": 13
                 },
                 "pc": 760,
+                "value": "[cast(ap + (-1), starkware.cairo.common.dict_access.DictAccess**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 52,
+                    "offset": 0
+                },
+                "pc": 766,
                 "value": "[cast(ap + (-2), felt*)]"
             },
             {
                 "ap_tracking_data": {
-                    "group": 51,
+                    "group": 52,
                     "offset": 0
                 },
-                "pc": 760,
+                "pc": 766,
                 "value": "[cast(ap + (-1), starkware.cairo.common.dict_access.DictAccess**)]"
             },
             {
                 "ap_tracking_data": {
-                    "group": 52,
+                    "group": 53,
                     "offset": 0
                 },
-                "pc": 768,
+                "pc": 775,
                 "value": "[cast(ap + (-5), felt*)]"
             },
             {
                 "ap_tracking_data": {
-                    "group": 52,
+                    "group": 53,
                     "offset": 0
                 },
-                "pc": 768,
+                "pc": 775,
                 "value": "[cast(ap + (-4), felt*)]"
-            },
-            {
-                "ap_tracking_data": {
-                    "group": 52,
-                    "offset": 0
-                },
-                "pc": 768,
-                "value": "[cast(ap + (-1), felt*)]"
-            },
-            {
-                "ap_tracking_data": {
-                    "group": 53,
-                    "offset": 0
-                },
-                "pc": 773,
-                "value": "[cast(fp + (-5), felt*)]"
-            },
-            {
-                "ap_tracking_data": {
-                    "group": 53,
-                    "offset": 0
-                },
-                "pc": 773,
-                "value": "[cast(fp + (-4), __main__.KeyValuePair**)]"
-            },
-            {
-                "ap_tracking_data": {
-                    "group": 53,
-                    "offset": 0
-                },
-                "pc": 773,
-                "value": "[cast(fp + (-3), starkware.cairo.common.dict_access.DictAccess**)]"
-            },
-            {
-                "ap_tracking_data": {
-                    "group": 53,
-                    "offset": 0
-                },
-                "pc": 773,
-                "value": "[cast(fp + (-6), felt*)]"
-            },
-            {
-                "ap_tracking_data": {
-                    "group": 53,
-                    "offset": 6
-                },
-                "pc": 783,
-                "value": "[cast(ap + (-1), starkware.cairo.common.dict_access.DictAccess**)]"
             },
             {
                 "ap_tracking_data": {
                     "group": 54,
                     "offset": 0
                 },
-                "pc": 791,
+                "pc": 778,
+                "value": "[cast(fp + (-5), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 54,
+                    "offset": 0
+                },
+                "pc": 778,
+                "value": "[cast(fp + (-4), __main__.KeyValuePair**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 54,
+                    "offset": 0
+                },
+                "pc": 778,
+                "value": "[cast(fp + (-3), starkware.cairo.common.dict_access.DictAccess**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 54,
+                    "offset": 0
+                },
+                "pc": 778,
+                "value": "[cast(fp + (-6), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 54,
+                    "offset": 6
+                },
+                "pc": 788,
+                "value": "[cast(ap + (-1), starkware.cairo.common.dict_access.DictAccess**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 55,
+                    "offset": 0
+                },
+                "pc": 796,
                 "value": "[cast(ap + (-2), felt*)]"
             }
         ]

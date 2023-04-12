@@ -13,13 +13,13 @@ const useEvaluateCondition = () => {
     const ctx = useContext(ConditionWASMContext);
 
     const runEvaluateCondition = useCallback(
-        (condition: Leaf, memory: number[], perceptibles: number[]) => {
+        (condition: Leaf, perceptibles: number[]) => {
         if (!ctx.wasm) {
             console.warn("WASM not initialized");
             return;
         }
         try {
-            let evaluateConditionInput: Int32Array = getEvaluateConditionInput(condition, memory, perceptibles);
+            let evaluateConditionInput: Int32Array = getEvaluateConditionInput(condition, perceptibles);
             let output = ctx.wasm.evaluateCondition(evaluateConditionInput)
             return [output.evaluation, null];
         } catch (e) {
