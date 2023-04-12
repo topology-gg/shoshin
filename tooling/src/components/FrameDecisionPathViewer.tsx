@@ -13,8 +13,8 @@ import React from "react";
 import { bodyStateNumberToName } from "../constants/constants";
 import { Frame, TestJson, getFlattenedPerceptiblesFromFrame } from "../types/Frame";
 import useEvaluateCondition from "../hooks/useEvaluateCondition";
-import { Condition } from "../types/Condition";
 import Agent from "../types/Agent";
+import Leaf from "../types/Leaf";
 
 type FrameDecisionPathViewerProps = {
     p1: Agent;
@@ -45,16 +45,21 @@ const FrameDecisionPathViewer = ({
     // With the example above, I have the following questions:
     // Q1: given an Agent (p1 or p2), how to get an array containing all the conditions involved, in order? i.e. [C1, C2]
     //     (because with this array obtained, we can evaluate each condition in the array using handleEvaluateCondition() right?)
+    // A1: updated the signature of handleEvaluateCondition() to take condition: Leaf. p1 and p2 are both of type Agent, which
+    //     has the field conditions: Leaf[]. Conditions contains all the conditions of the agent in order.
     // Q2: given an Agent (p1 or p2), how to get an array containing all the mental state names involved, in order i.e. [S1, S2, S3]
+    // A2: both p1 and p2 are of type Agent, which has the field mentalStatesNames: string[]. Added a helper function getMentalStatesNames()
+    //     to get the mental states names of an agent.
     // Q3: among the input args of handleEvaluateCondition(), what is `memory`? Is it required for the purpose of this component?
+    // A3: I added memory because I thought it might be useful for the evaluation of conditions but should actually be removed.
 
     const { runEvaluateCondition } = useEvaluateCondition();
-    function handleEvaluateCondition(condition: Condition, memory: number[] = [], selfAgentFrame: Frame, opponentAgentFrame: Frame) {
+    function handleEvaluateCondition(condition: Leaf, selfAgentFrame: Frame, opponentAgentFrame: Frame) {
         let perceptiblesSelf = getFlattenedPerceptiblesFromFrame(selfAgentFrame)
         let perceptiblesOpponent = getFlattenedPerceptiblesFromFrame(opponentAgentFrame)
         let perceptibles = perceptiblesSelf.concat(perceptiblesOpponent)
 
-        let result = runEvaluateCondition(condition, memory, perceptibles)
+        let result = runEvaluateCondition(condition, perceptibles)
         return result
     }
 

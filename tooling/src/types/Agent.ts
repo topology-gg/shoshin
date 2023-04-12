@@ -207,6 +207,13 @@ export function agentToCalldata(agent: Agent): string[] {
     })
 }
 
+export function getMentalStatesNames(agent: Agent): string[] {
+    if (!agent?.mentalStatesNames) {
+        return []
+    }
+    return agent.mentalStatesNames
+}
+
 export function equals(agent_1: Agent, agent_2: Agent) {
     return JSON.stringify(agent_1) === JSON.stringify(agent_2)
 }

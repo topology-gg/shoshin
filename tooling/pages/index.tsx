@@ -48,7 +48,7 @@ import {
     useStarknetExecute,
 } from "@starknet-react/core";
 import { EditorTabName } from "../src/components/sidePanelComponents/EditorTabs";
-import { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
+import Leaf, { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
 import dynamic from "next/dynamic";
 import SwipeableViews from 'react-swipeable-views';
 import { bindKeyboard } from 'react-swipeable-views-utils';
@@ -634,14 +634,23 @@ export default function Home() {
         setConditionUnderEditIndex(() => 0);
     }
 
-    function handleEvaluateCondition(condition: Condition, memory: number[] = [], selfAgentFrame: Frame, opponentAgentFrame: Frame) {
+    function handleEvaluateCondition(condition: Leaf, selfAgentFrame: Frame, opponentAgentFrame: Frame) {
         let perceptiblesSelf = getFlattenedPerceptiblesFromFrame(selfAgentFrame)
         let perceptiblesOpponent = getFlattenedPerceptiblesFromFrame(opponentAgentFrame)
         let perceptibles = perceptiblesSelf.concat(perceptiblesOpponent)
 
-        let result = runEvaluateCondition(condition, memory, perceptibles)
+        let result = runEvaluateCondition(condition, perceptibles)
         return result
     }
+
+    // Only for testing, can be removed once condition evaluation is integrated
+    // useEffect(() => {
+    //     if (!output) return
+    //     for (const condition of p1.conditions) {
+    //         let res = handleEvaluateCondition(condition, output.agent_0[animationFrame], output.agent_1[animationFrame])
+    //         console.log('evaluate condition', condition, res[0])
+    //     }
+    // }, [output, animationFrame])
 
     const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 
