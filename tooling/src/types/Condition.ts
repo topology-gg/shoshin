@@ -1,4 +1,4 @@
-import Leaf, { wrapToLeaf } from './Leaf'
+import Leaf, { flattenLeaf, wrapToLeaf } from './Leaf'
 
 export interface Condition {
     elements: ConditionElement[],
@@ -99,6 +99,7 @@ export enum Perceptible {
     SelfSta = 9,
     SelfBodyState = 10,
     SelfBodyCounter = 11,
+    SelfFatigued = 12,
     OpponentX = 101,
     OpponentY = 102,
     OpponentVelX = 103,
@@ -110,7 +111,9 @@ export enum Perceptible {
     OpponentSta = 109,
     OpponentBodyState = 110,
     OpponentBodyCounter = 111,
+    OpponentFatigued = 112,
 }
+export const PERCEPTIBLE_KEYS: number[] = Object.keys(Perceptible).map(k => parseInt(k)).filter(k => !isNaN(k))
 
 // Verify that the input condition is valid
 export function verifyValidCondition(c: Condition, confirm: boolean): [boolean, string] {
@@ -343,6 +346,12 @@ export const isOperatorWithDoubleOperands = (elem: ConditionElement) => {
         && value != Operator.Not
     )
 }
+
+export function flattenCondition(condition: Condition) {
+    let leafCondition: Leaf = parseConditionToLeaf(condition)
+    return flattenLeaf(leafCondition) 
+}
+
 
 // Converts the current condition into its string representation
 export function conditionToStr(c: Condition) {

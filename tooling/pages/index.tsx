@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Box, ThemeProvider } from "@mui/material";
 import MidScreenControl from "../src/components/MidScreenControl";
 import EditorView from "../src/components/sidePanelComponents/EditorView";
-import { FrameScene, TestJson } from "../src/types/Frame";
+import { Frame, FrameScene, TestJson, getFlattenedPerceptiblesFromFrame } from "../src/types/Frame";
 import { Tree, Direction } from "../src/types/Tree";
 import {
     Condition,
@@ -36,11 +36,10 @@ import P1P2SettingPanel, {
 } from "../src/components/P1P2SettingPanel";
 import FrameInspector from "../src/components/FrameInspector";
 import useRunCairoSimulation from "../src/hooks/useRunCairoSimulation";
+import useEvaluateCondition from "../src/hooks/useEvaluateCondition";
 import { useAgents } from "../lib/api";
 import {
-    Metadata,
     SingleMetadata,
-    splitMetadata,
     splitSingleMetadata,
 } from "../src/types/Metadata";
 import {
@@ -48,7 +47,6 @@ import {
     useConnectors,
     useStarknetExecute,
 } from "@starknet-react/core";
-import ConnectWallet from "../src/components/ConnectWallet";
 import { EditorTabName } from "../src/components/sidePanelComponents/EditorTabs";
 import { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
 import dynamic from "next/dynamic";
@@ -146,6 +144,7 @@ export default function Home() {
     ]);
 
     const { runCairoSimulation, wasmReady } = useRunCairoSimulation(p1, p2);
+    const { runEvaluateCondition } = useEvaluateCondition();
 
     useEffect(() => {
         if (output) {
@@ -596,19 +595,6 @@ export default function Home() {
         }
     }
 
-    //
-    // Set Agent in the side panel to blank agent
-    //
-    function setAgentInPanelToBlank() {
-        setInitialMentalState(() => 0);
-        setCombos(() => []);
-        setMentalStates(() => []);
-        setTrees(() => []);
-        setConditions(() => []);
-        setAgentName(() => "");
-        setCharacter(() => Character.Jessica);
-        setConditionUnderEditIndex(() => 0);
-    }
     function setAgentInPanelToAgent(agent: Agent) {
         // parse the given agent into new values for the React states
         setInitialMentalState(() => agent.initialState);
@@ -645,6 +631,15 @@ export default function Home() {
             agent.character == 0 ? Character.Jessica : Character.Antoc
         );
         setConditionUnderEditIndex(() => 0);
+    }
+
+    function handleEvaluateCondition(condition: Condition, memory: number[] = [], selfAgentFrame: Frame, opponentAgentFrame: Frame) {
+        let perceptiblesSelf = getFlattenedPerceptiblesFromFrame(selfAgentFrame)
+        let perceptiblesOpponent = getFlattenedPerceptiblesFromFrame(opponentAgentFrame)
+        let perceptibles = perceptiblesSelf.concat(perceptiblesOpponent)
+
+        let result = runEvaluateCondition(condition, memory, perceptibles)
+        return result
     }
 
     const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
@@ -780,6 +775,7 @@ export default function Home() {
     )
 
     const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
+    
     //
     // Render
     //

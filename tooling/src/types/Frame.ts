@@ -1,10 +1,10 @@
 
 export interface BodyState {
-    state: number,
-    counter: number,
+    dir: number,
     integrity: number,
     stamina: number,
-    dir: number,
+    state: number,
+    counter: number,
     fatigued: number,
 }
 
@@ -60,41 +60,42 @@ export interface TestJson {
     }
 }
 
-// From Cairo:
-// struct Frame {
-//     mental_state: felt,
-//     body_state: BodyState,
-//     physics_state: PhysicsState,
-//     action: felt,
-//     stimulus: felt,
-//     hitboxes: Hitboxes,
-// }
+export function getFlattenedPerceptiblesFromFrame(agent: Frame): number[] {
+    return [...getFlattenedPhysicState(agent.physics_state), ...getFlattenedBodyState(agent.body_state)]
+}
 
-// struct Hitboxes {
-//     action: Rectangle,
-//     body: Rectangle,
-// }
+function getFlattenedPhysicState(physicState: PhysicsState): number[] {
+    let flattenedPhysicState = []
+    let physicStateKeys = Object.keys(physicState)
 
-// struct BodyState {
-//     state: felt,
-//     counter: felt,
-//     integrity: felt,
-//     stamina: felt,
-//     dir: felt,
-// }
+    for (const key of physicStateKeys) {
+        let vector: Vec2 = physicState[key as keyof PhysicsState]
+        let flattenedVector = getFlattenedVector(vector)
 
-// struct PhysicsState {
-//     pos: Vec2,
-//     vel_fp: Vec2,
-//     acc_fp: Vec2,
-// }
+        flattenedPhysicState.push(...flattenedVector)
+    }
 
-// struct Vec2 {
-//     x: felt,
-//     y: felt,
-// }
+    return flattenedPhysicState
+}
 
-// struct Rectangle {
-//     origin: Vec2,
-//     dimension: Vec2,
-// }
+function getFlattenedVector(vector: Vec2): number[] {
+    let flattenedVector = []
+    let vectorKeys = Object.keys(vector)
+
+    for (const key of vectorKeys) {
+        flattenedVector.push(vector[key as keyof Vec2])
+    }
+
+    return flattenedVector
+}
+
+function getFlattenedBodyState(bodyState: BodyState): number[] {
+    let flattenedBodyState = []
+    let bodyStateKeys = Object.keys(bodyState)
+
+    for (const key of bodyStateKeys) {
+        flattenedBodyState.push(bodyState[key as keyof BodyState])
+    }
+
+    return flattenedBodyState
+}
