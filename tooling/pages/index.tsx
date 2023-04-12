@@ -61,6 +61,7 @@ import WalletConnectView from "../src/components/sidePanelComponents/WalletConne
 import crypto from "crypto";
 import SwipeableContent from "../src/components/layout/SwipeableContent";
 import theme from "../src/theme/theme";
+import FrameDecisionPathViewer from "../src/components/FrameDecisionPathViewer";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -772,6 +773,10 @@ export default function Home() {
                     }
                 />
                 <FrameInspector
+                    testJson={testJson}
+                    animationFrame={animationFrame}
+                />
+                <FrameDecisionPathViewer
                     testJson={testJson}
                     animationFrame={animationFrame}
                 />

@@ -37,6 +37,7 @@ const FrameInspector = ({
     ];
 
     return (
+        <div style={{padding:'10px', paddingBottom:'20px', marginBottom:'16px', border:'1px solid #777', borderRadius:'20px'}}>
         <Grid container spacing={1}>
             {[frameLeft, frameRight].map((frame, i) => (
                 <Grid item xs={6}>
@@ -167,6 +168,7 @@ const FrameInspector = ({
                 </Grid>
             ))}
         </Grid>
+        </div>
     );
 };
 
