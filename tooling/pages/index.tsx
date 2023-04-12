@@ -1,7 +1,7 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import React, { useEffect, useMemo, useState } from "react";
-import { Box, ThemeProvider } from "@mui/material";
+import { Alert, Box, Snackbar, ThemeProvider } from "@mui/material";
 import MidScreenControl from "../src/components/MidScreenControl";
 import EditorView from "../src/components/sidePanelComponents/EditorView";
 import { Frame, FrameScene, TestJson, getFlattenedPerceptiblesFromFrame } from "../src/types/Frame";
@@ -9,6 +9,7 @@ import { Tree, Direction } from "../src/types/Tree";
 import {
     Condition,
     ConditionElement,
+    ConditionVerificationResult,
     includeBodyState,
     validateConditionName,
     verifyValidCondition,
@@ -119,6 +120,16 @@ export default function Home() {
         useState<string>("");
     const [runCairoSimulationWarning, setCairoSimulationWarning] =
         useState<string>("");
+
+    const [successToastOpen, setToastOpen] = React.useState(false);
+
+    const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+        return;
+        }
+    
+        setToastOpen(false);
+    };
 
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents();
@@ -401,6 +412,37 @@ export default function Home() {
         });
     }
 
+    function saveCondition(
+        index: number,
+        conditionElements: ConditionElement[]
+    ){
+        setConditions((prev) => {
+        let prev_copy: Condition[] = JSON.parse(JSON.stringify(prev));
+        if (!prev_copy[index].key) {
+            prev_copy[index].key = crypto
+                .createHash("sha256")
+                .update(Date.now().toString())
+                .digest("hex")
+                .toString();
+        }
+
+            prev_copy[index].elements = conditionElements
+
+            if(prev_copy.length - 1 == index)
+            {
+                prev_copy.push({ elements: [] });
+            }
+            
+
+            console.log(prev_copy)
+
+            setToastOpen(true)
+            return prev_copy;
+
+        });
+
+    }
+
     function handleUpdateCondition(
         index: number,
         element: ConditionElement,
@@ -421,7 +463,6 @@ export default function Home() {
                 return prev_copy;
             }
             prev_copy[index].displayName = displayName;
-            console.log(prev_copy[index]);
             if (!prev_copy[index].key) {
                 prev_copy[index].key = crypto
                     .createHash("sha256")
@@ -432,14 +473,14 @@ export default function Home() {
 
             if (element) {
                 prev_copy[index].elements.push(element);
-                let [isValidFunction, error] = verifyValidCondition(
+                let result : ConditionVerificationResult = verifyValidCondition(
                     prev_copy[index],
                     false
                 );
-                if (!isValidFunction) {
+                if (!result.isValid) {
                     setConditionWarningTextOn(true);
                     setConditionWarningText(
-                        `Invalid ${element.type}, got: ${error}`
+                        `Invalid ${element.type}, got: ${result.message}`
                     );
                     setTimeout(() => setConditionWarningTextOn(false), 5000);
                     prev_copy[index].elements.pop();
@@ -468,10 +509,10 @@ export default function Home() {
     function handleConfirmCondition() {
         let length = conditions.length;
         let f = conditions[conditionUnderEditIndex];
-        let [isValidFunction, error] = verifyValidCondition(f, true);
-        if (!f?.elements || !isValidFunction) {
+        let result : ConditionVerificationResult = verifyValidCondition(f, true);
+        if (!f?.elements || !result.isValid) {
             setConditionWarningTextOn(true);
-            setConditionWarningText(`Invalid function, got: ${error}`);
+            setConditionWarningText(`Invalid function, got: ${result.message}`);
             setTimeout(() => setConditionWarningTextOn(false), 5000);
             return;
         }
@@ -689,6 +730,7 @@ export default function Home() {
             trees={trees}
             handleUpdateTree={handleUpdateTree}
             conditions={conditions}
+            handleSaveCondition={saveCondition}
             handleUpdateCondition={handleUpdateCondition}
             handleConfirmCondition={handleConfirmCondition}
             handleClickDeleteCondition={
@@ -804,6 +846,11 @@ export default function Home() {
                     <Tab label={'Wallet'}/>
                 </Tabs>
 
+                <Snackbar open={successToastOpen} autoHideDuration={6000} onClose={handleToastClose}>
+                    <Alert onClose={handleToastClose} severity="success" sx={{ width: '100%' }}>
+                        Condition Successfully saved
+                    </Alert>
+                </Snackbar>
                 <Box sx={{flex: 1, pt: 5}}>
                     <ThemeProvider theme={theme}>
                         <SwipeableViews
