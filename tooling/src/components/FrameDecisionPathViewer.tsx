@@ -9,20 +9,19 @@ import {
     TableRow,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import React from "react";
+import React, { useMemo } from "react";
 import { bodyStateNumberToName } from "../constants/constants";
 import { Frame, TestJson, getFlattenedPerceptiblesFromFrame } from "../types/Frame";
 import useEvaluateCondition from "../hooks/useEvaluateCondition";
-import Agent, { getMentalTrees } from "../types/Agent";
+import Agent, { getMentalTree } from "../types/Agent";
 import Leaf from "../types/Leaf";
-import { Tree, updateTreeToMatchConditions } from "../types/Tree";
+import { Tree, getConditionsIndex, getMentalStatesNames } from "../types/Tree";
 import { Condition } from "../types/Condition";
 
 type FrameDecisionPathViewerProps = {
     p1: Agent;
     p2: Agent;
     testJson: TestJson;
-    conditions: Condition[]
     animationFrame: number;
 };
 
@@ -30,7 +29,6 @@ const FrameDecisionPathViewer = ({
     p1,
     p2,
     testJson,
-    conditions,
     animationFrame,
 }: FrameDecisionPathViewerProps) => {
 
@@ -79,16 +77,58 @@ const FrameDecisionPathViewer = ({
         characterRightType === 0 ? "jessica" : "antoc",
     ];
 
-    const getMentalStatesNames = (agent: Agent) => {
-        let trees: Tree[] = getMentalTrees(agent)
-        trees.forEach(tree => updateTreeToMatchConditions(tree, conditions))
+    const currentTreeIndexLeft = frameLeft.mental_state
+    const currentTreeIndexRight = frameRight.mental_state
+    const mentalTreeLeft: Tree = getMentalTree(p1, currentTreeIndexLeft)
+    const mentalTreeRight: Tree = getMentalTree(p2, currentTreeIndexRight)
 
-        let mentalStatesNamesPerTree: string[][] = trees.map(tree => tree.nodes.filter(n => n.isChild).map(n => n.id))
-        return mentalStatesNamesPerTree
+    const getMentalStatesNamesForTree = (tree: Tree) => {
+        let mentalStatesNames: string[] = getMentalStatesNames(tree)
+        return mentalStatesNames
     }
 
-    const mentalStatesNamesPerTreeLeft: string[][] = getMentalStatesNames(p1)
-    const mentalStatesNamesPerTreeRight: string[][] = getMentalStatesNames(p2)
+    const mentalStatesNamesLeft: string[] = getMentalStatesNamesForTree(mentalTreeLeft)
+    const mentalStatesNamesRight: string[] = getMentalStatesNamesForTree(mentalTreeRight)
+
+    console.log('mentalStatesNamesLeft', mentalStatesNamesLeft)
+    console.log('mentalStatesNamesRight', mentalStatesNamesRight)
+
+    const getConditionsIndexForTree = (tree: Tree, conditionNames: string[]) => {
+        let conditionsIndex: number[] = getConditionsIndex(tree, conditionNames)
+        return conditionsIndex
+    }
+
+    const conditionsIndexLeft: number[] = getConditionsIndexForTree(mentalTreeLeft, p1.conditionNames)
+    const conditionsIndexeRight: number[] = getConditionsIndexForTree(mentalTreeRight, p2.conditionNames)
+
+    console.log('conditionsIndexLeft', conditionsIndexLeft)
+    console.log('conditionsIndexRight', conditionsIndexeRight)
+
+    const conditionsEvaluationsLeft: number[] = conditionsIndexLeft.map((conditionIndex) => {
+        let condition = p1.conditions[conditionIndex]
+        let conditionEvaluation = handleEvaluateCondition(condition, frameLeft, frameRight)
+
+        if (conditionEvaluation[1] !== null) {
+            console.log('error in evaluation', conditionEvaluation[1])
+            return -1
+        }
+        return conditionEvaluation[0]
+    })
+    const conditionsEvaluationsRight: number[] = conditionsIndexeRight.map((conditionIndex) => {
+        let condition = p2.conditions[conditionIndex]
+        let conditionEvaluation = handleEvaluateCondition(condition, frameRight, frameLeft)
+
+        if (conditionEvaluation[1] !== null) {
+            console.log('error in evaluation', conditionEvaluation[1])
+            return -1
+        }
+        return conditionEvaluation[0]
+    })
+
+    console.log('conditionsEvaluationsLeft', conditionsEvaluationsLeft)
+    console.log('conditionsEvaluationsRight', conditionsEvaluationsRight)
+
+
 
     return (
         <div style={{padding:'10px', paddingBottom:'20px', border:'1px solid #777', borderRadius:'20px'}}>
