@@ -1,4 +1,4 @@
-import { Card, CardContent, CardMedia, Grid, Typography } from "@mui/material";
+import { CardContent, Grid, Typography } from "@mui/material";
 
 const MobileView = () => {
     return (
