@@ -60,6 +60,8 @@ import WalletConnectView from "../src/components/sidePanelComponents/WalletConne
 import crypto from "crypto";
 import SwipeableContent from "../src/components/layout/SwipeableContent";
 import theme from "../src/theme/theme";
+import useMediaQuery from '@mui/material/useMediaQuery';
+import MobileView from "../src/components/MobileView";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -156,6 +158,8 @@ export default function Home() {
 
     const { runCairoSimulation, wasmReady } = useRunCairoSimulation(p1, p2);
     const { runEvaluateCondition } = useEvaluateCondition();
+
+    const isMobileDisplay = useMediaQuery('(max-width:800px)');
 
     useEffect(() => {
         if (output) {
@@ -818,6 +822,14 @@ export default function Home() {
 
     const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
     
+    if(isMobileDisplay)
+    {
+        return(
+        <div>
+            <MobileView/>
+        </div>)
+    }
+
     //
     // Render
     //
@@ -832,7 +844,7 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-
+                
                 <Tabs
                     value={swipeableViewIndex}
                     onChange={(event, newValue) => setSwipeableViewIndex((_) => newValue)}
