@@ -207,14 +207,14 @@ export function agentToCalldata(agent: Agent): string[] {
     })
 }
 
-export function getMentalTrees(agent: Agent): Tree[] {
+export function getMentalTree(agent: Agent, index: number): Tree {
     let mentalStatesNames = getMentalStatesNames(agent)
+    let conditionsNames = getConditionsNames(agent)
 
-    let trees: Tree[] = agent.mentalStates.map(v => 
-        { return { nodes: unwrapLeafToTree(v, mentalStatesNames) } 
-    }) 
+    let agentMentalState = agent.mentalStates[index]
+    let tree: Tree = { nodes: unwrapLeafToTree(agentMentalState, mentalStatesNames, conditionsNames) } 
 
-    return trees
+    return tree
 }
 
 function getMentalStatesNames(agent: Agent): string[] {
@@ -222,6 +222,13 @@ function getMentalStatesNames(agent: Agent): string[] {
         return []
     }
     return agent.mentalStatesNames
+}
+
+function getConditionsNames(agent: Agent): string[] {
+    if (!agent?.conditionNames) {
+        return []
+    }
+    return agent.conditionNames
 }
 
 export function equals(agent_1: Agent, agent_2: Agent) {
