@@ -104,26 +104,20 @@ const FrameDecisionPathViewer = ({
     console.log('conditionsIndexLeft', conditionsIndexLeft)
     console.log('conditionsIndexRight', conditionsIndexeRight)
 
-    const conditionsEvaluationsLeft: number[] = conditionsIndexLeft.map((conditionIndex) => {
-        let condition = p1.conditions[conditionIndex]
-        let conditionEvaluation = handleEvaluateCondition(condition, frameLeft, frameRight)
-
+    const getConditionEvaluationForAgent = (agent: Agent, conditionIndex: number, frameSelf: Frame, frameOpponent: Frame) => {
+        let condition = agent.conditions[conditionIndex]
+        let conditionEvaluation = handleEvaluateCondition(condition, frameSelf, frameOpponent)
+        
         if (conditionEvaluation[1] !== null) {
             console.log('error in evaluation', conditionEvaluation[1])
             return -1
         }
-        return conditionEvaluation[0]
-    })
-    const conditionsEvaluationsRight: number[] = conditionsIndexeRight.map((conditionIndex) => {
-        let condition = p2.conditions[conditionIndex]
-        let conditionEvaluation = handleEvaluateCondition(condition, frameRight, frameLeft)
 
-        if (conditionEvaluation[1] !== null) {
-            console.log('error in evaluation', conditionEvaluation[1])
-            return -1
-        }
         return conditionEvaluation[0]
-    })
+    }
+
+    const conditionsEvaluationsLeft: number[] = conditionsIndexLeft.map((conditionIndex) => {return getConditionEvaluationForAgent(p1, conditionIndex, frameLeft, frameRight)})
+    const conditionsEvaluationsRight: number[] = conditionsIndexeRight.map((conditionIndex) => {return getConditionEvaluationForAgent(p2, conditionIndex, frameRight, frameLeft)})
 
     console.log('conditionsEvaluationsLeft', conditionsEvaluationsLeft)
     console.log('conditionsEvaluationsRight', conditionsEvaluationsRight)
