@@ -609,18 +609,17 @@ export default function Home() {
         );
         setTrees(() => {
             let tree = agent.mentalStates.map((x) => {
-                return { nodes: unwrapLeafToTree(x, agent.mentalStatesNames) };
+                return { nodes: unwrapLeafToTree(x, agent.mentalStatesNames, agent.conditionNames) };
             });
             tree.push({ nodes: [] }); // add an empty tree for editing
             return tree;
         });
         setConditions(() => {
-
             let cond: Condition[] = agent.conditions.map((x, i) => {
-                let conditionName = agent.conditionNames[i] ? agent.conditionNames[i] : `F${i}`
+                let conditionName = agent.conditionNames[i] ? agent.conditionNames[i] : `C${i}`
                 return {
                     elements: includeBodyState(unwrapLeafToCondition(x)),
-                    key: `F${i}`,
+                    key: `${i}`,
                     displayName: conditionName,
                 };
             });
@@ -784,7 +783,6 @@ export default function Home() {
                     p1={p1}
                     p2={p2}
                     testJson={testJson}
-                    conditions={conditions}
                     animationFrame={animationFrame}
                 />
             </div>

@@ -188,7 +188,7 @@ const Conditions = ({
                         >
                             {conditions.slice(0, conditions.length - 1).map((_, i) =>
                                 <MenuItem value={i}>
-                                    {conditions[i].displayName || `F${i}`}
+                                    {conditions[i].displayName || `C${i}`}
                                 </MenuItem>
                             )}
                             <MenuItem value={conditions.length - 1} disabled={isReadOnly}>New Condition</MenuItem>

@@ -88,7 +88,7 @@ const TreeEditor = ({
                 <TextField
                     color={'info'}
                     id='outlined-textarea'
-                    placeholder={`F1 => MS IDLE,\nF2 => MS ATTACK,\n_ => MS DEFEND`}
+                    placeholder={`C1 => MS IDLE,\nC2 => MS ATTACK,\n_ => MS DEFEND`}
                     defaultValue={treeToString(tree, conditions)}
                     label={`Decision Tree for ${mentalState.state}`}
                     onChange={ (event) => handleUpdateTree(indexTree, event.target.value) }
