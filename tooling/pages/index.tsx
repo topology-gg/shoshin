@@ -49,7 +49,7 @@ import {
     useStarknetExecute,
 } from "@starknet-react/core";
 import { EditorTabName } from "../src/components/sidePanelComponents/EditorTabs";
-import { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
+import Leaf, { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
 import dynamic from "next/dynamic";
 import SwipeableViews from 'react-swipeable-views';
 import { bindKeyboard } from 'react-swipeable-views-utils';
@@ -60,6 +60,7 @@ import WalletConnectView from "../src/components/sidePanelComponents/WalletConne
 import crypto from "crypto";
 import SwipeableContent from "../src/components/layout/SwipeableContent";
 import theme from "../src/theme/theme";
+import FrameDecisionPathViewer from "../src/components/FrameDecisionPathViewer";
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from "../src/components/MobileView";
 
@@ -129,7 +130,7 @@ export default function Home() {
         if (reason === 'clickaway') {
         return;
         }
-    
+
         setToastOpen(false);
     };
 
@@ -436,7 +437,7 @@ export default function Home() {
             {
                 prev_copy.push({ elements: [] });
             }
-            
+
 
             console.log(prev_copy)
 
@@ -653,18 +654,17 @@ export default function Home() {
         );
         setTrees(() => {
             let tree = agent.mentalStates.map((x) => {
-                return { nodes: unwrapLeafToTree(x, agent.mentalStatesNames) };
+                return { nodes: unwrapLeafToTree(x, agent.mentalStatesNames, agent.conditionNames) };
             });
             tree.push({ nodes: [] }); // add an empty tree for editing
             return tree;
         });
         setConditions(() => {
-
             let cond: Condition[] = agent.conditions.map((x, i) => {
-                let conditionName = agent.conditionNames[i] ? agent.conditionNames[i] : `F${i}`
+                let conditionName = agent.conditionNames[i] ? agent.conditionNames[i] : `C${i}`
                 return {
                     elements: includeBodyState(unwrapLeafToCondition(x)),
-                    key: `F${i}`,
+                    key: `${i}`,
                     displayName: conditionName,
                 };
             });
@@ -678,14 +678,23 @@ export default function Home() {
         setConditionUnderEditIndex(() => 0);
     }
 
-    function handleEvaluateCondition(condition: Condition, memory: number[] = [], selfAgentFrame: Frame, opponentAgentFrame: Frame) {
+    function handleEvaluateCondition(condition: Leaf, selfAgentFrame: Frame, opponentAgentFrame: Frame) {
         let perceptiblesSelf = getFlattenedPerceptiblesFromFrame(selfAgentFrame)
         let perceptiblesOpponent = getFlattenedPerceptiblesFromFrame(opponentAgentFrame)
         let perceptibles = perceptiblesSelf.concat(perceptiblesOpponent)
 
-        let result = runEvaluateCondition(condition, memory, perceptibles)
+        let result = runEvaluateCondition(condition, perceptibles)
         return result
     }
+
+    // Only for testing, can be removed once condition evaluation is integrated
+    // useEffect(() => {
+    //     if (!output) return
+    //     for (const condition of p1.conditions) {
+    //         let res = handleEvaluateCondition(condition, output.agent_0[animationFrame], output.agent_1[animationFrame])
+    //         console.log('evaluate condition', condition, res[0])
+    //     }
+    // }, [output, animationFrame])
 
     const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 
@@ -816,12 +825,18 @@ export default function Home() {
                     testJson={testJson}
                     animationFrame={animationFrame}
                 />
+                <FrameDecisionPathViewer
+                    p1={p1}
+                    p2={p2}
+                    testJson={testJson}
+                    animationFrame={animationFrame}
+                />
             </div>
         </div>
     )
 
     const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
-    
+
     if(isMobileDisplay)
     {
         return(
@@ -844,7 +859,7 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-                
+
                 <Tabs
                     value={swipeableViewIndex}
                     onChange={(event, newValue) => setSwipeableViewIndex((_) => newValue)}

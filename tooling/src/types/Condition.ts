@@ -360,12 +360,6 @@ export const isOperatorWithDoubleOperands = (elem: ConditionElement) => {
     )
 }
 
-export function flattenCondition(condition: Condition) {
-    let leafCondition: Leaf = parseConditionToLeaf(condition)
-    return flattenLeaf(leafCondition) 
-}
-
-
 // Converts the current condition into its string representation
 export function conditionToStr(c: Condition) {
     let str = ''

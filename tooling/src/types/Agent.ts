@@ -1,5 +1,5 @@
 import { parseConditionToLeaf, Condition } from "./Condition"
-import Leaf, { flattenLeaf } from "./Leaf"
+import Leaf, { flattenLeaf, unwrapLeafToTree } from "./Leaf"
 import { MentalState, parseTree } from "./MentalState"
 import { Tree } from "./Tree"
 import { FRAME_COUNT, PRIME } from "../constants/constants"
@@ -205,6 +205,30 @@ export function agentToCalldata(agent: Agent): string[] {
     return args.map((a) => {
         return '' + (a < 0? (PRIME + BigInt(a)).toString(): a)
     })
+}
+
+export function getMentalTree(agent: Agent, index: number): Tree {
+    let mentalStatesNames = getMentalStatesNames(agent)
+    let conditionsNames = getConditionsNames(agent)
+
+    let agentMentalState = agent.mentalStates[index]
+    let tree: Tree = { nodes: unwrapLeafToTree(agentMentalState, mentalStatesNames, conditionsNames) } 
+
+    return tree
+}
+
+function getMentalStatesNames(agent: Agent): string[] {
+    if (!agent?.mentalStatesNames) {
+        return []
+    }
+    return agent.mentalStatesNames
+}
+
+function getConditionsNames(agent: Agent): string[] {
+    if (!agent?.conditionNames) {
+        return []
+    }
+    return agent.conditionNames
 }
 
 export function equals(agent_1: Agent, agent_2: Agent) {

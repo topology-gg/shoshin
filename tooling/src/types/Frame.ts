@@ -7,11 +7,13 @@ export interface BodyState {
     counter: number,
     fatigued: number,
 }
+const BODY_STATE_KEYS: (keyof BodyState)[] = ['dir', 'integrity', 'stamina', 'state', 'counter', 'fatigued']
 
 export interface Vec2 {
     x: number,
     y: number,
 }
+const VEC2_KEYS: (keyof Vec2)[] = ['x', 'y']
 
 export interface Rectangle {
     origin: Vec2,
@@ -23,6 +25,7 @@ export interface PhysicsState {
     vel_fp: Vec2,
     acc_fp: Vec2,
 }
+const PHYSICS_STATE_KEYS: (keyof PhysicsState)[] = ['pos', 'vel_fp', 'acc_fp']
 
 export interface Hitboxes {
     action: Rectangle,
@@ -66,10 +69,9 @@ export function getFlattenedPerceptiblesFromFrame(agent: Frame): number[] {
 
 function getFlattenedPhysicState(physicState: PhysicsState): number[] {
     let flattenedPhysicState = []
-    let physicStateKeys = Object.keys(physicState)
 
-    for (const key of physicStateKeys) {
-        let vector: Vec2 = physicState[key as keyof PhysicsState]
+    for (const key of PHYSICS_STATE_KEYS) {
+        let vector: Vec2 = physicState[key]
         let flattenedVector = getFlattenedVector(vector)
 
         flattenedPhysicState.push(...flattenedVector)
@@ -80,10 +82,9 @@ function getFlattenedPhysicState(physicState: PhysicsState): number[] {
 
 function getFlattenedVector(vector: Vec2): number[] {
     let flattenedVector = []
-    let vectorKeys = Object.keys(vector)
 
-    for (const key of vectorKeys) {
-        flattenedVector.push(vector[key as keyof Vec2])
+    for (const key of VEC2_KEYS) {
+        flattenedVector.push(vector[key])
     }
 
     return flattenedVector
@@ -91,10 +92,9 @@ function getFlattenedVector(vector: Vec2): number[] {
 
 function getFlattenedBodyState(bodyState: BodyState): number[] {
     let flattenedBodyState = []
-    let bodyStateKeys = Object.keys(bodyState)
 
-    for (const key of bodyStateKeys) {
-        flattenedBodyState.push(bodyState[key as keyof BodyState])
+    for (const key of BODY_STATE_KEYS) {
+        flattenedBodyState.push(bodyState[key])
     }
 
     return flattenedBodyState
