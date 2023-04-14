@@ -11,12 +11,20 @@ export interface ConditionElement {
     type?: ElementType,
 }
 
+export interface ConditionVerificationResult{
+    isValid : boolean,
+    message : string,
+    conditionElementIndex : number,
+    is_bracket_error : boolean
+}
+
 export enum ElementType {
     Operator = 'Operator',
     Constant = 'Constant',
     Perceptible = 'Perceptible',
     BodyState = 'BodyState'
 }
+
 
 export enum Operator {
     And = 'AND',
@@ -76,8 +84,8 @@ export enum BodystatesJessica {
 
 export enum BodystatesAntoc {
     Idle = 0,
-    Hori = 1010,
-    Vert = 1020,
+    HorizontalSwing = 1010,
+    VerticalSwing = 1020,
     Block = 1040,
     Hurt = 1050,
     Knocked = 1060,
@@ -116,13 +124,13 @@ export enum Perceptible {
 export const PERCEPTIBLE_KEYS: number[] = Object.keys(Perceptible).map(k => parseInt(k)).filter(k => !isNaN(k))
 
 // Verify that the input condition is valid
-export function verifyValidCondition(c: Condition, confirm: boolean): [boolean, string] {
+export function verifyValidCondition(c: Condition, confirm: boolean): ConditionVerificationResult {
     // count the open and close parenthesis
     let countParenthesis = 0
     // count the open and close absolute values
     let countAbs = 0
     let prevElement = { type: ElementType.Operator } as ConditionElement
-    for (let e of c?.elements) {
+    for (let [index, e] of c?.elements.entries()) {
         // Check that these rules are followed:
         //  - numeric value must not be followed by a opening parenthesis or abs
         //  - close parenthesis or abs must be preceded by a numeric value or a closing parenthesis
@@ -132,21 +140,21 @@ export function verifyValidCondition(c: Condition, confirm: boolean): [boolean, 
         let isCurrentSyntaxClose = e?.value == Operator.CloseParenthesis || e?.value == Operator.CloseAbs
         let isPrevNumeric = prevElement?.type === ElementType.Perceptible || prevElement.type === ElementType.Constant || prevElement.type === ElementType.BodyState
         if (isPrevNumeric && isCurrentSyntaxOpen) {
-            return [false, `Operator "${e?.value}" must be preceded by an operator`]
+            return { isValid : false, message :  `Operator "${e?.value}" must be preceded by an operator`, conditionElementIndex : index, is_bracket_error : false}
         }
         if ((!isPrevNumeric && prevElement?.value !== Operator.CloseParenthesis) && isCurrentSyntaxClose) {
-            return [false, `Operator "${e?.value}" must be preceded by a constant, perceptible or bodystate`]
+            return { isValid : false, message : `Operator "${e?.value}" must be preceded by a constant, perceptible or bodystate`, conditionElementIndex : index, is_bracket_error : false }
         }
         if (e?.value == Operator.Not && isPrevNumeric) {
-            return [false, `Operator "${e?.value}" must be preceded by operator`]
+            return { isValid : false, message :  `Operator "${e?.value}" must be preceded by operator`, conditionElementIndex : index, is_bracket_error : false }
         }
         if (prevElement?.value == Operator.Not && !isCurrentSyntaxOpen) {
-            return [false, `Operator "${prevElement?.value}" must be followed by ( or Abs(`]
-        }
+            return { isValid : false, message :  `Operator "${prevElement?.value}" must be followed by ( or Abs(`, conditionElementIndex : index, is_bracket_error : false }
 
+        }
         // if count negative, exit early
         if (countParenthesis < 0 || countAbs < 0) {
-            return [false, 'Unbalanced parenthesis or absolute value']
+            return { isValid : false, message :  'Unbalanced parenthesis or absolute value', conditionElementIndex : index, is_bracket_error : true }
         }
         // check the following rules are applied: operator must be preceded by
         // constant, perceptible, not operator, or closing of absolute/parenthesis
@@ -174,7 +182,7 @@ export function verifyValidCondition(c: Condition, confirm: boolean): [boolean, 
                 if (!isPrevNumeric &&
                     prevElement?.value !== Operator.CloseParenthesis &&
                     prevElement?.value !== Operator.CloseAbs) {
-                        return [false, `Operator "${e?.value}" must be preceded by a constant, perceptible or closing of absolute/parenthesis`]
+                        return { isValid : false, message : `Operator "${e?.value}" must be preceded by a constant, perceptible or closing of absolute/parenthesis`, conditionElementIndex : index, is_bracket_error : false }
                 }
                 break
             }
@@ -183,7 +191,7 @@ export function verifyValidCondition(c: Condition, confirm: boolean): [boolean, 
             case ElementType.Perceptible:
             case ElementType.BodyState: {
                 if (prevElement.type !== ElementType.Operator) {
-                    return [false, `${e?.type} must be preceded by an operator`]
+                    return { isValid : false, message : `${e?.type} must be preceded by an operator`, conditionElementIndex : index, is_bracket_error : false }
                 }
                 break
             }
@@ -191,9 +199,14 @@ export function verifyValidCondition(c: Condition, confirm: boolean): [boolean, 
         prevElement = e
     }
     if (confirm) {
-        return [countParenthesis == 0 && countAbs == 0, 'Unbalanced parenthesis or absolute value']
+
+        if(countParenthesis == 0 && countAbs == 0)
+        {
+            return { isValid : true, message : '', conditionElementIndex : -1, is_bracket_error :  false }
+        }
+        return { isValid : false, message : 'Unbalanced parenthesis or absolute value', conditionElementIndex : -1, is_bracket_error :  true }
     }
-    return [true, '']
+    return { isValid : true, message : '', conditionElementIndex : -1, is_bracket_error : false }
 }
 
 export function validateConditionName(name: string, conditions : Condition[]): string | undefined {
@@ -202,7 +215,7 @@ export function validateConditionName(name: string, conditions : Condition[]): s
     }
 
     if (name.length > 31) {
-        return "Name should be less than 31 characters long" + `\n String \"${name}\" is ${name.length} characters long!` 
+        return "Name should be less than 31 characters long" + `\n String \"${name}\" is ${name.length} characters long!`
     }
 
     const nameCollision = conditions.find(condition => condition.displayName == name)
@@ -368,7 +381,7 @@ export const conditionElementToStr = (elem: ConditionElement) => {
             return 'Idle'
         }
         value = value as number // can cast since type === BodyState
-        return value > 1000 ? 'Antoc ' + BodystatesAntoc[value] : 'Jessica ' + BodystatesJessica[value]
+        return value > 1000 ? 'Antoc' + BodystatesAntoc[value] : 'Jessica' + BodystatesJessica[value]
     }
     if (type === ElementType.Operator) {
         // convert a close abs to a closed parenthesis
