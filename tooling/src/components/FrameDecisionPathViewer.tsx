@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { Box } from "@mui/system";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { bodyStateNumberToName } from "../constants/constants";
 import { Frame, TestJson, getFlattenedPerceptiblesFromFrame } from "../types/Frame";
 import useEvaluateCondition from "../hooks/useEvaluateCondition";
@@ -56,6 +56,8 @@ const FrameDecisionPathViewer = ({
     //     is stored in the form of string[][] where the first index is the tree index and the second index is the mental state index.
     // Q3: among the input args of handleEvaluateCondition(), what is `memory`? Is it required for the purpose of this component?
     // A3: I added memory because I thought it might be useful for the evaluation of conditions but should actually be removed.
+
+    const [animationFrameAtLastConditionEvalPerPlayer, setAnimationFrameAtLastConditionEvalPerPlayer] = useState<number[]>([-1,-1]);
 
     const { runEvaluateCondition } = useEvaluateCondition();
     function handleEvaluateCondition(condition: Leaf, selfAgentFrame: Frame, opponentAgentFrame: Frame) {
@@ -132,6 +134,10 @@ const FrameDecisionPathViewer = ({
     const decisionPathDisplayRender = (playerIndex: number) => {
         // TODO: block this function with a react state settable by user button click
 
+        if (animationFrame != animationFrameAtLastConditionEvalPerPlayer[playerIndex]) {
+            return <></>
+        }
+
         const mentalTree = mentalTrees[playerIndex]
         const player = players[playerIndex]
 
@@ -162,15 +168,23 @@ const FrameDecisionPathViewer = ({
     return (
         <div style={{padding:'10px', paddingBottom:'20px', border:'1px solid #777', borderRadius:'20px'}}>
             <Grid container spacing={1}>
-                {[0,1].map((i) => (
+                {[0,1].map((playerIndex) => (
                     <Grid item xs={6}>
                         <Button
                             size="small" variant="outlined"
-                            onClick={() => {}}
+                            onClick={() => {setAnimationFrameAtLastConditionEvalPerPlayer(
+                                (prev) => {
+                                    if (playerIndex == 0){
+                                        return [animationFrame, prev[1]];
+                                    } else {
+                                        return [prev[0], animationFrame];
+                                    }
+                                }
+                            )}}
                         >
                             <RemoveRedEyeIcon />
                         </Button>
-                        {decisionPathDisplayRender(i)}
+                        {decisionPathDisplayRender(playerIndex)}
                     </Grid>
                 ))}
             </Grid>
