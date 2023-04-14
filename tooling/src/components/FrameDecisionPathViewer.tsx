@@ -96,22 +96,10 @@ const FrameDecisionPathViewer = ({
         return mentalStatesNames
     }
 
-    const mentalStatesNamesLeft: string[] = getMentalStatesNamesForTree(mentalTreeLeft)
-    const mentalStatesNamesRight: string[] = getMentalStatesNamesForTree(mentalTreeRight)
-
-    // console.log('mentalStatesNamesLeft', mentalStatesNamesLeft)
-    // console.log('mentalStatesNamesRight', mentalStatesNamesRight)
-
     const getConditionsIndexForTree = (tree: Tree, conditionNames: string[]) => {
         let conditionsIndex: number[] = getConditionsIndex(tree, conditionNames)
         return conditionsIndex
     }
-
-    const conditionsIndexLeft: number[] = getConditionsIndexForTree(mentalTreeLeft, p1.conditionNames)
-    const conditionsIndexeRight: number[] = getConditionsIndexForTree(mentalTreeRight, p2.conditionNames)
-
-    // console.log('conditionsIndexLeft', conditionsIndexLeft)
-    // console.log('conditionsIndexRight', conditionsIndexeRight)
 
     const getConditionEvaluationForAgent = (agent: Agent, conditionIndex: number, frameSelf: Frame, frameOpponent: Frame) => {
         let condition = agent.conditions[conditionIndex]
@@ -124,12 +112,6 @@ const FrameDecisionPathViewer = ({
 
         return conditionEvaluation[0]
     }
-
-    const conditionsEvaluationsLeft: number[] = conditionsIndexLeft.map((conditionIndex) => {return getConditionEvaluationForAgent(p1, conditionIndex, frameLeft, frameRight)})
-    const conditionsEvaluationsRight: number[] = conditionsIndexeRight.map((conditionIndex) => {return getConditionEvaluationForAgent(p2, conditionIndex, frameRight, frameLeft)})
-
-    // console.log('conditionsEvaluationsLeft', conditionsEvaluationsLeft)
-    // console.log('conditionsEvaluationsRight', conditionsEvaluationsRight)
 
     const decisionPathDisplayRender = (playerIndex: number) => {
         // TODO: block this function with a react state settable by user button click
@@ -151,7 +133,7 @@ const FrameDecisionPathViewer = ({
                 content.push (`_ => ${state}`)
             }
             else {
-                content.push(`${p1.conditionNames[conditionsIndexLeft[state_i]]} (${conditionsEvaluationsLeft[state_i]}) => ${state}`)
+                content.push(`${player.conditionNames[conditionsIndex[state_i]]} (${conditionsEvaluations[state_i]}) => ${state}`)
             }
         })
 
