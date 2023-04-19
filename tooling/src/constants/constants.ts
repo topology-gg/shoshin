@@ -4,7 +4,7 @@ import { MentalState } from "../types/MentalState"
 import { Direction, Tree } from "../types/Tree"
 
 // Mongo db name and collection
-export const DB_NAME = 'shoshin_indexer_2'
+export const DB_NAME = 'shoshin_indexer_5'
 export const COLLECTION_NAME = 'shoshin-dogfooding-submission'
 export const PRIME = BigInt(2**251) + BigInt(17) * BigInt(2**192) + BigInt(1)
 
