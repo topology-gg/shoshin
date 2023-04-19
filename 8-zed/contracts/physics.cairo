@@ -348,41 +348,28 @@ func produce_stimulus_given_conditions {range_check_ptr} (
 
     // Stimulus determination logic:
     // (TODO in Cairo 1.0 redesign, abstract this by defining character-specific parameters and devising a parameter-driven logic to determine stimulus)
-    // 1. (hit) when hit, get HURT if not in critical integrity, get KNOCKED otherwise
-    // 2. (block-attack) when jessica (self) attacks into antoc's block, self gets CLASH
-    // 3. (block-attack) when antoc (self) attacks into antoc's block, self gets KNOCKED
-    // 4. (block-attack) when jessica blocks antoc's attack, jessica gets CLASH, while antoc gets CLASH
-    // 5. (attack-attack) when two characters of the same type attack into each other, both get CLASH
-    // 6. (attack-attack) when jessica attack into antoc's attack, jessica gets KNOCKED, while antoc gets CLASH
+    // (block-attack) when jessica (self) attacks into antoc's block, self gets CLASH
+    // (block-attack) when antoc (self) attacks into antoc's block, self gets KNOCKED
+    // (block-attack) when jessica blocks antoc's attack, jessica gets CLASH, while antoc gets CLASH
+    // (attack-attack) when two characters of the same type attack into each other, both get CLASH
+    // (attack-attack) when jessica attack into antoc's attack, jessica gets KNOCKED, while antoc gets CLASH
+    // (hit) when hit, get HURT if not in critical integrity, get KNOCKED otherwise
 
-    // 1. when hit, HURT if not in critical integrity, KNOCKED otherwise
-    let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
-    if (bool_self_hit == 1) {
-        if (bool_self_block_active == 1) {
-            return ns_stimulus.NULL;
-        }
-        if (is_integrity_critical == 1) {
-            return ns_stimulus.KNOCKED;
-        } else {
-            return ns_stimulus.HURT;
-        }
-    }
-
-    // 2. (block-attack) when jessica (self) attacks into antoc's block, self gets CLASH
+    // (block-attack) when jessica (self) attacks into antoc's block, self gets CLASH
     if (bool_self_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             return ns_stimulus.CLASH;
         }
     }
 
-    // 3. (block-attack) when antoc (self) attacks into antoc's block, self gets KNOCKED
+    // (block-attack) when antoc (self) attacks into antoc's block, self gets KNOCKED
     if (bool_self_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.ANTOC) {
             return ns_stimulus.KNOCKED;
         }
     }
 
-    // 4. (block-attack) when jessica blocks antoc's attack, jessica gets CLASH, while antoc gets CLASH
+    // (block-attack) when jessica blocks antoc's attack, jessica gets CLASH, while antoc gets CLASH
     if (bool_self_block_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             return ns_stimulus.CLASH;
@@ -394,20 +381,33 @@ func produce_stimulus_given_conditions {range_check_ptr} (
         }
     }
 
-    // 5. (attack-attack) when two characters of the same type attack into each other, both get CLASH
+    // (attack-attack) when two characters of the same type attack into each other, both get CLASH
     if (bool_self_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == opp_character_type) {
             return ns_stimulus.CLASH;
         }
     }
 
-    // 6. (attack-attack) when jessica attack into antoc's attack, jessica gets KNOCKED, while antoc gets CLASH
+    // (attack-attack) when jessica attack into antoc's attack, jessica gets KNOCKED, while antoc gets CLASH
     if (bool_self_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             return ns_stimulus.KNOCKED;
         }
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
             return ns_stimulus.CLASH;
+        }
+    }
+
+    // (hit) when hit, HURT if not in critical integrity, KNOCKED otherwise
+    let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
+    if (bool_self_hit == 1) {
+        // if (bool_self_block_active == 1) {
+        //     return ns_stimulus.NULL;
+        // }
+        if (is_integrity_critical == 1) {
+            return ns_stimulus.KNOCKED;
+        } else {
+            return ns_stimulus.HURT;
         }
     }
 
