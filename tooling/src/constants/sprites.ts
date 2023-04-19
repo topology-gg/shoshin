@@ -328,19 +328,25 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
                 size: [187, 140],
                 hitboxOffset: { left: [83,-69], right: [17,-70] },
             }
-        ]
+        ],
+        clash: [
+            {
+                size: [213, 167],
+                hitboxOffset: { left: [69,-85], right: [31,-85] },
+            }
+        ],
     },
     jessica: {
         block: [
             {
                 size: [103, 126],
-                hitboxOffset: { left: [52, -52], right: [52,-52] },
+                hitboxOffset: { left: [52, -52], right: [49,-53] },
             }
         ],
         clash: [
             {
                 size: [132, 141],
-                hitboxOffset: { left: [65, -55], right: [35,-55] },
+                hitboxOffset: { left: [65, -55], right: [41,-67] },
             }
         ],
         dash_backward: [
@@ -358,7 +364,7 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         hurt: [
             {
                 size: [105, 142],
-                hitboxOffset: { left: [55, -60], right: [40,-60] },
+                hitboxOffset: { left: [55, -60], right: [45,-60] },
             }
         ],
         idle: [
