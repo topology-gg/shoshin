@@ -1,14 +1,15 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import React, { useEffect, useMemo, useState } from "react";
-import { Box, ThemeProvider } from "@mui/material";
+import { Alert, Box, Snackbar, ThemeProvider } from "@mui/material";
 import MidScreenControl from "../src/components/MidScreenControl";
 import EditorView from "../src/components/sidePanelComponents/EditorView";
-import { FrameScene, TestJson } from "../src/types/Frame";
+import { Frame, FrameScene, TestJson, getFlattenedPerceptiblesFromFrame } from "../src/types/Frame";
 import { Tree, Direction } from "../src/types/Tree";
 import {
     Condition,
     ConditionElement,
+    ConditionVerificationResult,
     includeBodyState,
     validateConditionName,
     verifyValidCondition,
@@ -36,11 +37,10 @@ import P1P2SettingPanel, {
 } from "../src/components/P1P2SettingPanel";
 import FrameInspector from "../src/components/FrameInspector";
 import useRunCairoSimulation from "../src/hooks/useRunCairoSimulation";
+import useEvaluateCondition from "../src/hooks/useEvaluateCondition";
 import { useAgents } from "../lib/api";
 import {
-    Metadata,
     SingleMetadata,
-    splitMetadata,
     splitSingleMetadata,
 } from "../src/types/Metadata";
 import {
@@ -48,9 +48,8 @@ import {
     useConnectors,
     useStarknetExecute,
 } from "@starknet-react/core";
-import ConnectWallet from "../src/components/ConnectWallet";
 import { EditorTabName } from "../src/components/sidePanelComponents/EditorTabs";
-import { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
+import Leaf, { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
 import dynamic from "next/dynamic";
 import SwipeableViews from 'react-swipeable-views';
 import { bindKeyboard } from 'react-swipeable-views-utils';
@@ -61,6 +60,9 @@ import WalletConnectView from "../src/components/sidePanelComponents/WalletConne
 import crypto from "crypto";
 import SwipeableContent from "../src/components/layout/SwipeableContent";
 import theme from "../src/theme/theme";
+import FrameDecisionPathViewer from "../src/components/FrameDecisionPathViewer";
+import useMediaQuery from '@mui/material/useMediaQuery';
+import MobileView from "../src/components/MobileView";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -122,6 +124,16 @@ export default function Home() {
     const [runCairoSimulationWarning, setCairoSimulationWarning] =
         useState<string>("");
 
+    const [successToastOpen, setToastOpen] = React.useState(false);
+
+    const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+        return;
+        }
+
+        setToastOpen(false);
+    };
+
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents();
     const t: SingleMetadata[] = data?.agents;
@@ -146,6 +158,9 @@ export default function Home() {
     ]);
 
     const { runCairoSimulation, wasmReady } = useRunCairoSimulation(p1, p2);
+    const { runEvaluateCondition } = useEvaluateCondition();
+
+    const isMobileDisplay = useMediaQuery('(max-width:800px)');
 
     useEffect(() => {
         if (output) {
@@ -402,6 +417,37 @@ export default function Home() {
         });
     }
 
+    function saveCondition(
+        index: number,
+        conditionElements: ConditionElement[]
+    ){
+        setConditions((prev) => {
+        let prev_copy: Condition[] = JSON.parse(JSON.stringify(prev));
+        if (!prev_copy[index].key) {
+            prev_copy[index].key = crypto
+                .createHash("sha256")
+                .update(Date.now().toString())
+                .digest("hex")
+                .toString();
+        }
+
+            prev_copy[index].elements = conditionElements
+
+            if(prev_copy.length - 1 == index)
+            {
+                prev_copy.push({ elements: [] });
+            }
+
+
+            console.log(prev_copy)
+
+            setToastOpen(true)
+            return prev_copy;
+
+        });
+
+    }
+
     function handleUpdateCondition(
         index: number,
         element: ConditionElement,
@@ -422,7 +468,6 @@ export default function Home() {
                 return prev_copy;
             }
             prev_copy[index].displayName = displayName;
-            console.log(prev_copy[index]);
             if (!prev_copy[index].key) {
                 prev_copy[index].key = crypto
                     .createHash("sha256")
@@ -433,14 +478,14 @@ export default function Home() {
 
             if (element) {
                 prev_copy[index].elements.push(element);
-                let [isValidFunction, error] = verifyValidCondition(
+                let result : ConditionVerificationResult = verifyValidCondition(
                     prev_copy[index],
                     false
                 );
-                if (!isValidFunction) {
+                if (!result.isValid) {
                     setConditionWarningTextOn(true);
                     setConditionWarningText(
-                        `Invalid ${element.type}, got: ${error}`
+                        `Invalid ${element.type}, got: ${result.message}`
                     );
                     setTimeout(() => setConditionWarningTextOn(false), 5000);
                     prev_copy[index].elements.pop();
@@ -469,10 +514,10 @@ export default function Home() {
     function handleConfirmCondition() {
         let length = conditions.length;
         let f = conditions[conditionUnderEditIndex];
-        let [isValidFunction, error] = verifyValidCondition(f, true);
-        if (!f?.elements || !isValidFunction) {
+        let result : ConditionVerificationResult = verifyValidCondition(f, true);
+        if (!f?.elements || !result.isValid) {
             setConditionWarningTextOn(true);
-            setConditionWarningText(`Invalid function, got: ${error}`);
+            setConditionWarningText(`Invalid function, got: ${result.message}`);
             setTimeout(() => setConditionWarningTextOn(false), 5000);
             return;
         }
@@ -596,19 +641,6 @@ export default function Home() {
         }
     }
 
-    //
-    // Set Agent in the side panel to blank agent
-    //
-    function setAgentInPanelToBlank() {
-        setInitialMentalState(() => 0);
-        setCombos(() => []);
-        setMentalStates(() => []);
-        setTrees(() => []);
-        setConditions(() => []);
-        setAgentName(() => "");
-        setCharacter(() => Character.Jessica);
-        setConditionUnderEditIndex(() => 0);
-    }
     function setAgentInPanelToAgent(agent: Agent) {
         // parse the given agent into new values for the React states
         setInitialMentalState(() => agent.initialState);
@@ -622,18 +654,17 @@ export default function Home() {
         );
         setTrees(() => {
             let tree = agent.mentalStates.map((x) => {
-                return { nodes: unwrapLeafToTree(x, agent.mentalStatesNames) };
+                return { nodes: unwrapLeafToTree(x, agent.mentalStatesNames, agent.conditionNames) };
             });
             tree.push({ nodes: [] }); // add an empty tree for editing
             return tree;
         });
         setConditions(() => {
-
             let cond: Condition[] = agent.conditions.map((x, i) => {
-                let conditionName = agent.conditionNames[i] ? agent.conditionNames[i] : `F${i}`
+                let conditionName = agent.conditionNames[i] ? agent.conditionNames[i] : `C${i}`
                 return {
                     elements: includeBodyState(unwrapLeafToCondition(x)),
-                    key: `F${i}`,
+                    key: `${i}`,
                     displayName: conditionName,
                 };
             });
@@ -646,6 +677,24 @@ export default function Home() {
         );
         setConditionUnderEditIndex(() => 0);
     }
+
+    function handleEvaluateCondition(condition: Leaf, selfAgentFrame: Frame, opponentAgentFrame: Frame) {
+        let perceptiblesSelf = getFlattenedPerceptiblesFromFrame(selfAgentFrame)
+        let perceptiblesOpponent = getFlattenedPerceptiblesFromFrame(opponentAgentFrame)
+        let perceptibles = perceptiblesSelf.concat(perceptiblesOpponent)
+
+        let result = runEvaluateCondition(condition, perceptibles)
+        return result
+    }
+
+    // Only for testing, can be removed once condition evaluation is integrated
+    // useEffect(() => {
+    //     if (!output) return
+    //     for (const condition of p1.conditions) {
+    //         let res = handleEvaluateCondition(condition, output.agent_0[animationFrame], output.agent_1[animationFrame])
+    //         console.log('evaluate condition', condition, res[0])
+    //     }
+    // }, [output, animationFrame])
 
     const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 
@@ -694,6 +743,7 @@ export default function Home() {
             trees={trees}
             handleUpdateTree={handleUpdateTree}
             conditions={conditions}
+            handleSaveCondition={saveCondition}
             handleUpdateCondition={handleUpdateCondition}
             handleConfirmCondition={handleConfirmCondition}
             handleClickDeleteCondition={
@@ -775,11 +825,26 @@ export default function Home() {
                     testJson={testJson}
                     animationFrame={animationFrame}
                 />
+                <FrameDecisionPathViewer
+                    p1={p1}
+                    p2={p2}
+                    testJson={testJson}
+                    animationFrame={animationFrame}
+                />
             </div>
         </div>
     )
 
     const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
+
+    if(isMobileDisplay)
+    {
+        return(
+        <div>
+            <MobileView/>
+        </div>)
+    }
+
     //
     // Render
     //
@@ -808,6 +873,11 @@ export default function Home() {
                     <Tab label={'Wallet'}/>
                 </Tabs>
 
+                <Snackbar open={successToastOpen} autoHideDuration={6000} onClose={handleToastClose}>
+                    <Alert onClose={handleToastClose} severity="success" sx={{ width: '100%' }}>
+                        Condition Successfully saved
+                    </Alert>
+                </Snackbar>
                 <Box sx={{flex: 1, pt: 5}}>
                     <ThemeProvider theme={theme}>
                         <SwipeableViews

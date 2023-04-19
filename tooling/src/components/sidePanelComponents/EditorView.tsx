@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Button } from '@mui/material';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
@@ -57,6 +57,7 @@ interface EditorViewProps {
     handleRemoveConditionElement: (index: number) => void
     handleSubmitAgent: () => void
     agents: Agent[]
+    handleSaveCondition: (index: number, conditionElements: ConditionElement[]) => void
 }
 
 
@@ -71,7 +72,7 @@ const EditorView = ({
     character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor,
     trees, handleUpdateTree, conditions, handleUpdateCondition, handleConfirmCondition, handleClickDeleteCondition,
     conditionUnderEditIndex, setConditionUnderEditIndex, isConditionWarningTextOn, conditionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText,
-    handleRemoveConditionElement, handleSubmitAgent, agents
+    handleRemoveConditionElement, handleSubmitAgent, agents, handleSaveCondition
 }: EditorViewProps) => {
 
     const isReadOnly = editorMode == EditorMode.ReadOnly
@@ -142,6 +143,7 @@ const EditorView = ({
                         isWarningTextOn={isConditionWarningTextOn}
                         warningText={conditionWarningText}
                         handleRemoveConditionElement={handleRemoveConditionElement}
+                        handleSaveCondition={handleSaveCondition}
                 />;
             }
 
@@ -254,7 +256,7 @@ const EditorView = ({
                         border: '1px solid #999999',
                         padding: '0.5rem 0.5rem 2rem 0.5rem',
                         height: '500px',
-                        overflow: 'auto',
+                        overflow: 'scroll',
                     }}
                 >
                     {content(workingTab)}
