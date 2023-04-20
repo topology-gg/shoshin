@@ -28,6 +28,7 @@ const senders = {
     "0x07ff2c85c7b1de1808ddf8897bc729feefa71ba269ea1015d1fd7a18c9918cc3" : "Greg",
     "0x0266ed55be7054c74db3f8ec2e79c728056c802a11481fad0e91220139b8916a" : "NonCents",
     "0x02f880133db4f533bdbc10c3d02fbc9b264dac2ff52eae4e0cec0ce794bad898" : "GG",
+    "0x01b0afcd626d197993070994f8b37d20594c93bebfd48e28bd38c3b94a5802ea" : "GG-Cartridge"
 }
 const lookupSenderAddress = (address : string) =>{
     return senders[address] ? senders[address] : "anon"

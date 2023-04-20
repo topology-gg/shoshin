@@ -10,7 +10,7 @@ export default async function handler(req, res) {
         .collection(COLLECTION_NAME)
         .find({})
         .sort({
-            'agent_id': 1,
+            '_chain.valid_from': 1,
         })
         .limit (20) // get 20 last tuple of agents
         .toArray()
