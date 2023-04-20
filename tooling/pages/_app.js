@@ -3,11 +3,19 @@ import { StarknetConfig, InjectedConnector } from '@starknet-react/core'
 import { SequencerProvider } from 'starknet'
 import { ShoshinWASMContextProvider } from '../src/context/wasm-shoshin'
 import { ConditionWASMContextProvider } from '../src/context/wasm-condition'
+import ControllerConnector from '@cartridge/connector';
+import { CONTRACT_ADDRESS, ENTRYPOINT_FIGHT } from '../src/constants/constants';
 
 function MyApp({ Component, pageProps }) {
     const connectors = [
         new InjectedConnector({ options: { id: 'braavos' }}),
         new InjectedConnector({ options: { id: 'argentX' }}),
+        new ControllerConnector([
+            {
+                method: ENTRYPOINT_FIGHT,
+                target: CONTRACT_ADDRESS,
+            }
+        ])
     ]
 
     const testnet1 = 'https://alpha4.starknet.io/'
