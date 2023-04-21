@@ -70,19 +70,19 @@ impl FixedImpl of Fixed {
 
 impl FixedPartialEq of PartialEq::<FixedType> {
     #[inline(always)]
-    fn eq(a: FixedType, b: FixedType) -> bool {
-        return eq(a, b);
+    fn eq(lhs: FixedType, rhs: FixedType) -> bool {
+        return eq(lhs, rhs);
     }
 
     #[inline(always)]
-    fn ne(a: FixedType, b: FixedType) -> bool {
-        return ne(a, b);
+    fn ne(lhs: FixedType, rhs: FixedType) -> bool {
+        return ne(lhs, rhs);
     }
 }
 
 impl FixedAdd of Add::<FixedType> {
-    fn add(a: FixedType, b: FixedType) -> FixedType {
-        return add(a, b);
+    fn add(lhs: FixedType, rhs: FixedType) -> FixedType {
+        return add(lhs, rhs);
     }
 }
 
@@ -94,8 +94,8 @@ impl FixedAddEq of AddEq::<FixedType> {
 }
 
 impl FixedSub of Sub::<FixedType> {
-    fn sub(a: FixedType, b: FixedType) -> FixedType {
-        return sub(a, b);
+    fn sub(lhs: FixedType, rhs: FixedType) -> FixedType {
+        return sub(lhs, rhs);
     }
 }
 
@@ -107,8 +107,8 @@ impl FixedSubEq of SubEq::<FixedType> {
 }
 
 impl FixedMul of Mul::<FixedType> {
-    fn mul(a: FixedType, b: FixedType) -> FixedType {
-        return mul(a, b);
+    fn mul(lhs: FixedType, rhs: FixedType) -> FixedType {
+        return mul(lhs, rhs);
     }
 }
 
@@ -120,8 +120,8 @@ impl FixedMulEq of MulEq::<FixedType> {
 }
 
 impl FixedDiv of Div::<FixedType> {
-    fn div(a: FixedType, b: FixedType) -> FixedType {
-        return div(a, b);
+    fn div(lhs: FixedType, rhs: FixedType) -> FixedType {
+        return div(lhs, rhs);
     }
 }
 
@@ -134,23 +134,23 @@ impl FixedDivEq of DivEq::<FixedType> {
 
 impl FixedPartialOrd of PartialOrd::<FixedType> {
     #[inline(always)]
-    fn ge(a: FixedType, b: FixedType) -> bool {
-        return ge(a, b);
+    fn ge(lhs: FixedType, rhs: FixedType) -> bool {
+        return ge(lhs, rhs);
     }
 
     #[inline(always)]
-    fn gt(a: FixedType, b: FixedType) -> bool {
-        return gt(a, b);
+    fn gt(lhs: FixedType, rhs: FixedType) -> bool {
+        return gt(lhs, rhs);
     }
 
     #[inline(always)]
-    fn le(a: FixedType, b: FixedType) -> bool {
-        return le(a, b);
+    fn le(lhs: FixedType, rhs: FixedType) -> bool {
+        return le(lhs, rhs);
     }
 
     #[inline(always)]
-    fn lt(a: FixedType, b: FixedType) -> bool {
-        return lt(a, b);
+    fn lt(lhs: FixedType, rhs: FixedType) -> bool {
+        return lt(lhs, rhs);
     }
 }
 
@@ -316,4 +316,17 @@ fn neg(a: FixedType) -> FixedType {
 
 fn sub(a: FixedType, b: FixedType) -> FixedType {
     return Fixed::from_felt(a.into() - b.into());
+}
+
+fn u128_wide_mul(a: u128, b: u128) -> (u128, u128) {
+    let (a_hi, a_lo) = integer::u128_safe_divmod(a, integer::u128_as_non_zero(ONE_u128));
+    let (b_hi, b_lo) = integer::u128_safe_divmod(b, integer::u128_as_non_zero(ONE_u128));
+    let lolo = a_lo * b_lo;
+    let hilo = a_hi * b_lo;
+    let lohi = a_lo * b_hi; 
+    let hihi = a_hi * b_hi;
+
+    let lo = lolo + (hilo * ONE_u128) + (lohi * ONE_u128);
+    let hi = hihi + (hilo / ONE_u128) + (lohi / ONE_u128);
+    (hi, lo)
 }
