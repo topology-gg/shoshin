@@ -1,11 +1,13 @@
 // https://github.com/influenceth/cubit
 use traits::Into;
 use option::OptionTrait;
+use debug::PrintTrait;
 
 const ONE: felt252 = 18446744073709551616; // 2 ** 64
 const ONE_u128: u128 = 18446744073709551616_u128; // 2 ** 64
 const HALF_PRIME: felt252 = 1809251394333065606848661391547535052811553607665798349986546028067936010240;
 const HALF_u128: u128 = 9223372036854775808_u128; // 2 ** 63
+const HALF: felt252 = 9223372036854775808; // 2 ** 63
 
 #[derive(Copy, Drop)]
 struct FixedType { mag: u128, sign: bool }
@@ -22,6 +24,13 @@ trait Fixed {
     fn ceil(self: FixedType) -> FixedType;
     fn floor(self: FixedType) -> FixedType;
     fn round(self: FixedType) -> FixedType;
+}
+
+impl FixedPrint of PrintTrait<FixedType> {
+    fn print(self: FixedType) {
+        self.sign.print();
+        self.mag.into().print();
+    }
 }
 
 impl FixedImpl of Fixed {
