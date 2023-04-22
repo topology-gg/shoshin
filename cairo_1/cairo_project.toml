@@ -1,2 +1,3 @@
 [crate_roots]
-shoshin_cairo_1 = "contracts"
+shoshin_cairo_1 = "src"
+tests = "src/tests"
