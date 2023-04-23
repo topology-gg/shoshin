@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Link } from '@mui/material';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import BuildIcon from '@mui/icons-material/Build';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import PublishIcon from '@mui/icons-material/Publish';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Tabs, { EditorTabName } from './EditorTabs';
 import MentalStates from './MentalStates';
 import TreeEditor from './TreeEditor';
@@ -18,6 +19,7 @@ import { MentalState } from '../../types/MentalState';
 import { Character, EditorMode } from '../../constants/constants';
 import { Tree } from '../../types/Tree';
 import { Condition, ConditionElement } from '../../types/Condition';
+import { CircularProgress, Tooltip } from '@mui/material';
 
 interface EditorViewProps {
     editorMode: EditorMode
@@ -58,6 +60,9 @@ interface EditorViewProps {
     handleSubmitAgent: () => void
     agents: Agent[]
     handleSaveCondition: (index: number, conditionElements: ConditionElement[]) => void
+    txHash?: string
+    txPending?: boolean
+    txStatusText?: string
 }
 
 
@@ -72,7 +77,7 @@ const EditorView = ({
     character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor,
     trees, handleUpdateTree, conditions, handleUpdateCondition, handleConfirmCondition, handleClickDeleteCondition,
     conditionUnderEditIndex, setConditionUnderEditIndex, isConditionWarningTextOn, conditionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText,
-    handleRemoveConditionElement, handleSubmitAgent, agents, handleSaveCondition
+    handleRemoveConditionElement, handleSubmitAgent, agents, handleSaveCondition, txHash, txStatusText, txPending = false,
 }: EditorViewProps) => {
 
     const isReadOnly = editorMode == EditorMode.ReadOnly
@@ -165,8 +170,8 @@ const EditorView = ({
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    width:'800px',
                     mb: '1rem',
-                    width:'800px'
                 }}
             >
 
@@ -182,7 +187,7 @@ const EditorView = ({
                 </div>
 
                 <div style={{display:'flex', flexDirection:'row', gap:'10px'}}>
-                    <div style={{marginBottom:'1rem'}}>
+                    <div >
                         <ButtonOptionList
                             buttonLabel={<><PersonSearchIcon sx={{}} /></>}
                             options={agents}
@@ -194,7 +199,7 @@ const EditorView = ({
                         />
                     </div>
 
-                    <div style={{marginBottom:'1rem'}}>
+                    <div style={{marginBottom: '1rem'}}>
                         <Button
                             id='button-option-list-button'
                             onClick={() => {
@@ -207,7 +212,7 @@ const EditorView = ({
                         </Button>
                     </div>
 
-                    <div style={{marginBottom:'1rem'}}>
+                    <div style={{marginBottom: '1rem'}}>
                         <ButtonOptionList
                             buttonLabel={<><PersonAddAlt1Icon  sx={{}} /></>}
                             options={agents}
@@ -219,7 +224,7 @@ const EditorView = ({
                         />
                     </div>
 
-                    <div style={{marginBottom:'1rem'}}>
+                    <div style={{marginBottom: '1rem'}}>
                         <Button
                             id='button-option-list-button'
                             onClick={() => {
@@ -227,13 +232,33 @@ const EditorView = ({
                                 handleSubmitAgent();
                             }}
                             variant="outlined"
-                            disabled={editorMode==EditorMode.ReadOnly}
+                            disabled={editorMode==EditorMode.ReadOnly || txPending}
                         >
-                            <PublishIcon sx={{}} />
+                            {txPending ? 
+                                <CircularProgress size="20px" color="inherit"/> : 
+                                <PublishIcon sx={{}} />
+                            }
                         </Button>
                     </div>
                 </div>
+                <div style={{height:'1rem'}}>
+                    {txHash && 
+                        <Tooltip title="View on Starkscan" arrow>
 
+                            <Link
+                                display="flex"
+                                alignItems="center"
+                                fontSize="0.8rem"
+                                gap="0.25rem"
+                                target="_blank"
+                                href={`https://testnet.starkscan.co/tx/${txHash}`}
+                            >
+                                <p>{txStatusText}</p>
+                                <OpenInNewIcon fontSize="inherit" />
+                            </Link>
+                        </Tooltip>
+                    }
+                </div>
             </Box>
 
             <Box

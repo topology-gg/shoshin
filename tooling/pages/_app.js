@@ -4,7 +4,7 @@ import { SequencerProvider } from 'starknet'
 import { ShoshinWASMContextProvider } from '../src/context/wasm-shoshin'
 import { ConditionWASMContextProvider } from '../src/context/wasm-condition'
 import ControllerConnector from '@cartridge/connector';
-import { CONTRACT_ADDRESS, ENTRYPOINT_FIGHT } from '../src/constants/constants';
+import { CONTRACT_ADDRESS, ENTRYPOINT_AGENT_SUBMISSION } from '../src/constants/constants';
 
 function MyApp({ Component, pageProps }) {
     const connectors = [
@@ -12,7 +12,7 @@ function MyApp({ Component, pageProps }) {
         new InjectedConnector({ options: { id: 'argentX' }}),
         new ControllerConnector([
             {
-                method: ENTRYPOINT_FIGHT,
+                method: ENTRYPOINT_AGENT_SUBMISSION,
                 target: CONTRACT_ADDRESS,
             }
         ])

@@ -46,7 +46,7 @@ import {
 import {
     useAccount,
     useConnectors,
-    useStarknetExecute,
+    useStarknetExecute
 } from "@starknet-react/core";
 import { EditorTabName } from "../src/components/sidePanelComponents/EditorTabs";
 import Leaf, { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
@@ -185,6 +185,8 @@ export default function Home() {
 
     // Starknet states
     const { account, address, status } = useAccount();
+    const [txPending, setTxPending] = useState<boolean>(false);
+    const [txStatusText, setTxStatusText] = useState<string>();
     const [hash, setHash] = useState<string>();
     const callData = useMemo(() => {
         let args = agentToCalldata(newAgent);
@@ -206,15 +208,17 @@ export default function Home() {
 
     useEffect(() => {
         if (hash) {
+            setTxStatusText("Submission Pending");
             account
-                .waitForTransaction(hash)
-                .then(() => console.log("Success!"))
+                .waitForTransaction(hash, 10000, ["ACCEPTED_ON_L1", "ACCEPTED_ON_L2"])
+                .then(() => setTxStatusText("Success!"))
                 .catch((err) => {
-                    console.log("Error! Please try again.");
+                    setTxStatusText("Error! Please try again.");
                     console.error(err);
-                });
+                })
+                .finally(() => setTxPending(false));
         }
-    }, [hash]);
+    }, [hash, account]);
 
     // Decode from React states
     if (testJson !== null) {
@@ -309,6 +313,7 @@ export default function Home() {
         // submit tx
         console.log("> submitting args:", callData);
         try {
+            setTxPending(true);
             setHash("");
             const response = await execute();
             setHash(response.transaction_hash);
@@ -764,6 +769,9 @@ export default function Home() {
             }
             handleSubmitAgent={handleSubmitAgent}
             agents={agents}
+            txPending={txPending}
+            txHash={hash}
+            txStatusText={txStatusText}
         />
     )
 
