@@ -23,7 +23,10 @@ const Combos = ({
                     pr: "1rem",
                 }}
             >
-                <Typography sx={{ fontSize: '17px' }} variant='overline'>Combos</Typography>
+                <Typography sx={{ fontSize: '17px' }} variant='overline'>
+                    <span style={{marginRight:'8px'}}>&#129354;</span>Combos
+                </Typography>
+
                 <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
                     <Select
                         value={selectedIndex}
