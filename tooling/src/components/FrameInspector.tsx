@@ -12,13 +12,18 @@ import { Box } from "@mui/system";
 import React from "react";
 import { bodyStateNumberToName } from "../constants/constants";
 import { TestJson } from "../types/Frame";
+import Agent from "../types/Agent";
 
 type FrameInspectorProps = {
+    p1: Agent;
+    p2: Agent;
     testJson: TestJson;
     animationFrame: number;
 };
 
 const FrameInspector = ({
+    p1,
+    p2,
     testJson,
     animationFrame,
 }: FrameInspectorProps) => {
@@ -35,17 +40,21 @@ const FrameInspector = ({
         characterLeftType === 0 ? "jessica" : "antoc",
         characterRightType === 0 ? "jessica" : "antoc",
     ];
+    const agentMentalStateNames = [
+        p1.mentalStatesNames,
+        p2.mentalStatesNames
+    ]
 
     return (
-        <div style={{padding:'10px', paddingBottom:'20px', marginBottom:'16px', border:'1px solid #777', borderRadius:'20px'}}>
+        // <div style={{padding:'10px', paddingBottom:'20px', marginBottom:'16px', border:'1px solid #777', borderRadius:'20px'}}>
         <Grid container spacing={1}>
-            {[frameLeft, frameRight].map((frame, i) => (
+            {[frameLeft, frameRight].map((frame, player_index) => (
                 <Grid item xs={6}>
                     <Table size="small">
                         <TableHead>
                             <TableRow>
                                 <TableCell colSpan={1}>
-                                    <b>{characterNames[i]}</b>
+                                    <b>{characterNames[player_index]}</b>
                                 </TableCell>
                                 <TableCell align="right" colSpan={2}>
                                     <Box sx={{ whiteSpace: "nowrap" }}>
@@ -75,100 +84,121 @@ const FrameInspector = ({
                             </TableRow>
                         </TableHead>
                         <TableBody>
+
                             <TableRow>
-                                <TableCell>body_state</TableCell>
+                                <TableCell colSpan={2}>
+                                    Mental State
+                                </TableCell>
+                                <TableCell align="right">
+                                    {
+                                        agentMentalStateNames[player_index][frame.mental_state]
+                                    }
+                                </TableCell>
+                            </TableRow>
+
+                            <TableRow>
+                                <TableCell colSpan={2}>
+                                    Body State
+                                </TableCell>
                                 <TableCell align="right">
                                     {
                                         bodyStateNumberToName[
-                                            characterNames[i]
+                                            characterNames[player_index]
                                         ][frame.body_state.state]
                                     }
                                 </TableCell>
-                                <TableCell align="right">
-                                    {frame.body_state.state}
-                                </TableCell>
                             </TableRow>
+
                             <TableRow>
                                 <TableCell colSpan={2}>
-                                    body_state.counter
+                                    Body Counter
                                 </TableCell>
                                 <TableCell align="right">
                                     {frame.body_state.counter}
                                 </TableCell>
                             </TableRow>
+
                             <TableRow>
                                 <TableCell colSpan={2}>
-                                    body_state.stamina
+                                    Stamina
                                 </TableCell>
                                 <TableCell align="right">
                                     {frame.body_state.stamina}
                                 </TableCell>
                             </TableRow>
+
                             <TableRow>
                                 <TableCell colSpan={2}>
-                                    body_state.integrity
+                                    HP
                                 </TableCell>
                                 <TableCell align="right">
                                     {frame.body_state.integrity}
                                 </TableCell>
                             </TableRow>
+
                             <TableRow>
                                 <TableCell colSpan={2}>
-                                    body_state.dir
+                                    Direction
                                 </TableCell>
                                 <TableCell align="right">
                                     {frame.body_state.dir}
                                 </TableCell>
                             </TableRow>
+
                             <TableRow>
                                 <TableCell colSpan={2}>
-                                    combo.index
+                                    Which Combo
                                 </TableCell>
                                 <TableCell align="right">
                                     {frame.combo.combo_index - 1}
                                 </TableCell>
                             </TableRow>
+
                             <TableRow>
                                 <TableCell colSpan={2}>
-                                    combo.action_index
+                                    Which Action in Combo
                                 </TableCell>
                                 <TableCell align="right">
                                     {frame.combo.action_index - 1}
                                 </TableCell>
                             </TableRow>
+
                             <TableRow>
                                 <TableCell colSpan={2}>
-                                    hitboxes.body.origin (x, y)
+                                    Body Origin
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frame.hitboxes.body.origin.x},{" "}
-                                    {frame.hitboxes.body.origin.y}
+                                    ({frame.hitboxes.body.origin.x},{" "}
+                                    {frame.hitboxes.body.origin.y})
                                 </TableCell>
                             </TableRow>
+
                             <TableRow>
                                 <TableCell colSpan={2}>
-                                    physics_state.vel_fp
+                                    Velocity
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frame.physics_state.vel_fp.x},{" "}
-                                    {frame.physics_state.vel_fp.y}
+                                    ({frame.physics_state.vel_fp.x},{" "}
+                                    {frame.physics_state.vel_fp.y})
                                 </TableCell>
                             </TableRow>
+
                             <TableRow>
                                 <TableCell colSpan={2}>
-                                    physics_state.acc_fp
+                                    Acceleration
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frame.physics_state.acc_fp.x},{" "}
-                                    {frame.physics_state.acc_fp.y}
+                                    ({frame.physics_state.acc_fp.x},{" "}
+                                    {frame.physics_state.acc_fp.y})
                                 </TableCell>
                             </TableRow>
+
                         </TableBody>
                     </Table>
                 </Grid>
             ))}
         </Grid>
-        </div>
+        // </div>
     );
 };
 

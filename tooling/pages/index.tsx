@@ -1,7 +1,8 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import React, { useEffect, useMemo, useState } from "react";
-import { Alert, Box, Snackbar, ThemeProvider } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Snackbar, ThemeProvider } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MidScreenControl from "../src/components/MidScreenControl";
 import EditorView from "../src/components/sidePanelComponents/EditorView";
 import { Frame, FrameScene, TestJson, getFlattenedPerceptiblesFromFrame } from "../src/types/Frame";
@@ -829,10 +830,32 @@ export default function Home() {
                         )
                     }
                 />
-                <FrameInspector
-                    testJson={testJson}
-                    animationFrame={animationFrame}
-                />
+
+                <div style={{padding:'10px', paddingBottom:'13px', marginBottom:'16px', border:'1px solid #777', borderRadius:'20px'}}>
+                    <Accordion
+                        key="accordion-1"
+                        style={{ boxShadow: "none", backgroundColor: "#ffffff00" }}
+                    >
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls="panel1a-content"
+                            id="panel1a-header"
+                            sx={{fontSize:'14px'}}
+                        >
+                            Frame Data Inspector
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <FrameInspector
+                                p1={p1}
+                                p2={p2}
+                                testJson={testJson}
+                                animationFrame={animationFrame}
+                            />
+                        </AccordionDetails>
+                    </Accordion>
+                </div>
+
+
                 <FrameDecisionPathViewer
                     p1={p1}
                     p2={p2}

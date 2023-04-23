@@ -10,6 +10,7 @@ import {
     TableRow,
 } from "@mui/material";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Box } from "@mui/system";
 import React, { useMemo, useState } from "react";
 import { bodyStateNumberToName } from "../constants/constants";
@@ -113,10 +114,19 @@ const FrameDecisionPathViewer = ({
         return conditionEvaluation[0]
     }
 
+    const canRenderDecisionPathForPlayerIndex = (playerIndex: number): boolean => {
+        if (animationFrame != animationFrameAtLastConditionEvalPerPlayer[playerIndex]) {
+            return false
+        }
+        else {
+            return true
+        }
+    }
+
     const decisionPathDisplayRender = (playerIndex: number) => {
         // TODO: block this function with a react state settable by user button click
 
-        if (animationFrame != animationFrameAtLastConditionEvalPerPlayer[playerIndex]) {
+        if (canRenderDecisionPathForPlayerIndex(playerIndex) == false) {
             return <></>
         }
 
@@ -148,7 +158,8 @@ const FrameDecisionPathViewer = ({
     }
 
     return (
-        <div style={{padding:'10px', paddingBottom:'20px', border:'1px solid #777', borderRadius:'20px'}}>
+        <div style={{padding:'10px', paddingBottom:'20px', paddingLeft:'24px', border:'1px solid #777', borderRadius:'20px'}}>
+            <p style={{fontSize:'14px'}}>Decision Path Display</p>
             <Grid container spacing={1}>
                 {[0,1].map((playerIndex) => (
                     <Grid item xs={6}>
@@ -164,7 +175,14 @@ const FrameDecisionPathViewer = ({
                                 }
                             )}}
                         >
-                            <RemoveRedEyeIcon />
+                            {
+                                canRenderDecisionPathForPlayerIndex(playerIndex) ?
+                                <RemoveRedEyeIcon sx={{marginRight:'4px'}} />
+                                :
+                                <VisibilityOffIcon sx={{marginRight:'4px'}} />
+                            }
+                            {/* <RemoveRedEyeIcon sx={{marginRight:'4px'}} /> */}
+                            P{playerIndex+1}
                         </Button>
                         {decisionPathDisplayRender(playerIndex)}
                     </Grid>
