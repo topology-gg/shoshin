@@ -13,6 +13,7 @@ import React from "react";
 import { bodyStateNumberToName } from "../constants/constants";
 import { TestJson } from "../types/Frame";
 import Agent from "../types/Agent";
+import { KeywordMentalState, KeywordBodyState } from "./ui/Keyword";
 
 type FrameInspectorProps = {
     p1: Agent;
@@ -87,25 +88,24 @@ const FrameInspector = ({
 
                             <TableRow>
                                 <TableCell colSpan={2}>
+                                    <span style={{fontSize:'20px', marginRight:'8px'}}>&#129504;</span>
                                     Mental State
                                 </TableCell>
                                 <TableCell align="right">
-                                    {
-                                        agentMentalStateNames[player_index][frame.mental_state]
-                                    }
+                                    <KeywordMentalState
+                                        text={agentMentalStateNames[player_index][frame.mental_state]}
+                                    />
                                 </TableCell>
                             </TableRow>
 
                             <TableRow>
                                 <TableCell colSpan={2}>
-                                    Body State
+                                    <span style={{fontSize:'20px'}}>&#129336;</span> Body State
                                 </TableCell>
                                 <TableCell align="right">
-                                    {
-                                        bodyStateNumberToName[
-                                            characterNames[player_index]
-                                        ][frame.body_state.state]
-                                    }
+                                    <KeywordBodyState
+                                        text={bodyStateNumberToName[characterNames[player_index]][frame.body_state.state]}
+                                    />
                                 </TableCell>
                             </TableRow>
 
