@@ -833,7 +833,7 @@ export default function Home() {
 
                 <div style={{padding:'10px', paddingBottom:'13px', marginBottom:'16px', border:'1px solid #777', borderRadius:'20px'}}>
                     <Accordion
-                        key="accordion-1"
+                        key="accordion-frame-data"
                         style={{ boxShadow: "none", backgroundColor: "#ffffff00" }}
                     >
                         <AccordionSummary
@@ -842,7 +842,7 @@ export default function Home() {
                             id="panel1a-header"
                             sx={{fontSize:'14px'}}
                         >
-                            Frame Data Inspector
+                            Frame Data
                         </AccordionSummary>
                         <AccordionDetails>
                             <FrameInspector
@@ -855,13 +855,30 @@ export default function Home() {
                     </Accordion>
                 </div>
 
+                <div style={{padding:'10px', paddingBottom:'13px', marginBottom:'16px', border:'1px solid #777', borderRadius:'20px'}}>
+                    <Accordion
+                        key="accordion-agent-decision-logic"
+                        style={{ boxShadow: "none", backgroundColor: "#ffffff00" }}
+                    >
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls="panel1a-content"
+                            id="panel1a-header"
+                            sx={{fontSize:'14px'}}
+                        >
+                            Agent Decision Logic
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <FrameDecisionPathViewer
+                                p1={p1}
+                                p2={p2}
+                                testJson={testJson}
+                                animationFrame={animationFrame}
+                            />
+                        </AccordionDetails>
+                    </Accordion>
+                </div>
 
-                <FrameDecisionPathViewer
-                    p1={p1}
-                    p2={p2}
-                    testJson={testJson}
-                    animationFrame={animationFrame}
-                />
             </div>
         </div>
     )

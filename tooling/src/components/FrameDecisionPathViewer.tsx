@@ -169,8 +169,8 @@ const FrameDecisionPathViewer = ({
     }
 
     return (
-        <div style={{padding:'10px', paddingBottom:'20px', paddingLeft:'24px', border:'1px solid #777', borderRadius:'20px'}}>
-            <p style={{fontSize:'14px'}}>Decision Logic</p>
+        // <div style={{padding:'10px', paddingBottom:'20px', paddingLeft:'24px', border:'1px solid #777', borderRadius:'20px'}}>
+        <>
             <Grid container spacing={1}>
                 {[0,1].map((playerIndex) => (
                     <Grid item xs={6}>
@@ -185,7 +185,7 @@ const FrameDecisionPathViewer = ({
                             </IconButton>
                         </>
 
-                        <p>
+                        <p style={{marginBottom:"24px"}}>
                             <span style={{fontSize:'20px'}}>&#129504;</span> Mental State:{" "}
                             <KeywordMentalState text={agentMentalStateNames[playerIndex][ frames[playerIndex].mental_state ]} />
                         </p>
@@ -212,7 +212,8 @@ const FrameDecisionPathViewer = ({
                     </Grid>
                 ))}
             </Grid>
-        </div>
+            {/* </div> */}
+        </>
     );
 };
 
