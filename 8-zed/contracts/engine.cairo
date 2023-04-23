@@ -23,6 +23,8 @@ from contracts.constants.constants import (
     Hitboxes,
     Perceptibles,
     ComboBuffer,
+    RealTimeFrame,
+    RealTimeFrameScene
 )
 from contracts.constants.constants_jessica import ns_jessica_character_dimension
 from contracts.body.body import _body
@@ -161,6 +163,11 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         character_type_0,
         character_type_1,
     );
+
+    %{
+    print(
+        ids.combos_offset_0)
+    %}
 
     //
     // Preparing starting frame
@@ -517,6 +524,75 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         character_type_1 = character_type_1,
     );
 }
+
+func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    state: RealTimeFrameScene,
+    player_action : felt,
+    character_type_0: felt,
+    character_type_1: felt,
+) -> (updatedState: RealTimeFrameScene) {
+    alloc_locals;
+
+    //
+    // Body Phase
+    // (given agent intent, stimulus, and last frame's body state, produce this frame's body state)
+    //
+    let (body_state_0 : BodyState) = _body (
+        character_type = character_type_0,
+        body_state     = state.agent_0.body_state,
+        stimulus       = state.agent_0.stimulus,
+        intent         =  state.agent_0.action,
+    );
+    let (body_state_1 : BodyState) = _body (
+        character_type = character_type_1,
+        body_state     = state.agent_1.body_state,
+        stimulus       = state.agent_1.stimulus,
+        intent         = state.agent_1.action,
+    );
+
+    //
+    // Physicality Phase:
+    // (given this frame's body state and last frame's physics state, produce this frame's physics state along with new stimulus and hitboxes)
+    //
+    let (
+        physics_state_0: PhysicsState,
+        physics_state_1: PhysicsState,
+        stimulus_0: felt,
+        stimulus_1: felt,
+        hitboxes_0: Hitboxes,
+        hitboxes_1: Hitboxes,
+    ) = _physicality(
+        character_type_0     = character_type_0,
+        character_type_1     = character_type_1,
+        last_physics_state_0 = state.agent_0.physics_state,
+        last_physics_state_1 = state.agent_1.physics_state,
+        curr_body_state_0    = body_state_0,
+        curr_body_state_1    = body_state_1,
+    );
+
+
+
+    // For player agent mental_state and other frame members are not relevent
+    let res = RealTimeFrameScene(
+        agent_0 = RealTimeFrame (
+            body_state    = body_state_0,
+            physics_state = physics_state_0,
+            action        =  0,
+            stimulus      = stimulus_0,
+            hitboxes      = hitboxes_0
+        ),
+        agent_1 = RealTimeFrame (
+            body_state    = body_state_1,
+            physics_state = physics_state_1,
+            action        = 0,
+            stimulus      = stimulus_1,
+            hitboxes      = hitboxes_1
+        )
+    );
+
+    return (updatedState=res);    
+}
+
 
 @event
 func event_array(arr_len: felt, arr: FrameScene*) {
