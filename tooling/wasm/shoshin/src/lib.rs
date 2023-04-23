@@ -30,6 +30,27 @@ pub fn run_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
     Result::Ok(serde_wasm_bindgen::to_value(&output)?)
 }
 
+
+/// Wasm binding to the input of the Shoshin loop
+/// # Arguments
+/// * `inputs` - The flattened inputs to the shoshin loop
+///
+/// # Returns
+/// The extracted output from the shoshin loop
+#[wasm_bindgen(js_name = simulateRealtimeFrame)]
+pub fn run_realtime_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
+    let inputs = ShoshinInputVec(inputs);
+    let inputs = prepare_args(inputs).map_err(|e| JsError::new(&e.to_string()))?;
+
+    let shoshin_bytecode = include_str!("./bytecode_shoshin.json");
+    let vm = execute_cairo_program(shoshin_bytecode, "playerInLoop", inputs)
+        .map_err(|e| JsError::new(&e.to_string()))?;
+
+    let output = get_output(vm).map_err(|e| JsError::new(&e.to_string()))?;
+    Result::Ok(serde_wasm_bindgen::to_value(&output)?)
+}
+
+
 /// Extract the frame scene from the final VM state
 /// # Arguments
 /// * `vm` - The final VM state after the shoshin loop execution

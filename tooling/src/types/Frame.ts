@@ -7,13 +7,11 @@ export interface BodyState {
     counter: number,
     fatigued: number,
 }
-const BODY_STATE_KEYS: (keyof BodyState)[] = ['dir', 'integrity', 'stamina', 'state', 'counter', 'fatigued']
 
 export interface Vec2 {
     x: number,
     y: number,
 }
-const VEC2_KEYS: (keyof Vec2)[] = ['x', 'y']
 
 export interface Rectangle {
     origin: Vec2,
@@ -25,7 +23,6 @@ export interface PhysicsState {
     vel_fp: Vec2,
     acc_fp: Vec2,
 }
-const PHYSICS_STATE_KEYS: (keyof PhysicsState)[] = ['pos', 'vel_fp', 'acc_fp']
 
 export interface Hitboxes {
     action: Rectangle,
@@ -41,6 +38,19 @@ export interface FrameScene {
     agent_0: Frame[],
     agent_1: Frame[],
 }
+
+export interface RealTimeFrameScene {
+    agent_0: RealTimeFrame,
+    agent_1: RealTimeFrame,
+}
+export interface RealTimeFrame {
+    body_state: BodyState,
+    physics_state: PhysicsState,
+    action: number,
+    stimulus: number,
+    hitboxes: Hitboxes,
+}
+
 
 export interface Frame {
     mental_state: number,
@@ -67,11 +77,48 @@ export function getFlattenedPerceptiblesFromFrame(agent: Frame): number[] {
     return [...getFlattenedPhysicState(agent.physics_state), ...getFlattenedBodyState(agent.body_state)]
 }
 
+
+
+function getFlattenedRectangle(rectangle : Rectangle) : number[]{
+    let flattenedRectangle = []
+
+    let rectangleKeys = Object.keys(rectangle)
+
+    for (const key of rectangleKeys){
+        let vector = rectangle[key as keyof Rectangle]
+
+        let flattenedVector = getFlattenedVector(vector)
+
+        flattenedRectangle.push(...flattenedVector)
+        
+    }
+
+    return flattenedRectangle
+
+}
+function getFlattenedHitboxes(hitboxes : Hitboxes) : number[] {
+    let flattenedHitboxes = []
+
+    let hitboxesKeys = Object.keys(hitboxes)
+
+    for (const key of hitboxesKeys){
+        let rectangle = hitboxes[key as keyof Hitboxes]
+
+        let flatteneRectangle = getFlattenedRectangle(rectangle)
+
+        flattenedHitboxes.push(flatteneRectangle)
+    }
+
+
+    return flattenedHitboxes
+}
+
 function getFlattenedPhysicState(physicState: PhysicsState): number[] {
     let flattenedPhysicState = []
+    let physicStateKeys = Object.keys(physicState)
 
-    for (const key of PHYSICS_STATE_KEYS) {
-        let vector: Vec2 = physicState[key]
+    for (const key of physicStateKeys) {
+        let vector: Vec2 = physicState[key as keyof PhysicsState]
         let flattenedVector = getFlattenedVector(vector)
 
         flattenedPhysicState.push(...flattenedVector)
@@ -82,9 +129,10 @@ function getFlattenedPhysicState(physicState: PhysicsState): number[] {
 
 function getFlattenedVector(vector: Vec2): number[] {
     let flattenedVector = []
+    let vectorKeys = Object.keys(vector)
 
-    for (const key of VEC2_KEYS) {
-        flattenedVector.push(vector[key])
+    for (const key of vectorKeys) {
+        flattenedVector.push(vector[key as keyof Vec2])
     }
 
     return flattenedVector
@@ -92,10 +140,31 @@ function getFlattenedVector(vector: Vec2): number[] {
 
 function getFlattenedBodyState(bodyState: BodyState): number[] {
     let flattenedBodyState = []
+    let bodyStateKeys = Object.keys(bodyState)
 
-    for (const key of BODY_STATE_KEYS) {
-        flattenedBodyState.push(bodyState[key])
+    for (const key of bodyStateKeys) {
+        flattenedBodyState.push(bodyState[key as keyof BodyState])
     }
 
     return flattenedBodyState
 }
+
+export function realTimeFrameSceneToArray(scene : RealTimeFrameScene) : number[]{
+    let flatBody_0 = getFlattenedBodyState(scene.agent_0.body_state)
+    let flatBody_1 = getFlattenedBodyState(scene.agent_1.body_state)
+
+    let flatPhysics_0 = getFlattenedPhysicState(scene.agent_0.physics_state)
+    let flatPhysics_1 = getFlattenedPhysicState(scene.agent_1.physics_state)
+    
+    let flatHitbox_0 = getFlattenedHitboxes(scene.agent_0.hitboxes)
+    let flatHitbox_1 = getFlattenedHitboxes(scene.agent_1.hitboxes)
+
+    
+
+    return [
+        
+    ]
+
+}
+
+
