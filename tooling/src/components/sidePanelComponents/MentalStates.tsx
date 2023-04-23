@@ -8,9 +8,9 @@ import Menu from '@mui/material/Menu';
 import MenuList from '@mui/material/MenuList';
 import { MentalState } from '../../types/MentalState';
 import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
+import { KeywordMentalState } from '../ui/Keyword';
 
 
-const buttonStyle = { marginBottom:"0.5rem", marginTop:"0.5rem", marginLeft: "0.2rem", marginRight: "0.2rem", height: "1.5rem"};
 let currentMenu = 0
 
 const actionToStr = (action: number, characterIndex) => {
@@ -107,7 +107,9 @@ const MentalStates = ({
                 pl: "2rem",
             }}
         >
-            <Typography sx={{ fontSize: '17px' }} variant='overline'>Mind</Typography>
+            <Typography sx={{ fontSize: '17px' }} variant='overline'>
+                <span style={{marginRight:'8px'}}>&#129504;</span>Mind
+            </Typography>
 
             <div
                 style={{
@@ -184,11 +186,11 @@ const MentalStates = ({
                                 }}
                             >
                                 <button
-                                    style={{ ...buttonStyle }}
+                                    className={'mentalStateButton'}
                                     key={`${i}`}
                                     onClick={() => handleClickTreeEditor(i+1)}
                                 >
-                                        {`${state.state}`}
+                                    {state.state}
                                 </button>
 
                                 <IconButton
@@ -206,7 +208,7 @@ const MentalStates = ({
                                     onClick={handleClick}
                                     disabled={isReadOnly}
                                 >
-                                    action {actionToStr(state.action, characterIndex)}
+                                    <span style={{marginRight:'7px'}}>&#129354;</span> {actionToStr(state.action, characterIndex)}
                                 </Button>
 
                                 <Menu

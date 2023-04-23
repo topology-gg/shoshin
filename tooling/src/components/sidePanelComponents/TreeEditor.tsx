@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import DecisionTree from './DecisionTree'
 import { Tree } from '../../types/Tree'
 import { Condition, conditionToStr } from '../../types/Condition'
+import { KeywordCondition, KeywordMentalState } from '../ui/Keyword';
 
 const treeToString = (tree: Tree, conditions : Condition[]) => {
     let str = ''
@@ -20,7 +21,7 @@ const treeToString = (tree: Tree, conditions : Condition[]) => {
             str += matchingCondition != undefined ? matchingCondition.displayName : n.id
             str += ' => '
         }
-        
+
     })
     return str
 }
@@ -80,17 +81,19 @@ const TreeEditor = ({
         >
             <IconButton onClick={(_)=>{handleClickTreeEditor(0)}}><ArrowBackIcon/></IconButton>
             <Box
-            sx={{
-                mt: '1rem',
-                ml: '1rem',
-                minWidth:'30vw'
-            }}>
+                sx={{
+                    mt: '1rem',
+                    ml: '1rem',
+                    minWidth:'30vw'
+                }}
+            >
+                <p style={{margin:0, marginBottom:'24px', fontSize:'16px'}}>Decision Tree for <KeywordMentalState text={mentalState.state}/></p>
                 <TextField
                     color={'info'}
                     id='outlined-textarea'
                     placeholder={`C1 => MS IDLE,\nC2 => MS ATTACK,\n_ => MS DEFEND`}
                     defaultValue={treeToString(tree, conditions)}
-                    label={`Decision Tree for ${mentalState.state}`}
+                    label={`Which Mental State to Go Next?`}
                     onChange={ (event) => handleUpdateTree(indexTree, event.target.value) }
                     fullWidth
                     multiline
@@ -108,52 +111,70 @@ const TreeEditor = ({
                         <Box margin={'0.5rem'}>{isWarningTextOn && <Typography color='red' padding={'0.1rem'} fontSize={'11px'} variant='overline'>{warningText}</Typography>}</Box>
                     </Box>
                     <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        marginLeft: '0.5rem',
-                    }}
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            marginLeft: '0.5rem',
+                            alignItems: 'center',
+                            mb:'1rem'
+                        }}
                     >
-                        <Typography padding={'0.1rem'} fontSize={'11px'} variant='overline'>Available conditions:</Typography>
-                        {(conditions.length == 0) && <Typography padding={'0.1rem'} fontSize={'11px'} color='red' variant='overline'>No conditions available, go to Conditions tab to create some</Typography>}
+                        <p style={{margin:'0 8px 0 0', padding:'0.1rem', fontSize:'14px'}}>
+                            <span style={{marginRight:'8px', fontSize:'14px'}}>&#128208;</span>Available Conditions:
+                        </p>
+
+                        {(conditions.length == 0) && <Typography padding={'0.1rem'} fontSize={'12px'} color='red' variant='overline'>No Conditions available, go to Conditions tab to create some</Typography>}
                         {
                             conditions.slice(0, conditions.length - 1).map((f, i) => {
                                 return (
                                     <Tooltip key={`tooltip-condition-${i}`} title={`${f.displayName}`}>
-                                        <Card
+                                        {/* <Card
                                         sx={{
                                             margin: '0.2rem 0.2rem 0.3rem 0.2rem',
                                             padding: '0.1rem',
                                         }}
                                         key={`card-condition-${i}`}
-                                        >{f.displayName}</Card>
+                                        >{f.displayName}</Card> */}
+                                        <>
+                                            <KeywordCondition text={f.displayName} />
+                                            <span style={{width:'4px'}} />
+                                        </>
                                     </Tooltip>
                                 )
                             })
                         }
                     </Box>
+
                     <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        marginLeft: '0.5rem',
-                    }}
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            marginLeft: '0.5rem',
+                            alignItems:'center'
+                        }}
                     >
-                        <Typography padding={'0.1rem'} fontSize={'11px'} variant='overline'>Available mental states:</Typography>
+                        <p style={{margin:'0 8px 0 0', padding:'0.1rem', fontSize:'14px'}}>
+                            <span style={{fontSize:'14px',marginRight:'8px'}}>&#129504;</span>Available Mental States:
+                        </p>
                         {
                             mentalStates.map((ms, i) => {
                                 return (
-                                    <Card
-                                    sx={{
-                                        margin: '0.2rem 0.2rem 0.3rem 0.2rem',
-                                        padding: '0.1rem',
-                                    }}
-                                    key={`card-mental-state-${i}`}
-                                    >{ms.state}</Card>
+                                    // <Card
+                                    //     sx={{
+                                    //         margin: '0.2rem 0.2rem 0.3rem 0.2rem',
+                                    //         padding: '0.1rem',
+                                    //     }}
+                                    //     key={`card-mental-state-${i}`}
+                                    // >{ms.state}</Card>
+                                    <>
+                                        <KeywordMentalState text={ms.state} />
+                                        <span style={{width:'4px'}} />
+                                    </>
                                 )
                             })
                         }
                     </Box>
+
                 </Box>
             </Box>
             {/* <Box

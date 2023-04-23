@@ -24,7 +24,9 @@ const Profile = ({
                 pl: "2rem",
             }}
         >
-            <Typography sx={{ fontSize: '17px' }} variant='overline'>Profile</Typography>
+            <Typography sx={{ fontSize: '17px' }} variant='overline'>
+                <span style={{marginRight:'8px'}}>&#128220;</span>Profile
+            </Typography>
 
             <Box sx={{fontSize:'14px', mb:'2rem'}}>
                 <FormControl variant="standard">

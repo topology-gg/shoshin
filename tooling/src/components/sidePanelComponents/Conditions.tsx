@@ -96,7 +96,10 @@ const Conditions = ({
                 pl: '1rem',
                 pr: '1rem',
         }}>
-            <Typography sx={{ fontSize: '17px' }} variant='overline'>Conditions</Typography>
+            <Typography sx={{ fontSize: '17px' }} variant='overline'>
+                <span style={{marginRight:'8px'}}>&#128208;</span>Conditions
+            </Typography>
+
             <Grid container spacing={1}>
                 <Grid
                     xs={ 12 }
