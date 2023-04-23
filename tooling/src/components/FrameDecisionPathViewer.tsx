@@ -10,6 +10,7 @@ import {
     TableRow,
 } from "@mui/material";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Box } from "@mui/system";
 import React, { useMemo, useState } from "react";
 import { bodyStateNumberToName } from "../constants/constants";
@@ -19,6 +20,7 @@ import Agent, { getMentalTree } from "../types/Agent";
 import Leaf from "../types/Leaf";
 import { Tree, getConditionsIndex, getMentalStatesNames } from "../types/Tree";
 import { Condition } from "../types/Condition";
+import { KeywordMentalState } from "./ui/Keyword";
 
 type FrameDecisionPathViewerProps = {
     p1: Agent;
@@ -83,13 +85,14 @@ const FrameDecisionPathViewer = ({
 
     const currentTreeIndexLeft = frameLeft.mental_state
     const currentTreeIndexRight = frameRight.mental_state
-    // console.log('1')
     const mentalTreeLeft: Tree = getMentalTree(p1, currentTreeIndexLeft)
-    // console.log('2')
     const mentalTreeRight: Tree = getMentalTree(p2, currentTreeIndexRight)
-    // console.log('3')
     const mentalTrees: Tree[] = [mentalTreeLeft, mentalTreeRight]
     const players: Agent[] = [p1, p2]
+    const agentMentalStateNames = [
+        p1.mentalStatesNames,
+        p2.mentalStatesNames
+    ]
 
     const getMentalStatesNamesForTree = (tree: Tree) => {
         let mentalStatesNames: string[] = getMentalStatesNames(tree)
@@ -113,10 +116,23 @@ const FrameDecisionPathViewer = ({
         return conditionEvaluation[0]
     }
 
+    const canRenderDecisionPathForPlayerIndex = (playerIndex: number): boolean => {
+        if (animationFrame != animationFrameAtLastConditionEvalPerPlayer[playerIndex]) {
+            return false
+        }
+        else {
+            return true
+        }
+    }
+
+    interface PatterMatchExpression {
+        LHS: String,
+        RHS: String,
+    }
     const decisionPathDisplayRender = (playerIndex: number) => {
         // TODO: block this function with a react state settable by user button click
 
-        if (animationFrame != animationFrameAtLastConditionEvalPerPlayer[playerIndex]) {
+        if (canRenderDecisionPathForPlayerIndex(playerIndex) == false) {
             return <></>
         }
 
@@ -130,47 +146,74 @@ const FrameDecisionPathViewer = ({
         let content = []
         mentalStatesNames.forEach((state, state_i) => {
             if (state_i == mentalStatesNames.length-1) {
-                content.push (`_ => ${state}`)
+                content.push({LHS:'_', RHS:state} as PatterMatchExpression)
             }
             else {
-                content.push(`${player.conditionNames[conditionsIndex[state_i]]} (${conditionsEvaluations[state_i]}) => ${state}`)
+                content.push({LHS:`${player.conditionNames[conditionsIndex[state_i]]} (${conditionsEvaluations[state_i]})`, RHS:state} as PatterMatchExpression)
+                // content.push(`${player.conditionNames[conditionsIndex[state_i]]} (${conditionsEvaluations[state_i]}) => ${state}`)
             }
         })
 
         return (
-            <>
+            <Box sx={{pl:'27px'}}>
             {
-                content.map((s) => <p>{s}</p>)
+                content.map(
+                    (patternMatchExpression: PatterMatchExpression) => (
+                        <p>{patternMatchExpression.LHS}{' => '}<KeywordMentalState text={patternMatchExpression.RHS}/></p>
+                    )
+                )
             }
-            </>
+            </Box>
         )
 
     }
 
     return (
-        <div style={{padding:'10px', paddingBottom:'20px', border:'1px solid #777', borderRadius:'20px'}}>
+        // <div style={{padding:'10px', paddingBottom:'20px', paddingLeft:'24px', border:'1px solid #777', borderRadius:'20px'}}>
+        <>
             <Grid container spacing={1}>
                 {[0,1].map((playerIndex) => (
                     <Grid item xs={6}>
-                        <Button
-                            size="small" variant="outlined"
-                            onClick={() => {setAnimationFrameAtLastConditionEvalPerPlayer(
-                                (prev) => {
-                                    if (playerIndex == 0){
-                                        return [animationFrame, prev[1]];
-                                    } else {
-                                        return [prev[0], animationFrame];
-                                    }
-                                }
-                            )}}
-                        >
-                            <RemoveRedEyeIcon />
-                        </Button>
+
+                        <>
+                            <span style={{fontSize:'12px'}}>P{playerIndex}</span>
+                            <IconButton
+                                disabled
+                                size="small"
+                            >
+                                <Person />
+                            </IconButton>
+                        </>
+
+                        <p style={{marginBottom:"24px"}}>
+                            <span style={{fontSize:'20px'}}>&#129504;</span> Mental State:{" "}
+                            <KeywordMentalState text={agentMentalStateNames[playerIndex][ frames[playerIndex].mental_state ]} />
+                        </p>
+
+                        {
+                            !canRenderDecisionPathForPlayerIndex(playerIndex) ? (
+                                <Button
+                                    size="small" variant="outlined"
+                                    onClick={() => {setAnimationFrameAtLastConditionEvalPerPlayer(
+                                        (prev) => {
+                                            if (playerIndex == 0){
+                                                return [animationFrame, prev[1]];
+                                            } else {
+                                                return [prev[0], animationFrame];
+                                            }
+                                        }
+                                    )}}
+                                >
+                                    <RemoveRedEyeIcon sx={{mr:'4px'}}/><span>decision path</span>
+                                </Button>
+                            ) : <></>
+                        }
                         {decisionPathDisplayRender(playerIndex)}
                     </Grid>
                 ))}
             </Grid>
-        </div>
+            {/* </div> */}
+        </>
     );
 };
 
