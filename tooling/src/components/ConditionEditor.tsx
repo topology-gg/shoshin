@@ -1,23 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import EditorComponent, { useMonaco, Monaco, OnChange } from "@monaco-editor/react";
+import EditorComponent, {
+    useMonaco,
+    Monaco,
+    OnChange,
+} from "@monaco-editor/react";
 import { EditorProps } from "@monaco-editor/react";
 import {
     ConditionElement,
     ConditionVerificationResult,
     ElementType,
     Operator,
+    Perceptible,
     conditionElementToStr,
     verifyValidCondition,
 } from "../types/Condition";
 import { Box } from "@mui/material";
 
-
 interface token {
     content: string;
     begin: number;
     end: number;
-    type : ElementType;
+    type: ElementType;
 }
 
 const perceptibles = [
@@ -46,34 +50,33 @@ const perceptibles = [
 ];
 
 const bodyStateNameMappings = {
-    'JessicaIdle' : 0,
-    'JessicaSlash' : 10,
-    'JessicaUpswing': 20,
-    'JessicaSidecut': 30,
-    'JessicaBlock':40,
-    'JessicaClash':50,
-    'JessicaHurt':60,
-    'JessicaKnocked':70,
-    'JessicaMoveForward':90,
-    'JessicaMoveBackward':100,
-    'JessicaDashForward':110,
-    'JessicaDashBackward':120,
+    JessicaIdle: 0,
+    JessicaSlash: 10,
+    JessicaUpswing: 20,
+    JessicaSidecut: 30,
+    JessicaBlock: 40,
+    JessicaClash: 50,
+    JessicaHurt: 60,
+    JessicaKnocked: 70,
+    JessicaMoveForward: 90,
+    JessicaMoveBackward: 100,
+    JessicaDashForward: 110,
+    JessicaDashBackward: 120,
 
-    'AntocIdle':0,
-    'AntocHorizontalSwing':1010,
-    'AntocVerticalSwing':1020,
-    'AntocHurt':1050,
-    'AntocKnocked':1060,
-    'AntocMoveForward':1090,
-    'AntocMoveBackward':1100,
-    'AntocDashForward':1110,
-    'AntocDashBackward':1120,
-}
-const bodyStateNames = Object.keys(bodyStateNameMappings)
-const allVariables = perceptibles.concat( bodyStateNames )
+    AntocIdle: 0,
+    AntocHorizontalSwing: 1010,
+    AntocVerticalSwing: 1020,
+    AntocHurt: 1050,
+    AntocKnocked: 1060,
+    AntocMoveForward: 1090,
+    AntocMoveBackward: 1100,
+    AntocDashForward: 1110,
+    AntocDashBackward: 1120,
+};
+const bodyStateNames = Object.keys(bodyStateNameMappings);
+const allVariables = perceptibles.concat(bodyStateNames);
 
 const operators = ["==", "<=", "*", "/", "%", "+", "-", "!", "AND", "OR"];
-
 
 function tokenize(input: string): token[] {
     // Remove any whitespace from the expression
@@ -84,7 +87,7 @@ function tokenize(input: string): token[] {
 
     // Define a regular expression to match operators and parentheses
     var bracketOpenRegex = /^(\(|Abs\()(.*)/;
-    var bracketCloseRegex = /^(\)|\|)(.*)/
+    var bracketCloseRegex = /^(\)|\|)(.*)/;
 
     // Negate Regex
     var negateRegex = /^(!)(.*)/;
@@ -104,7 +107,7 @@ function tokenize(input: string): token[] {
     while (expression && expression.length > 0) {
         var match;
 
-        expression = expression.trim()
+        expression = expression.trim();
 
         // Match negation regex
         if ((match = negateRegex.exec(expression)) !== null) {
@@ -112,9 +115,9 @@ function tokenize(input: string): token[] {
                 content: match[1],
                 begin: match.index,
                 end: match.index + match[0].length,
-                type : ElementType.Operator
+                type: ElementType.Operator,
             });
-            expression = match[2]
+            expression = match[2];
         }
 
         // Match parentheses
@@ -123,9 +126,9 @@ function tokenize(input: string): token[] {
                 content: match[1],
                 begin: match.index,
                 end: match.index + match[0].length,
-                type : ElementType.Operator
+                type: ElementType.Operator,
             });
-            expression = match[2]
+            expression = match[2];
         }
 
         // Match arithmatic operators
@@ -134,20 +137,29 @@ function tokenize(input: string): token[] {
                 content: match[1],
                 begin: match.index,
                 end: match.index + match[0].length,
-                type : ElementType.Operator
+                type: ElementType.Operator,
             });
-            expression = match[2]
+            expression = match[2];
         }
 
         // Match identifiers and boolean literals
         else if ((match = identifierRegex.exec(expression)) !== null) {
-            tokens.push({
-                content: match[1],
-                begin: match.index,
-                end: match.index + match[0].length,
-                type : ElementType.BodyState
-            });
-            expression = match[2]
+            if (perceptibles.includes(match[1])) {
+                tokens.push({
+                    content: match[1],
+                    begin: match.index,
+                    end: match.index + match[0].length,
+                    type: ElementType.Perceptible,
+                });
+            } else {
+                tokens.push({
+                    content: match[1],
+                    begin: match.index,
+                    end: match.index + match[0].length,
+                    type: ElementType.BodyState,
+                });
+            }
+            expression = match[2];
         }
         // Match numbers
         else if ((match = numberRegex.exec(expression)) !== null) {
@@ -155,17 +167,17 @@ function tokenize(input: string): token[] {
                 content: match[1],
                 begin: match.index,
                 end: match.index + match[0].length,
-                type : ElementType.Constant
+                type: ElementType.Constant,
             });
-            expression = match[2]
+            expression = match[2];
         } else if ((match = bracketCloseRegex.exec(expression)) !== null) {
             tokens.push({
                 content: match[1],
                 begin: match.index,
                 end: match.index + match[0].length,
-                type : ElementType.Operator
+                type: ElementType.Operator,
             });
-            expression = match[2]
+            expression = match[2];
         }
 
         // If we can't match anything, throw an error
@@ -177,46 +189,59 @@ function tokenize(input: string): token[] {
             throw new Error(`infinite recursion in tokenizer`);
         }
         i++;
-
     }
 
     return tokens;
 }
 
-
-const conditionElementsToDisplayText = (elements : ConditionElement[]) => {
-
-    return elements.map( (e: ConditionElement) => {
-        if (e.value == Operator.OpenParenthesis || e.value == Operator.OpenAbs || e.value == Operator.Not){
-            return e.value
-        }
-        else if (e.value == Operator.CloseParenthesis || e.value == Operator.CloseAbs){
-            return e.value
-        }
-        else {
-            return conditionElementToStr(e) + " "
-        }
-    }).join("").trim()
-}
-
+const conditionElementsToDisplayText = (elements: ConditionElement[]) => {
+    console.log(elements);
+    return elements
+        .map((e: ConditionElement) => {
+            if (
+                e.value == Operator.OpenParenthesis ||
+                e.value == Operator.OpenAbs ||
+                e.value == Operator.Not
+            ) {
+                return e.value;
+            } else if (
+                e.value == Operator.CloseParenthesis ||
+                e.value == Operator.CloseAbs
+            ) {
+                return e.value;
+            } else {
+                return conditionElementToStr(e) + " ";
+            }
+        })
+        .join("")
+        .trim();
+};
 
 interface ConditionEditorProps {
-    initialConditionElements : ConditionElement[],
-    setConditionElements : (is_valid : boolean, elements : ConditionElement[], warningText : string) => void
+    initialConditionElements: ConditionElement[];
+    setConditionElements: (
+        is_valid: boolean,
+        elements: ConditionElement[],
+        warningText: string
+    ) => void;
 }
-const ConditionEditor = ({initialConditionElements, setConditionElements} : ConditionEditorProps)   => {
+const ConditionEditor = ({
+    initialConditionElements,
+    setConditionElements,
+}: ConditionEditorProps) => {
     const editorRef = useRef(null);
     const monacoRef = useRef(null);
 
-    const initialValue = initialConditionElements ? conditionElementsToDisplayText(initialConditionElements) : ""
-    const [editorText, changeEditorText] = useState<string>(initialValue)
+    const initialValue = initialConditionElements
+        ? conditionElementsToDisplayText(initialConditionElements)
+        : "";
+    const [editorText, changeEditorText] = useState<string>(initialValue);
 
     useEffect(() => {
-        changeEditorText(conditionElementsToDisplayText(initialConditionElements))
-    }, [initialConditionElements])
-
-
-
+        changeEditorText(
+            conditionElementsToDisplayText(initialConditionElements)
+        );
+    }, [initialConditionElements]);
 
     function handleEditorDidMount(editor: EditorProps, monaco: Monaco) {
         // here is the editor instance
@@ -228,7 +253,7 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
             // returning a static list of proposals, not even looking at the prefix (filtering is done by the Monaco editor),
             // here you could do a server side lookup
 
-            const perceptibleProposals = perceptibles.map(p => {
+            const perceptibleProposals = perceptibles.map((p) => {
                 return {
                     label: p,
                     kind: monaco.languages.CompletionItemKind.Variable,
@@ -236,9 +261,9 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
                     insertText: p,
                     range: range,
                 };
-            })
+            });
 
-            const bodyStateNameProposals = bodyStateNames.map(n => {
+            const bodyStateNameProposals = bodyStateNames.map((n) => {
                 return {
                     label: n,
                     kind: monaco.languages.CompletionItemKind.Enum,
@@ -246,7 +271,7 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
                     insertText: n,
                     range: range,
                 };
-            })
+            });
 
             return perceptibleProposals.concat(bodyStateNameProposals);
         }
@@ -267,7 +292,6 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
 
         // Reference for usage: https://microsoft.github.io/monaco-editor/monarch.html
         monaco.languages.setMonarchTokensProvider("shoshin_condition", {
-
             perceptibles: perceptibles,
             bodyStateNames: bodyStateNames,
             operators: operators,
@@ -277,11 +301,13 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
                     // identifiers and keywords
                     [
                         /[a-zA-Z_\$][\w$]*/,
-                        { cases: {
-                            "@perceptibles": "perceptibles",
-                            "@bodyStateNames": "bodyStateNames",
-                            "@operators": "operators",
-                        } },
+                        {
+                            cases: {
+                                "@perceptibles": "perceptibles",
+                                "@bodyStateNames": "bodyStateNames",
+                                "@operators": "operators",
+                            },
+                        },
                     ],
 
                     // numbers
@@ -296,26 +322,45 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
         });
 
         editorRef.current = editor;
-        monacoRef.current = monaco
+        monacoRef.current = monaco;
     }
 
+    const transpileToken = (t: token): ConditionElement => {
+        if (t.type == ElementType.Operator) {
+            return {
+                value: t.content as Operator,
+                type: t.type,
+            };
+        } else if (t.type == ElementType.Constant) {
+            return {
+                value : parseInt(t.content) ,
+                type : t.type
+            }
+        } else if (t.type == ElementType.Perceptible) {
+            return {
+                value: Perceptible[t.content],
+                type: t.type,
+            };
+        } else if (t.type == ElementType.BodyState) {
+            return {
+                value: bodyStateNameMappings[t.content],
+                type: t.type,
+            };
+        }
+    };
     const handleChange: OnChange = (text, ev) => {
-
-        changeEditorText(text)
+        changeEditorText(text);
         //tokenize
-        let tokens;
-        try{
+        let tokens: token[];
+        try {
             tokens = tokenize(text);
-        }catch(e){
-            setConditionElements(false, [], e.message)
-            return
+        } catch (e) {
+            setConditionElements(false, [], e.message);
+            return;
         }
 
         //transpile
-        const elements: ConditionElement[] = tokens.map(t => ({
-            value : t.content,
-            type : t.type
-        }))
+        const elements: ConditionElement[] = tokens.map(transpileToken);
 
         //verify
         const result: ConditionVerificationResult = verifyValidCondition(
@@ -325,66 +370,60 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
             true
         );
 
-
-        if(!result.isValid)
-        {
+        if (!result.isValid) {
             //report errors to the editor screen and return
-            setConditionElements(false, elements, result.message)
-        }else
-        {
-            setConditionElements(true, elements,'')
+            setConditionElements(false, elements, result.message);
+        } else {
+            setConditionElements(true, elements, "");
         }
-
-
     };
 
     const monaco = useMonaco();
-    monaco?.editor.defineTheme('editor-theme', {
-        base: 'vs',
+    monaco?.editor.defineTheme("editor-theme", {
+        base: "vs",
         inherit: true,
         rules: [
             {
-                token: 'bodyStateNames',
-                foreground: 'a47dcb',
-                fontStyle: 'bold'
+                token: "bodyStateNames",
+                foreground: "a47dcb",
+                fontStyle: "bold",
             },
             {
-                token: 'perceptibles',
-                foreground: 'd46526',
-                fontStyle: 'bold'
+                token: "perceptibles",
+                foreground: "d46526",
+                fontStyle: "bold",
             },
             {
-                token: 'operators',
-                foreground: '89a7a2',
-                fontStyle: ''
+                token: "operators",
+                foreground: "89a7a2",
+                fontStyle: "",
             },
         ],
         colors: {
-            'editor.background': '#ffffffff',
-            'editor.lineHighlightBackground': '#00000000',
-            'editor.lineHighlightBorder': '#00000000',
-            'scrollbar.shadow': '#00000000',
+            "editor.background": "#ffffffff",
+            "editor.lineHighlightBackground": "#00000000",
+            "editor.lineHighlightBorder": "#00000000",
+            "scrollbar.shadow": "#00000000",
         },
     });
 
     return (
-        <Box style={{border:'1px solid #BBB', marginLeft:'16px'}}>
+        <Box style={{ border: "1px solid #BBB", marginLeft: "16px" }}>
             <EditorComponent
                 height="200px"
                 width="600px"
                 defaultLanguage="shoshin_condition"
                 defaultValue={editorText}
                 value={editorText}
-                theme='editor-theme'
+                theme="editor-theme"
                 options={{
                     minimap: {
-                      enabled: false,
+                        enabled: false,
                     },
                     wordWrap: "on",
                     fontSize: 16,
-                    lineNumbers: 'off',
+                    lineNumbers: "off",
                 }}
-
                 //@ts-ignore
                 onMount={handleEditorDidMount}
                 onChange={handleChange}
@@ -393,4 +432,4 @@ const ConditionEditor = ({initialConditionElements, setConditionElements} : Cond
     );
 };
 
-export default ConditionEditor
+export default ConditionEditor;
