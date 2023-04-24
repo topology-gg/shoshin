@@ -1,19 +1,19 @@
 mod opcodes {
-    const ADD: felt252 = 1;
-    const SUB: felt252 = 2;
-    const MUL: felt252 = 3;
-    const DIV: felt252 = 4;
-    const MOD: felt252 = 5;
-    const ABS: felt252 = 6;
-    const SQRT: felt252 = 7;
-    const POW: felt252 = 8;
+    const ADD: u128 = 1_u128;
+    const SUB: u128 = 2_u128;
+    const MUL: u128 = 3_u128;
+    const DIV: u128 = 4_u128;
+    const MOD: u128 = 5_u128;
+    const ABS: u128 = 6_u128;
+    const SQRT: u128 = 7_u128;
+    const POW: u128 = 8_u128;
 
-    const IS_NN: felt252 = 9;
-    const IS_LE: felt252 = 10;
-    const NOT: felt252 = 11;
-    const EQ: felt252 = 12;
+    const IS_NN: u128 = 9_u128;
+    const IS_LE: u128 = 10_u128;
+    const NOT: u128 = 11_u128;
+    const EQ: u128 = 12_u128;
 
-    const MEM: felt252 = 13;
-    const DICT: felt252 = 14;
-    const FUNC: felt252 = 15;
+    const MEM: u128 = 13_u128;
+    const DICT: u128 = 14_u128;
+    const FUNC: u128 = 15_u128;
 }

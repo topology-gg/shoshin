@@ -1,14 +1,18 @@
-// Library imports
+// Corelib imports
 use array::ArrayTrait;
 use array::SpanTrait;
-use debug::PrintTrait;
+use integer::u128_sqrt;
 use option::OptionTrait;
+use traits::Into;
+use traits::TryInto;
+
+// Library imports
 
 // Internal imports
 use bto::constants::opcodes;
 
 type Offset = usize;
-type Opcode = felt252;
+type Opcode = u128;
 
 #[derive(Drop)]
 struct Node {
@@ -17,7 +21,9 @@ struct Node {
     right: Offset,
 }
 
-fn execute(ref tree: Span<Node>) -> felt252 {
+
+// TODO: add ABS once we have signed integers
+fn execute(ref tree: Span<Node>) -> u128 {
     match gas::withdraw_gas() {
         Option::Some(_) => (),
         Option::None(_) => {
@@ -49,6 +55,23 @@ fn execute(ref tree: Span<Node>) -> felt252 {
 
     if value == opcodes::SUB {
         return execute(ref tree_slice_left) - execute(ref tree_slice_right);
+    }
+
+    if value == opcodes::MUL {
+        return execute(ref tree_slice_left) * execute(ref tree_slice_right);
+    }
+
+    if value == opcodes::DIV {
+        return execute(ref tree_slice_left) / execute(ref tree_slice_right);
+    }
+
+    if value == opcodes::MOD {
+        return execute(ref tree_slice_left) % execute(ref tree_slice_right);
+    }
+
+    if value == opcodes::SQRT {
+        let value = execute(ref tree_slice_right);
+        return u128_sqrt(value);
     }
 
     assert(false, 'Invalid opcode');
