@@ -176,5 +176,34 @@ fn test_sqrt__should_sqrt_one_value() {
     let result = tree::execute(ref tree_span);
 
     // Then
-    assert(result == 10, 'incorrect modulo result');
+    assert(result == 10, 'incorrect sqrt result');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_is_le__should_evaluate_is_le_two_values() {
+    // Given 
+    // Tree
+    //            is_le(0)
+    //          /       \
+    //         is_le(1)   0(6)
+    //       /      \
+    //     is_le(2)   2(5)
+    //    /   \
+    // 2(3) 6(3)
+    let mut tree_array: Array<Node> = ArrayTrait::new();
+    tree_array.append(Node { value: opcodes::IS_LE, left: 1_usize, right: 6_usize });
+    tree_array.append(Node { value: opcodes::IS_LE, left: 1_usize, right: 4_usize });
+    tree_array.append(Node { value: opcodes::IS_LE, left: 1_usize, right: 2_usize });
+    tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: 6, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: 0, left: 0_usize, right: 0_usize });
+
+    // When
+    let mut tree_span = tree_array.span();
+    let result = tree::execute(ref tree_span);
+
+    // Then
+    assert(result == 0, 'incorrect is less than result');
 }

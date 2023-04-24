@@ -23,6 +23,8 @@ struct Node {
 
 
 // TODO: add ABS once we have signed integers
+// TODO: add IS_NN once we have signed integers
+// TODO: import quaireaux_math and use it for POW
 fn execute(ref tree: Span<Node>) -> u128 {
     match gas::withdraw_gas() {
         Option::Some(_) => (),
@@ -74,6 +76,12 @@ fn execute(ref tree: Span<Node>) -> u128 {
         return u128_sqrt(value);
     }
 
+    if value == opcodes::IS_LE {
+        return match execute(ref tree_slice_left) <= execute(ref tree_slice_right) {
+            bool::False(()) => 0_u128,
+            bool::True(()) => 1_u128,
+        };
+    }
     assert(false, 'Invalid opcode');
     return 0;
 }
