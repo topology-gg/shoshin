@@ -9,9 +9,11 @@ import styles from "./Game.module.css";
 import { TestJson } from "../types/Frame";
 import Simulator from "../scene/Simulator";
 import { SimulatorProps } from "../types/Simulator";
+import RealTime from "../scene/Realtime";
+import { ShoshinWASMContext } from "../context/wasm-shoshin";
 
 
-const Game = ({testJson, animationFrame, animationState, showDebug}: SimulatorProps) => {
+const Game = ({testJson, animationFrame, animationState, showDebug, isRealTime = true}: SimulatorProps) => {
     const tagName = "div";
     const className = "relative top-0 left-0 w-full h-full my-12";
     const variant = "default";
@@ -27,6 +29,8 @@ const Game = ({testJson, animationFrame, animationState, showDebug}: SimulatorPr
             return require("phaser");
         }
     }, []);
+
+    const ctx = React.useContext(ShoshinWASMContext);
 
     // import('phaser/src/phaser').then((mod) => {
     //   if (mod && !Phaser) {
@@ -92,8 +96,16 @@ const Game = ({testJson, animationFrame, animationState, showDebug}: SimulatorPr
             };
             g = game.current = new Phaser.Game(config);
 
-            g.scene.add('simulator', Simulator)
-            g.scene.start('simulator')
+            if(isRealTime){
+                g.scene.add('realtime', RealTime)
+                g.scene.start('realtime')
+            } else{
+                g.scene.add('simulator', Simulator)
+                g.scene.start('simulator')
+            }
+            
+            
+            
         }
         return () => g.destroy();
     }, [Phaser, create, preload, parent, canvas]);
@@ -108,16 +120,30 @@ const Game = ({testJson, animationFrame, animationState, showDebug}: SimulatorPr
           return
         }
 
+        
+        
+        
+        if(isRealTime){
+            //@ts-ignore
+            let scene = game.current?.scene.getScene('realtime');
 
-        //@ts-ignore
-        let scene = game.current?.scene.getScene('simulator') as Simulator;
-
-        if(scene == undefined || !testJson)
-        {
-          return
+            if(scene?.is_wasm_undefined()){
+                (scene as RealTime).set_wasm_context(ctx)
+            }
+        }else {
+            //@ts-ignore
+            let scene = game.current?.scene.getScene('simulator') as Simulator;
+            if(scene == undefined || !testJson)
+            {
+              return
+            }
+    
+            scene.updateScene({ testJson, animationFrame, animationState, showDebug, isRealTime })
         }
+        
 
-        scene.updateScene({ testJson, animationFrame, animationState, showDebug })
+
+        
 
         //render stuff
     }, [testJson, animationFrame, animationState, showDebug])

@@ -149,7 +149,7 @@ function getFlattenedBodyState(bodyState: BodyState): number[] {
     return flattenedBodyState
 }
 
-export function realTimeFrameSceneToArray(scene : RealTimeFrameScene) : number[]{
+function realTimeFrameSceneToArray(scene : RealTimeFrameScene) : number[]{
     let flatBody_0 = getFlattenedBodyState(scene.agent_0.body_state)
     let flatBody_1 = getFlattenedBodyState(scene.agent_1.body_state)
 
@@ -162,9 +162,26 @@ export function realTimeFrameSceneToArray(scene : RealTimeFrameScene) : number[]
     
 
     return [
-        
+        ...flatBody_0,
+        ...flatPhysics_0,
+        scene.agent_0.action,
+        scene.agent_0.stimulus,
+        ...flatHitbox_0,
+        ...flatBody_1,
+        ...flatPhysics_1,
+        scene.agent_0.action,
+        scene.agent_0.stimulus,
+        ...flatHitbox_1,
     ]
+}
 
+export function realTimeInputToArray(
+    scene : RealTimeFrameScene, 
+    player_action : number, 
+    character_type_0 : number, 
+    character_type_1 : number) : number[]{
+
+    return [...realTimeFrameSceneToArray(scene), player_action, character_type_0, character_type_1]
 }
 
 

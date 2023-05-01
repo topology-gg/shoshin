@@ -5,4 +5,5 @@ export interface SimulatorProps {
     animationFrame: number;
     animationState: string;
     showDebug: boolean;
+    isRealTime : boolean
 }

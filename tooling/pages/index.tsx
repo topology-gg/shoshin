@@ -30,6 +30,7 @@ import {
     OFFENSIVE_AGENT,
     EditorMode,
     BLANK_AGENT,
+    InitialRealTimeFrameScene,
 } from "../src/constants/constants";
 import Agent, { agentToCalldata, buildAgent } from "../src/types/Agent";
 import StatusBarPanel from "../src/components/StatusBar";
@@ -64,6 +65,7 @@ import theme from "../src/theme/theme";
 import FrameDecisionPathViewer from "../src/components/FrameDecisionPathViewer";
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from "../src/components/MobileView";
+import useRunRealTime from "../src/hooks/useRunRealtime";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -161,6 +163,17 @@ export default function Home() {
     const { runCairoSimulation, wasmReady } = useRunCairoSimulation(p1, p2);
     const { runEvaluateCondition } = useEvaluateCondition();
 
+    const {runRealTime} = useRunRealTime(InitialRealTimeFrameScene, 0, 0, 0)    
+
+    useEffect(() => {
+        if(wasmReady){
+            const [out, err] = runRealTime();
+            console.log('realtime res', err ? err : out)
+        }
+    }, [wasmReady])
+
+    
+    
     const isMobileDisplay = useMediaQuery('(max-width:800px)');
 
     useEffect(() => {
@@ -799,6 +812,7 @@ export default function Home() {
                     animationFrame={animationFrame}
                     animationState={animationState}
                     showDebug={checkedShowDebugInfo}
+                    isRealTime={true}
                 />
 
                 <MidScreenControl
