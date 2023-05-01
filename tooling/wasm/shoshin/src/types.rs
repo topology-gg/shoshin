@@ -29,11 +29,37 @@ pub struct ShoshinInput {
     pub _char_0: u8,
     pub _char_1: u8,
 }
+
+#[derive(Debug, CairoArgs)]
+pub struct RealTimeInput {
+    pub state : RealTimeFrameScene,
+    pub player_action : i32,
+    pub character_type_0 : i32,
+    pub character_type_1 : i32
+}
+
+
+#[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
+pub struct RealTimeFrameScene {
+    pub agent_0: RealTimeAgent,
+    pub agent_1: RealTimeAgent,
+}
+
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
 pub struct FrameScene {
     pub agent_0: Agent,
     pub agent_1: Agent,
 }
+
+#[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
+pub struct RealTimeAgent {
+    pub body_state: BodyState,
+    pub physics_state: PhysicsState,
+    pub action: BigInt,
+    pub stimulus: BigInt,
+    pub hitboxes: Hitboxes,
+}
+
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
 pub struct Agent {
@@ -159,7 +185,7 @@ mod tests {
             ]
         }
     }
-
+    
     #[test]
     fn test_framescene_from_raw_ptr() {
         let data = get_random_input_data(FrameScene::size());
