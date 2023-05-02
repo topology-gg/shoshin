@@ -3,6 +3,7 @@ use array::ArrayTrait;
 use array::SpanTrait;
 use dict::Felt252DictTrait;
 use integer::u128_sqrt;
+use nullable::NullableTrait;
 use option::OptionTrait;
 use traits::Into;
 use traits::TryInto;
@@ -26,7 +27,12 @@ struct Node {
 // TODO: add ABS once we have signed integers
 // TODO: add IS_NN once we have signed integers
 // TODO: import quaireaux_math and use it for POW
-fn execute(ref tree: Span<Node>, ref stack: Span<u128>, ref heap: Felt252Dict<u128>) -> u128 {
+fn execute(
+    ref tree: Span<Node>,
+    ref stack: Span<u128>,
+    ref heap: Felt252Dict<u128>,
+    ref precompiles: Felt252Dict<Nullable<Span<Node>>>
+) -> u128 {
     match gas::withdraw_gas() {
         Option::Some(_) => (),
         Option::None(_) => {
@@ -51,12 +57,12 @@ fn execute(ref tree: Span<Node>, ref stack: Span<u128>, ref heap: Felt252Dict<u1
     }
 
     let mut tree_slice_right = tree.slice(right_offset, length - right_offset);
-    let value_right = execute(ref tree_slice_right, ref stack, ref heap);
+    let value_right: u128 = execute(ref tree_slice_right, ref stack, ref heap, ref precompiles);
 
     let mut value_left = 0_u128;
     if left_offset != 0_usize {
         let mut tree_slice_left = tree.slice(left_offset, right_offset - left_offset);
-        value_left = execute(ref tree_slice_left, ref stack, ref heap);
+        value_left = execute(ref tree_slice_left, ref stack, ref heap, ref precompiles);
     }
 
     if value == opcodes::ADD {
@@ -80,7 +86,7 @@ fn execute(ref tree: Span<Node>, ref stack: Span<u128>, ref heap: Felt252Dict<u1
     }
 
     if value == opcodes::SQRT {
-        return u128_sqrt(value_right);
+        return integer::upcast(u128_sqrt(value_right));
     }
 
     if value == opcodes::IS_LE {
@@ -111,6 +117,11 @@ fn execute(ref tree: Span<Node>, ref stack: Span<u128>, ref heap: Felt252Dict<u1
 
     if value == opcodes::DICT {
         return heap.get(value_right.into());
+    }
+
+    if value == opcodes::FUNC {
+        let mut precompile = precompiles.get(value_right.into()).deref();
+        return execute(ref precompile, ref stack, ref heap, ref precompiles);
     }
 
     assert(false, 'Invalid opcode');
