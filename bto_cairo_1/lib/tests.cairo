@@ -22,8 +22,8 @@ fn execute_tree(
     let mut tree_span = tree.span();
 
     let mut stack = match stack {
-        Option::Some(s) => s.span(),
-        Option::None(()) => ArrayTrait::new().span()
+        Option::Some(s) => s,
+        Option::None(()) => ArrayTrait::new()
     };
     let mut heap = match heap {
         Option::Some(h) => h,
@@ -293,14 +293,14 @@ fn test_eq__should_evaluate_eq() {
 
 #[test]
 #[available_gas(2000000)]
-fn test_mem__should_evaluate_mem() {
+fn test_stack__should_evaluate_stack() {
     // Given 
     // Tree
-    //           mem(0)
+    //           stack(0)
     //            |
     //         mul(1)
     //       /      \
-    //     mem(2)   2(4)
+    //     stack(2)   2(4)
     //       |
     //      1(3)
     let mut stack: Array<u128> = ArrayTrait::new();
@@ -312,9 +312,9 @@ fn test_mem__should_evaluate_mem() {
     stack.append(6_u128);
 
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::MEM, left: 0_usize, right: 1_usize });
+    tree_array.append(Node { value: opcodes::STACK, left: 0_usize, right: 1_usize });
     tree_array.append(Node { value: opcodes::MUL, left: 1_usize, right: 3_usize });
-    tree_array.append(Node { value: opcodes::MEM, left: 0_usize, right: 1_usize });
+    tree_array.append(Node { value: opcodes::STACK, left: 0_usize, right: 1_usize });
     tree_array.append(Node { value: 1, left: 0_usize, right: 0_usize });
     tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
 
@@ -324,19 +324,19 @@ fn test_mem__should_evaluate_mem() {
     );
 
     // Then
-    assert(result == 5, 'incorrect mem result');
+    assert(result == 5, 'incorrect stack result');
 }
 
 #[test]
 #[available_gas(2000000)]
-fn test_dict__should_evaluate_dict() {
+fn test_heap__should_evaluate_heap() {
     // Given 
     // Tree
-    //           dict(0)
+    //         heap(0)
     //            |
     //         mul(1)
     //       /      \
-    //     dict(2)   2(4)
+    //     heap(2)   2(4)
     //       |
     //      100(3)
     let mut heap = Felt252DictTrait::new();
@@ -344,9 +344,9 @@ fn test_dict__should_evaluate_dict() {
     heap.insert(44, 17_u128);
 
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::DICT, left: 0_usize, right: 1_usize });
+    tree_array.append(Node { value: opcodes::HEAP, left: 0_usize, right: 1_usize });
     tree_array.append(Node { value: opcodes::MUL, left: 1_usize, right: 3_usize });
-    tree_array.append(Node { value: opcodes::DICT, left: 0_usize, right: 1_usize });
+    tree_array.append(Node { value: opcodes::HEAP, left: 0_usize, right: 1_usize });
     tree_array.append(Node { value: 100, left: 0_usize, right: 0_usize });
     tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
 
@@ -356,21 +356,23 @@ fn test_dict__should_evaluate_dict() {
     );
 
     // Then
-    assert(result == 17, 'incorrect dict result');
+    assert(result == 17, 'incorrect heap result');
 }
 
 #[test]
 #[available_gas(20000000)]
 fn test_precompiles__should_evaluate_precompile() {
     // Given 
-    // Tree 1:
-    //           func(0)
-    //            |
-    //         div(1)
+    // Tree:
+    //              add(0)
+    //            /        \
+    //           func(1)  mem(6)
+    //            |         |
+    //         div(2)       0
     //       /      \
-    //     func(2)   99(4)
+    //     func(3)   99(5)
     //       |
-    //      0(3)
+    //      0(4)
     //
     // Func 0 (output = 99):
     //                     mul(0)
@@ -434,11 +436,14 @@ fn test_precompiles__should_evaluate_precompile() {
     precompiles.insert(1, nullable_from_box(precompile_second));
 
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::FUNC, left: 0_usize, right: 1_usize });
+    tree_array.append(Node { value: opcodes::ADD, left: 1_usize, right: 6_usize });
+    tree_array.append(Node { value: opcodes::PRECOMP, left: 0_usize, right: 1_usize });
     tree_array.append(Node { value: opcodes::DIV, left: 1_usize, right: 3_usize });
-    tree_array.append(Node { value: opcodes::FUNC, left: 0_usize, right: 1_usize });
+    tree_array.append(Node { value: opcodes::PRECOMP, left: 0_usize, right: 1_usize });
     tree_array.append(Node { value: 0, left: 0_usize, right: 0_usize });
     tree_array.append(Node { value: 99, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: opcodes::STACK, left: 0_usize, right: 1_usize });
+    tree_array.append(Node { value: 0, left: 0_usize, right: 0_usize });
 
     // When
     let result = execute_tree(
@@ -446,6 +451,6 @@ fn test_precompiles__should_evaluate_precompile() {
     );
 
     // Then
-    assert(result == 70, 'incorrect precompile result');
+    assert(result == 169, 'incorrect precompile result');
 }
 

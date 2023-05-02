@@ -29,7 +29,7 @@ struct Node {
 // TODO: import quaireaux_math and use it for POW
 fn execute(
     ref tree: Span<Node>,
-    ref stack: Span<u128>,
+    ref stack: Array<u128>,
     ref heap: Felt252Dict<u128>,
     ref precompiles: Felt252Dict<Nullable<Span<Node>>>
 ) -> u128 {
@@ -56,14 +56,15 @@ fn execute(
         return value;
     }
 
-    let mut tree_slice_right = tree.slice(right_offset, length - right_offset);
-    let value_right: u128 = execute(ref tree_slice_right, ref stack, ref heap, ref precompiles);
-
+    // if offset on left != 0, execute left
     let mut value_left = 0_u128;
     if left_offset != 0_usize {
         let mut tree_slice_left = tree.slice(left_offset, right_offset - left_offset);
         value_left = execute(ref tree_slice_left, ref stack, ref heap, ref precompiles);
     }
+
+    let mut tree_slice_right = tree.slice(right_offset, length - right_offset);
+    let value_right: u128 = execute(ref tree_slice_right, ref stack, ref heap, ref precompiles);
 
     if value == opcodes::ADD {
         return value_right + value_left;
@@ -110,18 +111,23 @@ fn execute(
         };
     }
 
-    if value == opcodes::MEM {
+    // read value in stack
+    if value == opcodes::STACK {
         let index: usize = value_right.into().try_into().unwrap();
         return *stack[index];
     }
 
-    if value == opcodes::DICT {
+    // read value in heap
+    if value == opcodes::HEAP {
         return heap.get(value_right.into());
     }
 
-    if value == opcodes::FUNC {
+    // evaluate precompile
+    if value == opcodes::PRECOMP {
         let mut precompile = precompiles.get(value_right.into()).deref();
-        return execute(ref precompile, ref stack, ref heap, ref precompiles);
+        let precompile_evaluation = execute(ref precompile, ref stack, ref heap, ref precompiles);
+        stack.append(precompile_evaluation);
+        return precompile_evaluation;
     }
 
     assert(false, 'Invalid opcode');

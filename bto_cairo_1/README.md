@@ -104,25 +104,25 @@ From the previous section on binary tree flattening, we can derive the below arr
 # Tree Chaining
 
 By using the output of a tree as the input of a another tree, it is possible to chain trees together. Tree chaining is made possible thanks to the use of a
-memory array. The output of each tree is stored in this array and can be accessed using the MEM opcode.
+stack. The output of each tree is stored in this array and can be accessed using the STACK opcode.
 An example of the use of the chaining of trees can be found in `tests/test_tree.cairo::test_execute_tree_chain`.
 
 # Available Opcodes
 
-| Opcode | Description                                                                                                                                                                                                                          | Tested |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| ADD    | Addition of left and right values                                                                                                                                                                                                    | ✅     |
-| SUB    | Substraction of left and right values                                                                                                                                                                                                | ✅     |
-| MUL    | Multiplication of left and right values                                                                                                                                                                                              | ✅     |
-| DIV    | Division of left and right values                                                                                                                                                                                                    | ✅     |
-| MOD    | Modulus of left and right values                                                                                                                                                                                                     | ✅     |
-| ABS    | Absolute of right value                                                                                                                                                                                                              | ✅     |
-| SQRT   | Square root of right value                                                                                                                                                                                                           | ✅     |
-| POW    | Left value to the power of right value                                                                                                                                                                                               | ✅     |
-| IS_NN  | 1 if right value >= 0, else 0                                                                                                                                                                                                        | ✅     |
-| IS_LE  | 1 if left value <= right value, else 0                                                                                                                                                                                               | ✅     |
-| NOT    | 1 if right value is 0, else 0                                                                                                                                                                                                        | ✅     |
-| EQ     | 1 if left value == right value, else 0                                                                                                                                                                                               | ✅     |
-| MEM    | Access the indexed values of previous trees output                                                                                                                                                                                   | ✅     |
-| DICT   | Access values stored in the passed dictionary                                                                                                                                                                                        | ✅     |
-| FUNC   | Access to the general purpose functions stored in <br /> the functions dictionary, allowing to evaluate a sub tree. <br /> The output of the subtree evaluation is saved in <br /> the memory array, accessable with the MEM opcode. | ✅     |
+| Opcode  | Description                                                                                                                                                                                           | Tested |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| ADD     | Addition of left and right values                                                                                                                                                                     | ✅     |
+| SUB     | Substraction of left and right values                                                                                                                                                                 | ✅     |
+| MUL     | Multiplication of left and right values                                                                                                                                                               | ✅     |
+| DIV     | Division of left and right values                                                                                                                                                                     | ✅     |
+| MOD     | Modulus of left and right values                                                                                                                                                                      | ✅     |
+| ABS     | Absolute of right value                                                                                                                                                                               | ✅     |
+| SQRT    | Square root of right value                                                                                                                                                                            | ✅     |
+| POW     | Left value to the power of right value                                                                                                                                                                | ✅     |
+| IS_NN   | 1 if right value >= 0, else 0                                                                                                                                                                         | ✅     |
+| IS_LE   | 1 if left value <= right value, else 0                                                                                                                                                                | ✅     |
+| NOT     | 1 if right value is 0, else 0                                                                                                                                                                         | ✅     |
+| EQ      | 1 if left value == right value, else 0                                                                                                                                                                | ✅     |
+| STACK   | Access the indexed values in the stack                                                                                                                                                                | ✅     |
+| HEAP    | Access values stored in the heap                                                                                                                                                                      | ✅     |
+| PRECOMP | Access to the precompiles stored in <br /> a dictionary, allowing to evaluate a sub tree. <br /> The output of the subtree evaluation is saved on <br /> the stack, accessable with the STACK opcode. | ✅     |
