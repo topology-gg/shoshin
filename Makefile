@@ -19,6 +19,10 @@ lib_files := $(shell find $(dir) -name "*.cairo" -path "*/lib/*")
 
 all: cairo-compile-shoshin cairo-compile-lib clean
 
+profiling:
+	cd $(dir) && \
+	protostar test tests/simulation/test_profiling.cairo --profiling
+
 cairo-build: prepare
 	sh ./scripts/compile_cairo.sh $(path) $(main_shoshin) $(cairo_files) 
 

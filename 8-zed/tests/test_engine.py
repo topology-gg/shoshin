@@ -1,10 +1,11 @@
-import pytest
-import os
-import json
-from starkware.starknet.testing.starknet import Starknet
 import asyncio
-from utils import import_json, parse_stages, parse_mental_to_action
+import json
 import logging
+import os
+
+import pytest
+from starkware.starknet.testing.starknet import Starknet
+from utils import adjust_from_felt, parse_agent
 
 LOGGER = logging.getLogger(__name__)
 
@@ -13,55 +14,6 @@ NO = 0
 NUM_SIGNING_ACCOUNTS = 0  ## 2 angel and 2 players
 DUMMY_PRIVATE = 9812304879503423120395
 users = []
-
-PRIME = 3618502788666131213697322783095070105623107215331596699973092056135872020481
-PRIME_HALF = PRIME // 2
-
-
-def adjust_from_felt(felt):
-    if felt > PRIME_HALF:
-        return felt - PRIME
-    else:
-        return felt
-
-
-def parse_agent(path: str):
-    data = import_json(path)
-    # parse the mental state
-    mental_states_keys = data["mental_state_to_action"].keys()
-    mental_states = []
-    for k in mental_states_keys:
-        mental_states.append(data["mental_states"][k]["stages"])
-    [state_machine, state_machine_offsets] = parse_stages(
-        data["mapping"], mental_states
-    )
-    # parse the general functions
-    general_functions = data["general_purpose_functions"]
-    [functions, functions_offsets] = parse_stages(data["mapping"], general_functions)
-
-    # parse the state to actions
-    actions = parse_mental_to_action(
-        data["mapping"], data["mental_state_to_action"].values()
-    )
-
-    state_machine = [a.to_tuple() for a in state_machine]
-    functions = [a.to_tuple() for a in functions]
-    # parse the combos
-    combos = data["combos"]
-    accumulator = 0
-    combos_offset = [0]
-    list(
-        map(combos_offset.append, [accumulator := len(x) + accumulator for x in combos])
-    )
-    return (
-        combos_offset,
-        [x for a in combos for x in a],
-        state_machine_offsets,
-        state_machine,
-        [x for (i, x) in enumerate(functions_offsets) if (i + 1) % 2 == 0],
-        functions,
-        actions,
-    )
 
 
 ### Reference: https://github.com/perama-v/GoL2/blob/main/tests/test_GoL2_infinite.py
