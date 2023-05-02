@@ -23,7 +23,8 @@ from contracts.constants.constants import (
     Hitboxes,
     Perceptibles,
     ComboBuffer,
-    RealTimeFrame,
+    RealTimeAgent,
+    RealTimePlayer,
     RealTimeFrameScene
 )
 from contracts.constants.constants_jessica import ns_jessica_character_dimension
@@ -164,10 +165,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         character_type_1,
     );
 
-    %{
-    print(
-        ids.combos_offset_0)
-    %}
+
 
     //
     // Preparing starting frame
@@ -525,29 +523,200 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     );
 }
 
+@external
 func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    state: RealTimeFrameScene,
-    player_action : felt,
-    character_type_0: felt,
-    character_type_1: felt,
-) -> (updatedState: RealTimeFrameScene) {
+        agent_0_body_state_state: felt,
+        agent_0_body_state_counter: felt,
+        agent_0_body_state_integrity: felt,
+        agent_0_body_state_stamina: felt,
+        agent_0_body_state_dir: felt,
+        agent_0_body_state_fatigued: felt,
+
+        agent_0_physics_state_pos_x: felt,
+        agent_0_physics_state_pos_y: felt,
+        agent_0_physics_state_vel_x: felt,
+        agent_0_physics_state_vel_y: felt,
+        agent_0_physics_state_acc_x: felt,
+        agent_0_physics_state_acc_y: felt,
+
+        agent_0_stimulus : felt,
+        agent_0_action: felt,
+        agent_0_character_type: felt,
+        
+        agent_1_body_state_state: felt,
+        agent_1_body_state_counter: felt,
+        agent_1_body_state_integrity: felt,
+        agent_1_body_state_stamina: felt,
+        agent_1_body_state_dir: felt,
+        agent_1_body_state_fatigued: felt,
+
+        agent_1_physics_state_pos_x: felt,
+        agent_1_physics_state_pos_y: felt,
+        agent_1_physics_state_vel_x: felt,
+        agent_1_physics_state_vel_y: felt,
+        agent_1_physics_state_acc_x: felt,
+        agent_1_physics_state_acc_y: felt,
+        
+        agent_1_stimulus : felt,
+        agent_1_character_type: felt,
+
+        
+        combos_offset_1_len: felt,
+        combos_offset_1: felt*,
+        combos_1_len: felt,
+        combos_1: felt*,
+        agent_1_state_machine_offset_len: felt,
+        agent_1_state_machine_offset: felt*,
+        agent_1_state_machine_len: felt,
+        agent_1_state_machine: Tree*,
+        
+        agent_1_mental_state: felt,
+        agent_1_conditions_offset_len: felt,
+        agent_1_conditions_offset: felt*,
+        agent_1_conditions_len: felt,
+        agent_1_conditions: Tree*,
+        actions_1_len: felt,
+        actions_1: felt*,
+
+) {
     alloc_locals;
+
+
+    //
+    // Preparing dictionaries
+    //
+
+    let (mental_state_1) = default_dict_new(default_value=0);
+    let (mental_state_offsets_1) = default_dict_new(default_value=0);
+    let (mental_state_1_new, mental_state_offsets_1_new) = fill_dictionary_offsets(
+        tree_dict=mental_state_1,
+        offsets_dict=mental_state_offsets_1,
+        offsets_len=agent_1_state_machine_offset_len,
+        offsets=agent_1_state_machine_offset,
+        tree=agent_1_state_machine,
+        i=0,
+    );
+
+    let (conditions_1) = default_dict_new(default_value=0);
+    let (conditions_1_new) = fill_dictionary(
+        dict=conditions_1,
+        offsets_len=agent_1_conditions_offset_len,
+        offsets=agent_1_conditions_offset,
+        tree=agent_1_conditions,
+        i=0,
+    );
+
+
+    // create agent 0 body and physics
+    let agent_0_body_state  = BodyState(
+        state=agent_0_body_state_state,
+        counter=agent_0_body_state_counter,
+        integrity=agent_0_body_state_integrity,
+        stamina=agent_0_body_state_stamina,
+        dir=agent_0_body_state_dir,
+        fatigued=agent_0_body_state_fatigued,
+    );
+
+    let agent_0_position = Vec2(agent_0_physics_state_pos_x, agent_0_physics_state_pos_y);
+    let agent_0_vel = Vec2(agent_0_physics_state_vel_x, agent_0_physics_state_vel_y);
+    let agent_0_acc = Vec2(agent_0_physics_state_acc_x, agent_0_physics_state_acc_y);
+
+    let agent_0_physics_state = PhysicsState(
+        agent_0_position,agent_0_vel, agent_0_acc
+    );
+
+    // create agent 1 body and physics
+    let agent_1_body_state  = BodyState(
+        agent_1_body_state_state,
+        agent_1_body_state_counter,
+        agent_1_body_state_integrity,
+        agent_1_body_state_stamina,
+        agent_1_body_state_dir,
+        agent_1_body_state_fatigued
+    );
+
+    let agent_1_position = Vec2(agent_1_physics_state_pos_x, agent_1_physics_state_pos_y);
+    let agent_1_vel = Vec2(agent_1_physics_state_vel_x, agent_1_physics_state_vel_y);
+    let agent_1_acc = Vec2(agent_1_physics_state_acc_x, agent_1_physics_state_acc_y);
+
+    let agent_1_physics_state = PhysicsState(
+        agent_1_position,agent_1_vel, agent_1_acc
+    );
+
+
+    //
+    // Perception Phase
+    // (given physics states and body states, produce perceptibles)
+    //
+
+    let p_1 = Perceptibles(
+        self_physics_state     = agent_1_physics_state,
+        self_body_state        = agent_1_body_state,
+        opponent_physics_state = agent_0_physics_state,
+        opponent_body_state    = agent_0_body_state,
+    );
+    let (perceptibles_1) = default_dict_new(default_value=0);
+    let (local perceptibles_1) = update_perceptibles(perceptibles_1, p_1);
+
+    //
+    // Agency Phase
+    // (given perceptibles, produce agent action / "intent")
+    //
+
+    let (mem) = alloc();
+    let (ptr_tree) = dict_read{dict_ptr=mental_state_1}(key=agent_1_mental_state);
+    tempvar tree = cast(ptr_tree, Tree*);
+    let (ptr_offsets) = dict_read{dict_ptr=mental_state_offsets_1}(
+        key=agent_1_mental_state
+    );
+    tempvar offsets = cast(ptr_offsets, felt*);
+    let (agent_state_1, conditions_1_new, dict_new) = BinaryOperatorTree.execute_tree_chain(
+        [offsets], offsets + 1, tree, 0, mem, conditions_1, perceptibles_1
+    );
+    default_dict_finalize(
+        dict_accesses_start=dict_new, dict_accesses_end=dict_new, default_value=0
+    );
+
+    tempvar agent_action_1 = actions_1 [agent_state_1];
+
+    //
+    // Combo Phase
+    // (determine agent's actual intent to be an atomic action or an action from combo buffer)
+    //
+
+
+    // Combo buffer might need to come from outside too
+    local agent_1_action;
+    tempvar combo_buffer = ComboBuffer(combos_offset_1_len, combos_offset_1, combos_1, 0, 0);
+    local combos_1_new: ComboBuffer;
+    let is_combo = is_le(ns_combos.ENCODING, agent_action_1);
+
+    if (is_combo == 1) {
+        let (a, c) = _combo(agent_action_1 - ns_combos.ENCODING, combo_buffer);
+        assert agent_1_action = a;
+        assert combos_1_new = c;
+        tempvar range_check_ptr = range_check_ptr;
+    } else {
+        assert agent_1_action = agent_action_1;
+        assert combos_1_new = ComboBuffer(combo_buffer.combos_offset_len, combo_buffer.combos_offset, combo_buffer.combos, 0, 0);
+        tempvar range_check_ptr = range_check_ptr;
+    }
 
     //
     // Body Phase
     // (given agent intent, stimulus, and last frame's body state, produce this frame's body state)
     //
     let (body_state_0 : BodyState) = _body (
-        character_type = character_type_0,
-        body_state     = state.agent_0.body_state,
-        stimulus       = state.agent_0.stimulus,
-        intent         =  state.agent_0.action,
+        character_type = agent_0_character_type,
+        body_state     = agent_0_body_state,
+        stimulus       = agent_0_stimulus,
+        intent         = agent_0_action,
     );
     let (body_state_1 : BodyState) = _body (
-        character_type = character_type_1,
-        body_state     = state.agent_1.body_state,
-        stimulus       = state.agent_1.stimulus,
-        intent         = state.agent_1.action,
+        character_type = agent_1_character_type,
+        body_state     = agent_1_body_state,
+        stimulus       = agent_1_stimulus,
+        intent         = agent_1_action,
     );
 
     //
@@ -562,40 +731,43 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         hitboxes_0: Hitboxes,
         hitboxes_1: Hitboxes,
     ) = _physicality(
-        character_type_0     = character_type_0,
-        character_type_1     = character_type_1,
-        last_physics_state_0 = state.agent_0.physics_state,
-        last_physics_state_1 = state.agent_1.physics_state,
+        character_type_0     = agent_0_character_type,
+        character_type_1     = agent_1_character_type,
+        last_physics_state_0 = agent_0_physics_state,
+        last_physics_state_1 = agent_1_physics_state,
         curr_body_state_0    = body_state_0,
         curr_body_state_1    = body_state_1,
     );
 
 
-
     // For player agent mental_state and other frame members are not relevent
     let res = RealTimeFrameScene(
-        agent_0 = RealTimeFrame (
+        agent_0 = RealTimePlayer (
             body_state    = body_state_0,
             physics_state = physics_state_0,
-            action        =  0,
             stimulus      = stimulus_0,
             hitboxes      = hitboxes_0
         ),
-        agent_1 = RealTimeFrame (
+        agent_1 = RealTimeAgent (
             body_state    = body_state_1,
             physics_state = physics_state_1,
-            action        = 0,
             stimulus      = stimulus_1,
-            hitboxes      = hitboxes_1
+            hitboxes      = hitboxes_1,
+            mental_state =  agent_state_1,
         )
     );
 
-    return (updatedState=res);    
+    event_realtime.emit(res);
+    return ();    
 }
 
 
 @event
 func event_array(arr_len: felt, arr: FrameScene*) {
+}
+
+@event
+func event_realtime(arr_len: felt, arr: RealTimeFrameScene) {
 }
 
 // emit both agents' description
