@@ -366,15 +366,15 @@ fn test_precompiles__should_evaluate_precompile() {
     // Tree:
     //              add(0)
     //            /        \
-    //           func(1)  mem(6)
+    //        precomp(1)  mem(6)
     //            |         |
     //         div(2)       0
     //       /      \
-    //     func(3)   99(5)
+    //  precomp(3)   99(5)
     //       |
     //      0(4)
     //
-    // Func 0 (output = 99):
+    // Precompile 0 (output = 99):
     //                     mul(0)
     //               /              \
     //            mul(1)           sub(13)
@@ -385,7 +385,7 @@ fn test_precompiles__should_evaluate_precompile() {
     //   / \                 /   \      
     // 2(4) 32(5)      350(10) 47(11)   
     //
-    // Func 1 (output = 70):
+    // Precompile 1 (output = 70):
     //                 mul(0)
     //               /       \
     //            mul(1)     add(8)
@@ -397,43 +397,43 @@ fn test_precompiles__should_evaluate_precompile() {
     let mut stack: Array<u128> = ArrayTrait::new();
     let mut precompiles: Felt252Dict<Nullable<Span<Node>>> = Felt252DictTrait::new();
 
-    let mut precompiles_first: Array<Node> = ArrayTrait::new();
-    precompiles_first.append(Node { value: opcodes::MUL, left: 1_usize, right: 12_usize });
-    precompiles_first.append(Node { value: opcodes::MUL, left: 1_usize, right: 6_usize });
-    precompiles_first.append(Node { value: opcodes::IS_LE, left: 1_usize, right: 4_usize });
-    precompiles_first.append(Node { value: opcodes::MUL, left: 1_usize, right: 2_usize });
-    precompiles_first.append(Node { value: 2, left: 0_usize, right: 0_usize });
-    precompiles_first.append(Node { value: 32, left: 0_usize, right: 0_usize });
-    precompiles_first.append(Node { value: 65, left: 0_usize, right: 0_usize });
-    precompiles_first.append(Node { value: opcodes::SUB, left: 1_usize, right: 2_usize });
-    precompiles_first.append(Node { value: 30, left: 0_usize, right: 0_usize });
-    precompiles_first.append(Node { value: opcodes::MOD, left: 1_usize, right: 2_usize });
-    precompiles_first.append(Node { value: 350, left: 0_usize, right: 0_usize });
-    precompiles_first.append(Node { value: 47, left: 0_usize, right: 0_usize });
-    precompiles_first.append(Node { value: opcodes::SUB, left: 1_usize, right: 3_usize });
-    precompiles_first.append(Node { value: opcodes::SQRT, left: 0_usize, right: 1_usize });
-    precompiles_first.append(Node { value: 150, left: 0_usize, right: 0_usize });
-    precompiles_first.append(Node { value: opcodes::NOT, left: 0_usize, right: 1_usize });
-    precompiles_first.append(Node { value: 0, left: 0_usize, right: 0_usize });
+    let mut precompile_one: Array<Node> = ArrayTrait::new();
+    precompile_one.append(Node { value: opcodes::MUL, left: 1_usize, right: 12_usize });
+    precompile_one.append(Node { value: opcodes::MUL, left: 1_usize, right: 6_usize });
+    precompile_one.append(Node { value: opcodes::IS_LE, left: 1_usize, right: 4_usize });
+    precompile_one.append(Node { value: opcodes::MUL, left: 1_usize, right: 2_usize });
+    precompile_one.append(Node { value: 2, left: 0_usize, right: 0_usize });
+    precompile_one.append(Node { value: 32, left: 0_usize, right: 0_usize });
+    precompile_one.append(Node { value: 65, left: 0_usize, right: 0_usize });
+    precompile_one.append(Node { value: opcodes::SUB, left: 1_usize, right: 2_usize });
+    precompile_one.append(Node { value: 30, left: 0_usize, right: 0_usize });
+    precompile_one.append(Node { value: opcodes::MOD, left: 1_usize, right: 2_usize });
+    precompile_one.append(Node { value: 350, left: 0_usize, right: 0_usize });
+    precompile_one.append(Node { value: 47, left: 0_usize, right: 0_usize });
+    precompile_one.append(Node { value: opcodes::SUB, left: 1_usize, right: 3_usize });
+    precompile_one.append(Node { value: opcodes::SQRT, left: 0_usize, right: 1_usize });
+    precompile_one.append(Node { value: 150, left: 0_usize, right: 0_usize });
+    precompile_one.append(Node { value: opcodes::NOT, left: 0_usize, right: 1_usize });
+    precompile_one.append(Node { value: 0, left: 0_usize, right: 0_usize });
 
-    let mut precompile_first: Box<Span<Node>> = BoxTrait::new(precompiles_first.span());
-    precompiles.insert(0, nullable_from_box(precompile_first));
+    let mut precompile_one: Box<Span<Node>> = BoxTrait::new(precompile_one.span());
+    precompiles.insert(0, nullable_from_box(precompile_one));
 
-    let mut precompiles_second: Array<Node> = ArrayTrait::new();
-    precompiles_second.append(Node { value: opcodes::MUL, left: 1_usize, right: 8_usize });
-    precompiles_second.append(Node { value: opcodes::MUL, left: 1_usize, right: 4_usize });
-    precompiles_second.append(Node { value: opcodes::MOD, left: 1_usize, right: 2_usize });
-    precompiles_second.append(Node { value: 47, left: 0_usize, right: 0_usize });
-    precompiles_second.append(Node { value: 7, left: 0_usize, right: 0_usize });
-    precompiles_second.append(Node { value: opcodes::SUB, left: 1_usize, right: 2_usize });
-    precompiles_second.append(Node { value: 30, left: 0_usize, right: 0_usize });
-    precompiles_second.append(Node { value: 28, left: 0_usize, right: 0_usize });
-    precompiles_second.append(Node { value: opcodes::ADD, left: 1_usize, right: 2_usize });
-    precompiles_second.append(Node { value: 3, left: 0_usize, right: 0_usize });
-    precompiles_second.append(Node { value: 4, left: 0_usize, right: 0_usize });
+    let mut precompile_two: Array<Node> = ArrayTrait::new();
+    precompile_two.append(Node { value: opcodes::MUL, left: 1_usize, right: 8_usize });
+    precompile_two.append(Node { value: opcodes::MUL, left: 1_usize, right: 4_usize });
+    precompile_two.append(Node { value: opcodes::MOD, left: 1_usize, right: 2_usize });
+    precompile_two.append(Node { value: 47, left: 0_usize, right: 0_usize });
+    precompile_two.append(Node { value: 7, left: 0_usize, right: 0_usize });
+    precompile_two.append(Node { value: opcodes::SUB, left: 1_usize, right: 2_usize });
+    precompile_two.append(Node { value: 30, left: 0_usize, right: 0_usize });
+    precompile_two.append(Node { value: 28, left: 0_usize, right: 0_usize });
+    precompile_two.append(Node { value: opcodes::ADD, left: 1_usize, right: 2_usize });
+    precompile_two.append(Node { value: 3, left: 0_usize, right: 0_usize });
+    precompile_two.append(Node { value: 4, left: 0_usize, right: 0_usize });
 
-    let mut precompile_second: Box<Span<Node>> = BoxTrait::new(precompiles_second.span());
-    precompiles.insert(1, nullable_from_box(precompile_second));
+    let mut precompile_two: Box<Span<Node>> = BoxTrait::new(precompile_two.span());
+    precompiles.insert(1, nullable_from_box(precompile_two));
 
     let mut tree_array: Array<Node> = ArrayTrait::new();
     tree_array.append(Node { value: opcodes::ADD, left: 1_usize, right: 6_usize });
