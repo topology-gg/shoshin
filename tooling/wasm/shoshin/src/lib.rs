@@ -1,6 +1,6 @@
 ///! This crate allows to run the Shoshin loop written in Cairo on the cairo-rs VM.
 mod types;
-use crate::types::{FrameScene, ShoshinInputVec};
+use crate::types::{FrameScene, ShoshinInputVec, RealTimeInputVec};
 use anyhow::Error;
 use cairo_execution::utils::{
     convert_to_felt, convert_to_relocatable, convert_to_structure_vector,
@@ -39,7 +39,7 @@ pub fn run_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
 /// The extracted output from the shoshin loop
 #[wasm_bindgen(js_name = simulateRealtimeFrame)]
 pub fn run_realtime_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
-    let inputs = ShoshinInputVec(inputs);
+    let inputs = RealTimeInputVec(inputs);
     let inputs = prepare_args(inputs).map_err(|e| JsError::new(&e.to_string()))?;
 
     let shoshin_bytecode = include_str!("./bytecode_shoshin.json");

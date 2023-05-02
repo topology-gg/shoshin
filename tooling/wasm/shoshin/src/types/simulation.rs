@@ -30,15 +30,6 @@ pub struct ShoshinInput {
     pub _char_1: u8,
 }
 
-#[derive(Debug, CairoArgs)]
-pub struct RealTimeInput {
-    pub state : RealTimeFrameScene,
-    pub player_action : i32,
-    pub character_type_0 : i32,
-    pub character_type_1 : i32
-}
-
-
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
 pub struct RealTimeFrameScene {
     pub agent_0: RealTimeAgent,
