@@ -40,16 +40,24 @@ export interface FrameScene {
 }
 
 export interface RealTimeFrameScene {
-    agent_0: RealTimeFrame,
-    agent_1: RealTimeFrame,
+    agent_0: RealTimePlayer,
+    agent_1: RealTimePlayer,
 }
-export interface RealTimeFrame {
+export interface RealTimePlayer {
     body_state: BodyState,
     physics_state: PhysicsState,
-    action: number,
+    stimulus: number,
+    hitboxes: Hitboxes,
+    mental_state: number,
+}
+
+export interface RealTimePlayer {
+    body_state: BodyState,
+    physics_state: PhysicsState,
     stimulus: number,
     hitboxes: Hitboxes,
 }
+
 
 
 export interface Frame {
@@ -149,39 +157,30 @@ function getFlattenedBodyState(bodyState: BodyState): number[] {
     return flattenedBodyState
 }
 
-function realTimeFrameSceneToArray(scene : RealTimeFrameScene) : number[]{
-    let flatBody_0 = getFlattenedBodyState(scene.agent_0.body_state)
-    let flatBody_1 = getFlattenedBodyState(scene.agent_1.body_state)
-
-    let flatPhysics_0 = getFlattenedPhysicState(scene.agent_0.physics_state)
-    let flatPhysics_1 = getFlattenedPhysicState(scene.agent_1.physics_state)
-    
-    let flatHitbox_0 = getFlattenedHitboxes(scene.agent_0.hitboxes)
-    let flatHitbox_1 = getFlattenedHitboxes(scene.agent_1.hitboxes)
-
-    
-
-    return [
-        ...flatBody_0,
-        ...flatPhysics_0,
-        scene.agent_0.action,
-        scene.agent_0.stimulus,
-        ...flatHitbox_0,
-        ...flatBody_1,
-        ...flatPhysics_1,
-        scene.agent_0.action,
-        scene.agent_0.stimulus,
-        ...flatHitbox_1,
-    ]
-}
-
 export function realTimeInputToArray(
     scene : RealTimeFrameScene, 
     player_action : number, 
     character_type_0 : number, 
     character_type_1 : number) : number[]{
 
-    return [...realTimeFrameSceneToArray(scene), player_action, character_type_0, character_type_1]
+
+    let flatBody_0 = getFlattenedBodyState(scene.agent_0.body_state)
+    let flatBody_1 = getFlattenedBodyState(scene.agent_1.body_state)
+
+    let flatPhysics_0 = getFlattenedPhysicState(scene.agent_0.physics_state)
+    let flatPhysics_1 = getFlattenedPhysicState(scene.agent_1.physics_state)
+    
+    return [
+        ...flatBody_0,
+        ...flatPhysics_0,
+        scene.agent_0.stimulus,
+        player_action, 
+        character_type_0, 
+        ...flatBody_1,
+        ...flatPhysics_1,
+        scene.agent_1.stimulus,
+        character_type_1
+    ]
 }
 
 

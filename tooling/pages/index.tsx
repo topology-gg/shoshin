@@ -163,7 +163,7 @@ export default function Home() {
     const { runCairoSimulation, wasmReady } = useRunCairoSimulation(p1, p2);
     const { runEvaluateCondition } = useEvaluateCondition();
 
-    const {runRealTime} = useRunRealTime(InitialRealTimeFrameScene, 0, 0, 0)    
+    const {runRealTime} = useRunRealTime(InitialRealTimeFrameScene, 0, 0, 0, IDLE_AGENT)    
 
     useEffect(() => {
         if(wasmReady){
