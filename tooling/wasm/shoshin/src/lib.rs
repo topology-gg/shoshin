@@ -1,6 +1,7 @@
 ///! This crate allows to run the Shoshin loop written in Cairo on the cairo-rs VM.
 mod types;
-use crate::types::{FrameScene, ShoshinInputVec, RealTimeInputVec};
+use crate::types::simulation::RealTimeFrameScene;
+use crate::types::{FrameScene, RealTimeInputVec, ShoshinInputVec};
 use anyhow::Error;
 use cairo_execution::utils::{
     convert_to_felt, convert_to_relocatable, convert_to_structure_vector,
@@ -10,6 +11,20 @@ use cairo_felt::{self, Felt};
 use cairo_vm::vm::vm_core::VirtualMachine;
 use num_traits::ToPrimitive;
 use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
+extern "C" {
+    // Use `js_namespace` here to bind `console.log(..)` instead of just
+    // `log(..)`
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
+macro_rules! console_log {
+    // Note that this is using the `log` function imported above during
+    // `bare_bones`
+    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
+}
 
 /// Wasm binding to the input of the Shoshin loop
 /// # Arguments
@@ -30,7 +45,6 @@ pub fn run_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
     Result::Ok(serde_wasm_bindgen::to_value(&output)?)
 }
 
-
 /// Wasm binding to the input of the Shoshin loop
 /// # Arguments
 /// * `inputs` - The flattened inputs to the shoshin loop
@@ -39,17 +53,24 @@ pub fn run_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
 /// The extracted output from the shoshin loop
 #[wasm_bindgen(js_name = simulateRealtimeFrame)]
 pub fn run_realtime_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
+    console_log!("inputs vec i32 {:?}", inputs);
     let inputs = RealTimeInputVec(inputs);
+
     let inputs = prepare_args(inputs).map_err(|e| JsError::new(&e.to_string()))?;
 
+    console_log!("inputs {:?}", inputs);
+
     let shoshin_bytecode = include_str!("./bytecode_shoshin.json");
+
     let vm = execute_cairo_program(shoshin_bytecode, "playerInLoop", inputs)
         .map_err(|e| JsError::new(&e.to_string()))?;
 
-    let output = get_output(vm).map_err(|e| JsError::new(&e.to_string()))?;
+    console_log!("vm done");
+
+    let output = get_realtime_output(vm).map_err(|e| JsError::new(&e.to_string()))?;
+    console_log!("output {:?}", output);
     Result::Ok(serde_wasm_bindgen::to_value(&output)?)
 }
-
 
 /// Extract the frame scene from the final VM state
 /// # Arguments
@@ -72,13 +93,36 @@ fn get_output(vm: VirtualMachine) -> Result<Vec<FrameScene>, Error> {
     Result::Ok(output)
 }
 
+/// Extract the RealTimeFrameScene scene from the final VM state
+/// # Arguments
+/// * `vm` - The final VM state after the shoshin loop execution
+///
+/// # Returns
+/// A Real Time Frame  Scene
+fn get_realtime_output(vm: VirtualMachine) -> Result<Vec<RealTimeFrameScene>, Error> {
+    // Handle return values: [frames_len: felt, frames: FrameScene*]
+    let return_values = vm.get_return_values(2)?;
+
+    //len should be one
+    let len = convert_to_felt(&return_values[0])?;
+    let len = Felt::to_u32(&len)
+        .ok_or_else(|| anyhow::anyhow!("error converting frames length to u32"))?;
+
+    let real_time_frames = convert_to_relocatable(&return_values[1])?;
+    //console_log!("real_time_frame {:?}", real_time_frame);
+
+    let output = convert_to_structure_vector::<RealTimeFrameScene>(real_time_frames, 1, vm)?;
+
+    Result::Ok(output)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::vec;
 
     fn get_shoshin_bytecode() -> String {
-        std::fs::read_to_string("./src/bytecode_shoshin.json").unwrap()
+        std::fs::read_to_string("./bytecode_shoshin.json").unwrap()
     }
 
     // returns a simple input for the shoshin loop (two idle agents)
@@ -117,6 +161,32 @@ mod tests {
         ]
     }
 
+    fn get_realtime_input() -> Vec<i32> {
+        vec![
+            0, 1, 1000, 1000, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1000, 0, 0, 100, 0, 0,
+            0, 0, 0, 0, 0, 2, 0, 5, 5, 2, 2, 2, 2, 2, 8, 1, 31, 1, 31, 1, 31, 1, 31, 124, 1, 1, 5,
+            3, 1, 3, 15, -1, 1, 0, -1, -1, 2, -1, -1, 3, 1, 5, 2, 1, 2, 1, -1, -1, 13, -1, 1, 0,
+            -1, -1, 1, 1, 5, 3, 1, 3, 15, -1, 1, 1, -1, -1, 1, -1, -1, 3, 1, 5, 2, 1, 2, 1, -1, -1,
+            13, -1, 1, 1, -1, -1, 1, 1, 5, 3, 1, 3, 15, -1, 1, 2, -1, -1, 3, -1, -1, 3, 1, 5, 2, 1,
+            2, 1, -1, -1, 13, -1, 1, 2, -1, -1, 0, -1, -1, 1, 1, 5, 3, 1, 3, 15, -1, 1, 0, -1, -1,
+            2, -1, -1, 3, 1, 5, 2, 1, 2, 1, -1, -1, 13, -1, 1, 0, -1, -1, 1, 1, 5, 3, 1, 3, 15, -1,
+            1, 1, -1, -1, 1, -1, -1, 3, 1, 5, 2, 1, 2, 1, -1, -1, 13, -1, 1, 1, -1, -1, 1, 1, 5, 3,
+            1, 3, 15, -1, 1, 2, -1, -1, 3, -1, -1, 3, 1, 5, 2, 1, 2, 1, -1, -1, 13, -1, 1, 2, -1,
+            -1, 0, -1, -1, 1, 1, 5, 3, 1, 3, 15, -1, 1, 0, -1, -1, 2, -1, -1, 3, 1, 5, 2, 1, 2, 1,
+            -1, -1, 13, -1, 1, 0, -1, -1, 1, 1, 5, 3, 1, 3, 15, -1, 1, 1, -1, -1, 1, -1, -1, 3, 1,
+            5, 2, 1, 2, 1, -1, -1, 13, -1, 1, 1, -1, -1, 1, 1, 5, 3, 1, 3, 15, -1, 1, 2, -1, -1, 3,
+            -1, -1, 3, 1, 5, 2, 1, 2, 1, -1, -1, 13, -1, 1, 2, -1, -1, 0, -1, -1, 1, 1, 5, 3, 1, 3,
+            15, -1, 1, 0, -1, -1, 2, -1, -1, 3, 1, 5, 2, 1, 2, 1, -1, -1, 13, -1, 1, 0, -1, -1, 1,
+            1, 5, 3, 1, 3, 15, -1, 1, 1, -1, -1, 1, -1, -1, 3, 1, 5, 2, 1, 2, 1, -1, -1, 13, -1, 1,
+            1, -1, -1, 1, 1, 5, 3, 1, 3, 15, -1, 1, 2, -1, -1, 3, -1, -1, 3, 1, 5, 2, 1, 2, 1, -1,
+            -1, 13, -1, 1, 2, -1, -1, 0, -1, -1, 0, 3, 24, 8, 7, 39, 1, 1, 5, 12, 1, 3, 14, -1, 1,
+            110, -1, -1, 10, -1, -1, 1, 1, 5, 12, 1, 3, 14, -1, 1, 110, -1, -1, 20, -1, -1, 1, 1,
+            5, 12, 1, 3, 14, -1, 1, 110, -1, -1, 30, -1, -1, 1, 1, 5, 12, 1, 3, 14, -1, 1, 110, -1,
+            -1, 1010, -1, -1, 12, 1, 3, 14, -1, 1, 110, -1, -1, 1020, -1, -1, 10, 1, 7, 6, -1, 1,
+            2, 1, 3, 14, -1, 1, 1, -1, -1, 14, -1, 1, 101, -1, -1, 80, -1, -1, 10, 1, 2, 200, -1,
+            -1, 2, 1, 3, 14, -1, 1, 1, -1, -1, 14, -1, 1, 101, -1, -1, 4, 0, 101, 3, 6,
+        ]
+    }
     #[test]
     fn test_execute_cairo_program_basic_input() {
         let inputs = get_shoshin_input();
@@ -157,9 +227,24 @@ mod tests {
         let inputs = ShoshinInputVec(inputs);
         let inputs = prepare_args(inputs).unwrap();
 
-        let bytecode = get_shoshin_bytecode();
+        let bytecode = include_str!("./bytecode_shoshin.json");
 
         let vm = execute_cairo_program(&bytecode, "loop", inputs).unwrap();
         get_output(vm).unwrap();
+    }
+
+    #[test]
+    fn test_realtime_output() {
+        let inputs = get_realtime_input();
+        let inputs = RealTimeInputVec(inputs);
+        let inputs = prepare_args(inputs).unwrap();
+
+        let bytecode = include_str!("./bytecode_shoshin.json");
+
+        let vm = execute_cairo_program(&bytecode, "playerInLoop", inputs).unwrap();
+
+        let output = get_realtime_output(vm).unwrap();
+
+        assert!(1 == 1);
     }
 }

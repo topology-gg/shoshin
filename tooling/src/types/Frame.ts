@@ -38,12 +38,7 @@ export interface FrameScene {
     agent_0: Frame[],
     agent_1: Frame[],
 }
-
-export interface RealTimeFrameScene {
-    agent_0: RealTimePlayer,
-    agent_1: RealTimePlayer,
-}
-export interface RealTimePlayer {
+export interface RealTimeAgent {
     body_state: BodyState,
     physics_state: PhysicsState,
     stimulus: number,
@@ -56,6 +51,12 @@ export interface RealTimePlayer {
     physics_state: PhysicsState,
     stimulus: number,
     hitboxes: Hitboxes,
+}
+
+
+export interface RealTimeFrameScene {
+    agent_0: RealTimePlayer,
+    agent_1: RealTimeAgent,
 }
 
 
@@ -183,4 +184,118 @@ export function realTimeInputToArray(
     ]
 }
 
+function countKeys(obj: any): number {
+    let count = 0;
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            count++;
+            if (typeof obj[key] === 'object') {
+                count += countKeys(obj[key]);
+            }
+        }
+    }
+    return count;
+}
 
+
+export function getSizeOfRealTimeInputScene(){
+    let temp : RealTimeFrameScene = {
+        agent_0 : {
+            body_state : {
+                dir : 1,
+                stamina : 1,
+                integrity  : 1,
+                state: 1,
+                fatigued: 1,
+                counter: 1,
+            },
+            physics_state : {
+                pos : {
+                    x : 1,
+                    y : 1,
+                },
+                vel_fp: {
+                    x : 1,
+                    y : 1,
+                },
+                acc_fp: {
+                    x : 1,
+                    y : 1,
+                },
+            },
+            hitboxes : {
+                action : {
+                    origin : {
+                        x : 1,
+                        y : 1,
+                    },
+                    dimension : {
+                        x : 1,
+                        y : 1,
+                    }
+                },
+                body : {
+                    origin : {
+                        x : 1,
+                        y : 1,
+                    },
+                    dimension : {
+                        x : 1,
+                        y : 1,
+                    }
+                }
+            },
+            stimulus : 1
+        },
+        agent_1 : {
+            body_state : {
+                dir : 1,
+                stamina : 1,
+                integrity  : 1,
+                state: 1,
+                fatigued: 1,
+                counter: 1,
+            },
+            physics_state : {
+                pos : {
+                    x : 1,
+                    y : 1,
+                },
+                vel_fp: {
+                    x : 1,
+                    y : 1,
+                },
+                acc_fp: {
+                    x : 1,
+                    y : 1,
+                },
+            },
+            hitboxes : {
+                action : {
+                    origin : {
+                        x : 1,
+                        y : 1,
+                    },
+                    dimension : {
+                        x : 1,
+                        y : 1,
+                    }
+                },
+                body : {
+                    origin : {
+                        x : 1,
+                        y : 1,
+                    },
+                    dimension : {
+                        x : 1,
+                        y : 1,
+                    }
+                }
+            },
+            stimulus : 1,
+            mental_state : 1
+        }
+    }
+    console.log('key count ', countKeys(temp))
+
+} 

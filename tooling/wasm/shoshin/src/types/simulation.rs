@@ -32,7 +32,7 @@ pub struct ShoshinInput {
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
 pub struct RealTimeFrameScene {
-    pub agent_0: RealTimeAgent,
+    pub agent_0: RealTimePlayer,
     pub agent_1: RealTimeAgent,
 }
 
@@ -46,7 +46,15 @@ pub struct FrameScene {
 pub struct RealTimeAgent {
     pub body_state: BodyState,
     pub physics_state: PhysicsState,
-    pub action: BigInt,
+    pub stimulus: BigInt,
+    pub hitboxes: Hitboxes,
+    pub mental_state : BigInt
+}
+
+#[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
+pub struct RealTimePlayer {
+    pub body_state: BodyState,
+    pub physics_state: PhysicsState,
     pub stimulus: BigInt,
     pub hitboxes: Hitboxes,
 }
@@ -107,6 +115,11 @@ pub struct Combo {
 impl Sizeable for FrameScene {
     fn size() -> usize {
         50
+    }
+}
+impl Sizeable for RealTimeFrameScene {
+    fn size() -> usize {
+        43
     }
 }
 
