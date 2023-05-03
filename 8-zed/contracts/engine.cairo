@@ -523,7 +523,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     );
 }
 
-@external
+
 func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         agent_0_body_state_state: felt,
         agent_0_body_state_counter: felt,
@@ -578,7 +578,7 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         actions_1_len: felt,
         actions_1: felt*,
 
-) {
+)  -> (len : felt, scene: RealTimeFrameScene*) {
     alloc_locals;
 
 
@@ -588,7 +588,7 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
 
     let (mental_state_1) = default_dict_new(default_value=0);
     let (mental_state_offsets_1) = default_dict_new(default_value=0);
-    let (mental_state_1_new, mental_state_offsets_1_new) = fill_dictionary_offsets(
+    let (mental_state_1_filled, mental_state_offsets_1_filled) = fill_dictionary_offsets(
         tree_dict=mental_state_1,
         offsets_dict=mental_state_offsets_1,
         offsets_len=agent_1_state_machine_offset_len,
@@ -598,7 +598,7 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
     );
 
     let (conditions_1) = default_dict_new(default_value=0);
-    let (conditions_1_new) = fill_dictionary(
+    let (conditions_1_filled) = fill_dictionary(
         dict=conditions_1,
         offsets_len=agent_1_conditions_offset_len,
         offsets=agent_1_conditions_offset,
@@ -664,14 +664,14 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
     //
 
     let (mem) = alloc();
-    let (ptr_tree) = dict_read{dict_ptr=mental_state_1}(key=agent_1_mental_state);
+    let (ptr_tree) = dict_read{dict_ptr=mental_state_1_filled}(key=agent_1_mental_state);
     tempvar tree = cast(ptr_tree, Tree*);
-    let (ptr_offsets) = dict_read{dict_ptr=mental_state_offsets_1}(
+    let (ptr_offsets) = dict_read{dict_ptr=mental_state_offsets_1_filled}(
         key=agent_1_mental_state
     );
     tempvar offsets = cast(ptr_offsets, felt*);
     let (agent_state_1, conditions_1_new, dict_new) = BinaryOperatorTree.execute_tree_chain(
-        [offsets], offsets + 1, tree, 0, mem, conditions_1, perceptibles_1
+        [offsets], offsets + 1, tree, 0, mem, conditions_1_filled, perceptibles_1
     );
     default_dict_finalize(
         dict_accesses_start=dict_new, dict_accesses_end=dict_new, default_value=0
@@ -739,26 +739,28 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         curr_body_state_1    = body_state_1,
     );
 
+    //Easier to recover the RealTimeFrame in rust by using an array
+    let (real_time_frame_scenes: RealTimeFrameScene*) = alloc();
 
     // For player agent mental_state and other frame members are not relevent
-    let res = RealTimeFrameScene(
-        agent_0 = RealTimePlayer (
-            body_state    = body_state_0,
-            physics_state = physics_state_0,
-            stimulus      = stimulus_0,
-            hitboxes      = hitboxes_0
+    assert real_time_frame_scenes[0] = RealTimeFrameScene(
+        agent_0=RealTimePlayer(
+            body_state=body_state_0,
+            physics_state=physics_state_0,
+            stimulus=stimulus_0,
+            hitboxes=hitboxes_0,
         ),
-        agent_1 = RealTimeAgent (
-            body_state    = body_state_1,
-            physics_state = physics_state_1,
-            stimulus      = stimulus_1,
-            hitboxes      = hitboxes_1,
-            mental_state =  agent_state_1,
-        )
+        agent_1=RealTimeAgent(
+            body_state=body_state_1,
+            physics_state=physics_state_1,
+            stimulus=stimulus_1,
+            hitboxes=hitboxes_1,
+            mental_state=agent_state_1,
+        ),
     );
 
-    event_realtime.emit(res);
-    return ();    
+    return (len=1, scene=real_time_frame_scenes);
+
 }
 
 
@@ -767,7 +769,7 @@ func event_array(arr_len: felt, arr: FrameScene*) {
 }
 
 @event
-func event_realtime(arr_len: felt, arr: RealTimeFrameScene) {
+func event_realtime(scene: RealTimeFrameScene) {
 }
 
 // emit both agents' description
