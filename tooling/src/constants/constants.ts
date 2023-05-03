@@ -225,8 +225,8 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 1020, type: ElementType.Constant },
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
         ],
-        displayName : "oponent_is_attacking",
-        key: "1"
+        displayName : "F0",
+        key: "F0"
     },
     {
         elements: [
@@ -395,20 +395,53 @@ export const INITIAL_CONDITIONS: Condition[] = [
 ]
 export const INITIAL_CONDITION_INDEX: number = INITIAL_CONDITIONS.length - 1
 
+
+const conditions = [ {
+    elements: [
+        { value: 1, type: ElementType.Constant },
+        { value: Operator.Equal, type: ElementType.Operator },
+        { value: 1, type: ElementType.Constant },
+    ],
+
+    displayName : "F0",
+    key: "F0"
+},
+{
+    elements: [
+        { value: 1, type: ElementType.Constant },
+        { value: Operator.Equal, type: ElementType.Operator },
+        { value: 1, type: ElementType.Constant },
+    ],
+
+    displayName : "F1",
+    key: "F1"
+},
+
+]
 const DECISION_TREE_IDLE_AGENT: Tree[] = [
     {
         nodes: [
-            { id: 'F9', isChild: false },
-            { id: 'MS IDLE', isChild: true, branch: Direction.Left },
-            { id: 'MS IDLE', isChild: true, branch: Direction.Right },
+            { id: 'F0', isChild: false },
+            { id: 'MS Two', isChild: true, branch: Direction.Left },
+
+            { id: 'MS One', isChild: true, branch: Direction.Right },
+        ]
+    },    
+    {
+        nodes: [
+            { id: 'F1', isChild: false },
+            { id: 'MS One', isChild: true, branch: Direction.Left },
+            { id: 'MS Two', isChild: true, branch: Direction.Right },
         ]
     }
 ]
 const MENTAL_STATES_IDLE_AGENT: MentalState[] = [
-    { state: 'MS IDLE', action: ActionsAntoc['Null'] },
+    { state: 'MS One', action: ActionsAntoc['Null'] },
+    { state: 'MS Two', action: ActionsAntoc['Null'] },
 ]
-export const IDLE_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_CONDITIONS, 0, 1)
-export const BLANK_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_CONDITIONS, 0, 0)
+//export const IDLE_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_CONDITIONS, 0, 1)
+export const IDLE_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, conditions, 0, 1)
+export const BLANK_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_CONDITIONS, 0, 1)
 
 const DECISION_TREE_OFFENSIVE_AGENT = INITIAL_DECISION_TREES
 const MENTAL_STATES_OFFENSIVE_AGENT: MentalState[] = [

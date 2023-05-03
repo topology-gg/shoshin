@@ -29,7 +29,7 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     let indexes: Map<number, boolean> = new Map()
     trees.forEach((t: Tree) => {
         let [parsedMentalState, usedConditions] = parseTree(t, mentalStates)
-        usedConditions.forEach((k, _) => {
+        usedConditions.forEach((_, k) => {
             indexes.set(k, true)
         })
         agentMentalStates.push(parsedMentalState)
@@ -40,6 +40,7 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     let agentCondtionNames = []
     // makes use of indexes to only parse the necessary conditions
     Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => conditions[i]).forEach((f) => {
+    
         // Temporary code to deal with backend bug, can be removed in subsequent pr, April 6, 2023
         agentCondtionNames.push(f.displayName.replaceAll("\u0000",""))
         agentConditions.push(parseConditionToLeaf(f))
