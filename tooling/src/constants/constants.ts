@@ -123,6 +123,31 @@ export enum ActionsAntoc {
     DashBackward = 7,
 }
 
+export const characterActionToNumber = {
+    jessica:{
+        Null : 0,
+        Slash : 1,
+        Upswing : 2,
+        Sidecut : 3,
+        Block : 4,
+        MoveForward  : 5,
+        MoveBackward : 6,
+        DashForward  : 7,
+        DashBackward : 8,
+    },
+    antoc: {
+        Null : 0,
+        Hori : 1,
+        Vert : 2,
+        Block : 3,
+        MoveForward : 4,
+        MoveBackward : 5,
+        DashForward : 6,
+        DashBackward : 7,
+    }
+
+}
+
 // Simulation related constants
 export const FRAME_COUNT = 120;
 
@@ -469,7 +494,6 @@ export const MENTAL_STATES_COMBO_AGENT: MentalState[] = [
 
 export const InitialRealTimeFrameScene : RealTimeFrameScene  = {
     agent_0 : {
-        "action": 0,
         "body_state": {
             "counter": 0,
             "dir": 1,
@@ -502,7 +526,7 @@ export const InitialRealTimeFrameScene : RealTimeFrameScene  = {
         },
         "physics_state": {
             "pos": {
-                "x": 100,
+                "x": -100,
                 "y": 0
             },
             "vel_fp": {
@@ -517,7 +541,6 @@ export const InitialRealTimeFrameScene : RealTimeFrameScene  = {
         "stimulus": 0
     },
     agent_1 : {
-        "action": 0,
         "body_state": {
             "counter": 0,
             "dir": 0,
@@ -546,7 +569,8 @@ export const InitialRealTimeFrameScene : RealTimeFrameScene  = {
                     "x": 50,
                     "y": 116
                 }
-            }
+            },
+
         },
         "physics_state": {
             "pos": {
@@ -562,6 +586,7 @@ export const InitialRealTimeFrameScene : RealTimeFrameScene  = {
                 "y": 0
             }
         },
-        "stimulus": 0
+        "stimulus": 0,
+        "mental_state" : 0,
     }
 }

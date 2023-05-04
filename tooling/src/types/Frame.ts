@@ -133,7 +133,11 @@ function getFlattenedPhysicState(physicState: PhysicsState): number[] {
         flattenedPhysicState.push(...flattenedVector)
     }
 
-    return flattenedPhysicState
+    return [
+        ...getFlattenedVector(physicState.pos),
+        ...getFlattenedVector(physicState.vel_fp),
+        ...getFlattenedVector(physicState.acc_fp),
+    ]
 }
 
 function getFlattenedVector(vector: Vec2): number[] {
@@ -148,16 +152,18 @@ function getFlattenedVector(vector: Vec2): number[] {
 }
 
 function getFlattenedBodyState(bodyState: BodyState): number[] {
-    let flattenedBodyState = []
-    let bodyStateKeys = Object.keys(bodyState)
 
-    for (const key of bodyStateKeys) {
-        flattenedBodyState.push(bodyState[key as keyof BodyState])
-    }
-
-    return flattenedBodyState
+    return [
+        bodyState.state,
+        bodyState.counter,
+        bodyState.integrity,
+        bodyState.stamina,
+        bodyState.dir,
+        bodyState.fatigued
+    ]
 }
 
+//Ordering of elements in array are important, they much match what is in the rust and cairo code
 export function realTimeInputToArray(
     scene : RealTimeFrameScene, 
     player_action : number, 

@@ -1,11 +1,11 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Snackbar, ThemeProvider } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MidScreenControl from "../src/components/MidScreenControl";
 import EditorView from "../src/components/sidePanelComponents/EditorView";
-import { Frame, FrameScene, TestJson, getFlattenedPerceptiblesFromFrame } from "../src/types/Frame";
+import { Frame, FrameScene, TestJson, getFlattenedPerceptiblesFromFrame, getSizeOfRealTimeInputScene } from "../src/types/Frame";
 import { Tree, Direction } from "../src/types/Tree";
 import {
     Condition,
@@ -65,7 +65,8 @@ import theme from "../src/theme/theme";
 import FrameDecisionPathViewer from "../src/components/FrameDecisionPathViewer";
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from "../src/components/MobileView";
-import useRunRealTime from "../src/hooks/useRunRealtime";
+import { runRealTimeFromContext } from "../src/hooks/useRunRealtime";
+import { ShoshinWASMContext } from "../src/context/wasm-shoshin";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -163,14 +164,18 @@ export default function Home() {
     const { runCairoSimulation, wasmReady } = useRunCairoSimulation(p1, p2);
     const { runEvaluateCondition } = useEvaluateCondition();
 
-    const {runRealTime} = useRunRealTime(InitialRealTimeFrameScene, 0, 0, 0, IDLE_AGENT)    
+    const ctx = useContext(ShoshinWASMContext)
+    getSizeOfRealTimeInputScene()
 
     useEffect(() => {
         if(wasmReady){
-            const [out, err] = runRealTime();
+            console.log("p1", p1)
+            console.log("running realtime")
+            const [out, err] = runRealTimeFromContext(ctx, InitialRealTimeFrameScene, 0, 0, 0, p1);
             console.log('realtime res', err ? err : out)
+            console.log("running realtime done")
         }
-    }, [wasmReady])
+    }, [wasmReady, p1])
 
     
     

@@ -125,11 +125,12 @@ export default class Platformer extends Phaser.Scene {
         return text
     }
 
-    private setPlayerOneCharacter(characterType : number){
+    setPlayerOneCharacter(characterType : number){
         const characterName = characterType == 0 ? 'jessica' : 'antoc'
         this.player_one_character = characterName
     }
-    private setPlayerTwoCharacter(characterType : number){
+    
+    setPlayerTwoCharacter(characterType : number){
         const characterName = characterType == 0 ? 'jessica' : 'antoc'
         this.player_two_character = characterName
     }
@@ -242,6 +243,7 @@ export default class Platformer extends Phaser.Scene {
         camera.pan( leftCharX + charDistance / 2 + DEFAULT_CAMERA_CENTER_X , DEFAULT_CAMERA_CENTER_Y, CAMERA_REACTION_TIME)
 
     }
+
     updateScene({testJson, animationFrame, animationState, showDebug}: SimulatorProps){
         console.log('updateScene::testJson', testJson)
                 const characterType0 = testJson?.agent_0.type

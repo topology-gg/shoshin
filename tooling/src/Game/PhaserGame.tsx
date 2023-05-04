@@ -18,6 +18,7 @@ const Game = ({testJson, animationFrame, animationState, showDebug, isRealTime =
     const className = "relative top-0 left-0 w-full h-full my-12";
     const variant = "default";
 
+
     const parent = React.useRef();
     const canvas = React.useRef();
     const game = React.useRef();
@@ -99,19 +100,20 @@ const Game = ({testJson, animationFrame, animationState, showDebug, isRealTime =
             if(isRealTime){
                 g.scene.add('realtime', RealTime)
                 g.scene.start('realtime')
+                
             } else{
                 g.scene.add('simulator', Simulator)
                 g.scene.start('simulator')
             }
-            
-            
-            
         }
         return () => g.destroy();
     }, [Phaser, create, preload, parent, canvas]);
 
+    
 
+    let realtimeScene = game.current?.scene.getScene('realtime')
 
+    console.log("real time scene ", realtimeScene)
     React.useEffect(() => {
         //get current scene
 
@@ -120,16 +122,16 @@ const Game = ({testJson, animationFrame, animationState, showDebug, isRealTime =
           return
         }
 
-        
-        
-        
         if(isRealTime){
+            console.log("ctx is ", ctx)
             //@ts-ignore
             let scene = game.current?.scene.getScene('realtime');
-
-            if(scene?.is_wasm_undefined()){
-                (scene as RealTime).set_wasm_context(ctx)
+            console.log("scene is", realtimeScene)
+            if(realtimeScene == undefined){
+                
+                return
             }
+            realtimeScene.set_wasm_context(ctx)
         }else {
             //@ts-ignore
             let scene = game.current?.scene.getScene('simulator') as Simulator;
@@ -138,15 +140,11 @@ const Game = ({testJson, animationFrame, animationState, showDebug, isRealTime =
               return
             }
     
-            scene.updateScene({ testJson, animationFrame, animationState, showDebug, isRealTime })
+            scene.updateScene({ testJson, animationFrame, animationState, showDebug, isRealTime})
         }
         
-
-
-        
-
         //render stuff
-    }, [testJson, animationFrame, animationState, showDebug])
+    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm, realtimeScene])
 
     return Phaser ? (
         <div
