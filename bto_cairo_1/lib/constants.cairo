@@ -13,7 +13,7 @@ mod opcodes {
     const NOT: u128 = 11_u128;
     const EQ: u128 = 12_u128;
 
-    const MEM: u128 = 13_u128;
-    const DICT: u128 = 14_u128;
-    const FUNC: u128 = 15_u128;
+    const STACK: u128 = 13_u128;
+    const HEAP: u128 = 14_u128;
+    const PRECOMP: u128 = 15_u128;
 }
