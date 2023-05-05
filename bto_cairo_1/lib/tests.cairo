@@ -9,16 +9,20 @@ use option::OptionTrait;
 use traits::Into;
 
 // Internal imports
+use bto::constants::opcodes;
 use bto::tree;
 use bto::tree::Node;
-use bto::constants::opcodes;
+use bto::types::i129;
+use bto::types::i129Trait;
+
+// TODO remove all the _usize (since Cairo 1.0 has inference)
 
 fn execute_tree(
     ref tree: Array<Node>,
-    stack: Option<Array<u128>>,
-    heap: Option<Felt252Dict<u128>>,
+    stack: Option<Array<i129>>,
+    heap: Option<Felt252Dict<Nullable<i129>>>,
     precompiles: Option<Felt252Dict<Nullable<Span<Node>>>>
-) -> u128 {
+) -> i129 {
     let mut tree_span = tree.span();
 
     let mut stack = match stack {
@@ -56,19 +60,19 @@ fn test_add__should_add_two_values() {
     //    /   \
     // 1(3)   2(3)
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::ADD, left: 1_usize, right: 6_usize });
-    tree_array.append(Node { value: opcodes::ADD, left: 1_usize, right: 4_usize });
-    tree_array.append(Node { value: opcodes::ADD, left: 1_usize, right: 2_usize });
-    tree_array.append(Node { value: 1, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 6, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 8, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: i129Trait::new(opcodes::ADD), left: 1, right: 6 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::ADD), left: 1, right: 4 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::ADD), left: 1, right: 2 });
+    tree_array.append(Node { value: i129Trait::new(1_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(6_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(8_u128), left: 0, right: 0 });
 
     // When
     let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
 
     // Then
-    assert(result == 17, 'incorrect addition result');
+    assert(result.inner == 17, 'incorrect addition result');
 }
 
 #[test]
@@ -84,19 +88,19 @@ fn test_sub__should_sub_two_values() {
     //    /   \
     // 1000(3) 15(3)
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::SUB, left: 1_usize, right: 6_usize });
-    tree_array.append(Node { value: opcodes::SUB, left: 1_usize, right: 4_usize });
-    tree_array.append(Node { value: opcodes::SUB, left: 1_usize, right: 2_usize });
-    tree_array.append(Node { value: 1000, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 15, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 9, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 245, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: i129Trait::new(opcodes::SUB), left: 1, right: 6 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::SUB), left: 1, right: 4 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::SUB), left: 1, right: 2 });
+    tree_array.append(Node { value: i129Trait::new(1000_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(15_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(9_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(245_u128), left: 0, right: 0 });
 
     // When
     let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
 
     // Then
-    assert(result == 731, 'incorrect substraction result');
+    assert(result.inner == 731, 'incorrect substraction result');
 }
 
 #[test]
@@ -112,19 +116,19 @@ fn test_mul__should_mul_two_values() {
     //    /   \
     // 13(3) 15(3)
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::MUL, left: 1_usize, right: 6_usize });
-    tree_array.append(Node { value: opcodes::MUL, left: 1_usize, right: 4_usize });
-    tree_array.append(Node { value: opcodes::MUL, left: 1_usize, right: 2_usize });
-    tree_array.append(Node { value: 13, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 15, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 9, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 6 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 4 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 2 });
+    tree_array.append(Node { value: i129Trait::new(13_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(15_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(9_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
 
     // When
     let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
 
     // Then
-    assert(result == 3510, 'incorrect multiplication result');
+    assert(result.inner == 3510, 'incorrect multiplication result');
 }
 
 #[test]
@@ -140,19 +144,19 @@ fn test_div__should_div_two_values() {
     //    /   \
     // 512(3) 4(3)
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::DIV, left: 1_usize, right: 6_usize });
-    tree_array.append(Node { value: opcodes::DIV, left: 1_usize, right: 4_usize });
-    tree_array.append(Node { value: opcodes::DIV, left: 1_usize, right: 2_usize });
-    tree_array.append(Node { value: 512, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 4, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 6, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: i129Trait::new(opcodes::DIV), left: 1, right: 6 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::DIV), left: 1, right: 4 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::DIV), left: 1, right: 2 });
+    tree_array.append(Node { value: i129Trait::new(512_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(4_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(6_u128), left: 0, right: 0 });
 
     // When
     let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
 
     // Then
-    assert(result == 10, 'incorrect division result');
+    assert(result.inner == 10, 'incorrect division result');
 }
 
 #[test]
@@ -168,19 +172,46 @@ fn test_mod__should_mod() {
     //    /   \
     // 512(3) 104(3)
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::MOD, left: 1_usize, right: 6_usize });
-    tree_array.append(Node { value: opcodes::MOD, left: 1_usize, right: 4_usize });
-    tree_array.append(Node { value: opcodes::MOD, left: 1_usize, right: 2_usize });
-    tree_array.append(Node { value: 512, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 104, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 63, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 7, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MOD), left: 1, right: 6 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MOD), left: 1, right: 4 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MOD), left: 1, right: 2 });
+    tree_array.append(Node { value: i129Trait::new(512_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(104_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(63_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(7_u128), left: 0, right: 0 });
 
     // When
     let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
 
     // Then
-    assert(result == 5, 'incorrect modulo result');
+    assert(result.inner == 5, 'incorrect modulo result');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_mod__should_abs() {
+    // Given 
+    // Tree
+    //           abs(0)
+    //            |
+    //         mult(1)
+    //       /      \
+    //     abs(2)   -2(4)
+    //       |
+    //      -100(3)
+    let mut tree_array: Array<Node> = ArrayTrait::new();
+    tree_array.append(Node { value: i129Trait::new(opcodes::ABS), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 3 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::ABS), left: 0, right: 1 });
+    tree_array.append(Node { value: -i129Trait::new(100_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: -i129Trait::new(2_u128), left: 0, right: 0 });
+
+    // When
+    let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
+
+    // Then
+    assert(result.inner == 200, 'incorrect abs result');
+    assert(!result.sign, 'incorrect abs result');
 }
 
 #[test]
@@ -196,17 +227,71 @@ fn test_sqrt__should_sqrt() {
     //       |
     //      400(3)
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::SQRT, left: 0_usize, right: 1_usize });
-    tree_array.append(Node { value: opcodes::MUL, left: 1_usize, right: 3_usize });
-    tree_array.append(Node { value: opcodes::SQRT, left: 0_usize, right: 1_usize });
-    tree_array.append(Node { value: 400, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 5, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: i129Trait::new(opcodes::SQRT), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 3 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::SQRT), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(400_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(5_u128), left: 0, right: 0 });
 
     // When
     let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
 
     // Then
-    assert(result == 10, 'incorrect sqrt result');
+    assert(result.inner == 10, 'incorrect sqrt result');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_mod__should_pow() {
+    // Given 
+    // Tree
+    //            pow(0)
+    //          /       \
+    //         pow(1)   2(6)
+    //       /      \
+    //     pow(2)   2(5)
+    //    /   \
+    // 2(3)   6(4)
+    let mut tree_array: Array<Node> = ArrayTrait::new();
+    tree_array.append(Node { value: i129Trait::new(opcodes::POW), left: 1, right: 6 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::POW), left: 1, right: 4 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::POW), left: 1, right: 2 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(6_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
+
+    // When
+    let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
+
+    // Then
+    assert(result.inner == 16777216, 'incorrect pow result');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_mod__should_is_nn() {
+    // Given 
+    // Tree
+    //           is_nn(0)
+    //            |
+    //         mul(1)
+    //       /      \
+    //     is_nn(2)   -1(4)
+    //       |
+    //      10(3)
+    let mut tree_array: Array<Node> = ArrayTrait::new();
+    tree_array.append(Node { value: i129Trait::new(opcodes::IS_NN), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 3 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::IS_NN), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(10_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: -i129Trait::new(1_u128), left: 0, right: 0 });
+
+    // When
+    let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
+
+    // Then
+    assert(result.inner == 0, 'incorrect abs result');
 }
 
 #[test]
@@ -222,19 +307,19 @@ fn test_is_le__should_evaluate_is_le_two_values() {
     //    /   \
     // 2(3) 6(3)
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::IS_LE, left: 1_usize, right: 6_usize });
-    tree_array.append(Node { value: opcodes::IS_LE, left: 1_usize, right: 4_usize });
-    tree_array.append(Node { value: opcodes::IS_LE, left: 1_usize, right: 2_usize });
-    tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 6, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 0, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: i129Trait::new(opcodes::IS_LE), left: 1, right: 6 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::IS_LE), left: 1, right: 4 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::IS_LE), left: 1, right: 2 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(6_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(0_u128), left: 0, right: 0 });
 
     // When
     let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
 
     // Then
-    assert(result == 0, 'incorrect is less than result');
+    assert(result.inner == 0, 'incorrect is less than result');
 }
 
 #[test]
@@ -250,17 +335,17 @@ fn test_not__should_evaluate_not() {
     //       |
     //      1(3)
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::NOT, left: 0_usize, right: 1_usize });
-    tree_array.append(Node { value: opcodes::MUL, left: 1_usize, right: 3_usize });
-    tree_array.append(Node { value: opcodes::NOT, left: 0_usize, right: 1_usize });
-    tree_array.append(Node { value: 1, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: i129Trait::new(opcodes::NOT), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 3 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::NOT), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(1_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
 
     // When
     let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
 
     // Then
-    assert(result == 1, 'incorrect not result');
+    assert(result.inner == 1, 'incorrect not result');
 }
 
 #[test]
@@ -276,19 +361,19 @@ fn test_eq__should_evaluate_eq() {
     //    /   \
     // 2(3) 3(3)
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::EQ, left: 1_usize, right: 6_usize });
-    tree_array.append(Node { value: opcodes::MUL, left: 1_usize, right: 4_usize });
-    tree_array.append(Node { value: opcodes::EQ, left: 1_usize, right: 2_usize });
-    tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 3, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 5, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 0, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: i129Trait::new(opcodes::EQ), left: 1, right: 6 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 4 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::EQ), left: 1, right: 2 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(3_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(5_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(0_u128), left: 0, right: 0 });
 
     // When
     let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
 
     // Then
-    assert(result == 1, 'incorrect eq result');
+    assert(result.inner == 1, 'incorrect eq result');
 }
 
 #[test]
@@ -303,20 +388,20 @@ fn test_stack__should_evaluate_stack() {
     //     stack(2)   2(4)
     //       |
     //      1(3)
-    let mut stack: Array<u128> = ArrayTrait::new();
-    stack.append(1_u128);
-    stack.append(2_u128);
-    stack.append(3_u128);
-    stack.append(4_u128);
-    stack.append(5_u128);
-    stack.append(6_u128);
+    let mut stack: Array<i129> = ArrayTrait::new();
+    stack.append(i129Trait::new(1_u128));
+    stack.append(i129Trait::new(2_u128));
+    stack.append(i129Trait::new(3_u128));
+    stack.append(i129Trait::new(4_u128));
+    stack.append(i129Trait::new(5_u128));
+    stack.append(i129Trait::new(6_u128));
 
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::STACK, left: 0_usize, right: 1_usize });
-    tree_array.append(Node { value: opcodes::MUL, left: 1_usize, right: 3_usize });
-    tree_array.append(Node { value: opcodes::STACK, left: 0_usize, right: 1_usize });
-    tree_array.append(Node { value: 1, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: i129Trait::new(opcodes::STACK), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 3 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::STACK), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(1_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
 
     // When
     let result = execute_tree(
@@ -324,7 +409,7 @@ fn test_stack__should_evaluate_stack() {
     );
 
     // Then
-    assert(result == 5, 'incorrect stack result');
+    assert(result.inner == 5, 'incorrect stack result');
 }
 
 #[test]
@@ -340,15 +425,15 @@ fn test_heap__should_evaluate_heap() {
     //       |
     //      100(3)
     let mut heap = Felt252DictTrait::new();
-    heap.insert(100, 22_u128);
-    heap.insert(44, 17_u128);
+    heap.insert(100, i129Trait::new(22_u128).into());
+    heap.insert(44, i129Trait::new(17_u128).into());
 
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::HEAP, left: 0_usize, right: 1_usize });
-    tree_array.append(Node { value: opcodes::MUL, left: 1_usize, right: 3_usize });
-    tree_array.append(Node { value: opcodes::HEAP, left: 0_usize, right: 1_usize });
-    tree_array.append(Node { value: 100, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 2, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: i129Trait::new(opcodes::HEAP), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 3 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::HEAP), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(100_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
 
     // When
     let result = execute_tree(
@@ -356,7 +441,7 @@ fn test_heap__should_evaluate_heap() {
     );
 
     // Then
-    assert(result == 17, 'incorrect heap result');
+    assert(result.inner == 17, 'incorrect heap result');
 }
 
 #[test]
@@ -394,56 +479,55 @@ fn test_precompiles__should_evaluate_precompile() {
     //      /  \     /    \          
     // 47(3)  7(4) 30(6) 28(7)   
 
-    let mut stack: Array<u128> = ArrayTrait::new();
     let mut precompiles: Felt252Dict<Nullable<Span<Node>>> = Felt252DictTrait::new();
 
     let mut precompile_one: Array<Node> = ArrayTrait::new();
-    precompile_one.append(Node { value: opcodes::MUL, left: 1_usize, right: 12_usize });
-    precompile_one.append(Node { value: opcodes::MUL, left: 1_usize, right: 6_usize });
-    precompile_one.append(Node { value: opcodes::IS_LE, left: 1_usize, right: 4_usize });
-    precompile_one.append(Node { value: opcodes::MUL, left: 1_usize, right: 2_usize });
-    precompile_one.append(Node { value: 2, left: 0_usize, right: 0_usize });
-    precompile_one.append(Node { value: 32, left: 0_usize, right: 0_usize });
-    precompile_one.append(Node { value: 65, left: 0_usize, right: 0_usize });
-    precompile_one.append(Node { value: opcodes::SUB, left: 1_usize, right: 2_usize });
-    precompile_one.append(Node { value: 30, left: 0_usize, right: 0_usize });
-    precompile_one.append(Node { value: opcodes::MOD, left: 1_usize, right: 2_usize });
-    precompile_one.append(Node { value: 350, left: 0_usize, right: 0_usize });
-    precompile_one.append(Node { value: 47, left: 0_usize, right: 0_usize });
-    precompile_one.append(Node { value: opcodes::SUB, left: 1_usize, right: 3_usize });
-    precompile_one.append(Node { value: opcodes::SQRT, left: 0_usize, right: 1_usize });
-    precompile_one.append(Node { value: 150, left: 0_usize, right: 0_usize });
-    precompile_one.append(Node { value: opcodes::NOT, left: 0_usize, right: 1_usize });
-    precompile_one.append(Node { value: 0, left: 0_usize, right: 0_usize });
+    precompile_one.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 12 });
+    precompile_one.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 6 });
+    precompile_one.append(Node { value: i129Trait::new(opcodes::IS_LE), left: 1, right: 4 });
+    precompile_one.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 2 });
+    precompile_one.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
+    precompile_one.append(Node { value: i129Trait::new(32_u128), left: 0, right: 0 });
+    precompile_one.append(Node { value: i129Trait::new(65_u128), left: 0, right: 0 });
+    precompile_one.append(Node { value: i129Trait::new(opcodes::SUB), left: 1, right: 2 });
+    precompile_one.append(Node { value: i129Trait::new(30_u128), left: 0, right: 0 });
+    precompile_one.append(Node { value: i129Trait::new(opcodes::MOD), left: 1, right: 2 });
+    precompile_one.append(Node { value: i129Trait::new(350_u128), left: 0, right: 0 });
+    precompile_one.append(Node { value: i129Trait::new(47_u128), left: 0, right: 0 });
+    precompile_one.append(Node { value: i129Trait::new(opcodes::SUB), left: 1, right: 3 });
+    precompile_one.append(Node { value: i129Trait::new(opcodes::SQRT), left: 0, right: 1 });
+    precompile_one.append(Node { value: i129Trait::new(150_u128), left: 0, right: 0 });
+    precompile_one.append(Node { value: i129Trait::new(opcodes::NOT), left: 0, right: 1 });
+    precompile_one.append(Node { value: i129Trait::new(0_u128), left: 0, right: 0 });
 
     let mut precompile_one: Box<Span<Node>> = BoxTrait::new(precompile_one.span());
     precompiles.insert(0, nullable_from_box(precompile_one));
 
     let mut precompile_two: Array<Node> = ArrayTrait::new();
-    precompile_two.append(Node { value: opcodes::MUL, left: 1_usize, right: 8_usize });
-    precompile_two.append(Node { value: opcodes::MUL, left: 1_usize, right: 4_usize });
-    precompile_two.append(Node { value: opcodes::MOD, left: 1_usize, right: 2_usize });
-    precompile_two.append(Node { value: 47, left: 0_usize, right: 0_usize });
-    precompile_two.append(Node { value: 7, left: 0_usize, right: 0_usize });
-    precompile_two.append(Node { value: opcodes::SUB, left: 1_usize, right: 2_usize });
-    precompile_two.append(Node { value: 30, left: 0_usize, right: 0_usize });
-    precompile_two.append(Node { value: 28, left: 0_usize, right: 0_usize });
-    precompile_two.append(Node { value: opcodes::ADD, left: 1_usize, right: 2_usize });
-    precompile_two.append(Node { value: 3, left: 0_usize, right: 0_usize });
-    precompile_two.append(Node { value: 4, left: 0_usize, right: 0_usize });
+    precompile_two.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 8 });
+    precompile_two.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 4 });
+    precompile_two.append(Node { value: i129Trait::new(opcodes::MOD), left: 1, right: 2 });
+    precompile_two.append(Node { value: i129Trait::new(47_u128), left: 0, right: 0 });
+    precompile_two.append(Node { value: i129Trait::new(7_u128), left: 0, right: 0 });
+    precompile_two.append(Node { value: i129Trait::new(opcodes::SUB), left: 1, right: 2 });
+    precompile_two.append(Node { value: i129Trait::new(30_u128), left: 0, right: 0 });
+    precompile_two.append(Node { value: i129Trait::new(28_u128), left: 0, right: 0 });
+    precompile_two.append(Node { value: i129Trait::new(opcodes::ADD), left: 1, right: 2 });
+    precompile_two.append(Node { value: i129Trait::new(3_u128), left: 0, right: 0 });
+    precompile_two.append(Node { value: i129Trait::new(4_u128), left: 0, right: 0 });
 
     let mut precompile_two: Box<Span<Node>> = BoxTrait::new(precompile_two.span());
     precompiles.insert(1, nullable_from_box(precompile_two));
 
     let mut tree_array: Array<Node> = ArrayTrait::new();
-    tree_array.append(Node { value: opcodes::ADD, left: 1_usize, right: 6_usize });
-    tree_array.append(Node { value: opcodes::PRECOMP, left: 0_usize, right: 1_usize });
-    tree_array.append(Node { value: opcodes::DIV, left: 1_usize, right: 3_usize });
-    tree_array.append(Node { value: opcodes::PRECOMP, left: 0_usize, right: 1_usize });
-    tree_array.append(Node { value: 0, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: 99, left: 0_usize, right: 0_usize });
-    tree_array.append(Node { value: opcodes::STACK, left: 0_usize, right: 1_usize });
-    tree_array.append(Node { value: 0, left: 0_usize, right: 0_usize });
+    tree_array.append(Node { value: i129Trait::new(opcodes::ADD), left: 1, right: 6 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::PRECOMP), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::DIV), left: 1, right: 3 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::PRECOMP), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(0_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(99_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::STACK), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(0_u128), left: 0, right: 0 });
 
     // When
     let result = execute_tree(
@@ -451,6 +535,6 @@ fn test_precompiles__should_evaluate_precompile() {
     );
 
     // Then
-    assert(result == 169, 'incorrect precompile result');
+    assert(result.inner == 169, 'incorrect precompile result');
 }
 
