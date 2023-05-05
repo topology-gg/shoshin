@@ -242,6 +242,34 @@ fn test_sqrt__should_sqrt() {
 
 #[test]
 #[available_gas(2000000)]
+fn test_mod__should_pow() {
+    // Given 
+    // Tree
+    //            pow(0)
+    //          /       \
+    //         pow(1)   2(6)
+    //       /      \
+    //     pow(2)   2(5)
+    //    /   \
+    // 2(3)   6(4)
+    let mut tree_array: Array<Node> = ArrayTrait::new();
+    tree_array.append(Node { value: i129Trait::new(opcodes::POW), left: 1, right: 6 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::POW), left: 1, right: 4 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::POW), left: 1, right: 2 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(6_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: i129Trait::new(2_u128), left: 0, right: 0 });
+
+    // When
+    let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
+
+    // Then
+    assert(result.inner == 16777216, 'incorrect pow result');
+}
+
+#[test]
+#[available_gas(2000000)]
 fn test_mod__should_is_nn() {
     // Given 
     // Tree

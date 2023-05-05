@@ -2,6 +2,7 @@
 use array::ArrayTrait;
 use array::SpanTrait;
 use dict::Felt252DictTrait;
+use integer::BoundedInt;
 use integer::u128_sqrt;
 use nullable::NullableTrait;
 use option::OptionTrait;
@@ -12,6 +13,7 @@ use traits::TryInto;
 
 // Internal imports
 use bto::constants::opcodes;
+use bto::math::fast_power;
 use bto::types::i129;
 use bto::types::i129Trait;
 
@@ -94,6 +96,15 @@ fn execute(
         assert(value_right >= i129Trait::new(0_u128), 'sqrt(x) with x<0');
         let sqrt: u128 = integer::upcast(u128_sqrt(value_right.inner));
         return i129Trait::new(sqrt);
+    }
+
+    if opcode == opcodes::POW {
+        assert(!value_left.sign & !value_right.sign, 'cannot pow negative values');
+        let base = value_left.inner;
+        let power = value_right.inner;
+        let m: u128 = BoundedInt::max();
+        let pow = fast_power(base, power, m);
+        return i129Trait::new(pow);
     }
 
     if opcode == opcodes::IS_NN {
