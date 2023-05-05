@@ -8,16 +8,17 @@ import { useLayoutEffect } from "../hooks/useIsomorphicLayoutEffect";
 import styles from "./Game.module.css";
 import { TestJson } from "../types/Frame";
 import Simulator from "../scene/Simulator";
-import { SimulatorProps } from "../types/Simulator";
+import { GameModes, PhaserGameProps, SimulatorProps } from "../types/Simulator";
 import RealTime from "../scene/Realtime";
 import { ShoshinWASMContext } from "../context/wasm-shoshin";
 
 
-const Game = ({testJson, animationFrame, animationState, showDebug, isRealTime = true}: SimulatorProps) => {
+const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, realTimeOptions }: PhaserGameProps) => {
     const tagName = "div";
     const className = "relative top-0 left-0 w-full h-full my-12";
     const variant = "default";
 
+    const isRealTime = gameMode == GameModes.realtime;
 
     const parent = React.useRef();
     const canvas = React.useRef();
@@ -140,11 +141,11 @@ const Game = ({testJson, animationFrame, animationState, showDebug, isRealTime =
               return
             }
     
-            scene.updateScene({ testJson, animationFrame, animationState, showDebug, isRealTime})
+            scene.updateScene({ testJson, animationFrame, animationState, showDebug})
         }
         
         //render stuff
-    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm, realtimeScene])
+    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm, realtimeScene, realTimeOptions])
 
     return Phaser ? (
         <div

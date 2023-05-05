@@ -1,7 +1,7 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Snackbar, ThemeProvider } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Button, Snackbar, ThemeProvider } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MidScreenControl from "../src/components/MidScreenControl";
 import EditorView from "../src/components/sidePanelComponents/EditorView";
@@ -34,9 +34,8 @@ import {
 } from "../src/constants/constants";
 import Agent, { agentToCalldata, buildAgent } from "../src/types/Agent";
 import StatusBarPanel from "../src/components/StatusBar";
-import P1P2SettingPanel, {
-    AgentOption,
-} from "../src/components/P1P2SettingPanel";
+import P1P2SettingPanel from "../src/components/settingsPanels/P1P2SettingPanel";
+import {AgentOption} from "../src/components/settingsPanels/settingsPanel";
 import FrameInspector from "../src/components/FrameInspector";
 import useRunCairoSimulation from "../src/hooks/useRunCairoSimulation";
 import useEvaluateCondition from "../src/hooks/useEvaluateCondition";
@@ -67,6 +66,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from "../src/components/MobileView";
 import { runRealTimeFromContext } from "../src/hooks/useRunRealtime";
 import { ShoshinWASMContext } from "../src/context/wasm-shoshin";
+import { GameModes } from "../src/types/Simulator";
+import RealTimeSettingPanel from "../src/components/settingsPanels/RealTimeSettingPanel";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -115,6 +116,9 @@ export default function Home() {
         useState<Condition[]>(INITIAL_CONDITIONS);
     const [agentName, setAgentName] = useState<string>("");
     const [character, setCharacter] = useState<Character>(Character.Jessica);
+
+    const [gameMode, setGameMode] = useState<GameModes>(GameModes.realtime)
+    const [realTimeCharacter, setRealTimeCharacter] = useState<number>(0)
 
     // React states for warnings
     const [isConditionWarningTextOn, setConditionWarningTextOn] =
@@ -793,7 +797,7 @@ export default function Home() {
             txStatusText={txStatusText}
         />
     )
-
+            
     let FightView = (
         <div className={styles.main}>
             <div
@@ -802,10 +806,31 @@ export default function Home() {
                     flexDirection: "column",
                 }}
             >
-                <P1P2SettingPanel
-                    agentsFromRegistry={t}
-                    agentChange={agentChange}
-                />
+                <Button variant="text"
+                    onClick={() => {
+                        gameMode == GameModes.simulation ? setGameMode(GameModes.realtime) :setGameMode(GameModes.simulation)
+                    }}
+                >
+                    {
+                        gameMode == GameModes.simulation ? "Simulation" : 'Real Time'
+                    }
+                </Button>
+                
+                {
+                    gameMode == GameModes.simulation ?
+                    (
+                        <P1P2SettingPanel
+                            agentsFromRegistry={t}
+                            agentChange={agentChange}
+                        />
+                    ) : 
+                    (  <RealTimeSettingPanel
+                            agentsFromRegistry={t}
+                            agentChange={agentChange}
+                            changeCharacter={(character) => setRealTimeCharacter(parseInt(character))}
+                        />
+                    )
+                }
 
                 <StatusBarPanel
                     testJson={testJson}
@@ -817,7 +842,11 @@ export default function Home() {
                     animationFrame={animationFrame}
                     animationState={animationState}
                     showDebug={checkedShowDebugInfo}
-                    isRealTime={true}
+                    gameMode={gameMode}
+                    realTimeOptions={{
+                        playerCharacter : realTimeCharacter,
+                        agentOpponent : p2
+                    }}
                 />
 
                 <MidScreenControl

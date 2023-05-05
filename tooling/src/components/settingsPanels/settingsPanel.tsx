@@ -1,16 +1,11 @@
 import React from "react";
 import Rating from "@mui/material/Rating";
 import { styled } from "@mui/material/styles";
-import styles from "../../styles/StatusBar.module.css";
-import "../../styles/StatusBar.module.css";
+import "../../../styles/StatusBar.module.css";
 import { Autocomplete, TextField } from "@mui/material";
-import Agent from "../types/Agent";
-import { SingleMetadata } from "../types/Metadata";
+import Agent from "../../types/Agent";
+import { SingleMetadata } from "../../types/Metadata";
 
-interface P1P2SettingPanelProps {
-    agentsFromRegistry: SingleMetadata[]
-    agentChange: (whichPlayer: string, event: object, value: AgentOption) => void
-}
 export interface AgentOption {
     group: string;
     label: string;
@@ -33,7 +28,10 @@ const senders = {
 const lookupSenderAddress = (address : string) =>{
     return senders[address] ? senders[address] : "anon"
 }
-const SetPlayerBar = ({ label, agentsFromRegistry, agentChange }) => {
+
+
+
+export const SetPlayerBar = ({ label, agentsFromRegistry, agentChange }) => {
 
     // ref: https://stackoverflow.com/questions/73095037/how-to-have-an-option-be-a-part-of-multiple-groups-with-mui-autocomplete
     let agentOptions = [{group:'Local', label:'new agent', index: -1}]
@@ -64,20 +62,20 @@ const SetPlayerBar = ({ label, agentsFromRegistry, agentChange }) => {
     )
 }
 
+export const SelectCharacterBar = ({ label, changeCharacter }) => {
 
-const P1P2SettingPanel = ({
-    agentsFromRegistry,
-    agentChange
-}  : P1P2SettingPanelProps) => {
-
+    const characterOptions = [
+        {label : "jessica", id: 0},
+        {label : 'antoc', id : 1}
+    ]
     return (
-        <div style={{marginBottom:'10px'}}>
-            <div className={styles.statusBarRow}>
-                <SetPlayerBar label={'P1'} agentsFromRegistry={agentsFromRegistry} agentChange={(event, value) => agentChange('P1', event, value)}/>
-                <SetPlayerBar label={'P2'} agentsFromRegistry={agentsFromRegistry} agentChange={(event, value) => agentChange('P2', event, value)}/>
-            </div>
-        </div>
-    );
-};
-
-export default P1P2SettingPanel;
+        <AutoComplete
+            disablePortal
+            id="combo-box-demo"
+            options={characterOptions}
+            sx={{ width: 220 }}
+            renderInput={(params) => <TextField {...params} label={label} />}
+            onChange={changeCharacter}
+        />
+    )
+}
