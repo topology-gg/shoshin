@@ -189,6 +189,33 @@ fn test_mod__should_mod() {
 
 #[test]
 #[available_gas(2000000)]
+fn test_mod__should_abs() {
+    // Given 
+    // Tree
+    //           abs(0)
+    //            |
+    //         mult(1)
+    //       /      \
+    //     abs(2)   -2(4)
+    //       |
+    //      -100(3)
+    let mut tree_array: Array<Node> = ArrayTrait::new();
+    tree_array.append(Node { value: i129Trait::new(opcodes::ABS), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 3 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::ABS), left: 0, right: 1 });
+    tree_array.append(Node { value: -i129Trait::new(100_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: -i129Trait::new(2_u128), left: 0, right: 0 });
+
+    // When
+    let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
+
+    // Then
+    assert(result.inner == 200, 'incorrect abs result');
+    assert(!result.sign, 'incorrect abs result');
+}
+
+#[test]
+#[available_gas(2000000)]
 fn test_sqrt__should_sqrt() {
     // Given 
     // Tree
@@ -211,6 +238,32 @@ fn test_sqrt__should_sqrt() {
 
     // Then
     assert(result.inner == 10, 'incorrect sqrt result');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_mod__should_is_nn() {
+    // Given 
+    // Tree
+    //           is_nn(0)
+    //            |
+    //         mul(1)
+    //       /      \
+    //     is_nn(2)   -1(4)
+    //       |
+    //      10(3)
+    let mut tree_array: Array<Node> = ArrayTrait::new();
+    tree_array.append(Node { value: i129Trait::new(opcodes::IS_NN), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::MUL), left: 1, right: 3 });
+    tree_array.append(Node { value: i129Trait::new(opcodes::IS_NN), left: 0, right: 1 });
+    tree_array.append(Node { value: i129Trait::new(10_u128), left: 0, right: 0 });
+    tree_array.append(Node { value: -i129Trait::new(1_u128), left: 0, right: 0 });
+
+    // When
+    let result = execute_tree(ref tree_array, Option::None(()), Option::None(()), Option::None(()));
+
+    // Then
+    assert(result.inner == 0, 'incorrect abs result');
 }
 
 #[test]

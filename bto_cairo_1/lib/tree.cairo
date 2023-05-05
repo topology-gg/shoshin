@@ -86,7 +86,9 @@ fn execute(
         return value_left % value_right;
     }
 
-    // TODO: add ABS
+    if opcode == opcodes::ABS {
+        return i129Trait::new(value_right.inner);
+    }
 
     if opcode == opcodes::SQRT {
         assert(value_right >= i129Trait::new(0_u128), 'sqrt(x) with x<0');
@@ -94,7 +96,12 @@ fn execute(
         return i129Trait::new(sqrt);
     }
 
-    // TODO: add IS_NN
+    if opcode == opcodes::IS_NN {
+        return match value_right >= i129Trait::new(0_u128) {
+            bool::False(()) => i129Trait::zero(),
+            bool::True(()) => i129Trait::one(),
+        };
+    }
 
     if opcode == opcodes::IS_LE {
         return match value_left <= value_right {
