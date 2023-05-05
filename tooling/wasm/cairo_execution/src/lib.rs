@@ -8,10 +8,10 @@ use cairo_vm::{
     types::program::Program,
     vm::{
         runners::cairo_runner::{CairoArg, CairoRunner},
-        vm_core::VirtualMachine,
+        vm_core::VirtualMachine, self,
     },
 };
-use std::io::Cursor;
+use std::{io::Cursor, time::SystemTime};
 
 #[derive(thiserror::Error, Debug)]
 pub enum CairoExecutionError {
@@ -23,12 +23,12 @@ pub enum CairoExecutionError {
     CairoContextExecutionError(String),
 }
 
-struct CairoExecutionContext {
-    entrypoint: String,
-    program: Program,
-    inputs: Vec<CairoArg>,
-    vm: VirtualMachine,
-    cairo_runner: CairoRunner,
+pub struct CairoExecutionContext {
+    pub entrypoint: String,
+    pub program: Program,
+    pub inputs: Vec<CairoArg>,
+    pub vm: VirtualMachine,
+    pub cairo_runner: CairoRunner,
 }
 
 /// Runs the Cairo compiled bytecode
@@ -45,11 +45,12 @@ pub fn execute_cairo_program(
     entrypoint: &str,
     inputs: Vec<CairoArg>,
 ) -> Result<VirtualMachine, Error> {
+    println!("{:?} : start initialize_cairo_execution_context", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
     let mut context = initialize_cairo_execution_context(bytecode, entrypoint, inputs)
         .map_err(|e| CairoExecutionError::InitializationError(e.to_string()))?;
-
+    println!("{:?} : start execute context", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
     execute_context(&mut context)?;
-
+    println!("{:?} : finish execute context", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
     Result::Ok(context.vm)
 }
 
@@ -59,8 +60,11 @@ fn initialize_cairo_execution_context(
     inputs: Vec<CairoArg>,
 ) -> Result<CairoExecutionContext, Error> {
     let mut vm = VirtualMachine::new(true);
+    println!("{:?} : done with new VM", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
     let program = load_program(bytecode, entrypoint)?;
+    println!("{:?} : done with load program", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
     let cairo_runner = initialize_cairo_runner(&mut vm, &program)?;
+    println!("{:?} : done with initialize_cairo_runner", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
 
     Ok(CairoExecutionContext {
         entrypoint: entrypoint.to_string(),
@@ -71,14 +75,15 @@ fn initialize_cairo_execution_context(
     })
 }
 
-fn load_program(bytecode: &str, entrypoint: &str) -> Result<Program, Error> {
+
+pub fn load_program(bytecode: &str, entrypoint: &str) -> Result<Program, Error> {
     Ok(Program::from_reader(
         Cursor::new(bytecode),
         Some(entrypoint),
     )?)
 }
 
-fn initialize_cairo_runner(
+pub fn initialize_cairo_runner(
     vm: &mut VirtualMachine,
     program: &Program,
 ) -> Result<CairoRunner, Error> {
@@ -88,7 +93,7 @@ fn initialize_cairo_runner(
     Result::Ok(cairo_runner)
 }
 
-fn execute_context(context: &mut CairoExecutionContext) -> Result<(), Error> {
+pub fn execute_context(context: &mut CairoExecutionContext) -> Result<(), Error> {
     let entrypoint_pc = get_entrypoint_pc(context)?;
     let mut hint_processor = BuiltinHintProcessor::new_empty();
 

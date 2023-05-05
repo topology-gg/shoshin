@@ -3,14 +3,48 @@ mod types;
 use crate::types::simulation::RealTimeFrameScene;
 use crate::types::{FrameScene, RealTimeInputVec, ShoshinInputVec};
 use anyhow::Error;
+use cairo_execution::{load_program, initialize_cairo_runner, CairoExecutionContext, execute_context};
 use cairo_execution::utils::{
     convert_to_felt, convert_to_relocatable, convert_to_structure_vector,
 };
 use cairo_execution::{execute_cairo_program, utils::prepare_args};
 use cairo_felt::{self, Felt};
+use cairo_vm::types::program::Program;
+use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use cairo_vm::vm::vm_core::VirtualMachine;
 use num_traits::ToPrimitive;
 use wasm_bindgen::prelude::*;
+
+// it is a program because VM is not clonable
+static mut CAIRO_PROGRAM_REALTIME : Option<Program> =  Option::None;
+
+
+#[wasm_bindgen(start)]
+pub fn set_program()  -> Result<(), JsError> {
+    let shoshin_bytecode = include_str!("./bytecode_shoshin.json");
+
+    match get_cairo_program( shoshin_bytecode, "playerInLoop") {
+        std::result::Result::Ok(cairo_runner) => {
+            unsafe { CAIRO_PROGRAM_REALTIME = Some(cairo_runner)};
+            Result::Ok(())
+        },
+        Err(e) => {
+            Err(JsError::new(&e.to_string()))
+        }
+    }
+}
+
+pub fn get_cairo_program(shoshin_bytecode: &str, entrypoint: &str) -> Result<Program, Error>{
+    match load_program(shoshin_bytecode, entrypoint) {
+        std::result::Result::Ok(program) => {
+            Result::Ok(program)
+        },
+        Err(e) => {
+            Err(e)
+        }
+    }
+}
+
 
 #[wasm_bindgen]
 extern "C" {
@@ -60,16 +94,37 @@ pub fn run_realtime_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsEr
 
     console_log!("inputs {:?}", inputs);
 
-    let shoshin_bytecode = include_str!("./bytecode_shoshin.json");
+    
+    
+    unsafe{
+        let program = CAIRO_PROGRAM_REALTIME.to_owned().unwrap();
 
-    let vm = execute_cairo_program(shoshin_bytecode, "playerInLoop", inputs)
-        .map_err(|e| JsError::new(&e.to_string()))?;
+        let mut vm = VirtualMachine::new(true);
+        let cairo_runner : Result<CairoRunner, Error> = initialize_cairo_runner(&mut vm, &program);
+        
+        match cairo_runner {
+            std::result::Result::Ok(cairo_runner) => {
+                let mut context = CairoExecutionContext {
+                    entrypoint: "playerInLoop".to_string(),
+                    program,
+                    vm,
+                    cairo_runner,
+                    inputs,
+                };
 
-    console_log!("vm done");
+                execute_context(&mut context).unwrap();
 
-    let output = get_realtime_output(vm).map_err(|e| JsError::new(&e.to_string()))?;
-    console_log!("output {:?}", output);
-    Result::Ok(serde_wasm_bindgen::to_value(&output)?)
+                let output = get_realtime_output(context.vm).map_err(|e| JsError::new(&e.to_string()))?;
+                return Result::Ok(serde_wasm_bindgen::to_value(&output)?)
+            },
+            Err(e) => {
+                return Result::Err(JsError::new(&e.to_string()))
+            }
+        }
+
+
+    }
+    
 }
 
 /// Extract the frame scene from the final VM state
@@ -119,7 +174,7 @@ fn get_realtime_output(vm: VirtualMachine) -> Result<Vec<RealTimeFrameScene>, Er
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::vec;
+    use std::{vec, time::SystemTime};
 
     fn get_shoshin_bytecode() -> String {
         std::fs::read_to_string("./bytecode_shoshin.json").unwrap()
@@ -236,14 +291,20 @@ mod tests {
     #[test]
     fn test_realtime_output() {
         let inputs = get_realtime_input();
+        println!("{:?} : start RealTimeInputVec", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
         let inputs = RealTimeInputVec(inputs);
+        println!("{:?} : start prepare_args", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
         let inputs = prepare_args(inputs).unwrap();
 
         let bytecode = include_str!("./bytecode_shoshin.json");
-
+        
+        println!("{:?} : start execute_cairo_program", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
         let vm = execute_cairo_program(&bytecode, "playerInLoop", inputs).unwrap();
 
+        println!("{:?} : start get_realtime_output", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
         let output = get_realtime_output(vm).unwrap();
+        
+        println!("{:?} : done with get_realtime_output", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
 
         assert!(1 == 1);
     }
