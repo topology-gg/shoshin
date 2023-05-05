@@ -12,9 +12,11 @@ use traits::TryInto;
 
 // Internal imports
 use bto::constants::opcodes;
+use bto::types::i129;
+use bto::types::i129Trait;
 
 type Offset = usize;
-type Opcode = u128;
+type Opcode = i129;
 
 #[derive(Drop)]
 struct Node {
@@ -24,15 +26,13 @@ struct Node {
 }
 
 
-// TODO: add ABS once we have signed integers
-// TODO: add IS_NN once we have signed integers
 // TODO: import quaireaux_math and use it for POW
 fn execute(
     ref tree: Span<Node>,
-    ref stack: Array<u128>,
-    ref heap: Felt252Dict<u128>,
+    ref stack: Array<i129>,
+    ref heap: Felt252Dict<Nullable<i129>>,
     ref precompiles: Felt252Dict<Nullable<Span<Node>>>
-) -> u128 {
+) -> i129 {
     match gas::withdraw_gas() {
         Option::Some(_) => (),
         Option::None(_) => {
@@ -41,14 +41,14 @@ fn execute(
             panic(data);
         },
     }
-
     if tree.is_empty() {
-        return 0;
+        return i129Trait::new(0_u128);
     }
     let length = tree.len();
 
     let node = tree[0];
     let value = *node.value;
+    let opcode = value.inner;
     let left_offset = *node.left;
     let right_offset = *node.right;
 
@@ -57,73 +57,80 @@ fn execute(
     }
 
     // if offset on left != 0, execute left
-    let mut value_left = 0_u128;
+    let mut value_left = i129Trait::new(0_u128);
     if left_offset != 0_usize {
         let mut tree_slice_left = tree.slice(left_offset, right_offset - left_offset);
         value_left = execute(ref tree_slice_left, ref stack, ref heap, ref precompiles);
     }
 
     let mut tree_slice_right = tree.slice(right_offset, length - right_offset);
-    let value_right: u128 = execute(ref tree_slice_right, ref stack, ref heap, ref precompiles);
+    let value_right = execute(ref tree_slice_right, ref stack, ref heap, ref precompiles);
 
-    if value == opcodes::ADD {
+    if opcode == opcodes::ADD {
         return value_right + value_left;
     }
 
-    if value == opcodes::SUB {
+    if opcode == opcodes::SUB {
         return value_left - value_right;
     }
 
-    if value == opcodes::MUL {
+    if opcode == opcodes::MUL {
         return value_right * value_left;
     }
 
-    if value == opcodes::DIV {
+    if opcode == opcodes::DIV {
         return value_left / value_right;
     }
 
-    if value == opcodes::MOD {
+    if opcode == opcodes::MOD {
         return value_left % value_right;
     }
 
-    if value == opcodes::SQRT {
-        return integer::upcast(u128_sqrt(value_right));
+    // TODO: add ABS
+
+    if opcode == opcodes::SQRT {
+        assert(value_right >= i129Trait::new(0_u128), 'sqrt(x) with x<0');
+        let sqrt: u128 = integer::upcast(u128_sqrt(value_right.inner));
+        return i129Trait::new(sqrt);
     }
 
-    if value == opcodes::IS_LE {
+    // TODO: add IS_NN
+
+    if opcode == opcodes::IS_LE {
         return match value_left <= value_right {
-            bool::False(()) => 0_u128,
-            bool::True(()) => 1_u128,
+            bool::False(()) => i129Trait::zero(),
+            bool::True(()) => i129Trait::one(),
         };
     }
 
-    if value == opcodes::NOT {
-        if value_right == 0_u128 {
-            return 1_u128;
+    if opcode == opcodes::NOT {
+        if value_right == i129Trait::zero() {
+            return i129Trait::one();
         }
-        return 0_u128;
+        return i129Trait::zero();
     }
 
-    if value == opcodes::EQ {
+    if opcode == opcodes::EQ {
         return match value_left == value_right {
-            bool::False(()) => 0_u128,
-            bool::True(()) => 1_u128,
+            bool::False(()) => i129Trait::zero(),
+            bool::True(()) => i129Trait::one(),
         };
     }
 
     // read value in stack
-    if value == opcodes::STACK {
-        let index: usize = value_right.into().try_into().unwrap();
+    if opcode == opcodes::STACK {
+        let index: usize = value_right.into();
         return *stack[index];
     }
 
     // read value in heap
-    if value == opcodes::HEAP {
-        return heap.get(value_right.into());
+    if opcode == opcodes::HEAP {
+        let key: felt252 = value_right.into();
+        return heap.get(key).deref();
     }
 
     // evaluate precompile
-    if value == opcodes::PRECOMP {
+    if opcode == opcodes::PRECOMP {
         let mut precompile = precompiles.get(value_right.into()).deref();
         let precompile_evaluation = execute(ref precompile, ref stack, ref heap, ref precompiles);
         stack.append(precompile_evaluation);
@@ -131,5 +138,5 @@ fn execute(
     }
 
     assert(false, 'Invalid opcode');
-    return 0;
+    return i129Trait::new(0_u128);
 }
