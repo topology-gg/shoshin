@@ -102,6 +102,7 @@ const EditorView = ({
                     <MentalStates
                         isReadOnly={isReadOnly}
                         mentalStates={mentalStates}
+                        trees={trees}
                         initialMentalState={initialMentalState}
                         handleSetInitialMentalState={handleSetInitialMentalState}
                         combos={combos}
@@ -248,6 +249,22 @@ const EditorView = ({
                         </div>
                     </Tooltip>
 
+                    <div style={{marginBottom: '1rem'}}>
+                        <Button
+                            id='button-option-list-button'
+                            onClick={() => {
+                                console.log('Submit Agent onchain');
+                                handleSubmitAgent();
+                            }}
+                            variant="outlined"
+                            disabled={editorMode==EditorMode.ReadOnly || txPending}
+                        >
+                            {txPending ?
+                                <CircularProgress size="20px" color="inherit"/> :
+                                <PublishIcon sx={{}} />
+                            }
+                        </Button>
+                    </div>
                 </div>
                 <div style={{height:'1rem'}}>
                     {txHash &&
