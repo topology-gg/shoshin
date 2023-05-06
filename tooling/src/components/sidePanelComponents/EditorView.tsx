@@ -102,6 +102,7 @@ const EditorView = ({
                     <MentalStates
                         isReadOnly={isReadOnly}
                         mentalStates={mentalStates}
+                        trees={trees}
                         initialMentalState={initialMentalState}
                         handleSetInitialMentalState={handleSetInitialMentalState}
                         combos={combos}
@@ -234,15 +235,15 @@ const EditorView = ({
                             variant="outlined"
                             disabled={editorMode==EditorMode.ReadOnly || txPending}
                         >
-                            {txPending ? 
-                                <CircularProgress size="20px" color="inherit"/> : 
+                            {txPending ?
+                                <CircularProgress size="20px" color="inherit"/> :
                                 <PublishIcon sx={{}} />
                             }
                         </Button>
                     </div>
                 </div>
                 <div style={{height:'1rem'}}>
-                    {txHash && 
+                    {txHash &&
                         <Tooltip title="View on Starkscan" arrow>
 
                             <Link

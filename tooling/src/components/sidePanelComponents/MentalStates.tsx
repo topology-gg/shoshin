@@ -9,7 +9,7 @@ import MenuList from '@mui/material/MenuList';
 import { MentalState } from '../../types/MentalState';
 import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
 import { KeywordMentalState } from '../ui/Keyword';
-
+import { getMentalStatesNames } from "../../types/Tree";
 
 let currentMenu = 0
 
@@ -21,7 +21,7 @@ const actionToStr = (action: number, characterIndex) => {
 }
 
 const MentalStates = ({
-    isReadOnly, mentalStates, initialMentalState, handleSetInitialMentalState,
+    isReadOnly, mentalStates, trees, initialMentalState, handleSetInitialMentalState,
     combos, character, handleAddMentalState, handleClickRemoveMentalState,
     handleSetMentalStateAction, handleClickTreeEditor
 }) => {
@@ -63,6 +63,12 @@ const MentalStates = ({
     combos.forEach((_, i) => {
         actions.push(`Combo ${i}`)
     })
+
+    // handle mental graph visualization
+    const mentalStateNamesOrdered = mentalStates.map((ms, _) => {return ms.state})
+    const nextMentalStateNamesOrdered:string[][] = mentalStates.map((_, ms_i: number) => getMentalStatesNames(trees[ms_i]))
+    // debug log
+    mentalStateNamesOrdered?.forEach((name, name_i) => console.log(name, '=>', nextMentalStateNamesOrdered[name_i]))
 
     let componentAddNewMentalState = (
         <>
