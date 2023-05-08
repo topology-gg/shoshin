@@ -1,6 +1,6 @@
 import { parseConditionToLeaf, Condition } from "./Condition"
 import Leaf, { flattenLeaf, unwrapLeafToTree } from "./Leaf"
-import { MentalState, parseTree } from "./MentalState"
+import { MentalState, parseTree, updateMentalStates } from "./MentalState"
 import { Tree } from "./Tree"
 import { FRAME_COUNT, PRIME } from "../constants/constants"
 import { encodeStringToFelt } from "./utils"
@@ -37,15 +37,26 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     agent.mentalStates = agentMentalStates
 
     let agentConditions = []
-    let agentCondtionNames = []
+    let agentConditionNames = []
+    // make use of indexes to add the correct condition index to the mental states
+    // ex: conditions = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    // MS0 uses conditions [0, 1, 2, 3]
+    // MS1 uses conditions [6, 7]
+    // conditions indexing for the agent should map to [0, 1, 2, 3, 6, 7] => [0, 1, 2, 3, 4, 5]
+    Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => conditions[i]).forEach((f, i) => {
+        agent.mentalStates.forEach((ms) => {
+            updateMentalStates(ms, parseInt(f.key), i)
+        })
+    })
+
     // makes use of indexes to only parse the necessary conditions
     Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => conditions[i]).forEach((f) => {
     
         // Temporary code to deal with backend bug, can be removed in subsequent pr, April 6, 2023
-        agentCondtionNames.push(f.displayName.replaceAll("\u0000",""))
+        agentConditionNames.push(f.displayName.replaceAll("\u0000",""))
         agentConditions.push(parseConditionToLeaf(f))
     })
-    agent.conditionNames = agentCondtionNames
+    agent.conditionNames = agentConditionNames
     agent.conditions = agentConditions
 
     agent.actions = mentalStates.map((ms) => ms.action)

@@ -158,34 +158,34 @@ export const INITIAL_COMBOS: number[][] = [[7, 7, 2, 2, 2, 2, 2]]
 export const INITIAL_DECISION_TREES: Tree[] = [
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
-            { id: 'F1', isChild: false, branch: Direction.Right },
+            { id: '1', isChild: false, branch: Direction.Right },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
-            { id: 'F1', isChild: false, branch: Direction.Right },
+            { id: '1', isChild: false, branch: Direction.Right },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
-            { id: 'F1', isChild: false, branch: Direction.Right },
+            { id: '1', isChild: false, branch: Direction.Right },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
         ]
@@ -226,7 +226,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
         ],
         displayName : "F0",
-        key: "F0"
+        key: "0"
     },
     {
         elements: [
@@ -239,7 +239,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 80, type: ElementType.Constant},
         ],
         displayName : "closer_than_80px",
-        key: "2"
+        key: "1"
     },
     {
         elements: [
@@ -250,7 +250,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 10, type: ElementType.Constant},
         ],
         displayName : "oponent_velocity_lt_10",
-        key: "3"
+        key: "2"
     },
     {
         elements: [
@@ -271,7 +271,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
         ],
         displayName : "oponent_300_integrity_and_close",
-        key: "4"
+        key: "3"
     },
     {
         elements: [
@@ -282,7 +282,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
         ],
         displayName : "self_lte_200_integrity",
-        key: "5"
+        key: "4"
     },
     {
         elements: [
@@ -320,7 +320,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
         ],
 
         displayName : "oponent_approaching",
-        key: "10"
+        key: "5"
     },
     {
         elements: [
@@ -377,7 +377,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 4, type: ElementType.Constant },
         ],
         displayName : "self_lte_4_frames",
-        key: "7"
+        key: "8"
     },
     {
         elements: [
@@ -387,7 +387,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
         ],
 
         displayName : "one_eq_one",
-        key: "8"
+        key: "9"
     },
     {
         elements: []
@@ -404,7 +404,7 @@ const conditions = [ {
     ],
 
     displayName : "F0",
-    key: "F0"
+    key: "0"
 },
 {
     elements: [
@@ -414,14 +414,14 @@ const conditions = [ {
     ],
 
     displayName : "F1",
-    key: "F1"
+    key: "1"
 },
 
 ]
 const DECISION_TREE_IDLE_AGENT: Tree[] = [
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS Two', isChild: true, branch: Direction.Left },
 
             { id: 'MS One', isChild: true, branch: Direction.Right },
@@ -429,7 +429,7 @@ const DECISION_TREE_IDLE_AGENT: Tree[] = [
     },    
     {
         nodes: [
-            { id: 'F1', isChild: false },
+            { id: '1', isChild: false },
             { id: 'MS One', isChild: true, branch: Direction.Left },
             { id: 'MS Two', isChild: true, branch: Direction.Right },
         ]
@@ -456,23 +456,23 @@ export const OFFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_OFFENSIVE_AGENT, 
 const DECISION_TREE_DEFENSIVE_AGENT = [
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'MS RETRAIT', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
-            { id: 'F8', isChild: false },
+            { id: '8', isChild: false },
             { id: 'MS RETRAIT', isChild: true, branch: Direction.Right },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
         ]
@@ -489,7 +489,7 @@ export const DEFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_DEFENSIVE_AGENT, 
 export const DECISION_TREE_COMBO_AGENT = [
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS COMBO', isChild: true, branch: Direction.Right },
         ]
