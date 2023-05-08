@@ -852,8 +852,10 @@ export default function Home() {
                 }
 
                 <StatusBarPanel
-                    testJson={testJson}
-                    animationFrame={animationFrame}
+                    integrity_0={playerStatuses.integrity_0}
+                    integrity_1={playerStatuses.integrity_1}
+                    stamina_0={playerStatuses.stamina_0}
+                    stamina_1={playerStatuses.stamina_1}
                 />
 
                 <Game
@@ -864,7 +866,8 @@ export default function Home() {
                     gameMode={gameMode}
                     realTimeOptions={{
                         playerCharacter : realTimeCharacter,
-                        agentOpponent : p2
+                        agentOpponent : p2,
+                        setPlayerStatuses
                     }}
                 />
 

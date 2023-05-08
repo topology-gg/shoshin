@@ -164,7 +164,7 @@ const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, re
         let scene = game.current?.scene.getScene(isRealTime ? GameModes.simulation : GameModes.realtime);
         if(scene !== null && scene !== undefined)
         {
-            scene.changeScene(gameMode, ctx)
+            scene.changeScene(gameMode, ctx, realTimeOptions.setPlayerStatuses)
         }
     }, [isRealTime])
 
@@ -175,7 +175,7 @@ const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, re
 
         if (isGameSceneDefined(gameMode) && testJson){
             let scene = game.current?.scene.getScene('simulator') as Simulator;
-            scene.updateScene({ testJson, animationFrame, animationState, showDebug})
+            scene.updateSceneFromFrame({ testJson, animationFrame, animationState, showDebug})
         }
         //render stuff
     }, [testJson, animationFrame, animationState, showDebug, ctx.wasm, isRealTime])

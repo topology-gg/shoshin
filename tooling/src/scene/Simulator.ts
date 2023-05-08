@@ -43,8 +43,8 @@ export default class Simulator extends Phaser.Scene {
 
     
     //context only relevent for realtime atm, but I strongly think simulator will have wasm calls soon
-    changeScene(scene : GameModes, context : IShoshinWASMContext){
-        this.scene.start(scene, {context})
+    changeScene(scene : GameModes, context : IShoshinWASMContext, setPlayerStatuses : any){
+        this.scene.start(scene, {context, setPlayerStatuses})
     }
 
     preload(){

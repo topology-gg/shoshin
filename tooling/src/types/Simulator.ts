@@ -1,6 +1,6 @@
 import { TestJson } from "./Frame";
 import Agent from './Agent'
-import { StatusBarPanelProps } from "../components/StatusBar";
+import { StatusBarPanelProps as PlayerStatuses} from "../components/StatusBar";
 
 export interface PhaserGameProps {
     testJson: TestJson;
@@ -21,7 +21,7 @@ export interface SimulatorProps {
 interface RealTimeOptions {
     playerCharacter : number,
     agentOpponent : Agent,
-    setPlayerStatuses : (playerStatuses : StatusBarPanelProps) => void
+    setPlayerStatuses : (playerStatuses : PlayerStatuses) => void
 }
 
 // enum currently name after game scenes, feel free to change

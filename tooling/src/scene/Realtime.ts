@@ -1,3 +1,4 @@
+import { StatusBarPanelProps } from "../components/StatusBar";
 import {
     IDLE_AGENT,
     InitialRealTimeFrameScene,
@@ -5,16 +6,13 @@ import {
     characterActionToNumber,
 } from "../constants/constants";
 import { IShoshinWASMContext } from "../context/wasm-shoshin";
-import {
-    runRealTimeFromContext,
-} from "../hooks/useRunRealtime";
+import { runRealTimeFromContext } from "../hooks/useRunRealtime";
 import Agent from "../types/Agent";
 import { RealTimeFrameScene } from "../types/Frame";
 import { GameModes } from "../types/Simulator";
 import Platformer from "./Simulator";
 
 export default class RealTime extends Platformer {
-
     state: RealTimeFrameScene = InitialRealTimeFrameScene;
 
     private player_action: number = 5;
@@ -32,11 +30,14 @@ export default class RealTime extends Platformer {
 
     private opponent: Agent = IDLE_AGENT;
 
+    private setPlayerStatuses: (playerStatuses: StatusBarPanelProps) => void =
+        () => {};
+
     is_wasm_undefined() {
         return this.wasmContext == undefined;
     }
 
-    resetGameState (){
+    resetGameState() {
         this.state = InitialRealTimeFrameScene;
     }
 
@@ -47,28 +48,70 @@ export default class RealTime extends Platformer {
 
     set_opponent_agent(agent: Agent) {
         this.opponent = agent;
-        this.setPlayerTwoCharacter(agent.character)
-        this.resetGameState()
+        this.setPlayerTwoCharacter(agent.character);
+
+        if(!this.isGameRunning)
+        {
+            this.setMenuText();   
+            this.resetGameState();
+        }        
     }
 
     set_player_character(charId: number) {
         this.character_type_0 = charId;
-        this.resetGameState()
+        if(!this.isGameRunning)
+        {   
+            console.log("set menu text")
+            this.setMenuText();   
+            this.resetGameState();
+        }      
+    }
+    
+
+    init(data: any) {
+        if (data !== undefined) {
+            this.wasmContext = data.context;
+            this.setPlayerStatuses = data.setPlayerStatuses;
+        }
     }
 
-    init(data : any){
-        if(data !== undefined)
-        {
-            this.wasmContext = data.context
-        }
-        
+    createCenteredText(content: string) {
+        const screenCenterX =
+            this.cameras.main.x + this.cameras.main.width / 2;
+        const screenCenterY =
+            this.cameras.main.y + this.cameras.main.height / 2;
+        const centeredText = this.add
+            .text(0, -100, content, {
+                color : "#000",
+                backgroundColor: "#FFF"
+            }).setOrigin(0.5, 0.5)
+
+        return centeredText
+    }
+
+    endGame(winner: number) {
+        this.createCenteredText(`Player ${winner} wins!`);
+        this.gameTimer.destroy();
+    }
+
+    setMenuText(){
+        let playerOne = this.character_type_0 == 0 ? "Jessica" : "Antoc"
+        let playerTwo = this.opponent.character == 0 ? "Jessica" : "Antoc"
+
+        this.startText?.setText(`Player One ${playerOne} \n Player Two ${playerTwo} \nPress Space key to begin`)
+    }
+    createMenu(){
+        let playerOne = this.character_type_0 == 0 ? "Jessica" : "Antoc"
+        let playerTwo = this.opponent.character == 0 ? "Jessica" : "Antoc"
+
+        this.startText = this.createCenteredText(`Player One ${playerOne} \n Player Two ${playerTwo} \nPress Space key to begin`)
+        this.initializeCameraSettings()
     }
 
     create() {
         this.intitialize();
-        this.startText = this.add.text(0, 0, "Press Space key to begin", {
-            color: "#000",
-        });
+        this.createMenu()
+
         this.isGameRunning = false;
 
         this.keyboard = this.input.keyboard.addKeys({
@@ -187,11 +230,35 @@ export default class RealTime extends Platformer {
         console.log("output state", out);
         let newState: RealTimeFrameScene = out as RealTimeFrameScene;
 
-        
         this.player_action = 0;
         if (newState) {
             this.state = newState;
-            this.updateScene(this.character_type_0, this.opponent.character, newState.agent_0, newState.agent_1, false, false)
+            this.updateScene(
+                this.character_type_0,
+                this.opponent.character,
+                newState.agent_0,
+                newState.agent_1,
+                false,
+                false
+            );
+
+            const integrity_0 = newState.agent_0.body_state.integrity;
+            const integrity_1 = newState.agent_1.body_state.integrity;
+            const stamina_0 = newState.agent_0.body_state.stamina;
+            const stamina_1 = newState.agent_1.body_state.stamina;
+
+            this.setPlayerStatuses({
+                integrity_0,
+                integrity_1,
+                stamina_0,
+                stamina_1,
+            });
+
+            if (integrity_0 == 0) {
+                this.endGame(1);
+            } else if (integrity_1 == 0) {
+                this.endGame(2);
+            }
         }
     }
 }
