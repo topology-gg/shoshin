@@ -1,7 +1,7 @@
-from dataclasses import dataclass
-from typing import Union, List, Dict
 import json
 import logging
+from dataclasses import dataclass
+from typing import Dict, List, Union
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(5)
@@ -24,6 +24,9 @@ OPCODES = {
     "FUNC": 15,
 }
 
+PRIME = 3618502788666131213697322783095070105623107215331596699973092056135872020481
+PRIME_HALF = PRIME // 2
+
 
 @dataclass
 class Node:
@@ -38,6 +41,52 @@ class Node:
 
     def to_tuple(self):
         return (self.value, self.left, self.right)
+
+
+def adjust_from_felt(felt):
+    if felt > PRIME_HALF:
+        return felt - PRIME
+    else:
+        return felt
+
+
+def parse_agent(path: str):
+    data = import_json(path)
+    # parse the mental state
+    mental_states_keys = data["mental_state_to_action"].keys()
+    mental_states = []
+    for k in mental_states_keys:
+        mental_states.append(data["mental_states"][k]["stages"])
+    [state_machine, state_machine_offsets] = parse_stages(
+        data["mapping"], mental_states
+    )
+    # parse the general functions
+    general_functions = data["general_purpose_functions"]
+    [functions, functions_offsets] = parse_stages(data["mapping"], general_functions)
+
+    # parse the state to actions
+    actions = parse_mental_to_action(
+        data["mapping"], data["mental_state_to_action"].values()
+    )
+
+    state_machine = [a.to_tuple() for a in state_machine]
+    functions = [a.to_tuple() for a in functions]
+    # parse the combos
+    combos = data["combos"]
+    accumulator = 0
+    combos_offset = [0]
+    list(
+        map(combos_offset.append, [accumulator := len(x) + accumulator for x in combos])
+    )
+    return (
+        combos_offset,
+        [x for a in combos for x in a],
+        state_machine_offsets,
+        state_machine,
+        [x for (i, x) in enumerate(functions_offsets) if (i + 1) % 2 == 0],
+        functions,
+        actions,
+    )
 
 
 def parse_mental_to_action(mapping: Dict, actions: List):
