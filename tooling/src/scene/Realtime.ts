@@ -21,6 +21,7 @@ export default class RealTime extends Platformer {
     private wasmContext?: IShoshinWASMContext;
 
     private startText: Phaser.GameObjects.Text;
+    private endText : Phaser.GameObjects.Text;
 
     private isGameRunning: boolean;
 
@@ -61,7 +62,6 @@ export default class RealTime extends Platformer {
         this.character_type_0 = charId;
         if(!this.isGameRunning)
         {   
-            console.log("set menu text")
             this.setMenuText();   
             this.resetGameState();
         }      
@@ -81,36 +81,46 @@ export default class RealTime extends Platformer {
         const screenCenterY =
             this.cameras.main.y + this.cameras.main.height / 2;
         const centeredText = this.add
-            .text(0, -100, content, {
+            .text(this.cameras.main.midPoint.x,
+                this.cameras.main.midPoint.y, 
+                content, {
                 color : "#000",
                 backgroundColor: "#FFF"
-            }).setOrigin(0.5, 0.5)
+            })
 
         return centeredText
-    }
-
-    endGame(winner: number) {
-        this.createCenteredText(`Player ${winner} wins!`);
-        this.gameTimer.destroy();
     }
 
     setMenuText(){
         let playerOne = this.character_type_0 == 0 ? "Jessica" : "Antoc"
         let playerTwo = this.opponent.character == 0 ? "Jessica" : "Antoc"
 
-        this.startText?.setText(`Player One ${playerOne} \n Player Two ${playerTwo} \nPress Space key to begin`)
+        if(this.startText !== null)
+        {   
+            console.log(this.startText)
+            this.startText?.setText(`Player One ${playerOne} \n Player Two ${playerTwo} \nPress Space key to play`)
+        }
+        
     }
     createMenu(){
         let playerOne = this.character_type_0 == 0 ? "Jessica" : "Antoc"
         let playerTwo = this.opponent.character == 0 ? "Jessica" : "Antoc"
 
-        this.startText = this.createCenteredText(`Player One ${playerOne} \n Player Two ${playerTwo} \nPress Space key to begin`)
+        this.startText = this.createCenteredText(`Player One ${playerOne} \n Player Two ${playerTwo} \nPress Space key to play`)
         this.initializeCameraSettings()
     }
 
+    centerText(text : Phaser.GameObjects.Text)
+    {
+        text.setPosition(
+            this.cameras.main.midPoint.x,
+            this.cameras.main.midPoint.y
+        )
+    }
     create() {
         this.intitialize();
         this.createMenu()
+
 
         this.isGameRunning = false;
 
@@ -140,23 +150,22 @@ export default class RealTime extends Platformer {
             callback: () => this.run(),
             //args: [],
             //callbackScope: thisArg,
-            repeat: 120,
+            //Match is 20 minutes tops
+            repeat: 12000,
         });
 
         this.isGameRunning = true;
         this.startText.setVisible(false);
     }
 
-    // Call when match is over to transition to menu state
-    endMatch() {
-        this.startText.setVisible(true);
+    endGame(winner: number) { 
+        this.centerText(this.startText)
+        this.startText.setVisible(true)
+        this.gameTimer.destroy();
         this.isGameRunning = false;
     }
 
     update(t, ds) {
-        if (this.gameTimer?.getRemaining() == 0) {
-            this.endMatch();
-        }
         if (this.keyboard.space.isDown && !this.isGameRunning) {
             this.startMatch();
         }
@@ -186,8 +195,6 @@ export default class RealTime extends Platformer {
                         this.character_type_0 == 1 ? "antoc" : "jessica"
                     ][this.character_type_0 == 1 ? "Hori" : "Slash"];
             } else if (this.keyboard.d.isDown) {
-                console.log(this.character_type_0 == 1 ? "antoc" : "jessica");
-                console.log(characterActionToNumber["jessica"]);
                 //attack # 2
                 this.player_action =
                     characterActionToNumber[
@@ -199,26 +206,22 @@ export default class RealTime extends Platformer {
                     characterActionToNumber[
                         this.character_type_0 == 1 ? "antoc" : "jessica"
                     ]["DashBackward"];
-            }
-            if (this.keyboard.e.isDown) {
+            } else if (this.keyboard.e.isDown) {
                 // dash forward
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? "antoc" : "jessica"
-                    ]["Forward"];
+                    ]["DashForward"];
             }
         }
     }
 
     run() {
-        console.log(this.wasmContext);
         if (!this.wasmContext) {
             console.log("no wasm context");
             return;
         }
 
-        console.log("input state", this.state);
-        console.log("player action", this.player_action);
         let [out, err] = runRealTimeFromContext(
             this.wasmContext,
             this.state,
@@ -227,7 +230,6 @@ export default class RealTime extends Platformer {
             this.opponent.character,
             OFFENSIVE_AGENT
         );
-        console.log("output state", out);
         let newState: RealTimeFrameScene = out as RealTimeFrameScene;
 
         this.player_action = 0;
@@ -254,11 +256,20 @@ export default class RealTime extends Platformer {
                 stamina_1,
             });
 
-            if (integrity_0 == 0) {
+            if (this.gameTimer?.getRemaining() == 0 && this.isGameRunning) {
+                if (integrity_0 <= integrity_1) {
+                    //this.endGame(1);
+                } else {
+                    //this.endGame(2);
+                }
+            }
+            if (integrity_0 <= 0) {
                 this.endGame(1);
-            } else if (integrity_1 == 0) {
+            } else if (integrity_1 <= 0) {
                 this.endGame(2);
             }
         }
+
+
     }
 }
