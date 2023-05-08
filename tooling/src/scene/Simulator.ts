@@ -1,8 +1,10 @@
 import Phaser from "phaser";
 import { bodyStateNumberToName } from "../constants/constants";
 import { spriteDataPhaser } from "../constants/sprites";
-import { Frame, RealTimeFrameScene, Rectangle } from "../types/Frame";
+import { FrameLike, RealTimeFrameScene, Rectangle } from "../types/Frame";
 import { SimulatorProps } from "../types/Simulator";
+import { GameModes } from "../types/Simulator";
+import { IShoshinWASMContext } from "../context/wasm-shoshin";
 
 const ARENA_WIDTH = 1000;
 const DEFAULT_ZOOM = 1.5
@@ -16,7 +18,8 @@ const CAMERA_REACTION_TIME = 400
 
 const HITBOX_STROKE_WIDTH = 1.5
 
-export default class Platformer extends Phaser.Scene {
+export default class Simulator extends Phaser.Scene {
+
     player_one : Phaser.GameObjects.Image;
     player_two : Phaser.GameObjects.Image;
 
@@ -37,6 +40,12 @@ export default class Platformer extends Phaser.Scene {
 
     readonly STROKE_STYLE_BODY_HITBOX = 0x7CFC00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xFF2400;//0xFB4D46;
+
+    
+    //context only relevent for realtime atm, but I strongly think simulator will have wasm calls soon
+    changeScene(scene : GameModes, context : IShoshinWASMContext){
+        this.scene.start(scene, {context})
+    }
 
     preload(){
 
@@ -135,15 +144,15 @@ export default class Platformer extends Phaser.Scene {
         this.player_two_character = characterName
     }
 
-    setPlayerOneFrame(frame : Partial<Frame>){
+    setPlayerOneFrame(frame : FrameLike){
         this.setPlayerFrameHelper(frame, this.player_one, this.player_one_character)
     }
 
-    setPlayerTwoFrame(frame : Partial<Frame>){
+    setPlayerTwoFrame(frame : FrameLike){
         this.setPlayerFrameHelper(frame, this.player_two, this.player_two_character)
     }
 
-    private setPlayerFrameHelper(frame: Partial<Frame>, player: Phaser.GameObjects.Image, characterName: string) {
+    private setPlayerFrameHelper(frame: FrameLike, player: Phaser.GameObjects.Image, characterName: string) {
         // Extract from frame
         const bodyState = frame.body_state.state
         const bodyStateCounter = frame.body_state.counter
@@ -168,19 +177,19 @@ export default class Platformer extends Phaser.Scene {
         player.setTexture(`${characterName}-${bodyStateName}`, `frame_${bodyStateCounter}.png`)
     }
 
-    private setPlayerOneBodyHitbox(frame : Frame) {
+    private setPlayerOneBodyHitbox(frame : FrameLike) {
         this.setHitboxHelper(frame.hitboxes.body, this.player_one_body_hitbox, this.player_one_body_hitbox_text, false)
     }
 
-    private setPlayerTwoBodyHitbox(frame : Frame) {
+    private setPlayerTwoBodyHitbox(frame : FrameLike) {
         this.setHitboxHelper(frame.hitboxes.body, this.player_two_body_hitbox, this.player_two_body_hitbox_text, false)
     }
 
-    private setPlayerOneActionHitbox(frame : Frame) {
+    private setPlayerOneActionHitbox(frame : FrameLike) {
         this.setHitboxHelper(frame.hitboxes.action, this.player_one_action_hitbox, this.player_one_action_hitbox_text, true)
     }
 
-    private setPlayerTwoActionHitbox(frame : Frame) {
+    private setPlayerTwoActionHitbox(frame : FrameLike) {
         this.setHitboxHelper(frame.hitboxes.action, this.player_two_action_hitbox, this.player_two_action_hitbox_text, true)
     }
 
@@ -244,18 +253,23 @@ export default class Platformer extends Phaser.Scene {
 
     }
 
-    updateScene({testJson, animationFrame, animationState, showDebug}: SimulatorProps){
-        console.log('updateScene::testJson', testJson)
-                const characterType0 = testJson?.agent_0.type
-                const characterType1 = testJson?.agent_1.type
-                const agentFrame0 = testJson?.agent_0.frames[animationFrame]
-                const agentFrame1 = testJson?.agent_1.frames[animationFrame]
+    updateSceneFromFrame({testJson, animationFrame, animationState, showDebug}: SimulatorProps){
+        const characterType0 = testJson?.agent_0.type
+        const characterType1 = testJson?.agent_1.type
+        const agentFrame0 = testJson?.agent_0.frames[animationFrame]
+        const agentFrame1 = testJson?.agent_1.frames[animationFrame]
+
+        this.updateScene(characterType0, characterType1, agentFrame0, agentFrame1, animationFrame == 0, showDebug)
+    }
+
+    updateScene(characterType0 : number ,characterType1: number , agentFrame0 : FrameLike, agentFrame1 : FrameLike, isBeginning : boolean = true, showDebug : boolean = false){
+        
                 this.setPlayerOneCharacter(characterType0)
                 this.setPlayerTwoCharacter(characterType1)
                 this.setPlayerOneFrame(agentFrame0);
                 this.setPlayerTwoFrame(agentFrame1);
 
-                if(animationFrame == 0)
+                if(isBeginning)
                 {
                     this.initializeCameraSettings()
                 }

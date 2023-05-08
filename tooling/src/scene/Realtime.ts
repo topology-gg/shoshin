@@ -10,9 +10,11 @@ import {
 } from "../hooks/useRunRealtime";
 import Agent from "../types/Agent";
 import { RealTimeFrameScene } from "../types/Frame";
+import { GameModes } from "../types/Simulator";
 import Platformer from "./Simulator";
 
 export default class RealTime extends Platformer {
+
     state: RealTimeFrameScene = InitialRealTimeFrameScene;
 
     private player_action: number = 5;
@@ -34,6 +36,10 @@ export default class RealTime extends Platformer {
         return this.wasmContext == undefined;
     }
 
+    resetGameState (){
+        this.state = InitialRealTimeFrameScene;
+    }
+
     set_wasm_context(ctx: IShoshinWASMContext) {
         console.log("initialize wasm context", ctx);
         this.wasmContext = ctx;
@@ -41,10 +47,21 @@ export default class RealTime extends Platformer {
 
     set_opponent_agent(agent: Agent) {
         this.opponent = agent;
+        this.setPlayerTwoCharacter(agent.character)
+        this.resetGameState()
     }
 
     set_player_character(charId: number) {
         this.character_type_0 = charId;
+        this.resetGameState()
+    }
+
+    init(data : any){
+        if(data !== undefined)
+        {
+            this.wasmContext = data.context
+        }
+        
     }
 
     create() {
@@ -170,11 +187,11 @@ export default class RealTime extends Platformer {
         console.log("output state", out);
         let newState: RealTimeFrameScene = out as RealTimeFrameScene;
 
+        
         this.player_action = 0;
         if (newState) {
             this.state = newState;
-            this.setPlayerOneFrame(newState.agent_0);
-            this.setPlayerTwoFrame(newState.agent_1);
+            this.updateScene(this.character_type_0, this.opponent.character, newState.agent_0, newState.agent_1, false, false)
         }
     }
 }

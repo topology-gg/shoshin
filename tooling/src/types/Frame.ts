@@ -71,6 +71,8 @@ export interface Frame {
     combo: Combo
 }
 
+export type FrameLike = Frame | RealTimePlayer | RealTimeAgent
+
 export interface TestJson {
     agent_0: {
         frames: Frame[],

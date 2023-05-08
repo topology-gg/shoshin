@@ -33,7 +33,7 @@ import {
     InitialRealTimeFrameScene,
 } from "../src/constants/constants";
 import Agent, { agentToCalldata, buildAgent } from "../src/types/Agent";
-import StatusBarPanel from "../src/components/StatusBar";
+import StatusBarPanel, { StatusBarPanelProps as PlayerStatuses } from "../src/components/StatusBar";
 import P1P2SettingPanel from "../src/components/settingsPanels/P1P2SettingPanel";
 import {AgentOption} from "../src/components/settingsPanels/settingsPanel";
 import FrameInspector from "../src/components/FrameInspector";
@@ -105,6 +105,14 @@ export default function Home() {
         EditorMode.ReadOnly
     );
 
+
+    const [playerStatuses, setPlayerStatuses] = useState<PlayerStatuses>({
+        integrity_0 : 1000,
+        integrity_1 : 1000,
+        stamina_0 : 100,
+        stamina_1 : 100
+    })
+
     // React states for tracking the New Agent being edited in the right panel
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
     const [combos, setCombos] = useState<number[][]>(INITIAL_COMBOS);
@@ -117,7 +125,7 @@ export default function Home() {
     const [agentName, setAgentName] = useState<string>("");
     const [character, setCharacter] = useState<Character>(Character.Jessica);
 
-    const [gameMode, setGameMode] = useState<GameModes>(GameModes.realtime)
+    const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation)
     const [realTimeCharacter, setRealTimeCharacter] = useState<number>(0)
 
     // React states for warnings
@@ -196,6 +204,17 @@ export default function Home() {
             });
         }
     }, [output]);
+
+    useEffect(() => {
+        const integrity_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.integrity : 0
+        const integrity_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.integrity : 0
+        const stamina_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.stamina : 0
+        const stamina_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.stamina : 0
+    
+        setPlayerStatuses({
+            integrity_0, integrity_1, stamina_0, stamina_1
+        })
+    }, [testJson])
 
     useEffect(() => {
         if (!simulationError) return;

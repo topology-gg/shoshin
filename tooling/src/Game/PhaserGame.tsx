@@ -10,7 +10,7 @@ import { TestJson } from "../types/Frame";
 import Simulator from "../scene/Simulator";
 import { GameModes, PhaserGameProps, SimulatorProps } from "../types/Simulator";
 import RealTime from "../scene/Realtime";
-import { ShoshinWASMContext } from "../context/wasm-shoshin";
+import { IShoshinWASMContext, ShoshinWASMContext } from "../context/wasm-shoshin";
 
 
 const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, realTimeOptions }: PhaserGameProps) => {
@@ -98,12 +98,12 @@ const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, re
             };
             g = game.current = new Phaser.Game(config);
 
+            g.scene.add('realtime', RealTime)
+            g.scene.add('simulator', Simulator)
             if(isRealTime){
-                g.scene.add('realtime', RealTime)
                 g.scene.start('realtime')
                 
             } else{
-                g.scene.add('simulator', Simulator)
                 g.scene.start('simulator')
             }
         }
@@ -112,40 +112,73 @@ const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, re
 
     
 
-    let realtimeScene = game.current?.scene.getScene('realtime')
 
-    console.log("real time scene ", realtimeScene)
-    React.useEffect(() => {
-        //get current scene
+    const attemptToSetWasmContext = () => {
+        let attemptWasmID = setInterval( () => {
+            console.log("Attempting to prepare realtime scene")
+            if(isRealTime && ctx){
+                let realtimeScene = game.current?.scene.getScene('realtime');
+                console.log('real time scene ', realtimeScene)
+                if(realtimeScene !== null){
+                    realtimeScene.set_wasm_context(ctx)
+                    clearInterval(attemptWasmID)
+                }
+            }
+        }, 500)
+    }
 
+
+    
+
+    const isGameSceneDefined = (gameMode : GameModes) => {
         if(game == undefined || game.current == undefined)
         {
-          return
+          return false
+        }
+        let scene = game.current?.scene.getScene(gameMode);
+
+        if(scene == null)
+        {
+            return false
+        }
+        return true
+
+    }
+
+    React.useEffect(() => {
+        if(isRealTime && isGameSceneDefined(gameMode)){
+            let scene = game.current?.scene.getScene(gameMode);
+            if(realTimeOptions.agentOpponent)
+            {
+                scene.set_opponent_agent(realTimeOptions.agentOpponent)
+            }
+            if(realTimeOptions.playerCharacter)
+            {
+                scene.set_player_character(realTimeOptions.playerCharacter)
+            }
+        }
+    }, [isRealTime, realTimeOptions])
+
+    
+    React.useEffect(() => {
+        let scene = game.current?.scene.getScene(isRealTime ? GameModes.simulation : GameModes.realtime);
+        if(scene !== null && scene !== undefined)
+        {
+            scene.changeScene(gameMode, ctx)
+        }
+    }, [isRealTime])
+
+    React.useEffect(() => {
+        if(!isRealTime){
+            //game.current?.scene.start(GameModes.simulation)
         }
 
-        if(isRealTime){
-            console.log("ctx is ", ctx)
-            //@ts-ignore
-            let scene = game.current?.scene.getScene('realtime');
-            console.log("scene is", realtimeScene)
-            if(realtimeScene == undefined){
-                
-                return
-            }
-            realtimeScene.set_wasm_context(ctx)
-        }else {
-            //@ts-ignore
+        if (isGameSceneDefined(gameMode) && testJson){
             let scene = game.current?.scene.getScene('simulator') as Simulator;
-            if(scene == undefined || !testJson)
-            {
-              return
-            }
-    
             scene.updateScene({ testJson, animationFrame, animationState, showDebug})
         }
-        
         //render stuff
-    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm, realtimeScene, realTimeOptions])
+    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm, isRealTime])
 
     return Phaser ? (
         <div
