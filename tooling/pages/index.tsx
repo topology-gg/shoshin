@@ -58,7 +58,6 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import ContractInformationView from "../src/components/sidePanelComponents/ContractInformationView"
 import WalletConnectView from "../src/components/sidePanelComponents/WalletConnectView"
-import crypto from "crypto";
 import SwipeableContent from "../src/components/layout/SwipeableContent";
 import theme from "../src/theme/theme";
 import FrameDecisionPathViewer from "../src/components/FrameDecisionPathViewer";
@@ -430,11 +429,7 @@ export default function Home() {
         setConditions((prev) => {
         let prev_copy: Condition[] = JSON.parse(JSON.stringify(prev));
         if (!prev_copy[index].key) {
-            prev_copy[index].key = crypto
-                .createHash("sha256")
-                .update(Date.now().toString())
-                .digest("hex")
-                .toString();
+            prev_copy[index].key = (Date.now() % 2 ** 200).toString()
         }
 
             prev_copy[index].elements = conditionElements
@@ -475,11 +470,7 @@ export default function Home() {
             }
             prev_copy[index].displayName = displayName;
             if (!prev_copy[index].key) {
-                prev_copy[index].key = crypto
-                    .createHash("sha256")
-                    .update(Date.now().toString())
-                    .digest("hex")
-                    .toString();
+                prev_copy[index].key = (Date.now() % 2 ** 200).toString()
             }
 
             if (element) {
