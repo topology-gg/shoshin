@@ -70,11 +70,9 @@ macro_rules! console_log {
 pub fn run_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
     let inputs = ShoshinInputVec(inputs);
     let inputs = prepare_args(inputs).map_err(|e| JsError::new(&e.to_string()))?;
-
     let shoshin_bytecode = include_str!("./bytecode_shoshin.json");
     let vm = execute_cairo_program(shoshin_bytecode, "loop", inputs)
         .map_err(|e| JsError::new(&e.to_string()))?;
-
     let output = get_output(vm).map_err(|e| JsError::new(&e.to_string()))?;
     Result::Ok(serde_wasm_bindgen::to_value(&output)?)
 }
@@ -87,15 +85,9 @@ pub fn run_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
 /// The extracted output from the shoshin loop
 #[wasm_bindgen(js_name = simulateRealtimeFrame)]
 pub fn run_realtime_cairo_program_wasm(inputs: Vec<i32>) -> Result<JsValue, JsError> {
-    console_log!("inputs vec i32 {:?}", inputs);
     let inputs = RealTimeInputVec(inputs);
-
     let inputs = prepare_args(inputs).map_err(|e| JsError::new(&e.to_string()))?;
 
-    console_log!("inputs {:?}", inputs);
-
-    
-    
     unsafe{
         let program = CAIRO_PROGRAM_REALTIME.to_owned().unwrap();
 
@@ -164,7 +156,6 @@ fn get_realtime_output(vm: VirtualMachine) -> Result<Vec<RealTimeFrameScene>, Er
         .ok_or_else(|| anyhow::anyhow!("error converting frames length to u32"))?;
 
     let real_time_frames = convert_to_relocatable(&return_values[1])?;
-    //console_log!("real_time_frame {:?}", real_time_frame);
 
     let output = convert_to_structure_vector::<RealTimeFrameScene>(real_time_frames, 1, vm)?;
 

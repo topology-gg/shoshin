@@ -45,12 +45,9 @@ pub fn execute_cairo_program(
     entrypoint: &str,
     inputs: Vec<CairoArg>,
 ) -> Result<VirtualMachine, Error> {
-    println!("{:?} : start initialize_cairo_execution_context", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
     let mut context = initialize_cairo_execution_context(bytecode, entrypoint, inputs)
         .map_err(|e| CairoExecutionError::InitializationError(e.to_string()))?;
-    println!("{:?} : start execute context", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
     execute_context(&mut context)?;
-    println!("{:?} : finish execute context", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
     Result::Ok(context.vm)
 }
 
@@ -60,11 +57,8 @@ fn initialize_cairo_execution_context(
     inputs: Vec<CairoArg>,
 ) -> Result<CairoExecutionContext, Error> {
     let mut vm = VirtualMachine::new(true);
-    println!("{:?} : done with new VM", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
     let program = load_program(bytecode, entrypoint)?;
-    println!("{:?} : done with load program", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
     let cairo_runner = initialize_cairo_runner(&mut vm, &program)?;
-    println!("{:?} : done with initialize_cairo_runner", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH));
 
     Ok(CairoExecutionContext {
         entrypoint: entrypoint.to_string(),
