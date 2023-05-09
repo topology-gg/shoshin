@@ -12,7 +12,7 @@ import { GameModes, PhaserGameProps, SimulatorProps } from "../types/Simulator";
 import RealTime from "../scene/Realtime";
 import { IShoshinWASMContext, ShoshinWASMContext } from "../context/wasm-shoshin";
 
-
+// Many shamefull @ts-ignore(s) in this file. It is not easy to know if game or scene is defined from outside the PhaserGame
 const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, realTimeOptions }: PhaserGameProps) => {
     const tagName = "div";
     const className = "relative top-0 left-0 w-full h-full my-12";
@@ -117,6 +117,7 @@ const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, re
         let attemptWasmID = setInterval( () => {
             console.log("Attempting to prepare realtime scene")
             if(isRealTime && ctx){
+                // @ts-ignore
                 let realtimeScene = game.current?.scene.getScene('realtime');
                 console.log('real time scene ', realtimeScene)
                 if(realtimeScene !== null){
@@ -135,6 +136,7 @@ const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, re
         {
           return false
         }
+        // @ts-ignore
         let scene = game.current?.scene.getScene(gameMode);
 
         if(scene == null)
@@ -147,6 +149,7 @@ const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, re
 
     React.useEffect(() => {
         if(isRealTime && isGameSceneDefined(gameMode)){
+            // @ts-ignore
             let scene = game.current?.scene.getScene(gameMode);
             if(realTimeOptions.agentOpponent)
             {
@@ -161,6 +164,7 @@ const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, re
 
     
     React.useEffect(() => {
+        // @ts-ignore
         let scene = game.current?.scene.getScene(isRealTime ? GameModes.simulation : GameModes.realtime);
         if(scene !== null && scene !== undefined)
         {
@@ -174,6 +178,7 @@ const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, re
         }
 
         if (isGameSceneDefined(gameMode) && testJson){
+            // @ts-ignore
             let scene = game.current?.scene.getScene('simulator') as Simulator;
             scene.updateSceneFromFrame({ testJson, animationFrame, animationState, showDebug})
         }
