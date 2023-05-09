@@ -31,6 +31,8 @@ export default class RealTime extends Platformer {
 
     private opponent: Agent = IDLE_AGENT;
 
+    private isDebug : boolean = false
+
     private setPlayerStatuses: (playerStatuses: StatusBarPanelProps) => void =
         () => {};
 
@@ -76,10 +78,6 @@ export default class RealTime extends Platformer {
     }
 
     createCenteredText(content: string) {
-        const screenCenterX =
-            this.cameras.main.x + this.cameras.main.width / 2;
-        const screenCenterY =
-            this.cameras.main.y + this.cameras.main.height / 2;
         const centeredText = this.add
             .text(this.cameras.main.midPoint.x,
                 this.cameras.main.midPoint.y, 
@@ -121,7 +119,6 @@ export default class RealTime extends Platformer {
         this.intitialize();
         this.createMenu()
 
-
         this.isGameRunning = false;
 
         this.keyboard = this.input.keyboard.addKeys({
@@ -133,17 +130,14 @@ export default class RealTime extends Platformer {
             w: Phaser.Input.Keyboard.KeyCodes.W,
             e: Phaser.Input.Keyboard.KeyCodes.E,
             space: Phaser.Input.Keyboard.KeyCodes.SPACE,
+            h: Phaser.Input.Keyboard.KeyCodes.H,
         });
-
-        console.log("keyboard", this.keyboard);
-
         this.setPlayerOneCharacter(this.character_type_0);
     }
 
     startMatch() {
         this.setPlayerOneCharacter(this.character_type_0);
-
-        //this.run()
+        this.resetGameState()
 
         this.gameTimer = this.time.addEvent({
             delay: 100, // ms
@@ -158,7 +152,7 @@ export default class RealTime extends Platformer {
         this.startText.setVisible(false);
     }
 
-    endGame(winner: number) { 
+    endGame() { 
         this.centerText(this.startText)
         this.startText.setVisible(true)
         this.gameTimer.destroy();
@@ -213,7 +207,12 @@ export default class RealTime extends Platformer {
                         this.character_type_0 == 1 ? "antoc" : "jessica"
                     ]["DashForward"];
             }
+        } 
+        if (this.keyboard.h.isDown) {
+                this.isDebug = !this.isDebug
         }
+        
+
     }
 
     run() {
@@ -241,7 +240,7 @@ export default class RealTime extends Platformer {
                 newState.agent_0,
                 newState.agent_1,
                 false,
-                false
+                this.isDebug
             );
 
             const integrity_0 = newState.agent_0.body_state.integrity;
@@ -264,9 +263,9 @@ export default class RealTime extends Platformer {
                 }
             }
             if (integrity_0 <= 0) {
-                this.endGame(1);
+                this.endGame();
             } else if (integrity_1 <= 0) {
-                this.endGame(2);
+                this.endGame();
             }
         }
 

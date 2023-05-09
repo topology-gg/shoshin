@@ -304,6 +304,4 @@ export function getSizeOfRealTimeInputScene(){
             mental_state : 1
         }
     }
-    console.log('key count ', countKeys(temp))
-
 } 
