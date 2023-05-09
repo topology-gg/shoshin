@@ -33,7 +33,7 @@ function getMatchingConditionIndexViaName(node: Node, conditions: string[]) {
 }
 
 function getMatchingConditionViaName(node: Node, conditions: string[]) {
-    return conditions.find((condition) => {
-        return condition === node.id 
+    return conditions.find((condition, i) => {
+        return i === parseInt(node.id)
     })
 }
