@@ -11,6 +11,7 @@ import {
     Condition,
     ConditionElement,
     ConditionVerificationResult,
+    generateConditionKey,
     includeBodyState,
     validateConditionName,
     verifyValidCondition,
@@ -429,7 +430,7 @@ export default function Home() {
         setConditions((prev) => {
         let prev_copy: Condition[] = JSON.parse(JSON.stringify(prev));
         if (!prev_copy[index].key) {
-            prev_copy[index].key = (Date.now() % 2 ** 200).toString()
+            prev_copy[index].key = generateConditionKey()
         }
 
             prev_copy[index].elements = conditionElements
@@ -470,7 +471,7 @@ export default function Home() {
             }
             prev_copy[index].displayName = displayName;
             if (!prev_copy[index].key) {
-                prev_copy[index].key = (Date.now() % 2 ** 200).toString()
+                prev_copy[index].key = generateConditionKey()
             }
 
             if (element) {
