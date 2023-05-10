@@ -389,3 +389,6 @@ export const conditionElementToStr = (elem: ConditionElement) => {
     }
     return value
 }
+
+
+export const generateConditionKey =  () => (Date.now() % 2 ** 200).toString()

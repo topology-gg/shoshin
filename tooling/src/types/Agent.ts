@@ -43,14 +43,18 @@ export function buildAgent(mentalStates: MentalState[], combos: number[][], tree
     // MS0 uses conditions [0, 1, 2, 3]
     // MS1 uses conditions [6, 7]
     // conditions indexing for the agent should map to [0, 1, 2, 3, 6, 7] => [0, 1, 2, 3, 4, 5]
-    Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => conditions[i]).forEach((f, i) => {
+    const findConditionByKey = (key, conditions) => {
+        let match = conditions.find(cond => cond.key == key)
+        return match ? match : conditions[0]
+    }
+    Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => findConditionByKey(i, conditions)).forEach((f, i) => {
         agent.mentalStates.forEach((ms) => {
             updateMentalStates(ms, parseInt(f.key), i)
         })
     })
 
     // makes use of indexes to only parse the necessary conditions
-    Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => conditions[i]).forEach((f) => {
+    Array.from(indexes.keys()).sort((a, b) => a - b).map((i) => findConditionByKey(i, conditions)).forEach((f) => {
     
         // Temporary code to deal with backend bug, can be removed in subsequent pr, April 6, 2023
         agentConditionNames.push(f.displayName.replaceAll("\u0000",""))
