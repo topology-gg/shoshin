@@ -26,6 +26,20 @@ function PaperComponent(props: PaperProps) {
 const JessicaInfo = `
 ## Jessica specification
 
+### Keybinding in real time mode
+
+| Key | Intent |
+| - | - |
+| W | Dash back |
+| E | Dash forward |
+| S | Slash |
+| D | Upswing |
+| F | Sidecut |
+| ↓ | Block |
+| ← | Walk back |
+| → | Walk forward |
+| H | Toggle hitboxes |
+
 ### Body transition rules
 | Body state | Duration in frames | Description | Entry Rules | Interruption |
 | - | - | - | - | - |
@@ -58,6 +72,19 @@ const JessicaInfo = `
 
 const AntocInfo = `
 ## Antoc specification
+
+### Keybinding in real time mode
+
+| Key | Intent |
+| - | - |
+| W | Dash back |
+| E | Dash forward |
+| S | Hori |
+| D | Vert |
+| ↓ | Block |
+| ← | Walk back |
+| → | Walk forward |
+| H | Toggle hitboxes |
 
 ### Body transition rules
 | Body state | Duration in frames | Description | Entry Rules | Interruption |

@@ -131,6 +131,7 @@ export default class RealTime extends Platformer {
             e: Phaser.Input.Keyboard.KeyCodes.E,
             space: Phaser.Input.Keyboard.KeyCodes.SPACE,
             h: Phaser.Input.Keyboard.KeyCodes.H,
+            f: Phaser.Input.Keyboard.KeyCodes.F,
         });
         this.setPlayerOneCharacter(this.character_type_0);
     }
@@ -206,6 +207,12 @@ export default class RealTime extends Platformer {
                     characterActionToNumber[
                         this.character_type_0 == 1 ? "antoc" : "jessica"
                     ]["DashForward"];
+            } else if (this.keyboard.f.isDown && this.character_type_0 == 0) {
+                // attack # 3
+                this.player_action =
+                    characterActionToNumber[
+                        "jessica"
+                    ]["Sidecut"];
             }
         } 
         if (this.keyboard.h.isDown) {
