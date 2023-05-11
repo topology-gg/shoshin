@@ -25,7 +25,8 @@ from contracts.constants.constants import (
     ComboBuffer,
     RealTimeAgent,
     RealTimePlayer,
-    RealTimeFrameScene
+    RealTimeFrameScene,
+    RealTimeComboInfo
 )
 from contracts.constants.constants_jessica import ns_jessica_character_dimension
 from contracts.body.body import _body
@@ -565,6 +566,8 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         combos_offset_1: felt*,
         combos_1_len: felt,
         combos_1: felt*,
+        current_combo_1 : felt,
+        combo_counter_1 : felt,
         agent_1_state_machine_offset_len: felt,
         agent_1_state_machine_offset: felt*,
         agent_1_state_machine_len: felt,
@@ -685,9 +688,9 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
     //
 
 
-    // Combo buffer might need to come from outside too
+    // Combo buffer state is maintained outside of this function
     local agent_1_action;
-    tempvar combo_buffer = ComboBuffer(combos_offset_1_len, combos_offset_1, combos_1, 0, 0);
+    tempvar combo_buffer = ComboBuffer(combos_offset_1_len, combos_offset_1, combos_1, current_combo_1, combo_counter_1);
     local combos_1_new: ComboBuffer;
     let is_combo = is_le(ns_combos.ENCODING, agent_action_1);
 
@@ -739,6 +742,12 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         curr_body_state_1    = body_state_1,
     );
 
+
+    let combo_info_1 = RealTimeComboInfo(
+        current_combo=combos_1_new.current_combo,
+        combo_counter=combos_1_new.combo_counter
+    );
+
     //Easier to recover the RealTimeFrame in rust by using an array
     let (real_time_frame_scenes: RealTimeFrameScene*) = alloc();
 
@@ -756,6 +765,7 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
             stimulus=stimulus_1,
             hitboxes=hitboxes_1,
             mental_state=agent_state_1,
+            combo_info=combo_info_1
         ),
     );
 
