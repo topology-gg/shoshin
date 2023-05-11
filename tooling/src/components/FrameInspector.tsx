@@ -9,10 +9,11 @@ import {
     TableCell,
     TableHead,
     TableRow,
+    Tooltip,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
-import { DT_FP, SCALE_FP, bodyStateNumberToName, getIntentNameByCharacterTypeAndNumber } from "../constants/constants";
+import { CHARACTERS_ACTIONS, DT_FP, SCALE_FP, bodyStateNumberToName, getIntentNameByCharacterTypeAndNumber } from "../constants/constants";
 import { TestJson } from "../types/Frame";
 import Agent from "../types/Agent";
 import { KeywordMentalState, KeywordBodyState } from "./ui/Keyword";
@@ -117,10 +118,10 @@ const FrameInspector = ({
                                                 {
                                                     combos[player_index][frame.combo.combo_index -1].map((num, num_i) => {
                                                         if (num_i == frame.combo.action_index - 1) {
-                                                            return <span style={{border:'1px solid #333333', padding:'4px', borderRadius:'4px', margin:'1px', backgroundColor:'#FD3A4ACC'}}>{num}</span>
+                                                            return  <Tooltip key={`${num}`} title={CHARACTERS_ACTIONS[player_index == 0 ? characterLeftType : characterRightType][num]}><span style={{border:'1px solid #333333', padding:'4px', borderRadius:'4px', margin:'1px', backgroundColor:'#FD3A4ACC'}}>{num}</span></Tooltip>
                                                         }
                                                         else {
-                                                            return <span style={{border:'1px solid #333333', padding:'4px', borderRadius:'4px', margin:'1px'}}>{num}</span>
+                                                            return  <Tooltip key={`${num}`} title={CHARACTERS_ACTIONS[player_index == 0 ? characterLeftType : characterRightType][num]}><span style={{border:'1px solid #333333', padding:'4px', borderRadius:'4px', margin:'1px'}}>{num}</span></Tooltip>
                                                         }
                                                     }
                                                 )}
