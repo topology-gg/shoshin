@@ -1,4 +1,6 @@
 import { Person } from "@mui/icons-material";
+import EastIcon from '@mui/icons-material/East';
+import WestIcon from '@mui/icons-material/West';
 import {
     Grid,
     IconButton,
@@ -114,7 +116,8 @@ const FrameInspector = ({
                                     Body Counter
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frame.body_state.counter}
+                                    {/* showing counter + 1 so that the body counter starts from 1 corresponding to 1st frame of the body state */}
+                                    {frame.body_state.counter + 1}
                                 </TableCell>
                             </TableRow>
 
@@ -141,7 +144,7 @@ const FrameInspector = ({
                                     Direction
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frame.body_state.dir}
+                                    {frame.body_state.dir == 1 ? <EastIcon /> : <WestIcon />}
                                 </TableCell>
                             </TableRow>
 
