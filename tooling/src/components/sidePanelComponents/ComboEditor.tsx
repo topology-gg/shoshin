@@ -3,7 +3,7 @@ import { Box, Button, Typography } from "@mui/material";
 import Tooltip from '@mui/material/Tooltip';
 import SingleAction  from './SingleAction'
 import NewAction  from './NewAction'
-import { CHARACTERS_ACTIONS, ACTIONS_ICON_MAP, MAX_COMBO_SIZE } from '../../constants/constants';
+import { CHARACTERS_ACTIONS, ACTIONS_ICON_MAP, MAX_COMBO_SIZE, CHARACTER_ACTIONS_DETAIL } from '../../constants/constants';
 
 const ComboEditor = ({
     isReadOnly, editingCombo, setEditingCombo, characterIndex, selectedIndex, setSelectedIndex, handleValidateCombo,
@@ -57,8 +57,21 @@ const ComboEditor = ({
                     >
                         {actions.map((key, key_i) => {
                             if (!key.includes('COMBO')){
+                                const frameString = CHARACTER_ACTIONS_DETAIL[characterIndex][key].duration == 1 ? "frame" : "frames"
+                                const actionDuration = CHARACTER_ACTIONS_DETAIL[characterIndex][key].duration
+                                let actionActiveFramesString = CHARACTER_ACTIONS_DETAIL[characterIndex][key].active?.join(', ')
+                                if (actionActiveFramesString != null) {actionActiveFramesString = 'Active Frame # : ' + actionActiveFramesString + '. ';}
+
                                 return (
-                                    <Tooltip key={`${key}`} title={`${key.replaceAll('_', ' ')}`}>
+                                    <Tooltip key={`${key}`}
+                                        title={
+                                            <React.Fragment>
+                                                <Typography color="inherit">{`${key.replaceAll('_', ' ')}`}</Typography>
+                                                <p><em>{"Duration : "}</em> <b>{actionDuration}</b> {`${frameString}`}.{' '}</p>
+                                                <p>{ actionActiveFramesString }</p>
+                                            </React.Fragment>
+                                        }
+                                    >
                                         <div
                                             key={`iconized-action-${key_i}`}
                                             style={{
