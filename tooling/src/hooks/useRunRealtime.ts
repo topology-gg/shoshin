@@ -12,7 +12,7 @@ import { RealTimeFrameScene, realTimeInputToArray } from "../types/Frame";
 import { encodeStringToFelt } from "../types/utils";
 import cairoOutputToRealTimeFrameScene from "../helpers/cairoOutputToRealTimeFrameScene";
 
-const realTimeAgentToArray = (agent: Agent) => {
+const realTimeAgentToArray = (agent: Agent, current_combo : number, combo_counter : number) => {
     let [
         combosOffset,
         combos,
@@ -27,6 +27,8 @@ const realTimeAgentToArray = (agent: Agent) => {
         ...combosOffset,
         combos.length,
         ...combos,
+        current_combo,
+        combo_counter,
         mentalStatesOffset.length,
         ...mentalStatesOffset,
         mentalStates.length / 3,
@@ -81,6 +83,7 @@ export const runRealTimeFromContext = (
         return;
     }
     try {
+        let {current_combo, combo_counter} = realTimeFrameScene.agent_1.combo_info
         let shoshinInput = new Int32Array([
             ...realTimeInputToArray(
                 realTimeFrameScene,
@@ -88,7 +91,7 @@ export const runRealTimeFromContext = (
                 character_type_0,
                 character_type_1
             ),
-            ...realTimeAgentToArray(opponent),
+            ...realTimeAgentToArray(opponent, current_combo, combo_counter),
         ]);
         let output = ctx.wasm.simulateRealtimeFrame(shoshinInput);
         return [cairoOutputToRealTimeFrameScene(output), null];
