@@ -32,9 +32,9 @@ const JessicaInfo = `
 | - | - |
 | W | Dash back |
 | E | Dash forward |
-| S | Attack one |
-| D | Attack two |
-| F | Attack three |
+| S | Slash |
+| D | Upswing |
+| F | Sidecut |
 | ↓ | Block |
 | ← | Walk back |
 | → | Walk forward |
@@ -79,8 +79,8 @@ const AntocInfo = `
 | - | - |
 | W | Dash back |
 | E | Dash forward |
-| S | Attack one |
-| D | Attack two |
+| S | Hori |
+| D | Vert |
 | ↓ | Block |
 | ← | Walk back |
 | → | Walk forward |
