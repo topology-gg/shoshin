@@ -1,11 +1,11 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import React, { useEffect, useMemo, useState } from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Snackbar, ThemeProvider } from "@mui/material";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Button, Snackbar, ThemeProvider } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MidScreenControl from "../src/components/MidScreenControl";
 import EditorView from "../src/components/sidePanelComponents/EditorView";
-import { Frame, FrameScene, TestJson, getFlattenedPerceptiblesFromFrame } from "../src/types/Frame";
+import { Frame, FrameScene, TestJson, getFlattenedPerceptiblesFromFrame, getSizeOfRealTimeInputScene } from "../src/types/Frame";
 import { Tree, Direction } from "../src/types/Tree";
 import {
     Condition,
@@ -30,12 +30,12 @@ import {
     OFFENSIVE_AGENT,
     EditorMode,
     BLANK_AGENT,
+    InitialRealTimeFrameScene,
 } from "../src/constants/constants";
 import Agent, { agentToCalldata, buildAgent } from "../src/types/Agent";
-import StatusBarPanel from "../src/components/StatusBar";
-import P1P2SettingPanel, {
-    AgentOption,
-} from "../src/components/P1P2SettingPanel";
+import StatusBarPanel, { StatusBarPanelProps as PlayerStatuses } from "../src/components/StatusBar";
+import P1P2SettingPanel from "../src/components/settingsPanels/P1P2SettingPanel";
+import {AgentOption} from "../src/components/settingsPanels/settingsPanel";
 import FrameInspector from "../src/components/FrameInspector";
 import useRunCairoSimulation from "../src/hooks/useRunCairoSimulation";
 import useEvaluateCondition from "../src/hooks/useEvaluateCondition";
@@ -64,6 +64,10 @@ import theme from "../src/theme/theme";
 import FrameDecisionPathViewer from "../src/components/FrameDecisionPathViewer";
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from "../src/components/MobileView";
+import { runRealTimeFromContext } from "../src/hooks/useRunRealtime";
+import { ShoshinWASMContext } from "../src/context/wasm-shoshin";
+import { GameModes } from "../src/types/Simulator";
+import RealTimeSettingPanel from "../src/components/settingsPanels/RealTimeSettingPanel";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -101,6 +105,14 @@ export default function Home() {
         EditorMode.ReadOnly
     );
 
+
+    const [playerStatuses, setPlayerStatuses] = useState<PlayerStatuses>({
+        integrity_0 : 1000,
+        integrity_1 : 1000,
+        stamina_0 : 100,
+        stamina_1 : 100
+    })
+
     // React states for tracking the New Agent being edited in the right panel
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
     const [combos, setCombos] = useState<number[][]>(INITIAL_COMBOS);
@@ -112,6 +124,9 @@ export default function Home() {
         useState<Condition[]>(INITIAL_CONDITIONS);
     const [agentName, setAgentName] = useState<string>("");
     const [character, setCharacter] = useState<Character>(Character.Jessica);
+
+    const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation)
+    const [realTimeCharacter, setRealTimeCharacter] = useState<number>(0)
 
     // React states for warnings
     const [isConditionWarningTextOn, setConditionWarningTextOn] =
@@ -161,6 +176,21 @@ export default function Home() {
     const { runCairoSimulation, wasmReady } = useRunCairoSimulation(p1, p2);
     const { runEvaluateCondition } = useEvaluateCondition();
 
+    const ctx = useContext(ShoshinWASMContext)
+    getSizeOfRealTimeInputScene()
+
+    useEffect(() => {
+        if(wasmReady){
+            console.log("p1", p1)
+            console.log("running realtime")
+            const [out, err] = runRealTimeFromContext(ctx, InitialRealTimeFrameScene, 0, 0, 0, p1);
+            console.log('realtime res', err ? err : out)
+            console.log("running realtime done")
+        }
+    }, [wasmReady, p1])
+
+    
+    
     const isMobileDisplay = useMediaQuery('(max-width:800px)');
 
     useEffect(() => {
@@ -174,6 +204,17 @@ export default function Home() {
             });
         }
     }, [output]);
+
+    useEffect(() => {
+        const integrity_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.integrity : 0
+        const integrity_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.integrity : 0
+        const stamina_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.stamina : 0
+        const stamina_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.stamina : 0
+    
+        setPlayerStatuses({
+            integrity_0, integrity_1, stamina_0, stamina_1
+        })
+    }, [testJson])
 
     useEffect(() => {
         if (!simulationError) return;
@@ -775,7 +816,7 @@ export default function Home() {
             txStatusText={txStatusText}
         />
     )
-
+            
     let FightView = (
         <div className={styles.main}>
             <div
@@ -784,14 +825,37 @@ export default function Home() {
                     flexDirection: "column",
                 }}
             >
-                <P1P2SettingPanel
-                    agentsFromRegistry={t}
-                    agentChange={agentChange}
-                />
+                <Button variant="text"
+                    onClick={() => {
+                        gameMode == GameModes.simulation ? setGameMode(GameModes.realtime) :setGameMode(GameModes.simulation)
+                    }}
+                >
+                    {
+                        gameMode == GameModes.simulation ? "Simulation" : 'Real Time'
+                    }
+                </Button>
+                
+                {
+                    gameMode == GameModes.simulation ?
+                    (
+                        <P1P2SettingPanel
+                            agentsFromRegistry={t}
+                            agentChange={agentChange}
+                        />
+                    ) : 
+                    (  <RealTimeSettingPanel
+                            agentsFromRegistry={t}
+                            agentChange={agentChange}
+                            changeCharacter={(character) => setRealTimeCharacter(parseInt(character))}
+                        />
+                    )
+                }
 
                 <StatusBarPanel
-                    testJson={testJson}
-                    animationFrame={animationFrame}
+                    integrity_0={playerStatuses.integrity_0}
+                    integrity_1={playerStatuses.integrity_1}
+                    stamina_0={playerStatuses.stamina_0}
+                    stamina_1={playerStatuses.stamina_1}
                 />
 
                 <Game
@@ -799,6 +863,12 @@ export default function Home() {
                     animationFrame={animationFrame}
                     animationState={animationState}
                     showDebug={checkedShowDebugInfo}
+                    gameMode={gameMode}
+                    realTimeOptions={{
+                        playerCharacter : realTimeCharacter,
+                        agentOpponent : p2,
+                        setPlayerStatuses
+                    }}
                 />
 
                 <MidScreenControl

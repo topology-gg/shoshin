@@ -1,5 +1,6 @@
 import Agent, { buildAgent } from "../types/Agent"
 import { ElementType, Condition, Operator, Perceptible } from "../types/Condition"
+import { RealTimeFrameScene } from "../types/Frame"
 import { MentalState } from "../types/MentalState"
 import { Direction, Tree } from "../types/Tree"
 
@@ -120,6 +121,31 @@ export enum ActionsAntoc {
     MoveBackward = 5,
     DashForward = 6,
     DashBackward = 7,
+}
+
+export const characterActionToNumber = {
+    jessica:{
+        Null : 0,
+        Slash : 1,
+        Upswing : 2,
+        Sidecut : 3,
+        Block : 4,
+        MoveForward  : 5,
+        MoveBackward : 6,
+        DashForward  : 7,
+        DashBackward : 8,
+    },
+    antoc: {
+        Null : 0,
+        Hori : 1,
+        Vert : 2,
+        Block : 3,
+        MoveForward : 4,
+        MoveBackward : 5,
+        DashForward : 6,
+        DashBackward : 7,
+    }
+
 }
 
 // Simulation related constants
@@ -465,3 +491,102 @@ export const DECISION_TREE_COMBO_AGENT = [
 export const MENTAL_STATES_COMBO_AGENT: MentalState[] = [
     { state: 'MS COMBO', action: 101 },
 ]
+
+export const InitialRealTimeFrameScene : RealTimeFrameScene  = {
+    agent_0 : {
+        "body_state": {
+            "counter": 0,
+            "dir": 1,
+            "integrity": 1000,
+            "stamina": 1000,
+            "state": 0,
+            "fatigued": 0
+        },
+        "hitboxes": {
+            "action": {
+                "origin": {
+                    "x": 2000,
+                    "y": 2000
+                },
+                "dimension": {
+                    "x": 0,
+                    "y": 0
+                }
+            },
+            "body": {
+                "origin": {
+                    "x": -100,
+                    "y": 0
+                },
+                "dimension": {
+                    "x": 50,
+                    "y": 116
+                }
+            }
+        },
+        "physics_state": {
+            "pos": {
+                "x": -100,
+                "y": 0
+            },
+            "vel_fp": {
+                "x": 0,
+                "y": 0
+            },
+            "acc_fp": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        "stimulus": 0
+    },
+    agent_1 : {
+        "body_state": {
+            "counter": 0,
+            "dir": 0,
+            "integrity": 1000,
+            "stamina": 1000,
+            "state": 0,
+            "fatigued": 0
+        },
+        "hitboxes": {
+            "action": {
+                "origin": {
+                    "x": 2000,
+                    "y": 2000
+                },
+                "dimension": {
+                    "x": 0,
+                    "y": 0
+                }
+            },
+            "body": {
+                "origin": {
+                    "x": 100,
+                    "y": 0
+                },
+                "dimension": {
+                    "x": 50,
+                    "y": 116
+                }
+            },
+
+        },
+        "physics_state": {
+            "pos": {
+                "x": 100,
+                "y": 0
+            },
+            "vel_fp": {
+                "x": 0,
+                "y": 0
+            },
+            "acc_fp": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        "stimulus": 0,
+        "mental_state" : 0,
+    }
+}
