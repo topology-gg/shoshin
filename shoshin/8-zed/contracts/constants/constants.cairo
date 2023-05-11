@@ -153,9 +153,29 @@ struct Frame {
     combo: Combo,
 }
 
+struct RealTimePlayer {
+    body_state: BodyState,
+    physics_state: PhysicsState,
+    stimulus: felt,
+    hitboxes: Hitboxes,
+}
+
+struct RealTimeAgent {
+    body_state: BodyState,
+    physics_state: PhysicsState,
+    stimulus: felt,
+    hitboxes: Hitboxes,
+    mental_state : felt,
+}
+
 struct FrameScene {
     agent_0: Frame,
     agent_1: Frame,
+}
+
+struct RealTimeFrameScene {
+    agent_0: RealTimePlayer,
+    agent_1: RealTimeAgent,
 }
 
 //
