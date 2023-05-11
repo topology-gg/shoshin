@@ -57,18 +57,21 @@ const ComboEditor = ({
                     >
                         {actions.map((key, key_i) => {
                             if (!key.includes('COMBO')){
-                                const actionDuration = CHARACTER_ACTIONS_DETAIL[characterIndex][key].duration
                                 const frameString = CHARACTER_ACTIONS_DETAIL[characterIndex][key].duration == 1 ? "frame" : "frames"
+                                const actionDuration = CHARACTER_ACTIONS_DETAIL[characterIndex][key].duration
+                                let actionActiveFramesString = CHARACTER_ACTIONS_DETAIL[characterIndex][key].active?.join(', ')
+                                if (actionActiveFramesString != null) {actionActiveFramesString = 'Active Frame # : ' + actionActiveFramesString + '. ';}
+
                                 return (
                                     <Tooltip key={`${key}`}
                                         title={
                                             <React.Fragment>
                                                 <Typography color="inherit">{`${key.replaceAll('_', ' ')}`}</Typography>
-                                                <em>{"Duration : "}</em> <b>{actionDuration}</b> {`${frameString}`}.{' '}
-                                                
+                                                <p><em>{"Duration : "}</em> <b>{actionDuration}</b> {`${frameString}`}.{' '}</p>
+                                                <p>{ actionActiveFramesString }</p>
                                             </React.Fragment>
-                                            }
-                                            >
+                                        }
+                                    >
                                         <div
                                             key={`iconized-action-${key_i}`}
                                             style={{

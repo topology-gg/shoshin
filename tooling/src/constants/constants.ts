@@ -131,7 +131,7 @@ export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc]
 interface CharacterAction {
     id : number,
     duration : number,
-    
+    active?: number[],
 }
 
 interface CharacterActions  {
@@ -140,21 +140,21 @@ interface CharacterActions  {
 
 export const ActionDetailJessica : CharacterActions = {
     Null : { id : 0, duration : 1},
-    Slash : { id : 1, duration : 5},
-    Upswing : {id : 2, duration : 5},
-    Sidecut : { id : 3, duration : 5},
-    Block : { id : 4, duration : 3},
+    Slash : { id : 1, duration : 5, active: [3]},
+    Upswing : {id : 2, duration : 5, active: [3]},
+    Sidecut : { id : 3, duration : 5, active: [3]},
+    Block : { id : 4, duration : 3, active: [2]},
     MoveForward : { id : 5, duration : 1},
     MoveBackward : { id : 5, duration : 1},
     DashForward : { id : 5, duration : 1},
     DashBackward : { id : 5, duration : 1},
 }
 
-export const ActionDetailAntoc : CharacterActions = { 
+export const ActionDetailAntoc : CharacterActions = {
     Null : { id : 0, duration : 1},
-    Hori : { id : 1, duration : 7},
-    Vert : { id : 2, duration : 10},
-    Block : { id : 3, duration : 6},
+    Hori : { id : 1, duration : 7, active: [2,3]},
+    Vert : { id : 2, duration : 10, active: [4,5]},
+    Block : { id : 3, duration : 6, active: [2,3,4,5]},
     MoveForward : { id : 4, duration : 1},
     MoveBackward : { id : 5, duration : 1},
     DashForward : { id : 6, duration : 4},
