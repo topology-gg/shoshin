@@ -13,6 +13,7 @@ from contracts.constants.constants import (
     PhysicsState,
     BodyState,
     Hitboxes,
+    ns_hitbox,
 )
 from contracts.constants.constants_jessica import (
     ns_jessica_character_dimension, ns_jessica_body_state_qualifiers, ns_jessica_hitbox
@@ -127,13 +128,13 @@ func _physicality{range_check_ptr}(
             if (curr_body_state_0.dir == 1) {
                 // # facing right
                 assert action_origin_0 = Vec2(
-                    candidate_physics_state_0.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W,
+                    candidate_physics_state_0.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W - ns_hitbox.NUDGE,
                     candidate_physics_state_0.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
                 );
             } else {
                 // # facing left
                 assert action_origin_0 = Vec2(
-                    candidate_physics_state_0.pos.x - ns_jessica_character_dimension.SLASH_HITBOX_W,
+                    candidate_physics_state_0.pos.x - ns_jessica_character_dimension.SLASH_HITBOX_W + ns_hitbox.NUDGE,
                     candidate_physics_state_0.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
                 );
             }
@@ -144,13 +145,13 @@ func _physicality{range_check_ptr}(
             if (curr_body_state_0.dir == 1) {
                 // # facing right
                 assert action_origin_0 = Vec2(
-                    candidate_physics_state_0.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W,
+                    candidate_physics_state_0.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W - ns_hitbox.NUDGE,
                     candidate_physics_state_0.pos.y + ns_jessica_character_dimension.BLOCK_HITBOX_Y
                 );
             } else {
                 // # facing left
                 assert action_origin_0 = Vec2(
-                    candidate_physics_state_0.pos.x - ns_jessica_character_dimension.BLOCK_HITBOX_W,
+                    candidate_physics_state_0.pos.x - ns_jessica_character_dimension.BLOCK_HITBOX_W + ns_hitbox.NUDGE,
                     candidate_physics_state_0.pos.y + ns_jessica_character_dimension.BLOCK_HITBOX_Y
                 );
             }
@@ -168,13 +169,13 @@ func _physicality{range_check_ptr}(
             if (curr_body_state_1.dir == 1) {
                 // # facing right
                 assert action_origin_1 = Vec2(
-                    candidate_physics_state_1.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W,
+                    candidate_physics_state_1.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W - ns_hitbox.NUDGE,
                     candidate_physics_state_1.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
                 );
             } else {
                 // # facing left
                 assert action_origin_1 = Vec2(
-                    candidate_physics_state_1.pos.x - ns_jessica_character_dimension.SLASH_HITBOX_W,
+                    candidate_physics_state_1.pos.x - ns_jessica_character_dimension.SLASH_HITBOX_W + ns_hitbox.NUDGE,
                     candidate_physics_state_1.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
                 );
             }
@@ -185,13 +186,13 @@ func _physicality{range_check_ptr}(
             if (curr_body_state_1.dir == 1) {
                 // # facing right
                 assert action_origin_1 = Vec2(
-                    candidate_physics_state_1.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W,
+                    candidate_physics_state_1.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W - ns_hitbox.NUDGE,
                     candidate_physics_state_1.pos.y + ns_jessica_character_dimension.BLOCK_HITBOX_Y
                 );
             } else {
                 // # facing left
                 assert action_origin_1 = Vec2(
-                    candidate_physics_state_1.pos.x - ns_jessica_character_dimension.BLOCK_HITBOX_W,
+                    candidate_physics_state_1.pos.x - ns_jessica_character_dimension.BLOCK_HITBOX_W + ns_hitbox.NUDGE,
                     candidate_physics_state_1.pos.y + ns_jessica_character_dimension.BLOCK_HITBOX_Y
                 );
             }
