@@ -99,6 +99,7 @@ const TreeEditor = ({
                     multiline
                     rows={10}
                     disabled={isReadOnly}
+                    spellCheck={false}
                 />
                 <Box
                 sx={{
