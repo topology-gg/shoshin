@@ -8,13 +8,17 @@ import { useLayoutEffect } from "../hooks/useIsomorphicLayoutEffect";
 import styles from "./Game.module.css";
 import { TestJson } from "../types/Frame";
 import Simulator from "../scene/Simulator";
-import { SimulatorProps } from "../types/Simulator";
+import { GameModes, PhaserGameProps, SimulatorProps } from "../types/Simulator";
+import RealTime from "../scene/Realtime";
+import { IShoshinWASMContext, ShoshinWASMContext } from "../context/wasm-shoshin";
 
-
-const Game = ({testJson, animationFrame, animationState, showDebug}: SimulatorProps) => {
+// Many shamefull @ts-ignore(s) in this file. It is not easy to know if game or scene is defined from outside the PhaserGame
+const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, realTimeOptions }: PhaserGameProps) => {
     const tagName = "div";
     const className = "relative top-0 left-0 w-full h-full my-12";
     const variant = "default";
+
+    const isRealTime = gameMode == GameModes.realtime;
 
     const parent = React.useRef();
     const canvas = React.useRef();
@@ -27,6 +31,8 @@ const Game = ({testJson, animationFrame, animationState, showDebug}: SimulatorPr
             return require("phaser");
         }
     }, []);
+
+    const ctx = React.useContext(ShoshinWASMContext);
 
     // import('phaser/src/phaser').then((mod) => {
     //   if (mod && !Phaser) {
@@ -92,35 +98,92 @@ const Game = ({testJson, animationFrame, animationState, showDebug}: SimulatorPr
             };
             g = game.current = new Phaser.Game(config);
 
+            g.scene.add('realtime', RealTime)
             g.scene.add('simulator', Simulator)
-            g.scene.start('simulator')
+            if(isRealTime){
+                g.scene.start('realtime')
+                
+            } else{
+                g.scene.start('simulator')
+            }
         }
         return () => g.destroy();
     }, [Phaser, create, preload, parent, canvas]);
 
+    
 
 
-    React.useEffect(() => {
-        //get current scene
+    const attemptToSetWasmContext = () => {
+        let attemptWasmID = setInterval( () => {
+            console.log("Attempting to prepare realtime scene")
+            if(isRealTime && ctx){
+                // @ts-ignore
+                let realtimeScene = game.current?.scene.getScene('realtime');
+                console.log('real time scene ', realtimeScene)
+                if(realtimeScene !== null){
+                    realtimeScene.set_wasm_context(ctx)
+                    clearInterval(attemptWasmID)
+                }
+            }
+        }, 500)
+    }
 
+
+    
+
+    const isGameSceneDefined = (gameMode : GameModes) => {
         if(game == undefined || game.current == undefined)
         {
-          return
+          return false
         }
+        // @ts-ignore
+        let scene = game.current?.scene.getScene(gameMode);
 
-
-        //@ts-ignore
-        let scene = game.current?.scene.getScene('simulator') as Simulator;
-
-        if(scene == undefined || !testJson)
+        if(scene == null)
         {
-          return
+            return false
+        }
+        return true
+
+    }
+
+    React.useEffect(() => {
+        if(isRealTime && isGameSceneDefined(gameMode)){
+            // @ts-ignore
+            let scene = game.current?.scene.getScene(gameMode);
+            if(realTimeOptions.agentOpponent)
+            {
+                scene.set_opponent_agent(realTimeOptions.agentOpponent)
+            }
+            if(realTimeOptions.playerCharacter)
+            {
+                scene.set_player_character(realTimeOptions.playerCharacter)
+            }
+        }
+    }, [isRealTime, realTimeOptions])
+
+    
+    React.useEffect(() => {
+        // @ts-ignore
+        let scene = game.current?.scene.getScene(isRealTime ? GameModes.simulation : GameModes.realtime);
+        if(scene !== null && scene !== undefined)
+        {
+            scene.changeScene(gameMode, ctx, realTimeOptions.setPlayerStatuses)
+        }
+    }, [isRealTime])
+
+    React.useEffect(() => {
+        if(!isRealTime){
+            //game.current?.scene.start(GameModes.simulation)
         }
 
-        scene.updateScene({ testJson, animationFrame, animationState, showDebug })
-
+        if (isGameSceneDefined(gameMode) && testJson){
+            // @ts-ignore
+            let scene = game.current?.scene.getScene('simulator') as Simulator;
+            scene.updateSceneFromFrame({ testJson, animationFrame, animationState, showDebug})
+        }
         //render stuff
-    }, [testJson, animationFrame, animationState, showDebug])
+    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm, isRealTime])
 
     return Phaser ? (
         <div

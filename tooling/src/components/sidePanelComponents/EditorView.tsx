@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Link } from '@mui/material';
+import { Box, Button, Link, Tooltip, styled } from '@mui/material';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
@@ -19,7 +19,7 @@ import { MentalState } from '../../types/MentalState';
 import { Character, EditorMode } from '../../constants/constants';
 import { Tree } from '../../types/Tree';
 import { Condition, ConditionElement } from '../../types/Condition';
-import { CircularProgress, Tooltip } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 
 interface EditorViewProps {
     editorMode: EditorMode
@@ -188,7 +188,7 @@ const EditorView = ({
                 </div>
 
                 <div style={{display:'flex', flexDirection:'row', gap:'10px'}}>
-                    <div >
+                    {/* <div >
                         <ButtonOptionList
                             buttonLabel={<><PersonSearchIcon sx={{}} /></>}
                             options={agents}
@@ -198,32 +198,56 @@ const EditorView = ({
                                 studyAgent(option)
                             }}
                         />
-                    </div>
+                    </div> */}
 
-                    <div style={{marginBottom: '1rem'}}>
-                        <Button
-                            id='button-option-list-button'
-                            onClick={() => {
-                                console.log('Build new Agent from blank');
-                                buildNewAgentFromBlank()
-                            }}
-                            variant="outlined"
-                        >
-                            <PersonAddAltIcon sx={{}} />
-                        </Button>
-                    </div>
+                    <Tooltip title="Build an agent from scratch">
+                        <div style={{marginBottom: '1rem'}}>
+                                <Button
+                                    id='button-option-list-button'
+                                    onClick={() => {
+                                        console.log('Build new Agent from blank');
+                                        buildNewAgentFromBlank()
+                                    }}
+                                    variant="outlined"
+                                >
+                                    <PersonAddAltIcon sx={{}} />
+                                </Button>
+                        </div>
+                    </Tooltip>
 
-                    <div style={{marginBottom: '1rem'}}>
-                        <ButtonOptionList
-                            buttonLabel={<><PersonAddAlt1Icon  sx={{}} /></>}
-                            options={agents}
-                            optionLabel={'agent'}
-                            optionSelected={(option: Agent) => {
-                                console.log('Build new Agent from an existing Agent:', option)
-                                buildNewAgentFromAgent(option)
-                            }}
-                        />
-                    </div>
+                    <Tooltip title="Build an agent starting from an existing agent">
+                        <div style={{marginBottom: '1rem'}}>
+
+                                <ButtonOptionList
+                                    buttonLabel={<><PersonAddAlt1Icon  sx={{}} /></>}
+                                    options={agents}
+                                    optionLabel={'agent'}
+                                    optionSelected={(option: Agent) => {
+                                        console.log('Build new Agent from an existing Agent:', option)
+                                        buildNewAgentFromAgent(option)
+                                    }}
+                                />
+                        </div>
+                    </Tooltip>
+
+                    <Tooltip title="Submit your agent onchain">
+                        <div style={{marginBottom: '1rem'}}>
+                            <Button
+                                id='button-option-list-button'
+                                onClick={() => {
+                                    console.log('Submit Agent onchain');
+                                    handleSubmitAgent();
+                                }}
+                                variant="outlined"
+                                disabled={editorMode==EditorMode.ReadOnly || txPending}
+                            >
+                                {txPending ?
+                                    <CircularProgress size="20px" color="inherit"/> :
+                                    <PublishIcon sx={{}} />
+                                }
+                            </Button>
+                        </div>
+                    </Tooltip>
 
                     <div style={{marginBottom: '1rem'}}>
                         <Button

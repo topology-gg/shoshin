@@ -25,14 +25,14 @@ function parseTreeInner(t: Tree, ms: MentalState[], usedFunctions: Map<number, n
         // t.nodes[1].id is the left branch of the tree
         let stateLeft = wrapToLeaf(ms.findIndex((mental) => t.nodes[1].id === mental.state))
         // condition is in the form 'F0'
-        let f = parseInt(condition.id[1])
+        let f = parseInt(condition.id)
         let fEval: Leaf
         // if function has already been used, add a MEM operator
         if (usedFunctions.has(f)) {
             fEval = { value: 13, left: -1, right: wrapToLeaf(usedFunctions.get(f)) }
         // else add a FUNC operator and add the function to the used functions (maps functions used to their index)
         } else {
-            fEval = { value: 15, left: -1, right: wrapToLeaf(usedIndex) }
+            fEval = { value: 15, left: -1, right: f }
             usedFunctions.set(f, usedIndex)
             usedIndex += 1
         }
@@ -47,4 +47,20 @@ function parseTreeInner(t: Tree, ms: MentalState[], usedFunctions: Map<number, n
     }
     // if condition is a child -> return the corresponding state's index
     return {value: ms.findIndex((mental) => condition.id === mental.state), left: -1, right: -1}
+}
+
+export function updateMentalStates(ms: Leaf, condition: number, newConditionIndex: number) {
+    if(ms.left == -1 && ms.right == -1) {
+        return;
+    }
+    if (ms.value == 15 && ms.left == -1 && ms.right == condition) {
+        ms.right = wrapToLeaf(newConditionIndex)
+        return
+    }
+    if (typeof ms.left == 'object') {
+        updateMentalStates(ms.left, condition, newConditionIndex)
+    }
+    if (typeof ms.right == 'object') {
+        updateMentalStates(ms.right, condition, newConditionIndex)
+    }
 }

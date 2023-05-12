@@ -1,8 +1,10 @@
 import Phaser from "phaser";
 import { bodyStateNumberToName } from "../constants/constants";
 import { spriteDataPhaser } from "../constants/sprites";
-import { Frame, Rectangle } from "../types/Frame";
+import { FrameLike, RealTimeFrameScene, Rectangle } from "../types/Frame";
 import { SimulatorProps } from "../types/Simulator";
+import { GameModes } from "../types/Simulator";
+import { IShoshinWASMContext } from "../context/wasm-shoshin";
 
 const ARENA_WIDTH = 1000;
 const DEFAULT_ZOOM = 1.5
@@ -16,27 +18,34 @@ const CAMERA_REACTION_TIME = 400
 
 const HITBOX_STROKE_WIDTH = 1.5
 
-export default class Platformer extends Phaser.Scene {
-    private player_one : Phaser.GameObjects.Image;
-    private player_two : Phaser.GameObjects.Image;
+export default class Simulator extends Phaser.Scene {
 
-    private player_one_character : string;
-    private player_two_character : string;
+    player_one : Phaser.GameObjects.Image;
+    player_two : Phaser.GameObjects.Image;
 
-    private player_one_body_hitbox : Phaser.GameObjects.Rectangle;
-    private player_two_body_hitbox : Phaser.GameObjects.Rectangle;
+    player_one_character : string;
+    player_two_character : string;
 
-    private player_one_action_hitbox : Phaser.GameObjects.Rectangle;
-    private player_two_action_hitbox : Phaser.GameObjects.Rectangle;
+    player_one_body_hitbox : Phaser.GameObjects.Rectangle;
+    player_two_body_hitbox : Phaser.GameObjects.Rectangle;
 
-    private player_one_body_hitbox_text : Phaser.GameObjects.Text
-    private player_two_body_hitbox_text : Phaser.GameObjects.Text
+    player_one_action_hitbox : Phaser.GameObjects.Rectangle;
+    player_two_action_hitbox : Phaser.GameObjects.Rectangle;
 
-    private player_one_action_hitbox_text : Phaser.GameObjects.Text
-    private player_two_action_hitbox_text : Phaser.GameObjects.Text
+    player_one_body_hitbox_text : Phaser.GameObjects.Text
+    player_two_body_hitbox_text : Phaser.GameObjects.Text
+
+    player_one_action_hitbox_text : Phaser.GameObjects.Text
+    player_two_action_hitbox_text : Phaser.GameObjects.Text
 
     readonly STROKE_STYLE_BODY_HITBOX = 0x7CFC00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xFF2400;//0xFB4D46;
+
+    
+    //context only relevent for realtime atm, but I strongly think simulator will have wasm calls soon
+    changeScene(scene : GameModes, context : IShoshinWASMContext, setPlayerStatuses : any){
+        this.scene.start(scene, {context, setPlayerStatuses})
+    }
 
     preload(){
 
@@ -81,8 +90,8 @@ export default class Platformer extends Phaser.Scene {
         // https://newdocs.phaser.io/docs/3.55.2/Phaser.Cameras.Scene2D.BaseCamera#setBounds
         this.cameras.main.setBounds(DEFAULT_CAMERA_LEFT, DEFAULT_CAMERA_TOP , ARENA_WIDTH, DEFAULT_CAMERA_HEIGHT)
     }
-    create(){
 
+    intitialize(){
         const yDisplacementFromCenterToGround = -150;
         let bg = this.add.image(0,20,'arena_bg');
         bg.setScale(0.3, 0.2).setPosition(0, bg.y + yDisplacementFromCenterToGround);
@@ -107,40 +116,43 @@ export default class Platformer extends Phaser.Scene {
         this.cameras.main.centerOn(0, yDisplacementFromCenterToGround)
         this.cameras.main.setBackgroundColor('#FFFFFF')
         this.initializeCameraSettings()
-
+    }
+    create(){
+        this.intitialize()
     }
 
-    private addRectangleHelper(strokeStyle: number, stokeWidth: number) {
+    addRectangleHelper(strokeStyle: number, stokeWidth: number) {
         const rect = this.add.rectangle(0, 0, 0, 0)
         rect.setStrokeStyle(stokeWidth, strokeStyle);
         rect.setFillStyle(0, .3)
         return rect
     }
 
-    private addTextHelper() {
+    addTextHelper() {
         const text = this.add.text(0,0,"")
         text.setFontSize(12).setAlign("center")
         return text
     }
 
-    private setPlayerOneCharacter(characterType : number){
+    setPlayerOneCharacter(characterType : number){
         const characterName = characterType == 0 ? 'jessica' : 'antoc'
         this.player_one_character = characterName
     }
-    private setPlayerTwoCharacter(characterType : number){
+    
+    setPlayerTwoCharacter(characterType : number){
         const characterName = characterType == 0 ? 'jessica' : 'antoc'
         this.player_two_character = characterName
     }
 
-    private setPlayerOneFrame(frame : Frame){
+    setPlayerOneFrame(frame : FrameLike){
         this.setPlayerFrameHelper(frame, this.player_one, this.player_one_character)
     }
 
-    private setPlayerTwoFrame(frame : Frame){
+    setPlayerTwoFrame(frame : FrameLike){
         this.setPlayerFrameHelper(frame, this.player_two, this.player_two_character)
     }
 
-    private setPlayerFrameHelper(frame: Frame, player: Phaser.GameObjects.Image, characterName: string) {
+    private setPlayerFrameHelper(frame: FrameLike, player: Phaser.GameObjects.Image, characterName: string) {
         // Extract from frame
         const bodyState = frame.body_state.state
         const bodyStateCounter = frame.body_state.counter
@@ -165,19 +177,19 @@ export default class Platformer extends Phaser.Scene {
         player.setTexture(`${characterName}-${bodyStateName}`, `frame_${bodyStateCounter}.png`)
     }
 
-    private setPlayerOneBodyHitbox(frame : Frame) {
+    private setPlayerOneBodyHitbox(frame : FrameLike) {
         this.setHitboxHelper(frame.hitboxes.body, this.player_one_body_hitbox, this.player_one_body_hitbox_text, false)
     }
 
-    private setPlayerTwoBodyHitbox(frame : Frame) {
+    private setPlayerTwoBodyHitbox(frame : FrameLike) {
         this.setHitboxHelper(frame.hitboxes.body, this.player_two_body_hitbox, this.player_two_body_hitbox_text, false)
     }
 
-    private setPlayerOneActionHitbox(frame : Frame) {
+    private setPlayerOneActionHitbox(frame : FrameLike) {
         this.setHitboxHelper(frame.hitboxes.action, this.player_one_action_hitbox, this.player_one_action_hitbox_text, true)
     }
 
-    private setPlayerTwoActionHitbox(frame : Frame) {
+    private setPlayerTwoActionHitbox(frame : FrameLike) {
         this.setHitboxHelper(frame.hitboxes.action, this.player_two_action_hitbox, this.player_two_action_hitbox_text, true)
     }
 
@@ -240,18 +252,24 @@ export default class Platformer extends Phaser.Scene {
         camera.pan( leftCharX + charDistance / 2 + DEFAULT_CAMERA_CENTER_X , DEFAULT_CAMERA_CENTER_Y, CAMERA_REACTION_TIME)
 
     }
-    updateScene({testJson, animationFrame, animationState, showDebug}: SimulatorProps){
-        console.log('updateScene::testJson', testJson)
-                const characterType0 = testJson?.agent_0.type
-                const characterType1 = testJson?.agent_1.type
-                const agentFrame0 = testJson?.agent_0.frames[animationFrame]
-                const agentFrame1 = testJson?.agent_1.frames[animationFrame]
+
+    updateSceneFromFrame({testJson, animationFrame, animationState, showDebug}: SimulatorProps){
+        const characterType0 = testJson?.agent_0.type
+        const characterType1 = testJson?.agent_1.type
+        const agentFrame0 = testJson?.agent_0.frames[animationFrame]
+        const agentFrame1 = testJson?.agent_1.frames[animationFrame]
+
+        this.updateScene(characterType0, characterType1, agentFrame0, agentFrame1, animationFrame == 0, showDebug)
+    }
+
+    updateScene(characterType0 : number ,characterType1: number , agentFrame0 : FrameLike, agentFrame1 : FrameLike, isBeginning : boolean = true, showDebug : boolean = false){
+        
                 this.setPlayerOneCharacter(characterType0)
                 this.setPlayerTwoCharacter(characterType1)
                 this.setPlayerOneFrame(agentFrame0);
                 this.setPlayerTwoFrame(agentFrame1);
 
-                if(animationFrame == 0)
+                if(isBeginning)
                 {
                     this.initializeCameraSettings()
                 }
@@ -271,4 +289,5 @@ export default class Platformer extends Phaser.Scene {
                     this.hideDebug()
                 }
     }
+
 }

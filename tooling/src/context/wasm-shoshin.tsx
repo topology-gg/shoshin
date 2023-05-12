@@ -25,7 +25,7 @@ export const ShoshinWASMContextProvider: React.FC<ShoshinWASMContextProviderProp
   return <ShoshinWASMContext.Provider value={state}>{children}</ShoshinWASMContext.Provider>;
 };
 
-interface IShoshinWASMContext {
+export interface IShoshinWASMContext {
   wasm?: typeof import("wasm-shoshin");
 }
 

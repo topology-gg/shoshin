@@ -94,24 +94,19 @@ const StaminaBar = (props: statusBarProps) => {
     );
 };
 
-interface StatusBarPanelProps {
-    // integrity_0: number;
-    // integrity_1: number;
-    // stamina_0: number;
-    // stamina_1: number;
-    testJson: TestJson;
-    animationFrame: number;
+export interface StatusBarPanelProps {
+    integrity_0: number;
+    integrity_1: number;
+    stamina_0: number;
+    stamina_1: number;
 }
 
 const StatusBarPanel = ({
-    testJson,
-    animationFrame,
+    integrity_0,
+    integrity_1,
+    stamina_0,
+    stamina_1
 }: StatusBarPanelProps) => {
-
-    const integrity_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.integrity : 0
-    const integrity_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.integrity : 0
-    const stamina_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.stamina : 0
-    const stamina_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.stamina : 0
 
     return (
         <div>

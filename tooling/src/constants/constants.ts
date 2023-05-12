@@ -1,5 +1,6 @@
 import Agent, { buildAgent } from "../types/Agent"
 import { ElementType, Condition, Operator, Perceptible } from "../types/Condition"
+import { RealTimeFrameScene } from "../types/Frame"
 import { MentalState } from "../types/MentalState"
 import { Direction, Tree } from "../types/Tree"
 
@@ -23,6 +24,10 @@ export enum EditorMode {
     ReadOnly = 'ReadOnly',
     Edit = 'Edit',
 }
+
+// Physics / numerics related constants
+export const SCALE_FP = 10**4
+export const DT_FP = 10**3
 
 export const bodyStateNumberToName = {
     'jessica':{
@@ -122,10 +127,75 @@ export enum ActionsAntoc {
     DashBackward = 7,
 }
 
+export const characterActionToNumber = {
+    jessica:{
+        Null : 0,
+        Slash : 1,
+        Upswing : 2,
+        Sidecut : 3,
+        Block : 4,
+        MoveForward  : 5,
+        MoveBackward : 6,
+        DashForward  : 7,
+        DashBackward : 8,
+    },
+    antoc: {
+        Null : 0,
+        Hori : 1,
+        Vert : 2,
+        Block : 3,
+        MoveForward : 4,
+        MoveBackward : 5,
+        DashForward : 6,
+        DashBackward : 7,
+    }
+}
+export function getIntentNameByCharacterTypeAndNumber(characterType: string, number: number) {
+    if ( !(characterType in characterActionToNumber) ) throw new Error(`Invalid characterType: ${characterType}; accepting: jessica | antoc`);
+    const object = characterActionToNumber[characterType];
+    return Object.keys(object).find(key => object[key] === number);
+  }
+
 // Simulation related constants
 export const FRAME_COUNT = 120;
 
 export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc]
+
+
+interface CharacterAction {
+    id : number,
+    duration : number,
+    active?: number[],
+}
+
+interface CharacterActions  {
+    [key : string] : CharacterAction
+}
+
+export const ActionDetailJessica : CharacterActions = {
+    Null : { id : 0, duration : 1},
+    Slash : { id : 1, duration : 5, active: [3]},
+    Upswing : {id : 2, duration : 5, active: [3]},
+    Sidecut : { id : 3, duration : 5, active: [3]},
+    Block : { id : 4, duration : 3, active: [2]},
+    MoveForward : { id : 5, duration : 1},
+    MoveBackward : { id : 5, duration : 1},
+    DashForward : { id : 5, duration : 1},
+    DashBackward : { id : 5, duration : 1},
+}
+
+export const ActionDetailAntoc : CharacterActions = {
+    Null : { id : 0, duration : 1},
+    Hori : { id : 1, duration : 7, active: [2,3]},
+    Vert : { id : 2, duration : 10, active: [4,5]},
+    Block : { id : 3, duration : 6, active: [2,3,4,5]},
+    MoveForward : { id : 4, duration : 1},
+    MoveBackward : { id : 5, duration : 1},
+    DashForward : { id : 6, duration : 4},
+    DashBackward : { id : 7, duration : 4},
+ }
+
+export const CHARACTER_ACTIONS_DETAIL : CharacterActions[] = [ActionDetailJessica, ActionDetailAntoc]
 
 export const ACTIONS_ICON_MAP = {
     Null: 'close',
@@ -158,34 +228,34 @@ export const INITIAL_COMBOS: number[][] = [[7, 7, 2, 2, 2, 2, 2]]
 export const INITIAL_DECISION_TREES: Tree[] = [
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
-            { id: 'F1', isChild: false, branch: Direction.Right },
+            { id: '1', isChild: false, branch: Direction.Right },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
-            { id: 'F1', isChild: false, branch: Direction.Right },
+            { id: '1', isChild: false, branch: Direction.Right },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
-            { id: 'F1', isChild: false, branch: Direction.Right },
+            { id: '1', isChild: false, branch: Direction.Right },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS CLOSER', isChild: true, branch: Direction.Right },
         ]
@@ -225,8 +295,8 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 1020, type: ElementType.Constant },
             { value: Operator.CloseParenthesis, type: ElementType.Operator },
         ],
-        displayName : "oponent_is_attacking",
-        key: "1"
+        displayName : "F0",
+        key: "0"
     },
     {
         elements: [
@@ -239,7 +309,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 80, type: ElementType.Constant},
         ],
         displayName : "closer_than_80px",
-        key: "2"
+        key: "1"
     },
     {
         elements: [
@@ -250,7 +320,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 10, type: ElementType.Constant},
         ],
         displayName : "oponent_velocity_lt_10",
-        key: "3"
+        key: "2"
     },
     {
         elements: [
@@ -271,7 +341,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
         ],
         displayName : "oponent_300_integrity_and_close",
-        key: "4"
+        key: "3"
     },
     {
         elements: [
@@ -282,7 +352,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: Operator.CloseParenthesis, type: ElementType.Operator},
         ],
         displayName : "self_lte_200_integrity",
-        key: "5"
+        key: "4"
     },
     {
         elements: [
@@ -320,7 +390,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
         ],
 
         displayName : "oponent_approaching",
-        key: "10"
+        key: "5"
     },
     {
         elements: [
@@ -377,7 +447,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
             { value: 4, type: ElementType.Constant },
         ],
         displayName : "self_lte_4_frames",
-        key: "7"
+        key: "8"
     },
     {
         elements: [
@@ -387,7 +457,7 @@ export const INITIAL_CONDITIONS: Condition[] = [
         ],
 
         displayName : "one_eq_one",
-        key: "8"
+        key: "9"
     },
     {
         elements: []
@@ -395,20 +465,53 @@ export const INITIAL_CONDITIONS: Condition[] = [
 ]
 export const INITIAL_CONDITION_INDEX: number = INITIAL_CONDITIONS.length - 1
 
+
+const conditions = [ {
+    elements: [
+        { value: 1, type: ElementType.Constant },
+        { value: Operator.Equal, type: ElementType.Operator },
+        { value: 1, type: ElementType.Constant },
+    ],
+
+    displayName : "F0",
+    key: "0"
+},
+{
+    elements: [
+        { value: 1, type: ElementType.Constant },
+        { value: Operator.Equal, type: ElementType.Operator },
+        { value: 1, type: ElementType.Constant },
+    ],
+
+    displayName : "F1",
+    key: "1"
+},
+
+]
 const DECISION_TREE_IDLE_AGENT: Tree[] = [
     {
         nodes: [
-            { id: 'F9', isChild: false },
-            { id: 'MS IDLE', isChild: true, branch: Direction.Left },
-            { id: 'MS IDLE', isChild: true, branch: Direction.Right },
+            { id: '0', isChild: false },
+            { id: 'MS Two', isChild: true, branch: Direction.Left },
+
+            { id: 'MS One', isChild: true, branch: Direction.Right },
+        ]
+    },    
+    {
+        nodes: [
+            { id: '1', isChild: false },
+            { id: 'MS One', isChild: true, branch: Direction.Left },
+            { id: 'MS Two', isChild: true, branch: Direction.Right },
         ]
     }
 ]
 const MENTAL_STATES_IDLE_AGENT: MentalState[] = [
-    { state: 'MS IDLE', action: ActionsAntoc['Null'] },
+    { state: 'MS One', action: ActionsAntoc['Null'] },
+    { state: 'MS Two', action: ActionsAntoc['Null'] },
 ]
-export const IDLE_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_CONDITIONS, 0, 1)
-export const BLANK_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_CONDITIONS, 0, 0)
+//export const IDLE_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_CONDITIONS, 0, 1)
+export const IDLE_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, conditions, 0, 1)
+export const BLANK_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_CONDITIONS, 0, 1)
 
 const DECISION_TREE_OFFENSIVE_AGENT = INITIAL_DECISION_TREES
 const MENTAL_STATES_OFFENSIVE_AGENT: MentalState[] = [
@@ -423,23 +526,23 @@ export const OFFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_OFFENSIVE_AGENT, 
 const DECISION_TREE_DEFENSIVE_AGENT = [
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
             { id: 'MS RETRAIT', isChild: true, branch: Direction.Right },
         ]
     },
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS BLOCK', isChild: true, branch: Direction.Left },
-            { id: 'F8', isChild: false },
+            { id: '8', isChild: false },
             { id: 'MS RETRAIT', isChild: true, branch: Direction.Right },
             { id: 'MS IDLE', isChild: true, branch: Direction.Right },
         ]
@@ -456,7 +559,7 @@ export const DEFENSIVE_AGENT: Agent = buildAgent(MENTAL_STATES_DEFENSIVE_AGENT, 
 export const DECISION_TREE_COMBO_AGENT = [
     {
         nodes: [
-            { id: 'F0', isChild: false },
+            { id: '0', isChild: false },
             { id: 'MS COMBO', isChild: true, branch: Direction.Left },
             { id: 'MS COMBO', isChild: true, branch: Direction.Right },
         ]
@@ -465,3 +568,102 @@ export const DECISION_TREE_COMBO_AGENT = [
 export const MENTAL_STATES_COMBO_AGENT: MentalState[] = [
     { state: 'MS COMBO', action: 101 },
 ]
+
+export const InitialRealTimeFrameScene : RealTimeFrameScene  = {
+    agent_0 : {
+        "body_state": {
+            "counter": 0,
+            "dir": 1,
+            "integrity": 1000,
+            "stamina": 1000,
+            "state": 0,
+            "fatigued": 0
+        },
+        "hitboxes": {
+            "action": {
+                "origin": {
+                    "x": 2000,
+                    "y": 2000
+                },
+                "dimension": {
+                    "x": 0,
+                    "y": 0
+                }
+            },
+            "body": {
+                "origin": {
+                    "x": -100,
+                    "y": 0
+                },
+                "dimension": {
+                    "x": 50,
+                    "y": 116
+                }
+            }
+        },
+        "physics_state": {
+            "pos": {
+                "x": -100,
+                "y": 0
+            },
+            "vel_fp": {
+                "x": 0,
+                "y": 0
+            },
+            "acc_fp": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        "stimulus": 0
+    },
+    agent_1 : {
+        "body_state": {
+            "counter": 0,
+            "dir": 0,
+            "integrity": 1000,
+            "stamina": 1000,
+            "state": 0,
+            "fatigued": 0
+        },
+        "hitboxes": {
+            "action": {
+                "origin": {
+                    "x": 2000,
+                    "y": 2000
+                },
+                "dimension": {
+                    "x": 0,
+                    "y": 0
+                }
+            },
+            "body": {
+                "origin": {
+                    "x": 100,
+                    "y": 0
+                },
+                "dimension": {
+                    "x": 50,
+                    "y": 116
+                }
+            },
+
+        },
+        "physics_state": {
+            "pos": {
+                "x": 100,
+                "y": 0
+            },
+            "vel_fp": {
+                "x": 0,
+                "y": 0
+            },
+            "acc_fp": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        "stimulus": 0,
+        "mental_state" : 0,
+    }
+}

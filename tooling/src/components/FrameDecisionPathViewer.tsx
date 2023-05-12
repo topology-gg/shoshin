@@ -136,9 +136,10 @@ const FrameDecisionPathViewer = ({
             return <></>
         }
 
+        
         const mentalTree = mentalTrees[playerIndex]
         const player = players[playerIndex]
-
+        console.log(mentalTree)
         const mentalStatesNames: string[] = getMentalStatesNamesForTree(mentalTree)
         const conditionsIndex: number[] = getConditionsIndexForTree(mentalTree, player.conditionNames)
         const conditionsEvaluations: number[] = conditionsIndex.map((conditionIndex) => {return getConditionEvaluationForAgent(player, conditionIndex, frameLeft, frameRight)})
