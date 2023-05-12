@@ -55,6 +55,9 @@ namespace ns_stimulus {
     const CLASH = 3;
 }
 
+namespace ns_hitbox {
+    const NUDGE = 5;
+}
 
 struct Vec2 {
     x: felt,
