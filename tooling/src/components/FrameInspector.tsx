@@ -1,5 +1,8 @@
 import { Person } from "@mui/icons-material";
+import EastIcon from '@mui/icons-material/East';
+import WestIcon from '@mui/icons-material/West';
 import {
+    Button,
     Grid,
     IconButton,
     Table,
@@ -7,10 +10,11 @@ import {
     TableCell,
     TableHead,
     TableRow,
+    Tooltip,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
-import { bodyStateNumberToName } from "../constants/constants";
+import { CHARACTERS_ACTIONS, DT_FP, SCALE_FP, bodyStateNumberToName, getIntentNameByCharacterTypeAndNumber } from "../constants/constants";
 import { TestJson } from "../types/Frame";
 import Agent from "../types/Agent";
 import { KeywordMentalState, KeywordBodyState } from "./ui/Keyword";
@@ -44,6 +48,10 @@ const FrameInspector = ({
     const agentMentalStateNames = [
         p1.mentalStatesNames,
         p2.mentalStatesNames
+    ]
+    const combos = [
+        p1.combos,
+        p2.combos
     ]
 
     return (
@@ -100,6 +108,40 @@ const FrameInspector = ({
 
                             <TableRow>
                                 <TableCell colSpan={2}>
+                                    <span style={{fontSize:'20px', marginLeft: '1px', marginRight:'1px'}}>&#127841;</span>
+                                    Combo
+                                </TableCell>
+                                <TableCell align="right">
+                                    {
+                                        frame.combo.combo_index == 0 ?
+                                            'n/a' :
+                                                <Tooltip placement={"left-start"}title={
+                                                    combos[player_index][frame.combo.combo_index -1]?.map((num, num_i) => {
+                                                        if (num_i == frame.combo.action_index - 1) {
+                                                            return  <div style={{border:'1px solid #333333', padding:'4px', borderRadius:'4px', margin:'1px', backgroundColor:'#FD3A4ACC'}}>{num_i}.{CHARACTERS_ACTIONS[player_index == 0 ? characterLeftType : characterRightType][num]}</div>
+                                                        }
+                                                        else {
+                                                            return  <div style={{border:'1px solid #333333', padding:'4px', borderRadius:'4px', margin:'1px'}}>{num_i}.{CHARACTERS_ACTIONS[player_index == 0 ? characterLeftType : characterRightType][num]}</div>
+                                                        }
+                                                    }
+                                                )
+                                            }><Button variant="text" size={"small"} style={{backgroundColor:'#FD3A4ACC'}}>Combo {frame.combo.combo_index}</Button></Tooltip>
+                                    }
+                                </TableCell>
+                            </TableRow>
+
+                            <TableRow>
+                                <TableCell colSpan={2}>
+                                    <span style={{fontSize:'20px', marginRight:'8px'}}>&#129354;</span>
+                                    Intent
+                                </TableCell>
+                                <TableCell align="right">
+                                    {getIntentNameByCharacterTypeAndNumber(characterNames[player_index], frame.action)}
+                                </TableCell>
+                            </TableRow>
+
+                            <TableRow>
+                                <TableCell colSpan={2}>
                                     <span style={{fontSize:'20px'}}>&#129336;</span> Body State
                                 </TableCell>
                                 <TableCell align="right">
@@ -114,7 +156,8 @@ const FrameInspector = ({
                                     Body Counter
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frame.body_state.counter}
+                                    {/* showing counter + 1 so that the body counter starts from 1 corresponding to 1st frame of the body state */}
+                                    {frame.body_state.counter + 1}
                                 </TableCell>
                             </TableRow>
 
@@ -141,11 +184,11 @@ const FrameInspector = ({
                                     Direction
                                 </TableCell>
                                 <TableCell align="right">
-                                    {frame.body_state.dir}
+                                    {frame.body_state.dir == 1 ? <EastIcon /> : <WestIcon />}
                                 </TableCell>
                             </TableRow>
 
-                            <TableRow>
+                            {/* <TableRow>
                                 <TableCell colSpan={2}>
                                     Which Combo
                                 </TableCell>
@@ -161,37 +204,39 @@ const FrameInspector = ({
                                 <TableCell align="right">
                                     {frame.combo.action_index - 1}
                                 </TableCell>
-                            </TableRow>
+                            </TableRow> */}
 
                             <TableRow>
                                 <TableCell colSpan={2}>
-                                    Body Origin
+                                    X position
                                 </TableCell>
                                 <TableCell align="right">
-                                    ({frame.hitboxes.body.origin.x},{" "}
-                                    {frame.hitboxes.body.origin.y})
-                                </TableCell>
-                            </TableRow>
-
-                            <TableRow>
-                                <TableCell colSpan={2}>
-                                    Velocity
-                                </TableCell>
-                                <TableCell align="right">
-                                    ({frame.physics_state.vel_fp.x},{" "}
-                                    {frame.physics_state.vel_fp.y})
+                                    {/* ({frame.hitboxes.body.origin.x},{" "}
+                                    {frame.hitboxes.body.origin.y}) */}
+                                    {frame.hitboxes.body.origin.x}
                                 </TableCell>
                             </TableRow>
 
                             <TableRow>
                                 <TableCell colSpan={2}>
-                                    Acceleration
+                                    Δ(X position)
                                 </TableCell>
                                 <TableCell align="right">
-                                    ({frame.physics_state.acc_fp.x},{" "}
-                                    {frame.physics_state.acc_fp.y})
+                                    {/* ({frame.physics_state.vel_fp.x / SCALE_FP * (DT_FP / SCALE_FP)},{" "}
+                                    {frame.physics_state.vel_fp.y / SCALE_FP * (DT_FP / SCALE_FP)})*/}
+                                    {frame.physics_state.vel_fp.x / SCALE_FP * (DT_FP / SCALE_FP)}
                                 </TableCell>
                             </TableRow>
+
+                            {/* <TableRow>
+                                <TableCell colSpan={2}>
+                                    Acceleration * DT
+                                </TableCell>
+                                <TableCell align="right">
+                                    ({frame.physics_state.acc_fp.x / SCALE_FP},{" "}
+                                    {frame.physics_state.acc_fp.y / SCALE_FP})
+                                </TableCell>
+                            </TableRow> */}
 
                         </TableBody>
                     </Table>

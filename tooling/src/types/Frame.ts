@@ -53,13 +53,10 @@ export interface RealTimePlayer {
     hitboxes: Hitboxes,
 }
 
-
 export interface RealTimeFrameScene {
     agent_0: RealTimePlayer,
     agent_1: RealTimeAgent,
 }
-
-
 
 export interface Frame {
     mental_state: number,
@@ -101,7 +98,7 @@ function getFlattenedRectangle(rectangle : Rectangle) : number[]{
         let flattenedVector = getFlattenedVector(vector)
 
         flattenedRectangle.push(...flattenedVector)
-        
+
     }
 
     return flattenedRectangle
@@ -167,9 +164,9 @@ function getFlattenedBodyState(bodyState: BodyState): number[] {
 
 //Ordering of elements in array are important, they much match what is in the rust and cairo code
 export function realTimeInputToArray(
-    scene : RealTimeFrameScene, 
-    player_action : number, 
-    character_type_0 : number, 
+    scene : RealTimeFrameScene,
+    player_action : number,
+    character_type_0 : number,
     character_type_1 : number) : number[]{
 
 
@@ -178,13 +175,13 @@ export function realTimeInputToArray(
 
     let flatPhysics_0 = getFlattenedPhysicState(scene.agent_0.physics_state)
     let flatPhysics_1 = getFlattenedPhysicState(scene.agent_1.physics_state)
-    
+
     return [
         ...flatBody_0,
         ...flatPhysics_0,
         scene.agent_0.stimulus,
-        player_action, 
-        character_type_0, 
+        player_action,
+        character_type_0,
         ...flatBody_1,
         ...flatPhysics_1,
         scene.agent_1.stimulus,
@@ -304,4 +301,4 @@ export function getSizeOfRealTimeInputScene(){
             mental_state : 1
         }
     }
-} 
+}

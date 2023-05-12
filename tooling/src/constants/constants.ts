@@ -25,6 +25,10 @@ export enum EditorMode {
     Edit = 'Edit',
 }
 
+// Physics / numerics related constants
+export const SCALE_FP = 10**4
+export const DT_FP = 10**3
+
 export const bodyStateNumberToName = {
     'jessica':{
         0: 'idle',
@@ -145,8 +149,12 @@ export const characterActionToNumber = {
         DashForward : 6,
         DashBackward : 7,
     }
-
 }
+export function getIntentNameByCharacterTypeAndNumber(characterType: string, number: number) {
+    if ( !(characterType in characterActionToNumber) ) throw new Error(`Invalid characterType: ${characterType}; accepting: jessica | antoc`);
+    const object = characterActionToNumber[characterType];
+    return Object.keys(object).find(key => object[key] === number);
+  }
 
 // Simulation related constants
 export const FRAME_COUNT = 120;
