@@ -51,7 +51,7 @@ const JessicaInfo = `
 | HURT | 2 | Involuntarily cringes from being hit | body hit by opponent's attack hitbox | knockable |
 | KNOCKED | 11 | Bounces back from being critically hit | body hit by opponent's attack hitbox at low health, *or attack when opponent is Antoc in blocking* | *invincible* |
 | MOVE FORWARD / BACKWARD | n/a | Walks forward or backward | {intent is DASH FORWARD or DASH BACKWARD} when body responds to locomotive intent | hurtible; knockable; interruptible by locomotive / defensive / offensive intents
-| DASH FORWARD / BACKWARD | 4 | Dashes forward or backward | {intent is DASH FORWARD or DASH BACKWARD} when body responds to locomotive intent | *invincible*; *interruptible by offensive intents* |
+| DASH FORWARD / BACKWARD | 4 | Dashes forward or backward | {intent is DASH FORWARD or DASH BACKWARD} when body responds to locomotive intent | *invincible*; transition directly to the *active* frame of UPSWING / SIDECUT / SLASH when interrupted by respective intents |
 
 ### Stamina change
 | Body state | Change | Note |
@@ -113,8 +113,20 @@ const AntocInfo = `
 (to be added)
 `
 
+const EngagementRules = `
+| Name | P1 | P2 | Consequence in Body |
+| - | - | - | - |
+| Light attacks Heavy block | Jessica attack | Antoc block | Attacker (P1) goes to CLASH |
+| Heavy attacks Heavy block | Antoc attack | Antoc block | Attacker (P1) goes to KNOCKED |
+| Heavy attacks Light block | Antoc attack | Jessica block | both sides go to CLASH |
+| Attack clashing with same weight | attack | attack (same character as P1) | both sides go to CLASH |
+| Attack clashing with different weight | Jessica attack | Antoc attack | P1 goes to KNOCKED; P2 goes to CLASH |
+| Knocked when under low HP | n/a | n/a | when hit, if HP <= 400 go to KNOCKED, otherwise go to HURT |
+`
+
 const JessicaInfoTag = <ReactMarkdown children={JessicaInfo} remarkPlugins={[remarkGfm]} />
 const AntocInfoTag = <ReactMarkdown children={AntocInfo} remarkPlugins={[remarkGfm]} />
+const EngagementRulesTag = <ReactMarkdown children={EngagementRules} remarkPlugins={[remarkGfm]} />
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -163,6 +175,7 @@ const ContractInformationView = () => {
             >
                 <Tab label="Jessica" {...a11yProps(0)} />
                 <Tab label="Antoc" {...a11yProps(1)} />
+                <Tab label="Engagement Rules" {...a11yProps(2)} />
             </Tabs>
             </Box>
 
@@ -177,13 +190,17 @@ const ContractInformationView = () => {
             </TabPanel>
 
             <TabPanel value={activeTabIndex} index={1}>
-            <SpriteAnimator
+                <SpriteAnimator
                     sprite="/images/antoc/idle/left_spritesheet.png"
                     width={180}
                     height={142}
                     fps={6}
                 />
                 {AntocInfoTag}
+            </TabPanel>
+
+            <TabPanel value={activeTabIndex} index={2}>
+                {EngagementRulesTag}
             </TabPanel>
         </div>
     );
