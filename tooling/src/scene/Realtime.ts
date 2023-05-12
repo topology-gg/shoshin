@@ -234,7 +234,7 @@ export default class RealTime extends Platformer {
             this.player_action,
             this.character_type_0,
             this.opponent.character,
-            OFFENSIVE_AGENT
+            this.opponent
         );
         let newState: RealTimeFrameScene = out as RealTimeFrameScene;
 
