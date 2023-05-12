@@ -224,8 +224,8 @@ const cairoOutputToRealTimeFrameScene = (output: any[]): RealTimeFrameScene => {
                 ? f.agent_1.stimulus[0] * f.agent_1.stimulus[1][0]
                 : 0,
             combo_info : {
-              combo_counter : f.agent_1.combo_info.combo_counter[0] ?  f.agent_1.combo_info.combo_counter[0] : 0,
-              current_combo : f.agent_1.combo_info.current_combo[0] ?  f.agent_1.combo_info.current_combo[0] : 0,
+              combo_counter : f.agent_1.combo_info.combo_counter[0] ?  f.agent_1.combo_info.combo_counter[1][0] : 0,
+              current_combo : f.agent_1.combo_info.current_combo[0] ?  f.agent_1.combo_info.current_combo[1][0] : 0,
             }
         },
     };
