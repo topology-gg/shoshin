@@ -125,7 +125,7 @@ const FrameInspector = ({
                                                         }
                                                     }
                                                 )
-                                            }><Button variant="text" size={"small"}>Combo {frame.combo.combo_index}</Button></Tooltip>
+                                            }><Button variant="text" size={"small"} style={{backgroundColor:'#FD3A4ACC'}}>Combo {frame.combo.combo_index}</Button></Tooltip>
                                     }
                                 </TableCell>
                             </TableRow>
