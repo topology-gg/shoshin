@@ -49,7 +49,11 @@ const MentalStatesGraph = ({
                 shape: "box",
                 shapeProperties: { borderRadius: 5 },
             },
-            edges: { arrows: { to: true }, arrowStrikethrough: true },
+            edges: {
+                arrows: { to: true },
+                arrowStrikethrough: true,
+                smooth: false,
+            },
         };
         graphRef.current = new vis.Network(container, data, options);
     }, []);
