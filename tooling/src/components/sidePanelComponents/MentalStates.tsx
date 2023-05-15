@@ -5,10 +5,8 @@ import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Menu from '@mui/material/Menu';
-import MenuList from '@mui/material/MenuList';
 import { MentalState } from '../../types/MentalState';
 import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
-import { KeywordMentalState } from '../ui/Keyword';
 
 
 let currentMenu = 0
@@ -52,7 +50,7 @@ const MentalStates = ({
         setAnchorElInitialState(event.currentTarget)
     }
     const handleChosenInitialState = (mentalStateIndex) => {
-        if (mentalStateIndex){
+        if (typeof mentalStateIndex == 'number' ){
             handleSetInitialMentalState(mentalStateIndex)
         }
         setAnchorElInitialState(null)
