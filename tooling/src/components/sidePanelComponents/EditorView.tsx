@@ -102,6 +102,7 @@ const EditorView = ({
                     <MentalStates
                         isReadOnly={isReadOnly}
                         mentalStates={mentalStates}
+                        trees={trees}
                         initialMentalState={initialMentalState}
                         handleSetInitialMentalState={handleSetInitialMentalState}
                         combos={combos}
@@ -247,7 +248,6 @@ const EditorView = ({
                             </Button>
                         </div>
                     </Tooltip>
-
                 </div>
                 <div style={{height:'1rem'}}>
                     {txHash &&

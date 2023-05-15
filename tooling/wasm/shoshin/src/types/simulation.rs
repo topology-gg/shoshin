@@ -48,7 +48,15 @@ pub struct RealTimeAgent {
     pub physics_state: PhysicsState,
     pub stimulus: BigInt,
     pub hitboxes: Hitboxes,
-    pub mental_state : BigInt
+    pub mental_state : BigInt,
+    pub combo_info : ComboInfo
+}
+
+#[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
+pub struct  ComboInfo {
+    current_combo : BigInt,
+    combo_counter : BigInt
+    
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
@@ -119,7 +127,7 @@ impl Sizeable for FrameScene {
 }
 impl Sizeable for RealTimeFrameScene {
     fn size() -> usize {
-        43
+        45
     }
 }
 
