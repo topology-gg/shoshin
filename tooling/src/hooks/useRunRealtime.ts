@@ -88,8 +88,6 @@ export const runRealTimeFromContext = (
     try {
         let {current_combo, combo_counter} = realTimeFrameScene.agent_1.combo_info
         let currentMentalState = isFirstTick ? opponent.initialState : realTimeFrameScene.agent_1.mental_state
-        console.log('current combo in ', current_combo)
-        console.log('combo counter in ', combo_counter)
         let shoshinInput = new Int32Array([
             ...realTimeInputToArray(
                 realTimeFrameScene,
