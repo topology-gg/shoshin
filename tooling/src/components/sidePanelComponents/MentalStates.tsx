@@ -1,68 +1,101 @@
-import React, { useState } from 'react';
-import { Box, Button, Grid, ListItemText, MenuItem, Typography } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
-import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Menu from '@mui/material/Menu';
-import MenuList from '@mui/material/MenuList';
-import { MentalState } from '../../types/MentalState';
-import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
-import { KeywordMentalState } from '../ui/Keyword';
+import React, { useState } from "react";
+import {
+    Box,
+    Button,
+    Grid,
+    ListItemText,
+    MenuItem,
+    Typography,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Menu from "@mui/material/Menu";
+import { MentalState } from "../../types/MentalState";
+import { Character, CHARACTERS_ACTIONS } from "../../constants/constants";
+import { getMentalStatesNames } from "../../types/Tree";
+import MentalStatesGraph from "./MentalStatesGraph";
 
-
-let currentMenu = 0
+let currentMenu = 0;
 
 const actionToStr = (action: number, characterIndex) => {
     if (action < 100) {
-        return CHARACTERS_ACTIONS[characterIndex][action]?.replace('_', ' ')
+        return CHARACTERS_ACTIONS[characterIndex][action]?.replace("_", " ");
     }
-    return `Combo ${action - 101}`
-}
+    return `Combo ${action - 101}`;
+};
 
 const MentalStates = ({
-    isReadOnly, mentalStates, initialMentalState, handleSetInitialMentalState,
-    combos, character, handleAddMentalState, handleClickRemoveMentalState,
-    handleSetMentalStateAction, handleClickTreeEditor
+    isReadOnly,
+    mentalStates,
+    trees,
+    initialMentalState,
+    handleSetInitialMentalState,
+    combos,
+    character,
+    handleAddMentalState,
+    handleClickRemoveMentalState,
+    handleSetMentalStateAction,
+    handleClickTreeEditor,
 }) => {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-    const [anchorElInitialState, setAnchorElInitialState] = useState<null | HTMLElement>(null)
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [anchorElInitialState, setAnchorElInitialState] =
+        useState<null | HTMLElement>(null);
     const [mentalState, setMentalState] = useState<string>(null);
 
-    const open = Boolean(anchorEl)
-    const openInitialState = Boolean(anchorElInitialState)
+    const open = Boolean(anchorEl);
+    const openInitialState = Boolean(anchorElInitialState);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        let id = event.currentTarget.id.split('-')
-        let menuIndex = parseInt(id[id.length - 1])
-        currentMenu = menuIndex
-        setAnchorEl(event.currentTarget)
-    }
+        let id = event.currentTarget.id.split("-");
+        let menuIndex = parseInt(id[id.length - 1]);
+        currentMenu = menuIndex;
+        setAnchorEl(event.currentTarget);
+    };
     const handleChosenActionForMentalState = (action) => {
         if (action) {
-            if (!action.includes('Combo')) {
-                handleSetMentalStateAction(currentMenu, CHARACTERS_ACTIONS[characterIndex][action])
+            if (!action.includes("Combo")) {
+                handleSetMentalStateAction(
+                    currentMenu,
+                    CHARACTERS_ACTIONS[characterIndex][action]
+                );
             } else {
-                let comboNumber = parseInt(action.split(' ')[1])
-                handleSetMentalStateAction(currentMenu, 101 + comboNumber)
+                let comboNumber = parseInt(action.split(" ")[1]);
+                handleSetMentalStateAction(currentMenu, 101 + comboNumber);
             }
         }
-        setAnchorEl(null)
-    }
-    const handleClickInitialState = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorElInitialState(event.currentTarget)
-    }
+        setAnchorEl(null);
+    };
+    const handleClickInitialState = (
+        event: React.MouseEvent<HTMLButtonElement>
+    ) => {
+        setAnchorElInitialState(event.currentTarget);
+    };
     const handleChosenInitialState = (mentalStateIndex) => {
-        if (mentalStateIndex){
-            handleSetInitialMentalState(mentalStateIndex)
+        if (mentalStateIndex) {
+            handleSetInitialMentalState(mentalStateIndex);
         }
-        setAnchorElInitialState(null)
-    }
+        setAnchorElInitialState(null);
+    };
 
-    let characterIndex = Object.keys(Character).indexOf(character)
-    let actions = Object.keys(CHARACTERS_ACTIONS[characterIndex]).filter((a) => isNaN(parseInt(a)))
+    let characterIndex = Object.keys(Character).indexOf(character);
+    let actions = Object.keys(CHARACTERS_ACTIONS[characterIndex]).filter((a) =>
+        isNaN(parseInt(a))
+    );
     combos.forEach((_, i) => {
-        actions.push(`Combo ${i}`)
-    })
+        actions.push(`Combo ${i}`);
+    });
+
+    // handle mental graph visualization
+    const mentalStateNamesOrdered = mentalStates.map((ms, _) => {
+        return ms.state;
+    });
+    const nextMentalStateNamesOrdered: string[][] = mentalStates.map(
+        (_, ms_i: number) => getMentalStatesNames(trees[ms_i])
+    );
+
+    // debug log
+    mentalStateNamesOrdered?.forEach((name, name_i) => console.log(name, '=>', nextMentalStateNamesOrdered[name_i]))
 
     let componentAddNewMentalState = (
         <>
@@ -70,16 +103,18 @@ const MentalStates = ({
                 xs={1}
                 item
                 sx={{
-                    display:"flex",
-                    alignItems:"flex-end",
-                    justifyContent:"flex-start"
+                    display: "flex",
+                    alignItems: "flex-end",
+                    justifyContent: "flex-start",
                 }}
             >
                 <IconButton
-                    onClick={(_)=>{mentalState ? handleAddMentalState(mentalState) : 0}}
+                    onClick={(_) => {
+                        mentalState ? handleAddMentalState(mentalState) : 0;
+                    }}
                     disabled={isReadOnly}
                 >
-                    <AddIcon/>
+                    <AddIcon />
                 </IconButton>
             </Grid>
             <Grid xs={10} item>
@@ -94,7 +129,7 @@ const MentalStates = ({
                 />
             </Grid>
         </>
-    )
+    );
 
     return (
         <Box
@@ -107,8 +142,8 @@ const MentalStates = ({
                 pl: "2rem",
             }}
         >
-            <Typography sx={{ fontSize: '17px' }} variant='overline'>
-                <span style={{marginRight:'8px'}}>&#129504;</span>Mind
+            <Typography sx={{ fontSize: "17px" }} variant="overline">
+                <span style={{ marginRight: "8px" }}>&#129504;</span>Mind
             </Typography>
 
             <div
@@ -117,126 +152,153 @@ const MentalStates = ({
                     flexDirection: "row",
                 }}
             >
-                {
-                    isReadOnly ? <></> : componentAddNewMentalState
-                }
+                {isReadOnly ? <></> : componentAddNewMentalState}
             </div>
 
-            <Grid
-                sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "left",
-                    alignItems: "left",
-                    mt: "1rem",
-                    pl: '2rem',
-                    pr: '2rem',
-                }}
-                xs={10}
-                item
-            >
-                <Button
-                    id={`initial-actions-menu-button`}
-                    aria-controls={openInitialState ? 'basic-menu' : undefined}
-                    aria-haspopup='true'
-                    aria-expanded={openInitialState ? 'true' : undefined}
-                    onClick={handleClickInitialState}
-                    disabled={isReadOnly}
-                >
-                    <Typography variant='overline'>Starting state: {mentalStates.length > 0 ? mentalStates[initialMentalState].state: 'Create at least one mental state'}</Typography>
-                </Button>
-                <Menu
-                    id={'initial-actions-menu'}
-                    anchorEl={anchorElInitialState}
-                    open={openInitialState}
-                    onClose={(e) => handleChosenInitialState(null)}
-                >
-                    {
-                        mentalStates.map((mentalState, mentalStateIndex) => {
-                            return (
-                                <MenuItem>
-                                    <ListItemText onClick={(e) => handleChosenInitialState(mentalStateIndex)}>{mentalState.state}</ListItemText>
-                                </MenuItem>
-                            )
-                        })
-                    }
-                </Menu>
-            </Grid>
+            <Grid container>
+                <Grid item xs={6}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "left",
+                            alignItems: "left",
+                            mt: "1rem",
+                            pl: "2rem",
+                            pr: "2rem",
+                        }}
+                    >
+                        <Button
+                            id={`initial-actions-menu-button`}
+                            aria-controls={
+                                openInitialState ? "basic-menu" : undefined
+                            }
+                            aria-haspopup="true"
+                            aria-expanded={
+                                openInitialState ? "true" : undefined
+                            }
+                            onClick={handleClickInitialState}
+                            disabled={isReadOnly}
+                        >
+                            <Typography variant="overline">
+                                Starting state:{" "}
+                                {mentalStates.length > 0
+                                    ? mentalStates[initialMentalState].state
+                                    : "Create at least one mental state"}
+                            </Typography>
+                        </Button>
+                        <Menu
+                            id={"initial-actions-menu"}
+                            anchorEl={anchorElInitialState}
+                            open={openInitialState}
+                            onClose={(e) => handleChosenInitialState(null)}
+                        >
+                            {mentalStates.map(
+                                (mentalState, mentalStateIndex) => {
+                                    return (
+                                        <MenuItem>
+                                            <ListItemText
+                                                onClick={(e) =>
+                                                    handleChosenInitialState(
+                                                        mentalStateIndex
+                                                    )
+                                                }
+                                            >
+                                                {mentalState.state}
+                                            </ListItemText>
+                                        </MenuItem>
+                                    );
+                                }
+                            )}
+                        </Menu>
+                    </Box>
 
-            <Grid
-                item
-                xs={12}
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "left",
-                    alignItems: "left",
-                    mt: "1rem",
-                }}
-            >
-                {
-                    mentalStates.map((state: MentalState, i: number) => {
+                    {mentalStates.map((state: MentalState, i: number) => {
                         return (
                             <Box
                                 key={`button-wrapper-${i}`}
                                 sx={{
-                                    display:"flex",
-                                    alignItems:"center",
-                                    ml: "2rem"
+                                    display: "flex",
+                                    alignItems: "center",
+                                    ml: "2rem",
                                 }}
                             >
                                 <button
-                                    className={'mentalStateButton'}
+                                    className={"mentalStateButton"}
                                     key={`${i}`}
-                                    onClick={() => handleClickTreeEditor(i+1)}
+                                    onClick={() => handleClickTreeEditor(i + 1)}
                                 >
                                     {state.state}
                                 </button>
 
                                 <IconButton
-                                    onClick={(_)=>handleClickRemoveMentalState(i)}
+                                    onClick={(_) =>
+                                        handleClickRemoveMentalState(i)
+                                    }
                                     disabled={isReadOnly}
                                 >
-                                    <DeleteIcon sx={{fontSize:"small"}}/>
+                                    <DeleteIcon sx={{ fontSize: "small" }} />
                                 </IconButton>
 
                                 <Button
                                     id={`actions-button-${i}`}
-                                    aria-controls={open ? 'basic-menu' : undefined}
-                                    aria-haspopup='true'
-                                    aria-expanded={open ? 'true' : undefined}
+                                    aria-controls={
+                                        open ? "basic-menu" : undefined
+                                    }
+                                    aria-haspopup="true"
+                                    aria-expanded={open ? "true" : undefined}
                                     onClick={handleClick}
                                     disabled={isReadOnly}
                                 >
-                                    <span style={{marginRight:'7px'}}>&#129354;</span> {actionToStr(state.action, characterIndex)}
+                                    <span style={{ marginRight: "7px" }}>
+                                        &#129354;
+                                    </span>{" "}
+                                    {actionToStr(state.action, characterIndex)}
                                 </Button>
 
                                 <Menu
                                     id={`actions-menu-${i}`}
                                     anchorEl={anchorEl}
                                     open={open}
-                                    onClose={(e) => handleChosenActionForMentalState(null)}
-                                >
-                                    {
-                                        actions.map((action) => {
-                                            return (
-                                                <MenuItem>
-                                                    <ListItemText onClick={(e) => handleChosenActionForMentalState(action)}>
-                                                        {action.replaceAll('_', ' ')}
-                                                    </ListItemText>
-                                                </MenuItem>
-                                            )
-                                        })
+                                    onClose={(e) =>
+                                        handleChosenActionForMentalState(null)
                                     }
+                                >
+                                    {actions.map((action) => {
+                                        return (
+                                            <MenuItem>
+                                                <ListItemText
+                                                    onClick={(e) =>
+                                                        handleChosenActionForMentalState(
+                                                            action
+                                                        )
+                                                    }
+                                                >
+                                                    {action.replaceAll(
+                                                        "_",
+                                                        " "
+                                                    )}
+                                                </ListItemText>
+                                            </MenuItem>
+                                        );
+                                    })}
                                 </Menu>
                             </Box>
-                        )
-                    })
-                }
-            </Grid>
+                        );
+                    })}
+                </Grid>
 
+                <Grid item xs={6}>
+                    <MentalStatesGraph
+                        mentalStateNamesOrdered={mentalStateNamesOrdered}
+                        nextMentalStateNamesOrdered={
+                            nextMentalStateNamesOrdered
+                        }
+                    />
+                </Grid>
+            </Grid>
         </Box>
-    )
-}
+    );
+};
 
 export default MentalStates;
