@@ -1,6 +1,6 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Button, Snackbar, ThemeProvider } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MidScreenControl from "../src/components/MidScreenControl";
@@ -31,7 +31,6 @@ import {
     OFFENSIVE_AGENT,
     EditorMode,
     BLANK_AGENT,
-    InitialRealTimeFrameScene,
 } from "../src/constants/constants";
 import Agent, { agentToCalldata, buildAgent } from "../src/types/Agent";
 import StatusBarPanel, { StatusBarPanelProps as PlayerStatuses } from "../src/components/StatusBar";
@@ -64,8 +63,6 @@ import theme from "../src/theme/theme";
 import FrameDecisionPathViewer from "../src/components/FrameDecisionPathViewer";
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from "../src/components/MobileView";
-import { runRealTimeFromContext } from "../src/hooks/useRunRealtime";
-import { ShoshinWASMContext } from "../src/context/wasm-shoshin";
 import { GameModes } from "../src/types/Simulator";
 import RealTimeSettingPanel from "../src/components/settingsPanels/RealTimeSettingPanel";
 
@@ -173,22 +170,9 @@ export default function Home() {
         initialMentalState,
     ]);
 
-    const { runCairoSimulation, wasmReady } = useRunCairoSimulation(p1, p2);
+    const { runCairoSimulation } = useRunCairoSimulation(p1, p2);
     const { runEvaluateCondition } = useEvaluateCondition();
-
-    const ctx = useContext(ShoshinWASMContext)
     getSizeOfRealTimeInputScene()
-
-    useEffect(() => {
-        if(wasmReady){
-            console.log("p1", p1)
-            console.log("running realtime")
-            const [out, err] = runRealTimeFromContext(ctx, InitialRealTimeFrameScene, 0, 0, 0, p1);
-            console.log('realtime res', err ? err : out)
-            console.log("running realtime done")
-        }
-    }, [wasmReady, p1])
-
     
     
     const isMobileDisplay = useMediaQuery('(max-width:800px)');

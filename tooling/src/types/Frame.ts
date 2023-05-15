@@ -38,12 +38,19 @@ export interface FrameScene {
     agent_0: Frame[],
     agent_1: Frame[],
 }
+
+interface ComboInfo {
+    current_combo : number,
+    combo_counter : number
+}
+
 export interface RealTimeAgent {
     body_state: BodyState,
     physics_state: PhysicsState,
     stimulus: number,
     hitboxes: Hitboxes,
     mental_state: number,
+    combo_info : ComboInfo
 }
 
 export interface RealTimePlayer {
@@ -298,7 +305,11 @@ export function getSizeOfRealTimeInputScene(){
                 }
             },
             stimulus : 1,
-            mental_state : 1
+            mental_state : 1,
+            combo_info : {
+                combo_counter : 0,
+                current_combo : 0
+            }
         }
     }
 }

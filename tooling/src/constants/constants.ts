@@ -665,5 +665,9 @@ export const InitialRealTimeFrameScene : RealTimeFrameScene  = {
         },
         "stimulus": 0,
         "mental_state" : 0,
+        "combo_info" : {
+            combo_counter : 0,
+            current_combo : 0
+        }
     }
 }
