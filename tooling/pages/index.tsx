@@ -1,6 +1,6 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useContext } from "react";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Button, Snackbar, ThemeProvider } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MidScreenControl from "../src/components/MidScreenControl";
@@ -66,6 +66,7 @@ import MobileView from "../src/components/MobileView";
 import { GameModes } from "../src/types/Simulator";
 import RealTimeSettingPanel from "../src/components/settingsPanels/RealTimeSettingPanel";
 import RegistrationPage from "../src/components/register/Register";
+import { ShoshinWASMContext } from "../src/context/wasm-shoshin";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -173,6 +174,8 @@ export default function Home() {
 
     const { runCairoSimulation } = useRunCairoSimulation(p1, p2);
     const { runEvaluateCondition } = useEvaluateCondition();
+    const ctx = useContext(ShoshinWASMContext);
+
     getSizeOfRealTimeInputScene()
     
     
@@ -796,6 +799,7 @@ export default function Home() {
         />
     )
             
+    console.log(ctx)
     let FightView = (
         <div className={styles.main}>
             <div
@@ -804,16 +808,18 @@ export default function Home() {
                     flexDirection: "column",
                 }}
             >
-                <Button variant="text"
-                    onClick={() => {
-                        gameMode == GameModes.simulation ? setGameMode(GameModes.realtime) :setGameMode(GameModes.simulation)
-                    }}
-                >
-                    {
-                        gameMode == GameModes.simulation ? "Simulation" : 'Real Time'
-                    }
-                </Button>
-                
+                {ctx.wasm !== undefined ?
+                    (
+                        <Button variant="text"
+                        onClick={() => {
+                            gameMode == GameModes.simulation ? setGameMode(GameModes.realtime) : setGameMode(GameModes.simulation)
+                        }}>
+                        {
+                            gameMode == GameModes.simulation ? "Simulation" : 'Real Time'
+                        }
+                        </Button>
+                    ) : null
+                }
                 {
                     gameMode == GameModes.simulation ?
                     (
