@@ -65,6 +65,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from "../src/components/MobileView";
 import { GameModes } from "../src/types/Simulator";
 import RealTimeSettingPanel from "../src/components/settingsPanels/RealTimeSettingPanel";
+import RegistrationPage from "../src/components/register/Register";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -211,6 +212,8 @@ export default function Home() {
 
     // Starknet states
     const { account, address, status } = useAccount();
+    const [isWhiteListed, setIsWhiteListed] = useState<boolean>(false);
+    const isProduction = process.env.NODE_ENV === 'production'
     const [txPending, setTxPending] = useState<boolean>(false);
     const [txStatusText, setTxStatusText] = useState<string>();
     const [hash, setHash] = useState<string>();
@@ -937,6 +940,11 @@ export default function Home() {
         <div>
             <MobileView/>
         </div>)
+    }
+
+    if(!isWhiteListed && isProduction){
+        return <RegistrationPage  
+            setIsWhiteListedTrue={() => {setIsWhiteListed(true)}}/>
     }
 
     //
