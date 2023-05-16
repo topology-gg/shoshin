@@ -163,12 +163,17 @@ struct RealTimePlayer {
     hitboxes: Hitboxes,
 }
 
+struct RealTimeComboInfo {
+    current_combo: felt,
+    combo_counter: felt,
+}
 struct RealTimeAgent {
     body_state: BodyState,
     physics_state: PhysicsState,
     stimulus: felt,
     hitboxes: Hitboxes,
     mental_state : felt,
+    combo_info : RealTimeComboInfo,
 }
 
 struct FrameScene {
