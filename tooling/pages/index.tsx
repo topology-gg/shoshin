@@ -795,7 +795,8 @@ export default function Home() {
             txStatusText={txStatusText}
         />
     )
-            
+    const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
+    
     let FightView = (
         <div className={styles.main}>
             <div
@@ -848,6 +849,7 @@ export default function Home() {
                         agentOpponent : p2,
                         setPlayerStatuses
                     }}
+                    isInView={swipeableViewIndex == 0}
                 />
 
                 <MidScreenControl
@@ -932,7 +934,6 @@ export default function Home() {
         </div>
     )
 
-    const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
 
     if(isMobileDisplay)
     {
