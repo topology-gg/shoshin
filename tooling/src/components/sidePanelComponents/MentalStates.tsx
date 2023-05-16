@@ -72,8 +72,8 @@ const MentalStates = ({
         setAnchorElInitialState(event.currentTarget);
     };
     const handleChosenInitialState = (mentalStateIndex) => {
-        if (mentalStateIndex) {
-            handleSetInitialMentalState(mentalStateIndex);
+        if (typeof mentalStateIndex == 'number' ){
+            handleSetInitialMentalState(mentalStateIndex)
         }
         setAnchorElInitialState(null);
     };
