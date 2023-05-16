@@ -68,7 +68,7 @@ import { runRealTimeFromContext } from "../src/hooks/useRunRealtime";
 import { ShoshinWASMContext } from "../src/context/wasm-shoshin";
 import { GameModes } from "../src/types/Simulator";
 import RealTimeSettingPanel from "../src/components/settingsPanels/RealTimeSettingPanel";
-import RegistrationPage from "../src/components/Register";
+import RegistrationPage from "../src/components/register/Register";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -958,7 +958,7 @@ export default function Home() {
         </div>)
     }
 
-    if(!isWhiteListed && isProduction){
+    if(!isWhiteListed){
         return <RegistrationPage  
             setIsWhiteListedTrue={() => {setIsWhiteListed(true)}}/>
     }
