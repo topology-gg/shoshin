@@ -31,7 +31,9 @@ export default class RealTime extends Platformer {
 
     private opponent: Agent = IDLE_AGENT;
 
-    private isDebug : boolean = false
+    private isDebug : boolean = false;
+
+    private isFirstTick : boolean = true;
 
     private setPlayerStatuses: (playerStatuses: StatusBarPanelProps) => void =
         () => {};
@@ -42,6 +44,7 @@ export default class RealTime extends Platformer {
 
     resetGameState() {
         this.state = InitialRealTimeFrameScene;
+        this.isFirstTick = true;
     }
 
     set_wasm_context(ctx: IShoshinWASMContext) {
@@ -53,6 +56,7 @@ export default class RealTime extends Platformer {
         this.opponent = agent;
         this.setPlayerTwoCharacter(agent.character);
 
+        console.log('opponent', this.opponent)
         if(!this.isGameRunning)
         {
             this.setMenuText();   
@@ -234,8 +238,11 @@ export default class RealTime extends Platformer {
             this.player_action,
             this.character_type_0,
             this.opponent.character,
-            OFFENSIVE_AGENT
+            this.opponent,
+            this.isFirstTick
         );
+
+        this.isFirstTick = false
         let newState: RealTimeFrameScene = out as RealTimeFrameScene;
 
         this.player_action = 0;

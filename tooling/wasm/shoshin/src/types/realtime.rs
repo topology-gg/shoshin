@@ -43,9 +43,10 @@ pub struct RealTimeInput {
     pub agent_1_stimulus : Base32,
     pub agent_1_character_type: Base32,
 
-    
     pub _combos_offset_1: Vec<Base32>,
     pub _combos_1: Vec<Base32>,
+    pub _current_combo_1 : Base32,
+    pub _combo_counter_1 : Base32,
     pub _state_machine_offset_1: Vec<Base32>,
     pub _state_machine_1: Vec<Tree>,
     pub _agent_1_mental_state: u8,
