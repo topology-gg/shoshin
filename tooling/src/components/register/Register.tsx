@@ -12,8 +12,10 @@ interface RegistrationProps {
 }
 
 const whiteListedAccounts = [
-    "0x266ed55be7054c74db3f8ec2e79c728056c802a11481fad0e91220139b8916a",
-    "0x013d200c8c96561a8c0b20fe1782c79b83edd4608228006ec674e5528b47ad9e",
+    "0x266ed55be7054c74db3f8ec2e79c728056c802a11481fad0e91220139b8916a", // noncents
+    "0x013d200c8c96561a8c0b20fe1782c79b83edd4608228006ec674e5528b47ad9e", // noncents cartridge
+    "0x02f880133db4f533bDbC10C3d02fbC9b264dAC2Ff52EAE4E0cec0CE794bAD898", // gg
+    "0x01b0afcd626d197993070994f8b37d20594c93bebfd48e28bd38c3b94a5802ea", // gg cartridge
 ];
 
 const RegistrationPage = ({ setIsWhiteListedTrue }: RegistrationProps) => {
@@ -45,7 +47,7 @@ const RegistrationPage = ({ setIsWhiteListedTrue }: RegistrationProps) => {
                 alignItems: "center",
                 flexDirection: "column",
             }}
-        >    
+        >
             <div className={styles.imageContainer}>
                 <img
                     className={styles.splashImage}
