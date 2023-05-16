@@ -796,6 +796,16 @@ export default function Home() {
         />
     )
             
+
+    const toggleGameMode = () => {
+        if(gameMode == GameModes.simulation)
+        {   
+            handleMidScreenControlClick("stop")
+            setGameMode(GameModes.realtime)
+        }else{
+            setGameMode(GameModes.simulation)
+        }  
+    }
     let FightView = (
         <div className={styles.main}>
             <div
@@ -805,9 +815,7 @@ export default function Home() {
                 }}
             >
                 <Button variant="text"
-                    onClick={() => {
-                        gameMode == GameModes.simulation ? setGameMode(GameModes.realtime) :setGameMode(GameModes.simulation)
-                    }}
+                    onClick={()=> toggleGameMode()}
                 >
                     {
                         gameMode == GameModes.simulation ? "Simulation" : 'Real Time'
@@ -851,7 +859,7 @@ export default function Home() {
                 />
 
                 <MidScreenControl
-                    runnable={!(p1 == null || p2 == null)}
+                    runnable={!(p1 == null || p2 == null) && gameMode == GameModes.simulation}
                     testJsonAvailable={
                         testJson ? true : false
                     }
