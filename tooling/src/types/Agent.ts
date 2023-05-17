@@ -16,6 +16,10 @@ export default interface Agent {
     character?: number,
 }
 
+export interface LeagueAgent extends Agent{
+    agentName : string
+}
+
 // Build the agent from the user's mental states (consisting of the Tree construction for each mental state and the
 // action linked to this state), combos, conditions, initial mental state and character
 export function buildAgent(mentalStates: MentalState[], combos: number[][], trees: Tree[], conditions: Condition[], initialMentalState, character) {

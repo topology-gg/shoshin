@@ -39,7 +39,7 @@ import {AgentOption} from "../src/components/settingsPanels/settingsPanel";
 import FrameInspector from "../src/components/FrameInspector";
 import useRunCairoSimulation from "../src/hooks/useRunCairoSimulation";
 import useEvaluateCondition from "../src/hooks/useEvaluateCondition";
-import { useAgents } from "../lib/api";
+import { useAgents, useLeagueAgents } from "../lib/api";
 import {
     SingleMetadata,
     splitSingleMetadata,
@@ -153,6 +153,11 @@ export default function Home() {
     const { data: data } = useAgents();
     const t: SingleMetadata[] = data?.agents;
     const agents: Agent[] = t?.map(splitSingleMetadata).flat();
+
+
+    const { data : leagueData } = useLeagueAgents();
+    
+    let leagueAgents: Agent[] = leagueData?.agents?.map(splitSingleMetadata).flat();
 
     const newAgent: Agent = useMemo(() => {
         let builtAgent = handleBuildAgent();
@@ -659,6 +664,8 @@ export default function Home() {
             setAgent = newAgent;
         } else if (value.group == "Registry") {
             setAgent = agents[value.index];
+        } else if (value.group == "League"){
+            setAgent = leagueAgents[value.index]
         }
 
         // setP1 / setP2 depending on whichPlayer
@@ -840,6 +847,7 @@ export default function Home() {
                     (
                         <P1P2SettingPanel
                             agentsFromRegistry={t}
+                            leagueAgents={leagueData?.agents}
                             agentChange={agentChange}
                         />
                     ) :

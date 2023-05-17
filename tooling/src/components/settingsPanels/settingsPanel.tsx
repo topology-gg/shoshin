@@ -31,10 +31,25 @@ const lookupSenderAddress = (address : string) =>{
 
 
 
-export const SetPlayerBar = ({ label, agentsFromRegistry, agentChange }) => {
+export const SetPlayerBar = ({ label, agentsFromRegistry, leagueAgents, agentChange }) => {
 
     // ref: https://stackoverflow.com/questions/73095037/how-to-have-an-option-be-a-part-of-multiple-groups-with-mui-autocomplete
     let agentOptions = [{group:'Local', label:'new agent', index: -1}]
+    
+    agentOptions = agentOptions.concat([
+        {group:'Training', label:'idle agent', index: -1},
+        {group:'Training', label:'defensive agent', index: -1},
+        {group:'Training', label:'offensive agent', index: -1},
+    ])
+
+    agentOptions = agentOptions.concat(!leagueAgents ? [] : leagueAgents.map((a: any, a_i: number) => {
+        return {
+            group: 'League',
+            label: `${a.agent_name} by ${lookupSenderAddress(a.sender)}`,
+            index: a_i,
+        } as AgentOption
+    }))
+
     agentOptions = agentOptions.concat (!agentsFromRegistry ? [] : agentsFromRegistry.map((a: SingleMetadata, a_i: number) => {
         return {
             group: 'Registry',
@@ -42,11 +57,8 @@ export const SetPlayerBar = ({ label, agentsFromRegistry, agentChange }) => {
             index: a_i,
         } as AgentOption
     }))
-    agentOptions = agentOptions.concat([
-        {group:'Template', label:'idle agent', index: -1},
-        {group:'Template', label:'defensive agent', index: -1},
-        {group:'Template', label:'offensive agent', index: -1},
-    ])
+
+
 
     return (
         <AutoComplete
