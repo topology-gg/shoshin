@@ -228,9 +228,15 @@ export function getMentalTree(agent: Agent, index: number): Tree {
     let conditionsNames = getConditionsNames(agent)
 
     let agentMentalState = agent.mentalStates[index]
-    let tree: Tree = { nodes: unwrapLeafToTree(agentMentalState, mentalStatesNames, conditionsNames) } 
 
-    return tree
+    // Prevents attempting to unwrap tree that is undefined
+    // This will make Frame decision Path Viewer unable to crash the frontend
+    if(agentMentalState !== undefined)
+    {
+        return { nodes: unwrapLeafToTree(agentMentalState, mentalStatesNames, conditionsNames) } as Tree   
+    }else {
+        return {nodes : []}
+    }
 }
 
 function getMentalStatesNames(agent: Agent): string[] {
