@@ -1,6 +1,6 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useContext } from "react";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Button, Snackbar, ThemeProvider } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MidScreenControl from "../src/components/MidScreenControl";
@@ -66,6 +66,7 @@ import MobileView from "../src/components/MobileView";
 import { GameModes } from "../src/types/Simulator";
 import RealTimeSettingPanel from "../src/components/settingsPanels/RealTimeSettingPanel";
 import RegistrationPage from "../src/components/register/Register";
+import { ShoshinWASMContext } from "../src/context/wasm-shoshin";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -173,9 +174,11 @@ export default function Home() {
 
     const { runCairoSimulation } = useRunCairoSimulation(p1, p2);
     const { runEvaluateCondition } = useEvaluateCondition();
+    const ctx = useContext(ShoshinWASMContext);
+
     getSizeOfRealTimeInputScene()
-    
-    
+
+
     const isMobileDisplay = useMediaQuery('(max-width:800px)');
 
     useEffect(() => {
@@ -195,7 +198,7 @@ export default function Home() {
         const integrity_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.integrity : 0
         const stamina_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.stamina : 0
         const stamina_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.stamina : 0
-        
+
         setPlayerStatuses({
             integrity_0, integrity_1, stamina_0, stamina_1
         })
@@ -796,17 +799,19 @@ export default function Home() {
             txStatusText={txStatusText}
         />
     )
-            
+
+    console.log('index.tsx::ctx', ctx)
 
     const toggleGameMode = () => {
         if(gameMode == GameModes.simulation)
-        {   
+        {
             handleMidScreenControlClick("stop")
             setGameMode(GameModes.realtime)
         }else{
             setGameMode(GameModes.simulation)
-        }  
+        }
     }
+
     let FightView = (
         <div className={styles.main}>
             <div
@@ -815,14 +820,19 @@ export default function Home() {
                     flexDirection: "column",
                 }}
             >
-                <Button variant="text"
-                    onClick={()=> toggleGameMode()}
-                >
-                    {
-                        gameMode == GameModes.simulation ? "Simulation" : 'Real Time'
-                    }
-                </Button>
-                
+                {
+                    ctx.wasm !== undefined ?
+                    (
+                        <Button variant="text"
+                            onClick={()=> toggleGameMode()}
+                        >
+                            {
+                                gameMode == GameModes.simulation ? "Simulation" : 'Real Time'
+                            }
+                        </Button>
+                    ) : null
+                }
+
                 {
                     gameMode == GameModes.simulation ?
                     (
@@ -830,7 +840,7 @@ export default function Home() {
                             agentsFromRegistry={t}
                             agentChange={agentChange}
                         />
-                    ) : 
+                    ) :
                     (  <RealTimeSettingPanel
                             agentsFromRegistry={t}
                             agentChange={agentChange}
@@ -952,7 +962,7 @@ export default function Home() {
     }
 
     if(!isWhiteListed && isProduction){
-        return <RegistrationPage  
+        return <RegistrationPage
             setIsWhiteListedTrue={() => {setIsWhiteListed(true)}}/>
     }
 
