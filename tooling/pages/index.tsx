@@ -177,8 +177,8 @@ export default function Home() {
     const ctx = useContext(ShoshinWASMContext);
 
     getSizeOfRealTimeInputScene()
-    
-    
+
+
     const isMobileDisplay = useMediaQuery('(max-width:800px)');
 
     useEffect(() => {
@@ -198,7 +198,7 @@ export default function Home() {
         const integrity_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.integrity : 0
         const stamina_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.stamina : 0
         const stamina_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.stamina : 0
-        
+
         setPlayerStatuses({
             integrity_0, integrity_1, stamina_0, stamina_1
         })
@@ -569,9 +569,10 @@ export default function Home() {
     }
 
     function handleClickDeleteCondition(index: number) {
+        let condition = conditions[index]
         if (
             trees.some((tree) =>
-                tree.nodes.some((node) => node.id === `F${index}`)
+                tree.nodes.some((node) => node.id === condition.key)
             )
         ) {
             alert(
@@ -798,8 +799,19 @@ export default function Home() {
             txStatusText={txStatusText}
         />
     )
-            
-    console.log(ctx)
+
+    console.log('index.tsx::ctx', ctx)
+
+    const toggleGameMode = () => {
+        if(gameMode == GameModes.simulation)
+        {
+            handleMidScreenControlClick("stop")
+            setGameMode(GameModes.realtime)
+        }else{
+            setGameMode(GameModes.simulation)
+        }
+    }
+
     let FightView = (
         <div className={styles.main}>
             <div
@@ -808,18 +820,19 @@ export default function Home() {
                     flexDirection: "column",
                 }}
             >
-                {ctx.wasm !== undefined ?
+                {
+                    ctx.wasm !== undefined ?
                     (
                         <Button variant="text"
-                        onClick={() => {
-                            gameMode == GameModes.simulation ? setGameMode(GameModes.realtime) : setGameMode(GameModes.simulation)
-                        }}>
-                        {
-                            gameMode == GameModes.simulation ? "Simulation" : 'Real Time'
-                        }
+                            onClick={()=> toggleGameMode()}
+                        >
+                            {
+                                gameMode == GameModes.simulation ? "Simulation" : 'Real Time'
+                            }
                         </Button>
                     ) : null
                 }
+
                 {
                     gameMode == GameModes.simulation ?
                     (
@@ -827,7 +840,7 @@ export default function Home() {
                             agentsFromRegistry={t}
                             agentChange={agentChange}
                         />
-                    ) : 
+                    ) :
                     (  <RealTimeSettingPanel
                             agentsFromRegistry={t}
                             agentChange={agentChange}
@@ -857,7 +870,7 @@ export default function Home() {
                 />
 
                 <MidScreenControl
-                    runnable={!(p1 == null || p2 == null)}
+                    runnable={!(p1 == null || p2 == null) && gameMode == GameModes.simulation}
                     testJsonAvailable={
                         testJson ? true : false
                     }
@@ -949,7 +962,7 @@ export default function Home() {
     }
 
     if(!isWhiteListed && isProduction){
-        return <RegistrationPage  
+        return <RegistrationPage
             setIsWhiteListedTrue={() => {setIsWhiteListed(true)}}/>
     }
 
