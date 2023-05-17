@@ -854,6 +854,7 @@ export default function Home() {
                     (  <RealTimeSettingPanel
                             agentsFromRegistry={t}
                             agentChange={agentChange}
+                            leagueAgents={leagueData?.agents}
                             changeCharacter={(character) => setRealTimeCharacter(parseInt(character))}
                         />
                     )
