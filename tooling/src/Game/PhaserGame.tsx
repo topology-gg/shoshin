@@ -187,17 +187,13 @@ const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, re
     }, [isInView])
 
     React.useEffect(() => {
-        if(!isRealTime){
-            //game.current?.scene.start(GameModes.simulation)
-        }
-
         if (isGameSceneDefined(gameMode) && testJson){
             // @ts-ignore
             let scene = game.current?.scene.getScene('simulator') as Simulator;
             scene.updateSceneFromFrame({ testJson, animationFrame, animationState, showDebug})
         }
         //render stuff
-    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm, isRealTime])
+    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm])
 
     return Phaser ? (
         <div
