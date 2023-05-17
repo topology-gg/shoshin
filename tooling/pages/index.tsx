@@ -566,9 +566,10 @@ export default function Home() {
     }
 
     function handleClickDeleteCondition(index: number) {
+        let condition = conditions[index]
         if (
             trees.some((tree) =>
-                tree.nodes.some((node) => node.id === `F${index}`)
+                tree.nodes.some((node) => node.id === condition.key)
             )
         ) {
             alert(
