@@ -800,6 +800,8 @@ export default function Home() {
         />
     )
 
+    const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
+
     console.log('index.tsx::ctx', ctx)
 
     const toggleGameMode = () => {
@@ -867,6 +869,7 @@ export default function Home() {
                         agentOpponent : p2,
                         setPlayerStatuses
                     }}
+                    isInView={swipeableViewIndex == 0}
                 />
 
                 <MidScreenControl
@@ -951,7 +954,6 @@ export default function Home() {
         </div>
     )
 
-    const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
 
     if(isMobileDisplay)
     {

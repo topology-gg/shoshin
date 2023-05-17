@@ -8,7 +8,8 @@ export interface PhaserGameProps {
     animationState: string;
     showDebug: boolean;
     gameMode : GameModes
-    realTimeOptions : RealTimeOptions
+    realTimeOptions : RealTimeOptions,
+    isInView : boolean
 }
 export interface SimulatorProps {
     testJson: TestJson;

@@ -164,6 +164,15 @@ export default class RealTime extends Platformer {
         this.isGameRunning = false;
     }
 
+    toggleInputs(enable : boolean){
+        if(enable)
+        {
+            this.input.keyboard.enableGlobalCapture()
+        }else{
+            this.input.keyboard.disableGlobalCapture()
+        }
+    }
+
     update(t, ds) {
         if (this.keyboard.space.isDown && !this.isGameRunning) {
             this.startMatch();
@@ -222,8 +231,6 @@ export default class RealTime extends Platformer {
         if (this.keyboard.h.isDown) {
                 this.isDebug = !this.isDebug
         }
-        
-
     }
 
     run() {

@@ -6,14 +6,13 @@ import PropTypes from "prop-types";
 
 import { useLayoutEffect } from "../hooks/useIsomorphicLayoutEffect";
 import styles from "./Game.module.css";
-import { TestJson } from "../types/Frame";
 import Simulator from "../scene/Simulator";
-import { GameModes, PhaserGameProps, SimulatorProps } from "../types/Simulator";
+import { GameModes, PhaserGameProps } from "../types/Simulator";
 import RealTime from "../scene/Realtime";
-import { IShoshinWASMContext, ShoshinWASMContext } from "../context/wasm-shoshin";
+import { ShoshinWASMContext } from "../context/wasm-shoshin";
 
 // Many shamefull @ts-ignore(s) in this file. It is not easy to know if game or scene is defined from outside the PhaserGame
-const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, realTimeOptions }: PhaserGameProps) => {
+const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, realTimeOptions, isInView }: PhaserGameProps) => {
     const tagName = "div";
     const className = "relative top-0 left-0 w-full h-full my-12";
     const variant = "default";
@@ -171,6 +170,21 @@ const Game = ({testJson, animationFrame, animationState, showDebug, gameMode, re
             scene.changeScene(gameMode, ctx, realTimeOptions.setPlayerStatuses)
         }
     }, [isRealTime])
+
+
+    React.useEffect(() => {
+
+        if(gameMode == GameModes.realtime)
+        {
+            // @ts-ignore
+            let scene = game.current?.scene.getScene(isRealTime ? GameModes.realtime : GameModes.simulation);
+            if(scene !== null && scene !== undefined)
+            {
+    
+                scene.toggleInputs(isInView)
+            }   
+        }
+    }, [isInView])
 
     React.useEffect(() => {
         if (isGameSceneDefined(gameMode) && testJson){
