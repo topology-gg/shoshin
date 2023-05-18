@@ -67,6 +67,7 @@ import { GameModes } from "../src/types/Simulator";
 import RealTimeSettingPanel from "../src/components/settingsPanels/RealTimeSettingPanel";
 import RegistrationPage from "../src/components/register/Register";
 import { ShoshinWASMContext } from "../src/context/wasm-shoshin";
+import { STARTER_AGENT } from "../src/constants/starter_agent";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -748,7 +749,7 @@ export default function Home() {
             }}
             buildNewAgentFromBlank={() => {
                 setEditorMode(() => EditorMode.Edit);
-                setAgentInPanelToAgent(BLANK_AGENT);
+                setAgentInPanelToAgent(STARTER_AGENT);
             }}
             buildNewAgentFromAgent={(agent: Agent) => {
                 setEditorMode(() => EditorMode.Edit);
