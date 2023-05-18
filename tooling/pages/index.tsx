@@ -163,10 +163,10 @@ export default function Home() {
 
     const newAgent: Agent = useMemo(() => {
         let builtAgent = handleBuildAgent();
-        if (p1Label === "new agent") {
+        if (p1Label === "your agent") {
             setP1(builtAgent);
         }
-        if (p2Label === "new agent") {
+        if (p2Label === "your agent") {
             setP2(builtAgent);
         }
         return builtAgent;
@@ -662,7 +662,7 @@ export default function Home() {
         if (value.label == "offensive agent") {
             setAgent = OFFENSIVE_AGENT;
         }
-        if (value.label == "new agent") {
+        if (value.label == "your agent") {
             setAgent = newAgent;
         } else if (value.group == "Registry") {
             setAgent = agents[value.index];

@@ -34,7 +34,7 @@ const lookupSenderAddress = (address : string) =>{
 export const SetPlayerBar = ({ label, agentsFromRegistry, leagueAgents, agentChange }) => {
 
     // ref: https://stackoverflow.com/questions/73095037/how-to-have-an-option-be-a-part-of-multiple-groups-with-mui-autocomplete
-    let agentOptions = [{group:'Local', label:'new agent', index: -1}]
+    let agentOptions = [{group:'Local', label:'your agent', index: -1}]
     
     agentOptions = agentOptions.concat([
         {group:'Training', label:'idle agent', index: -1},
