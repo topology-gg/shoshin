@@ -673,9 +673,9 @@ const trees: Tree[] = [
 ];
 
 const mentalStates = [
-    { state: "Start", action: 0 },
-    { state: "Attack", action: 0 },
-    { state: "Defend", action: 0 },
+    { state: "Start", action: 5 },
+    { state: "Attack", action: 1 },
+    { state: "Defend", action: 4 },
     { state: "Ignore", action: 0 },
 ];
 
@@ -683,12 +683,14 @@ export const INITIAL_AGENT_COMPONENTS = {
     mentalStates,
     trees,
     conditions,
+    combos : []
 };
+
 export const STARTER_AGENT: Agent = buildAgent(
     mentalStates,
     [],
     trees,
-        //@ts-ignore
+    //@ts-ignore
     //Copying from console.log removes enums which build will complain about
     conditions,
     0,
