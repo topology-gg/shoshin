@@ -1,13 +1,13 @@
 
-import clientPromise from "../../lib/mongodb"
-import { DB_NAME, COLLECTION_NAME } from '../../src/constants/constants'
+import clientPromise from "../../../lib/mongodb"
+import { DB_NAME, COLLECTION_NAME_SUBMISSION } from '../../../src/constants/constants'
 
 export default async function handler(req, res) {
 
     const client = await clientPromise
     const db = client.db(DB_NAME)
     const agents = await db
-        .collection(COLLECTION_NAME)
+        .collection(COLLECTION_NAME_SUBMISSION)
         .find({})
         .sort({
             '_chain.valid_from': 1,

@@ -8,20 +8,23 @@ interface RealTimeSettingPanelProps {
     agentsFromRegistry: SingleMetadata[]
     agentChange: (whichPlayer: string, event: object, value: AgentOption) => void
     changeCharacter : (character : string) => void
+    // Comment in P1P2 Settings
+    leagueAgents: any[],
 }
 
 
 const RealTimeSettingPanel = ({
     agentsFromRegistry,
     agentChange,
-    changeCharacter
+    changeCharacter,
+    leagueAgents
 }  : RealTimeSettingPanelProps) => {
 
     return (
         <div style={{marginBottom:'10px'}}>
             <div className={styles.statusBarRow}>
                 <SelectCharacterBar label={'Select Character'} changeCharacter={(event, value) => changeCharacter(value.id)}/>
-                <SetPlayerBar label={'P2'} agentsFromRegistry={agentsFromRegistry} agentChange={(event, value) => agentChange('P2', event, value)}/>
+                <SetPlayerBar label={'P2'} agentsFromRegistry={agentsFromRegistry}leagueAgents={leagueAgents} agentChange={(event, value) => agentChange('P2', event, value)}/>
             </div>
         </div>
     );
