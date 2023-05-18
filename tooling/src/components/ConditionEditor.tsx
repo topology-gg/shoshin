@@ -66,6 +66,7 @@ const bodyStateNameMappings = {
     AntocIdle: 0,
     AntocHorizontalSwing: 1010,
     AntocVerticalSwing: 1020,
+    AntocBlock: 1040,
     AntocHurt: 1050,
     AntocKnocked: 1060,
     AntocMoveForward: 1090,
