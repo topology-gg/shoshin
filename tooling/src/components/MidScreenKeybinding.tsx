@@ -59,7 +59,7 @@ const MidScreenKeybinding = (
             ) : <></>;
         const keyCode = keyNameToKeyCode (keyName)
         const isKeyDown = !(keyCode in keyDownState) ? false : keyDownState[keyCode]
-        const backgroundColor = isKeyDown ? '#B2FFFF' : '#EEEEEE'
+        const backgroundColor = isKeyDown ? 'lightgrey' : '#EEEEEE'
 
         const borderTopLeft = !show ? 'solid 1px #55555533' : isKeyDown ? 'solid 2px #555555' : 'solid 1px #555555';
         const borderBottomRight = !show ? 'solid 1px #55555533' : !isKeyDown ? 'solid 2px #555555' : 'solid 1px #555555';
