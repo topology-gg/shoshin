@@ -23,8 +23,8 @@ const P1P2SettingPanel = ({
     return (
         <div style={{marginBottom:'10px'}}>
             <div className={styles.statusBarRow}>
-                <SetPlayerBar label={'P1'} agentsFromRegistry={agentsFromRegistry} leagueAgents={leagueAgents} agentChange={(event, value) => agentChange('P1', event, value)}/>
-                <SetPlayerBar label={'P2'} agentsFromRegistry={agentsFromRegistry} leagueAgents={leagueAgents} agentChange={(event, value) => agentChange('P2', event, value)}/>
+                <SetPlayerBar label={'Select Player 1'} agentsFromRegistry={agentsFromRegistry} leagueAgents={leagueAgents} agentChange={(event, value) => agentChange('P1', event, value)}/>
+                <SetPlayerBar label={'Select Player 2'} agentsFromRegistry={agentsFromRegistry} leagueAgents={leagueAgents} agentChange={(event, value) => agentChange('P2', event, value)}/>
             </div>
         </div>
     );
