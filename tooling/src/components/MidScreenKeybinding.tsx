@@ -61,9 +61,14 @@ const MidScreenKeybinding = (
         const isKeyDown = !(keyCode in keyDownState) ? false : keyDownState[keyCode]
         const backgroundColor = isKeyDown ? '#B2FFFF' : '#EEEEEE'
 
+        const borderTopLeft = !show ? 'solid 1px #55555533' : isKeyDown ? 'solid 2px #555555' : 'solid 1px #555555';
+        const borderBottomRight = !show ? 'solid 1px #55555533' : !isKeyDown ? 'solid 2px #555555' : 'solid 1px #555555';
+
         return (
             <div style={{
-                width:'30px', height:'30px', margin:'2px', border: show ? 'solid 1px #555555' : 'solid 1px #55555533',
+                width:'30px', height:'30px', margin:'2px',
+                borderTop: borderTopLeft, borderLeft: borderTopLeft,
+                borderBottom: borderBottomRight, borderRight: borderBottomRight,
                 backgroundColor: backgroundColor,
             }}>
                 {content}
