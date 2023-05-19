@@ -513,6 +513,8 @@ const MENTAL_STATES_IDLE_AGENT: MentalState[] = [
 ]
 //export const IDLE_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_CONDITIONS, 0, 1)
 export const IDLE_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, conditions, 0, 1)
+
+// used when you select build agent from blank in edit
 export const BLANK_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_CONDITIONS, 0, 1)
 
 const DECISION_TREE_OFFENSIVE_AGENT = INITIAL_DECISION_TREES

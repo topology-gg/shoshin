@@ -67,6 +67,7 @@ import { GameModes } from "../src/types/Simulator";
 import RealTimeSettingPanel from "../src/components/settingsPanels/RealTimeSettingPanel";
 import RegistrationPage from "../src/components/register/Register";
 import { ShoshinWASMContext } from "../src/context/wasm-shoshin";
+import { INITIAL_AGENT_COMPONENTS, STARTER_AGENT } from "../src/constants/starter_agent";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -114,13 +115,14 @@ export default function Home() {
 
     // React states for tracking the New Agent being edited in the right panel
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
-    const [combos, setCombos] = useState<number[][]>(INITIAL_COMBOS);
+    const [combos, setCombos] = useState<number[][]>(INITIAL_AGENT_COMPONENTS.combos);
     const [mentalStates, setMentalStates] = useState<MentalState[]>(
-        INITIAL_MENTAL_STATES
+        INITIAL_AGENT_COMPONENTS.mentalStates
     );
-    const [trees, setTrees] = useState<Tree[]>(INITIAL_DECISION_TREES);
+    const [trees, setTrees] = useState<Tree[]>(INITIAL_AGENT_COMPONENTS.trees);
     const [conditions, setConditions] =
-        useState<Condition[]>(INITIAL_CONDITIONS);
+        //@ts-ignore
+        useState<Condition[]>(INITIAL_AGENT_COMPONENTS.conditions);
     const [agentName, setAgentName] = useState<string>("");
     const [character, setCharacter] = useState<Character>(Character.Jessica);
 
@@ -161,10 +163,10 @@ export default function Home() {
 
     const newAgent: Agent = useMemo(() => {
         let builtAgent = handleBuildAgent();
-        if (p1Label === "new agent") {
+        if (p1Label === "your agent") {
             setP1(builtAgent);
         }
-        if (p2Label === "new agent") {
+        if (p2Label === "your agent") {
             setP2(builtAgent);
         }
         return builtAgent;
@@ -623,8 +625,8 @@ export default function Home() {
         return buildAgent(
             mentalStates,
             combos,
-            trees.slice(0, -1),
-            conditions.slice(0, -1),
+            trees,
+            conditions,
             initialMentalState,
             char
         );
@@ -660,7 +662,7 @@ export default function Home() {
         if (value.label == "offensive agent") {
             setAgent = OFFENSIVE_AGENT;
         }
-        if (value.label == "new agent") {
+        if (value.label == "your agent") {
             setAgent = newAgent;
         } else if (value.group == "Registry") {
             setAgent = agents[value.index];
@@ -709,7 +711,7 @@ export default function Home() {
             return cond;
         });
         setAgentName(() => "");
-        setCharacter(() =>
+        setCharacter(() =>  
             agent.character == 0 ? Character.Jessica : Character.Antoc
         );
         setConditionUnderEditIndex(() => 0);
@@ -748,7 +750,7 @@ export default function Home() {
             }}
             buildNewAgentFromBlank={() => {
                 setEditorMode(() => EditorMode.Edit);
-                setAgentInPanelToAgent(BLANK_AGENT);
+                setAgentInPanelToAgent(STARTER_AGENT);
             }}
             buildNewAgentFromAgent={(agent: Agent) => {
                 setEditorMode(() => EditorMode.Edit);

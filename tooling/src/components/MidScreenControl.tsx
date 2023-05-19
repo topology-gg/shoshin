@@ -263,7 +263,7 @@ const MidScreenControl = ({
                     }}
                 />
                 <Box sx={{ position: "relative" }}>
-                    <Chip label="P1" color="info" size="small" sx={{ position: "absolute", top: 0, left: -50 }} />
+                    <Chip label="Player 1" color="info" size="small" sx={{ position: "absolute", top: 0, left: -50 }} />
                     <Timeline
                         color="info"
                         value={animationFrame}
@@ -274,7 +274,7 @@ const MidScreenControl = ({
                     />
                 </Box>
                 <Box sx={{ position: "relative" }}>
-                    <Chip label="P2" color="info" size="small" sx={{ position: "absolute", top: 0, left: -50 }} />
+                    <Chip label="Player 2" color="info" size="small" sx={{ position: "absolute", top: 0, left: -50 }} />
                     <Timeline
                         color="info"
                         value={animationFrame}
