@@ -49,13 +49,27 @@ const MidScreenKeybinding = (
     const KeyElement = (keyName: string, keyDownState: { [keycode: number]: boolean }) => {
         const show = (keyName.length > 0);
         const content = keyName.length == 1 ? (
-                <span>{keyName}</span>
+                <span
+                style={{ 
+                    alignSelf : "center"
+                 }}
+                >{keyName}</span>
             ) : keyName == 'left' ? (
-                <ArrowBack />
+                <ArrowBack 
+                style={{ 
+                    alignSelf : "center"
+                 }}
+                />
             ) : keyName == 'down' ? (
-                <ArrowDownward />
+                <ArrowDownward 
+                style={{ 
+                    alignSelf : "center"
+                 }}/>
             ) : keyName == 'right' ? (
-                <ArrowForward />
+                <ArrowForward 
+                style={{ 
+                    alignSelf : "center"
+                 }}/>
             ) : <></>;
         const keyCode = keyNameToKeyCode (keyName)
         const isKeyDown = !(keyCode in keyDownState) ? false : keyDownState[keyCode]
@@ -70,6 +84,8 @@ const MidScreenKeybinding = (
                 borderTop: borderTopLeft, borderLeft: borderTopLeft,
                 borderBottom: borderBottomRight, borderRight: borderBottomRight,
                 backgroundColor: backgroundColor,
+                justifyContent :'center',
+                display : "flex",
             }}>
                 {content}
             </div>
