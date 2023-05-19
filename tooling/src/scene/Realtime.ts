@@ -59,20 +59,20 @@ export default class RealTime extends Platformer {
         console.log('opponent', this.opponent)
         if(!this.isGameRunning)
         {
-            this.setMenuText();   
+            this.setMenuText();
             this.resetGameState();
-        }        
+        }
     }
 
     set_player_character(charId: number) {
         this.character_type_0 = charId;
         if(!this.isGameRunning)
-        {   
-            this.setMenuText();   
+        {
+            this.setMenuText();
             this.resetGameState();
-        }      
+        }
     }
-    
+
 
     init(data: any) {
         if (data !== undefined) {
@@ -84,7 +84,7 @@ export default class RealTime extends Platformer {
     createCenteredText(content: string) {
         const centeredText = this.add
             .text(this.cameras.main.midPoint.x,
-                this.cameras.main.midPoint.y, 
+                this.cameras.main.midPoint.y,
                 content, {
                 color : "#000",
                 backgroundColor: "#FFF"
@@ -98,17 +98,16 @@ export default class RealTime extends Platformer {
         let playerTwo = this.opponent.character == 0 ? "Jessica" : "Antoc"
 
         if(this.startText !== null)
-        {   
+        {
             console.log(this.startText)
-            this.startText?.setText(`Player One ${playerOne} \n Player Two ${playerTwo} \nPress Space key to play`)
+            this.startText?.setText(`Player One ${playerOne}\nPlayer Two ${playerTwo}\nPress Space to play`)
         }
-        
     }
     createMenu(){
         let playerOne = this.character_type_0 == 0 ? "Jessica" : "Antoc"
         let playerTwo = this.opponent.character == 0 ? "Jessica" : "Antoc"
 
-        this.startText = this.createCenteredText(`Player One ${playerOne} \n Player Two ${playerTwo} \nPress Space key to play`)
+        this.startText = this.createCenteredText(`Player One ${playerOne}\nPlayer Two ${playerTwo}\nPress Space to play`)
         this.initializeCameraSettings()
     }
 
@@ -157,7 +156,7 @@ export default class RealTime extends Platformer {
         this.startText.setVisible(false);
     }
 
-    endGame() { 
+    endGame() {
         this.centerText(this.startText)
         this.startText.setVisible(true)
         this.gameTimer.destroy();
@@ -227,7 +226,7 @@ export default class RealTime extends Platformer {
                         "jessica"
                     ]["Sidecut"];
             }
-        } 
+        }
         if (this.keyboard.h.isDown) {
                 this.isDebug = !this.isDebug
         }

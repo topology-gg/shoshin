@@ -68,6 +68,7 @@ import RealTimeSettingPanel from "../src/components/settingsPanels/RealTimeSetti
 import RegistrationPage from "../src/components/register/Register";
 import { ShoshinWASMContext } from "../src/context/wasm-shoshin";
 import { INITIAL_AGENT_COMPONENTS, STARTER_AGENT } from "../src/constants/starter_agent";
+import MidScreenKeybinding from "../src/components/MidScreenKeybinding";
 
 //@ts-ignore
 const Game = dynamic(() => import("../src/Game/PhaserGame"), {
@@ -151,6 +152,38 @@ export default function Home() {
         setToastOpen(false);
     };
 
+
+    const [keyDownState, setKeyDownState] = useState<{ [keycode: number]: boolean }>({});
+
+    // add listnener for keydown events
+    useEffect(() => {
+        function handleKeyDown(e) {
+            console.log('keydown', e.keyCode);
+            setKeyDownState((prev) => {
+                let prev_copy = JSON.parse(JSON.stringify(prev));
+                prev_copy[e.keyCode] = true;
+                return prev_copy;
+            })
+        }
+        function handleKeyUp(e) {
+            console.log('keyup', e.keyCode);
+            setKeyDownState((prev) => {
+                let prev_copy = JSON.parse(JSON.stringify(prev));
+                prev_copy[e.keyCode] = false;
+                return prev_copy;
+            })
+        }
+
+        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('keyup', handleKeyUp);
+
+        // clean up
+        return function cleanup() {
+            document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('keyup', handleKeyUp);
+        }
+    }, []);
+
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents();
     const t: SingleMetadata[] = data?.agents;
@@ -158,7 +191,7 @@ export default function Home() {
 
 
     const { data : leagueData } = useLeagueAgents();
-    
+
     let leagueAgents: Agent[] = leagueData?.agents?.map(splitSingleMetadata).flat();
 
     const newAgent: Agent = useMemo(() => {
@@ -711,7 +744,7 @@ export default function Home() {
             return cond;
         });
         setAgentName(() => "");
-        setCharacter(() =>  
+        setCharacter(() =>
             agent.character == 0 ? Character.Jessica : Character.Antoc
         );
         setConditionUnderEditIndex(() => 0);
@@ -811,7 +844,7 @@ export default function Home() {
 
     const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
 
-    console.log('index.tsx::ctx', ctx)
+    // console.log('index.tsx::ctx', ctx)
 
     const toggleGameMode = () => {
         if(gameMode == GameModes.simulation)
@@ -882,36 +915,41 @@ export default function Home() {
                     }}
                     isInView={swipeableViewIndex == 0}
                 />
-
-                <MidScreenControl
-                    runnable={!(p1 == null || p2 == null) && gameMode == GameModes.simulation}
-                    testJsonAvailable={
-                        testJson ? true : false
-                    }
-                    testJson={testJson}
-                    animationFrame={animationFrame}
-                    n_cycles={N_FRAMES}
-                    animationState={animationState}
-                    handleClick={
-                        handleMidScreenControlClick
-                    }
-                    handleSlideChange={(evt) => {
-                        if (animationState == "Run") return;
-                        console.log('handleSlideChange::value', evt.target.value)
-                        const slide_val: number = parseInt(
-                            evt.target.value
-                        );
-                        setAnimationFrame(slide_val);
-                    }}
-                    checkedShowDebugInfo={
-                        checkedShowDebugInfo
-                    }
-                    handleChangeDebugInfo={() =>
-                        setCheckedShowDebugInfo(
-                            (_) => !checkedShowDebugInfo
-                        )
-                    }
-                />
+                {
+                    gameMode == GameModes.simulation ? (
+                        <MidScreenControl
+                            runnable={!(p1 == null || p2 == null) && gameMode == GameModes.simulation}
+                            testJsonAvailable={
+                                testJson ? true : false
+                            }
+                            testJson={testJson}
+                            animationFrame={animationFrame}
+                            n_cycles={N_FRAMES}
+                            animationState={animationState}
+                            handleClick={
+                                handleMidScreenControlClick
+                            }
+                            handleSlideChange={(evt) => {
+                                if (animationState == "Run") return;
+                                console.log('handleSlideChange::value', evt.target.value)
+                                const slide_val: number = parseInt(
+                                    evt.target.value
+                                );
+                                setAnimationFrame(slide_val);
+                            }}
+                            checkedShowDebugInfo={
+                                checkedShowDebugInfo
+                            }
+                            handleChangeDebugInfo={() =>
+                                setCheckedShowDebugInfo(
+                                    (_) => !checkedShowDebugInfo
+                                )
+                            }
+                        />
+                    ) : (
+                        <MidScreenKeybinding realTimeCharacter={realTimeCharacter} keyDownState={keyDownState}/>
+                    )
+                }
 
                 <div style={{padding:'10px', paddingBottom:'13px', marginBottom:'16px', border:'1px solid #777', borderRadius:'20px'}}>
                     <Accordion
