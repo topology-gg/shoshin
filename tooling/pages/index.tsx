@@ -23,14 +23,8 @@ import {
     DEFENSIVE_AGENT,
     ENTRYPOINT_AGENT_SUBMISSION,
     IDLE_AGENT,
-    INITIAL_COMBOS,
-    INITIAL_DECISION_TREES,
-    INITIAL_CONDITIONS,
-    INITIAL_CONDITION_INDEX,
-    INITIAL_MENTAL_STATES,
     OFFENSIVE_AGENT,
     EditorMode,
-    BLANK_AGENT,
 } from "../src/constants/constants";
 import Agent, { agentToCalldata, buildAgent } from "../src/types/Agent";
 import StatusBarPanel, { StatusBarPanelProps as PlayerStatuses } from "../src/components/StatusBar";
@@ -101,7 +95,7 @@ export default function Home() {
     const [settingModalOpen, setSettingModalOpen] = useState<boolean>(false);
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [conditionUnderEditIndex, setConditionUnderEditIndex] =
-        useState<number>(INITIAL_CONDITION_INDEX);
+        useState<number>(0);
     const [editorMode, setEditorMode] = useState<EditorMode>(
         EditorMode.ReadOnly
     );
