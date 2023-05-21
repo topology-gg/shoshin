@@ -24,6 +24,7 @@ block_to_start_indexing = 792_325
 
 # Get indexer id from env
 indexer_id = os.getenv('INDEXER_ID', 'default-indexer-id')
+print(f"indexer_id = {indexer_id}")
 
 submission_key = "0x03a4a594e9b3ae15762aec67ca82f720f08ea5b663db0e29835ca136faf96346"
 metadata_key = "0x0364ea994a381e991dd8c15146830a602f0e489a22a5318a44458a423ba89888"
