@@ -16,7 +16,7 @@ const whiteListedAccounts = [
     "0x013d200c8c96561a8c0b20fe1782c79b83edd4608228006ec674e5528b47ad9e", // noncents cartridge
     "0x2f880133db4f533bDbC10C3d02fbC9b264dAC2Ff52EAE4E0cec0CE794bAD898", // gg
     "0x1b0afcd626d197993070994f8b37d20594c93bebfd48e28bd38c3b94a5802ea", // gg cartridge
-    "0x013dB223F1bb7c87bb36440FE1C1F01A7B32e6b4CFcadFE77dC0cD716c83A3f8" // xiler argent -x
+    "0x013db223f1bb7c87bb36440fe1c1f01a7b32e6b4cfcadfe77dc0cd716c83a3f8" // xiler argent -x
 ];
 
 const RegistrationPage = ({ setIsWhiteListedTrue }: RegistrationProps) => {
