@@ -194,12 +194,15 @@ func _body_antoc {range_check_ptr}(
 
         // if intent remains BLOCK
         if (intent == ns_antoc_action.BLOCK) {
-            if (counter == ns_antoc_body_state_duration.BLOCK - 1) {
-                // reset counter
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, updated_stamina, dir, FALSE) );
-            } else {
-                // increment counter
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, counter + 1, integrity, updated_stamina, dir, FALSE) );
+            // check stamina
+            if(enough_stamina == TRUE){
+                if (counter == 2) {
+                    // if counter reaches active frame (3rd frame; counter == 2) => stay in active frame
+                    return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, counter, integrity, updated_stamina, dir, FALSE) );
+                } else {
+                    // else increment counter
+                    return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, counter + 1, integrity, updated_stamina, dir, FALSE) );
+                }
             }
         }
 

@@ -57,12 +57,12 @@ func _body_jessica {range_check_ptr}(
         if (intent == ns_jessica_action.MOVE_BACKWARD) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.MOVE_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
         }
-        if (intent == ns_jessica_action.BLOCK) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir, FALSE) );
-        }
         if(enough_stamina == TRUE){
+            if (intent == ns_jessica_action.BLOCK) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir, FALSE) );
+            }
             if (intent == ns_jessica_action.SLASH) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 0, integrity, updated_stamina, dir, FALSE) );
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 0, integrity, updated_stamina, dir, FALSE) );
             }
             if (intent == ns_jessica_action.UPSWING) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 0, integrity, updated_stamina, dir, FALSE) );
@@ -208,12 +208,15 @@ func _body_jessica {range_check_ptr}(
 
         // body responds to intent
         if (intent == ns_jessica_action.BLOCK) {
-            if (counter == ns_jessica_body_state_duration.BLOCK - 1) {
-                // reset counter
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, updated_stamina, dir, FALSE) );
-            } else {
-                // increment counter
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, counter + 1, integrity, updated_stamina, dir, FALSE) );
+            // check stamina
+            if(enough_stamina == TRUE){
+                if (counter == 1) {
+                    // if counter reaches active frame (2nd frame; counter == 1) => stay in active frame
+                    return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, counter, integrity, updated_stamina, dir, FALSE) );
+                } else {
+                    // else increment counter
+                    return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, counter + 1, integrity, updated_stamina, dir, FALSE) );
+                }
             }
         }
 
@@ -281,11 +284,10 @@ func _body_jessica {range_check_ptr}(
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
-        if (intent == ns_jessica_action.BLOCK) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir, FALSE) );
-        }
-
         if(enough_stamina == TRUE){
+            if (intent == ns_jessica_action.BLOCK) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir, FALSE) );
+            }
             if (intent == ns_jessica_action.SLASH) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir, FALSE) );
             }
@@ -330,10 +332,10 @@ func _body_jessica {range_check_ptr}(
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
-        if (intent == ns_jessica_action.BLOCK) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir, FALSE) );
-        }
         if(enough_stamina == TRUE){
+            if (intent == ns_jessica_action.BLOCK) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir, FALSE) );
+            }
             if (intent == ns_jessica_action.SLASH) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 0, integrity, stamina, dir, FALSE) );
             }
