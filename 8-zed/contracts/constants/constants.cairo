@@ -21,16 +21,15 @@ namespace ns_stamina {
 }
 
 namespace ns_common_stamina_effect {
-    // These values are added to the players stamina,
-    // They are amortized across the entire animation
-    const NULL = 20;
-    const MOVE_FORWARD = 20;
-    const MOVE_BACKWARD = 20;
-    const BLOCK = 10;
-    // These values are removed from the players stamina
-    // These have an upfront cost that is paid in the first frame
-    const DASH_FORWARD = -200;
-    const DASH_BACKWARD = -200;
+    // These values are applied every frame in the body state
+    const NULL = 50; // replenish stamina
+    const MOVE_FORWARD = 25; // replenish stamina
+    const MOVE_BACKWARD = 25; // replenish stamina
+    const BLOCK = -25; // consumes stamina
+
+    // These values are applied in the first frame of body state
+    const DASH_FORWARD = -200; // consumes stamina
+    const DASH_BACKWARD = -200; // consumes stamina
 }
 
 namespace ns_integrity {
