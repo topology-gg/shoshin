@@ -208,12 +208,15 @@ func _body_jessica {range_check_ptr}(
 
         // body responds to intent
         if (intent == ns_jessica_action.BLOCK) {
-            if (counter == 1) {
-                // if counter reaches active frame (2nd frame; counter == 1) => stay in active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, counter, integrity, updated_stamina, dir, FALSE) );
-            } else {
-                // else increment counter
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, counter + 1, integrity, updated_stamina, dir, FALSE) );
+            // check stamina
+            if(enough_stamina == TRUE){
+                if (counter == 1) {
+                    // if counter reaches active frame (2nd frame; counter == 1) => stay in active frame
+                    return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, counter, integrity, updated_stamina, dir, FALSE) );
+                } else {
+                    // else increment counter
+                    return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, counter + 1, integrity, updated_stamina, dir, FALSE) );
+                }
             }
         }
 
