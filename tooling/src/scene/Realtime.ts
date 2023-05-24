@@ -137,6 +137,9 @@ export default class RealTime extends Platformer {
             f: Phaser.Input.Keyboard.KeyCodes.F,
         });
         this.setPlayerOneCharacter(this.character_type_0);
+        this.scene.scene.events.on("pause", () => {
+            this.toggleInputs(false)
+        })
     }
 
     startMatch() {
@@ -170,7 +173,8 @@ export default class RealTime extends Platformer {
         }else{
             this.input.keyboard.disableGlobalCapture()
         }
-    }
+    }   
+
 
     update(t, ds) {
         if (this.keyboard.space.isDown && !this.isGameRunning) {
