@@ -200,7 +200,7 @@ const EditorView = ({
                         />
                     </div> */}
 
-                    <Tooltip title="Build an agent from scratch">
+                    <Tooltip title="Build an agent from scratch" placement="top">
                         <div style={{marginBottom: '1rem'}}>
                                 <Button
                                     id='button-option-list-button'
@@ -215,7 +215,7 @@ const EditorView = ({
                         </div>
                     </Tooltip>
 
-                    <Tooltip title="Build an agent starting from an existing agent">
+                    <Tooltip title="Build an agent starting from an existing agent" placement="top">
                         <div style={{marginBottom: '1rem'}}>
 
                                 <ButtonOptionList
@@ -230,7 +230,7 @@ const EditorView = ({
                         </div>
                     </Tooltip>
 
-                    <Tooltip title="Submit your agent onchain">
+                    <Tooltip title="Submit your agent onchain" placement="top">
                         <div style={{marginBottom: '1rem'}}>
                             <Button
                                 id='button-option-list-button'
