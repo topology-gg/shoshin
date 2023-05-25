@@ -349,48 +349,58 @@ func produce_stimulus_given_conditions {range_check_ptr} (
 
     // Stimulus determination logic:
     // (TODO in Cairo 1.0 redesign, abstract this by defining character-specific parameters and devising a parameter-driven logic to determine stimulus)
-    // (block-attack) when jessica (self) attacks into antoc's block, self gets CLASH
-    // (block-attack) when antoc (self) attacks into antoc's block, self gets KNOCKED
-    // (block-attack) when jessica blocks antoc's attack, jessica gets CLASH, while antoc gets CLASH
-    // (attack-attack) when two characters of the same type attack into each other, both get CLASH
-    // (attack-attack) when jessica attack into antoc's attack, jessica gets KNOCKED, while antoc gets CLASH
-    // (hit) when hit, get HURT if not in critical integrity, get KNOCKED otherwise
 
-    // (block-attack) when jessica (self) attacks into antoc's block, self gets CLASH
+    // self attacks into opp's block
     if (bool_self_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
-        if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
+        // self is jessica & opp is jessica
+        if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.JESSICA) {
             return ns_stimulus.CLASH;
         }
-    }
 
-    // (block-attack) when antoc (self) attacks into antoc's block, self gets KNOCKED
-    if (bool_self_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
+        // self is jessica & opp is antoc
+        if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
+            return ns_stimulus.KNOCKED;
+        }
+
+        // self is antoc & opp is jessica
+        if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
+            return ns_stimulus.CLASH;
+        }
+
+        // self is antoc & opp is antoc
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.ANTOC) {
             return ns_stimulus.KNOCKED;
         }
     }
 
-    // (block-attack) when jessica blocks antoc's attack, jessica gets CLASH, while antoc gets CLASH
+    // self blocks opp's attack
     if (bool_self_block_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
+        // self is jessica & opp is jessica
+        if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.JESSICA) {
+            return ns_stimulus.NULL;
+        }
+
+        // self is jessica & opp is antoc
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             return ns_stimulus.CLASH;
         }
-    }
-    if (bool_self_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
+
+        // self is antoc & opp is jessica
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
-            return ns_stimulus.CLASH;
+            return ns_stimulus.NULL;
+        }
+
+        // self is antoc & opp is antoc
+        if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.ANTOC) {
+            return ns_stimulus.NULL;
         }
     }
 
-    // (attack-attack) when two characters of the same type attack into each other, both get CLASH
+    // self attacks into opp's attack
     if (bool_self_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == opp_character_type) {
             return ns_stimulus.CLASH;
         }
-    }
-
-    // (attack-attack) when jessica attack into antoc's attack, jessica gets KNOCKED, while antoc gets CLASH
-    if (bool_self_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             return ns_stimulus.KNOCKED;
         }
