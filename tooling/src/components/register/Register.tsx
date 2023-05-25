@@ -30,7 +30,7 @@ const RegistrationPage = ({ setIsWhiteListedTrue }: RegistrationProps) => {
     const { address } = useAccount();
 
     useEffect(() => {
-        let match = whiteListedAccounts.findIndex(
+        let match = !address ? -1 : whiteListedAccounts.findIndex(
             (whitelistedAddress) => matchHexstringsByNumber(whitelistedAddress, address)
         );
         if (match != -1) {

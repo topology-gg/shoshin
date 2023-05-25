@@ -1006,7 +1006,7 @@ export default function Home() {
         </div>)
     }
 
-    if(!isWhiteListed && isProduction){
+    if(!isWhiteListed){
         return <RegistrationPage
             setIsWhiteListedTrue={() => {setIsWhiteListed(true)}}/>
     }
