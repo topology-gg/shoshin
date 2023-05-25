@@ -6,7 +6,6 @@ import { useAccount } from "@starknet-react/core";
 import ConnectWallet from "../ConnectWallet";
 import styles from './register.module.css'
 
-
 interface RegistrationProps {
     setIsWhiteListedTrue: () => void;
 }
@@ -19,14 +18,20 @@ const whiteListedAccounts = [
     "0x013db223f1bb7c87bb36440fe1c1f01a7b32e6b4cfcadfe77dc0cd716c83a3f8" // xiler argent -x
 ];
 
+const hexstringToNumber = (hexstr: string): number => {
+    const num = parseInt(hexstr.replace(/^#/, ''), 16);
+    return num;
+}
+const matchHexstringsByNumber = (hexstr1: string, hexstr2: string): boolean => {
+    return hexstringToNumber(hexstr1) == hexstringToNumber(hexstr2);
+}
+
 const RegistrationPage = ({ setIsWhiteListedTrue }: RegistrationProps) => {
     const { address } = useAccount();
 
-
-
     useEffect(() => {
         let match = whiteListedAccounts.findIndex(
-            (whitelistedAddress) => whitelistedAddress == address
+            (whitelistedAddress) => matchHexstringsByNumber(whitelistedAddress, address)
         );
         if (match != -1) {
             setIsWhiteListedTrue();
