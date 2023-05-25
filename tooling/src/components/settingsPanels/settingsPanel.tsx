@@ -2,7 +2,8 @@ import React from "react";
 import Rating from "@mui/material/Rating";
 import { styled } from "@mui/material/styles";
 import "../../../styles/StatusBar.module.css";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, Box, FormControl, InputLabel, ListSubheader, MenuItem, SelectChangeEvent, TextField } from "@mui/material";
+import Select from '@mui/material/Select'
 import Agent from "../../types/Agent";
 import { SingleMetadata } from "../../types/Metadata";
 
@@ -31,63 +32,90 @@ const lookupSenderAddress = (address : string) =>{
 
 
 
+const createMenuItem = (index : number, group: string, label : string) => {
+    return (        
+        <MenuItem  value={JSON.stringify(
+            {
+                index : index,
+                group : group,
+                label : label
+            }
+        )}>
+            {label}
+        </MenuItem>)
+}
 export const SetPlayerBar = ({ label, agentsFromRegistry, leagueAgents, agentChange }) => {
 
     // ref: https://stackoverflow.com/questions/73095037/how-to-have-an-option-be-a-part-of-multiple-groups-with-mui-autocomplete
-    let agentOptions = [{group:'Local', label:'your agent', index: -1}]
+    let yourAgent = createMenuItem(-1, null, 'your agent')
     
-    agentOptions = agentOptions.concat([
-        {group:'Training', label:'idle agent', index: -1},
-        {group:'Training', label:'defensive agent', index: -1},
-        {group:'Training', label:'offensive agent', index: -1},
+    const trainingAgents = ([
+        createMenuItem(-1, 'Training', 'idle agent'),
+        createMenuItem(-1, 'Training', 'offensive agent'),
+        createMenuItem(-1, 'Training', 'defensive agent')
     ])
 
-    agentOptions = agentOptions.concat(!leagueAgents ? [] : leagueAgents.map((a: any, a_i: number) => {
-        return {
-            group: 'League',
-            label: `${a.agent_name} by ${lookupSenderAddress(a.sender)}`,
-            index: a_i,
-        } as AgentOption
-    }))
+    const leagueAgentOptions = !leagueAgents ? []  : leagueAgents.map((a: any, a_i: number) => {
+        return createMenuItem(a_i, 'League', `${a.agent_name} by ${lookupSenderAddress(a.sender)}`,)
+        
+    })
 
-    agentOptions = agentOptions.concat (!agentsFromRegistry ? [] : agentsFromRegistry.map((a: SingleMetadata, a_i: number) => {
-        return {
-            group: 'Registry',
-            label: `agent-${a_i} by ${lookupSenderAddress(a.sender)}`,
-            index: a_i,
-        } as AgentOption
-    }))
 
+    const registryAgents = !agentsFromRegistry ? [] : agentsFromRegistry.map((a: SingleMetadata, a_i: number) => {
+        return createMenuItem(a_i, 'Registry', `agent-${a_i} by ${lookupSenderAddress(a.sender)}`,)
+    })
+
+
+    const handleChange = (event: SelectChangeEvent, value : string) => {
+        agentChange(JSON.parse(event.target.value))
+    };
 
 
     return (
-        <AutoComplete
-            disablePortal
-            id="combo-box-demo"
-            options={agentOptions}
-            groupBy={(option: AgentOption) => option.group}
-            getOptionLabel={(option: AgentOption) => option.label}
-            sx={{ width: 220 }}
-            renderInput={(params) => <TextField {...params} label={label} />}
-            onChange={agentChange}
-        />
+        <Box width={"200px"}>
+            <FormControl fullWidth>
+                <InputLabel id="select label">{label}</InputLabel>
+                <Select
+                    id="agent-select"
+                    onChange={handleChange}
+                >   
+                    <ListSubheader>Local</ListSubheader>
+                        {yourAgent}
+                    <ListSubheader>Training</ListSubheader>
+                        {trainingAgents}
+                    <ListSubheader>League</ListSubheader>
+                        {leagueAgentOptions}
+                    <ListSubheader>Registry</ListSubheader>
+                        {registryAgents}
+                </Select>
+            </FormControl>
+        </Box>
     )
 }
 
 export const SelectCharacterBar = ({ label, changeCharacter }) => {
+    const handleChange = (event: SelectChangeEvent, value : string) => {
+        changeCharacter(event.target.value)
+    };
 
-    const characterOptions = [
-        {label : "jessica", id: 0},
-        {label : 'antoc', id : 1}
-    ]
+
     return (
-        <AutoComplete
-            disablePortal
-            id="combo-box-demo"
-            options={characterOptions}
-            sx={{ width: 220 }}
-            renderInput={(params) => <TextField {...params} label={label} />}
-            onChange={changeCharacter}
-        />
+        <Box width={"200px"}>
+            <FormControl fullWidth>
+                <InputLabel id="select label">{label}</InputLabel>
+                <Select
+                    id="agent-select"
+                    onChange={handleChange}
+                    defaultValue=""
+                >   
+                    <MenuItem  value={0}>
+                        jessica
+                    </MenuItem>
+                    <MenuItem  value={1}>
+                        antoc
+                    </MenuItem>
+                </Select>
+            </FormControl>
+        </Box>
     )
 }
