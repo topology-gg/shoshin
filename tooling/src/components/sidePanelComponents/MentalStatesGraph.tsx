@@ -9,13 +9,25 @@ function generateGraphData(
         id: i,
         label: name,
     }));
+    let mapLabelToIndex = {}
+    mentalStateNamesOrdered.forEach((value: string, index: number) => {
+        mapLabelToIndex[value] = index
+    })
 
     // create an array with edges
-    const edges: Edge[] = mentalStateNamesOrdered.flatMap((name, i) =>
-        nextMentalStateNamesOrdered[i].map((_name, nextI) => ({
-            from: i,
-            to: nextI,
-        }))
+    const edges: Edge[] = mentalStateNamesOrdered.flatMap( (fromName, fromNodeIndex) =>
+
+        nextMentalStateNamesOrdered[fromNodeIndex].reduce(function(result, toName) {
+            const toNodeIndex = mapLabelToIndex[toName]
+            if (toNodeIndex !== undefined) {
+                result.push({
+                    from: fromNodeIndex,
+                    to: toNodeIndex
+                })
+            }
+            return result;
+        }, [])
+
     );
     return {
         nodes,
@@ -30,6 +42,7 @@ const MentalStatesGraph = ({
     mentalStateNamesOrdered: string[];
     nextMentalStateNamesOrdered: string[][];
 }) => {
+
     const containerRef = useRef<HTMLDivElement>();
     const graphRef = useRef<Network>();
 
@@ -40,6 +53,7 @@ const MentalStatesGraph = ({
             mentalStateNamesOrdered,
             nextMentalStateNamesOrdered
         );
+        console.log('graph data:', data)
         var options: Options = {
             autoResize: true,
             height: "400px",
