@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
-import { Box, Card, CardContent } from "@mui/material";
+import { Box, Button, Card, CardContent } from "@mui/material";
 import { useAccount } from "@starknet-react/core";
 import ConnectWallet from "../ConnectWallet";
 import styles from './register.module.css'
@@ -46,10 +46,15 @@ const RegistrationPage = ({ setIsWhiteListedTrue }: RegistrationProps) => {
     const displayWhitelistError =
         whiteListedAccounts.find(
             (whitelistedAddress) => whitelistedAddress == address
-        ) == undefined;
+        ) == undefined && address
     const whiteListErrorMessage = address
-        ? `Account ${address}... is not whitelisted. If you believe there is an error please contact us directly`
+        ? `Account with address ${address} \n is not whitelisted. If you believe there is an error please contact us directly`
         : "";
+
+
+    const copyAddress = () => {
+        navigator.clipboard.writeText(address)
+    }
 
     return (
         <Box
@@ -66,7 +71,7 @@ const RegistrationPage = ({ setIsWhiteListedTrue }: RegistrationProps) => {
                     src="./images/splash/shoshin-title.jpg"
                 />
             </div>
-            <Card sx={{ maxWidth: 400, margin: "20px" }}>
+            <Card sx={{ maxWidth: 400, margin: "20px" }} >
                 <CardContent>
                     <Typography
                         variant="h6"
@@ -87,10 +92,29 @@ const RegistrationPage = ({ setIsWhiteListedTrue }: RegistrationProps) => {
                     .
                     <br />
                     <br />
-                    Whitelisted players can connect to Shoshin below               
-                    <Typography component="div" sx={{ color: "red" }}>
+                    Whitelisted players can connect to Shoshin below
+
+                    <Typography component="div" sx={{ color: "red" }} overflow={'auto'} paragraph={true} flexDirection={'column'}>
+                    <div
+                        style={{
+                            
+                            display: "flex",
+                            flexDirection: "column",
+                            wordBreak : "break-word"
+                        }}>
                         {displayWhitelistError ? whiteListErrorMessage : null}
+                        {
+                            displayWhitelistError ? (
+                            <Button
+                                onClick={copyAddress}>
+                                Copy Address
+                            </Button>)
+                            : null
+                        }             
+
+                    </div>
                     </Typography>
+
                     <Box
                         sx={{
                             display: "flex",
@@ -98,6 +122,7 @@ const RegistrationPage = ({ setIsWhiteListedTrue }: RegistrationProps) => {
                             marginTop: "20px",
                         }}
                     >
+                        
                         <ConnectWallet />
                     </Box>
                 </CardContent>
