@@ -8,13 +8,13 @@ from contracts.constants.constants import (
 
 namespace ns_antoc_dynamics {
 
+    // dt = 0.1; one frame from static to max vel; two frames from minus max vel to positive max vel
+    const MOVE_ACC_FP = 1000 * ns_dynamics.SCALE_FP;
     const MAX_VEL_MOVE_FP = 100 * ns_dynamics.SCALE_FP;
     const MIN_VEL_MOVE_FP = (-100) * ns_dynamics.SCALE_FP;
 
     const MAX_VEL_DASH_FP = 900 * ns_dynamics.SCALE_FP;
     const MIN_VEL_DASH_FP = (-900) * ns_dynamics.SCALE_FP;
-
-    const MOVE_ACC_FP = 300 * ns_dynamics.SCALE_FP;
     const DASH_VEL_FP = 900 * ns_dynamics.SCALE_FP;
 
     const KNOCK_VEL_X_FP = 150 * ns_dynamics.SCALE_FP;
