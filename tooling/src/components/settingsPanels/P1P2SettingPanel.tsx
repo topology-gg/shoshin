@@ -10,7 +10,7 @@ interface P1P2SettingPanelProps {
     //Temporary type awkwardness since league db has agent names but user submitted does not
     // Will eventually be SingleMetadata when agent names are added to registry
     leagueAgents: any[],
-    agentChange: (whichPlayer: string, event: object, value: AgentOption) => void
+    agentChange: (whichPlayer: string, value: AgentOption) => void
 }
 
 
@@ -23,8 +23,8 @@ const P1P2SettingPanel = ({
     return (
         <div style={{marginBottom:'10px'}}>
             <div className={styles.statusBarRow}>
-                <SetPlayerBar label={'Select Player 1'} agentsFromRegistry={agentsFromRegistry} leagueAgents={leagueAgents} agentChange={(event, value) => agentChange('P1', event, value)}/>
-                <SetPlayerBar label={'Select Player 2'} agentsFromRegistry={agentsFromRegistry} leagueAgents={leagueAgents} agentChange={(event, value) => agentChange('P2', event, value)}/>
+                <SetPlayerBar label={'Select Player 1'} agentsFromRegistry={agentsFromRegistry} leagueAgents={leagueAgents} agentChange={(value) => agentChange('P1', value)}/>
+                <SetPlayerBar label={'Select Player 2'} agentsFromRegistry={agentsFromRegistry} leagueAgents={leagueAgents} agentChange={(value) => agentChange('P2', value)}/>
             </div>
         </div>
     );

@@ -23,7 +23,7 @@ const RealTimeSettingPanel = ({
     return (
         <div style={{marginBottom:'10px'}}>
             <div className={styles.statusBarRow}>
-                <SelectCharacterBar label={'Select Character'} changeCharacter={(event, value) => changeCharacter(value.id)}/>
+                <SelectCharacterBar label={'Select Character'} changeCharacter={(value) => changeCharacter(value)}/>
                 <SetPlayerBar label={'Select Player 2'} agentsFromRegistry={agentsFromRegistry}leagueAgents={leagueAgents} agentChange={(event, value) => agentChange('P2', event, value)}/>
             </div>
         </div>

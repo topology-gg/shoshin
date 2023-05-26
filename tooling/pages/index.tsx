@@ -664,7 +664,6 @@ export default function Home() {
     //
     function agentChange(
         whichPlayer: string,
-        event: object,
         value: AgentOption
     ) {
         let setAgent: Agent;
