@@ -9,16 +9,16 @@ from contracts.constants.constants import (
 
 namespace ns_jessica_dynamics {
 
+    // dt = 0.1; one frame from static to max vel; two frames from minus max vel to positive max vel
+    const MOVE_ACC_FP = 1200 * ns_dynamics.SCALE_FP;
     const MAX_VEL_MOVE_FP = 120 * ns_dynamics.SCALE_FP;
     const MIN_VEL_MOVE_FP = (-120) * ns_dynamics.SCALE_FP;
 
     const MAX_VEL_DASH_FP = 1200 * ns_dynamics.SCALE_FP;
     const MIN_VEL_DASH_FP = (-1200) * ns_dynamics.SCALE_FP;
-
-    const MOVE_ACC_FP = 300 * ns_dynamics.SCALE_FP;
     const DASH_VEL_FP = 900 * ns_dynamics.SCALE_FP;
 
-    const KNOCK_VEL_X_FP = 150 * ns_dynamics.SCALE_FP; 
+    const KNOCK_VEL_X_FP = 150 * ns_dynamics.SCALE_FP;
     const KNOCK_VEL_Y_FP = 350 * ns_dynamics.SCALE_FP;
 
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
