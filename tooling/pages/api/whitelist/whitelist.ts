@@ -6,8 +6,8 @@ import { DB_NAME, COLLECTION_NAME_WHITELIST } from '../../../src/constants/const
 // Returns an array of whitelist-user objects
 
 export interface WhitelistUser {
-    username : String,
-    address : String
+    username : string,
+    address : string
 }
 export default async function handler(req, res) {
 
