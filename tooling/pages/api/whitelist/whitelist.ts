@@ -5,18 +5,18 @@ import { DB_NAME, COLLECTION_NAME_WHITELIST } from '../../../src/constants/const
 
 // Returns an array of whitelist-user objects
 
-interface WhitelistUser {
+export interface WhitelistUser {
     username : String,
-    addresss : String
+    address : String
 }
 export default async function handler(req, res) {
 
     const client = await clientPromise
     const db = client.db(DB_NAME)
-    const addresses : WhitelistUser[] = await db
+    const users : WhitelistUser[] = await db
         .collection(COLLECTION_NAME_WHITELIST)
         .find({})
         .toArray()
 
-    res.status(200).json(addresses)
+    res.status(200).json(users)
 }

@@ -5,6 +5,8 @@ import { Box, Button, Card, CardContent } from "@mui/material";
 import { useAccount } from "@starknet-react/core";
 import ConnectWallet from "../ConnectWallet";
 import styles from './register.module.css'
+import { useWhitelist } from "../../../lib/api";
+import { WhitelistUser } from "../../../pages/api/whitelist/whitelist";
 
 interface RegistrationProps {
     setIsWhiteListedTrue: () => void;
@@ -43,9 +45,14 @@ const RegistrationPage = ({ setIsWhiteListedTrue }: RegistrationProps) => {
             setIsWhiteListedTrue();
         }
     }, [address]);
+
+    const {data : users}  = useWhitelist()
+
+    console.log("whitelist users", users)
+
     const displayWhitelistError =
-        whiteListedAccounts.find(
-            (whitelistedAddress) => whitelistedAddress == address
+        users?.find(
+            (whitelistUser : WhitelistUser) => whitelistUser.address == address
         ) == undefined && address
     const whiteListErrorMessage = address
         ? `Account with address ${address} \n is not whitelisted. If you believe there is an error please contact us directly`
