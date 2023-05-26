@@ -18,7 +18,7 @@ const whiteListedAccounts = [
     "0x013db223f1bb7c87bb36440fe1c1f01a7b32e6b4cfcadfe77dc0cd716c83a3f8", // xiler argent -x
 
     // playtest cohort 01 below
-    "0x04e53743fa7332b81f350948137319e3c05c02c58eb", // kunho
+    "0x04e53743fa7332b81f350948137319e3c05c02c58eb2824690fd2f6a103b9cd1", // kunho
     "0x03fe959b3103e6b6755332edfe0c7c8af56442cb4d637e998963f009ae3e55df", // Minh
     "0x040db0248c455fd3002175ae2e4fbbe2e1a1a13f2689e81c1744a2024b9ef7d1", // Han
     "0x0350a4555e8d7c28d6ed9a807fd242e7a63d50da6444c2284eb61de34bfff6c5", // Ranyah
