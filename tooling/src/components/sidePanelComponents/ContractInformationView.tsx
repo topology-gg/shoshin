@@ -56,12 +56,12 @@ const JessicaInfo = `
 ### Stamina change
 | Body state | Change | Note |
 | - | - | - |
-| No action | +20 | stamina replenishes per frame |
-| Move forward | +20 | stamina replenishes per frame |
-| Move backward | +20 | stamina replenishes per frame |
-| Block | +10 | stamina replenishes per frame |
-| Dash forward | -50 | stamina consumed once when body enters the state |
-| Dash backward | -50 | stamina consumed once when body enters the state |
+| No action | +50 | stamina replenishes per frame |
+| Move forward | +25 | stamina replenishes per frame |
+| Move backward | +25 | stamina replenishes per frame |
+| Block | -25 | stamina consumed per frame |
+| Dash forward | -200 | stamina consumed once when body enters the state |
+| Dash backward | -200 | stamina consumed once when body enters the state |
 | Upswing | -100 | stamina consumed once when body enters the state |
 | Sidecut | -100 | stamina consumed once when body enters the state |
 | Slash | -100 | stamina consumed once when body enters the state |
@@ -100,12 +100,12 @@ const AntocInfo = `
 ### Stamina change
 | Body state | Change | Note |
 | - | - | - |
-| No action | +20 | stamina replenishes per frame |
-| Move forward | +20 | stamina replenishes per frame |
-| Move backward | +20 | stamina replenishes per frame |
-| Block | +10 | stamina replenishes per frame |
-| Dash forward | -50 | stamina consumed once when body enters the state |
-| Dash backward | -50 | stamina consumed once when body enters the state |
+| No action | +50 | stamina replenishes per frame |
+| Move forward | +25 | stamina replenishes per frame |
+| Move backward | +25 | stamina replenishes per frame |
+| Block | -25 | stamina consumed per frame |
+| Dash forward | -200 | stamina consumed once when body enters the state |
+| Dash backward | -200 | stamina consumed once when body enters the state |
 | Hori | -100 | stamina consumed once when body enters the state |
 | Vert | -100 | stamina consumed once when body enters the state |
 
