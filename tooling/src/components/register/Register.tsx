@@ -5,24 +5,12 @@ import { Box, Button, Card, CardContent } from "@mui/material";
 import { useAccount } from "@starknet-react/core";
 import ConnectWallet from "../ConnectWallet";
 import styles from './register.module.css'
+import { useWhitelist } from "../../../lib/api";
+import { WhitelistUser } from "../../../pages/api/whitelist/whitelist";
 
 interface RegistrationProps {
     setIsWhiteListedTrue: () => void;
 }
-
-const whiteListedAccounts = [
-    "0x266ed55be7054c74db3f8ec2e79c728056c802a11481fad0e91220139b8916a", // noncents
-    "0x013d200c8c96561a8c0b20fe1782c79b83edd4608228006ec674e5528b47ad9e", // noncents cartridge
-    "0x2f880133db4f533bDbC10C3d02fbC9b264dAC2Ff52EAE4E0cec0CE794bAD898", // gg
-    "0x1b0afcd626d197993070994f8b37d20594c93bebfd48e28bd38c3b94a5802ea", // gg cartridge
-    "0x013db223f1bb7c87bb36440fe1c1f01a7b32e6b4cfcadfe77dc0cd716c83a3f8", // xiler argent -x
-
-    // playtest cohort 01 below
-    "0x04e53743fa7332b81f350948137319e3c05c02c58eb2824690fd2f6a103b9cd1", // kunho
-    "0x03fe959b3103e6b6755332edfe0c7c8af56442cb4d637e998963f009ae3e55df", // Minh
-    "0x040db0248c455fd3002175ae2e4fbbe2e1a1a13f2689e81c1744a2024b9ef7d1", // Han
-    "0x0350a4555e8d7c28d6ed9a807fd242e7a63d50da6444c2284eb61de34bfff6c5", // Ranyah
-];
 
 const hexstringToNumber = (hexstr: string): number => {
     const num = parseInt(hexstr.replace(/^#/, ''), 16);
@@ -35,17 +23,20 @@ const matchHexstringsByNumber = (hexstr1: string, hexstr2: string): boolean => {
 const RegistrationPage = ({ setIsWhiteListedTrue }: RegistrationProps) => {
     const { address } = useAccount();
 
+    const {data : users}  = useWhitelist()
+
     useEffect(() => {
-        let match = !address ? -1 : whiteListedAccounts.findIndex(
-            (whitelistedAddress) => matchHexstringsByNumber(whitelistedAddress, address)
+        let match = !address ? -1 : (users as WhitelistUser[]).findIndex(
+            (user) => matchHexstringsByNumber(user.address, address)
         );
         if (match != -1) {
             setIsWhiteListedTrue();
         }
-    }, [address]);
+    }, [address, users]);
+
     const displayWhitelistError =
-        whiteListedAccounts.find(
-            (whitelistedAddress) => whitelistedAddress == address
+        users?.find(
+            (whitelistUser : WhitelistUser) => whitelistUser.address == address
         ) == undefined && address
     const whiteListErrorMessage = address
         ? `Account with address ${address} \n is not whitelisted. If you believe there is an error please contact us directly`

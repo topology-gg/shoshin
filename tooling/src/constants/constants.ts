@@ -8,6 +8,7 @@ import { Direction, Tree } from "../types/Tree"
 export const DB_NAME = 'shoshin_indexer_5'
 export const COLLECTION_NAME_SUBMISSION = 'shoshin-dogfooding-submission'
 export const COLLECTION_NAME_LEAGUE = 'shoshin-league'
+export const COLLECTION_NAME_WHITELIST = 'shoshin-whitelist'
 
 export const PRIME = BigInt(2**251) + BigInt(17) * BigInt(2**192) + BigInt(1)
 
