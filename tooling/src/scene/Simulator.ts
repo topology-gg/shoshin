@@ -38,10 +38,14 @@ export default class Simulator extends Phaser.Scene {
     player_one_action_hitbox_text : Phaser.GameObjects.Text
     player_two_action_hitbox_text : Phaser.GameObjects.Text
 
+    endTextP1Won : Phaser.GameObjects.Text;
+    endTextP2Won : Phaser.GameObjects.Text;
+    endTextDraw : Phaser.GameObjects.Text;
+
     readonly STROKE_STYLE_BODY_HITBOX = 0x7CFC00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xFF2400;//0xFB4D46;
 
-    
+
     //context only relevent for realtime atm, but I strongly think simulator will have wasm calls soon
     changeScene(scene : GameModes, context : IShoshinWASMContext, setPlayerStatuses : any){
 
@@ -56,7 +60,7 @@ export default class Simulator extends Phaser.Scene {
             this.scene.start(scene, {context, setPlayerStatuses})
         }
 
-        
+
     }
 
     preload(){
@@ -103,6 +107,19 @@ export default class Simulator extends Phaser.Scene {
         this.cameras.main.setBounds(DEFAULT_CAMERA_LEFT, DEFAULT_CAMERA_TOP , ARENA_WIDTH, DEFAULT_CAMERA_HEIGHT)
     }
 
+    createCenteredText(content: string) {
+        const centeredText = this.add
+            .text(
+                this.cameras.main.midPoint.x,
+                this.cameras.main.midPoint.y - 40,
+                content, {
+                color : "#000",
+                backgroundColor: "#FFF"
+            }).setOrigin(0.5)
+
+        return centeredText
+    }
+
     intitialize(){
         const yDisplacementFromCenterToGround = -150;
         let bg = this.add.image(0,20,'arena_bg');
@@ -128,6 +145,15 @@ export default class Simulator extends Phaser.Scene {
         this.cameras.main.centerOn(0, yDisplacementFromCenterToGround)
         this.cameras.main.setBackgroundColor('#FFFFFF')
         this.initializeCameraSettings()
+
+        this.endTextP1Won = this.createCenteredText('')
+        this.endTextP1Won.setVisible(false);
+
+        this.endTextP2Won = this.createCenteredText('')
+        this.endTextP2Won.setVisible(false);
+
+        this.endTextDraw = this.createCenteredText('')
+        this.endTextDraw.setVisible(false);
     }
     create(){
         this.intitialize()
@@ -150,7 +176,7 @@ export default class Simulator extends Phaser.Scene {
         const characterName = characterType == 0 ? 'jessica' : 'antoc'
         this.player_one_character = characterName
     }
-    
+
     setPlayerTwoCharacter(characterType : number){
         const characterName = characterType == 0 ? 'jessica' : 'antoc'
         this.player_two_character = characterName
@@ -271,24 +297,47 @@ export default class Simulator extends Phaser.Scene {
         const agentFrame0 = testJson?.agent_0.frames[animationFrame]
         const agentFrame1 = testJson?.agent_1.frames[animationFrame]
 
-        this.updateScene(characterType0, characterType1, agentFrame0, agentFrame1, animationFrame == 0, showDebug)
+        this.updateScene(characterType0, characterType1, agentFrame0, agentFrame1, animationFrame == 0, showDebug, animationFrame == 119)
     }
 
-    updateScene(characterType0 : number ,characterType1: number , agentFrame0 : FrameLike, agentFrame1 : FrameLike, isBeginning : boolean = true, showDebug : boolean = false){
-        
+    updateScene(characterType0 : number ,characterType1: number , agentFrame0 : FrameLike, agentFrame1 : FrameLike, isBeginning : boolean = true, showDebug : boolean = false, isLast : boolean = false){
+
                 this.setPlayerOneCharacter(characterType0)
                 this.setPlayerTwoCharacter(characterType1)
                 this.setPlayerOneFrame(agentFrame0);
                 this.setPlayerTwoFrame(agentFrame1);
 
-                if(isBeginning)
-                {
-                    this.initializeCameraSettings()
+                if (isLast) {
+                    const integrity_P1 = agentFrame0.body_state.integrity
+                    const integrity_P2 = agentFrame1.body_state.integrity
+                    if (integrity_P1 < integrity_P2) {
+                        this.endTextP2Won = this.createCenteredText('Player 2 won!')
+                        this.endTextP2Won.setVisible(true)
+                    }
+                    else if (integrity_P1 > integrity_P2) {
+                        this.endTextP1Won = this.createCenteredText('Player 1 won!')
+                        this.endTextP1Won.setVisible(true)
+                    }
+                    else {
+                        this.endTextDraw = this.createCenteredText('Draw!')
+                        this.endTextDraw.setVisible(true)
+                    }
                 }
-                else
-                {
-                    this.adjustCamera(agentFrame0.physics_state.pos.x, agentFrame1.physics_state.pos.x)
+                else {
+                    this.endTextDraw.setVisible(false)
+                    this.endTextP1Won.setVisible(false)
+                    this.endTextP2Won.setVisible(false)
+
+                    if (isBeginning)
+                    {
+                        this.initializeCameraSettings()
+                    }
+                    else
+                    {
+                        this.adjustCamera(agentFrame0.physics_state.pos.x, agentFrame1.physics_state.pos.x)
+                    }
                 }
+
 
                 if(showDebug)
                 {

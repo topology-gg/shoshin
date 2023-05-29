@@ -20,10 +20,10 @@ export default class RealTime extends Platformer {
 
     private wasmContext?: IShoshinWASMContext;
 
-    private startText: Phaser.GameObjects.Text;
-    private endTextP1Won : Phaser.GameObjects.Text;
-    private endTextP2Won : Phaser.GameObjects.Text;
-    private endTextDraw : Phaser.GameObjects.Text;
+    startText: Phaser.GameObjects.Text;
+    endTextP1Won : Phaser.GameObjects.Text;
+    endTextP2Won : Phaser.GameObjects.Text;
+    endTextDraw : Phaser.GameObjects.Text;
 
     private isGameRunning: boolean;
 
