@@ -20,8 +20,10 @@ export default class RealTime extends Platformer {
 
     private wasmContext?: IShoshinWASMContext;
 
-    private startText: Phaser.GameObjects.Text;
-    private endText : Phaser.GameObjects.Text;
+    startText: Phaser.GameObjects.Text;
+    endTextP1Won : Phaser.GameObjects.Text;
+    endTextP2Won : Phaser.GameObjects.Text;
+    endTextDraw : Phaser.GameObjects.Text;
 
     private isGameRunning: boolean;
 
@@ -83,31 +85,42 @@ export default class RealTime extends Platformer {
 
     createCenteredText(content: string) {
         const centeredText = this.add
-            .text(this.cameras.main.midPoint.x,
-                this.cameras.main.midPoint.y,
+            .text(
+                this.cameras.main.midPoint.x,
+                this.cameras.main.midPoint.y - 40,
                 content, {
                 color : "#000",
                 backgroundColor: "#FFF"
-            })
+            }).setOrigin(0.5)
 
         return centeredText
     }
 
     setMenuText(){
-        let playerOne = this.character_type_0 == 0 ? "Jessica" : "Antoc"
-        let playerTwo = this.opponent.character == 0 ? "Jessica" : "Antoc"
+        // let playerOne = this.character_type_0 == 0 ? "Jessica" : "Antoc"
+        // let playerTwo = this.opponent.character == 0 ? "Jessica" : "Antoc"
 
         if(this.startText !== null)
         {
             console.log(this.startText)
-            this.startText?.setText(`Player One ${playerOne}\nPlayer Two ${playerTwo}\nPress Space to play`)
+            this.startText?.setText('Press Space to play')
         }
     }
     createMenu(){
-        let playerOne = this.character_type_0 == 0 ? "Jessica" : "Antoc"
-        let playerTwo = this.opponent.character == 0 ? "Jessica" : "Antoc"
+        // let playerOne = this.character_type_0 == 0 ? "Jessica" : "Antoc"
+        // let playerTwo = this.opponent.character == 0 ? "Jessica" : "Antoc"
 
-        this.startText = this.createCenteredText(`Player One ${playerOne}\nPlayer Two ${playerTwo}\nPress Space to play`)
+        this.startText = this.createCenteredText('Press Space to start')
+
+        this.endTextP1Won = this.createCenteredText('Player 1 won!\nPress Space to restart')
+        this.endTextP1Won.setVisible(false);
+
+        this.endTextP2Won = this.createCenteredText('Player 2 won!\nPress Space to restart')
+        this.endTextP2Won.setVisible(false);
+
+        this.endTextDraw = this.createCenteredText('Draw!\nPress Space to restart')
+        this.endTextDraw.setVisible(false);
+
         this.initializeCameraSettings()
     }
 
@@ -115,7 +128,7 @@ export default class RealTime extends Platformer {
     {
         text.setPosition(
             this.cameras.main.midPoint.x,
-            this.cameras.main.midPoint.y
+            this.cameras.main.midPoint.y - 40
         )
     }
     create() {
@@ -136,14 +149,14 @@ export default class RealTime extends Platformer {
             h: Phaser.Input.Keyboard.KeyCodes.H,
             f: Phaser.Input.Keyboard.KeyCodes.F,
         });
-        this.setPlayerOneCharacter(this.character_type_0);
+        this.set_player_character(this.character_type_0);
         this.scene.scene.events.on("pause", () => {
             this.toggleInputs(false)
         })
     }
 
     startMatch() {
-        this.setPlayerOneCharacter(this.character_type_0);
+        this.set_player_character(this.character_type_0);
         this.resetGameState()
 
         this.gameTimer = this.time.addEvent({
@@ -151,17 +164,32 @@ export default class RealTime extends Platformer {
             callback: () => this.run(),
             //args: [],
             //callbackScope: thisArg,
-            //Match is 20 minutes tops
-            repeat: 12000,
+            //Match is 60 seconds tops
+            repeat: 60 / 0.1,
         });
 
         this.isGameRunning = true;
         this.startText.setVisible(false);
+        this.endTextP1Won.setVisible(false);
+        this.endTextP2Won.setVisible(false);
+        this.endTextDraw.setVisible(false);
     }
 
-    endGame() {
-        this.centerText(this.startText)
-        this.startText.setVisible(true)
+    checkEndGame(integrityP1: number, integrityP2: number) {
+
+        if (integrityP1 == integrityP2) {
+            // draw
+            this.centerText(this.endTextDraw)
+            this.endTextDraw.setVisible(true)
+        }
+        else if (integrityP1 < integrityP2) {
+            this.centerText(this.endTextP2Won)
+            this.endTextP2Won.setVisible(true)
+        }
+        else {
+            this.centerText(this.endTextP1Won)
+            this.endTextP1Won.setVisible(true)
+        }
         this.gameTimer.destroy();
         this.isGameRunning = false;
     }
@@ -173,8 +201,7 @@ export default class RealTime extends Platformer {
         }else{
             this.input.keyboard.disableGlobalCapture()
         }
-    }   
-
+    }
 
     update(t, ds) {
         if (this.keyboard.space.isDown && !this.isGameRunning) {
@@ -278,19 +305,15 @@ export default class RealTime extends Platformer {
                 stamina_0,
                 stamina_1,
             });
+            console.log('this.gameTimer', this.gameTimer)
+            if (this.gameTimer.repeatCount == 0 && this.isGameRunning) {
+                this.checkEndGame(integrity_0, integrity_1);
+            }
 
-            if (this.gameTimer?.getRemaining() == 0 && this.isGameRunning) {
-                if (integrity_0 <= integrity_1) {
-                    //this.endGame(1);
-                } else {
-                    //this.endGame(2);
-                }
+            if ( (integrity_0 <= 0) || (integrity_1 <= 0) ) {
+                this.checkEndGame(integrity_0, integrity_1);
             }
-            if (integrity_0 <= 0) {
-                this.endGame();
-            } else if (integrity_1 <= 0) {
-                this.endGame();
-            }
+
         }
 
 
