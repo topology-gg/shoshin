@@ -26,11 +26,14 @@ const RegistrationPage = ({ setIsWhiteListedTrue }: RegistrationProps) => {
     const {data : users}  = useWhitelist()
 
     useEffect(() => {
-        let match = !address ? -1 : (users as WhitelistUser[]).findIndex(
-            (user) => matchHexstringsByNumber(user.address, address)
-        );
-        if (match != -1) {
-            setIsWhiteListedTrue();
+        if(users !== undefined)
+        {
+            let match = !address ? -1 : (users as WhitelistUser[]).findIndex(
+                (user) => matchHexstringsByNumber(user.address, address)
+            );
+            if (match != -1) {
+                setIsWhiteListedTrue();
+            }
         }
     }, [address, users]);
 
