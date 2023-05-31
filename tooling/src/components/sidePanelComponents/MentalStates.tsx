@@ -94,6 +94,18 @@ const MentalStates = ({
         (_, ms_i: number) => getMentalStatesNames(trees[ms_i])
     );
 
+    const [highlightedMentalState, setHighlightedMentalState] = useState<number>(-1)
+
+    const highlightMentalState = (index : number) => {
+        setHighlightedMentalState(index)
+    }
+
+    const selectMentalState = (index : number) => {
+        handleClickTreeEditor(index + 1)
+    }
+
+    // We do not want MS Graph to needlessly rerender
+    const MemoMSGraph = React.memo(MentalStatesGraph)                   
     // debug log
     mentalStateNamesOrdered?.forEach((name, name_i) => console.log(name, '=>', nextMentalStateNamesOrdered[name_i]))
 
@@ -221,6 +233,7 @@ const MentalStates = ({
                                     display: "flex",
                                     alignItems: "center",
                                     ml: "2rem",
+                                    bgcolor: highlightedMentalState == i ? "lightgrey" : null
                                 }}
                             >
                                 <button
@@ -289,11 +302,13 @@ const MentalStates = ({
                 </Grid>
 
                 <Grid item xs={6}>
-                    <MentalStatesGraph
+                    <MemoMSGraph
                         mentalStateNamesOrdered={mentalStateNamesOrdered}
                         nextMentalStateNamesOrdered={
                             nextMentalStateNamesOrdered
                         }
+                        highlightMentalState={highlightMentalState}
+                        selectMentalState={selectMentalState}
                     />
                 </Grid>
             </Grid>
