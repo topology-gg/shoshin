@@ -73,6 +73,7 @@ const bodyStateNameMappings = {
     AntocMoveBackward: 1100,
     AntocDashForward: 1110,
     AntocDashBackward: 1120,
+    AntocClash: 1130,
 };
 const bodyStateNames = Object.keys(bodyStateNameMappings);
 const allVariables = perceptibles.concat(bodyStateNames);
