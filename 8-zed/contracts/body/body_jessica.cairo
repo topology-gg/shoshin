@@ -227,9 +227,17 @@ func _body_jessica {range_check_ptr}(
 
     //
     // Clash
-    // note: uninterruptible
+    // note: is interruptible
     //
     if (state == ns_jessica_body_state.CLASH) {
+
+        // body responds to stimulus first
+        if (stimulus == ns_stimulus.HURT) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, hurt_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
+        }
 
         // if counter is full => return to IDLE
         if (counter == ns_jessica_body_state_duration.CLASH - 1) {
