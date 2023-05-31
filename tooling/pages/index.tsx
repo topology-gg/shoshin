@@ -614,6 +614,15 @@ export default function Home() {
             );
             return;
         }
+
+        const response = confirm(`Are you sure you want to delete the condition '${condition.displayName}'? This action cannot be undone.`);
+
+        if (!response) {
+            //Cancel delete operation
+            return
+        } else {
+            alert("Condition deleted");
+        }
         setConditionUnderEditIndex((prev) => {
             if (index !== 0 && index === prev) {
                 return prev - 1;
