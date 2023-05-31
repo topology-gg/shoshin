@@ -44,9 +44,9 @@ const theme = createTheme({
                     color: "black",
                     backgroundColor: "white",
                     ":hover": {
-                        backgroundColor: "#52af77",
+                        backgroundColor: "#f1573b",
                         color: "#fff",
-                        transition: "background 0.2s, color 0.2s",
+                        transition: "background 0.1s, color 0.1s",
                     },
                 },
             },

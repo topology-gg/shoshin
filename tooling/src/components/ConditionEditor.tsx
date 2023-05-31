@@ -197,7 +197,7 @@ function tokenize(input: string): token[] {
 }
 
 const conditionElementsToDisplayText = (elements: ConditionElement[]) => {
-    console.log(elements);
+    // console.log(elements);
     return elements
         .map((e: ConditionElement) => {
             if (
@@ -220,14 +220,20 @@ const conditionElementsToDisplayText = (elements: ConditionElement[]) => {
 };
 
 interface ConditionEditorProps {
+
+    shortcutsButtonClickCounts: {[key: string]: number};
+
     initialConditionElements: ConditionElement[];
+
     setConditionElements: (
         is_valid: boolean,
         elements: ConditionElement[],
         warningText: string
     ) => void;
+
 }
 const ConditionEditor = ({
+    shortcutsButtonClickCounts,
     initialConditionElements,
     setConditionElements,
 }: ConditionEditorProps) => {
@@ -244,6 +250,12 @@ const ConditionEditor = ({
             conditionElementsToDisplayText(initialConditionElements)
         );
     }, [initialConditionElements]);
+
+    // watch shortcutsButtonClickCounts to append templated condition to editorText
+    useEffect(() => {
+        if (shortcutsButtonClickCounts['xDistanceLte'] == 0) return;
+        changeEditorText((prev) => prev+='Abs(SelfX - OpponentX| <= ')
+    }, [shortcutsButtonClickCounts['xDistanceLte']])
 
     function handleEditorDidMount(editor: EditorProps, monaco: Monaco) {
         // here is the editor instance
@@ -410,7 +422,7 @@ const ConditionEditor = ({
     });
 
     return (
-        <Box style={{ border: "1px solid #BBB", marginLeft: "16px" }}>
+        <Box style={{ border: "1px solid #BBB", marginLeft: "8px" }}>
             <EditorComponent
                 height="200px"
                 width="600px"

@@ -1,8 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, Chip, Grid, Autocomplete, Select, MenuItem } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ListIcon from '@mui/icons-material/List';
+import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
+import SaveIcon from '@mui/icons-material/Save';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import TextField from '@mui/material/TextField';
 import { ConditionElement, Operator, ElementType, Perceptible, Condition, isPerceptibleBodyState, isOperatorWithDoubleOperands, conditionElementToStr, validateConditionName } from '../../types/Condition'
@@ -39,6 +43,10 @@ interface ConditionEditErrors{
     namingErrorText : string
 }
 
+export const ConditionShortcuts = [
+    'xDistanceLte',
+]
+
 const Conditions = ({
     isReadOnly, conditions, handleUpdateCondition, handleClickDeleteCondition,
     conditionUnderEditIndex, setConditionUnderEditIndex, handleRemoveConditionElement, handleSaveCondition
@@ -46,6 +54,10 @@ const Conditions = ({
     let f = conditions[conditionUnderEditIndex]
     const [updatedConditionElements, setConditionElements] = useState<ConditionElement[]>(conditions[conditionUnderEditIndex].elements);
     const [initialConditionElement, setInititalConditionElements] = useState<ConditionElement[]>(conditions[conditionUnderEditIndex].elements);
+
+    const [shortcutsButtonClickCounts, setShortcutsButtonClickCounts] = useState<{[key: string]: number}>(
+        {'xDistanceLte':0}
+    );
 
     const [conditionErrors, setConditionEditErrors] = useState<ConditionEditErrors>({
         isValidCondition : false,
@@ -107,10 +119,14 @@ const Conditions = ({
                     className='available-conditions'
                 >
                     <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
+
+                        <ListIcon />
+
                         <Select
                             value={conditionUnderEditIndex}
                             size="small"
-                            fullWidth
+                            // fullWidth
+                            sx = {{width:'300px'}}
                             onChange={(event) => setConditionUnderEditIndex(event.target.value as number)}
                         >
                             {conditions.slice(0, conditions.length - 1).map((_, i) =>
@@ -121,63 +137,106 @@ const Conditions = ({
                             <MenuItem value={conditions.length - 1} disabled={isReadOnly}>New Condition</MenuItem>
                         </Select>
 
-                        <div>
-                            <IconButton
-                                aria-label="delete" onClick={() => handleClickDeleteCondition(conditionUnderEditIndex)}
-                                disabled={isReadOnly || conditionUnderEditIndex === conditions.length - 1 || conditions.length < 3}
-                            >
-                                <DeleteIcon />
-                            </IconButton>
-                        </div>
+
                     </Box>
                 </Grid>
 
                 {/* { handleDisplayText(isReadOnly, isWarningTextOn, warningText, conditionUnderEditIndex) } */}
 
-                <Grid xs={ 12 } item sx={{mt: 1, mb: 2}}>
-                    <TextField
-                        label="Condition Name"
-                        size="small"
-                        // fullWidth
-                        sx = {{width:'400px'}}
-                        value={f.displayName || ""}
-                        onChange={handleUpdateUsername}
-                    />
+                <Grid xs={ 2.5 } item sx={{mt: 1, mb: 2}}>
+                    <div style={{
+                        display:'flex', flexDirection: 'column', padding: '5px', paddingBottom:'10px', marginTop: '8px', border: '1px solid #33333355',
+                        borderRadius:' 5px', alignItems:"center"
+                    }}>
+                        <div style={{display:'flex', flexDirection:'row', justifyContent: "center", alignItems: "center",}}>
+                            <ElectricBoltIcon />
+                            <p style={{margin:'8px', marginLeft:'4px', fontSize:'16px', display: 'table-cell', verticalAlign: "middle"}}>
+                                Shortcuts
+                            </p>
+                        </div>
+
+
+                        <Button
+                            id='template-condition-x-distance'
+                            onClick={() => {
+                                setShortcutsButtonClickCounts((prev) => {
+                                    let prev_copy = JSON.parse(JSON.stringify(prev));
+                                    prev_copy['xDistanceLte'] += 1;
+                                    return prev_copy;
+                                })
+                            }}
+                            variant="outlined"
+                        >
+                            X-Distance ≤
+                        </Button>
+                    </div>
                 </Grid>
 
-                {
-                    isReadOnly ? <></> : (
-                        <Grid container spacing={1}>
-                            <ConditionEditor setConditionElements={handleSetConditionElements} initialConditionElements={initialConditionElement} />
+                <Grid xs={ 9.5 } item sx={{mt: 1, mb: 2}}>
+                    <Grid xs={ 12 } item sx={{mt: 1, mb: 2}}>
 
-                            {conditionErrors.conditionErrorText.length ?
-                                <Grid item xs={12}>
-                                <Typography color={'red'} variant='overline'>{conditionErrors.conditionErrorText}</Typography>
-                                </Grid>
-                                : null
-                            }
-                            {conditionErrors.namingErrorText.length ?
-                                <Grid item xs={12}>
-                                <Typography color={'red'} variant='overline'>{conditionErrors.namingErrorText}</Typography>
-                                </Grid>
-                                : null
-                            }
+                        <div style={{display:'flex', flexDirection:'row'}}>
 
-                            <Grid item xs={12}>
-                                <Button
-                                    id={`confirm-gp-function`}
-                                    variant="outlined"
-                                    size="medium"
-                                    disabled={!isDisabled}
-                                    // className={ styles.confirm }
-                                    onClick={() => handleSaveClick()}
+                            <TextField
+                                label="Condition Name"
+                                size="small"
+                                // fullwidth
+                                sx = {{width:'300px'}}
+                                value={f.displayName || ""}
+                                onChange={handleUpdateUsername}
+                            />
+
+                            <div>
+                                <IconButton
+                                    aria-label="delete" onClick={() => handleClickDeleteCondition(conditionUnderEditIndex)}
+                                    disabled={isReadOnly || conditionUnderEditIndex === conditions.length - 1 || conditions.length < 3}
                                 >
-                                    Save
-                                </Button>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </div>
+                        </div>
+
+                    </Grid>
+
+                    {
+                        isReadOnly ? <></> : (
+                            <Grid container spacing={1}>
+                                <ConditionEditor
+                                    shortcutsButtonClickCounts={shortcutsButtonClickCounts}
+                                    setConditionElements={handleSetConditionElements}
+                                    initialConditionElements={initialConditionElement}
+                                />
+
+                                {conditionErrors.conditionErrorText.length ?
+                                    <Grid item xs={12}>
+                                    <Typography color={'red'} variant='overline'>{conditionErrors.conditionErrorText}</Typography>
+                                    </Grid>
+                                    : null
+                                }
+                                {conditionErrors.namingErrorText.length ?
+                                    <Grid item xs={12}>
+                                    <Typography color={'red'} variant='overline'>{conditionErrors.namingErrorText}</Typography>
+                                    </Grid>
+                                    : null
+                                }
+
+                                <Grid item xs={12}>
+                                    <Button
+                                        id={`confirm-gp-function`}
+                                        variant="outlined"
+                                        size="medium"
+                                        disabled={!isDisabled}
+                                        // className={ styles.confirm }
+                                        onClick={() => handleSaveClick()}
+                                    >
+                                        <SaveIcon /><span style={{width:'6px'}}></span>
+                                        Save
+                                    </Button>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    )
-                }
+                        )
+                    }
+                </Grid>
 
             </Grid>
         </Box>
