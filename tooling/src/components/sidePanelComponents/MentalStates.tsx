@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -31,9 +31,9 @@ const MentalStates = ({
     mentalStates,
     trees,
     initialMentalState,
-    handleSetInitialMentalState,
     combos,
     character,
+    handleSetInitialMentalState,
     handleAddMentalState,
     handleClickRemoveMentalState,
     handleSetMentalStateAction,
@@ -105,9 +105,16 @@ const MentalStates = ({
     }
 
     // We do not want MS Graph to needlessly rerender
-    const MemoMSGraph = React.memo(MentalStatesGraph)                   
+    const MemoMSGraph = React.memo(MentalStatesGraph)
     // debug log
-    mentalStateNamesOrdered?.forEach((name, name_i) => console.log(name, '=>', nextMentalStateNamesOrdered[name_i]))
+    // mentalStateNamesOrdered?.forEach((name, name_i) => console.log(name, '=>', nextMentalStateNamesOrdered[name_i]))
+    useEffect(() => {console.log('isReadOnly')}, [isReadOnly]);
+    useEffect(() => {console.log('mentalStates')}, [mentalStates])
+    useEffect(() => {console.log('trees')}, [trees])
+    useEffect(() => {console.log('initialMentalState')}, [initialMentalState])
+    useEffect(() => {console.log('combos')}, [combos])
+    useEffect(() => {console.log('character')}, [character])
+    console.log('MentalStates component rerendered')
 
     let componentAddNewMentalState = (
         <>
