@@ -1,13 +1,13 @@
-import { Condition } from "./Condition"
+import { Condition } from './Condition';
 
 export interface Tree {
-    nodes: Node[],
+    nodes: Node[];
 }
 
 export interface Node {
-    id: string,
-    isChild: boolean,
-    branch?: Direction,
+    id: string;
+    isChild: boolean;
+    branch?: Direction;
 }
 
 export enum Direction {
@@ -16,24 +16,29 @@ export enum Direction {
 }
 
 export function getMentalStatesNames(tree: Tree) {
-    return tree.nodes.filter(n => n.isChild).map(n => n.id)
+    return tree.nodes.filter((n) => n.isChild).map((n) => n.id);
 }
 
 export function getConditionsIndex(tree: Tree, conditionNames: string[]) {
-    let conditionsIndex = tree.nodes.filter(node => !node.isChild).map((node) => {
-        let matchingConditionIndex = getMatchingConditionIndexViaName(node, conditionNames)
-        return matchingConditionIndex
-    })
-    return conditionsIndex
+    let conditionsIndex = tree.nodes
+        .filter((node) => !node.isChild)
+        .map((node) => {
+            let matchingConditionIndex = getMatchingConditionIndexViaName(
+                node,
+                conditionNames
+            );
+            return matchingConditionIndex;
+        });
+    return conditionsIndex;
 }
 
 function getMatchingConditionIndexViaName(node: Node, conditions: string[]) {
-    let matchingCondition = getMatchingConditionViaName(node, conditions)
-    return conditions.indexOf(matchingCondition)
+    let matchingCondition = getMatchingConditionViaName(node, conditions);
+    return conditions.indexOf(matchingCondition);
 }
 
 function getMatchingConditionViaName(node: Node, conditions: string[]) {
     return conditions.find((condition, i) => {
-        return i === parseInt(node.id)
-    })
+        return i === parseInt(node.id);
+    });
 }

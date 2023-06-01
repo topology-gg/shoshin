@@ -1,4 +1,4 @@
-import { RealTimeFrameScene } from "../types/Frame";
+import { RealTimeFrameScene } from '../types/Frame';
 
 const cairoOutputToRealTimeFrameScene = (output: any[]): RealTimeFrameScene => {
     let f = output[0];
@@ -223,10 +223,14 @@ const cairoOutputToRealTimeFrameScene = (output: any[]): RealTimeFrameScene => {
             stimulus: f.agent_1.stimulus[0]
                 ? f.agent_1.stimulus[0] * f.agent_1.stimulus[1][0]
                 : 0,
-            combo_info : {
-              current_combo : f.agent_1.combo_info.current_combo[0] ?  f.agent_1.combo_info.current_combo[1][0] : 0,
-              combo_counter : f.agent_1.combo_info.combo_counter[0] ?  f.agent_1.combo_info.combo_counter[1][0] : 0,
-            }
+            combo_info: {
+                current_combo: f.agent_1.combo_info.current_combo[0]
+                    ? f.agent_1.combo_info.current_combo[1][0]
+                    : 0,
+                combo_counter: f.agent_1.combo_info.combo_counter[0]
+                    ? f.agent_1.combo_info.combo_counter[1][0]
+                    : 0,
+            },
         },
     };
 

@@ -1,21 +1,23 @@
-import React from "react";
-import Rating from "@mui/material/Rating";
-import { styled } from "@mui/material/styles";
-import styles from "../../styles/StatusBar.module.css";
-import "../../styles/StatusBar.module.css";
+import React from 'react';
+import Rating from '@mui/material/Rating';
+import { styled } from '@mui/material/styles';
+import styles from '../../styles/StatusBar.module.css';
+import '../../styles/StatusBar.module.css';
 
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
-import LinearProgress, { linearProgressClasses } from "@mui/material/LinearProgress";
-import { TestJson } from "../types/Frame";
+import LinearProgress, {
+    linearProgressClasses,
+} from '@mui/material/LinearProgress';
+import { TestJson } from '../types/Frame';
 
 const StyledRating = styled(Rating)({
-    "& .MuiRating-iconFilled": {
-        color: "#ff6d75",
+    '& .MuiRating-iconFilled': {
+        color: '#ff6d75',
     },
-    "& .MuiRating-iconHover": {
-        color: "#ff3d47",
+    '& .MuiRating-iconHover': {
+        color: '#ff3d47',
     },
 });
 
@@ -31,7 +33,7 @@ const IntegrityBar = (props: statusBarProps) => {
                 name="customized-color"
                 readOnly={true}
                 getLabelText={(value: number) =>
-                    `${value} Heart${value !== 1 ? "s" : ""}`
+                    `${value} Heart${value !== 1 ? 's' : ''}`
                 }
                 precision={0.5}
                 value={value / 200}
@@ -52,13 +54,13 @@ const StaminaBar = (props: statusBarProps) => {
         staminaBarValues.push(
             <div
                 style={{
-                    position: "relative",
+                    position: 'relative',
                     top: -5 * i,
                     left: 20 * i,
                     zIndex: 200,
                     width: 2,
                     height: BarHeight,
-                    backgroundColor: "white",
+                    backgroundColor: 'white',
                 }}
                 key={`status-bar-value-${i}`}
             ></div>
@@ -72,14 +74,13 @@ const StaminaBar = (props: statusBarProps) => {
         height: BarHeight,
         borderRadius: 5,
         [`&.${linearProgressClasses.colorPrimary}`]: {
-          backgroundColor: '#DDDDDD',
+            backgroundColor: '#DDDDDD',
         },
         [`& .${linearProgressClasses.bar}`]: {
-          borderRadius: 5,
-          backgroundColor:'#73C2FB'
+            borderRadius: 5,
+            backgroundColor: '#73C2FB',
         },
     }));
-
 
     return (
         <div>
@@ -87,7 +88,7 @@ const StaminaBar = (props: statusBarProps) => {
                 datatype="stamina"
                 variant="determinate"
                 value={value / 10}
-                sx = {{ width: 200 }}
+                sx={{ width: 200 }}
             />
             {staminaBarValues}
         </div>
@@ -105,16 +106,15 @@ const StatusBarPanel = ({
     integrity_0,
     integrity_1,
     stamina_0,
-    stamina_1
+    stamina_1,
 }: StatusBarPanelProps) => {
-
     return (
         <div>
             <div className={styles.statusBarRow}>
                 <IntegrityBar value={integrity_0} />
                 <IntegrityBar value={integrity_1} />
             </div>
-            <div className={styles.statusBarRow} style={{height:'1rem'}}>
+            <div className={styles.statusBarRow} style={{ height: '1rem' }}>
                 <StaminaBar value={stamina_0} />
                 <StaminaBar value={stamina_1} />
             </div>
