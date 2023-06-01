@@ -50,33 +50,35 @@ const MidScreenKeybinding = (
         const show = (keyName.length > 0);
         const content = keyName.length == 1 ? (
                 <span
-                style={{ 
+                style={{
                     alignSelf : "center"
                  }}
                 >{keyName}</span>
             ) : keyName == 'left' ? (
-                <ArrowBack 
-                style={{ 
+                <ArrowBack
+                style={{
                     alignSelf : "center"
                  }}
                 />
             ) : keyName == 'down' ? (
-                <ArrowDownward 
-                style={{ 
+                <ArrowDownward
+                style={{
                     alignSelf : "center"
                  }}/>
             ) : keyName == 'right' ? (
-                <ArrowForward 
-                style={{ 
+                <ArrowForward
+                style={{
                     alignSelf : "center"
                  }}/>
             ) : <></>;
         const keyCode = keyNameToKeyCode (keyName)
         const isKeyDown = !(keyCode in keyDownState) ? false : keyDownState[keyCode]
-        const backgroundColor = isKeyDown ? 'lightgrey' : '#EEEEEE'
+        const backgroundColor = isKeyDown ? '#f1573b' : '#EEEEEE'
+        const color = isKeyDown ? '#fff' : '#333'
+        // const transform = isKeyDown ? 'translate(2px,2px)' : ''
 
-        const borderTopLeft = !show ? 'solid 1px #55555533' : isKeyDown ? 'solid 2px #555555' : 'solid 1px #555555';
-        const borderBottomRight = !show ? 'solid 1px #55555533' : !isKeyDown ? 'solid 2px #555555' : 'solid 1px #555555';
+        const borderTopLeft = !show ? 'solid 1px #55555533' : isKeyDown ? 'solid 3px #555555' : 'solid 1px #555555';
+        const borderBottomRight = !show ? 'solid 1px #55555533' : !isKeyDown ? 'solid 3px #555555' : 'solid 1px #555555';
 
         return (
             <div style={{
@@ -84,8 +86,10 @@ const MidScreenKeybinding = (
                 borderTop: borderTopLeft, borderLeft: borderTopLeft,
                 borderBottom: borderBottomRight, borderRight: borderBottomRight,
                 backgroundColor: backgroundColor,
+                color: color,
                 justifyContent :'center',
                 display : "flex",
+                // transform: transform,
             }}>
                 {content}
             </div>
