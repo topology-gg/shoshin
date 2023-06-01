@@ -328,8 +328,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     /// See if a player has health <= 0
     //
 
-    let agent_0_standing = is_in_range(last_frame.agent_0.body_state.integrity, 0, 1001);
-    let agent_1_standing = is_in_range(last_frame.agent_0.body_state.integrity, 0, 1001);
+    let agent_0_standing = is_in_range(last_frame.agent_0.body_state.integrity, 1, 1001);
+    let agent_1_standing = is_in_range(last_frame.agent_0.body_state.integrity, 1, 1001);
 
     
     if (agent_0_standing == 0) {
