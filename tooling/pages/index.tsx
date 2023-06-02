@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import React, { useEffect, useMemo, useState, useContext } from 'react';
+import React, { useEffect, useMemo, useState, useContext, useRef } from 'react';
 import {
     Accordion,
     AccordionDetails,
@@ -83,6 +83,7 @@ import {
     STARTER_AGENT,
 } from '../src/constants/starter_agent';
 import MidScreenKeybinding from '../src/components/MidScreenKeybinding';
+import { KeyboardShortcut } from '../src/types/UI';
 
 //@ts-ignore
 const Game = dynamic(() => import('../src/Game/PhaserGame'), {
@@ -91,7 +92,7 @@ const Game = dynamic(() => import('../src/Game/PhaserGame'), {
 
 export default function Home() {
     // Constants
-    const LATENCY = 100;
+    const LATENCY = 70;
     const runnable = true;
 
     // React states for simulation / animation control
@@ -157,6 +158,10 @@ export default function Home() {
     const [runCairoSimulationWarning, setCairoSimulationWarning] =
         useState<string>('');
 
+    // React state for tracking which tab is active in contract information view (Reference tab)
+    const [contractInformationTabIndex, setContractInformationTabIndex] =
+        useState<number>(0);
+
     const [successToastOpen, setToastOpen] = React.useState(false);
 
     const handleToastClose = (
@@ -174,34 +179,81 @@ export default function Home() {
         [keyName: string]: boolean;
     }>({});
 
-    // add listnener for keydown events
+    // Handle key events the React way
+    const ref = useRef(null);
     useEffect(() => {
-        function handleKeyDown(e) {
-            console.log('keydown', e.key);
-            setKeyDownState((prev) => {
-                let prev_copy = JSON.parse(JSON.stringify(prev));
-                prev_copy[e.key] = true;
-                return prev_copy;
-            });
-        }
-        function handleKeyUp(e) {
-            console.log('keyup', e.key);
-            setKeyDownState((prev) => {
-                let prev_copy = JSON.parse(JSON.stringify(prev));
-                prev_copy[e.key] = false;
-                return prev_copy;
-            });
-        }
+        if (!ref.current) return;
+        ref.current.focus();
+    }, [ref.current]);
 
-        document.addEventListener('keydown', handleKeyDown);
-        document.addEventListener('keyup', handleKeyUp);
+    const handleKeyDown = (e) => {
+        // console.log('keydown', e.key);
+        setKeyDownState((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy[e.key] = true;
+            return prev_copy;
+        });
 
-        // clean up
-        return function cleanup() {
-            document.removeEventListener('keydown', handleKeyDown);
-            document.removeEventListener('keyup', handleKeyUp);
-        };
-    }, []);
+        if (e.key == '[') {
+            setSwipeableViewIndex((prev) => {
+                if (prev == 0) return prev;
+                else return prev - 1;
+            });
+        } else if (e.key == ']') {
+            setSwipeableViewIndex((prev) => {
+                if (prev == 3) return prev;
+                else return prev + 1;
+            });
+        } else if (e.key == ';') {
+            if (swipeableViewIndex == 1) {
+                // in Editor tab
+                setWorkingTab((prev) => {
+                    if (prev == EditorTabName.Profile) return prev;
+                    else if (prev == EditorTabName.Mind)
+                        return EditorTabName.Profile;
+                    else if (prev == EditorTabName.Combos)
+                        return EditorTabName.Mind;
+                    else return EditorTabName.Combos;
+                });
+            } else if (swipeableViewIndex == 2) {
+                // in Reference tab
+                setContractInformationTabIndex((prev) => {
+                    if (prev == 0) return prev;
+                    else return prev - 1;
+                });
+            }
+        } else if (e.key == "'") {
+            if (swipeableViewIndex == 0) {
+                // in Fight tab
+                toggleGameMode();
+            } else if (swipeableViewIndex == 1) {
+                // in Edit tab
+                setWorkingTab((prev) => {
+                    if (prev == EditorTabName.Conditions) return prev;
+                    else if (prev == EditorTabName.Combos)
+                        return EditorTabName.Conditions;
+                    else if (prev == EditorTabName.Mind)
+                        return EditorTabName.Combos;
+                    else if (prev == EditorTabName.Profile)
+                        return EditorTabName.Mind;
+                });
+            } else if (swipeableViewIndex == 2) {
+                // in Reference tab
+                setContractInformationTabIndex((prev) => {
+                    if (prev == 2) return prev;
+                    else return prev + 1;
+                });
+            }
+        }
+    };
+    const handleKeyUp = (e) => {
+        // console.log('keyup', e.key);
+        setKeyDownState((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy[e.key] = false;
+            return prev_copy;
+        });
+    };
 
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents();
@@ -1077,11 +1129,42 @@ export default function Home() {
         );
     }
 
+    const keyboardShortcuts: KeyboardShortcut[] = [
+        { key: '[', keyName: '[', description: '❮ Mode' },
+        { key: ']', keyName: ']', description: '❯ Mode' },
+    ].concat(
+        swipeableViewIndex == 0
+            ? [
+                  {
+                      key: "'",
+                      keyName: "'",
+                      description: 'Toggle Simulation / Real Time',
+                  },
+              ]
+            : swipeableViewIndex == 1
+            ? [
+                  { key: ';', keyName: ';', description: '❮ Tab' },
+                  { key: "'", keyName: "'", description: '❯ Tab' },
+              ]
+            : swipeableViewIndex == 2
+            ? [
+                  { key: ';', keyName: ';', description: '❮ Tab' },
+                  { key: "'", keyName: "'", description: '❯ Tab' },
+              ]
+            : []
+    );
+
     //
     // Render
     //
     return (
-        <div className={styles.container}>
+        <div
+            className={styles.container}
+            ref={ref}
+            tabIndex={-1}
+            onKeyDown={handleKeyDown}
+            onKeyUp={handleKeyUp}
+        >
             <Head>
                 <title>Shoshin Tooling</title>
                 <meta
@@ -1090,6 +1173,28 @@ export default function Home() {
                 />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
+
+            {/* Contextual hints for keyboard shortcut */}
+            <div
+                style={{
+                    position: 'fixed',
+                    bottom: '0px',
+                    width: '100%',
+                    height: '70px',
+                    backgroundColor: '#333333E3',
+                    zIndex: '100',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    verticalAlign: 'middle',
+                    padding: '20px',
+                }}
+            >
+                {}
+                {keyboardShortcuts.map((shortcut: KeyboardShortcut) => {
+                    return <KeyboardShortcutElement shortcut={shortcut} />;
+                })}
+            </div>
 
             <Tabs
                 value={swipeableViewIndex}
@@ -1100,10 +1205,10 @@ export default function Home() {
                 sx={{ mt: 2 }}
                 centered
             >
-                <Tab label={'Fight'} />
-                <Tab label={'Edit'} />
-                <Tab label={'Reference'} />
-                <Tab label={'Wallet'} />
+                <Tab label={'Fight'} sx={{ fontFamily: 'Raleway' }} />
+                <Tab label={'Edit'} sx={{ fontFamily: 'Raleway' }} />
+                <Tab label={'Reference'} sx={{ fontFamily: 'Raleway' }} />
+                <Tab label={'Wallet'} sx={{ fontFamily: 'Raleway' }} />
             </Tabs>
 
             <Snackbar
@@ -1119,7 +1224,7 @@ export default function Home() {
                     Condition Successfully saved
                 </Alert>
             </Snackbar>
-            <Box sx={{ flex: 1, pt: 5 }}>
+            <Box sx={{ flex: 1, pt: 5, pb: 8 }}>
                 <ThemeProvider theme={theme}>
                     <SwipeableViews
                         index={swipeableViewIndex}
@@ -1137,7 +1242,16 @@ export default function Home() {
                         <SwipeableContent
                             sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}
                         >
-                            <ContractInformationView />
+                            <ContractInformationView
+                                contractInformationTabIndex={
+                                    contractInformationTabIndex
+                                }
+                                setContractInformationTabIndex={(tabIndex) =>
+                                    setContractInformationTabIndex(
+                                        (_) => tabIndex
+                                    )
+                                }
+                            />
                         </SwipeableContent>
                         <SwipeableContent
                             sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}
@@ -1150,3 +1264,65 @@ export default function Home() {
         </div>
     );
 }
+
+const KeyboardShortcutElement = ({
+    shortcut,
+}: {
+    shortcut: KeyboardShortcut;
+}) => {
+    const fontSize = shortcut.keyName.length > 1 ? '11px' : '13px';
+
+    return (
+        <div
+            style={{
+                marginRight: '48px',
+                display: 'flex',
+                flexDirection: 'row',
+                verticalAlign: 'middle',
+            }}
+        >
+            <div
+                style={{
+                    height: '30px',
+                    lineHeight: '30px',
+                    color: '#eee',
+                    fontFamily: 'Raleway',
+                    textAlign: 'center',
+                    verticalAlign: 'center',
+                    fontSize: '14px',
+                    marginRight: '8px',
+                }}
+            >
+                <span style={{ alignSelf: 'center' }}>
+                    {' '}
+                    {shortcut.description}{' '}
+                </span>
+            </div>
+
+            <div
+                style={{
+                    height: '30px',
+                    width: '30px',
+                    lineHeight: '30px',
+                    borderRadius: '5px',
+                    borderBottom: '3px solid #000',
+                    marginBottom: '-3px',
+                    borderRight: '3px solid #000',
+                    marginRight: '-3px',
+                    backgroundColor: '#eee',
+                    color: '#333',
+                    fontFamily: 'Raleway',
+                    textAlign: 'center',
+                    verticalAlign: 'center',
+                    fontSize: fontSize,
+                }}
+                className={'border_box'}
+            >
+                <span style={{ alignSelf: 'center', fontWeight: 'bold' }}>
+                    {' '}
+                    {shortcut.keyName}{' '}
+                </span>
+            </div>
+        </div>
+    );
+};

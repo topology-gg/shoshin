@@ -1,8 +1,29 @@
+@font-face{
+    font-family: "Raleway";
+    src: url("./fonts/Raleway/Raleway-Regular.ttf") format("truetype");
+}
+@font-face{
+    font-family: "Raleway";
+    src: url("./fonts/Raleway/Raleway-Bold.ttf") format("truetype");
+    font-weight: bold;
+}
+@font-face{
+    font-family: "Raleway";
+    src: url("./fonts/Raleway/Raleway-Italic.ttf") format("truetype");
+    font-style: italic;
+}
+@font-face{
+    font-family: "Raleway";
+    src: url("./fonts/Raleway/Raleway-BoldItalic.ttf") format("truetype");
+    font-weight: bold;
+    font-style: italic;
+}
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+  font-family: Raleway, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
@@ -208,7 +229,7 @@ input[type="range"]::-ms-fill-upper {
 } */
 
 :root {
-  --font-family-secondary: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+  --font-family-secondary: Raleway, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
 }
 
 /* ref: https://alvarotrigo.com/blog/css-highlight-text/ */

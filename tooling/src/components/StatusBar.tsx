@@ -12,6 +12,8 @@ import LinearProgress, {
 } from '@mui/material/LinearProgress';
 import { TestJson } from '../types/Frame';
 
+const StaminaBarHeight = 15;
+
 const StyledRating = styled(Rating)({
     '& .MuiRating-iconFilled': {
         color: '#ff6d75',
@@ -47,7 +49,6 @@ const IntegrityBar = (props: statusBarProps) => {
 const StaminaBar = (props: statusBarProps) => {
     let { value } = props;
 
-    const BarHeight = 5;
     let staminaBarValues = [];
 
     for (let i = 1; i < 10; i++) {
@@ -55,11 +56,11 @@ const StaminaBar = (props: statusBarProps) => {
             <div
                 style={{
                     position: 'relative',
-                    top: -5 * i,
+                    top: -StaminaBarHeight * i,
                     left: 20 * i,
                     zIndex: 200,
                     width: 2,
-                    height: BarHeight,
+                    height: StaminaBarHeight,
                     backgroundColor: 'white',
                 }}
                 key={`status-bar-value-${i}`}
@@ -71,10 +72,10 @@ const StaminaBar = (props: statusBarProps) => {
     // https://github.com/topology-gg/shoshin-tooling/pull/50
     // https://www.colorsexplained.com/shades-of-blue-color-names/ - Maya blue
     const CustomLinearProgress = styled(LinearProgress)(({ datatype }) => ({
-        height: BarHeight,
+        height: StaminaBarHeight,
         borderRadius: 5,
         [`&.${linearProgressClasses.colorPrimary}`]: {
-            backgroundColor: '#DDDDDD',
+            backgroundColor: '#EEE',
         },
         [`& .${linearProgressClasses.bar}`]: {
             borderRadius: 5,
@@ -88,7 +89,7 @@ const StaminaBar = (props: statusBarProps) => {
                 datatype="stamina"
                 variant="determinate"
                 value={value / 10}
-                sx={{ width: 200 }}
+                sx={{ width: 200, height: StaminaBarHeight }}
             />
             {staminaBarValues}
         </div>

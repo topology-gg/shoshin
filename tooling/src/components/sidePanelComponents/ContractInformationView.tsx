@@ -178,16 +178,20 @@ function a11yProps(index: number) {
     };
 }
 
-const ContractInformationView = () => {
-    const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
-
+const ContractInformationView = ({
+    contractInformationTabIndex,
+    setContractInformationTabIndex,
+}: {
+    contractInformationTabIndex: number;
+    setContractInformationTabIndex: (tabIndex: number) => void;
+}) => {
     return (
         <div>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs
-                    value={activeTabIndex}
-                    onChange={(event, number) =>
-                        setActiveTabIndex((_) => number)
+                    value={contractInformationTabIndex}
+                    onChange={(event, tabIndex) =>
+                        setContractInformationTabIndex(tabIndex)
                     }
                     aria-label="basic tabs example"
                 >
@@ -197,7 +201,7 @@ const ContractInformationView = () => {
                 </Tabs>
             </Box>
 
-            <TabPanel value={activeTabIndex} index={0}>
+            <TabPanel value={contractInformationTabIndex} index={0}>
                 <SpriteAnimator
                     sprite="/images/jessica/idle/left_spritesheet.png"
                     width={96}
@@ -207,7 +211,7 @@ const ContractInformationView = () => {
                 {JessicaInfoTag}
             </TabPanel>
 
-            <TabPanel value={activeTabIndex} index={1}>
+            <TabPanel value={contractInformationTabIndex} index={1}>
                 <SpriteAnimator
                     sprite="/images/antoc/idle/left_spritesheet.png"
                     width={180}
@@ -217,7 +221,7 @@ const ContractInformationView = () => {
                 {AntocInfoTag}
             </TabPanel>
 
-            <TabPanel value={activeTabIndex} index={2}>
+            <TabPanel value={contractInformationTabIndex} index={2}>
                 {EngagementRulesTag}
             </TabPanel>
         </div>

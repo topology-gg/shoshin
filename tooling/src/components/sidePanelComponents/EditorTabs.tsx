@@ -31,6 +31,7 @@ const EditorTabs = ({ workingTab, handleClickTab }) => {
             '&:hover': {
                 cursor: 'pointer',
             },
+            fontFamily: 'Raleway',
         };
     };
 

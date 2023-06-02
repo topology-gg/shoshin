@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from 'react';
 import {
     Box,
     Button,
@@ -72,7 +72,7 @@ const MentalStates = ({
         setAnchorElInitialState(event.currentTarget);
     };
     const handleChosenInitialState = (mentalStateIndex) => {
-        if (typeof mentalStateIndex == "number") {
+        if (typeof mentalStateIndex == 'number') {
             handleSetInitialMentalState(mentalStateIndex);
         }
         setAnchorElInitialState(null);
@@ -234,13 +234,13 @@ const MentalStates = ({
                             <Box
                                 key={`button-wrapper-${i}`}
                                 sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    ml: "2rem",
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    ml: '2rem',
                                     bgcolor:
                                         highlightedMentalState == i
-                                            ? "lightgrey"
-                                            : null
+                                            ? 'lightgrey'
+                                            : null,
                                 }}
                                 onMouseOver={() => highlightMentalState(i)}
                                 onMouseOut={() => highlightMentalState(-1)}
@@ -249,6 +249,10 @@ const MentalStates = ({
                                     className={'mentalStateButton'}
                                     key={`${i}`}
                                     onClick={() => handleClickTreeEditor(i + 1)}
+                                    style={{
+                                        fontFamily: 'Raleway',
+                                        fontSize: '14px',
+                                    }}
                                 >
                                     {state.state}
                                 </button>
