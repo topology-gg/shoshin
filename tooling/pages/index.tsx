@@ -180,7 +180,7 @@ export default function Home() {
         ref.current.focus();
     }, [ref.current]);
 
-    const handleKeyDown = e => {
+    const handleKeyDown = (e) => {
         // console.log('keydown', e.key);
         setKeyDownState((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
@@ -199,9 +199,8 @@ export default function Home() {
                 else return prev + 1;
             });
         } else if (e.key == ';') {
-            console.log('hey, swipeableViewIndex is', swipeableViewIndex)
             if (swipeableViewIndex == 1) {
-                console.log('haha')
+                console.log('haha');
                 setWorkingTab((prev) => {
                     if (prev == EditorTabName.Profile) return prev;
                     else if (prev == EditorTabName.Mind)
@@ -224,15 +223,15 @@ export default function Home() {
                 });
             }
         }
-    }
-    const handleKeyUp = e => {
+    };
+    const handleKeyUp = (e) => {
         // console.log('keyup', e.key);
         setKeyDownState((prev) => {
             let prev_copy = JSON.parse(JSON.stringify(prev));
             prev_copy[e.key] = false;
             return prev_copy;
         });
-    }
+    };
 
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents();
@@ -1112,7 +1111,13 @@ export default function Home() {
     // Render
     //
     return (
-        <div className={styles.container} ref={ref} tabIndex={-1} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
+        <div
+            className={styles.container}
+            ref={ref}
+            tabIndex={-1}
+            onKeyDown={handleKeyDown}
+            onKeyUp={handleKeyUp}
+        >
             <Head>
                 <title>Shoshin Tooling</title>
                 <meta
