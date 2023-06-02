@@ -242,6 +242,8 @@ const MentalStates = ({
                                             ? "lightgrey"
                                             : null,
                                 }}
+                                onMouseOver={() => highlightMentalState(i)}
+                                onMouseOut={() => highlightMentalState(-1)}
                             >
                                 <button
                                     className={"mentalStateButton"}
@@ -315,6 +317,7 @@ const MentalStates = ({
                             nextMentalStateNamesOrdered
                         }
                         highlightMentalState={highlightMentalState}
+                        highlightedMentalStateIndex={highlightedMentalState}
                         selectMentalState={selectMentalState}
                     />
                 </Grid>

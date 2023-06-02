@@ -9,27 +9,30 @@ function generateGraphData(
         label: name,
         // x : 0, y : 0 makes the node positions consistant between renders
         x: 0,
-        y: 0
+        y: 0,
     }));
-    let mapLabelToIndex = {}
+    let mapLabelToIndex = {};
     mentalStateNamesOrdered.forEach((value: string, index: number) => {
-        mapLabelToIndex[value] = index
-    })
+        mapLabelToIndex[value] = index;
+    });
 
     // create an array with edges
-    const edges: Edge[] = mentalStateNamesOrdered.flatMap( (fromName, fromNodeIndex) =>
-
-        nextMentalStateNamesOrdered[fromNodeIndex].reduce(function(result, toName) {
-            const toNodeIndex = mapLabelToIndex[toName]
-            if (toNodeIndex !== undefined) {
-                result.push({
-                    from: fromNodeIndex,
-                    to: toNodeIndex
-                })
-            }
-            return result;
-        }, [])
-
+    const edges: Edge[] = mentalStateNamesOrdered.flatMap(
+        (fromName, fromNodeIndex) =>
+            nextMentalStateNamesOrdered[fromNodeIndex].reduce(function (
+                result,
+                toName
+            ) {
+                const toNodeIndex = mapLabelToIndex[toName];
+                if (toNodeIndex !== undefined) {
+                    result.push({
+                        from: fromNodeIndex,
+                        to: toNodeIndex,
+                    });
+                }
+                return result;
+            },
+            [])
     );
     return {
         nodes,
@@ -41,14 +44,15 @@ const MentalStatesGraph = ({
     mentalStateNamesOrdered,
     nextMentalStateNamesOrdered,
     highlightMentalState,
-    selectMentalState
+    highlightedMentalStateIndex,
+    selectMentalState,
 }: {
     mentalStateNamesOrdered: string[];
     nextMentalStateNamesOrdered: string[][];
-    highlightMentalState : (index : number) => void;
-    selectMentalState : (index : number) => void;
+    highlightMentalState: (index: number) => void;
+    highlightedMentalStateIndex: number;
+    selectMentalState: (index: number) => void;
 }) => {
-
     const containerRef = useRef<HTMLDivElement>();
     const graphRef = useRef<Network>();
 
@@ -69,49 +73,48 @@ const MentalStatesGraph = ({
                 shapeProperties: { borderRadius: 5 },
             },
             edges: {
-                arrows: { to: {enabled: true, scaleFactor: 0.5}, },
+                arrows: { to: { enabled: true, scaleFactor: 0.5 } },
                 arrowStrikethrough: false,
                 smooth: false,
                 chosen: true,
-                color: '#777777'
+                color: "#777777",
             },
             interaction: {
                 hover: true,
                 dragNodes: false, // Disable node dragging
-                dragView: false // Disable view dragging
+                dragView: false, // Disable view dragging
             },
             layout: {
                 improvedLayout: false, // Disable dynamic initial layout
                 hierarchical: {
-                  enabled: false, // Disable hierarchical layout
-                  direction: 'UD', // Specify the layout direction (e.g., 'UD' for up-down)
-                  sortMethod: 'directed' // Use the directed layout algorithm
-                }
-              },
-              physics : {
+                    enabled: false, // Disable hierarchical layout
+                    direction: "UD", // Specify the layout direction (e.g., 'UD' for up-down)
+                    sortMethod: "directed", // Use the directed layout algorithm
+                },
+            },
+            physics: {
                 enabled: true, // Enable physics simulation
-              }
+            },
         };
-        let network =  new vis.Network(container, data, options);
+        let network = new vis.Network(container, data, options);
 
-        network.on('click', (event) => {
-            const nodeId = event?.nodes[0]
-            if (nodeId !== undefined){
-                selectMentalState(nodeId)
+        network.on("click", (event) => {
+            const nodeId = event?.nodes[0];
+            if (nodeId !== undefined) {
+                selectMentalState(nodeId);
             }
-        })
-        network.on('hoverNode', (event) => {
+        });
+        network.on("hoverNode", (event) => {
             const nodeId = event.node;
-            event.event.preventDefault()
-            highlightMentalState(nodeId)
+            event.event.preventDefault();
+            highlightMentalState(nodeId);
+        });
+        network.on("blurNode", (event) => {
+            event.event.preventDefault();
+            highlightMentalState(-1);
+        });
 
-        })
-        network.on('blurNode', (event) => {
-            event.event.preventDefault()
-            highlightMentalState(-1)
-        })
-
-        graphRef.current = network
+        graphRef.current = network;
     }, []);
 
     useEffect(() => {
@@ -123,6 +126,11 @@ const MentalStatesGraph = ({
         );
         graphRef.current?.redraw(); // Redraw the graph
     }, [mentalStateNamesOrdered, nextMentalStateNamesOrdered]);
+
+    useEffect(() => {
+        const nodesToSelect = highlightedMentalStateIndex !== -1 ? [highlightedMentalStateIndex] : []
+        graphRef.current?.selectNodes(nodesToSelect);
+    }, [highlightedMentalStateIndex]);
 
     return <div ref={containerRef}></div>;
 };
