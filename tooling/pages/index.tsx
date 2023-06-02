@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import React, { useEffect, useMemo, useState, useContext } from 'react';
+import React, { useEffect, useMemo, useState, useContext, useRef } from 'react';
 import {
     Accordion,
     AccordionDetails,
@@ -174,69 +174,65 @@ export default function Home() {
         [keyName: string]: boolean;
     }>({});
 
-    // add listnener for keydown events
+    // Handle key events the React way
+    const ref = useRef(null);
     useEffect(() => {
-        function handleKeyDown(e) {
-            // console.log('keydown', e.key);
-            setKeyDownState((prev) => {
-                let prev_copy = JSON.parse(JSON.stringify(prev));
-                prev_copy[e.key] = true;
-                return prev_copy;
-            });
+        ref.current.focus();
+    }, [ref.current]);
 
-            if (e.key == '[') {
-                setSwipeableViewIndex((prev) => {
-                    if (prev == 0) return prev;
-                    else return prev - 1;
+    const handleKeyDown = e => {
+        // console.log('keydown', e.key);
+        setKeyDownState((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy[e.key] = true;
+            return prev_copy;
+        });
+
+        if (e.key == '[') {
+            setSwipeableViewIndex((prev) => {
+                if (prev == 0) return prev;
+                else return prev - 1;
+            });
+        } else if (e.key == ']') {
+            setSwipeableViewIndex((prev) => {
+                if (prev == 3) return prev;
+                else return prev + 1;
+            });
+        } else if (e.key == ';') {
+            console.log('hey, swipeableViewIndex is', swipeableViewIndex)
+            if (swipeableViewIndex == 1) {
+                console.log('haha')
+                setWorkingTab((prev) => {
+                    if (prev == EditorTabName.Profile) return prev;
+                    else if (prev == EditorTabName.Mind)
+                        return EditorTabName.Profile;
+                    else if (prev == EditorTabName.Combos)
+                        return EditorTabName.Mind;
+                    else return EditorTabName.Combos;
                 });
-            } else if (e.key == ']') {
-                setSwipeableViewIndex((prev) => {
-                    if (prev == 3) return prev;
-                    else return prev + 1;
+            }
+        } else if (e.key == "'") {
+            if (swipeableViewIndex == 1) {
+                setWorkingTab((prev) => {
+                    if (prev == EditorTabName.Conditions) return prev;
+                    else if (prev == EditorTabName.Combos)
+                        return EditorTabName.Conditions;
+                    else if (prev == EditorTabName.Mind)
+                        return EditorTabName.Combos;
+                    else if (prev == EditorTabName.Profile)
+                        return EditorTabName.Mind;
                 });
-            } else if (e.key == ';') {
-                if (swipeableViewIndex == 1) {
-                    setWorkingTab((prev) => {
-                        if (prev == EditorTabName.Profile) return prev;
-                        else if (prev == EditorTabName.Mind)
-                            return EditorTabName.Profile;
-                        else if (prev == EditorTabName.Combos)
-                            return EditorTabName.Mind;
-                        else return EditorTabName.Combos;
-                    });
-                }
-            } else if (e.key == "'") {
-                if (swipeableViewIndex == 1) {
-                    setWorkingTab((prev) => {
-                        if (prev == EditorTabName.Conditions) return prev;
-                        else if (prev == EditorTabName.Combos)
-                            return EditorTabName.Conditions;
-                        else if (prev == EditorTabName.Mind)
-                            return EditorTabName.Combos;
-                        else if (prev == EditorTabName.Profile)
-                            return EditorTabName.Mind;
-                    });
-                }
             }
         }
-        function handleKeyUp(e) {
-            // console.log('keyup', e.key);
-            setKeyDownState((prev) => {
-                let prev_copy = JSON.parse(JSON.stringify(prev));
-                prev_copy[e.key] = false;
-                return prev_copy;
-            });
-        }
-
-        document.addEventListener('keydown', handleKeyDown);
-        document.addEventListener('keyup', handleKeyUp);
-
-        // clean up
-        return function cleanup() {
-            document.removeEventListener('keydown', handleKeyDown);
-            document.removeEventListener('keyup', handleKeyUp);
-        };
-    }, []);
+    }
+    const handleKeyUp = e => {
+        // console.log('keyup', e.key);
+        setKeyDownState((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy[e.key] = false;
+            return prev_copy;
+        });
+    }
 
     // Retrieve the last 20 agents submissions from the db
     const { data: data } = useAgents();
@@ -1116,7 +1112,7 @@ export default function Home() {
     // Render
     //
     return (
-        <div className={styles.container}>
+        <div className={styles.container} ref={ref} tabIndex={-1} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
             <Head>
                 <title>Shoshin Tooling</title>
                 <meta
