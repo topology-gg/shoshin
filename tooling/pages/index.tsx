@@ -171,24 +171,24 @@ export default function Home() {
     };
 
     const [keyDownState, setKeyDownState] = useState<{
-        [keycode: number]: boolean;
+        [keyName: string]: boolean;
     }>({});
 
     // add listnener for keydown events
     useEffect(() => {
         function handleKeyDown(e) {
-            console.log('keydown', e.keyCode);
+            console.log('keydown', e.key);
             setKeyDownState((prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev));
-                prev_copy[e.keyCode] = true;
+                prev_copy[e.key] = true;
                 return prev_copy;
             });
         }
         function handleKeyUp(e) {
-            console.log('keyup', e.keyCode);
+            console.log('keyup', e.key);
             setKeyDownState((prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev));
-                prev_copy[e.keyCode] = false;
+                prev_copy[e.key] = false;
                 return prev_copy;
             });
         }

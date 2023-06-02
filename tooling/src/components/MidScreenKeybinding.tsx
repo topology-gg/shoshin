@@ -13,41 +13,15 @@ import {
 } from '@mui/icons-material';
 
 const JESSICA_KEYS = [
-    ['W', 'E', '', '', '', '', ''],
-    ['S', 'D', 'F', 'H', '', '', ''],
-    ['', '', '', '', 'left', 'down', 'right'],
+    ['q', '', 'e', '', '', '', ''],
+    ['a', 's', 'd', '', 'j', 'k', 'l'],
+    ['', '', '', '', '', '', '.'],
 ];
 const ANTOC_KEYS = [
-    ['W', 'E', '', '', '', '', ''],
-    ['S', 'D', '', 'H', '', '', ''],
-    ['', '', '', '', 'left', 'down', 'right'],
+    ['q', '', 'e', '', '', '', ''],
+    ['a', 's', 'd', '', 'j', 'k', ''],
+    ['', '', '', '', '', '', '.'],
 ];
-const keyNameToKeyCode = (whichKey: string): number => {
-    switch (whichKey) {
-        case 'W':
-            return 87;
-        case 'E':
-            return 69;
-        case 'S':
-            return 83;
-        case 'D':
-            return 68;
-        case 'F':
-            return 70;
-        case 'H':
-            return 72;
-        case 'left':
-            return 37;
-        case 'down':
-            return 40;
-        case 'right':
-            return 39;
-        case 'up':
-            return 38;
-        default:
-            return -1;
-    }
-};
 
 const MidScreenKeybinding = ({
     realTimeCharacter,
@@ -70,7 +44,7 @@ const MidScreenKeybinding = ({
                         alignSelf: 'center',
                     }}
                 >
-                    {keyName}
+                    {keyName.toUpperCase()}
                 </span>
             ) : keyName == 'left' ? (
                 <ArrowBack
@@ -93,10 +67,9 @@ const MidScreenKeybinding = ({
             ) : (
                 <></>
             );
-        const keyCode = keyNameToKeyCode(keyName);
-        const isKeyDown = !(keyCode in keyDownState)
+        const isKeyDown = !(keyName in keyDownState)
             ? false
-            : keyDownState[keyCode];
+            : keyDownState[keyName];
         const backgroundColor = isKeyDown ? '#f1573b' : '#EEEEEE';
         const color = isKeyDown ? '#fff' : '#333';
         // const transform = isKeyDown ? 'translate(2px,2px)' : ''

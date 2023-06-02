@@ -37,6 +37,8 @@ export default class RealTime extends Platformer {
 
     private isFirstTick: boolean = true;
 
+    private tickLatencyInSecond = 0.07;
+
     private setPlayerStatuses: (playerStatuses: StatusBarPanelProps) => void =
         () => {};
 
@@ -142,16 +144,21 @@ export default class RealTime extends Platformer {
         this.isGameRunning = false;
 
         this.keyboard = this.input.keyboard.addKeys({
-            down: Phaser.Input.Keyboard.KeyCodes.DOWN,
-            left: Phaser.Input.Keyboard.KeyCodes.LEFT,
-            right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
-            d: Phaser.Input.Keyboard.KeyCodes.D,
+            // down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+            // left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+            // right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+            a: Phaser.Input.Keyboard.KeyCodes.A,
             s: Phaser.Input.Keyboard.KeyCodes.S,
-            w: Phaser.Input.Keyboard.KeyCodes.W,
+            d: Phaser.Input.Keyboard.KeyCodes.D,
+            q: Phaser.Input.Keyboard.KeyCodes.Q,
             e: Phaser.Input.Keyboard.KeyCodes.E,
+            j: Phaser.Input.Keyboard.KeyCodes.J,
+            k: Phaser.Input.Keyboard.KeyCodes.K,
+            l: Phaser.Input.Keyboard.KeyCodes.L,
+            // w: Phaser.Input.Keyboard.KeyCodes.W,
             space: Phaser.Input.Keyboard.KeyCodes.SPACE,
-            h: Phaser.Input.Keyboard.KeyCodes.H,
-            f: Phaser.Input.Keyboard.KeyCodes.F,
+            period: Phaser.Input.Keyboard.KeyCodes.PERIOD,
+            // f: Phaser.Input.Keyboard.KeyCodes.F,
         });
         this.set_player_character(this.character_type_0);
         this.scene.scene.events.on('pause', () => {
@@ -164,12 +171,12 @@ export default class RealTime extends Platformer {
         this.resetGameState();
 
         this.gameTimer = this.time.addEvent({
-            delay: 100, // ms
+            delay: this.tickLatencyInSecond*1000, // ms
             callback: () => this.run(),
             //args: [],
             //callbackScope: thisArg,
             //Match is 60 seconds tops
-            repeat: 60 / 0.1,
+            repeat: 60 / this.tickLatencyInSecond,
         });
 
         this.isGameRunning = true;
@@ -208,37 +215,37 @@ export default class RealTime extends Platformer {
             this.startMatch();
         }
         if (this.isGameRunning) {
-            if (this.keyboard.down.isDown) {
+            if (this.keyboard.s.isDown) {
                 //block
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ]['Block'];
-            } else if (this.keyboard.left.isDown) {
+            } else if (this.keyboard.a.isDown) {
                 // move left
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ]['MoveBackward'];
-            } else if (this.keyboard.right.isDown) {
+            } else if (this.keyboard.d.isDown) {
                 // move right
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ]['MoveForward'];
-            } else if (this.keyboard.s.isDown) {
+            } else if (this.keyboard.j.isDown) {
                 //attack # 1
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ][this.character_type_0 == 1 ? 'Hori' : 'Slash'];
-            } else if (this.keyboard.d.isDown) {
+            } else if (this.keyboard.k.isDown) {
                 //attack # 2
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ][this.character_type_0 == 1 ? 'Vert' : 'Upswing'];
-            } else if (this.keyboard.w.isDown) {
+            } else if (this.keyboard.q.isDown) {
                 // dash back
                 this.player_action =
                     characterActionToNumber[
@@ -250,13 +257,13 @@ export default class RealTime extends Platformer {
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ]['DashForward'];
-            } else if (this.keyboard.f.isDown && this.character_type_0 == 0) {
+            } else if (this.keyboard.l.isDown && this.character_type_0 == 0) {
                 // attack # 3
                 this.player_action =
                     characterActionToNumber['jessica']['Sidecut'];
             }
         }
-        if (this.keyboard.h.isDown) {
+        if (this.keyboard.period.isDown) {
             this.isDebug = !this.isDebug;
         }
     }
