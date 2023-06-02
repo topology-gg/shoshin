@@ -159,7 +159,8 @@ export default function Home() {
         useState<string>('');
 
     // React state for tracking which tab is active in contract information view (Reference tab)
-    const [contractInformationTabIndex, setContractInformationTabIndex] = useState<number>(0);
+    const [contractInformationTabIndex, setContractInformationTabIndex] =
+        useState<number>(0);
 
     const [successToastOpen, setToastOpen] = React.useState(false);
 
@@ -213,20 +214,18 @@ export default function Home() {
                         return EditorTabName.Mind;
                     else return EditorTabName.Combos;
                 });
-            }
-            else if (swipeableViewIndex == 2) {
+            } else if (swipeableViewIndex == 2) {
                 // in Reference tab
                 setContractInformationTabIndex((prev) => {
                     if (prev == 0) return prev;
-                    else return prev-1;
-                })
+                    else return prev - 1;
+                });
             }
         } else if (e.key == "'") {
             if (swipeableViewIndex == 0) {
                 // in Fight tab
-                toggleGameMode()
-            }
-            else if (swipeableViewIndex == 1) {
+                toggleGameMode();
+            } else if (swipeableViewIndex == 1) {
                 // in Edit tab
                 setWorkingTab((prev) => {
                     if (prev == EditorTabName.Conditions) return prev;
@@ -237,13 +236,12 @@ export default function Home() {
                     else if (prev == EditorTabName.Profile)
                         return EditorTabName.Mind;
                 });
-            }
-            else if (swipeableViewIndex == 2) {
+            } else if (swipeableViewIndex == 2) {
                 // in Reference tab
                 setContractInformationTabIndex((prev) => {
                     if (prev == 2) return prev;
-                    else return prev+1;
-                })
+                    else return prev + 1;
+                });
             }
         }
     };
@@ -1131,18 +1129,28 @@ export default function Home() {
     }
 
     const keyboardShortcuts: KeyboardShortcut[] = [
-        {key:'[', keyName:'[', description:'← Mode'},
-        {key:']', keyName:']', description:'→ Mode'}
+        { key: '[', keyName: '[', description: '← Mode' },
+        { key: ']', keyName: ']', description: '→ Mode' },
     ].concat(
-        (swipeableViewIndex == 0) ? [
-            {key:"'", keyName:"'", description:'Toggle Simulation / Real Time'},
-        ] : (swipeableViewIndex == 1) ? [
-            {key:";", keyName:";", description:'→ Tab'},
-            {key:"'", keyName:"'", description:'→ Tab'}
-        ] : (swipeableViewIndex == 2) ? [
-            {key:";", keyName:";", description:'→ Tab'},
-            {key:"'", keyName:"'", description:'→ Tab'}
-        ] : []
+        swipeableViewIndex == 0
+            ? [
+                  {
+                      key: "'",
+                      keyName: "'",
+                      description: 'Toggle Simulation / Real Time',
+                  },
+              ]
+            : swipeableViewIndex == 1
+            ? [
+                  { key: ';', keyName: ';', description: '→ Tab' },
+                  { key: "'", keyName: "'", description: '→ Tab' },
+              ]
+            : swipeableViewIndex == 2
+            ? [
+                  { key: ';', keyName: ';', description: '→ Tab' },
+                  { key: "'", keyName: "'", description: '→ Tab' },
+              ]
+            : []
     );
 
     //
@@ -1166,18 +1174,25 @@ export default function Home() {
             </Head>
 
             {/* Contextual hints for keyboard shortcut */}
-            <div style={{
-                position:'fixed', bottom:'0px', width:'100%', height:'70px', backgroundColor:'#333333E3', zIndex:'100',
-                display:'flex', flexDirection:'row', justifyContent: 'center', verticalAlign:'middle', padding:'20px'
-            }}>
-                {
-
-                }
-                {
-                    keyboardShortcuts.map((shortcut: KeyboardShortcut) => {return (
-                        <KeyboardShortcutElement shortcut={shortcut} />
-                    )})
-                }
+            <div
+                style={{
+                    position: 'fixed',
+                    bottom: '0px',
+                    width: '100%',
+                    height: '70px',
+                    backgroundColor: '#333333E3',
+                    zIndex: '100',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    verticalAlign: 'middle',
+                    padding: '20px',
+                }}
+            >
+                {}
+                {keyboardShortcuts.map((shortcut: KeyboardShortcut) => {
+                    return <KeyboardShortcutElement shortcut={shortcut} />;
+                })}
             </div>
 
             <Tabs
@@ -1189,10 +1204,10 @@ export default function Home() {
                 sx={{ mt: 2 }}
                 centered
             >
-                <Tab label={'Fight'} sx={{fontFamily:'Raleway'}} />
-                <Tab label={'Edit'} sx={{fontFamily:'Raleway'}} />
-                <Tab label={'Reference'} sx={{fontFamily:'Raleway'}} />
-                <Tab label={'Wallet'} sx={{fontFamily:'Raleway'}} />
+                <Tab label={'Fight'} sx={{ fontFamily: 'Raleway' }} />
+                <Tab label={'Edit'} sx={{ fontFamily: 'Raleway' }} />
+                <Tab label={'Reference'} sx={{ fontFamily: 'Raleway' }} />
+                <Tab label={'Wallet'} sx={{ fontFamily: 'Raleway' }} />
             </Tabs>
 
             <Snackbar
@@ -1227,8 +1242,14 @@ export default function Home() {
                             sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}
                         >
                             <ContractInformationView
-                                contractInformationTabIndex={contractInformationTabIndex}
-                                setContractInformationTabIndex={(tabIndex) => setContractInformationTabIndex((_) => tabIndex)}
+                                contractInformationTabIndex={
+                                    contractInformationTabIndex
+                                }
+                                setContractInformationTabIndex={(tabIndex) =>
+                                    setContractInformationTabIndex(
+                                        (_) => tabIndex
+                                    )
+                                }
                             />
                         </SwipeableContent>
                         <SwipeableContent
@@ -1243,41 +1264,64 @@ export default function Home() {
     );
 }
 
-const KeyboardShortcutElement = ({shortcut} : {shortcut:KeyboardShortcut}) => {
-    const fontSize = shortcut.keyName.length > 1 ? '11px' : '13px'
+const KeyboardShortcutElement = ({
+    shortcut,
+}: {
+    shortcut: KeyboardShortcut;
+}) => {
+    const fontSize = shortcut.keyName.length > 1 ? '11px' : '13px';
 
     return (
-        <div style={{marginRight:'48px', display:'flex', flexDirection:'row', verticalAlign:'middle'}}>
-
-            <div style={{
-                height: '30px',
-                lineHeight: '30px',
-                color: '#eee',
-                fontFamily:'Raleway',
-                textAlign:'center', verticalAlign:'center',
-                fontSize:'14px',
-                marginRight:'8px',
-
-            }}>
-                <span style={{alignSelf:'center'}}> { shortcut.description } </span>
+        <div
+            style={{
+                marginRight: '48px',
+                display: 'flex',
+                flexDirection: 'row',
+                verticalAlign: 'middle',
+            }}
+        >
+            <div
+                style={{
+                    height: '30px',
+                    lineHeight: '30px',
+                    color: '#eee',
+                    fontFamily: 'Raleway',
+                    textAlign: 'center',
+                    verticalAlign: 'center',
+                    fontSize: '14px',
+                    marginRight: '8px',
+                }}
+            >
+                <span style={{ alignSelf: 'center' }}>
+                    {' '}
+                    {shortcut.description}{' '}
+                </span>
             </div>
 
-            <div style={{
-                height: '30px', width: '30px',
-                lineHeight: '30px', borderRadius:'5px',
-                borderBottom: '3px solid #000',
-                marginBottom: '-3px',
-                borderRight: '3px solid #000',
-                marginRight: '-3px',
-                backgroundColor:'#eee',
-                color: '#333',
-                fontFamily:'Raleway',
-                textAlign:'center', verticalAlign:'center',
-                fontSize:fontSize,
-
-            }} className={"border_box"}>
-                <span style={{alignSelf:'center'}}> { shortcut.keyName } </span>
+            <div
+                style={{
+                    height: '30px',
+                    width: '30px',
+                    lineHeight: '30px',
+                    borderRadius: '5px',
+                    borderBottom: '3px solid #000',
+                    marginBottom: '-3px',
+                    borderRight: '3px solid #000',
+                    marginRight: '-3px',
+                    backgroundColor: '#eee',
+                    color: '#333',
+                    fontFamily: 'Raleway',
+                    textAlign: 'center',
+                    verticalAlign: 'center',
+                    fontSize: fontSize,
+                }}
+                className={'border_box'}
+            >
+                <span style={{ alignSelf: 'center' }}>
+                    {' '}
+                    {shortcut.keyName}{' '}
+                </span>
             </div>
         </div>
-    )
-}
+    );
+};

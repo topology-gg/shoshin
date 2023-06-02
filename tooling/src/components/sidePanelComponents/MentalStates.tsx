@@ -249,7 +249,10 @@ const MentalStates = ({
                                     className={'mentalStateButton'}
                                     key={`${i}`}
                                     onClick={() => handleClickTreeEditor(i + 1)}
-                                    style={{fontFamily:'Raleway', fontSize:'14px'}}
+                                    style={{
+                                        fontFamily: 'Raleway',
+                                        fontSize: '14px',
+                                    }}
                                 >
                                     {state.state}
                                 </button>

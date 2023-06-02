@@ -89,7 +89,7 @@ const StaminaBar = (props: statusBarProps) => {
                 datatype="stamina"
                 variant="determinate"
                 value={value / 10}
-                sx={{ width: 200, height:StaminaBarHeight }}
+                sx={{ width: 200, height: StaminaBarHeight }}
             />
             {staminaBarValues}
         </div>

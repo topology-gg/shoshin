@@ -178,18 +178,13 @@ function a11yProps(index: number) {
     };
 }
 
-const ContractInformationView = (
-    {
-        contractInformationTabIndex,
-        setContractInformationTabIndex
-    }:
-    {
-        contractInformationTabIndex: number,
-        setContractInformationTabIndex: (tabIndex: number) => void,
-    }
-) => {
-
-
+const ContractInformationView = ({
+    contractInformationTabIndex,
+    setContractInformationTabIndex,
+}: {
+    contractInformationTabIndex: number;
+    setContractInformationTabIndex: (tabIndex: number) => void;
+}) => {
     return (
         <div>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

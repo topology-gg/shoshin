@@ -1,5 +1,5 @@
 export interface KeyboardShortcut {
-    keyName: string,
-    key: string,
-    description: string,
+    keyName: string;
+    key: string;
+    description: string;
 }
