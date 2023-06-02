@@ -171,7 +171,7 @@ export default class RealTime extends Platformer {
         this.resetGameState();
 
         this.gameTimer = this.time.addEvent({
-            delay: this.tickLatencyInSecond*1000, // ms
+            delay: this.tickLatencyInSecond * 1000, // ms
             callback: () => this.run(),
             //args: [],
             //callbackScope: thisArg,
