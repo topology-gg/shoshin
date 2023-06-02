@@ -1318,7 +1318,7 @@ const KeyboardShortcutElement = ({
                 }}
                 className={'border_box'}
             >
-                <span style={{ alignSelf: 'center', fontWeight:'bold' }}>
+                <span style={{ alignSelf: 'center', fontWeight: 'bold' }}>
                     {' '}
                     {shortcut.keyName}{' '}
                 </span>
