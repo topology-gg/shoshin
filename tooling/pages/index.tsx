@@ -177,15 +177,48 @@ export default function Home() {
     // add listnener for keydown events
     useEffect(() => {
         function handleKeyDown(e) {
-            console.log('keydown', e.key);
+            // console.log('keydown', e.key);
             setKeyDownState((prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev));
                 prev_copy[e.key] = true;
                 return prev_copy;
             });
+
+            if (e.key == '[') {
+                setSwipeableViewIndex ((prev) => {
+                    if (prev == 0) return prev
+                    else return prev-1
+                })
+            }
+            else if (e.key == ']') {
+                setSwipeableViewIndex ((prev) => {
+                    if (prev == 3) return prev
+                    else return prev+1
+                })
+            }
+            else if (e.key == ';') {
+                if (swipeableViewIndex == 1) {
+                    setWorkingTab ((prev) => {
+                        if (prev == EditorTabName.Profile) return prev
+                        else if (prev == EditorTabName.Mind) return EditorTabName.Profile
+                        else if (prev == EditorTabName.Combos) return EditorTabName.Mind
+                        else return EditorTabName.Combos
+                    })
+                }
+            }
+            else if (e.key == "'") {
+                if (swipeableViewIndex == 1) {
+                    setWorkingTab ((prev) => {
+                        if (prev == EditorTabName.Conditions) return prev
+                        else if (prev == EditorTabName.Combos) return EditorTabName.Conditions
+                        else if (prev == EditorTabName.Mind) return EditorTabName.Combos
+                        else if (prev == EditorTabName.Profile) return EditorTabName.Mind
+                    })
+                }
+            }
         }
         function handleKeyUp(e) {
-            console.log('keyup', e.key);
+            // console.log('keyup', e.key);
             setKeyDownState((prev) => {
                 let prev_copy = JSON.parse(JSON.stringify(prev));
                 prev_copy[e.key] = false;
