@@ -20,7 +20,7 @@ declare module '@mui/material/Slider' {
 const theme = createTheme({
     typography: {
         fontFamily:
-            'Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;',
+            'Raleway, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;',
         fontSize: 12,
     },
     palette: {
