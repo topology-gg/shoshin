@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from "react";
 import {
     Box,
     Button,
@@ -31,9 +31,9 @@ const MentalStates = ({
     mentalStates,
     trees,
     initialMentalState,
-    handleSetInitialMentalState,
     combos,
     character,
+    handleSetInitialMentalState,
     handleAddMentalState,
     handleClickRemoveMentalState,
     handleSetMentalStateAction,
@@ -72,7 +72,7 @@ const MentalStates = ({
         setAnchorElInitialState(event.currentTarget);
     };
     const handleChosenInitialState = (mentalStateIndex) => {
-        if (typeof mentalStateIndex == 'number') {
+        if (typeof mentalStateIndex == "number") {
             handleSetInitialMentalState(mentalStateIndex);
         }
         setAnchorElInitialState(null);
@@ -87,17 +87,31 @@ const MentalStates = ({
     });
 
     // handle mental graph visualization
-    const mentalStateNamesOrdered = mentalStates.map((ms, _) => {
-        return ms.state;
-    });
-    const nextMentalStateNamesOrdered: string[][] = mentalStates.map(
-        (_, ms_i: number) => getMentalStatesNames(trees[ms_i])
+    const mentalStateNamesOrdered = useMemo(
+        () =>
+            mentalStates.map((ms, _) => {
+                return ms.state;
+            }),
+        [mentalStates]
+    );
+    const nextMentalStateNamesOrdered: string[][] = useMemo(
+        () =>
+            mentalStates.map((_, ms_i: number) =>
+                getMentalStatesNames(trees[ms_i])
+            ),
+        [mentalStates]
     );
 
-    // debug log
-    mentalStateNamesOrdered?.forEach((name, name_i) =>
-        console.log(name, '=>', nextMentalStateNamesOrdered[name_i])
-    );
+    const [highlightedMentalState, setHighlightedMentalState] =
+        useState<number>(-1);
+
+    const highlightMentalState = (index: number) => {
+        setHighlightedMentalState(index);
+    };
+
+    const selectMentalState = (index: number) => {
+        handleClickTreeEditor(index + 1);
+    };
 
     let componentAddNewMentalState = (
         <>
@@ -220,10 +234,16 @@ const MentalStates = ({
                             <Box
                                 key={`button-wrapper-${i}`}
                                 sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    ml: '2rem',
+                                    display: "flex",
+                                    alignItems: "center",
+                                    ml: "2rem",
+                                    bgcolor:
+                                        highlightedMentalState == i
+                                            ? "lightgrey"
+                                            : null
                                 }}
+                                onMouseOver={() => highlightMentalState(i)}
+                                onMouseOut={() => highlightMentalState(-1)}
                             >
                                 <button
                                     className={'mentalStateButton'}
@@ -296,6 +316,9 @@ const MentalStates = ({
                         nextMentalStateNamesOrdered={
                             nextMentalStateNamesOrdered
                         }
+                        highlightMentalState={highlightMentalState}
+                        highlightedMentalStateIndex={highlightedMentalState}
+                        selectMentalState={selectMentalState}
                     />
                 </Grid>
             </Grid>
