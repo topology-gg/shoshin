@@ -185,35 +185,37 @@ export default function Home() {
             });
 
             if (e.key == '[') {
-                setSwipeableViewIndex ((prev) => {
-                    if (prev == 0) return prev
-                    else return prev-1
-                })
-            }
-            else if (e.key == ']') {
-                setSwipeableViewIndex ((prev) => {
-                    if (prev == 3) return prev
-                    else return prev+1
-                })
-            }
-            else if (e.key == ';') {
+                setSwipeableViewIndex((prev) => {
+                    if (prev == 0) return prev;
+                    else return prev - 1;
+                });
+            } else if (e.key == ']') {
+                setSwipeableViewIndex((prev) => {
+                    if (prev == 3) return prev;
+                    else return prev + 1;
+                });
+            } else if (e.key == ';') {
                 if (swipeableViewIndex == 1) {
-                    setWorkingTab ((prev) => {
-                        if (prev == EditorTabName.Profile) return prev
-                        else if (prev == EditorTabName.Mind) return EditorTabName.Profile
-                        else if (prev == EditorTabName.Combos) return EditorTabName.Mind
-                        else return EditorTabName.Combos
-                    })
+                    setWorkingTab((prev) => {
+                        if (prev == EditorTabName.Profile) return prev;
+                        else if (prev == EditorTabName.Mind)
+                            return EditorTabName.Profile;
+                        else if (prev == EditorTabName.Combos)
+                            return EditorTabName.Mind;
+                        else return EditorTabName.Combos;
+                    });
                 }
-            }
-            else if (e.key == "'") {
+            } else if (e.key == "'") {
                 if (swipeableViewIndex == 1) {
-                    setWorkingTab ((prev) => {
-                        if (prev == EditorTabName.Conditions) return prev
-                        else if (prev == EditorTabName.Combos) return EditorTabName.Conditions
-                        else if (prev == EditorTabName.Mind) return EditorTabName.Combos
-                        else if (prev == EditorTabName.Profile) return EditorTabName.Mind
-                    })
+                    setWorkingTab((prev) => {
+                        if (prev == EditorTabName.Conditions) return prev;
+                        else if (prev == EditorTabName.Combos)
+                            return EditorTabName.Conditions;
+                        else if (prev == EditorTabName.Mind)
+                            return EditorTabName.Combos;
+                        else if (prev == EditorTabName.Profile)
+                            return EditorTabName.Mind;
+                    });
                 }
             }
         }
