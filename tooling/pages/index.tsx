@@ -182,7 +182,7 @@ export default function Home() {
     // Handle key events the React way
     const ref = useRef(null);
     useEffect(() => {
-        ref.current.focus();
+        if (ref.current !== undefined) ref.current.focus();
     }, [ref.current]);
 
     const handleKeyDown = (e) => {
