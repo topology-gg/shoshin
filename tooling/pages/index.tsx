@@ -92,7 +92,7 @@ const Game = dynamic(() => import('../src/Game/PhaserGame'), {
 
 export default function Home() {
     // Constants
-    const LATENCY = 100;
+    const LATENCY = 70;
     const runnable = true;
 
     // React states for simulation / animation control
