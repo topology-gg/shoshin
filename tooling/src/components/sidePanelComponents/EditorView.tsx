@@ -22,66 +22,102 @@ import { Condition, ConditionElement } from '../../types/Condition';
 import { CircularProgress } from '@mui/material';
 
 interface EditorViewProps {
-    editorMode: EditorMode
-    settingModalOpen: boolean
-    setSettingModalOpen: (bool: boolean) => void
-    studyAgent: (agent: Agent) => void
-    buildNewAgentFromBlank: () => void
-    buildNewAgentFromAgent: (agent: Agent) => void
-    agentName: string
-    setAgentName: (name: string) => void
-    workingTab: EditorTabName
-    handleClickTab: (tab: EditorTabName) => void
-    mentalStates: MentalState[]
-    initialMentalState: number
-    handleSetInitialMentalState: (initialMentalState: number) => void
-    combos: number[][]
-    handleValidateCombo: (combo: number[], index: number) => void
-    character: Character
-    setCharacter: (character: Character) => void
-    handleAddMentalState: (new_state: string) => void
-    handleClickRemoveMentalState: (index: number) => void
-    handleSetMentalStateAction: (index: number, action: number) => void
-    treeEditor: number
-    handleClickTreeEditor: (index: number) => void
-    trees: Tree[]
-    handleUpdateTree: (index: number, input: string) => void
-    conditions: Condition[]
-    handleUpdateCondition: (index: number, element: ConditionElement, name: string) => void
-    handleConfirmCondition: () => void
-    handleClickDeleteCondition: (index: number) => void
-    conditionUnderEditIndex: number
-    setConditionUnderEditIndex: (index: number) => void
-    isConditionWarningTextOn: boolean
-    conditionWarningText: string
-    isTreeEditorWarningTextOn: boolean
-    treeEditorWarningText: string
-    handleRemoveConditionElement: (index: number) => void
-    handleSubmitAgent: () => void
-    agents: Agent[]
-    handleSaveCondition: (index: number, conditionElements: ConditionElement[]) => void
-    txHash?: string
-    txPending?: boolean
-    txStatusText?: string
+    editorMode: EditorMode;
+    settingModalOpen: boolean;
+    setSettingModalOpen: (bool: boolean) => void;
+    studyAgent: (agent: Agent) => void;
+    buildNewAgentFromBlank: () => void;
+    buildNewAgentFromAgent: (agent: Agent) => void;
+    agentName: string;
+    setAgentName: (name: string) => void;
+    workingTab: EditorTabName;
+    handleClickTab: (tab: EditorTabName) => void;
+    mentalStates: MentalState[];
+    initialMentalState: number;
+    handleSetInitialMentalState: (initialMentalState: number) => void;
+    combos: number[][];
+    handleValidateCombo: (combo: number[], index: number) => void;
+    character: Character;
+    setCharacter: (character: Character) => void;
+    handleAddMentalState: (new_state: string) => void;
+    handleClickRemoveMentalState: (index: number) => void;
+    handleSetMentalStateAction: (index: number, action: number) => void;
+    treeEditor: number;
+    handleClickTreeEditor: (index: number) => void;
+    trees: Tree[];
+    handleUpdateTree: (index: number, input: string) => void;
+    conditions: Condition[];
+    handleUpdateCondition: (
+        index: number,
+        element: ConditionElement,
+        name: string
+    ) => void;
+    handleConfirmCondition: () => void;
+    handleClickDeleteCondition: (index: number) => void;
+    conditionUnderEditIndex: number;
+    setConditionUnderEditIndex: (index: number) => void;
+    isConditionWarningTextOn: boolean;
+    conditionWarningText: string;
+    isTreeEditorWarningTextOn: boolean;
+    treeEditorWarningText: string;
+    handleRemoveConditionElement: (index: number) => void;
+    handleSubmitAgent: () => void;
+    agents: Agent[];
+    handleSaveCondition: (
+        index: number,
+        conditionElements: ConditionElement[]
+    ) => void;
+    txHash?: string;
+    txPending?: boolean;
+    txStatusText?: string;
 }
-
 
 const EditorView = ({
     editorMode,
-    settingModalOpen, setSettingModalOpen,
+    settingModalOpen,
+    setSettingModalOpen,
     studyAgent,
     buildNewAgentFromBlank,
     buildNewAgentFromAgent,
-    agentName,setAgentName,
-    workingTab, handleClickTab, mentalStates, initialMentalState, handleSetInitialMentalState, combos, handleValidateCombo,
-    character, setCharacter, handleAddMentalState, handleClickRemoveMentalState, handleSetMentalStateAction, treeEditor, handleClickTreeEditor,
-    trees, handleUpdateTree, conditions, handleUpdateCondition, handleConfirmCondition, handleClickDeleteCondition,
-    conditionUnderEditIndex, setConditionUnderEditIndex, isConditionWarningTextOn, conditionWarningText, isTreeEditorWarningTextOn, treeEditorWarningText,
-    handleRemoveConditionElement, handleSubmitAgent, agents, handleSaveCondition, txHash, txStatusText, txPending = false,
+    agentName,
+    setAgentName,
+    workingTab,
+    handleClickTab,
+    mentalStates,
+    initialMentalState,
+    handleSetInitialMentalState,
+    combos,
+    handleValidateCombo,
+    character,
+    setCharacter,
+    handleAddMentalState,
+    handleClickRemoveMentalState,
+    handleSetMentalStateAction,
+    treeEditor,
+    handleClickTreeEditor,
+    trees,
+    handleUpdateTree,
+    conditions,
+    handleUpdateCondition,
+    handleConfirmCondition,
+    handleClickDeleteCondition,
+    conditionUnderEditIndex,
+    setConditionUnderEditIndex,
+    isConditionWarningTextOn,
+    conditionWarningText,
+    isTreeEditorWarningTextOn,
+    treeEditorWarningText,
+    handleRemoveConditionElement,
+    handleSubmitAgent,
+    agents,
+    handleSaveCondition,
+    txHash,
+    txStatusText,
+    txPending = false,
 }: EditorViewProps) => {
-
-    const isReadOnly = editorMode == EditorMode.ReadOnly
-    const [openContractInformation, setOpenContractInformation] = React.useState(false);
+    const isReadOnly = editorMode == EditorMode.ReadOnly;
+    const [openContractInformation, setOpenContractInformation] =
+        React.useState(false);
 
     const content = (workingTab: EditorTabName) => {
         switch (workingTab) {
@@ -94,37 +130,46 @@ const EditorView = ({
                         character={character}
                         setCharacter={setCharacter}
                     />
-                )
+                );
             }
 
             case EditorTabName.Mind: {
-                return !treeEditor && (
-                    <MentalStates
-                        isReadOnly={isReadOnly}
-                        mentalStates={mentalStates}
-                        trees={trees}
-                        initialMentalState={initialMentalState}
-                        handleSetInitialMentalState={handleSetInitialMentalState}
-                        combos={combos}
-                        character={character}
-                        handleAddMentalState={handleAddMentalState}
-                        handleClickRemoveMentalState={handleClickRemoveMentalState}
-                        handleSetMentalStateAction={handleSetMentalStateAction}
-                        handleClickTreeEditor={handleClickTreeEditor}
-                    />
-                ) || !!treeEditor && (
-                    <TreeEditor
-                        isReadOnly={isReadOnly}
-                        indexTree={ treeEditor - 1 }
-                        tree={trees[treeEditor - 1]}
-                        handleUpdateTree={handleUpdateTree}
-                        mentalStates={mentalStates}
-                        conditions={conditions}
-                        handleClickTreeEditor={handleClickTreeEditor}
-                        isWarningTextOn={isTreeEditorWarningTextOn}
-                        warningText={treeEditorWarningText}
-                    />
-                )
+                return (
+                    (!treeEditor && (
+                        <MentalStates
+                            isReadOnly={isReadOnly}
+                            mentalStates={mentalStates}
+                            trees={trees}
+                            initialMentalState={initialMentalState}
+                            handleSetInitialMentalState={
+                                handleSetInitialMentalState
+                            }
+                            combos={combos}
+                            character={character}
+                            handleAddMentalState={handleAddMentalState}
+                            handleClickRemoveMentalState={
+                                handleClickRemoveMentalState
+                            }
+                            handleSetMentalStateAction={
+                                handleSetMentalStateAction
+                            }
+                            handleClickTreeEditor={handleClickTreeEditor}
+                        />
+                    )) ||
+                    (!!treeEditor && (
+                        <TreeEditor
+                            isReadOnly={isReadOnly}
+                            indexTree={treeEditor - 1}
+                            tree={trees[treeEditor - 1]}
+                            handleUpdateTree={handleUpdateTree}
+                            mentalStates={mentalStates}
+                            conditions={conditions}
+                            handleClickTreeEditor={handleClickTreeEditor}
+                            isWarningTextOn={isTreeEditorWarningTextOn}
+                            warningText={treeEditorWarningText}
+                        />
+                    ))
+                );
             }
 
             case EditorTabName.Combos: {
@@ -135,10 +180,11 @@ const EditorView = ({
                         combos={combos}
                         handleValidateCombo={handleValidateCombo}
                     ></Combos>
-                )
+                );
             }
             case EditorTabName.Conditions: {
-                return <Conditions
+                return (
+                    <Conditions
                         isReadOnly={isReadOnly}
                         conditions={conditions}
                         handleUpdateCondition={handleUpdateCondition}
@@ -148,13 +194,15 @@ const EditorView = ({
                         setConditionUnderEditIndex={setConditionUnderEditIndex}
                         isWarningTextOn={isConditionWarningTextOn}
                         warningText={conditionWarningText}
-                        handleRemoveConditionElement={handleRemoveConditionElement}
+                        handleRemoveConditionElement={
+                            handleRemoveConditionElement
+                        }
                         handleSaveCondition={handleSaveCondition}
-                />;
+                    />
+                );
             }
-
         }
-    }
+    };
 
     return (
         <Box
@@ -171,23 +219,54 @@ const EditorView = ({
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    width:'800px',
+                    width: '800px',
                     mb: '1rem',
                 }}
             >
-
                 {/* for vertically align icon: https://stackoverflow.com/questions/43360526/align-material-icon-vertically */}
-                <div style={{marginBottom:'1rem', display:'flex', flexDirection:'row', justifyContent: 'space-between'}}>
-                    <p style={{fontSize:'1rem', lineHeight:'1rem'}}>
-                        Editor status: {editorMode == EditorMode.ReadOnly ? (
-                            <><AutoStoriesIcon sx={{marginLeft: '0.2rem', marginRight:'0.6rem', verticalAlign:'middle'}} />Read Only</>
+                <div
+                    style={{
+                        marginBottom: '1rem',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                    }}
+                >
+                    <p style={{ fontSize: '1rem', lineHeight: '1rem' }}>
+                        Editor status:{' '}
+                        {editorMode == EditorMode.ReadOnly ? (
+                            <>
+                                <AutoStoriesIcon
+                                    sx={{
+                                        marginLeft: '0.2rem',
+                                        marginRight: '0.6rem',
+                                        verticalAlign: 'middle',
+                                    }}
+                                />
+                                Read Only
+                            </>
                         ) : (
-                            <><BuildIcon sx={{marginLeft: '0.2rem', marginRight:'0.6rem', verticalAlign:'middle'}} />Edit Agent</>
+                            <>
+                                <BuildIcon
+                                    sx={{
+                                        marginLeft: '0.2rem',
+                                        marginRight: '0.6rem',
+                                        verticalAlign: 'middle',
+                                    }}
+                                />
+                                Edit Agent
+                            </>
                         )}
                     </p>
                 </div>
 
-                <div style={{display:'flex', flexDirection:'row', gap:'10px'}}>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        gap: '10px',
+                    }}
+                >
                     {/* <div >
                         <ButtonOptionList
                             buttonLabel={<><PersonSearchIcon sx={{}} /></>}
@@ -200,59 +279,77 @@ const EditorView = ({
                         />
                     </div> */}
 
-                    <Tooltip title="Build an agent from scratch" placement="top">
-                        <div style={{marginBottom: '1rem'}}>
-                                <Button
-                                    id='button-option-list-button'
-                                    onClick={() => {
-                                        console.log('Build new Agent from blank');
-                                        buildNewAgentFromBlank()
-                                    }}
-                                    variant="outlined"
-                                >
-                                    <PersonAddAltIcon sx={{}} />
-                                </Button>
+                    <Tooltip
+                        title="Build an agent from scratch"
+                        placement="top"
+                    >
+                        <div style={{ marginBottom: '1rem' }}>
+                            <Button
+                                id="button-option-list-button"
+                                onClick={() => {
+                                    console.log('Build new Agent from blank');
+                                    buildNewAgentFromBlank();
+                                }}
+                                variant="outlined"
+                            >
+                                <PersonAddAltIcon sx={{}} />
+                            </Button>
                         </div>
                     </Tooltip>
 
-                    <Tooltip title="Build an agent starting from an existing agent" placement="top">
-                        <div style={{marginBottom: '1rem'}}>
-
-                                <ButtonOptionList
-                                    buttonLabel={<><PersonAddAlt1Icon  sx={{}} /></>}
-                                    options={agents}
-                                    optionLabel={'agent'}
-                                    optionSelected={(option: Agent) => {
-                                        console.log('Build new Agent from an existing Agent:', option)
-                                        buildNewAgentFromAgent(option)
-                                    }}
-                                />
+                    <Tooltip
+                        title="Build an agent starting from an existing agent"
+                        placement="top"
+                    >
+                        <div style={{ marginBottom: '1rem' }}>
+                            <ButtonOptionList
+                                buttonLabel={
+                                    <>
+                                        <PersonAddAlt1Icon sx={{}} />
+                                    </>
+                                }
+                                options={agents}
+                                optionLabel={'agent'}
+                                optionSelected={(option: Agent) => {
+                                    console.log(
+                                        'Build new Agent from an existing Agent:',
+                                        option
+                                    );
+                                    buildNewAgentFromAgent(option);
+                                }}
+                            />
                         </div>
                     </Tooltip>
 
                     <Tooltip title="Submit your agent onchain" placement="top">
-                        <div style={{marginBottom: '1rem'}}>
+                        <div style={{ marginBottom: '1rem' }}>
                             <Button
-                                id='button-option-list-button'
+                                id="button-option-list-button"
                                 onClick={() => {
                                     console.log('Submit Agent onchain');
                                     handleSubmitAgent();
                                 }}
                                 variant="outlined"
-                                disabled={editorMode==EditorMode.ReadOnly || txPending}
-                            >
-                                {txPending ?
-                                    <CircularProgress size="20px" color="inherit"/> :
-                                    <PublishIcon sx={{}} />
+                                disabled={
+                                    editorMode == EditorMode.ReadOnly ||
+                                    txPending
                                 }
+                            >
+                                {txPending ? (
+                                    <CircularProgress
+                                        size="20px"
+                                        color="inherit"
+                                    />
+                                ) : (
+                                    <PublishIcon sx={{}} />
+                                )}
                             </Button>
                         </div>
                     </Tooltip>
                 </div>
-                <div style={{height:'1rem'}}>
-                    {txHash &&
+                <div style={{ height: '1rem' }}>
+                    {txHash && (
                         <Tooltip title="View on Starkscan" arrow>
-
                             <Link
                                 display="flex"
                                 alignItems="center"
@@ -265,7 +362,7 @@ const EditorView = ({
                                 <OpenInNewIcon fontSize="inherit" />
                             </Link>
                         </Tooltip>
-                    }
+                    )}
                 </div>
             </Box>
 
@@ -278,7 +375,10 @@ const EditorView = ({
                     width: '800px',
                 }}
             >
-                <Tabs workingTab={workingTab} handleClickTab={handleClickTab}></Tabs>
+                <Tabs
+                    workingTab={workingTab}
+                    handleClickTab={handleClickTab}
+                ></Tabs>
                 <Box
                     sx={{
                         display: 'flex',
@@ -294,11 +394,9 @@ const EditorView = ({
                 >
                     {content(workingTab)}
                 </Box>
-
             </Box>
-
         </Box>
-    )
-}
+    );
+};
 
 export default EditorView;

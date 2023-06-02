@@ -1,97 +1,115 @@
-import React, { useState, useEffect } from "react";
-import {useAccount, useConnectors} from '@starknet-react/core'
-import { useTranslation } from "react-i18next";
+import React, { useState, useEffect } from 'react';
+import { useAccount, useConnectors } from '@starknet-react/core';
+import { useTranslation } from 'react-i18next';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 
-import styles from './ConnectWallet.module.css'
-import { Button } from "@mui/material";
+import styles from './ConnectWallet.module.css';
+import { Button } from '@mui/material';
 
 // export default function ConnectWallet ({ modalOpen, handleOnOpen, handleOnClose }) {
-export default function ConnectWallet () {
+export default function ConnectWallet() {
     const { t } = useTranslation();
 
     // const [open, setOpen] = useState<boolean>(false);
     // const handleOpen = () => {setOpen(true);};
     // const handleClose = () => {setOpen(false);};
 
-    const { account, address, status } = useAccount()
-    const { available, connect, disconnect } = useConnectors()
+    const { account, address, status } = useAccount();
+    const { available, connect, disconnect } = useConnectors();
 
     // React states
-    const [connectors, setConnectors] = useState([])
-    const [walletNotFound, setWalletNotFound] = useState(false)
-
+    const [connectors, setConnectors] = useState([]);
+    const [walletNotFound, setWalletNotFound] = useState(false);
 
     let modalRender;
 
     // Connectors are not available server-side therefore we
     // set the state in a useEffect hook
     useEffect(() => {
-        if (available) setConnectors(available)
-    }, [available])
+        if (available) setConnectors(available);
+    }, [available]);
 
     if (account) {
-
-        let rendered_account = <>Connected: {String(address).slice(0,6) + '...' + String(address).slice(-4)}</>
+        let rendered_account = (
+            <>
+                Connected:{' '}
+                {String(address).slice(0, 6) +
+                    '...' +
+                    String(address).slice(-4)}
+            </>
+        );
 
         modalRender = (
-            <div className={styles.wrapper} style={{paddingTop:'1rem'}}>
-
-                <p style={{margin:'0', fontSize:'14px'}}>{rendered_account}</p>
+            <div className={styles.wrapper} style={{ paddingTop: '1rem' }}>
+                <p style={{ margin: '0', fontSize: '14px' }}>
+                    {rendered_account}
+                </p>
 
                 <MenuItem
-                    sx={{width:'100%', mt:2, justifyContent: 'center'}}
+                    sx={{ width: '100%', mt: 2, justifyContent: 'center' }}
                     onClick={() => disconnect()}
                 >
                     Disconnect
                 </MenuItem>
             </div>
-        )
-    }
-    else {
-        const menu_items_sorted = [].concat(connectors)
-        .sort ((a,b) => {
-            if(a.name() < b.name()) { return -1; }
-            if(a.name() > b.name()) { return 1; }
-            return 0;
-        })
-        .map ((connector) => (
-            <MenuItem
-                key={connector.id()}
-                onClick={() => connect(connector)}
-                sx={{justifyContent: 'center'}}
-            >
-                {/* {t("Connect")}{connector.name()} */}
-                {connector.name()}
-            </MenuItem>
-        ))
+        );
+    } else {
+        const menu_items_sorted = []
+            .concat(connectors)
+            .sort((a, b) => {
+                if (a.name() < b.name()) {
+                    return -1;
+                }
+                if (a.name() > b.name()) {
+                    return 1;
+                }
+                return 0;
+            })
+            .map((connector) => (
+                <MenuItem
+                    key={connector.id()}
+                    onClick={() => connect(connector)}
+                    sx={{ justifyContent: 'center' }}
+                >
+                    {/* {t("Connect")}{connector.name()} */}
+                    {connector.name()}
+                </MenuItem>
+            ));
 
         modalRender = (
             <MenuList>
-
-                {connectors.length > 0 ? menu_items_sorted : (
+                {connectors.length > 0 ? (
+                    menu_items_sorted
+                ) : (
                     <>
-                        <Button variant="outlined" onClick={() => setWalletNotFound(true)}>Connect</Button>
-                        {walletNotFound && <p className='error-text'>Wallet not found. Please install ArgentX or Braavos.</p>}
+                        <Button
+                            variant="outlined"
+                            onClick={() => setWalletNotFound(true)}
+                        >
+                            Connect
+                        </Button>
+                        {walletNotFound && (
+                            <p className="error-text">
+                                Wallet not found. Please install ArgentX or
+                                Braavos.
+                            </p>
+                        )}
                     </>
                 )}
-
             </MenuList>
-        )
+        );
     }
 
-    return modalRender
-};
-
+    return modalRender;
+}
 
 // reference: https://stackoverflow.com/a/66228871
-function feltLiteralToString (felt: string) {
-
+function feltLiteralToString(felt: string) {
     const tester = felt.split('');
 
     let currentChar = '';
-    let result = "";
+    let result = '';
     const minVal = 25;
     const maxval = 255;
 
@@ -99,14 +117,13 @@ function feltLiteralToString (felt: string) {
         currentChar += tester[i];
         if (parseInt(currentChar) > minVal) {
             // console.log(currentChar, String.fromCharCode(currentChar));
-            result += String.fromCharCode( parseInt(currentChar) );
-            currentChar = "";
+            result += String.fromCharCode(parseInt(currentChar));
+            currentChar = '';
         }
         if (parseInt(currentChar) > maxval) {
             currentChar = '';
         }
     }
 
-    return result
+    return result;
 }
-

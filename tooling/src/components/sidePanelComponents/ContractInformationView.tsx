@@ -1,24 +1,35 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, IconButton, List, ListItem, ListItemText, Box, Tabs, Tab, Typography } from '@mui/material';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    IconButton,
+    List,
+    ListItem,
+    ListItemText,
+    Box,
+    Tabs,
+    Tab,
+    Typography,
+} from '@mui/material';
 import { Close } from '@mui/icons-material';
 import Draggable from 'react-draggable';
 import Paper, { PaperProps } from '@mui/material/Paper';
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { SpriteAnimator } from 'react-sprite-animator'
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { SpriteAnimator } from 'react-sprite-animator';
 
-interface ContractInformationViewProps {
-}
+interface ContractInformationViewProps {}
 
 function PaperComponent(props: PaperProps) {
-  return (
-    <Draggable
-      handle="#draggable-dialog-title"
-      cancel={'[class*="MuiDialogContent-root"]'}
-    >
-      <Paper {...props} />
-    </Draggable>
-  );
+    return (
+        <Draggable
+            handle="#draggable-dialog-title"
+            cancel={'[class*="MuiDialogContent-root"]'}
+        >
+            <Paper {...props} />
+        </Draggable>
+    );
 }
 
 //  hurtable, knockable, clashable; at its last frame, if intent is UPSWING and agent has sufficient stamina, enter its first frame next (instead of returning to IDLE) |
@@ -68,7 +79,7 @@ const JessicaInfo = `
 
 ### Hitbox dimensions
 (to be added)
-`
+`;
 
 const AntocInfo = `
 ## Antoc specification
@@ -111,7 +122,7 @@ const AntocInfo = `
 
 ### Hitbox dimensions
 (to be added)
-`
+`;
 
 const EngagementRules = `
 | Name | P1 | P2 | Consequence in Body |
@@ -122,11 +133,17 @@ const EngagementRules = `
 | Attack clashing with same weight | attack | attack (same character as P1) | both sides go to CLASH |
 | Attack clashing with different weight | Jessica attack | Antoc attack | P1 goes to KNOCKED; P2 goes to CLASH |
 | Knocked when under low HP | n/a | n/a | when hit, if HP <= 400 go to KNOCKED, otherwise go to HURT |
-`
+`;
 
-const JessicaInfoTag = <ReactMarkdown children={JessicaInfo} remarkPlugins={[remarkGfm]} />
-const AntocInfoTag = <ReactMarkdown children={AntocInfo} remarkPlugins={[remarkGfm]} />
-const EngagementRulesTag = <ReactMarkdown children={EngagementRules} remarkPlugins={[remarkGfm]} />
+const JessicaInfoTag = (
+    <ReactMarkdown children={JessicaInfo} remarkPlugins={[remarkGfm]} />
+);
+const AntocInfoTag = (
+    <ReactMarkdown children={AntocInfo} remarkPlugins={[remarkGfm]} />
+);
+const EngagementRulesTag = (
+    <ReactMarkdown children={EngagementRules} remarkPlugins={[remarkGfm]} />
+);
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -139,17 +156,17 @@ function TabPanel(props: TabPanelProps) {
 
     return (
         <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
         >
-        {value === index && (
-            <Box sx={{ p: 3 }}>
-            <Typography>{children}</Typography>
-            </Box>
-        )}
+            {value === index && (
+                <Box sx={{ p: 3 }}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
         </div>
     );
 }
@@ -162,21 +179,22 @@ function a11yProps(index: number) {
 }
 
 const ContractInformationView = () => {
-
     const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
 
     return (
         <div>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs
-                value={activeTabIndex}
-                onChange={(event, number) => setActiveTabIndex((_) => number)}
-                aria-label="basic tabs example"
-            >
-                <Tab label="Jessica" {...a11yProps(0)} />
-                <Tab label="Antoc" {...a11yProps(1)} />
-                <Tab label="Engagement Rules" {...a11yProps(2)} />
-            </Tabs>
+                <Tabs
+                    value={activeTabIndex}
+                    onChange={(event, number) =>
+                        setActiveTabIndex((_) => number)
+                    }
+                    aria-label="basic tabs example"
+                >
+                    <Tab label="Jessica" {...a11yProps(0)} />
+                    <Tab label="Antoc" {...a11yProps(1)} />
+                    <Tab label="Engagement Rules" {...a11yProps(2)} />
+                </Tabs>
             </Box>
 
             <TabPanel value={activeTabIndex} index={0}>

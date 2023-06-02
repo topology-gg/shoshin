@@ -1,31 +1,43 @@
-import { PERCEPTIBLE_KEYS } from "../types/Condition";
-import Leaf, { flattenLeaf } from "../types/Leaf";
+import { PERCEPTIBLE_KEYS } from '../types/Condition';
+import Leaf, { flattenLeaf } from '../types/Leaf';
 
-const FLAT_CONDITION_SIZE = 3 // (opcode, left, right)
-const FLAT_MEMORY_SIZE = 1 // (mem_value)
-const FLAT_PERCEPTIBLE_SIZE = 2 // (key, value)
+const FLAT_CONDITION_SIZE = 3; // (opcode, left, right)
+const FLAT_MEMORY_SIZE = 1; // (mem_value)
+const FLAT_PERCEPTIBLE_SIZE = 2; // (key, value)
 
-export function getEvaluateConditionInput(condition: Leaf, perceptibles: number[]): Int32Array {
-    let flattenedCondition = flattenLeaf(condition)
-    let flattenedConditionWithLength = prependArrayCorrectedLength(flattenedCondition, FLAT_CONDITION_SIZE)
+export function getEvaluateConditionInput(
+    condition: Leaf,
+    perceptibles: number[]
+): Int32Array {
+    let flattenedCondition = flattenLeaf(condition);
+    let flattenedConditionWithLength = prependArrayCorrectedLength(
+        flattenedCondition,
+        FLAT_CONDITION_SIZE
+    );
 
-    let perceptiblesWithKey = addPerceptiblesKey(perceptibles)
-    let perceptiblesWithKeyAndLength = prependArrayCorrectedLength(perceptiblesWithKey, FLAT_PERCEPTIBLE_SIZE)
+    let perceptiblesWithKey = addPerceptiblesKey(perceptibles);
+    let perceptiblesWithKeyAndLength = prependArrayCorrectedLength(
+        perceptiblesWithKey,
+        FLAT_PERCEPTIBLE_SIZE
+    );
 
     return new Int32Array([
-        ...flattenedConditionWithLength, 
-        ...perceptiblesWithKeyAndLength
-    ])
+        ...flattenedConditionWithLength,
+        ...perceptiblesWithKeyAndLength,
+    ]);
 }
 
 function addPerceptiblesKey(perceptibles: number[]) {
-    let keyValuePerceptibles = []
+    let keyValuePerceptibles = [];
     perceptibles.map((v, i) => {
-        keyValuePerceptibles.push(PERCEPTIBLE_KEYS[i], v)
-    })
-    return keyValuePerceptibles
+        keyValuePerceptibles.push(PERCEPTIBLE_KEYS[i], v);
+    });
+    return keyValuePerceptibles;
 }
 
-function prependArrayCorrectedLength(array: number[], cairoStructureSize: number) {
-    return [array.length / cairoStructureSize , ...array]
+function prependArrayCorrectedLength(
+    array: number[],
+    cairoStructureSize: number
+) {
+    return [array.length / cairoStructureSize, ...array];
 }

@@ -1,54 +1,69 @@
-import React, { useMemo } from "react";
-import { Box, Button, Chip, FormControlLabel, Switch } from "@mui/material";
-import { FastForward, FastRewind, Pause, PlayArrow, Stop } from "@mui/icons-material";
+import React, { useMemo } from 'react';
+import { Box, Button, Chip, FormControlLabel, Switch } from '@mui/material';
+import {
+    FastForward,
+    FastRewind,
+    Pause,
+    PlayArrow,
+    Stop,
+} from '@mui/icons-material';
 import Slider from '@mui/material/Slider';
-import { Frame } from "../types/Frame";
-import { BodystatesAntoc, BodystatesJessica } from "../types/Condition";
-import Timeline from "./ui/Timeline";
-import EventSymbol from "./ui/EventSymbol";
+import { Frame } from '../types/Frame';
+import { BodystatesAntoc, BodystatesJessica } from '../types/Condition';
+import Timeline from './ui/Timeline';
+import EventSymbol from './ui/EventSymbol';
 
 // Calculate key events to be displayed along the timeline slider
-function findFrameNumbersAtHurt (frames: Frame[]){
+function findFrameNumbersAtHurt(frames: Frame[]) {
     if (!frames) return;
     // find the frame number at which the agent is at the first frame (counter == 0) for hurt state (currently need to iterate over all character types)
     // and record that frame number minus one, which is the frame number where the agent is hurt by opponent
-    let frameNumbers = []
+    let frameNumbers = [];
     frames.forEach((frame, frame_i) => {
         if (
-            (frame.body_state.state == BodystatesAntoc.Hurt || frame.body_state.state == BodystatesJessica.Hurt)
-            && (frame.body_state.counter == 0)
-        ){
+            (frame.body_state.state == BodystatesAntoc.Hurt ||
+                frame.body_state.state == BodystatesJessica.Hurt) &&
+            frame.body_state.counter == 0
+        ) {
             frameNumbers.push(frame_i);
         }
-    })
-    return frameNumbers
+    });
+    return frameNumbers;
 }
 
-function findFrameNumbersAtKnocked (frames: Frame[]){
-    if (!frames) return
+function findFrameNumbersAtKnocked(frames: Frame[]) {
+    if (!frames) return;
     // find the frame number at which the agent is at the first frame (counter == 0) for hurt state (currently need to iterate over all character types)
     // and record that frame number minus one, which is the frame number where the agent is knocked by opponent
-    let frameNumbers = []
+    let frameNumbers = [];
     frames.forEach((frame, frame_i) => {
         if (
-            (frame.body_state.state == BodystatesAntoc.Knocked || frame.body_state.state == BodystatesJessica.Knocked)
-            && (frame.body_state.counter == 0)
-        ){
+            (frame.body_state.state == BodystatesAntoc.Knocked ||
+                frame.body_state.state == BodystatesJessica.Knocked) &&
+            frame.body_state.counter == 0
+        ) {
             frameNumbers.push(frame_i);
         }
-    })
-    return frameNumbers
+    });
+    return frameNumbers;
 }
 
 const MidScreenControl = ({
-    runnable, testJsonAvailable, testJson, animationFrame, n_cycles, animationState, handleClick, handleSlideChange,
-    checkedShowDebugInfo, handleChangeDebugInfo
-
+    runnable,
+    testJsonAvailable,
+    testJson,
+    animationFrame,
+    n_cycles,
+    animationState,
+    handleClick,
+    handleSlideChange,
+    checkedShowDebugInfo,
+    handleChangeDebugInfo,
 }) => {
-    const BLANK_COLOR = '#EFEFEF'
+    const BLANK_COLOR = '#EFEFEF';
 
-    const agent_0_frames = testJson?.agent_0.frames
-    const agent_1_frames = testJson?.agent_1.frames
+    const agent_0_frames = testJson?.agent_0.frames;
+    const agent_1_frames = testJson?.agent_1.frames;
 
     const marksP1 = useMemo(
         () => [
@@ -88,10 +103,10 @@ const MidScreenControl = ({
     return (
         <Box
             sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
                 backgroundColor: BLANK_COLOR,
                 p: 2,
                 mb: 2,
@@ -104,28 +119,27 @@ const MidScreenControl = ({
         >
             <Box
                 sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                     backgroundColor: '#ffffff00',
                     gap: 1,
                 }}
             >
-
                 <Button
                     size="small"
                     variant="outlined"
-                    onClick={() => handleClick("ToggleRun")}
+                    onClick={() => handleClick('ToggleRun')}
                     disabled={!runnable}
                 >
-                    {animationState != "Run" ? <PlayArrow /> : <Pause />}
+                    {animationState != 'Run' ? <PlayArrow /> : <Pause />}
                 </Button>
 
                 <Button
                     size="small"
                     variant="outlined"
-                    onClick={() => handleClick("Stop")}
+                    onClick={() => handleClick('Stop')}
                     disabled={!runnable || !testJsonAvailable}
                 >
                     <Stop />
@@ -134,7 +148,7 @@ const MidScreenControl = ({
                 <Button
                     size="small"
                     variant="outlined"
-                    onClick={() => handleClick("PrevFrame")}
+                    onClick={() => handleClick('PrevFrame')}
                     disabled={!runnable || !testJsonAvailable}
                 >
                     <FastRewind />
@@ -143,7 +157,7 @@ const MidScreenControl = ({
                 <Button
                     size="small"
                     variant="outlined"
-                    onClick={() => handleClick("NextFrame")}
+                    onClick={() => handleClick('NextFrame')}
                     disabled={!runnable || !testJsonAvailable}
                 >
                     <FastForward />
@@ -182,7 +196,7 @@ const MidScreenControl = ({
                                         border: '6px solid #fff',
                                     },
                                     '&.Mui-disabled .MuiSwitch-thumb': {
-                                        color:'#888'
+                                        color: '#888',
                                     },
                                     '&.Mui-disabled + .MuiSwitch-track': {
                                         opacity: 0.7,
@@ -194,7 +208,7 @@ const MidScreenControl = ({
                                     height: 22,
                                 },
                                 '& .MuiSwitch-track': {
-                                    borderRadius: 26/2,
+                                    borderRadius: 26 / 2,
                                     backgroundColor: '#E9E9EA',
                                     opacity: 1,
                                     transition: 500,
@@ -203,21 +217,25 @@ const MidScreenControl = ({
                         />
                     }
                     label={
-                        <Box component="div" fontSize={'0.75rem'} sx={{ml:0.5}}>
+                        <Box
+                            component="div"
+                            fontSize={'0.75rem'}
+                            sx={{ ml: 0.5 }}
+                        >
                             Debug
                         </Box>
                     }
-                    sx={{ml: 1}}
+                    sx={{ ml: 1 }}
                 />
             </Box>
 
-            <Box sx={{ width: 600, mt:3 }}>
+            <Box sx={{ width: 600, mt: 3 }}>
                 <Slider
                     aria-label="Always visible"
                     value={animationFrame}
                     onChange={handleSlideChange}
                     min={0}
-                    max={n_cycles == 0 ? 0 : n_cycles-1}
+                    max={n_cycles == 0 ? 0 : n_cycles - 1}
                     step={1}
                     getAriaValueText={(value) => `${value}`}
                     valueLabelDisplay="on"
@@ -233,7 +251,7 @@ const MidScreenControl = ({
                         '& .MuiSlider-valueLabel': {
                             fontSize: 11,
                             fontWeight: 'normal',
-                            top:24,
+                            top: 24,
                             backgroundColor: 'unset',
                             color: '#eee',
                             '&:before': {
@@ -258,30 +276,40 @@ const MidScreenControl = ({
                         },
 
                         '& .MuiSlider-track': {
-                            height: 10
+                            height: 10,
                         },
                     }}
                 />
-                <Box sx={{ position: "relative" }}>
-                    <Chip label="Player 1" color="info" size="small" sx={{ position: "absolute", top: 0, left: -50 }} />
+                <Box sx={{ position: 'relative' }}>
+                    <Chip
+                        label="Player 1"
+                        color="info"
+                        size="small"
+                        sx={{ position: 'absolute', top: 0, left: -50 }}
+                    />
                     <Timeline
                         color="info"
                         value={animationFrame}
                         onChange={handleSlideChange}
                         marks={marksP1}
                         step={null}
-                        max={n_cycles == 0 ? 0 : n_cycles-1}
+                        max={n_cycles == 0 ? 0 : n_cycles - 1}
                     />
                 </Box>
-                <Box sx={{ position: "relative" }}>
-                    <Chip label="Player 2" color="info" size="small" sx={{ position: "absolute", top: 0, left: -50 }} />
+                <Box sx={{ position: 'relative' }}>
+                    <Chip
+                        label="Player 2"
+                        color="info"
+                        size="small"
+                        sx={{ position: 'absolute', top: 0, left: -50 }}
+                    />
                     <Timeline
                         color="info"
                         value={animationFrame}
                         onChange={handleSlideChange}
                         marks={marksP2}
                         step={null}
-                        max={n_cycles == 0 ? 0 : n_cycles-1}
+                        max={n_cycles == 0 ? 0 : n_cycles - 1}
                     />
                 </Box>
             </Box>

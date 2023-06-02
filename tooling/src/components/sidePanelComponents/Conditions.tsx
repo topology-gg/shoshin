@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Chip, Grid, Autocomplete, Select, MenuItem, Menu, Tooltip } from "@mui/material";
+import {
+    Box,
+    Button,
+    Chip,
+    Grid,
+    Autocomplete,
+    Select,
+    MenuItem,
+    Menu,
+    Tooltip,
+} from '@mui/material';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -9,148 +19,192 @@ import SaveIcon from '@mui/icons-material/Save';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import TextField from '@mui/material/TextField';
-import { ConditionElement, Operator, ElementType, Perceptible, Condition, isPerceptibleBodyState, isOperatorWithDoubleOperands, conditionElementToStr, validateConditionName } from '../../types/Condition'
-import PerceptibleList from './PerceptibleList'
+import {
+    ConditionElement,
+    Operator,
+    ElementType,
+    Perceptible,
+    Condition,
+    isPerceptibleBodyState,
+    isOperatorWithDoubleOperands,
+    conditionElementToStr,
+    validateConditionName,
+} from '../../types/Condition';
+import PerceptibleList from './PerceptibleList';
 import { BodystatesAntoc, BodystatesJessica } from '../../types/Condition';
 import ConditionEditor from '../ConditionEditor';
 
 // Interfaces
 
 interface ConditionsProps {
-    conditions: Condition[]
-    handleUpdateCondition: (index: number, element: ConditionElement, name: string) => void
-    handleConfirmCondition: () => void
-    handleClickDeleteCondition: (index: number) => void
-    conditionUnderEditIndex: number
-    setConditionUnderEditIndex: (index: number) => void
-    isWarningTextOn: boolean
-    warningText: string
-    handleRemoveConditionElement: (index: number) => void
-    isReadOnly: boolean,
-    handleSaveCondition: (index: number, conditionElements: ConditionElement[]) => void
+    conditions: Condition[];
+    handleUpdateCondition: (
+        index: number,
+        element: ConditionElement,
+        name: string
+    ) => void;
+    handleConfirmCondition: () => void;
+    handleClickDeleteCondition: (index: number) => void;
+    conditionUnderEditIndex: number;
+    setConditionUnderEditIndex: (index: number) => void;
+    isWarningTextOn: boolean;
+    warningText: string;
+    handleRemoveConditionElement: (index: number) => void;
+    isReadOnly: boolean;
+    handleSaveCondition: (
+        index: number,
+        conditionElements: ConditionElement[]
+    ) => void;
 }
 
 interface BodyStateOption {
-    group: string
-    name: string
-    bodystate: number
+    group: string;
+    name: string;
+    bodystate: number;
 }
 
-interface ConditionEditErrors{
-    isValidCondition : boolean,
-    conditionErrorText : string,
-    isValidDisplayName : boolean,
-    namingErrorText : string
+interface ConditionEditErrors {
+    isValidCondition: boolean;
+    conditionErrorText: string;
+    isValidDisplayName: boolean;
+    namingErrorText: string;
 }
 
-export const ConditionShortcuts = [
-    'xDistanceLte',
-]
+export const ConditionShortcuts = ['xDistanceLte'];
 
 const Conditions = ({
-    isReadOnly, conditions, handleUpdateCondition, handleClickDeleteCondition,
-    conditionUnderEditIndex, setConditionUnderEditIndex, handleRemoveConditionElement, handleSaveCondition
+    isReadOnly,
+    conditions,
+    handleUpdateCondition,
+    handleClickDeleteCondition,
+    conditionUnderEditIndex,
+    setConditionUnderEditIndex,
+    handleRemoveConditionElement,
+    handleSaveCondition,
 }: ConditionsProps) => {
-    let f = conditions[conditionUnderEditIndex]
-    const [updatedConditionElements, setConditionElements] = useState<ConditionElement[]>(conditions[conditionUnderEditIndex].elements);
-    const [initialConditionElement, setInititalConditionElements] = useState<ConditionElement[]>(conditions[conditionUnderEditIndex].elements);
+    let f = conditions[conditionUnderEditIndex];
+    const [updatedConditionElements, setConditionElements] = useState<
+        ConditionElement[]
+    >(conditions[conditionUnderEditIndex].elements);
+    const [initialConditionElement, setInititalConditionElements] = useState<
+        ConditionElement[]
+    >(conditions[conditionUnderEditIndex].elements);
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-    const handleShortcutClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleShortcutClick = (
+        event: React.MouseEvent<HTMLButtonElement>
+    ) => {
         setAnchorEl(event.currentTarget);
-      };
+    };
 
     const handleShortcutClose = () => {
-        setAnchorEl(null); 
-    }
+        setAnchorEl(null);
+    };
 
     const xDistanceClick = () => {
-        setShortcutsButtonClickCounts(
-            (prev) => {
-                let prev_copy =
-                    JSON.parse(
-                        JSON.stringify(
-                            prev
-                        )
-                    );
-                prev_copy[
-                    "xDistanceLte"
-                ] += 1;
-                return prev_copy;
-            }
-        );
-        handleShortcutClose()
-    }
+        setShortcutsButtonClickCounts((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy['xDistanceLte'] += 1;
+            return prev_copy;
+        });
+        handleShortcutClose();
+    };
 
-    const [shortcutsButtonClickCounts, setShortcutsButtonClickCounts] = useState<{[key: string]: number}>(
-        {'xDistanceLte':0}
-    );
+    const [shortcutsButtonClickCounts, setShortcutsButtonClickCounts] =
+        useState<{ [key: string]: number }>({ xDistanceLte: 0 });
 
-    const [conditionErrors, setConditionEditErrors] = useState<ConditionEditErrors>({
-        isValidCondition : false,
-        conditionErrorText : "",
-        isValidDisplayName : true,
-        namingErrorText : ""
-    })
+    const [conditionErrors, setConditionEditErrors] =
+        useState<ConditionEditErrors>({
+            isValidCondition: false,
+            conditionErrorText: '',
+            isValidDisplayName: true,
+            namingErrorText: '',
+        });
 
-    const isDisabled = conditionErrors.isValidCondition && conditionErrors.isValidDisplayName;
+    const isDisabled =
+        conditionErrors.isValidCondition && conditionErrors.isValidDisplayName;
 
     useEffect(() => {
-        setConditionElements(conditions[conditionUnderEditIndex].elements)
-        setInititalConditionElements(conditions[conditionUnderEditIndex].elements)
-    }, [conditionUnderEditIndex])
+        setConditionElements(conditions[conditionUnderEditIndex].elements);
+        setInititalConditionElements(
+            conditions[conditionUnderEditIndex].elements
+        );
+    }, [conditionUnderEditIndex]);
 
-    const handleSetConditionElements = (is_valid : boolean, elements : ConditionElement[], warningText : string) => {
-        setConditionEditErrors({...conditionErrors, isValidCondition : is_valid, conditionErrorText : warningText})
+    const handleSetConditionElements = (
+        is_valid: boolean,
+        elements: ConditionElement[],
+        warningText: string
+    ) => {
+        setConditionEditErrors({
+            ...conditionErrors,
+            isValidCondition: is_valid,
+            conditionErrorText: warningText,
+        });
 
-        if(elements.length){
-            setConditionElements(elements)
+        if (elements.length) {
+            setConditionElements(elements);
         }
-    }
+    };
 
     const handleSaveClick = () => {
-        handleSaveCondition(conditionUnderEditIndex, updatedConditionElements)
-    }
+        handleSaveCondition(conditionUnderEditIndex, updatedConditionElements);
+    };
 
     const handleUpdateUsername = (e) => {
-
-        handleUpdateCondition(conditionUnderEditIndex, undefined, e.target.value)
-        const excludingSelectedCondition = conditions.filter((_, i) => conditionUnderEditIndex != i)
-        const nameError = validateConditionName( e.target.value, excludingSelectedCondition);
-        setConditionEditErrors({...conditionErrors, isValidDisplayName : !nameError, namingErrorText : nameError ? nameError : ''})
-        if(!nameError){
-            handleUpdateCondition(conditionUnderEditIndex, undefined, e.target.value)
+        handleUpdateCondition(
+            conditionUnderEditIndex,
+            undefined,
+            e.target.value
+        );
+        const excludingSelectedCondition = conditions.filter(
+            (_, i) => conditionUnderEditIndex != i
+        );
+        const nameError = validateConditionName(
+            e.target.value,
+            excludingSelectedCondition
+        );
+        setConditionEditErrors({
+            ...conditionErrors,
+            isValidDisplayName: !nameError,
+            namingErrorText: nameError ? nameError : '',
+        });
+        if (!nameError) {
+            handleUpdateCondition(
+                conditionUnderEditIndex,
+                undefined,
+                e.target.value
+            );
         }
-    }
-
+    };
 
     return (
         <Box
             sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "left",
-                pt: "1rem",
-                pl: "1rem",
-                pr: "1rem",
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'left',
+                pt: '1rem',
+                pl: '1rem',
+                pr: '1rem',
             }}
         >
-            <Typography sx={{ fontSize: "17px" }} variant="overline">
-                <span style={{ marginRight: "8px" }}>&#128208;</span>Conditions
+            <Typography sx={{ fontSize: '17px' }} variant="overline">
+                <span style={{ marginRight: '8px' }}>&#128208;</span>Conditions
             </Typography>
 
             <Grid container spacing={1}>
                 <Grid xs={12} item className="available-conditions">
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <ListIcon />
 
                         <Select
                             value={conditionUnderEditIndex}
                             size="small"
                             // fullWidth
-                            sx={{ width: "300px" }}
+                            sx={{ width: '300px' }}
                             onChange={(event) =>
                                 setConditionUnderEditIndex(
                                     event.target.value as number
@@ -178,13 +232,13 @@ const Conditions = ({
 
                 <Grid xs={9.5} item sx={{ mt: 1, mb: 2 }}>
                     <Grid xs={12} item sx={{ mt: 1, mb: 2 }}>
-                        <div style={{ display: "flex", flexDirection: "row" }}>
+                        <div style={{ display: 'flex', flexDirection: 'row' }}>
                             <TextField
                                 label="Condition Name"
                                 size="small"
                                 // fullwidth
-                                sx={{ width: "300px" }}
-                                value={f.displayName || ""}
+                                sx={{ width: '300px' }}
+                                value={f.displayName || ''}
                                 onChange={handleUpdateUsername}
                             />
 
@@ -209,31 +263,28 @@ const Conditions = ({
                                 </Tooltip>
                             </div>
                             <div>
-                            <Tooltip title="Shortcuts">
-                                <IconButton
-                                    aria-label="delete"
-                                    onClick={handleShortcutClick
-                                    }
-                                    disabled={
-                                        isReadOnly
-                                    }
-                                >
-                                    <ElectricBoltIcon />
-
-                                </IconButton>
+                                <Tooltip title="Shortcuts">
+                                    <IconButton
+                                        aria-label="delete"
+                                        onClick={handleShortcutClick}
+                                        disabled={isReadOnly}
+                                    >
+                                        <ElectricBoltIcon />
+                                    </IconButton>
                                 </Tooltip>
                                 <Menu
-                                        id="basic-menu"
-                                        anchorEl={anchorEl}
-                                        open={anchorEl !== null}
-                                        onClose={handleShortcutClose}
-                                        MenuListProps={{
+                                    id="basic-menu"
+                                    anchorEl={anchorEl}
+                                    open={anchorEl !== null}
+                                    onClose={handleShortcutClose}
+                                    MenuListProps={{
                                         'aria-labelledby': 'basic-button',
-                                        }}
-                                    >
-                                        <MenuItem onClick={xDistanceClick}>X-Distance ≤</MenuItem>
+                                    }}
+                                >
+                                    <MenuItem onClick={xDistanceClick}>
+                                        X-Distance ≤
+                                    </MenuItem>
                                 </Menu>
-                                
                             </div>
                         </div>
                     </Grid>
@@ -242,7 +293,7 @@ const Conditions = ({
                         <></>
                     ) : (
                         <Grid container spacing={1}>
-                            <Box display={"flex"}>
+                            <Box display={'flex'}>
                                 <ConditionEditor
                                     shortcutsButtonClickCounts={
                                         shortcutsButtonClickCounts
@@ -258,7 +309,7 @@ const Conditions = ({
                             {conditionErrors.conditionErrorText.length ? (
                                 <Grid item xs={12}>
                                     <Typography
-                                        color={"red"}
+                                        color={'red'}
                                         variant="overline"
                                     >
                                         {conditionErrors.conditionErrorText}
@@ -268,7 +319,7 @@ const Conditions = ({
                             {conditionErrors.namingErrorText.length ? (
                                 <Grid item xs={12}>
                                     <Typography
-                                        color={"red"}
+                                        color={'red'}
                                         variant="overline"
                                     >
                                         {conditionErrors.namingErrorText}
@@ -286,7 +337,7 @@ const Conditions = ({
                                     onClick={() => handleSaveClick()}
                                 >
                                     <SaveIcon />
-                                    <span style={{ width: "6px" }}></span>
+                                    <span style={{ width: '6px' }}></span>
                                     Save
                                 </Button>
                             </Grid>
@@ -296,6 +347,6 @@ const Conditions = ({
             </Grid>
         </Box>
     );
-}
+};
 
 export default Conditions;

@@ -1,8 +1,8 @@
-import { Add } from "@mui/icons-material";
-import { InputBase } from "@mui/material";
-import React, { ChangeEventHandler, useEffect, useRef, useState } from "react";
-import { CHARACTERS_ACTIONS } from "../../constants/constants";
-import ActionToken from "./ActionToken";
+import { Add } from '@mui/icons-material';
+import { InputBase } from '@mui/material';
+import React, { ChangeEventHandler, useEffect, useRef, useState } from 'react';
+import { CHARACTERS_ACTIONS } from '../../constants/constants';
+import ActionToken from './ActionToken';
 
 const NewAction = ({
     disabled,
@@ -11,7 +11,7 @@ const NewAction = ({
     selected,
     onSelect,
     onBlur,
-    characterIndex
+    characterIndex,
 }) => {
     const inputRef = useRef<HTMLInputElement>();
 
@@ -31,7 +31,7 @@ const NewAction = ({
             setInvalid(true);
         }
         // Reset the input
-        inputRef.current.value = "";
+        inputRef.current.value = '';
     };
 
     const handleBlur = () => {
@@ -60,9 +60,9 @@ const NewAction = ({
                 onKeyDown={onKeyDown}
                 onBlur={handleBlur}
                 sx={{
-                    bgcolor: invalid ? "error.main" : "transparent",
-                    color: "secondary.contrastText",
-                    transition: "ease-in-out .2s",
+                    bgcolor: invalid ? 'error.main' : 'transparent',
+                    color: 'secondary.contrastText',
+                    transition: 'ease-in-out .2s',
                 }}
             />
             {!selected ? <Add color="info" fontSize="small" /> : null}

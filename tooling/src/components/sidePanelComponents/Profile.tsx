@@ -1,5 +1,12 @@
 import React from 'react';
-import { Box, FormControl, Input, InputLabel, Select, Typography } from "@mui/material";
+import {
+    Box,
+    FormControl,
+    Input,
+    InputLabel,
+    Select,
+    Typography,
+} from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import { Character } from '../../constants/constants';
 
@@ -12,29 +19,30 @@ const Profile = ({
     character,
     setCharacter,
 }) => {
-
     return (
         <Box
             sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "left",
-                pt: "1rem",
-                pl: "2rem",
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'left',
+                pt: '1rem',
+                pl: '2rem',
             }}
         >
-            <Typography sx={{ fontSize: '17px' }} variant='overline'>
-                <span style={{marginRight:'8px'}}>&#128220;</span>Profile
+            <Typography sx={{ fontSize: '17px' }} variant="overline">
+                <span style={{ marginRight: '8px' }}>&#128220;</span>Profile
             </Typography>
 
-            <Box sx={{fontSize:'14px', mb:'2rem'}}>
+            <Box sx={{ fontSize: '14px', mb: '2rem' }}>
                 <FormControl variant="standard">
-                    <InputLabel htmlFor="component-simple">Agent Name</InputLabel>
+                    <InputLabel htmlFor="component-simple">
+                        Agent Name
+                    </InputLabel>
                     <Input
                         id="component-simple"
                         value={agentName}
-                        onChange={event => setAgentName(event.target.value)}
+                        onChange={(event) => setAgentName(event.target.value)}
                         disabled={isReadOnly}
                     />
                 </FormControl>
@@ -47,24 +55,28 @@ const Profile = ({
                 </Button>
             </Box> */}
 
-        <FormControl variant="standard" sx={{ minWidth: 120, width: '5rem', mb:'2rem' }}>
-            <InputLabel id="demo-simple-select-standard-label">Character</InputLabel>
-
-            <Select
-                labelId="demo-simple-select-standard-label"
-                id="demo-simple-select-standard"
-                value={character}
-                onChange={(event) => setCharacter(event.target.value)}
-                label="Character"
-                disabled={isReadOnly}
+            <FormControl
+                variant="standard"
+                sx={{ minWidth: 120, width: '5rem', mb: '2rem' }}
             >
-                <MenuItem value={Character.Jessica}>Jessica</MenuItem>
-                <MenuItem value={Character.Antoc}>Antoc</MenuItem>
-            </Select>
-        </FormControl>
+                <InputLabel id="demo-simple-select-standard-label">
+                    Character
+                </InputLabel>
 
+                <Select
+                    labelId="demo-simple-select-standard-label"
+                    id="demo-simple-select-standard"
+                    value={character}
+                    onChange={(event) => setCharacter(event.target.value)}
+                    label="Character"
+                    disabled={isReadOnly}
+                >
+                    <MenuItem value={Character.Jessica}>Jessica</MenuItem>
+                    <MenuItem value={Character.Antoc}>Antoc</MenuItem>
+                </Select>
+            </FormControl>
         </Box>
-    )
-}
+    );
+};
 
 export default Profile;

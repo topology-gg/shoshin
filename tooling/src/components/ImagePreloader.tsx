@@ -1,11 +1,11 @@
-import { Box, LinearProgress } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
-import { spriteData } from "../constants/sprites";
+import { Box, LinearProgress } from '@mui/material';
+import React, { useEffect, useMemo, useState } from 'react';
+import { spriteData } from '../constants/sprites';
 
 function allImages() {
     return Object.keys(spriteData).flatMap((character) =>
         Object.keys(spriteData[character]).flatMap((state) =>
-            ["left", "right"].map(
+            ['left', 'right'].map(
                 (direction) =>
                     `./images/${character}/${state}/${direction}_spritesheet.png`
             )
@@ -40,7 +40,7 @@ const ImagePreloader = ({ onComplete }: { onComplete: () => void }) => {
             {!allLoaded && (
                 <>
                     <div>Loading images...</div>
-                    <Box sx={{ width: "50%" }}>
+                    <Box sx={{ width: '50%' }}>
                         <LinearProgress
                             variant="determinate"
                             value={(loaded / images.length) * 100}

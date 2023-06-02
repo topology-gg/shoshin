@@ -1,5 +1,5 @@
-import { Box } from "@mui/material";
-import React from "react";
+import { Box } from '@mui/material';
+import React from 'react';
 
 export const Keyword = ({
     text,
@@ -7,24 +7,32 @@ export const Keyword = ({
     bgColorInHex,
     textColorInHex,
 }: {
-    text: String,
-    fontSizeInPixel: number,
-    bgColorInHex: String,
-    textColorInHex: String,
+    text: String;
+    fontSizeInPixel: number;
+    bgColorInHex: String;
+    textColorInHex: String;
 }) => {
-
-    const fontSize = `${fontSizeInPixel}px`
-    const bgColor = `#${bgColorInHex}`
-    const textColor = `#${textColorInHex}`
+    const fontSize = `${fontSizeInPixel}px`;
+    const bgColor = `#${bgColorInHex}`;
+    const textColor = `#${textColorInHex}`;
 
     return (
-        <span style={{fontSize:fontSize, backgroundColor:bgColor, color:textColor, padding:'4px', borderRadius:'4px', height:'24px'}}>
+        <span
+            style={{
+                fontSize: fontSize,
+                backgroundColor: bgColor,
+                color: textColor,
+                padding: '4px',
+                borderRadius: '4px',
+                height: '24px',
+            }}
+        >
             {text}
         </span>
     );
 };
 
-export const KeywordMentalState = ({text} : {text: String}) => {
+export const KeywordMentalState = ({ text }: { text: String }) => {
     return (
         <Keyword
             text={text}
@@ -32,10 +40,10 @@ export const KeywordMentalState = ({text} : {text: String}) => {
             bgColorInHex={'ffa0bf'}
             textColorInHex={'222'}
         />
-    )
-}
+    );
+};
 
-export const KeywordBodyState = ({text} : {text: String}) => {
+export const KeywordBodyState = ({ text }: { text: String }) => {
     return (
         <Keyword
             text={text}
@@ -43,11 +51,10 @@ export const KeywordBodyState = ({text} : {text: String}) => {
             bgColorInHex={'ffdb42'}
             textColorInHex={'222'}
         />
-    )
-}
+    );
+};
 
-
-export const KeywordCondition = ({text} : {text: String}) => {
+export const KeywordCondition = ({ text }: { text: String }) => {
     return (
         <Keyword
             text={text}
@@ -55,5 +62,5 @@ export const KeywordCondition = ({text} : {text: String}) => {
             bgColorInHex={'bcd3e5'}
             textColorInHex={'222'}
         />
-    )
-}
+    );
+};

@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
     interface Palette {
@@ -12,41 +12,41 @@ declare module '@mui/material/styles' {
 
 declare module '@mui/material/Slider' {
     interface SliderPropsColorOverrides {
-        accent: true,
-        info: true,
+        accent: true;
+        info: true;
     }
 }
 
 const theme = createTheme({
     typography: {
         fontFamily:
-            "Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;",
+            'Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;',
         fontSize: 12,
     },
     palette: {
         primary: {
-            main: "#000000",
+            main: '#000000',
         },
         secondary: {
-            main: "#2d4249",
+            main: '#2d4249',
         },
         info: {
-            main: "#848f98",
+            main: '#848f98',
         },
         accent: {
-            main: "#52af77",
-        }
+            main: '#52af77',
+        },
     },
     components: {
         MuiButton: {
             styleOverrides: {
                 outlinedPrimary: {
-                    color: "black",
-                    backgroundColor: "white",
-                    ":hover": {
-                        backgroundColor: "#f1573b",
-                        color: "#fff",
-                        transition: "background 0.1s, color 0.1s",
+                    color: 'black',
+                    backgroundColor: 'white',
+                    ':hover': {
+                        backgroundColor: '#f1573b',
+                        color: '#fff',
+                        transition: 'background 0.1s, color 0.1s',
                     },
                 },
             },
@@ -54,4 +54,4 @@ const theme = createTheme({
     },
 });
 
-export default theme
+export default theme;

@@ -1,12 +1,27 @@
-import Head from "next/head";
-import styles from "../styles/Home.module.css";
-import React, { useEffect, useMemo, useState, useContext } from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Button, Snackbar, ThemeProvider } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import MidScreenControl from "../src/components/MidScreenControl";
-import EditorView from "../src/components/sidePanelComponents/EditorView";
-import { Frame, FrameScene, TestJson, getFlattenedPerceptiblesFromFrame, getSizeOfRealTimeInputScene } from "../src/types/Frame";
-import { Tree, Direction } from "../src/types/Tree";
+import Head from 'next/head';
+import styles from '../styles/Home.module.css';
+import React, { useEffect, useMemo, useState, useContext } from 'react';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Alert,
+    Box,
+    Button,
+    Snackbar,
+    ThemeProvider,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import MidScreenControl from '../src/components/MidScreenControl';
+import EditorView from '../src/components/sidePanelComponents/EditorView';
+import {
+    Frame,
+    FrameScene,
+    TestJson,
+    getFlattenedPerceptiblesFromFrame,
+    getSizeOfRealTimeInputScene,
+} from '../src/types/Frame';
+import { Tree, Direction } from '../src/types/Tree';
 import {
     Condition,
     ConditionElement,
@@ -15,8 +30,8 @@ import {
     includeBodyState,
     validateConditionName,
     verifyValidCondition,
-} from "../src/types/Condition";
-import { MentalState } from "../src/types/MentalState";
+} from '../src/types/Condition';
+import { MentalState } from '../src/types/MentalState';
 import {
     Character,
     CONTRACT_ADDRESS,
@@ -25,47 +40,52 @@ import {
     IDLE_AGENT,
     OFFENSIVE_AGENT,
     EditorMode,
-} from "../src/constants/constants";
-import Agent, { agentToCalldata, buildAgent } from "../src/types/Agent";
-import StatusBarPanel, { StatusBarPanelProps as PlayerStatuses } from "../src/components/StatusBar";
-import P1P2SettingPanel from "../src/components/settingsPanels/P1P2SettingPanel";
-import {AgentOption} from "../src/components/settingsPanels/settingsPanel";
-import FrameInspector from "../src/components/FrameInspector";
-import useRunCairoSimulation from "../src/hooks/useRunCairoSimulation";
-import useEvaluateCondition from "../src/hooks/useEvaluateCondition";
-import { useAgents, useLeagueAgents } from "../lib/api";
-import {
-    SingleMetadata,
-    splitSingleMetadata,
-} from "../src/types/Metadata";
+} from '../src/constants/constants';
+import Agent, { agentToCalldata, buildAgent } from '../src/types/Agent';
+import StatusBarPanel, {
+    StatusBarPanelProps as PlayerStatuses,
+} from '../src/components/StatusBar';
+import P1P2SettingPanel from '../src/components/settingsPanels/P1P2SettingPanel';
+import { AgentOption } from '../src/components/settingsPanels/settingsPanel';
+import FrameInspector from '../src/components/FrameInspector';
+import useRunCairoSimulation from '../src/hooks/useRunCairoSimulation';
+import useEvaluateCondition from '../src/hooks/useEvaluateCondition';
+import { useAgents, useLeagueAgents } from '../lib/api';
+import { SingleMetadata, splitSingleMetadata } from '../src/types/Metadata';
 import {
     useAccount,
     useConnectors,
-    useStarknetExecute
-} from "@starknet-react/core";
-import { EditorTabName } from "../src/components/sidePanelComponents/EditorTabs";
-import Leaf, { unwrapLeafToCondition, unwrapLeafToTree } from "../src/types/Leaf";
-import dynamic from "next/dynamic";
+    useStarknetExecute,
+} from '@starknet-react/core';
+import { EditorTabName } from '../src/components/sidePanelComponents/EditorTabs';
+import Leaf, {
+    unwrapLeafToCondition,
+    unwrapLeafToTree,
+} from '../src/types/Leaf';
+import dynamic from 'next/dynamic';
 import SwipeableViews from 'react-swipeable-views';
 import { bindKeyboard } from 'react-swipeable-views-utils';
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import ContractInformationView from "../src/components/sidePanelComponents/ContractInformationView"
-import WalletConnectView from "../src/components/sidePanelComponents/WalletConnectView"
-import SwipeableContent from "../src/components/layout/SwipeableContent";
-import theme from "../src/theme/theme";
-import FrameDecisionPathViewer from "../src/components/FrameDecisionPathViewer";
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import ContractInformationView from '../src/components/sidePanelComponents/ContractInformationView';
+import WalletConnectView from '../src/components/sidePanelComponents/WalletConnectView';
+import SwipeableContent from '../src/components/layout/SwipeableContent';
+import theme from '../src/theme/theme';
+import FrameDecisionPathViewer from '../src/components/FrameDecisionPathViewer';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import MobileView from "../src/components/MobileView";
-import { GameModes } from "../src/types/Simulator";
-import RealTimeSettingPanel from "../src/components/settingsPanels/RealTimeSettingPanel";
-import RegistrationPage from "../src/components/register/Register";
-import { ShoshinWASMContext } from "../src/context/wasm-shoshin";
-import { INITIAL_AGENT_COMPONENTS, STARTER_AGENT } from "../src/constants/starter_agent";
-import MidScreenKeybinding from "../src/components/MidScreenKeybinding";
+import MobileView from '../src/components/MobileView';
+import { GameModes } from '../src/types/Simulator';
+import RealTimeSettingPanel from '../src/components/settingsPanels/RealTimeSettingPanel';
+import RegistrationPage from '../src/components/register/Register';
+import { ShoshinWASMContext } from '../src/context/wasm-shoshin';
+import {
+    INITIAL_AGENT_COMPONENTS,
+    STARTER_AGENT,
+} from '../src/constants/starter_agent';
+import MidScreenKeybinding from '../src/components/MidScreenKeybinding';
 
 //@ts-ignore
-const Game = dynamic(() => import("../src/Game/PhaserGame"), {
+const Game = dynamic(() => import('../src/Game/PhaserGame'), {
     ssr: false,
 });
 
@@ -78,12 +98,12 @@ export default function Home() {
     const [output, setOuput] = useState<FrameScene>();
     const [simulationError, setSimulationError] = useState();
     const [p1, setP1] = useState<Agent>();
-    const [p1Label, setP1Label] = useState<string>("");
+    const [p1Label, setP1Label] = useState<string>('');
     const [p2, setP2] = useState<Agent>();
-    const [p2Label, setP2Label] = useState<string>("");
+    const [p2Label, setP2Label] = useState<string>('');
     const [loop, setLoop] = useState<NodeJS.Timer>();
     const [animationFrame, setAnimationFrame] = useState<number>(0);
-    const [animationState, setAnimationState] = useState<string>("Stop");
+    const [animationState, setAnimationState] = useState<string>('Stop');
     const [testJson, setTestJson] = useState<TestJson>(null);
     const [checkedShowDebugInfo, setCheckedShowDebugInfo] =
         useState<boolean>(false);
@@ -100,17 +120,18 @@ export default function Home() {
         EditorMode.ReadOnly
     );
 
-
     const [playerStatuses, setPlayerStatuses] = useState<PlayerStatuses>({
-        integrity_0 : 1000,
-        integrity_1 : 1000,
-        stamina_0 : 100,
-        stamina_1 : 100
-    })
+        integrity_0: 1000,
+        integrity_1: 1000,
+        stamina_0: 100,
+        stamina_1: 100,
+    });
 
     // React states for tracking the New Agent being edited in the right panel
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
-    const [combos, setCombos] = useState<number[][]>(INITIAL_AGENT_COMPONENTS.combos);
+    const [combos, setCombos] = useState<number[][]>(
+        INITIAL_AGENT_COMPONENTS.combos
+    );
     const [mentalStates, setMentalStates] = useState<MentalState[]>(
         INITIAL_AGENT_COMPONENTS.mentalStates
     );
@@ -118,36 +139,40 @@ export default function Home() {
     const [conditions, setConditions] =
         //@ts-ignore
         useState<Condition[]>(INITIAL_AGENT_COMPONENTS.conditions);
-    const [agentName, setAgentName] = useState<string>("");
+    const [agentName, setAgentName] = useState<string>('');
     const [character, setCharacter] = useState<Character>(Character.Jessica);
 
-    const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation)
-    const [realTimeCharacter, setRealTimeCharacter] = useState<number>(0)
+    const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation);
+    const [realTimeCharacter, setRealTimeCharacter] = useState<number>(0);
 
     // React states for warnings
     const [isConditionWarningTextOn, setConditionWarningTextOn] =
         useState<boolean>(false);
     const [conditionWarningText, setConditionWarningText] =
-        useState<string>("");
+        useState<string>('');
     const [isTreeEditorWarningTextOn, setTreeEditorWarningTextOn] =
         useState<boolean>(false);
     const [treeEditorWarningText, setTreeEditorWarningText] =
-        useState<string>("");
+        useState<string>('');
     const [runCairoSimulationWarning, setCairoSimulationWarning] =
-        useState<string>("");
+        useState<string>('');
 
     const [successToastOpen, setToastOpen] = React.useState(false);
 
-    const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    const handleToastClose = (
+        event?: React.SyntheticEvent | Event,
+        reason?: string
+    ) => {
         if (reason === 'clickaway') {
-        return;
+            return;
         }
 
         setToastOpen(false);
     };
 
-
-    const [keyDownState, setKeyDownState] = useState<{ [keycode: number]: boolean }>({});
+    const [keyDownState, setKeyDownState] = useState<{
+        [keycode: number]: boolean;
+    }>({});
 
     // add listnener for keydown events
     useEffect(() => {
@@ -157,7 +182,7 @@ export default function Home() {
                 let prev_copy = JSON.parse(JSON.stringify(prev));
                 prev_copy[e.keyCode] = true;
                 return prev_copy;
-            })
+            });
         }
         function handleKeyUp(e) {
             console.log('keyup', e.keyCode);
@@ -165,7 +190,7 @@ export default function Home() {
                 let prev_copy = JSON.parse(JSON.stringify(prev));
                 prev_copy[e.keyCode] = false;
                 return prev_copy;
-            })
+            });
         }
 
         document.addEventListener('keydown', handleKeyDown);
@@ -175,7 +200,7 @@ export default function Home() {
         return function cleanup() {
             document.removeEventListener('keydown', handleKeyDown);
             document.removeEventListener('keyup', handleKeyUp);
-        }
+        };
     }, []);
 
     // Retrieve the last 20 agents submissions from the db
@@ -183,17 +208,18 @@ export default function Home() {
     const t: SingleMetadata[] = data?.agents;
     const agents: Agent[] = t?.map(splitSingleMetadata).flat();
 
+    const { data: leagueData } = useLeagueAgents();
 
-    const { data : leagueData } = useLeagueAgents();
-
-    let leagueAgents: Agent[] = leagueData?.agents?.map(splitSingleMetadata).flat();
+    let leagueAgents: Agent[] = leagueData?.agents
+        ?.map(splitSingleMetadata)
+        .flat();
 
     const newAgent: Agent = useMemo(() => {
         let builtAgent = handleBuildAgent();
-        if (p1Label === "your agent") {
+        if (p1Label === 'your agent') {
             setP1(builtAgent);
         }
-        if (p2Label === "your agent") {
+        if (p2Label === 'your agent') {
             setP2(builtAgent);
         }
         return builtAgent;
@@ -210,14 +236,13 @@ export default function Home() {
     const { runEvaluateCondition } = useEvaluateCondition();
     const ctx = useContext(ShoshinWASMContext);
 
-    getSizeOfRealTimeInputScene()
-
+    getSizeOfRealTimeInputScene();
 
     const isMobileDisplay = useMediaQuery('(max-width:800px)');
 
     useEffect(() => {
         if (output) {
-            console.log('caught output:', output)
+            console.log('caught output:', output);
             setTestJson((_) => {
                 return {
                     agent_0: { frames: output.agent_0, type: p1.character },
@@ -228,29 +253,40 @@ export default function Home() {
     }, [output]);
 
     useEffect(() => {
-        const integrity_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.integrity : 0
-        const integrity_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.integrity : 0
-        const stamina_0 = testJson ? testJson.agent_0.frames[animationFrame].body_state.stamina : 0
-        const stamina_1 = testJson ? testJson.agent_1.frames[animationFrame].body_state.stamina : 0
+        const integrity_0 = testJson
+            ? testJson.agent_0.frames[animationFrame].body_state.integrity
+            : 0;
+        const integrity_1 = testJson
+            ? testJson.agent_1.frames[animationFrame].body_state.integrity
+            : 0;
+        const stamina_0 = testJson
+            ? testJson.agent_0.frames[animationFrame].body_state.stamina
+            : 0;
+        const stamina_1 = testJson
+            ? testJson.agent_1.frames[animationFrame].body_state.stamina
+            : 0;
 
         setPlayerStatuses({
-            integrity_0, integrity_1, stamina_0, stamina_1
-        })
-    }, [testJson, animationFrame])
+            integrity_0,
+            integrity_1,
+            stamina_0,
+            stamina_1,
+        });
+    }, [testJson, animationFrame]);
 
     useEffect(() => {
         if (!simulationError) return;
 
         setCairoSimulationWarning(
-            "Incorrect agent, please verify. If error persists, please contact us on Discord."
+            'Incorrect agent, please verify. If error persists, please contact us on Discord.'
         );
-        setTimeout(() => setCairoSimulationWarning(""), 5000);
+        setTimeout(() => setCairoSimulationWarning(''), 5000);
     }, [simulationError]);
 
     // Starknet states
     const { account, address, status } = useAccount();
     const [isWhiteListed, setIsWhiteListed] = useState<boolean>(false);
-    const isProduction = process.env.NODE_ENV === 'production'
+    const isProduction = process.env.NODE_ENV === 'production';
     const [txPending, setTxPending] = useState<boolean>(false);
     const [txStatusText, setTxStatusText] = useState<string>();
     const [hash, setHash] = useState<string>();
@@ -274,12 +310,15 @@ export default function Home() {
 
     useEffect(() => {
         if (hash) {
-            setTxStatusText("Submission Pending");
+            setTxStatusText('Submission Pending');
             account
-                .waitForTransaction(hash, 10000, ["ACCEPTED_ON_L1", "ACCEPTED_ON_L2"])
-                .then(() => setTxStatusText("Success!"))
+                .waitForTransaction(hash, 10000, [
+                    'ACCEPTED_ON_L1',
+                    'ACCEPTED_ON_L2',
+                ])
+                .then(() => setTxStatusText('Success!'))
                 .catch((err) => {
-                    setTxStatusText("Error! Please try again.");
+                    setTxStatusText('Error! Please try again.');
                     console.error(err);
                 })
                 .finally(() => setTxPending(false));
@@ -293,21 +332,21 @@ export default function Home() {
     const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length;
 
     function handleMidScreenControlClick(operation: string) {
-        if (operation == "NextFrame" && animationState != "Run") {
+        if (operation == 'NextFrame' && animationState != 'Run') {
             animationStepForward(N_FRAMES);
-        } else if (operation == "PrevFrame" && animationState != "Run") {
+        } else if (operation == 'PrevFrame' && animationState != 'Run') {
             animationStepBackward();
-        } else if (operation == "ToggleRun") {
+        } else if (operation == 'ToggleRun') {
             // If in Run => go to Pause
-            if (animationState == "Run") {
+            if (animationState == 'Run') {
                 clearInterval(loop); // kill the timer
-                setAnimationState("Pause");
+                setAnimationState('Pause');
             }
 
             // If in Pause => resume Run without simulation
-            else if (animationState == "Pause") {
+            else if (animationState == 'Pause') {
                 // Begin animation
-                setAnimationState("Run");
+                setAnimationState('Run');
                 setLoop(
                     setInterval(() => {
                         animationStepForward(N_FRAMES);
@@ -316,7 +355,7 @@ export default function Home() {
             }
 
             // If in Stop => perform simulation then go to Run
-            else if (animationState == "Stop" && runnable) {
+            else if (animationState == 'Stop' && runnable) {
                 const [out, err] = runCairoSimulation();
                 if (err != null) {
                     setSimulationError(err);
@@ -325,7 +364,7 @@ export default function Home() {
                 setOuput(out);
 
                 // Begin animation
-                setAnimationState("Run");
+                setAnimationState('Run');
 
                 setLoop(
                     setInterval(() => {
@@ -336,7 +375,7 @@ export default function Home() {
         } else {
             // Stop
             clearInterval(loop); // kill the timer
-            setAnimationState("Stop");
+            setAnimationState('Stop');
             setAnimationFrame((_) => 0);
         }
     }
@@ -357,30 +396,30 @@ export default function Home() {
     function onReaderLoad(event) {
         const loadedJsonString = JSON.parse(event.target.result);
         const loadedJson = JSON.parse(loadedJsonString);
-        console.log("loaded json:", loadedJson);
+        console.log('loaded json:', loadedJson);
         setTestJson((_) => loadedJson);
     }
 
     function handleClickPreloadedTestJson(testJson) {
         const preloadedJson = JSON.parse(testJson);
-        console.log("preloaded json:", preloadedJson);
+        console.log('preloaded json:', preloadedJson);
         setTestJson((_) => preloadedJson);
     }
 
     async function handleSubmitAgent() {
         if (!account) {
-            console.log("> wallet not connected yet");
+            console.log('> wallet not connected yet');
             setSettingModalOpen((_) => true);
             return;
         }
 
-        console.log("> connected address:", String(address));
+        console.log('> connected address:', String(address));
 
         // submit tx
-        console.log("> submitting args:", callData);
+        console.log('> submitting args:', callData);
         try {
             setTxPending(true);
-            setHash("");
+            setHash('');
             const response = await execute();
             setHash(response.transaction_hash);
         } catch (err) {
@@ -462,7 +501,7 @@ export default function Home() {
                     { id: fCondition.key, isChild: false },
                     { id: match[2], isChild: true, branch: Direction.Left }
                 );
-            } else if (mCondition && match[1] === "_") {
+            } else if (mCondition && match[1] === '_') {
                 new_tree.nodes.push({
                     id: match[2],
                     isChild: true,
@@ -491,28 +530,24 @@ export default function Home() {
     function saveCondition(
         index: number,
         conditionElements: ConditionElement[]
-    ){
+    ) {
         setConditions((prev) => {
-        let prev_copy: Condition[] = JSON.parse(JSON.stringify(prev));
-        if (!prev_copy[index].key) {
-            prev_copy[index].key = generateConditionKey()
-        }
+            let prev_copy: Condition[] = JSON.parse(JSON.stringify(prev));
+            if (!prev_copy[index].key) {
+                prev_copy[index].key = generateConditionKey();
+            }
 
-            prev_copy[index].elements = conditionElements
+            prev_copy[index].elements = conditionElements;
 
-            if(prev_copy.length - 1 == index)
-            {
+            if (prev_copy.length - 1 == index) {
                 prev_copy.push({ elements: [] });
             }
 
+            console.log(prev_copy);
 
-            console.log(prev_copy)
-
-            setToastOpen(true)
+            setToastOpen(true);
             return prev_copy;
-
         });
-
     }
 
     function handleUpdateCondition(
@@ -526,8 +561,13 @@ export default function Home() {
                 prev_copy = [{ elements: [] }];
             }
 
-            const excludingSelectedCondition = prev_copy.filter((_, i) => index != i)
-            const nameError = validateConditionName(displayName, excludingSelectedCondition);
+            const excludingSelectedCondition = prev_copy.filter(
+                (_, i) => index != i
+            );
+            const nameError = validateConditionName(
+                displayName,
+                excludingSelectedCondition
+            );
             if (nameError) {
                 setConditionWarningTextOn(true);
                 setConditionWarningText(nameError);
@@ -536,12 +576,12 @@ export default function Home() {
             }
             prev_copy[index].displayName = displayName;
             if (!prev_copy[index].key) {
-                prev_copy[index].key = generateConditionKey()
+                prev_copy[index].key = generateConditionKey();
             }
 
             if (element) {
                 prev_copy[index].elements.push(element);
-                let result : ConditionVerificationResult = verifyValidCondition(
+                let result: ConditionVerificationResult = verifyValidCondition(
                     prev_copy[index],
                     false
                 );
@@ -577,7 +617,7 @@ export default function Home() {
     function handleConfirmCondition() {
         let length = conditions.length;
         let f = conditions[conditionUnderEditIndex];
-        let result : ConditionVerificationResult = verifyValidCondition(f, true);
+        let result: ConditionVerificationResult = verifyValidCondition(f, true);
         if (!f?.elements || !result.isValid) {
             setConditionWarningTextOn(true);
             setConditionWarningText(`Invalid function, got: ${result.message}`);
@@ -603,25 +643,27 @@ export default function Home() {
     }
 
     function handleClickDeleteCondition(index: number) {
-        let condition = conditions[index]
+        let condition = conditions[index];
         if (
             trees.some((tree) =>
                 tree.nodes.some((node) => node.id === condition.key)
             )
         ) {
             alert(
-                "The condition cannot be deleted. It is used in the decision tree"
+                'The condition cannot be deleted. It is used in the decision tree'
             );
             return;
         }
 
-        const response = confirm(`Are you sure you want to delete the condition '${condition.displayName}'? This action cannot be undone.`);
+        const response = confirm(
+            `Are you sure you want to delete the condition '${condition.displayName}'? This action cannot be undone.`
+        );
 
         if (!response) {
             //Cancel delete operation
-            return
+            return;
         } else {
-            alert("Condition deleted");
+            alert('Condition deleted');
         }
         setConditionUnderEditIndex((prev) => {
             if (index !== 0 && index === prev) {
@@ -671,15 +713,12 @@ export default function Home() {
     //
     // Function that sets either P1 or P2 to a specified Agent
     //
-    function agentChange(
-        whichPlayer: string,
-        value: AgentOption
-    ) {
+    function agentChange(whichPlayer: string, value: AgentOption) {
         let setAgent: Agent;
 
         // if Agent is not specified with the function call, set P1 or P2 to null
         if (!value) {
-            if (whichPlayer == "P1") {
+            if (whichPlayer == 'P1') {
                 setP1(() => null);
             } else {
                 setP2(() => null);
@@ -688,25 +727,25 @@ export default function Home() {
         }
 
         // get agent from value
-        if (value.label == "idle agent") {
+        if (value.label == 'idle agent') {
             setAgent = IDLE_AGENT;
         }
-        if (value.label == "defensive agent") {
+        if (value.label == 'defensive agent') {
             setAgent = DEFENSIVE_AGENT;
         }
-        if (value.label == "offensive agent") {
+        if (value.label == 'offensive agent') {
             setAgent = OFFENSIVE_AGENT;
         }
-        if (value.label == "your agent") {
+        if (value.label == 'your agent') {
             setAgent = newAgent;
-        } else if (value.group == "Registry") {
+        } else if (value.group == 'Registry') {
             setAgent = agents[value.index];
-        } else if (value.group == "League"){
-            setAgent = leagueAgents[value.index]
+        } else if (value.group == 'League') {
+            setAgent = leagueAgents[value.index];
         }
 
         // setP1 / setP2 depending on whichPlayer
-        if (whichPlayer == "P1") {
+        if (whichPlayer == 'P1') {
             setP1Label(value.label);
             setP1(() => setAgent);
         } else {
@@ -728,14 +767,22 @@ export default function Home() {
         );
         setTrees(() => {
             let tree = agent.mentalStates.map((x) => {
-                return { nodes: unwrapLeafToTree(x, agent.mentalStatesNames, agent.conditionNames) };
+                return {
+                    nodes: unwrapLeafToTree(
+                        x,
+                        agent.mentalStatesNames,
+                        agent.conditionNames
+                    ),
+                };
             });
             tree.push({ nodes: [] }); // add an empty tree for editing
             return tree;
         });
         setConditions(() => {
             let cond: Condition[] = agent.conditions.map((x, i) => {
-                let conditionName = agent.conditionNames[i] ? agent.conditionNames[i] : `C${i}`
+                let conditionName = agent.conditionNames[i]
+                    ? agent.conditionNames[i]
+                    : `C${i}`;
                 return {
                     elements: includeBodyState(unwrapLeafToCondition(x)),
                     key: `${i}`,
@@ -745,20 +792,26 @@ export default function Home() {
             cond.push({ elements: [] }); // add an empty condition for editing
             return cond;
         });
-        setAgentName(() => "");
+        setAgentName(() => '');
         setCharacter(() =>
             agent.character == 0 ? Character.Jessica : Character.Antoc
         );
         setConditionUnderEditIndex(() => 0);
     }
 
-    function handleEvaluateCondition(condition: Leaf, selfAgentFrame: Frame, opponentAgentFrame: Frame) {
-        let perceptiblesSelf = getFlattenedPerceptiblesFromFrame(selfAgentFrame)
-        let perceptiblesOpponent = getFlattenedPerceptiblesFromFrame(opponentAgentFrame)
-        let perceptibles = perceptiblesSelf.concat(perceptiblesOpponent)
+    function handleEvaluateCondition(
+        condition: Leaf,
+        selfAgentFrame: Frame,
+        opponentAgentFrame: Frame
+    ) {
+        let perceptiblesSelf =
+            getFlattenedPerceptiblesFromFrame(selfAgentFrame);
+        let perceptiblesOpponent =
+            getFlattenedPerceptiblesFromFrame(opponentAgentFrame);
+        let perceptibles = perceptiblesSelf.concat(perceptiblesOpponent);
 
-        let result = runEvaluateCondition(condition, perceptibles)
-        return result
+        let result = runEvaluateCondition(condition, perceptibles);
+        return result;
     }
 
     // Only for testing, can be removed once condition evaluation is integrated
@@ -776,9 +829,7 @@ export default function Home() {
         <EditorView
             editorMode={editorMode}
             settingModalOpen={settingModalOpen}
-            setSettingModalOpen={(bool) =>
-                setSettingModalOpen(() => bool)
-            }
+            setSettingModalOpen={(bool) => setSettingModalOpen(() => bool)}
             studyAgent={(agent: Agent) => {
                 setEditorMode(() => EditorMode.ReadOnly);
                 setAgentInPanelToAgent(agent);
@@ -797,7 +848,7 @@ export default function Home() {
             handleClickTab={setWorkingTab}
             character={character}
             setCharacter={(value) => {
-                console.log("setCharacter:", value);
+                console.log('setCharacter:', value);
                 setCharacter(value);
             }}
             mentalStates={mentalStates}
@@ -806,12 +857,8 @@ export default function Home() {
             combos={combos}
             handleValidateCombo={handleValidateCombo}
             handleAddMentalState={handleAddMentalState}
-            handleClickRemoveMentalState={
-                handleClickRemoveMentalState
-            }
-            handleSetMentalStateAction={
-                handleSetMentalStateAction
-            }
+            handleClickRemoveMentalState={handleClickRemoveMentalState}
+            handleSetMentalStateAction={handleSetMentalStateAction}
             treeEditor={treeEditor}
             handleClickTreeEditor={handleClickTreeEditor}
             trees={trees}
@@ -820,82 +867,67 @@ export default function Home() {
             handleSaveCondition={saveCondition}
             handleUpdateCondition={handleUpdateCondition}
             handleConfirmCondition={handleConfirmCondition}
-            handleClickDeleteCondition={
-                handleClickDeleteCondition
-            }
+            handleClickDeleteCondition={handleClickDeleteCondition}
             conditionUnderEditIndex={conditionUnderEditIndex}
-            setConditionUnderEditIndex={
-                setConditionUnderEditIndex
-            }
+            setConditionUnderEditIndex={setConditionUnderEditIndex}
             isConditionWarningTextOn={isConditionWarningTextOn}
             conditionWarningText={conditionWarningText}
-            isTreeEditorWarningTextOn={
-                isTreeEditorWarningTextOn
-            }
+            isTreeEditorWarningTextOn={isTreeEditorWarningTextOn}
             treeEditorWarningText={treeEditorWarningText}
-            handleRemoveConditionElement={
-                handleRemoveConditionElement
-            }
+            handleRemoveConditionElement={handleRemoveConditionElement}
             handleSubmitAgent={handleSubmitAgent}
             agents={agents}
             txPending={txPending}
             txHash={hash}
             txStatusText={txStatusText}
         />
-    )
+    );
 
     const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
 
     // console.log('index.tsx::ctx', ctx)
 
     const toggleGameMode = () => {
-        if(gameMode == GameModes.simulation)
-        {
-            handleMidScreenControlClick("stop")
-            setGameMode(GameModes.realtime)
-        }else{
-            setGameMode(GameModes.simulation)
+        if (gameMode == GameModes.simulation) {
+            handleMidScreenControlClick('stop');
+            setGameMode(GameModes.realtime);
+        } else {
+            setGameMode(GameModes.simulation);
         }
-    }
+    };
 
     let FightView = (
         <div className={styles.main}>
             <div
                 style={{
-                    display: "flex",
-                    flexDirection: "column",
+                    display: 'flex',
+                    flexDirection: 'column',
                 }}
             >
-                {
-                    ctx.wasm !== undefined ?
-                    (
-                        <Button variant="text"
-                            onClick={()=> toggleGameMode()}
-                        >
-                            {
-                                gameMode == GameModes.simulation ? "Simulation" : 'Real Time'
-                            }
-                        </Button>
-                    ) : null
-                }
+                {ctx.wasm !== undefined ? (
+                    <Button variant="text" onClick={() => toggleGameMode()}>
+                        {gameMode == GameModes.simulation
+                            ? 'Simulation'
+                            : 'Real Time'}
+                    </Button>
+                ) : null}
 
-                {
-                    gameMode == GameModes.simulation ?
-                    (
-                        <P1P2SettingPanel
-                            agentsFromRegistry={t}
-                            leagueAgents={leagueData?.agents}
-                            agentChange={agentChange}
-                        />
-                    ) :
-                    (  <RealTimeSettingPanel
-                            agentsFromRegistry={t}
-                            agentChange={agentChange}
-                            leagueAgents={leagueData?.agents}
-                            changeCharacter={(character) => setRealTimeCharacter(parseInt(character))}
-                        />
-                    )
-                }
+                {gameMode == GameModes.simulation ? (
+                    <P1P2SettingPanel
+                        agentsFromRegistry={t}
+                        leagueAgents={leagueData?.agents}
+                        agentChange={agentChange}
+                    />
+                ) : (
+                    <RealTimeSettingPanel
+                        agentsFromRegistry={t}
+                        agentChange={agentChange}
+                        leagueAgents={leagueData?.agents}
+                        changeCharacter={(character) =>
+                            setRealTimeCharacter(parseInt(character))
+                        }
+                    />
+                )}
 
                 <StatusBarPanel
                     integrity_0={playerStatuses.integrity_0}
@@ -911,58 +943,70 @@ export default function Home() {
                     showDebug={checkedShowDebugInfo}
                     gameMode={gameMode}
                     realTimeOptions={{
-                        playerCharacter : realTimeCharacter,
-                        agentOpponent : p2,
-                        setPlayerStatuses
+                        playerCharacter: realTimeCharacter,
+                        agentOpponent: p2,
+                        setPlayerStatuses,
                     }}
                     isInView={swipeableViewIndex == 0}
                 />
-                {
-                    gameMode == GameModes.simulation ? (
-                        <MidScreenControl
-                            runnable={!(p1 == null || p2 == null) && gameMode == GameModes.simulation}
-                            testJsonAvailable={
-                                testJson ? true : false
-                            }
-                            testJson={testJson}
-                            animationFrame={animationFrame}
-                            n_cycles={N_FRAMES}
-                            animationState={animationState}
-                            handleClick={
-                                handleMidScreenControlClick
-                            }
-                            handleSlideChange={(evt) => {
-                                if (animationState == "Run") return;
-                                console.log('handleSlideChange::value', evt.target.value)
-                                const slide_val: number = parseInt(
-                                    evt.target.value
-                                );
-                                setAnimationFrame(slide_val);
-                            }}
-                            checkedShowDebugInfo={
-                                checkedShowDebugInfo
-                            }
-                            handleChangeDebugInfo={() =>
-                                setCheckedShowDebugInfo(
-                                    (_) => !checkedShowDebugInfo
-                                )
-                            }
-                        />
-                    ) : (
-                        <MidScreenKeybinding realTimeCharacter={realTimeCharacter} keyDownState={keyDownState}/>
-                    )
-                }
+                {gameMode == GameModes.simulation ? (
+                    <MidScreenControl
+                        runnable={
+                            !(p1 == null || p2 == null) &&
+                            gameMode == GameModes.simulation
+                        }
+                        testJsonAvailable={testJson ? true : false}
+                        testJson={testJson}
+                        animationFrame={animationFrame}
+                        n_cycles={N_FRAMES}
+                        animationState={animationState}
+                        handleClick={handleMidScreenControlClick}
+                        handleSlideChange={(evt) => {
+                            if (animationState == 'Run') return;
+                            console.log(
+                                'handleSlideChange::value',
+                                evt.target.value
+                            );
+                            const slide_val: number = parseInt(
+                                evt.target.value
+                            );
+                            setAnimationFrame(slide_val);
+                        }}
+                        checkedShowDebugInfo={checkedShowDebugInfo}
+                        handleChangeDebugInfo={() =>
+                            setCheckedShowDebugInfo(
+                                (_) => !checkedShowDebugInfo
+                            )
+                        }
+                    />
+                ) : (
+                    <MidScreenKeybinding
+                        realTimeCharacter={realTimeCharacter}
+                        keyDownState={keyDownState}
+                    />
+                )}
 
-                <div style={{padding:'10px', paddingBottom:'13px', marginBottom:'16px', border:'1px solid #777', borderRadius:'20px'}}>
+                <div
+                    style={{
+                        padding: '10px',
+                        paddingBottom: '13px',
+                        marginBottom: '16px',
+                        border: '1px solid #777',
+                        borderRadius: '20px',
+                    }}
+                >
                     <Accordion
                         key="accordion-frame-data"
-                        style={{ boxShadow: "none", backgroundColor: "#ffffff00" }}
+                        style={{
+                            boxShadow: 'none',
+                            backgroundColor: '#ffffff00',
+                        }}
                     >
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-controls="panel1a-content"
                             id="panel1a-header"
-                            sx={{fontSize:'14px'}}
+                            sx={{ fontSize: '14px' }}
                         >
                             Frame Data
                         </AccordionSummary>
@@ -977,16 +1021,27 @@ export default function Home() {
                     </Accordion>
                 </div>
 
-                <div style={{padding:'10px', paddingBottom:'13px', marginBottom:'16px', border:'1px solid #777', borderRadius:'20px'}}>
+                <div
+                    style={{
+                        padding: '10px',
+                        paddingBottom: '13px',
+                        marginBottom: '16px',
+                        border: '1px solid #777',
+                        borderRadius: '20px',
+                    }}
+                >
                     <Accordion
                         key="accordion-agent-decision-logic"
-                        style={{ boxShadow: "none", backgroundColor: "#ffffff00" }}
+                        style={{
+                            boxShadow: 'none',
+                            backgroundColor: '#ffffff00',
+                        }}
                     >
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-controls="panel1a-content"
                             id="panel1a-header"
-                            sx={{fontSize:'14px'}}
+                            sx={{ fontSize: '14px' }}
                         >
                             Agent Decision Logic
                         </AccordionSummary>
@@ -1000,23 +1055,26 @@ export default function Home() {
                         </AccordionDetails>
                     </Accordion>
                 </div>
-
             </div>
         </div>
-    )
+    );
 
-
-    if(isMobileDisplay)
-    {
-        return(
-        <div>
-            <MobileView/>
-        </div>)
+    if (isMobileDisplay) {
+        return (
+            <div>
+                <MobileView />
+            </div>
+        );
     }
 
-    if(!isWhiteListed && isProduction){
-        return <RegistrationPage
-            setIsWhiteListedTrue={() => {setIsWhiteListed(true)}}/>
+    if (!isWhiteListed && isProduction) {
+        return (
+            <RegistrationPage
+                setIsWhiteListedTrue={() => {
+                    setIsWhiteListed(true);
+                }}
+            />
+        );
     }
 
     //
@@ -1033,43 +1091,62 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
+            <Tabs
+                value={swipeableViewIndex}
+                onChange={(event, newValue) =>
+                    setSwipeableViewIndex((_) => newValue)
+                }
+                aria-label="basic tabs example"
+                sx={{ mt: 2 }}
+                centered
+            >
+                <Tab label={'Fight'} />
+                <Tab label={'Edit'} />
+                <Tab label={'Reference'} />
+                <Tab label={'Wallet'} />
+            </Tabs>
 
-                <Tabs
-                    value={swipeableViewIndex}
-                    onChange={(event, newValue) => setSwipeableViewIndex((_) => newValue)}
-                    aria-label="basic tabs example"
-                    sx={{mt:2}}
-                    centered
+            <Snackbar
+                open={successToastOpen}
+                autoHideDuration={6000}
+                onClose={handleToastClose}
+            >
+                <Alert
+                    onClose={handleToastClose}
+                    severity="success"
+                    sx={{ width: '100%' }}
                 >
-                    <Tab label={'Fight'}/>
-                    <Tab label={'Edit'}/>
-                    <Tab label={'Reference'}/>
-                    <Tab label={'Wallet'}/>
-                </Tabs>
-
-                <Snackbar open={successToastOpen} autoHideDuration={6000} onClose={handleToastClose}>
-                    <Alert onClose={handleToastClose} severity="success" sx={{ width: '100%' }}>
-                        Condition Successfully saved
-                    </Alert>
-                </Snackbar>
-                <Box sx={{flex: 1, pt: 5}}>
-                    <ThemeProvider theme={theme}>
-                        <SwipeableViews
-                            index={swipeableViewIndex}
-                            containerStyle={{
-                                transition: 'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s'
-                            }}
-                            // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
-                            // a fix for the issue: first index change doesn't animate (swipe)
+                    Condition Successfully saved
+                </Alert>
+            </Snackbar>
+            <Box sx={{ flex: 1, pt: 5 }}>
+                <ThemeProvider theme={theme}>
+                    <SwipeableViews
+                        index={swipeableViewIndex}
+                        containerStyle={{
+                            transition:
+                                'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s',
+                        }}
+                        // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
+                        // a fix for the issue: first index change doesn't animate (swipe)
+                    >
+                        <SwipeableContent>{FightView}</SwipeableContent>
+                        <SwipeableContent>
+                            {EditorViewComponent}
+                        </SwipeableContent>
+                        <SwipeableContent
+                            sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}
                         >
-                            <SwipeableContent>{ FightView }</SwipeableContent>
-                            <SwipeableContent>{ EditorViewComponent }</SwipeableContent>
-                            <SwipeableContent sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}><ContractInformationView /></SwipeableContent>
-                            <SwipeableContent sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}><WalletConnectView /></SwipeableContent>
-                        </SwipeableViews>
-                    </ThemeProvider>
-                </Box>
-
+                            <ContractInformationView />
+                        </SwipeableContent>
+                        <SwipeableContent
+                            sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}
+                        >
+                            <WalletConnectView />
+                        </SwipeableContent>
+                    </SwipeableViews>
+                </ThemeProvider>
+            </Box>
         </div>
     );
 }

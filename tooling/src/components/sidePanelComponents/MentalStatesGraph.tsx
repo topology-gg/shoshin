@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import vis, { Data, Edge, Network, Options } from "vis-network";
+import React, { useEffect, useRef } from 'react';
+import vis, { Data, Edge, Network, Options } from 'vis-network';
 
 function generateGraphData(
     mentalStateNamesOrdered: string[],
@@ -9,25 +9,28 @@ function generateGraphData(
         id: i,
         label: name,
     }));
-    let mapLabelToIndex = {}
+    let mapLabelToIndex = {};
     mentalStateNamesOrdered.forEach((value: string, index: number) => {
-        mapLabelToIndex[value] = index
-    })
+        mapLabelToIndex[value] = index;
+    });
 
     // create an array with edges
-    const edges: Edge[] = mentalStateNamesOrdered.flatMap( (fromName, fromNodeIndex) =>
-
-        nextMentalStateNamesOrdered[fromNodeIndex].reduce(function(result, toName) {
-            const toNodeIndex = mapLabelToIndex[toName]
-            if (toNodeIndex !== undefined) {
-                result.push({
-                    from: fromNodeIndex,
-                    to: toNodeIndex
-                })
-            }
-            return result;
-        }, [])
-
+    const edges: Edge[] = mentalStateNamesOrdered.flatMap(
+        (fromName, fromNodeIndex) =>
+            nextMentalStateNamesOrdered[fromNodeIndex].reduce(function (
+                result,
+                toName
+            ) {
+                const toNodeIndex = mapLabelToIndex[toName];
+                if (toNodeIndex !== undefined) {
+                    result.push({
+                        from: fromNodeIndex,
+                        to: toNodeIndex,
+                    });
+                }
+                return result;
+            },
+            [])
     );
     return {
         nodes,
@@ -42,7 +45,6 @@ const MentalStatesGraph = ({
     mentalStateNamesOrdered: string[];
     nextMentalStateNamesOrdered: string[][];
 }) => {
-
     const containerRef = useRef<HTMLDivElement>();
     const graphRef = useRef<Network>();
 
@@ -53,22 +55,22 @@ const MentalStatesGraph = ({
             mentalStateNamesOrdered,
             nextMentalStateNamesOrdered
         );
-        console.log('graph data:', data)
+        console.log('graph data:', data);
         var options: Options = {
             autoResize: true,
-            height: "400px",
+            height: '400px',
             nodes: {
-                label: "A",
-                color: "#ffa0bf",
-                shape: "box",
+                label: 'A',
+                color: '#ffa0bf',
+                shape: 'box',
                 shapeProperties: { borderRadius: 5 },
             },
             edges: {
-                arrows: { to: {enabled: true, scaleFactor: 0.5}, },
+                arrows: { to: { enabled: true, scaleFactor: 0.5 } },
                 arrowStrikethrough: false,
                 smooth: false,
                 chosen: true,
-                color: '#777777'
+                color: '#777777',
             },
         };
         graphRef.current = new vis.Network(container, data, options);
