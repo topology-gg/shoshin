@@ -176,7 +176,7 @@ export default class RealTime extends Platformer {
             //args: [],
             //callbackScope: thisArg,
             //Match is 60 seconds tops
-            repeat: 60 / this.tickLatencyInSecond,
+            repeat: (60 * 30) / this.tickLatencyInSecond,
         });
 
         this.isGameRunning = true;
