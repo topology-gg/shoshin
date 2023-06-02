@@ -65,11 +65,11 @@ const MentalStatesGraph = ({
         );
         var options: Options = {
             autoResize: true,
-            height: "400px",
+            height: '400px',
             nodes: {
-                label: "A",
-                color: "#ffa0bf",
-                shape: "box",
+                label: 'A',
+                color: '#ffa0bf',
+                shape: 'box',
                 shapeProperties: { borderRadius: 5 },
             },
             edges: {

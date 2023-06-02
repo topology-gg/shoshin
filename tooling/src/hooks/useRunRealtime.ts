@@ -1,18 +1,23 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext } from 'react';
 import {
     IShoshinWASMContext,
     ShoshinWASMContext,
-} from "../context/wasm-shoshin";
+} from '../context/wasm-shoshin';
 import Agent, {
     agentToArray,
     agentsToArray,
     flattenAgent,
-} from "../types/Agent";
-import { RealTimeFrameScene, realTimeInputToArray } from "../types/Frame";
-import { encodeStringToFelt } from "../types/utils";
-import cairoOutputToRealTimeFrameScene from "../helpers/cairoOutputToRealTimeFrameScene";
+} from '../types/Agent';
+import { RealTimeFrameScene, realTimeInputToArray } from '../types/Frame';
+import { encodeStringToFelt } from '../types/utils';
+import cairoOutputToRealTimeFrameScene from '../helpers/cairoOutputToRealTimeFrameScene';
 
-const realTimeAgentToArray = (agent: Agent, current_combo : number, combo_counter : number, currentMentalState : number) => {
+const realTimeAgentToArray = (
+    agent: Agent,
+    current_combo: number,
+    combo_counter: number,
+    currentMentalState: number
+) => {
     let [
         combosOffset,
         combos,
@@ -51,7 +56,7 @@ const useRunRealTime = (
     character_type_0: number,
     character_type_1: number,
     opponent: Agent,
-    isFirstTick : boolean
+    isFirstTick: boolean
 ) => {
     const ctx = useContext(ShoshinWASMContext);
     const runRealTime = useCallback(() => {
@@ -79,15 +84,18 @@ export const runRealTimeFromContext = (
     character_type_0: number,
     character_type_1: number,
     opponent: Agent,
-    isFirstTick : boolean
+    isFirstTick: boolean
 ) => {
     if (!ctx.wasm) {
-        console.warn("WASM not initialized");
+        console.warn('WASM not initialized');
         return;
     }
     try {
-        let {current_combo, combo_counter} = realTimeFrameScene.agent_1.combo_info
-        let currentMentalState = isFirstTick ? opponent.initialState : realTimeFrameScene.agent_1.mental_state
+        let { current_combo, combo_counter } =
+            realTimeFrameScene.agent_1.combo_info;
+        let currentMentalState = isFirstTick
+            ? opponent.initialState
+            : realTimeFrameScene.agent_1.mental_state;
         let shoshinInput = new Int32Array([
             ...realTimeInputToArray(
                 realTimeFrameScene,
@@ -95,12 +103,17 @@ export const runRealTimeFromContext = (
                 character_type_0,
                 character_type_1
             ),
-            ...realTimeAgentToArray(opponent, current_combo, combo_counter, currentMentalState),
+            ...realTimeAgentToArray(
+                opponent,
+                current_combo,
+                combo_counter,
+                currentMentalState
+            ),
         ]);
         let output = ctx.wasm.simulateRealtimeFrame(shoshinInput);
         return [cairoOutputToRealTimeFrameScene(output), null];
     } catch (e) {
-        console.log("Got an error running wasm", e);
+        console.log('Got an error running wasm', e);
         return [null, e];
     }
 };

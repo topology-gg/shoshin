@@ -1,11 +1,20 @@
-import React from "react";
-import Rating from "@mui/material/Rating";
-import { styled } from "@mui/material/styles";
-import "../../../styles/StatusBar.module.css";
-import { Autocomplete, Box, FormControl, InputLabel, ListSubheader, MenuItem, SelectChangeEvent, TextField } from "@mui/material";
-import Select from '@mui/material/Select'
-import Agent from "../../types/Agent";
-import { SingleMetadata } from "../../types/Metadata";
+import React from 'react';
+import Rating from '@mui/material/Rating';
+import { styled } from '@mui/material/styles';
+import '../../../styles/StatusBar.module.css';
+import {
+    Autocomplete,
+    Box,
+    FormControl,
+    InputLabel,
+    ListSubheader,
+    MenuItem,
+    SelectChangeEvent,
+    TextField,
+} from '@mui/material';
+import Select from '@mui/material/Select';
+import Agent from '../../types/Agent';
+import { SingleMetadata } from '../../types/Metadata';
 
 export interface AgentOption {
     group: string;
@@ -14,108 +23,113 @@ export interface AgentOption {
 }
 
 const AutoComplete = styled(Autocomplete)`
-  & .MuiInputBase-input {
-    height: 1rem;
-  }
+    & .MuiInputBase-input {
+        height: 1rem;
+    }
 `;
 
-
 const senders = {
-    "0x07ff2c85c7b1de1808ddf8897bc729feefa71ba269ea1015d1fd7a18c9918cc3" : "Greg",
-    "0x0266ed55be7054c74db3f8ec2e79c728056c802a11481fad0e91220139b8916a" : "NonCents",
-    "0x02f880133db4f533bdbc10c3d02fbc9b264dac2ff52eae4e0cec0ce794bad898" : "GG",
-    "0x01b0afcd626d197993070994f8b37d20594c93bebfd48e28bd38c3b94a5802ea" : "GG-Cartridge"
-}
-const lookupSenderAddress = (address : string) =>{
-    return senders[address] ? senders[address] : "anon"
-}
+    '0x07ff2c85c7b1de1808ddf8897bc729feefa71ba269ea1015d1fd7a18c9918cc3':
+        'Greg',
+    '0x0266ed55be7054c74db3f8ec2e79c728056c802a11481fad0e91220139b8916a':
+        'NonCents',
+    '0x02f880133db4f533bdbc10c3d02fbc9b264dac2ff52eae4e0cec0ce794bad898': 'GG',
+    '0x01b0afcd626d197993070994f8b37d20594c93bebfd48e28bd38c3b94a5802ea':
+        'GG-Cartridge',
+};
+const lookupSenderAddress = (address: string) => {
+    return senders[address] ? senders[address] : 'anon';
+};
 
-
-
-const createMenuItem = (index : number, group: string, label : string) => {
-    return (        
-        <MenuItem  value={JSON.stringify(
-            {
-                index : index,
-                group : group,
-                label : label
-            }
-        )}>
+const createMenuItem = (index: number, group: string, label: string) => {
+    return (
+        <MenuItem
+            value={JSON.stringify({
+                index: index,
+                group: group,
+                label: label,
+            })}
+        >
             {label}
-        </MenuItem>)
-}
-export const SetPlayerBar = ({ label, agentsFromRegistry, leagueAgents, agentChange }) => {
-
+        </MenuItem>
+    );
+};
+export const SetPlayerBar = ({
+    label,
+    agentsFromRegistry,
+    leagueAgents,
+    agentChange,
+}) => {
     // ref: https://stackoverflow.com/questions/73095037/how-to-have-an-option-be-a-part-of-multiple-groups-with-mui-autocomplete
-    let yourAgent = createMenuItem(-1, null, 'your agent')
-    
-    const trainingAgents = ([
+    let yourAgent = createMenuItem(-1, null, 'your agent');
+
+    const trainingAgents = [
         createMenuItem(-1, 'Training', 'idle agent'),
         createMenuItem(-1, 'Training', 'offensive agent'),
-        createMenuItem(-1, 'Training', 'defensive agent')
-    ])
+        createMenuItem(-1, 'Training', 'defensive agent'),
+    ];
 
-    const leagueAgentOptions = !leagueAgents ? []  : leagueAgents.map((a: any, a_i: number) => {
-        return createMenuItem(a_i, 'League', `${a.agent_name} by ${lookupSenderAddress(a.sender)}`,)
-        
-    })
+    const leagueAgentOptions = !leagueAgents
+        ? []
+        : leagueAgents.map((a: any, a_i: number) => {
+              return createMenuItem(
+                  a_i,
+                  'League',
+                  `${a.agent_name} by ${lookupSenderAddress(a.sender)}`
+              );
+          });
 
+    const registryAgents = !agentsFromRegistry
+        ? []
+        : agentsFromRegistry.map((a: SingleMetadata, a_i: number) => {
+              return createMenuItem(
+                  a_i,
+                  'Registry',
+                  `agent-${a_i} by ${lookupSenderAddress(a.sender)}`
+              );
+          });
 
-    const registryAgents = !agentsFromRegistry ? [] : agentsFromRegistry.map((a: SingleMetadata, a_i: number) => {
-        return createMenuItem(a_i, 'Registry', `agent-${a_i} by ${lookupSenderAddress(a.sender)}`,)
-    })
-
-
-    const handleChange = (event: SelectChangeEvent, value : string) => {
-        agentChange(JSON.parse(event.target.value))
+    const handleChange = (event: SelectChangeEvent, value: string) => {
+        agentChange(JSON.parse(event.target.value));
     };
 
-
     return (
-        <Box width={"200px"}>
+        <Box width={'200px'}>
             <FormControl fullWidth>
                 <InputLabel id="select label">{label}</InputLabel>
-                <Select
-                    id="agent-select"
-                    onChange={handleChange}
-                >   
+                <Select id="agent-select" onChange={handleChange}>
                     <ListSubheader>Local</ListSubheader>
-                        {yourAgent}
+                    {yourAgent}
                     <ListSubheader>Training</ListSubheader>
-                        {trainingAgents}
+                    {trainingAgents}
                     <ListSubheader>League</ListSubheader>
-                        {leagueAgentOptions}
+                    {leagueAgentOptions}
                     <ListSubheader>Registry</ListSubheader>
-                        {registryAgents}
+                    {registryAgents}
                 </Select>
             </FormControl>
         </Box>
-    )
-}
+    );
+};
 
 export const SelectCharacterBar = ({ label, changeCharacter }) => {
-    const handleChange = (event: SelectChangeEvent, value : string) => {
-        changeCharacter(event.target.value)
+    const handleChange = (event: SelectChangeEvent, value: string) => {
+        changeCharacter(event.target.value);
     };
 
-
     return (
-        <Box width={"200px"}>
+        <Box width={'200px'}>
             <FormControl fullWidth>
                 <InputLabel id="select label">{label}</InputLabel>
                 <Select
                     id="agent-select"
                     onChange={handleChange}
                     defaultValue=""
-                >   
-                    <MenuItem  value={0}>
-                        jessica
-                    </MenuItem>
-                    <MenuItem  value={1}>
-                        antoc
-                    </MenuItem>
+                >
+                    <MenuItem value={0}>jessica</MenuItem>
+                    <MenuItem value={1}>antoc</MenuItem>
                 </Select>
             </FormControl>
         </Box>
-    )
-}
+    );
+};

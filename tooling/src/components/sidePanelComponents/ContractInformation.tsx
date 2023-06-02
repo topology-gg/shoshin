@@ -1,27 +1,39 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, IconButton, List, ListItem, ListItemText, Box, Tabs, Tab, Typography } from '@mui/material';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    IconButton,
+    List,
+    ListItem,
+    ListItemText,
+    Box,
+    Tabs,
+    Tab,
+    Typography,
+} from '@mui/material';
 import { Close } from '@mui/icons-material';
 import Draggable from 'react-draggable';
 import Paper, { PaperProps } from '@mui/material/Paper';
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { SpriteAnimator } from 'react-sprite-animator'
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { SpriteAnimator } from 'react-sprite-animator';
 
 interface ContractInformationProps {
-  title: string
-  onClose: () => void
-  open: boolean
+    title: string;
+    onClose: () => void;
+    open: boolean;
 }
 
 function PaperComponent(props: PaperProps) {
-  return (
-    <Draggable
-      handle="#draggable-dialog-title"
-      cancel={'[class*="MuiDialogContent-root"]'}
-    >
-      <Paper {...props} />
-    </Draggable>
-  );
+    return (
+        <Draggable
+            handle="#draggable-dialog-title"
+            cancel={'[class*="MuiDialogContent-root"]'}
+        >
+            <Paper {...props} />
+        </Draggable>
+    );
 }
 
 //  hurtable, knockable, clashable; at its last frame, if intent is UPSWING and agent has sufficient stamina, enter its first frame next (instead of returning to IDLE) |
@@ -57,7 +69,7 @@ const JessicaInfo = `
 
 ### Hitbox dimensions
 (to be added)
-`
+`;
 
 const AntocInfo = `
 ## Antoc specification
@@ -87,10 +99,14 @@ const AntocInfo = `
 
 ### Hitbox dimensions
 (to be added)
-`
+`;
 
-const JessicaInfoTag = <ReactMarkdown children={JessicaInfo} remarkPlugins={[remarkGfm]} />
-const AntocInfoTag = <ReactMarkdown children={AntocInfo} remarkPlugins={[remarkGfm]} />
+const JessicaInfoTag = (
+    <ReactMarkdown children={JessicaInfo} remarkPlugins={[remarkGfm]} />
+);
+const AntocInfoTag = (
+    <ReactMarkdown children={AntocInfo} remarkPlugins={[remarkGfm]} />
+);
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -103,17 +119,17 @@ function TabPanel(props: TabPanelProps) {
 
     return (
         <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
         >
-        {value === index && (
-            <Box sx={{ p: 3 }}>
-            <Typography>{children}</Typography>
-            </Box>
-        )}
+            {value === index && (
+                <Box sx={{ p: 3 }}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
         </div>
     );
 }
@@ -126,36 +142,40 @@ function a11yProps(index: number) {
 }
 
 const ContractInformation = ({
-    title, onClose, open
+    title,
+    onClose,
+    open,
 }: ContractInformationProps) => {
-
     const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
 
     return (
-    <Dialog
-        fullWidth={true}
-        maxWidth={'lg'}
-        open={open}
-        onClose={onClose}
-        hideBackdrop={true}
-        disableEnforceFocus={true}
-        PaperComponent={PaperComponent}
-        aria-labelledby="draggable-dialog-title"
-        slotProps={{
-            root: { style: { width: '70%'} },
-        }}
-    >
-      <DialogTitle sx={{backgroundColor: 'grey.100'}}>
-        <div>
-          {title}
-          <IconButton onClick={onClose} sx={{ position: 'absolute', top: 0, right: 0 }}>
-            <Close />
-          </IconButton>
-        </div>
-      </DialogTitle>
+        <Dialog
+            fullWidth={true}
+            maxWidth={'lg'}
+            open={open}
+            onClose={onClose}
+            hideBackdrop={true}
+            disableEnforceFocus={true}
+            PaperComponent={PaperComponent}
+            aria-labelledby="draggable-dialog-title"
+            slotProps={{
+                root: { style: { width: '70%' } },
+            }}
+        >
+            <DialogTitle sx={{ backgroundColor: 'grey.100' }}>
+                <div>
+                    {title}
+                    <IconButton
+                        onClick={onClose}
+                        sx={{ position: 'absolute', top: 0, right: 0 }}
+                    >
+                        <Close />
+                    </IconButton>
+                </div>
+            </DialogTitle>
 
-      <DialogContent dividers>
-        {/* <div style={{width: '40rem', height: '30rem'}}>
+            <DialogContent dividers>
+                {/* <div style={{width: '40rem', height: '30rem'}}>
           <List dense>
             <ListItemText primary={'Common stamina effets'}/>
               <List dense>
@@ -167,42 +187,42 @@ const ContractInformation = ({
           </List>
         </div> */}
 
-        {/* {infoTag} */}
+                {/* {infoTag} */}
 
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs
-            value={activeTabIndex}
-            onChange={(event, number) => setActiveTabIndex((_) => number)}
-            aria-label="basic tabs example"
-        >
-            <Tab label="Jessica" {...a11yProps(0)} />
-            <Tab label="Antoc" {...a11yProps(1)} />
-        </Tabs>
-        </Box>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs
+                        value={activeTabIndex}
+                        onChange={(event, number) =>
+                            setActiveTabIndex((_) => number)
+                        }
+                        aria-label="basic tabs example"
+                    >
+                        <Tab label="Jessica" {...a11yProps(0)} />
+                        <Tab label="Antoc" {...a11yProps(1)} />
+                    </Tabs>
+                </Box>
 
-        <TabPanel value={activeTabIndex} index={0}>
-            <SpriteAnimator
-                sprite="/images/jessica/idle/left_spritesheet.png"
-                width={96}
-                height={126}
-                fps={6}
-            />
-            {JessicaInfoTag}
-        </TabPanel>
+                <TabPanel value={activeTabIndex} index={0}>
+                    <SpriteAnimator
+                        sprite="/images/jessica/idle/left_spritesheet.png"
+                        width={96}
+                        height={126}
+                        fps={6}
+                    />
+                    {JessicaInfoTag}
+                </TabPanel>
 
-        <TabPanel value={activeTabIndex} index={1}>
-        <SpriteAnimator
-                sprite="/images/antoc/idle/left_spritesheet.png"
-                width={180}
-                height={142}
-                fps={6}
-            />
-            {AntocInfoTag}
-        </TabPanel>
-
-      </DialogContent>
-
-    </Dialog>
+                <TabPanel value={activeTabIndex} index={1}>
+                    <SpriteAnimator
+                        sprite="/images/antoc/idle/left_spritesheet.png"
+                        width={180}
+                        height={142}
+                        fps={6}
+                    />
+                    {AntocInfoTag}
+                </TabPanel>
+            </DialogContent>
+        </Dialog>
     );
 };
 

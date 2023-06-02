@@ -5,7 +5,6 @@ export function TreeString(lines, columnCount, rootColumn) {
 }
 
 TreeString.prototype = {
-
     constructor: TreeString,
 
     /** @return the number of lines */
@@ -14,22 +13,22 @@ TreeString.prototype = {
     },
 
     /** @return the number of columns */
-    getColumnCount: function() {
+    getColumnCount: function () {
         return this.columnCount;
     },
 
     /** @return the index of the column containing the center of the root */
-    getRootColumn: function() {
+    getRootColumn: function () {
         return this.rootColumn;
     },
 
     /** @return the number of columns to the right of the column containing the center of the root */
-    getRootColumnFromRight: function() {
+    getRootColumnFromRight: function () {
         return this.getColumnCount() - (this.getRootColumn() + 1);
     },
 
     /** @return the line at {@code index} */
-    getLine: function(index) {
+    getLine: function (index) {
         return this.lines[index];
     },
-}
+};

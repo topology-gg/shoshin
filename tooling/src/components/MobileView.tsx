@@ -1,13 +1,13 @@
-import { CardContent, Grid, Typography } from "@mui/material";
+import { CardContent, Grid, Typography } from '@mui/material';
 
 const MobileView = () => {
     return (
         <div>
-            <Grid container spacing={0} marginTop={"200px"}>
+            <Grid container spacing={0} marginTop={'200px'}>
                 <Grid item xs={4}></Grid>
                 <Grid item xs={4}>
                     <img
-                        src={"./images/jessica/dash_backward/right/frame_2.png"}
+                        src={'./images/jessica/dash_backward/right/frame_2.png'}
                     />
                 </Grid>
                 <Grid item xs={4}></Grid>

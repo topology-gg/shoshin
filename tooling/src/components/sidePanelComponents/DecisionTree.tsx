@@ -2,21 +2,20 @@ import React, { useEffect } from 'react';
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 
-cytoscape.use( dagre );
+cytoscape.use(dagre);
 
 interface DecisionTreeProps {
-    data: any,
-    height: number,
-    width: number,
+    data: any;
+    height: number;
+    width: number;
 }
 
 const DecisionTree = ({ data, height, width }) => {
-
     let cyStyle = {
         height: height,
         width: width,
         margin: '20px 0px',
-    }
+    };
 
     useEffect(() => {
         console.log('* Cytoscape.js is rendering the graph..');
@@ -27,29 +26,29 @@ const DecisionTree = ({ data, height, width }) => {
             boxSelectionEnabled: false,
             autounselectify: true,
 
-            style: cytoscape.stylesheet()
+            style: cytoscape
+                .stylesheet()
                 .selector('node')
                 .css({
-                    'height': 80,
-                    'width': 80,
+                    height: 80,
+                    width: 80,
                     'background-fit': 'cover',
                     'border-color': '#36454F',
                     'background-color': '#FFFFFF',
                     'border-width': 1,
                     'border-opacity': 0.5,
-                    'content': 'data(id)',
+                    content: 'data(id)',
                     'text-valign': 'center',
-                    'color': '#36454F',
+                    color: '#36454F',
                 })
                 .selector('edge')
                 .css({
-                    'width': 3,
+                    width: 3,
                     'target-arrow-shape': 'triangle',
                     'line-color': '#36454F',
                     'target-arrow-color': '#36454F',
                     'curve-style': 'bezier',
-                })
-            ,
+                }),
             elements: {
                 nodes: data.nodes,
                 edges: data.edges,
@@ -61,29 +60,32 @@ const DecisionTree = ({ data, height, width }) => {
             },
         });
 
-        let nodes = []
+        let nodes = [];
         cy.edges().map((e) => {
-            let id = e.source().id()
-            if (! nodes.includes(id)) {
-                nodes.push(id)
+            let id = e.source().id();
+            if (!nodes.includes(id)) {
+                nodes.push(id);
             }
-            return 0
-        })
+            return 0;
+        });
 
-        cy.nodes().filter((e) => {
-            return !nodes.includes(e.id()) && e.scratch().branch === 'left'
-        })
-        .style({
-            "background-color": "#fedfb0"
-        })
+        cy.nodes()
+            .filter((e) => {
+                return !nodes.includes(e.id()) && e.scratch().branch === 'left';
+            })
+            .style({
+                'background-color': '#fedfb0',
+            });
 
-        cy.nodes().filter((e) => {
-            return !nodes.includes(e.id()) && e.scratch().branch === 'right'
-        })
-        .style({
-            "background-color": "#fedfb0"
-        })
-
+        cy.nodes()
+            .filter((e) => {
+                return (
+                    !nodes.includes(e.id()) && e.scratch().branch === 'right'
+                );
+            })
+            .style({
+                'background-color': '#fedfb0',
+            });
 
         // cy.nodes().map((n) => {
         //     let size = Math.floor(n.id().length - 4) * 6 + 70
@@ -91,16 +93,16 @@ const DecisionTree = ({ data, height, width }) => {
         //     return n
         // })
 
-        cy.zoom(1.0)
-        cy.minZoom(0.5)
-        cy.maxZoom(1.1)
-    })
+        cy.zoom(1.0);
+        cy.minZoom(0.5);
+        cy.maxZoom(1.1);
+    });
 
     return (
         <div>
             <div style={cyStyle} id="cy" />
         </div>
     );
-}
+};
 
 export default DecisionTree;

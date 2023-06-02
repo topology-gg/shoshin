@@ -8,7 +8,10 @@
     "build:wasm": "wasm-pack build wasm/shoshin --release --target web && wasm-pack build wasm/condition_eval --release --target web",
     "start": "next start",
     "lint": "next lint",
-    "test": "cross-env TS_NODE_PROJECT=\"tsconfig.testing.json\" mocha"
+    "test": "cross-env TS_NODE_PROJECT=\"tsconfig.testing.json\" mocha",
+    "format": "prettier --check --ignore-path .gitignore \"{src,pages}/**/*.{ts,tsx,js,jsx}\" ",
+    "format:fix": "prettier --write --ignore-path .gitignore \"{src,pages}/**/*.{ts,tsx,js,jsx}\"",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@cartridge/connector": "0.3.17",
@@ -52,9 +55,12 @@
     "chai": "^4.3.7",
     "eslint": "8.25.0",
     "eslint-config-next": "12.3.1",
+    "eslint-config-prettier": "^8.8.0",
     "mocha": "^10.1.0",
+    "prettier": "2.8.8",
     "ts-node": "^10.9.1",
     "typescript": "4.8.4",
-    "wasm-pack": "^0.10.3"
+    "wasm-pack": "^0.10.3",
+    "husky": "^8.0.0"
   }
 }

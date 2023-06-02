@@ -1,5 +1,5 @@
-import React from "react";
-import { Box } from "@mui/material";
+import React from 'react';
+import { Box } from '@mui/material';
 import testJsonStr0 from '../json/test_engine_demo0.json';
 import testJsonStr1 from '../json/test_engine_demo1.json';
 import testJsonStr2 from '../json/test_engine_demo2.json';
@@ -16,11 +16,7 @@ import testJsonStr12 from '../json/test_engine_demo12.json';
 import testJsonStr13 from '../json/test_engine_demo13.json';
 import testJsonStr14 from '../json/test_engine_demo14.json';
 
-const LoadTestJson = ({
-    handleLoadTestJson,
-    handleClickPreloadedTestJson,
-}) => {
-
+const LoadTestJson = ({ handleLoadTestJson, handleClickPreloadedTestJson }) => {
     const preloadedTestJsons = [
         testJsonStr0,
         testJsonStr1,
@@ -37,59 +33,82 @@ const LoadTestJson = ({
         testJsonStr12,
         testJsonStr13,
         testJsonStr14,
-    ]
+    ];
 
-    const BLANK_COLOR = '#EFEFEF'
+    const BLANK_COLOR = '#EFEFEF';
 
     const onChangeInputTestJson = (event: any) => {
         if (/.json$/.exec(event.target.value)) {
-            handleLoadTestJson (event);
+            handleLoadTestJson(event);
         }
-    }
+    };
     const onClickPreloadedTestJson = (i: number) => {
-        handleClickPreloadedTestJson (preloadedTestJsons[i]);
-    }
+        handleClickPreloadedTestJson(preloadedTestJsons[i]);
+    };
 
     return (
         <Box
             sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "27rem",
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '27rem',
                 backgroundColor: BLANK_COLOR,
-                pt: "1rem",
-                pb: "3rem",
-                mt: "1rem",
+                pt: '1rem',
+                pb: '3rem',
+                mt: '1rem',
                 // height: '220px',
                 border: 1,
                 borderRadius: 4,
                 boxShadow: 3,
             }}
         >
-            <fieldset style={{fontSize:'12px', border:'1px groove #77777755'}}>
+            <fieldset
+                style={{ fontSize: '12px', border: '1px groove #77777755' }}
+            >
                 <legend>Upload Json from testing</legend>
                 <input
-                    className='button' type="file"
-                    style={{fontSize:'12px', border:'none', marginTop:'5px', backgroundColor:'#ffffff00'}}
+                    className="button"
+                    type="file"
+                    style={{
+                        fontSize: '12px',
+                        border: 'none',
+                        marginTop: '5px',
+                        backgroundColor: '#ffffff00',
+                    }}
                     onChange={(e) => onChangeInputTestJson(e)}
                 />
             </fieldset>
 
-            <p style={{margin:'0', fontSize:'12px', lineHeight: '25px', marginTop:'20px'}}>Preloaded: </p>
-            <div style={{display:'flex', flexDirection:'row', flexWrap:'wrap', marginTop:'0', height:'25px'}}>
-                {
-                    preloadedTestJsons.map( (testJson,i) => (
-                        <button
-                            onClick={() => onClickPreloadedTestJson(i)}
-                            key={`preload-button-${i}`}
-                            style={{marginTop:'3px'}}
-                        >
-                            {i}
-                        </button>
-                    ))
-                }
+            <p
+                style={{
+                    margin: '0',
+                    fontSize: '12px',
+                    lineHeight: '25px',
+                    marginTop: '20px',
+                }}
+            >
+                Preloaded:{' '}
+            </p>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    marginTop: '0',
+                    height: '25px',
+                }}
+            >
+                {preloadedTestJsons.map((testJson, i) => (
+                    <button
+                        onClick={() => onClickPreloadedTestJson(i)}
+                        key={`preload-button-${i}`}
+                        style={{ marginTop: '3px' }}
+                    >
+                        {i}
+                    </button>
+                ))}
             </div>
         </Box>
     );

@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 
 import EditorComponent, {
     useMonaco,
     Monaco,
     OnChange,
-} from "@monaco-editor/react";
-import { EditorProps } from "@monaco-editor/react";
+} from '@monaco-editor/react';
+import { EditorProps } from '@monaco-editor/react';
 import {
     ConditionElement,
     ConditionVerificationResult,
@@ -14,8 +14,8 @@ import {
     Perceptible,
     conditionElementToStr,
     verifyValidCondition,
-} from "../types/Condition";
-import { Box } from "@mui/material";
+} from '../types/Condition';
+import { Box } from '@mui/material';
 
 interface token {
     content: string;
@@ -26,27 +26,27 @@ interface token {
 
 const perceptibles = [
     `SelfX`,
-    "SelfY",
-    "SelfVelX",
-    "SelfVelY",
-    "SelfAccX",
-    "SelfAccY",
-    "SelfDir",
-    "SelfInt",
-    "SelfSta",
-    "SelfBodyState",
-    "SelfBodyCounter",
-    "OpponentX",
-    "OpponentY",
-    "OpponentVelX",
-    "OpponentVelY",
-    "OpponentAccX",
-    "OpponentAccY",
-    "OpponentDir",
-    "OpponentInt",
-    "OpponentSta",
-    "OpponentBodyState",
-    "OpponentBodyCounter",
+    'SelfY',
+    'SelfVelX',
+    'SelfVelY',
+    'SelfAccX',
+    'SelfAccY',
+    'SelfDir',
+    'SelfInt',
+    'SelfSta',
+    'SelfBodyState',
+    'SelfBodyCounter',
+    'OpponentX',
+    'OpponentY',
+    'OpponentVelX',
+    'OpponentVelY',
+    'OpponentAccX',
+    'OpponentAccY',
+    'OpponentDir',
+    'OpponentInt',
+    'OpponentSta',
+    'OpponentBodyState',
+    'OpponentBodyCounter',
 ];
 
 const bodyStateNameMappings = {
@@ -78,11 +78,11 @@ const bodyStateNameMappings = {
 const bodyStateNames = Object.keys(bodyStateNameMappings);
 const allVariables = perceptibles.concat(bodyStateNames);
 
-const operators = ["==", "<=", "*", "/", "%", "+", "-", "!", "AND", "OR"];
+const operators = ['==', '<=', '*', '/', '%', '+', '-', '!', 'AND', 'OR'];
 
 function tokenize(input: string): token[] {
     // Remove any whitespace from the expression
-    let expression = input.replace(/\n/g, "");
+    let expression = input.replace(/\n/g, '');
 
     // Define an array to store the tokens
     var tokens: token[] = [];
@@ -197,7 +197,7 @@ function tokenize(input: string): token[] {
 }
 
 const conditionElementsToDisplayText = (elements: ConditionElement[]) => {
-    console.log(elements);
+    // console.log(elements);
     return elements
         .map((e: ConditionElement) => {
             if (
@@ -212,15 +212,18 @@ const conditionElementsToDisplayText = (elements: ConditionElement[]) => {
             ) {
                 return e.value;
             } else {
-                return conditionElementToStr(e) + " ";
+                return conditionElementToStr(e) + ' ';
             }
         })
-        .join("")
+        .join('')
         .trim();
 };
 
 interface ConditionEditorProps {
+    shortcutsButtonClickCounts: { [key: string]: number };
+
     initialConditionElements: ConditionElement[];
+
     setConditionElements: (
         is_valid: boolean,
         elements: ConditionElement[],
@@ -228,6 +231,7 @@ interface ConditionEditorProps {
     ) => void;
 }
 const ConditionEditor = ({
+    shortcutsButtonClickCounts,
     initialConditionElements,
     setConditionElements,
 }: ConditionEditorProps) => {
@@ -236,7 +240,7 @@ const ConditionEditor = ({
 
     const initialValue = initialConditionElements
         ? conditionElementsToDisplayText(initialConditionElements)
-        : "";
+        : '';
     const [editorText, changeEditorText] = useState<string>(initialValue);
 
     useEffect(() => {
@@ -245,11 +249,17 @@ const ConditionEditor = ({
         );
     }, [initialConditionElements]);
 
+    // watch shortcutsButtonClickCounts to append templated condition to editorText
+    useEffect(() => {
+        if (shortcutsButtonClickCounts['xDistanceLte'] == 0) return;
+        changeEditorText((prev) => (prev += 'Abs(SelfX - OpponentX| <= '));
+    }, [shortcutsButtonClickCounts['xDistanceLte']]);
+
     function handleEditorDidMount(editor: EditorProps, monaco: Monaco) {
         // here is the editor instance
         // you can store it in `useRef` for further usage
 
-        monaco.languages.register({ id: "shoshin_condition" });
+        monaco.languages.register({ id: 'shoshin_condition' });
 
         function createDependencyProposals(range) {
             // returning a static list of proposals, not even looking at the prefix (filtering is done by the Monaco editor),
@@ -259,7 +269,7 @@ const ConditionEditor = ({
                 return {
                     label: p,
                     kind: monaco.languages.CompletionItemKind.Variable,
-                    documentation: "TBD",
+                    documentation: 'TBD',
                     insertText: p,
                     range: range,
                 };
@@ -269,7 +279,7 @@ const ConditionEditor = ({
                 return {
                     label: n,
                     kind: monaco.languages.CompletionItemKind.Enum,
-                    documentation: "TBD",
+                    documentation: 'TBD',
                     insertText: n,
                     range: range,
                 };
@@ -277,7 +287,7 @@ const ConditionEditor = ({
 
             return perceptibleProposals.concat(bodyStateNameProposals);
         }
-        monaco.languages.registerCompletionItemProvider("shoshin_condition", {
+        monaco.languages.registerCompletionItemProvider('shoshin_condition', {
             provideCompletionItems: function (model, position) {
                 var word = model.getWordUntilPosition(position);
                 var range = {
@@ -293,7 +303,7 @@ const ConditionEditor = ({
         });
 
         // Reference for usage: https://microsoft.github.io/monaco-editor/monarch.html
-        monaco.languages.setMonarchTokensProvider("shoshin_condition", {
+        monaco.languages.setMonarchTokensProvider('shoshin_condition', {
             perceptibles: perceptibles,
             bodyStateNames: bodyStateNames,
             operators: operators,
@@ -305,15 +315,15 @@ const ConditionEditor = ({
                         /[a-zA-Z_\$][\w$]*/,
                         {
                             cases: {
-                                "@perceptibles": "perceptibles",
-                                "@bodyStateNames": "bodyStateNames",
-                                "@operators": "operators",
+                                '@perceptibles': 'perceptibles',
+                                '@bodyStateNames': 'bodyStateNames',
+                                '@operators': 'operators',
                             },
                         },
                     ],
 
                     // numbers
-                    [/\d+/, "number"],
+                    [/\d+/, 'number'],
 
                     // delimiters and operators
                     // [/@symbols/, { cases: {
@@ -335,9 +345,9 @@ const ConditionEditor = ({
             };
         } else if (t.type == ElementType.Constant) {
             return {
-                value : parseInt(t.content) ,
-                type : t.type
-            }
+                value: parseInt(t.content),
+                type: t.type,
+            };
         } else if (t.type == ElementType.Perceptible) {
             return {
                 value: Perceptible[t.content],
@@ -376,41 +386,41 @@ const ConditionEditor = ({
             //report errors to the editor screen and return
             setConditionElements(false, elements, result.message);
         } else {
-            setConditionElements(true, elements, "");
+            setConditionElements(true, elements, '');
         }
     };
 
     const monaco = useMonaco();
-    monaco?.editor.defineTheme("editor-theme", {
-        base: "vs",
+    monaco?.editor.defineTheme('editor-theme', {
+        base: 'vs',
         inherit: true,
         rules: [
             {
-                token: "bodyStateNames",
-                foreground: "a47dcb",
-                fontStyle: "bold",
+                token: 'bodyStateNames',
+                foreground: 'a47dcb',
+                fontStyle: 'bold',
             },
             {
-                token: "perceptibles",
-                foreground: "d46526",
-                fontStyle: "bold",
+                token: 'perceptibles',
+                foreground: 'd46526',
+                fontStyle: 'bold',
             },
             {
-                token: "operators",
-                foreground: "89a7a2",
-                fontStyle: "",
+                token: 'operators',
+                foreground: '89a7a2',
+                fontStyle: '',
             },
         ],
         colors: {
-            "editor.background": "#ffffffff",
-            "editor.lineHighlightBackground": "#00000000",
-            "editor.lineHighlightBorder": "#00000000",
-            "scrollbar.shadow": "#00000000",
+            'editor.background': '#ffffffff',
+            'editor.lineHighlightBackground': '#00000000',
+            'editor.lineHighlightBorder': '#00000000',
+            'scrollbar.shadow': '#00000000',
         },
     });
 
     return (
-        <Box style={{ border: "1px solid #BBB", marginLeft: "16px" }}>
+        <Box style={{ border: '1px solid #BBB', marginLeft: '8px' }}>
             <EditorComponent
                 height="200px"
                 width="600px"
@@ -422,9 +432,9 @@ const ConditionEditor = ({
                     minimap: {
                         enabled: false,
                     },
-                    wordWrap: "on",
+                    wordWrap: 'on',
                     fontSize: 16,
-                    lineNumbers: "off",
+                    lineNumbers: 'off',
                 }}
                 //@ts-ignore
                 onMount={handleEditorDidMount}
