@@ -310,8 +310,10 @@ export default class RealTime extends Platformer {
                 stamina_0,
                 stamina_1,
             });
-            console.log('this.gameTimer', this.gameTimer);
-            if (this.gameTimer.repeatCount == 0 && this.isGameRunning) {
+            if (
+                Math.floor(this.gameTimer.repeatCount) == 0 &&
+                this.isGameRunning
+            ) {
                 this.checkEndGame(integrity_0, integrity_1);
             }
 
