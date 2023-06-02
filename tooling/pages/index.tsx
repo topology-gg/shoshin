@@ -1130,8 +1130,8 @@ export default function Home() {
     }
 
     const keyboardShortcuts: KeyboardShortcut[] = [
-        { key: '[', keyName: '[', description: '← Mode' },
-        { key: ']', keyName: ']', description: '→ Mode' },
+        { key: '[', keyName: '[', description: '❮ Mode' },
+        { key: ']', keyName: ']', description: '❯ Mode' },
     ].concat(
         swipeableViewIndex == 0
             ? [
@@ -1143,13 +1143,13 @@ export default function Home() {
               ]
             : swipeableViewIndex == 1
             ? [
-                  { key: ';', keyName: ';', description: '→ Tab' },
-                  { key: "'", keyName: "'", description: '→ Tab' },
+                  { key: ';', keyName: ';', description: '❮ Tab' },
+                  { key: "'", keyName: "'", description: '❯ Tab' },
               ]
             : swipeableViewIndex == 2
             ? [
-                  { key: ';', keyName: ';', description: '→ Tab' },
-                  { key: "'", keyName: "'", description: '→ Tab' },
+                  { key: ';', keyName: ';', description: '❮ Tab' },
+                  { key: "'", keyName: "'", description: '❯ Tab' },
               ]
             : []
     );
@@ -1318,7 +1318,7 @@ const KeyboardShortcutElement = ({
                 }}
                 className={'border_box'}
             >
-                <span style={{ alignSelf: 'center' }}>
+                <span style={{ alignSelf: 'center', fontWeight:'bold' }}>
                     {' '}
                     {shortcut.keyName}{' '}
                 </span>
