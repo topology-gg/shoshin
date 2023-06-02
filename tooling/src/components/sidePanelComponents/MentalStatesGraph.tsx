@@ -59,7 +59,6 @@ const MentalStatesGraph = ({
             mentalStateNamesOrdered,
             nextMentalStateNamesOrdered
         );
-        console.log('graph data:', data)
         var options: Options = {
             autoResize: true,
             height: "400px",
@@ -68,7 +67,6 @@ const MentalStatesGraph = ({
                 color: "#ffa0bf",
                 shape: "box",
                 shapeProperties: { borderRadius: 5 },
-                
             },
             edges: {
                 arrows: { to: {enabled: true, scaleFactor: 0.5}, },
@@ -78,7 +76,7 @@ const MentalStatesGraph = ({
                 color: '#777777'
             },
             interaction: {
-                hover : true,     
+                hover: true,
                 dragNodes: false, // Disable node dragging
                 dragView: false // Disable view dragging
             },

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
     Box,
     Button,
@@ -72,8 +72,8 @@ const MentalStates = ({
         setAnchorElInitialState(event.currentTarget);
     };
     const handleChosenInitialState = (mentalStateIndex) => {
-        if (typeof mentalStateIndex == 'number' ){
-            handleSetInitialMentalState(mentalStateIndex)
+        if (typeof mentalStateIndex == "number") {
+            handleSetInitialMentalState(mentalStateIndex);
         }
         setAnchorElInitialState(null);
     };
@@ -87,34 +87,31 @@ const MentalStates = ({
     });
 
     // handle mental graph visualization
-    const mentalStateNamesOrdered = mentalStates.map((ms, _) => {
-        return ms.state;
-    });
-    const nextMentalStateNamesOrdered: string[][] = mentalStates.map(
-        (_, ms_i: number) => getMentalStatesNames(trees[ms_i])
+    const mentalStateNamesOrdered = useMemo(
+        () =>
+            mentalStates.map((ms, _) => {
+                return ms.state;
+            }),
+        [mentalStates]
+    );
+    const nextMentalStateNamesOrdered: string[][] = useMemo(
+        () =>
+            mentalStates.map((_, ms_i: number) =>
+                getMentalStatesNames(trees[ms_i])
+            ),
+        [mentalStates]
     );
 
-    const [highlightedMentalState, setHighlightedMentalState] = useState<number>(-1)
+    const [highlightedMentalState, setHighlightedMentalState] =
+        useState<number>(-1);
 
-    const highlightMentalState = (index : number) => {
-        setHighlightedMentalState(index)
-    }
+    const highlightMentalState = (index: number) => {
+        setHighlightedMentalState(index);
+    };
 
-    const selectMentalState = (index : number) => {
-        handleClickTreeEditor(index + 1)
-    }
-
-    // We do not want MS Graph to needlessly rerender
-    const MemoMSGraph = React.memo(MentalStatesGraph)
-    // debug log
-    // mentalStateNamesOrdered?.forEach((name, name_i) => console.log(name, '=>', nextMentalStateNamesOrdered[name_i]))
-    useEffect(() => {console.log('isReadOnly')}, [isReadOnly]);
-    useEffect(() => {console.log('mentalStates')}, [mentalStates])
-    useEffect(() => {console.log('trees')}, [trees])
-    useEffect(() => {console.log('initialMentalState')}, [initialMentalState])
-    useEffect(() => {console.log('combos')}, [combos])
-    useEffect(() => {console.log('character')}, [character])
-    console.log('MentalStates component rerendered')
+    const selectMentalState = (index: number) => {
+        handleClickTreeEditor(index + 1);
+    };
 
     let componentAddNewMentalState = (
         <>
@@ -240,7 +237,10 @@ const MentalStates = ({
                                     display: "flex",
                                     alignItems: "center",
                                     ml: "2rem",
-                                    bgcolor: highlightedMentalState == i ? "lightgrey" : null
+                                    bgcolor:
+                                        highlightedMentalState == i
+                                            ? "lightgrey"
+                                            : null,
                                 }}
                             >
                                 <button
@@ -309,7 +309,7 @@ const MentalStates = ({
                 </Grid>
 
                 <Grid item xs={6}>
-                    <MemoMSGraph
+                    <MentalStatesGraph
                         mentalStateNamesOrdered={mentalStateNamesOrdered}
                         nextMentalStateNamesOrdered={
                             nextMentalStateNamesOrdered
