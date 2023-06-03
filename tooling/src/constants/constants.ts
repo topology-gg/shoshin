@@ -209,7 +209,10 @@ export function getIntentNameByCharacterTypeAndNumber(
 // Simulation related constants
 export const FRAME_COUNT = 120;
 
-export const CHARACTERS_ACTION_KEYBINDINGS: any[] = [ActionKeybindingsJessica, ActionKeybindingsAntoc];
+export const CHARACTERS_ACTION_KEYBINDINGS: any[] = [
+    ActionKeybindingsJessica,
+    ActionKeybindingsAntoc,
+];
 export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc];
 
 interface CharacterAction {

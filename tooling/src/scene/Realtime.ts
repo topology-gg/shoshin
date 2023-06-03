@@ -86,7 +86,7 @@ export default class RealTime extends Platformer {
         const centeredText = this.add
             .text(
                 this.cameras.main.midPoint.x,
-                this.cameras.main.midPoint.y - 40,
+                this.cameras.main.midPoint.y - 10,
                 content,
                 {
                     color: '#000',
@@ -134,7 +134,7 @@ export default class RealTime extends Platformer {
     centerText(text: Phaser.GameObjects.Text) {
         text.setPosition(
             this.cameras.main.midPoint.x,
-            this.cameras.main.midPoint.y - 40
+            this.cameras.main.midPoint.y - 10
         );
     }
     create() {

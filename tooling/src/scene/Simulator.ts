@@ -7,11 +7,11 @@ import { GameModes } from '../types/Simulator';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
 
 const ARENA_WIDTH = 1000;
-const DEFAULT_ZOOM = 1.5;
+const DEFAULT_ZOOM = 1.7;
 
 const DEFAULT_CAMERA_HEIGHT = 400;
 const DEFAULT_CAMERA_CENTER_X = 25;
-const DEFAULT_CAMERA_CENTER_Y = -110;
+const DEFAULT_CAMERA_CENTER_Y = -95;
 const DEFAULT_CAMERA_LEFT = -ARENA_WIDTH / 2;
 const DEFAULT_CAMERA_TOP = DEFAULT_CAMERA_CENTER_Y - DEFAULT_CAMERA_HEIGHT / 2;
 const CAMERA_REACTION_TIME = 400;
@@ -224,7 +224,7 @@ export default class Simulator extends Phaser.Scene {
         const centeredText = this.add
             .text(
                 this.cameras.main.midPoint.x,
-                this.cameras.main.midPoint.y - 40,
+                this.cameras.main.midPoint.y - 10,
                 content,
                 {
                     color: '#000',
