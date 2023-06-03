@@ -125,6 +125,29 @@ export enum Character {
     Antoc = 'Antoc',
 }
 
+export enum ActionKeybindingsJessica {
+    Null = '-',
+    Slash = 'J',
+    Upswing = 'K',
+    Sidecut = 'L',
+    Block = 'S',
+    MoveForward = 'D',
+    MoveBackward = 'A',
+    DashForward = 'E',
+    DashBackward = 'Q',
+}
+
+export enum ActionKeybindingsAntoc {
+    Null = '',
+    Hori = 'J',
+    Vert = 'K',
+    Block = 'S',
+    MoveForward = 'D',
+    MoveBackward = 'A',
+    DashForward = 'E',
+    DashBackward = 'Q',
+}
+
 export enum ActionsJessica {
     Null = 0,
     Slash = 1,
@@ -186,6 +209,7 @@ export function getIntentNameByCharacterTypeAndNumber(
 // Simulation related constants
 export const FRAME_COUNT = 120;
 
+export const CHARACTERS_ACTION_KEYBINDINGS: any[] = [ActionKeybindingsJessica, ActionKeybindingsAntoc];
 export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc];
 
 interface CharacterAction {

@@ -41,15 +41,15 @@ const JessicaInfo = `
 
 | Key | Intent |
 | - | - |
-| W | Dash back |
+| Q | Dash back |
 | E | Dash forward |
-| S | Slash |
-| D | Upswing |
-| F | Sidecut |
-| ↓ | Block |
-| ← | Walk back |
-| → | Walk forward |
-| H | Toggle hitboxes |
+| J | Slash |
+| K | Upswing |
+| L | Sidecut |
+| S | Block |
+| A | Walk back |
+| D | Walk forward |
+| . | Toggle hitboxes |
 
 ### Body transition rules
 | Body state | Duration in frames | Description | Entry Rules | Interruption |
@@ -88,21 +88,22 @@ const AntocInfo = `
 
 | Key | Intent |
 | - | - |
-| W | Dash back |
+| Q | Dash back |
 | E | Dash forward |
-| S | Hori |
-| D | Vert |
-| ↓ | Block |
-| ← | Walk back |
-| → | Walk forward |
-| H | Toggle hitboxes |
+| J | Hori |
+| K | Vert |
+| S | Block |
+| A | Walk back |
+| D | Walk forward |
+| . | Toggle hitboxes |
 
 ### Body transition rules
 | Body state | Duration in frames | Description | Entry Rules | Interruption |
 | - | - | - | - | - |
-| HORI | 7 | Actively swings her katana upward; 2nd-3rd frames are active | {intent is HORI} when {body is IDLE or last frame of HORI or *8th/9th/10th frame of VERT*} | hurtible; knockable; *not clashable*  |
-| VERT | 10 | Actively swings her katana sideway; 4th-5th frames are active | {intent is VERT} when {body is IDLE or last frame of VERT} | hurtible; knockable; *not clashable* |
-| BLOCK | 6 | Actively blocks with his great sword; 2nd-5th frames are active | {intent is BLOCK} when {body is IDLE or last frame of BLOCK} | hurtible; knockable |
+| HORI | 7 | Actively swings his sword upward; 2nd-3rd frames are active | {intent is HORI} when {body is IDLE or last frame of HORI or *8th/9th/10th frame of VERT*} | hurtible; knockable; *not clashable*  |
+| VERT | 10 | Actively swings his sword sideway; 4th-5th frames are active | {intent is VERT} when {body is IDLE or last frame of VERT} | hurtible; knockable; *not clashable* |
+| BLOCK | 6 | Actively blocks with his sword; 2nd-5th frames are active | {intent is BLOCK} when {body is IDLE or last frame of BLOCK} | hurtible; knockable |
+| CLASH | 4 | Involuntarily retracts his sword from clashing with opponent's weapon | the two players' attack hitboxes overlap | hurtible; knockable |
 | HURT | 2 | Involuntarily cringes from being hit | body hit by opponent's attack hitbox | knockable |
 | KNOCKED | 11 | Bounces back from being critically hit | body hit by opponent's attack hitbox at low health | *invincible* |
 | MOVE FORWARD / BACKWARD | n/a | Walks forward or backward | {intent is DASH FORWARD or DASH BACKWARD} when body responds to locomotive intent | hurtible; knockable; interruptible by locomotive / defensive / offensive intents |
