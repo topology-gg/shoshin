@@ -1,32 +1,21 @@
 import React from 'react';
-import Rating from '@mui/material/Rating';
-import { styled } from '@mui/material/styles';
 import '../../../styles/StatusBar.module.css';
 import {
-    Autocomplete,
     Box,
     FormControl,
     InputLabel,
     ListSubheader,
     MenuItem,
     SelectChangeEvent,
-    TextField,
 } from '@mui/material';
-import Select from '@mui/material/Select';
-import Agent from '../../types/Agent';
 import { SingleMetadata } from '../../types/Metadata';
+import BlurrableSelect from '../ui/BlurrableSelect';
 
 export interface AgentOption {
     group: string;
     label: string;
     index: number;
 }
-
-const AutoComplete = styled(Autocomplete)`
-    & .MuiInputBase-input {
-        height: 1rem;
-    }
-`;
 
 const senders = {
     '0x07ff2c85c7b1de1808ddf8897bc729feefa71ba269ea1015d1fd7a18c9918cc3':
@@ -97,7 +86,7 @@ export const SetPlayerBar = ({
         <Box width={'200px'}>
             <FormControl fullWidth>
                 <InputLabel id="select label">{label}</InputLabel>
-                <Select id="agent-select" onChange={handleChange}>
+                <BlurrableSelect id="agent-select" onChange={handleChange}>
                     <ListSubheader>Local</ListSubheader>
                     {yourAgent}
                     <ListSubheader>Training</ListSubheader>
@@ -106,14 +95,14 @@ export const SetPlayerBar = ({
                     {leagueAgentOptions}
                     <ListSubheader>Registry</ListSubheader>
                     {registryAgents}
-                </Select>
+                </BlurrableSelect>
             </FormControl>
         </Box>
     );
 };
 
 export const SelectCharacterBar = ({ label, changeCharacter }) => {
-    const handleChange = (event: SelectChangeEvent, value: string) => {
+    const handleChange = (event: SelectChangeEvent) => {
         changeCharacter(event.target.value);
     };
 
@@ -121,14 +110,14 @@ export const SelectCharacterBar = ({ label, changeCharacter }) => {
         <Box width={'200px'}>
             <FormControl fullWidth>
                 <InputLabel id="select label">{label}</InputLabel>
-                <Select
+                <BlurrableSelect
                     id="agent-select"
                     onChange={handleChange}
                     defaultValue=""
                 >
                     <MenuItem value={0}>jessica</MenuItem>
                     <MenuItem value={1}>antoc</MenuItem>
-                </Select>
+                </BlurrableSelect>
             </FormControl>
         </Box>
     );
