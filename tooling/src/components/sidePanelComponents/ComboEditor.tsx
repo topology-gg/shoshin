@@ -8,6 +8,7 @@ import {
     ACTIONS_ICON_MAP,
     MAX_COMBO_SIZE,
     CHARACTER_ACTIONS_DETAIL,
+    ACTIONS_TO_KEYS,
 } from '../../constants/constants';
 
 const ComboEditor = ({
@@ -137,9 +138,9 @@ const ComboEditor = ({
                                             }}
                                         >
                                             {
-                                                CHARACTERS_ACTIONS[
-                                                    characterIndex
-                                                ][key]
+                                                ACTIONS_TO_KEYS[characterIndex][
+                                                    key
+                                                ]
                                             }
                                         </p>
                                     </div>

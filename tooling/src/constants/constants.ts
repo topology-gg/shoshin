@@ -125,6 +125,45 @@ export enum Character {
     Antoc = 'Antoc',
 }
 
+export enum KeysToActionsJessica {
+    '-' = 'Null',
+    'J' = 'Slash',
+    'K' = 'Upswing',
+    'L' = 'Sidecut',
+    'S' = 'Block',
+    'D' = 'MoveForward',
+    'A' = 'MoveBackward',
+    'E' = 'DashForward',
+    'Q' = 'DashBackward',
+}
+
+export enum KeysToActionsAntoc {
+    '-' = 'Null',
+    'J' = 'Hori',
+    'K' = 'Vert',
+    'S' = 'Block',
+    'D' = 'MoveForward',
+    'A' = 'MoveBackward',
+    'E' = 'DashForward',
+    'Q' = 'DashBackward',
+}
+
+// Mapping such that { 'Null' : '-' }
+let ActionsToKeysJessica = {};
+for (const key in KeysToActionsJessica) {
+    const value = KeysToActionsJessica[key];
+    ActionsToKeysJessica[value] = key;
+}
+
+// Mapping such that { 'Null' : '-' }
+let ActionsToKeysAntoc = {};
+for (const key in KeysToActionsAntoc) {
+    const value = KeysToActionsAntoc[key];
+    ActionsToKeysAntoc[value] = key;
+}
+
+export const ACTIONS_TO_KEYS = [ActionsToKeysJessica, ActionsToKeysAntoc];
+
 export enum ActionsJessica {
     Null = 0,
     Slash = 1,
@@ -186,6 +225,10 @@ export function getIntentNameByCharacterTypeAndNumber(
 // Simulation related constants
 export const FRAME_COUNT = 120;
 
+export const CHARACTERS_ACTION_KEYBINDINGS: any[] = [
+    KeysToActionsJessica,
+    KeysToActionsAntoc,
+];
 export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc];
 
 interface CharacterAction {
