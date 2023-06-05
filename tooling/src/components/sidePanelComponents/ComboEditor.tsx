@@ -4,11 +4,11 @@ import Tooltip from '@mui/material/Tooltip';
 import SingleAction from './SingleAction';
 import NewAction from './NewAction';
 import {
-    CHARACTERS_ACTION_KEYBINDINGS,
     CHARACTERS_ACTIONS,
     ACTIONS_ICON_MAP,
     MAX_COMBO_SIZE,
     CHARACTER_ACTIONS_DETAIL,
+    ACTIONS_TO_KEYS,
 } from '../../constants/constants';
 
 const ComboEditor = ({
@@ -138,9 +138,9 @@ const ComboEditor = ({
                                             }}
                                         >
                                             {
-                                                CHARACTERS_ACTION_KEYBINDINGS[
-                                                    characterIndex
-                                                ][key]
+                                                ACTIONS_TO_KEYS[characterIndex][
+                                                    key
+                                                ]
                                             }
                                         </p>
                                     </div>

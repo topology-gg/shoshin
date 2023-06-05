@@ -1,7 +1,10 @@
 import { Add } from '@mui/icons-material';
 import { InputBase } from '@mui/material';
 import React, { ChangeEventHandler, useEffect, useRef, useState } from 'react';
-import { CHARACTERS_ACTIONS } from '../../constants/constants';
+import {
+    CHARACTERS_ACTIONS,
+    CHARACTERS_ACTION_KEYBINDINGS,
+} from '../../constants/constants';
 import ActionToken from './ActionToken';
 
 const NewAction = ({
@@ -17,15 +20,20 @@ const NewAction = ({
 
     const [invalid, setInvalid] = useState<boolean>(false);
 
+    const keybindings = CHARACTERS_ACTION_KEYBINDINGS[characterIndex];
+    const actions = CHARACTERS_ACTIONS[characterIndex];
+
     const handleClick = () => {
         if (disabled) return;
         onSelect();
     };
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-        const action = event.target.value;
-        if (Object.keys(CHARACTERS_ACTIONS[characterIndex]).includes(action)) {
-            onInsert(action);
+        const key = event.target.value.toUpperCase();
+
+        //LOWER CASE
+        if (keybindings[key]) {
+            onInsert(actions[keybindings[key]]);
             setInvalid(false);
         } else {
             setInvalid(true);

@@ -125,28 +125,44 @@ export enum Character {
     Antoc = 'Antoc',
 }
 
-export enum ActionKeybindingsJessica {
-    Null = '-',
-    Slash = 'J',
-    Upswing = 'K',
-    Sidecut = 'L',
-    Block = 'S',
-    MoveForward = 'D',
-    MoveBackward = 'A',
-    DashForward = 'E',
-    DashBackward = 'Q',
+export enum KeysToActionsJessica {
+    '-' = 'Null',
+    'J' = 'Slash',
+    'K' = 'Upswing',
+    'L' = 'Sidecut',
+    'S' = 'Block',
+    'D' = 'MoveForward',
+    'A' = 'MoveBackward',
+    'E' = 'DashForward',
+    'Q' = 'DashBackward',
 }
 
-export enum ActionKeybindingsAntoc {
-    Null = '',
-    Hori = 'J',
-    Vert = 'K',
-    Block = 'S',
-    MoveForward = 'D',
-    MoveBackward = 'A',
-    DashForward = 'E',
-    DashBackward = 'Q',
+export enum KeysToActionsAntoc {
+    '-' = 'Null',
+    'J' = 'Hori',
+    'K' = 'Vert',
+    'S' = 'Block',
+    'D' = 'MoveForward',
+    'A' = 'MoveBackward',
+    'E' = 'DashForward',
+    'Q' = 'DashBackward',
 }
+
+// Mapping such that { 'Null' : '-' }
+let ActionsToKeysJessica = {};
+for (const key in KeysToActionsJessica) {
+    const value = KeysToActionsJessica[key];
+    ActionsToKeysJessica[value] = key;
+}
+
+// Mapping such that { 'Null' : '-' }
+let ActionsToKeysAntoc = {};
+for (const key in KeysToActionsAntoc) {
+    const value = KeysToActionsAntoc[key];
+    ActionsToKeysAntoc[value] = key;
+}
+
+export const ACTIONS_TO_KEYS = [ActionsToKeysJessica, ActionsToKeysAntoc];
 
 export enum ActionsJessica {
     Null = 0,
@@ -210,8 +226,8 @@ export function getIntentNameByCharacterTypeAndNumber(
 export const FRAME_COUNT = 120;
 
 export const CHARACTERS_ACTION_KEYBINDINGS: any[] = [
-    ActionKeybindingsJessica,
-    ActionKeybindingsAntoc,
+    KeysToActionsJessica,
+    KeysToActionsAntoc,
 ];
 export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc];
 
