@@ -44,7 +44,7 @@ const IntegrityBar = (props: statusBarProps) => {
             max={10}
         />
     );
-    const text = <p style={{ margin: '0 6px' }}>{value}</p>;
+    const text = <p style={{ margin: '0 6px', color:'#555' }}>{value}</p>;
 
     if (positionedLeft) {
         return (
@@ -116,13 +116,13 @@ const StaminaBar = (props: statusBarProps) => {
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
                 {bar}
-                <p style={{ margin: '0 6px' }}>{value}</p>
+                <p style={{ margin: '0 6px', color:'#555' }}>{value}</p>
             </div>
         );
     } else {
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <p style={{ margin: '0 6px' }}>{value}</p>
+                <p style={{ margin: '0 6px', color:'#555' }}>{value}</p>
                 {bar}
             </div>
         );
