@@ -81,7 +81,7 @@ const TreeEditor = ({
         return;
     }
 
-    const treeInString: string = treeToString(tree, conditions)
+    const treeInString: string = treeToString(tree, conditions);
 
     return (
         <Box

@@ -5,3 +5,6 @@ build: clean
 
 clean:
 	rm -fr node_modules .next package-lock.json
+
+format:
+	npm run format:fix

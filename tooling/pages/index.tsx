@@ -957,7 +957,15 @@ export default function Home() {
                 }}
             >
                 {ctx.wasm !== undefined ? (
-                    <Button variant="text" onClick={() => toggleGameMode()}>
+                    <Button
+                        variant="text"
+                        onClick={() => toggleGameMode()}
+                        style={{
+                            padding: '6px',
+                            width: '100px',
+                            margin: '0 auto',
+                        }}
+                    >
                         {gameMode == GameModes.simulation
                             ? 'Simulation'
                             : 'Real Time'}
@@ -1224,7 +1232,7 @@ export default function Home() {
                     Condition Successfully saved
                 </Alert>
             </Snackbar>
-            <Box sx={{ flex: 1, pt: 5, pb: 8 }}>
+            <Box sx={{ flex: 1, pt: 1, pb: 8 }}>
                 <ThemeProvider theme={theme}>
                     <SwipeableViews
                         index={swipeableViewIndex}
