@@ -309,7 +309,7 @@ const MentalStates = ({
                                         handleClickRemoveMentalState(i)
                                     }
                                     disabled={isReadOnly}
-                                    style={{marginLeft:'auto'}}
+                                    style={{ marginLeft: 'auto' }}
                                 >
                                     <DeleteIcon sx={{ fontSize: 'small' }} />
                                 </IconButton>
