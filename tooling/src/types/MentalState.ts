@@ -1,6 +1,11 @@
 import { Tree } from './Tree';
 import Leaf, { wrapToLeaf } from './Leaf';
 
+export interface Thought {
+    conditionKey: string;
+    nextState: string;
+}
+
 export interface MentalState {
     state: string;
     action: number;

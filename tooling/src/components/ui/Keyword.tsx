@@ -22,7 +22,7 @@ export const Keyword = ({
                 fontSize: fontSize,
                 backgroundColor: bgColor,
                 color: textColor,
-                padding: '4px',
+                padding: '6px',
                 borderRadius: '4px',
                 height: '24px',
             }}
@@ -32,11 +32,13 @@ export const Keyword = ({
     );
 };
 
+const KeywordFontSize = 14;
+
 export const KeywordMentalState = ({ text }: { text: String }) => {
     return (
         <Keyword
             text={text}
-            fontSizeInPixel={12}
+            fontSizeInPixel={KeywordFontSize}
             bgColorInHex={'ffa0bf'}
             textColorInHex={'222'}
         />
@@ -47,7 +49,7 @@ export const KeywordBodyState = ({ text }: { text: String }) => {
     return (
         <Keyword
             text={text}
-            fontSizeInPixel={12}
+            fontSizeInPixel={KeywordFontSize}
             bgColorInHex={'ffdb42'}
             textColorInHex={'222'}
         />
@@ -58,7 +60,7 @@ export const KeywordCondition = ({ text }: { text: String }) => {
     return (
         <Keyword
             text={text}
-            fontSizeInPixel={12}
+            fontSizeInPixel={KeywordFontSize}
             bgColorInHex={'bcd3e5'}
             textColorInHex={'222'}
         />

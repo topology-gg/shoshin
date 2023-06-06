@@ -16,6 +16,7 @@ import { MentalState } from '../../types/MentalState';
 import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
 import { getMentalStatesNames } from '../../types/Tree';
 import MentalStatesGraph from './MentalStatesGraph';
+import BlurrableButton from '../ui/BlurrableButton';
 
 let currentMenu = 0;
 
@@ -237,34 +238,28 @@ const MentalStates = ({
                                     display: 'flex',
                                     alignItems: 'center',
                                     ml: '2rem',
+                                    pl: '0.5rem',
                                     bgcolor:
                                         highlightedMentalState == i
-                                            ? 'lightgrey'
+                                            ? '#EEE'
                                             : null,
                                 }}
                                 onMouseOver={() => highlightMentalState(i)}
                                 onMouseOut={() => highlightMentalState(-1)}
                             >
-                                <button
+                                <BlurrableButton
                                     className={'mentalStateButton'}
                                     key={`${i}`}
                                     onClick={() => handleClickTreeEditor(i + 1)}
                                     style={{
                                         fontFamily: 'Raleway',
                                         fontSize: '14px',
+                                        padding: '8px',
+                                        lineHeight: '9px',
                                     }}
                                 >
                                     {state.state}
-                                </button>
-
-                                <IconButton
-                                    onClick={(_) =>
-                                        handleClickRemoveMentalState(i)
-                                    }
-                                    disabled={isReadOnly}
-                                >
-                                    <DeleteIcon sx={{ fontSize: 'small' }} />
-                                </IconButton>
+                                </BlurrableButton>
 
                                 <Button
                                     id={`actions-button-${i}`}
@@ -309,6 +304,16 @@ const MentalStates = ({
                                         );
                                     })}
                                 </Menu>
+
+                                <IconButton
+                                    onClick={(_) =>
+                                        handleClickRemoveMentalState(i)
+                                    }
+                                    disabled={isReadOnly}
+                                    style={{ marginLeft: 'auto' }}
+                                >
+                                    <DeleteIcon sx={{ fontSize: 'small' }} />
+                                </IconButton>
                             </Box>
                         );
                     })}
