@@ -32,7 +32,7 @@ export const Keyword = ({
     );
 };
 
-const KeywordFontSize = 14
+const KeywordFontSize = 14;
 
 export const KeywordMentalState = ({ text }: { text: String }) => {
     return (

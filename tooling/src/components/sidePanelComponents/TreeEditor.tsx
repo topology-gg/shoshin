@@ -164,26 +164,52 @@ const TreeEditor = ({
                                     flexDirection: 'column',
                                     marginLeft: '1rem',
                                     alignItems: 'left',
-                                    mb:'1rem'
+                                    mb: '1rem',
                                 }}
                             >
-                                <p style={{margin:'0 8px 0 0', padding:'0.1rem', fontSize:'16px'}}>
-                                    <span style={{marginRight:'8px', fontSize:'16px'}}>&#128208;</span>Available Conditions:
+                                <p
+                                    style={{
+                                        margin: '0 8px 0 0',
+                                        padding: '0.1rem',
+                                        fontSize: '16px',
+                                    }}
+                                >
+                                    <span
+                                        style={{
+                                            marginRight: '8px',
+                                            fontSize: '16px',
+                                        }}
+                                    >
+                                        &#128208;
+                                    </span>
+                                    Available Conditions:
                                 </p>
 
-                                {(conditions.length == 0) && <Typography padding={'0.1rem'} fontSize={'12px'} color='red' variant='overline'>No Conditions available, go to Conditions tab to create some</Typography>}
-                                {
-                                    conditions.slice(0, conditions.length - 1).map((condition, condition_i) => {
+                                {conditions.length == 0 && (
+                                    <Typography
+                                        padding={'0.1rem'}
+                                        fontSize={'12px'}
+                                        color="red"
+                                        variant="overline"
+                                    >
+                                        No Conditions available, go to
+                                        Conditions tab to create some
+                                    </Typography>
+                                )}
+                                {conditions
+                                    .slice(0, conditions.length - 1)
+                                    .map((condition, condition_i) => {
                                         return (
                                             // <Tooltip key={`tooltip-condition-${condition_i}`} title={`${condition.displayName}`}>
-                                            <p style={{marginBottom:'5px'}}>
-                                                <KeywordCondition text={condition.displayName} />
+                                            <p style={{ marginBottom: '5px' }}>
+                                                <KeywordCondition
+                                                    text={condition.displayName}
+                                                />
                                                 {/* <span style={{width:'4px'}} /> */}
                                             </p>
                                             // </Tooltip>
-                                        )
-                                    })
-                                }
+                                        );
+                                    })}
                             </Box>
                         </Grid>
 
@@ -193,28 +219,40 @@ const TreeEditor = ({
                                     display: 'flex',
                                     flexDirection: 'column',
                                     marginLeft: '0.5rem',
-                                    alignItems:'left'
+                                    alignItems: 'left',
                                 }}
                             >
-                                <p style={{margin:'0 8px 0 0', padding:'0.1rem', fontSize:'16px'}}>
-                                    <span style={{fontSize:'16px',marginRight:'8px'}}>&#129504;</span>Available Mental States:
+                                <p
+                                    style={{
+                                        margin: '0 8px 0 0',
+                                        padding: '0.1rem',
+                                        fontSize: '16px',
+                                    }}
+                                >
+                                    <span
+                                        style={{
+                                            fontSize: '16px',
+                                            marginRight: '8px',
+                                        }}
+                                    >
+                                        &#129504;
+                                    </span>
+                                    Available Mental States:
                                 </p>
-                                {
-                                    mentalStates.map((ms, i) => {
-                                        return (
-                                            <p style={{marginBottom:'5px'}}>
-                                                <KeywordMentalState text={ms.state} />
-                                                {/* <span style={{width:'4px'}} /> */}
-                                            </p>
-                                        )
-                                    })
-                                }
+                                {mentalStates.map((ms, i) => {
+                                    return (
+                                        <p style={{ marginBottom: '5px' }}>
+                                            <KeywordMentalState
+                                                text={ms.state}
+                                            />
+                                            {/* <span style={{width:'4px'}} /> */}
+                                        </p>
+                                    );
+                                })}
                             </Box>
                         </Grid>
                     </Grid>
-
                 </Box>
-
             </Box>
             {/* <Box
             sx={{
