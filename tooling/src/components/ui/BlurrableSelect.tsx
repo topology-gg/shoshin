@@ -13,6 +13,9 @@ const BlurrableSelect = ({ onChange, ...props }: SelectProps) => {
                 blur: any;
             };
             typeof activeElement.blur === 'function' && activeElement.blur();
+
+            const motherElement = document.getElementById('mother');
+            motherElement.focus();
         }, 0);
     };
     return <Select {...props} onChange={handleChange} />;

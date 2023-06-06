@@ -71,6 +71,7 @@ interface EditorViewProps {
     txHash?: string;
     txPending?: boolean;
     txStatusText?: string;
+    newThoughtClicks: number;
 }
 
 const EditorView = ({
@@ -115,6 +116,7 @@ const EditorView = ({
     txHash,
     txStatusText,
     txPending = false,
+    newThoughtClicks,
 }: EditorViewProps) => {
     const isReadOnly = editorMode == EditorMode.ReadOnly;
     const [openContractInformation, setOpenContractInformation] =
@@ -168,6 +170,7 @@ const EditorView = ({
                             handleClickTreeEditor={handleClickTreeEditor}
                             isWarningTextOn={isTreeEditorWarningTextOn}
                             warningText={treeEditorWarningText}
+                            newThoughtClicks={newThoughtClicks}
                         />
                     ))
                 );

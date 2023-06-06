@@ -16,6 +16,7 @@ import { MentalState } from '../../types/MentalState';
 import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
 import { getMentalStatesNames } from '../../types/Tree';
 import MentalStatesGraph from './MentalStatesGraph';
+import BlurrableButton from '../ui/BlurrableButton';
 
 let currentMenu = 0;
 
@@ -246,7 +247,7 @@ const MentalStates = ({
                                 onMouseOver={() => highlightMentalState(i)}
                                 onMouseOut={() => highlightMentalState(-1)}
                             >
-                                <button
+                                <BlurrableButton
                                     className={'mentalStateButton'}
                                     key={`${i}`}
                                     onClick={() => handleClickTreeEditor(i + 1)}
@@ -258,7 +259,7 @@ const MentalStates = ({
                                     }}
                                 >
                                     {state.state}
-                                </button>
+                                </BlurrableButton>
 
                                 <Button
                                     id={`actions-button-${i}`}

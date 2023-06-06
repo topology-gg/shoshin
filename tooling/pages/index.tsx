@@ -162,6 +162,9 @@ export default function Home() {
     const [contractInformationTabIndex, setContractInformationTabIndex] =
         useState<number>(0);
 
+    // React state for tracking clicks to create new thoughts
+    const [newThoughtClicks, setNewThoughtClicks] = useState<number>(0);
+
     const [successToastOpen, setToastOpen] = React.useState(false);
 
     const handleToastClose = (
@@ -243,6 +246,11 @@ export default function Home() {
                     if (prev == 2) return prev;
                     else return prev + 1;
                 });
+            }
+        } else if (e.key == '/') {
+            if (swipeableViewIndex == 1 && treeEditor != 0) {
+                console.log('new thought!');
+                setNewThoughtClicks((prev) => prev + 1);
             }
         }
     };
@@ -932,6 +940,7 @@ export default function Home() {
             txPending={txPending}
             txHash={hash}
             txStatusText={txStatusText}
+            newThoughtClicks={newThoughtClicks}
         />
     );
 
@@ -1153,7 +1162,11 @@ export default function Home() {
             ? [
                   { key: ';', keyName: ';', description: '❮ Tab' },
                   { key: "'", keyName: "'", description: '❯ Tab' },
-              ]
+              ].concat(
+                  treeEditor != 0
+                      ? [{ key: '/', keyName: '/', description: 'New Thought' }]
+                      : []
+              )
             : swipeableViewIndex == 2
             ? [
                   { key: ';', keyName: ';', description: '❮ Tab' },
@@ -1167,6 +1180,7 @@ export default function Home() {
     //
     return (
         <div
+            id={'mother'}
             className={styles.container}
             ref={ref}
             tabIndex={-1}

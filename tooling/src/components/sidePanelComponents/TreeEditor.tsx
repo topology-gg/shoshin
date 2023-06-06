@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Card, Grid, Tooltip, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';
@@ -7,6 +7,7 @@ import DecisionTree from './DecisionTree';
 import { Tree } from '../../types/Tree';
 import { Condition, conditionToStr } from '../../types/Condition';
 import { KeywordCondition, KeywordMentalState } from '../ui/Keyword';
+import { Thought } from '../../types/MentalState';
 
 const treeToString = (tree: Tree, conditions: Condition[]) => {
     let str = '';
@@ -72,8 +73,20 @@ const TreeEditor = ({
     handleClickTreeEditor,
     isWarningTextOn,
     warningText,
+    newThoughtClicks,
 }) => {
     let mentalState = mentalStates[indexTree];
+
+    const [thoughts, setThoughts] = useState<Thought[]>([]);
+
+    useEffect(() => {
+        setThoughts((prev) =>
+            prev.concat({
+                conditionKey: 'conditionKey',
+                nextState: 'nextState',
+            })
+        );
+    }, [newThoughtClicks]);
 
     if (!tree) {
         // return to parent view
@@ -115,9 +128,19 @@ const TreeEditor = ({
                         fontSize: '16px',
                     }}
                 >
-                    Decision Tree for{' '}
-                    <KeywordMentalState text={mentalState.state} />
+                    Thoughts at <KeywordMentalState text={mentalState.state} />
                 </p>
+
+                {/* {
+                    thoughts.map((thought, thought_i) => {return(
+                        <div style={{display:'flex', flexDirection:'row', height:'30px', margin:'6px 0'}}>
+                            <p style={{margin:'0', width:'20px', fontSize:'14px'}}>{thought_i+1}.</p>
+                            <p style={{margin:'0'}}><KeywordCondition text={thought.conditionKey} /></p>
+                            <p style={{margin:'0 4px', fontSize:'15px'}}>? go to / stay at</p>
+                            <p style={{margin:'0'}}><KeywordMentalState text={mentalState.state} /></p>
+                        </div>
+                    )})
+                } */}
 
                 <TextField
                     color={'info'}
