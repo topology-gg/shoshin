@@ -88,17 +88,21 @@ const StaminaBar = (props: statusBarProps) => {
     // Reference
     // https://github.com/topology-gg/shoshin-tooling/pull/50
     // https://www.colorsexplained.com/shades-of-blue-color-names/ - Maya blue
-    const CustomLinearProgress = styled(LinearProgress)(({ datatype }) => ({
-        height: StaminaBarHeight,
-        borderRadius: 5,
-        [`&.${linearProgressClasses.colorPrimary}`]: {
-            backgroundColor: '#EEE',
-        },
-        [`& .${linearProgressClasses.bar}`]: {
+    const CustomLinearProgress = styled(LinearProgress)(
+        ({ datatype, value }) => ({
+            height: StaminaBarHeight,
             borderRadius: 5,
-            backgroundColor: '#73C2FBA5',
-        },
-    }));
+            [`&.${linearProgressClasses.colorPrimary}`]: {
+                backgroundColor: '#EEE',
+            },
+            [`& .${linearProgressClasses.bar}`]: {
+                borderRadius: 5,
+                backgroundColor: '#73C2FBA5',
+                borderTopRightRadius: value == 100 ? 5 : 0,
+                borderBottomRightRadius: value == 100 ? 5 : 0,
+            },
+        })
+    );
 
     const bar = (
         <>
