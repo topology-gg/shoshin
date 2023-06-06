@@ -126,7 +126,7 @@ export enum Character {
 }
 
 export enum KeysToActionsJessica {
-    '-' = 'Null',
+    '-' = 'Rest',
     'J' = 'Slash',
     'K' = 'Upswing',
     'L' = 'Sidecut',
@@ -138,7 +138,7 @@ export enum KeysToActionsJessica {
 }
 
 export enum KeysToActionsAntoc {
-    '-' = 'Null',
+    '-' = 'Rest',
     'J' = 'Hori',
     'K' = 'Vert',
     'S' = 'Block',
@@ -148,14 +148,14 @@ export enum KeysToActionsAntoc {
     'Q' = 'DashBackward',
 }
 
-// Mapping such that { 'Null' : '-' }
+// Mapping such that { 'Rest' : '-' }
 let ActionsToKeysJessica = {};
 for (const key in KeysToActionsJessica) {
     const value = KeysToActionsJessica[key];
     ActionsToKeysJessica[value] = key;
 }
 
-// Mapping such that { 'Null' : '-' }
+// Mapping such that { 'Rest' : '-' }
 let ActionsToKeysAntoc = {};
 for (const key in KeysToActionsAntoc) {
     const value = KeysToActionsAntoc[key];
@@ -165,7 +165,7 @@ for (const key in KeysToActionsAntoc) {
 export const ACTIONS_TO_KEYS = [ActionsToKeysJessica, ActionsToKeysAntoc];
 
 export enum ActionsJessica {
-    Null = 0,
+    Rest = 0,
     Slash = 1,
     Upswing = 2,
     Sidecut = 3,
@@ -177,7 +177,7 @@ export enum ActionsJessica {
 }
 
 export enum ActionsAntoc {
-    Null = 0,
+    Rest = 0,
     Hori = 1,
     Vert = 2,
     Block = 3,
@@ -189,7 +189,7 @@ export enum ActionsAntoc {
 
 export const characterActionToNumber = {
     jessica: {
-        Null: 0,
+        Rest: 0,
         Slash: 1,
         Upswing: 2,
         Sidecut: 3,
@@ -200,7 +200,7 @@ export const characterActionToNumber = {
         DashBackward: 8,
     },
     antoc: {
-        Null: 0,
+        Rest: 0,
         Hori: 1,
         Vert: 2,
         Block: 3,
@@ -242,7 +242,7 @@ interface CharacterActions {
 }
 
 export const ActionDetailJessica: CharacterActions = {
-    Null: { id: 0, duration: 1 },
+    Rest: { id: 0, duration: 1 },
     Slash: { id: 1, duration: 5, active: [3] },
     Upswing: { id: 2, duration: 5, active: [3] },
     Sidecut: { id: 3, duration: 5, active: [3] },
@@ -254,7 +254,7 @@ export const ActionDetailJessica: CharacterActions = {
 };
 
 export const ActionDetailAntoc: CharacterActions = {
-    Null: { id: 0, duration: 1 },
+    Rest: { id: 0, duration: 1 },
     Hori: { id: 1, duration: 7, active: [2, 3] },
     Vert: { id: 2, duration: 10, active: [4, 5] },
     Block: { id: 3, duration: 6, active: [2, 3, 4, 5] },
@@ -270,7 +270,7 @@ export const CHARACTER_ACTIONS_DETAIL: CharacterActions[] = [
 ];
 
 export const ACTIONS_ICON_MAP = {
-    Null: 'close',
+    Rest: 'close',
 
     Slash: 'local_dining',
     Upswing: 'swipe_vertical',
@@ -289,7 +289,7 @@ export const ACTIONS_ICON_MAP = {
 export const MAX_COMBO_SIZE = 10;
 
 export const INITIAL_MENTAL_STATES: MentalState[] = [
-    { state: 'MS IDLE', action: ActionsJessica['Null'] },
+    { state: 'MS IDLE', action: ActionsJessica['Rest'] },
     { state: 'MS COMBO', action: 101 },
     { state: 'MS BLOCK', action: ActionsJessica['Block'] },
     { state: 'MS CLOSER', action: ActionsJessica['MoveForward'] },
@@ -622,8 +622,8 @@ const DECISION_TREE_IDLE_AGENT: Tree[] = [
     },
 ];
 const MENTAL_STATES_IDLE_AGENT: MentalState[] = [
-    { state: 'MS One', action: ActionsAntoc['Null'] },
-    { state: 'MS Two', action: ActionsAntoc['Null'] },
+    { state: 'MS One', action: ActionsAntoc['Rest'] },
+    { state: 'MS Two', action: ActionsAntoc['Rest'] },
 ];
 //export const IDLE_AGENT: Agent = buildAgent(MENTAL_STATES_IDLE_AGENT, [], DECISION_TREE_IDLE_AGENT, INITIAL_CONDITIONS, 0, 1)
 export const IDLE_AGENT: Agent = buildAgent(
@@ -647,7 +647,7 @@ export const BLANK_AGENT: Agent = buildAgent(
 
 const DECISION_TREE_OFFENSIVE_AGENT = INITIAL_DECISION_TREES;
 const MENTAL_STATES_OFFENSIVE_AGENT: MentalState[] = [
-    { state: 'MS IDLE', action: ActionsAntoc['Null'] },
+    { state: 'MS IDLE', action: ActionsAntoc['Rest'] },
     { state: 'MS COMBO', action: 101 },
     { state: 'MS BLOCK', action: ActionsAntoc['Block'] },
     { state: 'MS CLOSER', action: ActionsAntoc['MoveForward'] },
@@ -688,7 +688,7 @@ const DECISION_TREE_DEFENSIVE_AGENT = [
     },
 ];
 const MENTAL_STATES_DEFENSIVE_AGENT: MentalState[] = [
-    { state: 'MS IDLE', action: ActionsAntoc['Null'] },
+    { state: 'MS IDLE', action: ActionsAntoc['Rest'] },
     { state: 'MS BLOCK', action: 101 },
     { state: 'MS RETRAIT', action: 102 },
 ];
