@@ -25,29 +25,49 @@ const StyledRating = styled(Rating)({
 
 interface statusBarProps {
     value: number;
+    positionedLeft: boolean;
 }
 const IntegrityBar = (props: statusBarProps) => {
-    let { value } = props;
+    let { value, positionedLeft } = props;
 
-    return (
-        <div>
-            <StyledRating
-                name="customized-color"
-                readOnly={true}
-                getLabelText={(value: number) =>
-                    `${value} Heart${value !== 1 ? 's' : ''}`
-                }
-                precision={0.5}
-                value={value / 200}
-                icon={<FavoriteIcon fontSize="inherit" />}
-                emptyIcon={<FavoriteBorderIcon fontSize="inherit" />}
-            />
-        </div>
+    const bar = (
+        <StyledRating
+            name="customized-color"
+            readOnly={true}
+            getLabelText={(value: number) =>
+                `${value} Heart${value !== 1 ? 's' : ''}`
+            }
+            precision={0.5}
+            value={value / 100}
+            icon={<FavoriteIcon fontSize="inherit" />}
+            emptyIcon={<FavoriteBorderIcon fontSize="inherit" />}
+            max={10}
+        />
     );
+    const text = (
+        <p style={{margin:'0 6px'}}>{value}</p>
+    )
+
+    if (positionedLeft) {
+        return (
+            <div style={{display:'flex', flexDirection:'row'}}>
+                {bar}
+                {text}
+            </div>
+        )
+    }
+    else {
+        return (
+            <div style={{display:'flex', flexDirection:'row'}}>
+                {text}
+                {bar}
+            </div>
+        )
+    }
 };
 
 const StaminaBar = (props: statusBarProps) => {
-    let { value } = props;
+    let { value, positionedLeft } = props;
 
     let staminaBarValues = [];
 
@@ -61,7 +81,7 @@ const StaminaBar = (props: statusBarProps) => {
                     zIndex: 200,
                     width: 2,
                     height: StaminaBarHeight,
-                    backgroundColor: 'white',
+                    backgroundColor: 'green',
                 }}
                 key={`status-bar-value-${i}`}
             ></div>
@@ -83,17 +103,34 @@ const StaminaBar = (props: statusBarProps) => {
         },
     }));
 
-    return (
-        <div>
+    const bar = (
+        <>
             <CustomLinearProgress
                 datatype="stamina"
                 variant="determinate"
                 value={value / 10}
-                sx={{ width: 200, height: StaminaBarHeight }}
+                sx={{ width: 206, height: StaminaBarHeight }}
             />
-            {staminaBarValues}
-        </div>
-    );
+            {/* {staminaBarValues} */}
+        </>
+    )
+
+    if (positionedLeft) {
+        return (
+            <div style={{display:'flex', flexDirection:'row'}}>
+                {bar}
+                <p style={{margin:'0 6px'}}>{value}</p>
+            </div>
+        )
+    }
+    else {
+        return (
+            <div style={{display:'flex', flexDirection:'row'}}>
+                <p style={{margin:'0 6px'}}>{value}</p>
+                {bar}
+            </div>
+        )
+    }
 };
 
 export interface StatusBarPanelProps {
@@ -112,12 +149,12 @@ const StatusBarPanel = ({
     return (
         <div>
             <div className={styles.statusBarRow}>
-                <IntegrityBar value={integrity_0} />
-                <IntegrityBar value={integrity_1} />
+                <IntegrityBar value={integrity_0} positionedLeft={true} />
+                <IntegrityBar value={integrity_1} positionedLeft={false} />
             </div>
             <div className={styles.statusBarRow} style={{ height: '1rem' }}>
-                <StaminaBar value={stamina_0} />
-                <StaminaBar value={stamina_1} />
+                <StaminaBar value={stamina_0} positionedLeft={true} />
+                <StaminaBar value={stamina_1} positionedLeft={false} />
             </div>
         </div>
     );
