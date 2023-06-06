@@ -281,7 +281,11 @@ const EditorView = ({
                     </div> */}
 
                     <Tooltip
-                        title={<Typography fontSize={13}>Build an agent from scratch</Typography>}
+                        title={
+                            <Typography fontSize={13}>
+                                Build an agent from scratch
+                            </Typography>
+                        }
                         placement="top"
                     >
                         <div style={{ marginBottom: '1rem' }}>
@@ -299,7 +303,11 @@ const EditorView = ({
                     </Tooltip>
 
                     <Tooltip
-                        title={<Typography fontSize={13}>Build an agent starting from an existing agent</Typography>}
+                        title={
+                            <Typography fontSize={13}>
+                                Build an agent starting from an existing agent
+                            </Typography>
+                        }
                         placement="top"
                     >
                         <div style={{ marginBottom: '1rem' }}>
@@ -323,7 +331,11 @@ const EditorView = ({
                     </Tooltip>
 
                     <Tooltip
-                        title={<Typography fontSize={13}>Submit your agent onchain</Typography>}
+                        title={
+                            <Typography fontSize={13}>
+                                Submit your agent onchain
+                            </Typography>
+                        }
                         placement="top"
                     >
                         <div style={{ marginBottom: '1rem' }}>
