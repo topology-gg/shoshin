@@ -21,6 +21,8 @@ namespace ns_antoc_dynamics {
     const KNOCK_VEL_Y_FP = 400 * ns_dynamics.SCALE_FP;
 
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
+
+    const JUMP_VEL_Y_FP = 600 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_antoc_character_dimension {
@@ -54,6 +56,9 @@ namespace ns_antoc_action {
     const DASH_FORWARD = 6;
     const DASH_BACKWARD = 7;
 
+    const STEP_FORWARD = 8;
+    const JUMP = 9;
+
     // noncents : can this action be removed?
     const COMBO = 10;
 }
@@ -61,6 +66,7 @@ namespace ns_antoc_action {
 namespace ns_antoc_stamina_effect {
     const HORI = -100;
     const VERT = -100;
+    const STEP_FORWARD = -25;
 }
 
 namespace ns_antoc_body_state_duration {
@@ -75,6 +81,8 @@ namespace ns_antoc_body_state_duration {
     const DASH_FORWARD = 4;
     const DASH_BACKWARD = 4;
     const CLASH = 5;
+    const FORWARD_STEP = 4;
+    const JUMP = 7;
 }
 
 namespace ns_antoc_body_state {
@@ -89,6 +97,8 @@ namespace ns_antoc_body_state {
     const DASH_FORWARD = 1110;  // 9 frames
     const DASH_BACKWARD = 1120;  // 9 frames
     const CLASH = 1130; // 5 frames
+    const FORWARD_STEP = 1140; // 4 frames
+    const JUMP = 1150; // 7 frames
 }
 
 namespace ns_antoc_body_state_qualifiers {

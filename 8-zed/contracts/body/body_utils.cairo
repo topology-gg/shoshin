@@ -54,6 +54,10 @@ func calculate_stamina_change{range_check_ptr}(stamina : felt, intent : felt, ma
                 let (updated_stamina, enough_stamina)= _settle_stamina_change(stamina, ns_common_stamina_effect.MOVE_BACKWARD, max_stamina);
                 return (updated_stamina, enough_stamina);
             }
+            if (intent == ns_jessica_action.JUMP) {
+                let (updated_stamina, enough_stamina)= _settle_stamina_change(stamina, ns_common_stamina_effect.JUMP, max_stamina);
+                return (updated_stamina, enough_stamina);
+            }
             if (intent == ns_jessica_action.NULL){
                 let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, max_stamina);
                 return (updated_stamina, enough_stamina);
@@ -89,19 +93,27 @@ func calculate_stamina_change{range_check_ptr}(stamina : felt, intent : felt, ma
                 let (updated_stamina, enough_stamina)= _settle_stamina_change(stamina, ns_common_stamina_effect.MOVE_BACKWARD, max_stamina);
                 return (updated_stamina, enough_stamina);
             }
+            if (intent == ns_jessica_action.STEP_FORWARD) {
+                let (updated_stamina, enough_stamina)= _settle_stamina_change(stamina, ns_antoc_stamina_effect.STEP_FORWARD, max_stamina);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_jessica_action.JUMP) {
+                let (updated_stamina, enough_stamina)= _settle_stamina_change(stamina, ns_common_stamina_effect.JUMP, max_stamina);
+                return (updated_stamina, enough_stamina);
+            }
             if (intent == ns_antoc_action.NULL){
                 let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, max_stamina);
                 return (updated_stamina, enough_stamina);
             }
         }
-    
+
     with_attr error_message("Intent is not recognized.") {
         assert 0 = 1;
     }
     return (0, FALSE);
 }
 
-func _settle_stamina_change{range_check_ptr}(stamina : felt, stamina_change : felt, max_stamina : felt) -> (felt, felt) {        
+func _settle_stamina_change{range_check_ptr}(stamina : felt, stamina_change : felt, max_stamina : felt) -> (felt, felt) {
         alloc_locals;
         let is_neg = is_le(stamina_change, 0);
         let updated_stamina = stamina + stamina_change;
@@ -110,7 +122,7 @@ func _settle_stamina_change{range_check_ptr}(stamina : felt, stamina_change : fe
         if(is_neg == TRUE) {
             if(is_not_negative == 0) {
                 return (0, FALSE);
-            } 
+            }
         } else {
             if(is_overflow == 1) {
                 return (max_stamina, TRUE);

@@ -22,6 +22,8 @@ namespace ns_jessica_dynamics {
     const KNOCK_VEL_Y_FP = 350 * ns_dynamics.SCALE_FP;
 
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
+
+    const JUMP_VEL_Y_FP = 1000 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_jessica_character_dimension {
@@ -56,6 +58,8 @@ namespace ns_jessica_action {
     const DASH_FORWARD  = 7;
     const DASH_BACKWARD = 8;
 
+    const JUMP = 9;
+
     const COMBO = 10;
 }
 
@@ -79,6 +83,7 @@ namespace ns_jessica_body_state_duration {
     const MOVE_BACKWARD = 6;
     const DASH_FORWARD = 4;
     const DASH_BACKWARD = 4;
+    const JUMP = 7;
 }
 
 namespace ns_jessica_body_state {
@@ -94,6 +99,7 @@ namespace ns_jessica_body_state {
     const MOVE_BACKWARD = 100;  // 6 frames
     const DASH_FORWARD = 110;  // 5 frames
     const DASH_BACKWARD = 120;  // 5 frames
+    const JUMP = 130; // 7 frames
 }
 
 namespace ns_jessica_body_state_qualifiers {
