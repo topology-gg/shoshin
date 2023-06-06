@@ -237,9 +237,10 @@ const MentalStates = ({
                                     display: 'flex',
                                     alignItems: 'center',
                                     ml: '2rem',
+                                    pl: '0.5rem',
                                     bgcolor:
                                         highlightedMentalState == i
-                                            ? 'lightgrey'
+                                            ? '#EEE'
                                             : null,
                                 }}
                                 onMouseOver={() => highlightMentalState(i)}
@@ -258,15 +259,6 @@ const MentalStates = ({
                                 >
                                     {state.state}
                                 </button>
-
-                                <IconButton
-                                    onClick={(_) =>
-                                        handleClickRemoveMentalState(i)
-                                    }
-                                    disabled={isReadOnly}
-                                >
-                                    <DeleteIcon sx={{ fontSize: 'small' }} />
-                                </IconButton>
 
                                 <Button
                                     id={`actions-button-${i}`}
@@ -311,6 +303,16 @@ const MentalStates = ({
                                         );
                                     })}
                                 </Menu>
+
+                                <IconButton
+                                    onClick={(_) =>
+                                        handleClickRemoveMentalState(i)
+                                    }
+                                    disabled={isReadOnly}
+                                    style={{marginLeft:'auto'}}
+                                >
+                                    <DeleteIcon sx={{ fontSize: 'small' }} />
+                                </IconButton>
                             </Box>
                         );
                     })}
