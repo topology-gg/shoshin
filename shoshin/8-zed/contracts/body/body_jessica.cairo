@@ -76,6 +76,9 @@ func _body_jessica {range_check_ptr}(
             if (intent == ns_jessica_action.DASH_BACKWARD) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
             }
+            if (intent == ns_jessica_action.JUMP) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // otherwise stay in IDLE but increment counter modulo duration
@@ -305,6 +308,9 @@ func _body_jessica {range_check_ptr}(
             if (intent == ns_jessica_action.SIDECUT) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir, FALSE) );
             }
+            if (intent == ns_jessica_action.JUMP) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // continue moving forward
@@ -353,6 +359,9 @@ func _body_jessica {range_check_ptr}(
             if (intent == ns_jessica_action.SIDECUT) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir, FALSE) );
             }
+            if (intent == ns_jessica_action.JUMP) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // continue moving forward
@@ -397,6 +406,11 @@ func _body_jessica {range_check_ptr}(
                 // go straight to SIDECUT's active frame
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 2, integrity, updated_stamina, dir, FALSE) );
             }
+
+            // interruptible by jump
+            if (intent == ns_jessica_action.JUMP) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
 
@@ -417,8 +431,8 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.DASH_BACKWARD) {
 
-        // interruptible by offensive intent
         if(enough_stamina == TRUE){
+            // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
                 // go straight to SLASH's active frame
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 2, integrity, updated_stamina, dir, FALSE) );
@@ -431,8 +445,12 @@ func _body_jessica {range_check_ptr}(
                 // go straight to SIDECUT's active frame
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 2, integrity, updated_stamina, dir, FALSE) );
             }
-        }
 
+            // interruptible by jump
+            if (intent == ns_jessica_action.JUMP) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
 
         // continue the dashing if not interrupted by an attack
         if (counter == ns_jessica_body_state_duration.DASH_BACKWARD - 1) {
