@@ -16,7 +16,7 @@ const StaminaBarHeight = 15;
 
 const StyledRating = styled(Rating)({
     '& .MuiRating-iconFilled': {
-        color: '#ff6d75',
+        color: '#ff6d75E3',
     },
     '& .MuiRating-iconHover': {
         color: '#ff3d47',
@@ -44,7 +44,7 @@ const IntegrityBar = (props: statusBarProps) => {
             max={10}
         />
     );
-    const text = <p style={{ margin: '0 6px', color:'#555' }}>{value}</p>;
+    const text = <p style={{ margin: '0 6px', color: '#555' }}>{value}</p>;
 
     if (positionedLeft) {
         return (
@@ -96,7 +96,7 @@ const StaminaBar = (props: statusBarProps) => {
         },
         [`& .${linearProgressClasses.bar}`]: {
             borderRadius: 5,
-            backgroundColor: '#73C2FB',
+            backgroundColor: '#73C2FBA5',
         },
     }));
 
@@ -116,13 +116,13 @@ const StaminaBar = (props: statusBarProps) => {
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
                 {bar}
-                <p style={{ margin: '0 6px', color:'#555' }}>{value}</p>
+                <p style={{ margin: '0 6px', color: '#555' }}>{value}</p>
             </div>
         );
     } else {
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <p style={{ margin: '0 6px', color:'#555' }}>{value}</p>
+                <p style={{ margin: '0 6px', color: '#555' }}>{value}</p>
                 {bar}
             </div>
         );
