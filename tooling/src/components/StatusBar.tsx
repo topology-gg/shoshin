@@ -44,25 +44,22 @@ const IntegrityBar = (props: statusBarProps) => {
             max={10}
         />
     );
-    const text = (
-        <p style={{margin:'0 6px'}}>{value}</p>
-    )
+    const text = <p style={{ margin: '0 6px' }}>{value}</p>;
 
     if (positionedLeft) {
         return (
-            <div style={{display:'flex', flexDirection:'row'}}>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
                 {bar}
                 {text}
             </div>
-        )
-    }
-    else {
+        );
+    } else {
         return (
-            <div style={{display:'flex', flexDirection:'row'}}>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
                 {text}
                 {bar}
             </div>
-        )
+        );
     }
 };
 
@@ -113,23 +110,22 @@ const StaminaBar = (props: statusBarProps) => {
             />
             {/* {staminaBarValues} */}
         </>
-    )
+    );
 
     if (positionedLeft) {
         return (
-            <div style={{display:'flex', flexDirection:'row'}}>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
                 {bar}
-                <p style={{margin:'0 6px'}}>{value}</p>
+                <p style={{ margin: '0 6px' }}>{value}</p>
             </div>
-        )
-    }
-    else {
+        );
+    } else {
         return (
-            <div style={{display:'flex', flexDirection:'row'}}>
-                <p style={{margin:'0 6px'}}>{value}</p>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <p style={{ margin: '0 6px' }}>{value}</p>
                 {bar}
             </div>
-        )
+        );
     }
 };
 
