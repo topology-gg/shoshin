@@ -252,6 +252,8 @@ const MentalStates = ({
                                     style={{
                                         fontFamily: 'Raleway',
                                         fontSize: '14px',
+                                        padding: '8px',
+                                        lineHeight:'9px'
                                     }}
                                 >
                                     {state.state}
