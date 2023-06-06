@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Box, Button, Link, Tooltip, styled } from '@mui/material';
-import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import { Box, Button, Link, Tooltip, Typography, styled } from '@mui/material';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import SportsMartialArtsIcon from '@mui/icons-material/SportsMartialArts';
+import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import BuildIcon from '@mui/icons-material/Build';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import PublishIcon from '@mui/icons-material/Publish';
@@ -280,7 +281,7 @@ const EditorView = ({
                     </div> */}
 
                     <Tooltip
-                        title="Build an agent from scratch"
+                        title={<Typography fontSize={13}>Build an agent from scratch</Typography>}
                         placement="top"
                     >
                         <div style={{ marginBottom: '1rem' }}>
@@ -292,20 +293,20 @@ const EditorView = ({
                                 }}
                                 variant="outlined"
                             >
-                                <PersonAddAltIcon sx={{}} />
+                                <AccessibilityNewIcon sx={{}} />
                             </Button>
                         </div>
                     </Tooltip>
 
                     <Tooltip
-                        title="Build an agent starting from an existing agent"
+                        title={<Typography fontSize={13}>Build an agent starting from an existing agent</Typography>}
                         placement="top"
                     >
                         <div style={{ marginBottom: '1rem' }}>
                             <ButtonOptionList
                                 buttonLabel={
                                     <>
-                                        <PersonAddAlt1Icon sx={{}} />
+                                        <SportsMartialArtsIcon sx={{}} />
                                     </>
                                 }
                                 options={agents}
@@ -321,7 +322,10 @@ const EditorView = ({
                         </div>
                     </Tooltip>
 
-                    <Tooltip title="Submit your agent onchain" placement="top">
+                    <Tooltip
+                        title={<Typography fontSize={13}>Submit your agent onchain</Typography>}
+                        placement="top"
+                    >
                         <div style={{ marginBottom: '1rem' }}>
                             <Button
                                 id="button-option-list-button"
