@@ -81,6 +81,8 @@ const TreeEditor = ({
         return;
     }
 
+    const treeInString: string = treeToString(tree, conditions)
+
     return (
         <Box
             sx={{
@@ -121,7 +123,7 @@ const TreeEditor = ({
                     color={'info'}
                     id="outlined-textarea"
                     placeholder={`C1 => MS IDLE,\nC2 => MS ATTACK,\n_ => MS DEFEND`}
-                    defaultValue={treeToString(tree, conditions)}
+                    defaultValue={treeInString}
                     label={`Which Mental State to Go Next?`}
                     onChange={(event) =>
                         handleUpdateTree(indexTree, event.target.value)
