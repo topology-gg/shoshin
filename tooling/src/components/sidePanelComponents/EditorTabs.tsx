@@ -13,6 +13,7 @@ import {
 // export enum for tab names
 export enum EditorTabName {
     Profile = 'Profile',
+    Gambit = 'Gambit',
     Mind = 'Mind',
     Combos = 'Combos',
     Conditions = 'Conditions',
@@ -65,6 +66,14 @@ const EditorTabs = ({ workingTab, handleClickTab }) => {
                 style={tabStyle(workingTab, EditorTabName.Profile)}
             >
                 Profile
+            </button>
+            <button
+                onClick={(event) =>
+                    handleTabChange(event, EditorTabName.Gambit)
+                }
+                style={tabStyle(workingTab, EditorTabName.Gambit)}
+            >
+                Gambit
             </button>
             <button
                 onClick={(event) => handleTabChange(event, EditorTabName.Mind)}

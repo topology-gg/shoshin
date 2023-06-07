@@ -12,54 +12,73 @@ export interface Layer {
     action: number;
 }
 
-const defaultLayer: Layer = {
-    //@ts-ignore
-    condition: alwaysTrueCondition,
-    action: 0,
-};
-
-const layersToAgentComponents = (
+//given layers gets all needed mental states, conditions and trees to build an agent using the state machine structure
+export const layersToAgentComponents = (
     layers: Layer[],
     character: number
 ): { mentalStates: MentalState[]; conditions: Condition[]; trees: Tree[] } => {
-    const mentalStates = layers.map((layer) => {
-        return {
-            state: generateConditionKey(),
-            action: layer.action,
-        };
-    });
+    const startMentalState: MentalState = {
+        state: 'Start',
+        action: 0,
+    };
 
-    let unflattenedConditions = layers.map((layer) => {
+    const generatedMentalStates = [
+        ...layers.map((layer, i) => {
+            return {
+                state: `ms_${i}`,
+                action: layer.action,
+            };
+        }),
+    ];
+
+    let unflattenedConditions = layers.map((layer, i) => {
         //action to bodystate
         const bodyState = actionstoBodyState[character][layer.action];
         //get amount of frames to wait
-        const duration =
-            CHARACTER_ACTIONS_DETAIL[character][layer.action].duration;
 
-        const isFinished = getIsFinishedCondition(duration);
+        let key = Object.keys(CHARACTER_ACTIONS_DETAIL[character]).find(
+            (key) => {
+                return (
+                    CHARACTER_ACTIONS_DETAIL[character][key].id == layer.action
+                );
+            }
+        );
+        const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration;
+
+        const isFinished = getIsFinishedCondition(duration, i);
         // get character specific bodystates
-        const isInterrupted = getInterruptedCondition(character);
+        const isInterrupted = getInterruptedCondition(character, i);
 
         return [isFinished, isInterrupted];
     });
 
-    const nodes = layers.map((layer, index) => {
+    const nodes = generatedMentalStates.map((ms, index) => {
         return {
             nodes: getNode(
-                'FILL',
+                ms.state,
                 unflattenedConditions[index][0].key,
                 unflattenedConditions[index][1].key
             ),
         };
     });
 
-    const conditions = unflattenedConditions.flat();
+    const generatedConditions = unflattenedConditions.length
+        ? unflattenedConditions.flat()
+        : [];
+
+    const rootConditions = layers.map((layer) => layer.condition);
 
     //@ts-ignore
-    const trees = [{ nodes: getRootNode(conditions, mentalStates) }, ...nodes];
+    const trees = [
+        { nodes: getRootNode(rootConditions, generatedMentalStates) },
+        ...nodes,
+    ];
+
+    const combined = [...rootConditions, ...generatedConditions];
+    const mentalStates = [startMentalState, ...generatedMentalStates];
 
     //@ts-ignore
-    return { mentalStates, conditions, trees };
+    return { mentalStates, conditions: combined, trees };
 };
 
 //condtions to transition to action
@@ -74,7 +93,7 @@ const getRootNode = (conditions: Condition[], mentalStates: MentalState[]) => {
                 },
                 {
                     id: mentalStates[index].state,
-                    isChild: false,
+                    isChild: true,
                     branch: Direction.Left,
                 },
             ];
@@ -123,7 +142,7 @@ const getNode = (
     ];
 };
 
-const getIsFinishedCondition = (duration: number) => {
+const getIsFinishedCondition = (duration: number, id: number) => {
     return {
         elements: [
             {
@@ -148,11 +167,11 @@ const getIsFinishedCondition = (duration: number) => {
             },
         ],
         displayName: 'is_action_finished',
-        key: generateConditionKey(),
+        key: `is_action_finished_${id}`,
     };
 };
 
-const getInterruptedCondition = (character: number) => {
+const getInterruptedCondition = (character: number, id: number) => {
     return {
         elements: [
             {
@@ -228,7 +247,7 @@ const getInterruptedCondition = (character: number) => {
             },
         ],
         displayName: 'is_interrupted',
-        key: generateConditionKey(),
+        key: `is_interrupted_${id}`,
     };
 };
 
@@ -396,3 +415,9 @@ const exampleMS = [
         action: 1,
     },
 ];
+
+export const defaultLayer: Layer = {
+    //@ts-ignore
+    condition: alwaysTrueCondition,
+    action: 0,
+};

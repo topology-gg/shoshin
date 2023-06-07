@@ -276,9 +276,9 @@ export const ActionDetailJessica: CharacterActions = {
     Sidecut: { id: 3, duration: 5, active: [3] },
     Block: { id: 4, duration: 3, active: [2] },
     MoveForward: { id: 5, duration: 1 },
-    MoveBackward: { id: 5, duration: 1 },
-    DashForward: { id: 5, duration: 1 },
-    DashBackward: { id: 5, duration: 1 },
+    MoveBackward: { id: 6, duration: 1 },
+    DashForward: { id: 7, duration: 1 },
+    DashBackward: { id: 8, duration: 1 },
 };
 
 export const ActionDetailAntoc: CharacterActions = {

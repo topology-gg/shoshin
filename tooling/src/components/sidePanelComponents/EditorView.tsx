@@ -21,6 +21,10 @@ import { Character, EditorMode } from '../../constants/constants';
 import { Tree } from '../../types/Tree';
 import { Condition, ConditionElement } from '../../types/Condition';
 import { CircularProgress } from '@mui/material';
+import { Layer } from '../../types/Layer';
+import Gambit from './Gambit';
+import { GambitMs } from './GambitMs';
+import { GambitTree } from './GambitTreeEditor';
 
 interface EditorViewProps {
     editorMode: EditorMode;
@@ -72,6 +76,8 @@ interface EditorViewProps {
     txPending?: boolean;
     txStatusText?: string;
     newThoughtClicks: number;
+    layers: Layer[];
+    setLayers: (layers: Layer[]) => void;
 }
 
 const EditorView = ({
@@ -117,6 +123,8 @@ const EditorView = ({
     txStatusText,
     txPending = false,
     newThoughtClicks,
+    layers,
+    setLayers,
 }: EditorViewProps) => {
     const isReadOnly = editorMode == EditorMode.ReadOnly;
     const [openContractInformation, setOpenContractInformation] =
@@ -136,41 +144,32 @@ const EditorView = ({
                 );
             }
 
+            case EditorTabName.Gambit: {
+                return (
+                    <Gambit
+                        layers={layers}
+                        setLayers={setLayers}
+                        isReadOnly={isReadOnly}
+                        character={character}
+                        conditions={conditions}
+                    />
+                );
+            }
             case EditorTabName.Mind: {
                 return (
                     (!treeEditor && (
-                        <MentalStates
-                            isReadOnly={isReadOnly}
-                            mentalStates={mentalStates}
-                            trees={trees}
-                            initialMentalState={initialMentalState}
-                            handleSetInitialMentalState={
-                                handleSetInitialMentalState
-                            }
-                            combos={combos}
+                        <GambitMs
+                            layers={layers}
                             character={character}
-                            handleAddMentalState={handleAddMentalState}
-                            handleClickRemoveMentalState={
-                                handleClickRemoveMentalState
-                            }
-                            handleSetMentalStateAction={
-                                handleSetMentalStateAction
-                            }
                             handleClickTreeEditor={handleClickTreeEditor}
                         />
                     )) ||
                     (!!treeEditor && (
-                        <TreeEditor
-                            isReadOnly={isReadOnly}
-                            indexTree={treeEditor - 1}
-                            tree={trees[treeEditor - 1]}
-                            handleUpdateTree={handleUpdateTree}
-                            mentalStates={mentalStates}
-                            conditions={conditions}
+                        <GambitTree
+                            index={treeEditor - 1}
+                            layers={layers}
+                            character={character}
                             handleClickTreeEditor={handleClickTreeEditor}
-                            isWarningTextOn={isTreeEditorWarningTextOn}
-                            warningText={treeEditorWarningText}
-                            newThoughtClicks={newThoughtClicks}
                         />
                     ))
                 );
