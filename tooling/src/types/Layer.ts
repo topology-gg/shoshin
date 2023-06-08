@@ -43,7 +43,7 @@ export const layersToAgentComponents = (
                 );
             }
         );
-        const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration;
+        const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration - 1;
 
         const isFinished = getIsFinishedCondition(duration, i);
         // get character specific bodystates
@@ -81,6 +81,12 @@ export const layersToAgentComponents = (
     return { mentalStates, conditions: combined, trees };
 };
 
+// Condition keys have to be a number, and unique
+// Unique encoding for each condition type and condition per index
+const conditionKeyEncoding = {
+    interrupt: 555,
+    finished: 444,
+};
 //condtions to transition to action
 //ms names to transition to
 const getRootNode = (conditions: Condition[], mentalStates: MentalState[]) => {
@@ -167,7 +173,7 @@ const getIsFinishedCondition = (duration: number, id: number) => {
             },
         ],
         displayName: 'is_action_finished',
-        key: `is_action_finished_${id}`,
+        key: `${conditionKeyEncoding.finished}${id}`,
     };
 };
 
@@ -247,7 +253,7 @@ const getInterruptedCondition = (character: number, id: number) => {
             },
         ],
         displayName: 'is_interrupted',
-        key: `is_interrupted_${id}`,
+        key: `${conditionKeyEncoding.interrupt}${id}`,
     };
 };
 

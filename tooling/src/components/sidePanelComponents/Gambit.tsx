@@ -19,6 +19,7 @@ import MentalStatesGraph from './MentalStatesGraph';
 import BlurrableButton from '../ui/BlurrableButton';
 import { Layer, defaultLayer } from '../../types/Layer';
 import { Condition } from '../../types/Condition';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 let currentMenu = 0;
@@ -38,19 +39,67 @@ interface GambitProps {
     conditions: Condition[];
 }
 
-const Gambit = ({
+interface LayerProps {
+    layer: Layer;
+    index: number;
+    isReadOnly: boolean;
+    character: Character;
+    conditions: Condition[];
+    handleRemoveLayer: (index: number) => void;
+    handleChooseAction: (actionName: string) => void;
+    handleChooseCondition: (condition: Condition) => void;
+}
+
+const DraggableLayer = ({
+    layer,
+    index,
     isReadOnly,
-    layers,
-    setLayers,
     character,
     conditions,
-}: GambitProps) => {
+    handleChooseAction,
+    handleChooseCondition,
+    handleRemoveLayer,
+}: LayerProps) => {
+    return (
+        <Draggable draggableId={index.toString()} index={index}>
+            {(provided) => (
+                <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                >
+                    {' '}
+                    <div>Test</div>
+                    <Layer
+                        layer={layer}
+                        index={index}
+                        isReadOnly={isReadOnly}
+                        character={character}
+                        conditions={conditions}
+                        handleChooseAction={handleChooseAction}
+                        handleChooseCondition={handleChooseCondition}
+                        handleRemoveLayer={handleRemoveLayer}
+                    />
+                </div>
+            )}
+        </Draggable>
+    );
+};
+
+const Layer = ({
+    layer,
+    index: i,
+    isReadOnly,
+    character,
+    conditions,
+    handleChooseAction,
+    handleChooseCondition,
+    handleRemoveLayer,
+}: LayerProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const [conditionAnchorEl, setConditionAnchorEl] =
         useState<null | HTMLElement>(null);
-
-    const [mentalState, setMentalState] = useState<string>(null);
 
     let characterIndex = Object.keys(Character).indexOf(character);
 
@@ -61,13 +110,15 @@ const Gambit = ({
     let actions = Object.keys(CHARACTERS_ACTIONS[characterIndex]).filter((a) =>
         isNaN(parseInt(a))
     );
-    const handleCreateLayer = () => {
-        setLayers([defaultLayer, ...layers]);
+
+    const onActionSelect = (action: string) => {
+        handleChooseAction(action);
+        setAnchorEl(null);
     };
 
-    const handleRemoveLayer = (index: number) => {
-        //TODO check if deleting last layer breaks things
-        setLayers(layers.splice(index, 1));
+    const onConditionSelect = (condition: Condition) => {
+        handleChooseCondition(condition);
+        setAnchorEl(null);
     };
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -86,41 +137,116 @@ const Gambit = ({
         setConditionAnchorEl(event.currentTarget);
     };
 
-    const handleChooseAction = (actionName) => {
-        let updatedLayers = layers.map((layer, index) => {
-            if (index == currentMenu) {
-                return {
-                    ...layer,
-                    action: CHARACTERS_ACTIONS[characterIndex][actionName],
-                };
-            }
-            return layer;
-        });
-        setLayers(updatedLayers);
-        setAnchorEl(null);
-    };
-
     const handleCloseActionDropdown = () => {
         setAnchorEl(null);
-    };
-
-    const handleChooseCondition = (condition) => {
-        let updatedLayers = layers.map((layer, index) => {
-            if (index == currentConditionMenu) {
-                return {
-                    ...layer,
-                    condition,
-                };
-            }
-            return layer;
-        });
-        setLayers(updatedLayers);
-        setConditionAnchorEl(null);
     };
 
     const handleCloseConditionDropdown = () => {
         setConditionAnchorEl(null);
     };
+
+    return (
+        <Grid xs={12}>
+            <Box
+                key={`button-wrapper-${i}`}
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    ml: '2rem',
+                    pl: '0.5rem',
+                }}
+            >
+                <BlurrableButton
+                    className={'mentalStateButton'}
+                    key={`${i}`}
+                    id={`condition-btn-${i}`}
+                    onClick={handleConditionClick}
+                    style={{
+                        fontFamily: 'Raleway',
+                        fontSize: '14px',
+                        padding: '8px',
+                        lineHeight: '9px',
+                    }}
+                >
+                    {layer.condition.displayName}
+                </BlurrableButton>
+
+                <Menu
+                    id={`conditions-menu-${i}`}
+                    anchorEl={conditionAnchorEl}
+                    open={conditionsOpen}
+                    onClose={(e) => handleCloseConditionDropdown()}
+                >
+                    {conditions.map((condition) => {
+                        return (
+                            <MenuItem>
+                                <ListItemText
+                                    onClick={(e) =>
+                                        onConditionSelect(condition)
+                                    }
+                                >
+                                    {condition.displayName}
+                                </ListItemText>
+                            </MenuItem>
+                        );
+                    })}
+                </Menu>
+
+                <Button
+                    id={`actions-button-${i}`}
+                    aria-controls={open ? 'basic-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? 'true' : undefined}
+                    onClick={handleClick}
+                    disabled={isReadOnly}
+                >
+                    <span style={{ marginRight: '7px' }}>&#129354;</span>{' '}
+                    {actionToStr(layer.action, characterIndex)}
+                </Button>
+
+                <Menu
+                    id={`actions-menu-${i}`}
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleCloseActionDropdown}
+                >
+                    {actions.map((action) => {
+                        return (
+                            <MenuItem>
+                                <ListItemText
+                                    onClick={(e) => onActionSelect(action)}
+                                >
+                                    {action.replaceAll('_', ' ')}
+                                </ListItemText>
+                            </MenuItem>
+                        );
+                    })}
+                </Menu>
+
+                <IconButton
+                    onClick={(_) => handleRemoveLayer(i)}
+                    disabled={isReadOnly}
+                    style={{ marginLeft: 'auto' }}
+                >
+                    <DeleteIcon sx={{ fontSize: 'small' }} />
+                </IconButton>
+            </Box>
+        </Grid>
+    );
+};
+
+const Gambit = ({
+    isReadOnly,
+    layers,
+    setLayers,
+    character,
+    conditions,
+}: GambitProps) => {
+    const handleCreateLayer = () => {
+        setLayers([defaultLayer, ...layers]);
+    };
+
+    let characterIndex = Object.keys(Character).indexOf(character);
 
     let componentAddLayer = (
         <>
@@ -145,6 +271,71 @@ const Gambit = ({
         </>
     );
 
+    function onDragEnd(result) {
+        const { draggableId, source, destination } = result;
+
+        if (!destination) {
+            return;
+        }
+
+        if (destination.index === source.index) {
+            return;
+        }
+
+        const updatedLayers = Array.from(layers);
+        const [removedItem] = updatedLayers.splice(source.index, 1);
+        updatedLayers.splice(destination.index, 0, removedItem);
+
+        setLayers(updatedLayers);
+    }
+
+    const handleRemoveLayer = (index: number) => {
+        //TODO check if deleting last layer breaks things
+        setLayers(layers.splice(index, 1));
+    };
+
+    const handleChooseAction = (actionName: string) => {
+        let updatedLayers = layers.map((layer, index) => {
+            if (index == currentMenu) {
+                return {
+                    ...layer,
+                    action: CHARACTERS_ACTIONS[characterIndex][actionName],
+                };
+            }
+            return layer;
+        });
+        setLayers(updatedLayers);
+    };
+
+    const handleChooseCondition = (condition) => {
+        let updatedLayers = layers.map((layer, index) => {
+            if (index == currentConditionMenu) {
+                return {
+                    ...layer,
+                    condition,
+                };
+            }
+            return layer;
+        });
+        setLayers(updatedLayers);
+    };
+
+    const LayerList = React.memo(function LayerList({ layers }: any) {
+        return layers.map((layer: Layer, index: number) => (
+            <DraggableLayer
+                layer={layer}
+                index={index}
+                key={index}
+                handleRemoveLayer={handleRemoveLayer}
+                handleChooseAction={handleChooseAction}
+                isReadOnly={false}
+                character={character}
+                conditions={conditions}
+                handleChooseCondition={handleChooseCondition}
+            />
+        ));
+    });
+
     return (
         <Box
             sx={{
@@ -159,7 +350,6 @@ const Gambit = ({
             <Typography sx={{ fontSize: '17px' }} variant="overline">
                 <span style={{ marginRight: '8px' }}>&#129504;</span>Gambit
             </Typography>
-
             <div
                 style={{
                     display: 'flex',
@@ -170,111 +360,19 @@ const Gambit = ({
             </div>
 
             <Grid container>
-                {layers.map((layer, i) => {
-                    return (
-                        <Grid xs={12}>
-                            <Box
-                                key={`button-wrapper-${i}`}
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    ml: '2rem',
-                                    pl: '0.5rem',
-                                }}
+                <DragDropContext onDragEnd={onDragEnd}>
+                    <Droppable droppableId="list" style={{ transform: 'none' }}>
+                        {(provided) => (
+                            <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
                             >
-                                <BlurrableButton
-                                    className={'mentalStateButton'}
-                                    key={`${i}`}
-                                    id={`condition-btn-${i}`}
-                                    onClick={handleConditionClick}
-                                    style={{
-                                        fontFamily: 'Raleway',
-                                        fontSize: '14px',
-                                        padding: '8px',
-                                        lineHeight: '9px',
-                                    }}
-                                >
-                                    {layer.condition.displayName}
-                                </BlurrableButton>
-
-                                <Menu
-                                    id={`conditions-menu-${i}`}
-                                    anchorEl={conditionAnchorEl}
-                                    open={conditionsOpen}
-                                    onClose={(e) =>
-                                        handleCloseConditionDropdown()
-                                    }
-                                >
-                                    {conditions.map((condition) => {
-                                        return (
-                                            <MenuItem>
-                                                <ListItemText
-                                                    onClick={(e) =>
-                                                        handleChooseCondition(
-                                                            condition
-                                                        )
-                                                    }
-                                                >
-                                                    {condition.displayName}
-                                                </ListItemText>
-                                            </MenuItem>
-                                        );
-                                    })}
-                                </Menu>
-
-                                <Button
-                                    id={`actions-button-${i}`}
-                                    aria-controls={
-                                        open ? 'basic-menu' : undefined
-                                    }
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}
-                                    disabled={isReadOnly}
-                                >
-                                    <span style={{ marginRight: '7px' }}>
-                                        &#129354;
-                                    </span>{' '}
-                                    {actionToStr(layer.action, characterIndex)}
-                                </Button>
-
-                                <Menu
-                                    id={`actions-menu-${i}`}
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleCloseActionDropdown}
-                                >
-                                    {actions.map((action) => {
-                                        return (
-                                            <MenuItem>
-                                                <ListItemText
-                                                    onClick={(e) =>
-                                                        handleChooseAction(
-                                                            action
-                                                        )
-                                                    }
-                                                >
-                                                    {action.replaceAll(
-                                                        '_',
-                                                        ' '
-                                                    )}
-                                                </ListItemText>
-                                            </MenuItem>
-                                        );
-                                    })}
-                                </Menu>
-
-                                <IconButton
-                                    onClick={(_) => handleRemoveLayer(i)}
-                                    disabled={isReadOnly}
-                                    style={{ marginLeft: 'auto' }}
-                                >
-                                    <DeleteIcon sx={{ fontSize: 'small' }} />
-                                </IconButton>
-                            </Box>
-                        </Grid>
-                    );
-                })}
+                                <LayerList layers={layers} />
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
             </Grid>
         </Box>
     );
