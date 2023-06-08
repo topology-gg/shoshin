@@ -36,6 +36,8 @@ const perceptibles = [
     'SelfSta',
     'SelfBodyState',
     'SelfBodyCounter',
+    'SelfCurrentCombo',
+    'SelfComboCounter',
     'OpponentX',
     'OpponentY',
     'OpponentVelX',
