@@ -58,6 +58,14 @@ func update_perceptibles{range_check_ptr}(perceptibles: DictAccess*, p: Percepti
         key=ns_perceptibles.SELF_BODY_COUNTER, new_value=p.self_body_state.counter
     );
 
+    // Self combo update
+    dict_write{dict_ptr=perceptibles}(
+        key=ns_perceptibles.SELF_CURRENT_COMBO, new_value=p.self_combo.combo_index
+    );
+    dict_write{dict_ptr=perceptibles}(
+        key=ns_perceptibles.SELF_COMBO_COUNTER, new_value=p.self_combo.action_index
+    );
+
     // OPPONENT
     // Opponent position update
     dict_write{dict_ptr=perceptibles}(

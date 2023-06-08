@@ -102,42 +102,6 @@ struct PhysicsState {
 }
 
 //
-// Perceptibles
-//
-struct Perceptibles {
-    self_physics_state: PhysicsState,
-    self_body_state: BodyState,
-    opponent_physics_state: PhysicsState,
-    opponent_body_state: BodyState,
-}
-
-namespace ns_perceptibles {
-    const SELF_X_POS = 1;
-    const SELF_Y_POS = 2;
-    const SELF_VEL_X = 3;
-    const SELF_VEL_Y = 4;
-    const SELF_ACC_X = 5;
-    const SELF_ACC_Y = 6;
-    const SELF_DIR = 7;
-    const SELF_INT = 8;
-    const SELF_STA = 9;
-    const SELF_BODY_STATE = 10;
-    const SELF_BODY_COUNTER = 11;
-
-    const OPPONENT_X_POS = 101;
-    const OPPONENT_Y_POS = 102;
-    const OPPONENT_VEL_X = 103;
-    const OPPONENT_VEL_Y = 104;
-    const OPPONENT_ACC_X = 105;
-    const OPPONENT_ACC_Y = 106;
-    const OPPONENT_DIR = 107;
-    const OPPONENT_INT = 108;
-    const OPPONENT_STA = 109;
-    const OPPONENT_BODY_STATE = 110;
-    const OPPONENT_BODY_COUNTER = 111;
-}
-
-//
 // Frame
 //
 struct Combo {
@@ -183,6 +147,45 @@ struct FrameScene {
 struct RealTimeFrameScene {
     agent_0: RealTimePlayer,
     agent_1: RealTimeAgent,
+}
+
+//
+// Perceptibles
+//
+struct Perceptibles {
+    self_physics_state: PhysicsState,
+    self_body_state: BodyState,
+    self_combo: Combo,
+    opponent_physics_state: PhysicsState,
+    opponent_body_state: BodyState,
+}
+
+namespace ns_perceptibles {
+    const SELF_X_POS = 1;
+    const SELF_Y_POS = 2;
+    const SELF_VEL_X = 3;
+    const SELF_VEL_Y = 4;
+    const SELF_ACC_X = 5;
+    const SELF_ACC_Y = 6;
+    const SELF_DIR = 7;
+    const SELF_INT = 8;
+    const SELF_STA = 9;
+    const SELF_BODY_STATE = 10;
+    const SELF_BODY_COUNTER = 11;
+    const SELF_CURRENT_COMBO = 12;
+    const SELF_COMBO_COUNTER = 13;
+
+    const OPPONENT_X_POS = 101;
+    const OPPONENT_Y_POS = 102;
+    const OPPONENT_VEL_X = 103;
+    const OPPONENT_VEL_Y = 104;
+    const OPPONENT_ACC_X = 105;
+    const OPPONENT_ACC_Y = 106;
+    const OPPONENT_DIR = 107;
+    const OPPONENT_INT = 108;
+    const OPPONENT_STA = 109;
+    const OPPONENT_BODY_STATE = 110;
+    const OPPONENT_BODY_COUNTER = 111;
 }
 
 //
