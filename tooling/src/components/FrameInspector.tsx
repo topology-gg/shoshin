@@ -197,7 +197,8 @@ const FrameInspector = ({
                                                         '#FD3A4ACC',
                                                 }}
                                             >
-                                                Combo {frame.combo.combo_index - 1}
+                                                Combo{' '}
+                                                {frame.combo.combo_index - 1}
                                                 {/* combo index == 0 signifies current frame is running with atomic intent instead of combo */}
                                             </Button>
                                         </Tooltip>
