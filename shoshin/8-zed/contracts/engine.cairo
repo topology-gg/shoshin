@@ -196,9 +196,9 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     assert arr_frames[0] = FrameScene(
         agent_0 = Frame(
             mental_state  = agent_0_initial_state,
-            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1, 0), 
+            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1, 0),
             physics_state = physics_state_0,
-            action        = 0, 
+            action        = 0,
             stimulus      = ns_stimulus.NULL,
             hitboxes      = Hitboxes(
                 action = null_rect,
@@ -211,9 +211,9 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             ),
         agent_1 = Frame(
             mental_state  = agent_1_initial_state,
-            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0, 0), 
+            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0, 0),
             physics_state = physics_state_1,
-            action        = 0, 
+            action        = 0,
             stimulus      = ns_stimulus.NULL,
             hitboxes      = Hitboxes(
                 action = null_rect,
@@ -269,7 +269,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
     tempvar arr_empty: felt* = new ();
     // cairo -i return _loop(
-    // cairo -d 
+    // cairo -d
     let (idx) = _loop(
         idx = 1,
         len = len,
@@ -310,11 +310,11 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     character_type_0: felt,
     character_type_1: felt,
 ) -> (idx: felt) {
-    // cairo --return (frames_len: felt, frames: FrameScene*) 
+    // cairo --return (frames_len: felt, frames: FrameScene*)
     alloc_locals;
     if (idx == len) {
         // cairo -i return(frames_len=len, frames=arr_frames);
-        // cairo -d 
+        // cairo -d
         return (idx=len);
     }
 
@@ -322,7 +322,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // Preparation
     //
     let last_frame: FrameScene = arr_frames[idx - 1];
-    
+
 
     //
     /// See if a player has health <= 0
@@ -331,15 +331,15 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     let agent_0_standing = is_in_range(last_frame.agent_0.body_state.integrity, 1, 1001);
     let agent_1_standing = is_in_range(last_frame.agent_0.body_state.integrity, 1, 1001);
 
-    
+
     if (agent_0_standing == 0) {
         // cairo -i return(frames_len=idx, frames=arr_frames);
-        // cairo -d 
+        // cairo -d
        return (idx=idx);
     }
     if (agent_1_standing == 0) {
         // cairo -i return(frames_len=idx, frames=arr_frames);
-        // cairo -d 
+        // cairo -d
        return (idx=idx);
     }
 
@@ -351,6 +351,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     let p_0 = Perceptibles(
         self_physics_state     = last_frame.agent_0.physics_state,
         self_body_state        = last_frame.agent_0.body_state,
+        self_combo             = last_frame.agent_0.combo,
         opponent_physics_state = last_frame.agent_1.physics_state,
         opponent_body_state    = last_frame.agent_1.body_state,
     );
@@ -360,6 +361,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     let p_1 = Perceptibles(
         self_physics_state     = last_frame.agent_1.physics_state,
         self_body_state        = last_frame.agent_1.body_state,
+        self_combo             = last_frame.agent_1.combo,
         opponent_physics_state = last_frame.agent_0.physics_state,
         opponent_body_state    = last_frame.agent_0.body_state,
     );
@@ -484,7 +486,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             stimulus      = stimulus_0,
             hitboxes      = hitboxes_0,
             combo         = Combo(
-                combo_index   = combos_0_new.current_combo, 
+                combo_index   = combos_0_new.current_combo,
                 action_index  = combos_0_new.combo_counter
                 ),
         ),
@@ -496,7 +498,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             stimulus      = stimulus_1,
             hitboxes      = hitboxes_1,
             combo         = Combo(
-                combo_index   = combos_1_new.current_combo, 
+                combo_index   = combos_1_new.current_combo,
                 action_index  = combos_1_new.combo_counter
                 ),
         )
@@ -543,7 +545,7 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         agent_0_stimulus : felt,
         agent_0_action: felt,
         agent_0_character_type: felt,
-        
+
         agent_1_body_state_state: felt,
         agent_1_body_state_counter: felt,
         agent_1_body_state_integrity: felt,
@@ -557,11 +559,11 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         agent_1_physics_state_vel_y: felt,
         agent_1_physics_state_acc_x: felt,
         agent_1_physics_state_acc_y: felt,
-        
+
         agent_1_stimulus : felt,
         agent_1_character_type: felt,
 
-        
+
         combos_offset_1_len: felt,
         combos_offset_1: felt*,
         combos_1_len: felt,
@@ -572,7 +574,7 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         agent_1_state_machine_offset: felt*,
         agent_1_state_machine_len: felt,
         agent_1_state_machine: Tree*,
-        
+
         agent_1_mental_state: felt,
         agent_1_conditions_offset_len: felt,
         agent_1_conditions_offset: felt*,
@@ -651,10 +653,14 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
     // Perception Phase
     // (given physics states and body states, produce perceptibles)
     //
-
+    let combo_1 = Combo(
+        combo_index = current_combo_1,
+        action_index = combo_counter_1
+    );
     let p_1 = Perceptibles(
         self_physics_state     = agent_1_physics_state,
         self_body_state        = agent_1_body_state,
+        self_combo             = combo_1,
         opponent_physics_state = agent_0_physics_state,
         opponent_body_state    = agent_0_body_state,
     );
