@@ -69,6 +69,10 @@ const DraggableLayer = ({
                 <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
+                    style={{
+                        ...provided.draggableProps.style,
+                        position: 'static',
+                    }}
                     {...provided.dragHandleProps}
                 >
                     <Layer
@@ -399,7 +403,7 @@ const Gambit = ({
 
             <Grid container>
                 <DragDropContext onDragEnd={onDragEnd}>
-                    <Droppable droppableId="list">
+                    <Droppable droppableId="droppable">
                         {(provided) => (
                             <div
                                 style={{ width: '100%' }}
