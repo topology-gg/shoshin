@@ -6,17 +6,49 @@ import { Condition, generateConditionKey } from './Condition';
 import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
 
-//TODO - make conditions appendable, allow actions to be combos
+//TODO - make conditions appendable,
 export interface Layer {
     condition: Condition;
-    action: number;
+    action: {
+        //Id is either that action decimal number or combo decimal number (both are defined in shoshin smart contracts)
+        id: number;
+        isCombo: boolean;
+        comboDuration: number;
+    };
 }
 
+const getActionCondition = (
+    layer: Layer,
+    layerIndex: number,
+    character: number
+) => {
+    let key = Object.keys(CHARACTER_ACTIONS_DETAIL[character]).find((key) => {
+        return CHARACTER_ACTIONS_DETAIL[character][key].id == layer.action.id;
+    });
+
+    console.log('action id ', layer.action.id);
+    console.log('key', key);
+    const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration - 1;
+
+    let terminatingCondition;
+    if (key == 'MoveForward' || key == 'MoveBackward') {
+        return (terminatingCondition = getNotCondition(
+            layerIndex,
+            layer.condition
+        ));
+    } else {
+        return (terminatingCondition = getIsFinishedCondition(
+            duration,
+            layerIndex
+        ));
+    }
+};
 //given layers gets all needed mental states, conditions and trees to build an agent using the state machine structure
 export const layersToAgentComponents = (
     layers: Layer[],
     character: number
 ): { mentalStates: MentalState[]; conditions: Condition[]; trees: Tree[] } => {
+    console.log('layers', layers);
     const startMentalState: MentalState = {
         state: 'Start',
         action: 0,
@@ -26,30 +58,25 @@ export const layersToAgentComponents = (
         ...layers.map((layer, i) => {
             return {
                 state: `ms_${i}`,
-                action: layer.action,
+                action: layer.action.id,
             };
         }),
     ];
 
     let unflattenedConditions = layers.map((layer, i) => {
         //action to bodystate
-        const bodyState = actionstoBodyState[character][layer.action];
+        const bodyState = actionstoBodyState[character][layer.action.id];
         //get amount of frames to wait
 
-        let key = Object.keys(CHARACTER_ACTIONS_DETAIL[character]).find(
-            (key) => {
-                return (
-                    CHARACTER_ACTIONS_DETAIL[character][key].id == layer.action
-                );
-            }
-        );
-        const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration - 1;
-
+        //if combo, we need to get combo length, and put in the action for the node
         let terminatingCondition;
-        if (key == 'MoveForward' || key == 'MoveBackward') {
-            terminatingCondition = getNotCondition(i, layer.condition);
+        if (layer.action.isCombo == true) {
+            terminatingCondition = getIsComboFinishedCondition(
+                layer.action.comboDuration,
+                layer.action.id
+            );
         } else {
-            terminatingCondition = getIsFinishedCondition(duration, i);
+            terminatingCondition = getActionCondition(layer, i, character);
         }
 
         // get character specific bodystates
@@ -94,6 +121,7 @@ const conditionKeyEncoding = {
     finished: 808,
     not: 303,
 };
+
 //condtions to transition to action
 //ms names to transition to
 const getRootNode = (conditions: Condition[], mentalStates: MentalState[]) => {
@@ -202,6 +230,35 @@ const getIsFinishedCondition = (duration: number, id: number) => {
             },
         ],
         displayName: 'is_action_finished',
+        key: `${conditionKeyEncoding.finished}${id}`,
+    };
+};
+
+const getIsComboFinishedCondition = (comboDuration: number, id: number) => {
+    return {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: '13',
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: comboDuration,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'is_combo_finished',
         key: `${conditionKeyEncoding.finished}${id}`,
     };
 };
@@ -454,5 +511,9 @@ const exampleMS = [
 export const defaultLayer: Layer = {
     //@ts-ignore
     condition: alwaysTrueCondition,
-    action: 0,
+    action: {
+        id: 0,
+        isCombo: false,
+        comboDuration: -1,
+    },
 };

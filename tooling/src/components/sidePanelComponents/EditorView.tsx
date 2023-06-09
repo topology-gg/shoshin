@@ -152,6 +152,7 @@ const EditorView = ({
                         isReadOnly={isReadOnly}
                         character={character}
                         conditions={conditions}
+                        combos={combos}
                     />
                 );
             }

@@ -786,7 +786,7 @@ export default function Home() {
         //todo remove trees
         return buildAgent(
             generatedMs,
-            [],
+            combos,
             generatedTrees,
             generatedConditions,
             0,

@@ -33,6 +33,7 @@ interface GambitProps {
     setLayers: (layers: Layer[]) => void;
     character: Character;
     conditions: Condition[];
+    combos: number[][];
 }
 
 interface LayerProps {
@@ -41,8 +42,13 @@ interface LayerProps {
     isReadOnly: boolean;
     character: Character;
     conditions: Condition[];
+    combos: number[][];
     handleRemoveLayer: (index: number) => void;
-    handleChooseAction: (actionName: string) => void;
+    handleChooseAction: (
+        actionName: string,
+        isCombo: boolean,
+        comboDuration: number
+    ) => void;
     handleChooseCondition: (condition: Condition) => void;
 }
 
@@ -52,6 +58,7 @@ const DraggableLayer = ({
     isReadOnly,
     character,
     conditions,
+    combos,
     handleChooseAction,
     handleChooseCondition,
     handleRemoveLayer,
@@ -70,6 +77,7 @@ const DraggableLayer = ({
                         isReadOnly={isReadOnly}
                         character={character}
                         conditions={conditions}
+                        combos={combos}
                         handleChooseAction={handleChooseAction}
                         handleChooseCondition={handleChooseCondition}
                         handleRemoveLayer={handleRemoveLayer}
@@ -86,6 +94,7 @@ const Layer = ({
     isReadOnly,
     character,
     conditions,
+    combos,
     handleChooseAction,
     handleChooseCondition,
     handleRemoveLayer,
@@ -105,8 +114,24 @@ const Layer = ({
         isNaN(parseInt(a))
     );
 
+    combos.forEach((_, i) => {
+        actions.push(`Combo ${i}`);
+    });
+
     const onActionSelect = (action: string) => {
-        handleChooseAction(action);
+        console.log('action onActionSelect', action);
+        if (!action.includes('Combo')) {
+            handleChooseAction(action, false, -1);
+        } else {
+            let comboNumber = parseInt(action.split(' ')[1]);
+            const comboDuration = combos[comboNumber].length;
+            handleChooseAction(
+                (101 + comboNumber).toString(),
+                true,
+                comboDuration
+            );
+        }
+
         setAnchorEl(null);
     };
 
@@ -200,7 +225,7 @@ const Layer = ({
                         disabled={isReadOnly}
                     >
                         <span style={{ marginRight: '7px' }}>&#129354;</span>{' '}
-                        {actionToStr(layer.action, characterIndex)}
+                        {actionToStr(layer.action.id, characterIndex)}
                     </Button>
                 </Grid>
                 <Menu
@@ -241,6 +266,7 @@ const Gambit = ({
     setLayers,
     character,
     conditions,
+    combos,
 }: GambitProps) => {
     const handleCreateLayer = () => {
         setLayers([defaultLayer, ...layers]);
@@ -297,12 +323,22 @@ const Gambit = ({
         setLayers(updatedArray);
     };
 
-    const handleChooseAction = (actionName: string) => {
+    const handleChooseAction = (
+        actionName: string,
+        isCombo: boolean,
+        comboDuration: number
+    ) => {
         let updatedLayers = layers.map((layer, index) => {
             if (index == currentMenu) {
                 return {
                     ...layer,
-                    action: CHARACTERS_ACTIONS[characterIndex][actionName],
+                    action: {
+                        id: isCombo
+                            ? actionName
+                            : CHARACTERS_ACTIONS[characterIndex][actionName],
+                        isCombo,
+                        comboDuration,
+                    },
                 };
             }
             return layer;
@@ -335,6 +371,7 @@ const Gambit = ({
                 character={character}
                 conditions={conditions}
                 handleChooseCondition={handleChooseCondition}
+                combos={combos}
             />
         ));
     });
