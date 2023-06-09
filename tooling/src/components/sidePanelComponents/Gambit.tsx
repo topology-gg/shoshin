@@ -119,7 +119,6 @@ const Layer = ({
     });
 
     const onActionSelect = (action: string) => {
-        console.log('action onActionSelect', action);
         if (!action.includes('Combo')) {
             handleChooseAction(action, false, -1);
         } else {
@@ -319,7 +318,6 @@ const Gambit = ({
         let updatedArray = [...layers];
         updatedArray.splice(index, 1);
 
-        console.log(updatedArray);
         setLayers(updatedArray);
     };
 

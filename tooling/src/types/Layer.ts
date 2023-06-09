@@ -26,8 +26,6 @@ const getActionCondition = (
         return CHARACTER_ACTIONS_DETAIL[character][key].id == layer.action.id;
     });
 
-    console.log('action id ', layer.action.id);
-    console.log('key', key);
     const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration - 1;
 
     let terminatingCondition;
@@ -48,7 +46,6 @@ export const layersToAgentComponents = (
     layers: Layer[],
     character: number
 ): { mentalStates: MentalState[]; conditions: Condition[]; trees: Tree[] } => {
-    console.log('layers', layers);
     const startMentalState: MentalState = {
         state: 'Start',
         action: 0,
