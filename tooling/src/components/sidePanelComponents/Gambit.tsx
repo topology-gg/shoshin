@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     Button,
@@ -9,13 +9,9 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Menu from '@mui/material/Menu';
-import { MentalState } from '../../types/MentalState';
 import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
-import { getMentalStatesNames } from '../../types/Tree';
-import MentalStatesGraph from './MentalStatesGraph';
 import BlurrableButton from '../ui/BlurrableButton';
 import { Layer, defaultLayer } from '../../types/Layer';
 import { Condition } from '../../types/Condition';
@@ -68,8 +64,6 @@ const DraggableLayer = ({
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                 >
-                    {' '}
-                    <div>Test</div>
                     <Layer
                         layer={layer}
                         index={index}
@@ -154,23 +148,28 @@ const Layer = ({
                     alignItems: 'center',
                     ml: '2rem',
                     pl: '0.5rem',
+                    width: '100%',
                 }}
             >
-                <BlurrableButton
-                    className={'mentalStateButton'}
-                    key={`${i}`}
-                    id={`condition-btn-${i}`}
-                    onClick={handleConditionClick}
-                    style={{
-                        fontFamily: 'Raleway',
-                        fontSize: '14px',
-                        padding: '8px',
-                        lineHeight: '9px',
-                    }}
-                >
-                    {layer.condition.displayName}
-                </BlurrableButton>
-
+                <Grid item xs={1}>
+                    {i + 1}
+                </Grid>
+                <Grid item xs={4}>
+                    <BlurrableButton
+                        className={'mentalStateButton'}
+                        key={`${i}`}
+                        id={`condition-btn-${i}`}
+                        onClick={handleConditionClick}
+                        style={{
+                            fontFamily: 'Raleway',
+                            fontSize: '14px',
+                            padding: '8px',
+                            lineHeight: '9px',
+                        }}
+                    >
+                        {layer.condition.displayName}
+                    </BlurrableButton>
+                </Grid>
                 <Menu
                     id={`conditions-menu-${i}`}
                     anchorEl={conditionAnchorEl}
@@ -191,19 +190,19 @@ const Layer = ({
                         );
                     })}
                 </Menu>
-
-                <Button
-                    id={`actions-button-${i}`}
-                    aria-controls={open ? 'basic-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? 'true' : undefined}
-                    onClick={handleClick}
-                    disabled={isReadOnly}
-                >
-                    <span style={{ marginRight: '7px' }}>&#129354;</span>{' '}
-                    {actionToStr(layer.action, characterIndex)}
-                </Button>
-
+                <Grid item xs={4}>
+                    <Button
+                        id={`actions-button-${i}`}
+                        aria-controls={open ? 'basic-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? 'true' : undefined}
+                        onClick={handleClick}
+                        disabled={isReadOnly}
+                    >
+                        <span style={{ marginRight: '7px' }}>&#129354;</span>{' '}
+                        {actionToStr(layer.action, characterIndex)}
+                    </Button>
+                </Grid>
                 <Menu
                     id={`actions-menu-${i}`}
                     anchorEl={anchorEl}
@@ -222,14 +221,15 @@ const Layer = ({
                         );
                     })}
                 </Menu>
-
-                <IconButton
-                    onClick={(_) => handleRemoveLayer(i)}
-                    disabled={isReadOnly}
-                    style={{ marginLeft: 'auto' }}
-                >
-                    <DeleteIcon sx={{ fontSize: 'small' }} />
-                </IconButton>
+                <Grid item xs={1}>
+                    <IconButton
+                        onClick={(_) => handleRemoveLayer(i)}
+                        disabled={isReadOnly}
+                        style={{ marginLeft: 'auto' }}
+                    >
+                        <DeleteIcon sx={{ fontSize: 'small' }} />
+                    </IconButton>
+                </Grid>
             </Box>
         </Grid>
     );
@@ -259,14 +259,14 @@ const Gambit = ({
                     justifyContent: 'flex-start',
                 }}
             >
-                <IconButton
+                <Button
                     onClick={(_) => {
                         handleCreateLayer();
                     }}
                     disabled={isReadOnly}
                 >
-                    <AddIcon />
-                </IconButton>
+                    {'Add Layer'} <AddIcon />
+                </Button>
             </Grid>
         </>
     );
@@ -290,8 +290,11 @@ const Gambit = ({
     }
 
     const handleRemoveLayer = (index: number) => {
-        //TODO check if deleting last layer breaks things
-        setLayers(layers.splice(index, 1));
+        let updatedArray = [...layers];
+        updatedArray.splice(index, 1);
+
+        console.log(updatedArray);
+        setLayers(updatedArray);
     };
 
     const handleChooseAction = (actionName: string) => {
@@ -364,9 +367,34 @@ const Gambit = ({
                     <Droppable droppableId="list">
                         {(provided) => (
                             <div
+                                style={{ width: '100%' }}
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
                             >
+                                <Grid container>
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            ml: '2rem',
+                                            pl: '0.5rem',
+                                            width: '100%',
+                                        }}
+                                    >
+                                        <Grid item xs={1}>
+                                            Order
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            Condition
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            Action
+                                        </Grid>
+                                        <Grid item xs={1}>
+                                            Remove
+                                        </Grid>
+                                    </Box>
+                                </Grid>
                                 <LayerList layers={layers} />
                                 {provided.placeholder}
                             </div>

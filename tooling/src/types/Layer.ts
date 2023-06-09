@@ -45,11 +45,17 @@ export const layersToAgentComponents = (
         );
         const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration - 1;
 
-        const isFinished = getIsFinishedCondition(duration, i);
+        let terminatingCondition;
+        if (key == 'MoveForward' || key == 'MoveBackward') {
+            terminatingCondition = getNotCondition(i, layer.condition);
+        } else {
+            terminatingCondition = getIsFinishedCondition(duration, i);
+        }
+
         // get character specific bodystates
         const isInterrupted = getInterruptedCondition(character, i);
 
-        return [isFinished, isInterrupted];
+        return [terminatingCondition, isInterrupted];
     });
 
     const nodes = generatedMentalStates.map((ms, index) => {
@@ -81,11 +87,12 @@ export const layersToAgentComponents = (
     return { mentalStates, conditions: combined, trees };
 };
 
-// Condition keys have to be a number, and unique
-// Unique encoding for each condition type and condition per index
+// Condition keys have to be a unique number
+// Unique encoding for each condition type and layer index is unique amongst layers
 const conditionKeyEncoding = {
-    interrupt: 555,
-    finished: 444,
+    interrupt: 909,
+    finished: 808,
+    not: 303,
 };
 //condtions to transition to action
 //ms names to transition to
@@ -146,6 +153,28 @@ const getNode = (
             branch: 'right',
         },
     ];
+};
+
+const getNotCondition = (id: number, condition: Condition) => {
+    return {
+        elements: [
+            {
+                value: '!',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            ...condition.elements,
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'is_condition_not_false',
+        key: `${conditionKeyEncoding.finished}${id}`,
+    };
 };
 
 const getIsFinishedCondition = (duration: number, id: number) => {
