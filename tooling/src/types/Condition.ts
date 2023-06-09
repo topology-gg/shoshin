@@ -107,7 +107,9 @@ export enum Perceptible {
     SelfSta = 9,
     SelfBodyState = 10,
     SelfBodyCounter = 11,
-    SelfFatigued = 12,
+    SelfCurrentCombo = 12,
+    SelfComboCounter = 13,
+    // SelfFatigued = 12,
     OpponentX = 101,
     OpponentY = 102,
     OpponentVelX = 103,
@@ -119,7 +121,7 @@ export enum Perceptible {
     OpponentSta = 109,
     OpponentBodyState = 110,
     OpponentBodyCounter = 111,
-    OpponentFatigued = 112,
+    // OpponentFatigued = 112,
 }
 export const PERCEPTIBLE_KEYS: number[] = Object.keys(Perceptible)
     .map((k) => parseInt(k))
