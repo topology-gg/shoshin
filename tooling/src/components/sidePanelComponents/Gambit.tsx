@@ -361,7 +361,7 @@ const Gambit = ({
 
             <Grid container>
                 <DragDropContext onDragEnd={onDragEnd}>
-                    <Droppable droppableId="list" style={{ transform: 'none' }}>
+                    <Droppable droppableId="list">
                         {(provided) => (
                             <div
                                 ref={provided.innerRef}
