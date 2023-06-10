@@ -3,7 +3,12 @@ import {
     CHARACTER_ACTIONS_DETAIL,
     actionstoBodyState,
 } from '../constants/constants';
-import { Condition, ElementType, Operator, generateConditionKey } from './Condition';
+import {
+    Condition,
+    ElementType,
+    Operator,
+    generateConditionKey,
+} from './Condition';
 import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
 
@@ -28,7 +33,7 @@ const getActionCondition = (
     });
 
     const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration - 1;
-    console.log(character, key, duration)
+    console.log(character, key, duration);
 
     let terminatingCondition;
     if (key == 'MoveForward' || key == 'MoveBackward') {
@@ -67,20 +72,21 @@ export const layersToAgentComponents = (
         const bodyState = actionstoBodyState[character][layer.action.id];
 
         let terminatingCondition;
-        const action_name = CHARACTERS_ACTIONS[character][layer.action.id]
+        const action_name = CHARACTERS_ACTIONS[character][layer.action.id];
         if (action_name == 'Block') {
             // block needs to be handled differently because its body counter saturates at 3 until intent changes
             // when blocking, termination condition is the inverse of the condition for this layer
-            terminatingCondition = getInverseCondition(layer.condition, layer.action.id);
-        }
-        else if (layer.action.isCombo == true) {
+            terminatingCondition = getInverseCondition(
+                layer.condition,
+                layer.action.id
+            );
+        } else if (layer.action.isCombo == true) {
             //if combo, we need to get combo length, and put in the action for the node
             terminatingCondition = getIsComboFinishedCondition(
                 layer.action.comboDuration,
                 layer.action.id
             );
-        }
-        else {
+        } else {
             terminatingCondition = getActionCondition(layer, i, character);
         }
 
@@ -217,7 +223,7 @@ const getInverseCondition = (condition: Condition, id: number): Condition => {
         elements: [
             {
                 value: Operator.Not,
-                type: ElementType.Operator
+                type: ElementType.Operator,
             },
             {
                 value: Operator.OpenParenthesis,
@@ -231,8 +237,8 @@ const getInverseCondition = (condition: Condition, id: number): Condition => {
         ],
         displayName: 'inverse_'.concat(condition.displayName),
         key: `${conditionKeyEncoding.inverse}${id}`,
-    }
-}
+    };
+};
 
 const getIsFinishedCondition = (duration: number, id: number) => {
     return {
