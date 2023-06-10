@@ -159,6 +159,8 @@ export default function Home() {
 
     const [layers, setLayers] = useState<Layer[]>([]);
 
+    const [createLayerKeyCount, setCreateLayerKeyCount] = useState<number>(0);
+
     // React states for warnings
     const [isConditionWarningTextOn, setConditionWarningTextOn] =
         useState<boolean>(false);
@@ -225,8 +227,10 @@ export default function Home() {
                 // in Editor tab
                 setWorkingTab((prev) => {
                     if (prev == EditorTabName.Profile) return prev;
-                    else if (prev == EditorTabName.Mind)
+                    else if (prev == EditorTabName.Gambit)
                         return EditorTabName.Profile;
+                    else if (prev == EditorTabName.Mind)
+                        return EditorTabName.Gambit;
                     else if (prev == EditorTabName.Combos)
                         return EditorTabName.Mind;
                     else return EditorTabName.Combos;
@@ -250,8 +254,9 @@ export default function Home() {
                         return EditorTabName.Conditions;
                     else if (prev == EditorTabName.Mind)
                         return EditorTabName.Combos;
-                    else if (prev == EditorTabName.Profile)
+                    else if (prev == EditorTabName.Gambit)
                         return EditorTabName.Mind;
+                    else return EditorTabName.Gambit;
                 });
             } else if (swipeableViewIndex == 2) {
                 // in Reference tab
@@ -262,8 +267,12 @@ export default function Home() {
             }
         } else if (e.key == '/') {
             if (swipeableViewIndex == 1 && treeEditor != 0) {
-                console.log('new thought!');
+                console.log('new thought');
                 setNewThoughtClicks((prev) => prev + 1);
+            }
+            else if (swipeableViewIndex == 1 && workingTab == EditorTabName.Gambit && editorMode != EditorMode.ReadOnly) {
+                console.log('new layer');
+                setCreateLayerKeyCount((prev) => prev + 1);
             }
         }
     };
@@ -971,6 +980,7 @@ export default function Home() {
                     newThoughtClicks={newThoughtClicks}
                     layers={layers}
                     setLayers={setLayers}
+                    createLayerKeyCount={createLayerKeyCount}
                 />
             </CharacterContext.Provider>
         </LayerContext.Provider>
@@ -1195,9 +1205,12 @@ export default function Home() {
                   { key: ';', keyName: ';', description: '❮ Tab' },
                   { key: "'", keyName: "'", description: '❯ Tab' },
               ].concat(
-                  treeEditor != 0
-                      ? [{ key: '/', keyName: '/', description: 'New Thought' }]
-                      : []
+                treeEditor != 0
+                    ? [{ key: '/', keyName: '/', description: 'New Thought' }]
+                    :
+                workingTab == EditorTabName.Gambit && editorMode != EditorMode.ReadOnly ? [
+                    { key: '/', keyName: '/', description: 'New Layer' },
+                ] : []
               )
             : swipeableViewIndex == 2
             ? [

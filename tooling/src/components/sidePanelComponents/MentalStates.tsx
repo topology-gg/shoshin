@@ -248,7 +248,7 @@ const MentalStates = ({
                                 onMouseOut={() => highlightMentalState(-1)}
                             >
                                 <BlurrableButton
-                                    className={'mentalStateButton'}
+                                    className={'gambitButton mentalStateButton'}
                                     key={`${i}`}
                                     onClick={() => handleClickTreeEditor(i + 1)}
                                     style={{

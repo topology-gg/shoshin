@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Button,
@@ -11,11 +11,12 @@ import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Menu from '@mui/material/Menu';
-import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
+import { Action, Character, CHARACTERS_ACTIONS } from '../../constants/constants';
 import BlurrableButton from '../ui/BlurrableButton';
 import { Layer, defaultLayer } from '../../types/Layer';
 import { Condition } from '../../types/Condition';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import BlurrableListItemText from '../ui/BlurrableListItemText';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 let currentMenu = 0;
@@ -27,6 +28,30 @@ const actionToStr = (action: number, characterIndex) => {
     }
     return `Combo ${action - 101}`;
 };
+
+const actionIndexToAction = (action: number, characterIndex): Action => {
+    if (action < 100) {
+        const name = CHARACTERS_ACTIONS[characterIndex][action]?.replace('_', ' ')
+        console.log('name=', name)
+        return {
+            name: name,
+            // unicode: '&#129354;',
+            unicode:
+                name == 'Rest' ? '\u{1F9D8}' :
+                name == 'Block' ? '\u{1F6E1}' :
+                name.includes('Move') ? '\u{1F6B6}' :
+                name.includes('Dash') ? '\u{1F3C3}' :
+                '\u{1F5E1}',
+        }
+    }
+    else {
+        return {
+            name: `Combo ${action - 101}`,
+            unicode: '\u{1F4BE}',
+        }
+    }
+};
+
 interface GambitProps {
     layers: Layer[];
     isReadOnly: boolean;
@@ -34,6 +59,7 @@ interface GambitProps {
     character: Character;
     conditions: Condition[];
     combos: number[][];
+    createLayerKeyCount: number;
 }
 
 interface LayerProps {
@@ -167,6 +193,8 @@ const Layer = ({
         setConditionAnchorEl(null);
     };
 
+    const action: Action = actionIndexToAction(layer.action.id, characterIndex)
+
     return (
         <Grid xs={12}>
             <Box
@@ -174,27 +202,33 @@ const Layer = ({
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    ml: '2rem',
-                    pl: '0.5rem',
+                    // ml: '2rem',
+                    // pl: '0.5rem',
                     width: '100%',
+                    border: '1px solid #ddd',
+                    marginBottom: '4px',
+                    borderRadius: '20px',
                 }}
             >
                 <Grid item xs={1}>
-                    {i + 1}
+                    <div style={{textAlign:'center', fontSize:'13px'}}>{i + 1}</div>
                 </Grid>
                 <Grid item xs={4}>
                     <BlurrableButton
-                        className={'mentalStateButton'}
+                        className={'gambitButton conditionButton'}
                         key={`${i}`}
                         id={`condition-btn-${i}`}
                         onClick={handleConditionClick}
                         style={{
                             fontFamily: 'Raleway',
                             fontSize: '14px',
-                            padding: '8px',
+                            padding: '8px 14px',
                             lineHeight: '9px',
                         }}
                     >
+                        <span style={{ marginRight: '7px' }}>
+                            {'\u{1F4D0}'}
+                        </span>
                         {layer.condition.displayName}
                     </BlurrableButton>
                 </Grid>
@@ -207,29 +241,36 @@ const Layer = ({
                     {conditions.map((condition) => {
                         return (
                             <MenuItem>
-                                <ListItemText
-                                    onClick={(e) =>
+                                <BlurrableListItemText
+                                    onClick={(e) => {
                                         onConditionSelect(condition)
-                                    }
+                                    }}
                                 >
                                     {condition.displayName}
-                                </ListItemText>
+                                </BlurrableListItemText>
                             </MenuItem>
                         );
                     })}
                 </Menu>
-                <Grid item xs={4}>
-                    <Button
-                        id={`actions-button-${i}`}
-                        aria-controls={open ? 'basic-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? 'true' : undefined}
+                <Grid item xs={6}>
+                    <BlurrableButton
+                        className={'gambitButton actionButton'}
+                        key={`${i}`}
+                        id={`condition-btn-${i}`}
                         onClick={handleClick}
-                        disabled={isReadOnly}
+                        style={{
+                            fontFamily: 'Raleway',
+                            fontSize: '14px',
+                            padding: '8px 14px',
+                            lineHeight: '9px',
+                        }}
                     >
-                        <span style={{ marginRight: '7px' }}>&#129354;</span>{' '}
-                        {actionToStr(layer.action.id, characterIndex)}
-                    </Button>
+                        <span style={{ marginRight: '7px' }}>
+                            {action.unicode}
+                        </span>
+                        {' '}
+                        {action.name}
+                    </BlurrableButton>
                 </Grid>
                 <Menu
                     id={`actions-menu-${i}`}
@@ -240,11 +281,11 @@ const Layer = ({
                     {actions.map((action) => {
                         return (
                             <MenuItem>
-                                <ListItemText
+                                <BlurrableListItemText
                                     onClick={(e) => onActionSelect(action)}
                                 >
                                     {action.replaceAll('_', ' ')}
-                                </ListItemText>
+                                </BlurrableListItemText>
                             </MenuItem>
                         );
                     })}
@@ -255,7 +296,7 @@ const Layer = ({
                         disabled={isReadOnly}
                         style={{ marginLeft: 'auto' }}
                     >
-                        <DeleteIcon sx={{ fontSize: 'small' }} />
+                        <DeleteIcon sx={{ fontSize:'16px', color:'#888' }} />
                     </IconButton>
                 </Grid>
             </Box>
@@ -270,9 +311,16 @@ const Gambit = ({
     character,
     conditions,
     combos,
+    createLayerKeyCount,
 }: GambitProps) => {
+
+    useEffect(() => {
+        handleCreateLayer ();
+    }, [createLayerKeyCount])
+
     const handleCreateLayer = () => {
-        setLayers([defaultLayer, ...layers]);
+        // insert layer at lowest priority
+        setLayers([...layers, defaultLayer]);
     };
 
     let characterIndex = Object.keys(Character).indexOf(character);
@@ -294,7 +342,7 @@ const Gambit = ({
                     }}
                     disabled={isReadOnly}
                 >
-                    {'Add Layer'} <AddIcon />
+                    <AddIcon sx={{mr:'3px'}}/>{'Layer'}
                 </Button>
             </Grid>
         </>
@@ -396,6 +444,7 @@ const Gambit = ({
                 style={{
                     display: 'flex',
                     flexDirection: 'row',
+                    marginBottom:'4px',
                 }}
             >
                 {isReadOnly ? <></> : componentAddLayer}
@@ -410,30 +459,33 @@ const Gambit = ({
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
                             >
-                                <Grid container>
+                                <Grid container sx={{mb:1}}>
                                     <Box
                                         sx={{
                                             display: 'flex',
                                             alignItems: 'center',
-                                            ml: '2rem',
-                                            pl: '0.5rem',
+                                            // ml: '2rem',
+                                            // pl: '0.5rem',
                                             width: '100%',
+                                            color: '#999',
+                                            fontSize:'13px',
                                         }}
                                     >
                                         <Grid item xs={1}>
-                                            Order
+                                            <div style={{textAlign:'center'}}>Order</div>
                                         </Grid>
                                         <Grid item xs={4}>
-                                            Condition
+                                            <div style={{paddingLeft:'8px'}}>Condition</div>
                                         </Grid>
-                                        <Grid item xs={4}>
-                                            Action
+                                        <Grid item xs={6}>
+                                        <div style={{paddingLeft:'8px'}}>Action</div>
                                         </Grid>
                                         <Grid item xs={1}>
-                                            Remove
+                                            {/* Remove */}
                                         </Grid>
                                     </Box>
                                 </Grid>
+
                                 <LayerList layers={layers} />
                                 {provided.placeholder}
                             </div>

@@ -153,6 +153,11 @@ export enum Character {
     Antoc = 'Antoc',
 }
 
+export interface Action {
+    name: string,
+    unicode: string
+}
+
 export enum KeysToActionsJessica {
     '-' = 'Rest',
     'J' = 'Slash',
