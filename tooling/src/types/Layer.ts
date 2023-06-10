@@ -1,8 +1,9 @@
 import {
+    CHARACTERS_ACTIONS,
     CHARACTER_ACTIONS_DETAIL,
     actionstoBodyState,
 } from '../constants/constants';
-import { Condition, generateConditionKey } from './Condition';
+import { Condition, ElementType, Operator, generateConditionKey } from './Condition';
 import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
 
@@ -27,6 +28,7 @@ const getActionCondition = (
     });
 
     const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration - 1;
+    console.log(character, key, duration)
 
     let terminatingCondition;
     if (key == 'MoveForward' || key == 'MoveBackward') {
@@ -63,16 +65,22 @@ export const layersToAgentComponents = (
     let unflattenedConditions = layers.map((layer, i) => {
         //action to bodystate
         const bodyState = actionstoBodyState[character][layer.action.id];
-        //get amount of frames to wait
 
-        //if combo, we need to get combo length, and put in the action for the node
         let terminatingCondition;
-        if (layer.action.isCombo == true) {
+        const action_name = CHARACTERS_ACTIONS[character][layer.action.id]
+        if (action_name == 'Block') {
+            // block needs to be handled differently because its body counter saturates at 3 until intent changes
+            // when blocking, termination condition is the inverse of the condition for this layer
+            terminatingCondition = getInverseCondition(layer.condition, layer.action.id);
+        }
+        else if (layer.action.isCombo == true) {
+            //if combo, we need to get combo length, and put in the action for the node
             terminatingCondition = getIsComboFinishedCondition(
                 layer.action.comboDuration,
                 layer.action.id
             );
-        } else {
+        }
+        else {
             terminatingCondition = getActionCondition(layer, i, character);
         }
 
@@ -114,6 +122,7 @@ export const layersToAgentComponents = (
 // Condition keys have to be a unique number
 // Unique encoding for each condition type and layer index is unique amongst layers
 const conditionKeyEncoding = {
+    inverse: 12321,
     interrupt: 909,
     finished: 808,
     not: 303,
@@ -201,6 +210,29 @@ const getNotCondition = (id: number, condition: Condition) => {
         key: `${conditionKeyEncoding.finished}${id}`,
     };
 };
+
+const getInverseCondition = (condition: Condition, id: number): Condition => {
+    // create and return !(condition)
+    return {
+        elements: [
+            {
+                value: Operator.Not,
+                type: ElementType.Operator
+            },
+            {
+                value: Operator.OpenParenthesis,
+                type: ElementType.Operator,
+            },
+            ...condition.elements,
+            {
+                value: Operator.CloseParenthesis,
+                type: ElementType.Operator,
+            },
+        ],
+        displayName: 'inverse_'.concat(condition.displayName),
+        key: `${conditionKeyEncoding.inverse}${id}`,
+    }
+}
 
 const getIsFinishedCondition = (duration: number, id: number) => {
     return {
