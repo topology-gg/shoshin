@@ -322,7 +322,6 @@ const Gambit = ({
     conditions,
     combos,
 }: GambitProps) => {
-
     const handleCreateLayer = () => {
         // insert layer at lowest priority
         setLayers([...layers, defaultLayer]);

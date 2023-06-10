@@ -91,7 +91,11 @@ import {
 } from '../src/constants/starter_agent';
 import MidScreenKeybinding from '../src/components/MidScreenKeybinding';
 import { KeyboardShortcut } from '../src/types/UI';
-import { Layer, defaultLayer, layersToAgentComponents } from '../src/types/Layer';
+import {
+    Layer,
+    defaultLayer,
+    layersToAgentComponents,
+} from '../src/types/Layer';
 
 //@ts-ignore
 const Game = dynamic(() => import('../src/Game/PhaserGame'), {
