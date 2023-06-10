@@ -319,7 +319,7 @@ export const ACTIONS_ICON_MAP = {
     DashBackward: 'keyboard_double_arrow_left',
 };
 
-export const MAX_COMBO_SIZE = 10;
+export const MAX_COMBO_SIZE = 20;
 
 export const INITIAL_MENTAL_STATES: MentalState[] = [
     { state: 'MS IDLE', action: ActionsJessica['Rest'] },
