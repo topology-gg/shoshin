@@ -11,7 +11,11 @@ import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Menu from '@mui/material/Menu';
-import { Action, Character, CHARACTERS_ACTIONS } from '../../constants/constants';
+import {
+    Action,
+    Character,
+    CHARACTERS_ACTIONS,
+} from '../../constants/constants';
 import BlurrableButton from '../ui/BlurrableButton';
 import { Layer, defaultLayer } from '../../types/Layer';
 import { Condition } from '../../types/Condition';
@@ -31,24 +35,30 @@ const actionToStr = (action: number, characterIndex) => {
 
 const actionIndexToAction = (action: number, characterIndex): Action => {
     if (action < 100) {
-        const name = CHARACTERS_ACTIONS[characterIndex][action]?.replace('_', ' ')
-        console.log('name=', name)
+        const name = CHARACTERS_ACTIONS[characterIndex][action]?.replace(
+            '_',
+            ' '
+        );
+        console.log('name=', name);
         return {
             name: name,
             // unicode: '&#129354;',
             unicode:
-                name == 'Rest' ? '\u{1F9D8}' :
-                name == 'Block' ? '\u{1F6E1}' :
-                name.includes('Move') ? '\u{1F6B6}' :
-                name.includes('Dash') ? '\u{1F3C3}' :
-                '\u{1F5E1}',
-        }
-    }
-    else {
+                name == 'Rest'
+                    ? '\u{1F9D8}'
+                    : name == 'Block'
+                    ? '\u{1F6E1}'
+                    : name.includes('Move')
+                    ? '\u{1F6B6}'
+                    : name.includes('Dash')
+                    ? '\u{1F3C3}'
+                    : '\u{1F5E1}',
+        };
+    } else {
         return {
             name: `Combo ${action - 101}`,
             unicode: '\u{1F4BE}',
-        }
+        };
     }
 };
 
@@ -193,7 +203,7 @@ const Layer = ({
         setConditionAnchorEl(null);
     };
 
-    const action: Action = actionIndexToAction(layer.action.id, characterIndex)
+    const action: Action = actionIndexToAction(layer.action.id, characterIndex);
 
     return (
         <Grid xs={12}>
@@ -211,7 +221,9 @@ const Layer = ({
                 }}
             >
                 <Grid item xs={1}>
-                    <div style={{textAlign:'center', fontSize:'13px'}}>{i + 1}</div>
+                    <div style={{ textAlign: 'center', fontSize: '13px' }}>
+                        {i + 1}
+                    </div>
                 </Grid>
                 <Grid item xs={4}>
                     <BlurrableButton
@@ -243,7 +255,7 @@ const Layer = ({
                             <MenuItem>
                                 <BlurrableListItemText
                                     onClick={(e) => {
-                                        onConditionSelect(condition)
+                                        onConditionSelect(condition);
                                     }}
                                 >
                                     {condition.displayName}
@@ -267,8 +279,7 @@ const Layer = ({
                     >
                         <span style={{ marginRight: '7px' }}>
                             {action.unicode}
-                        </span>
-                        {' '}
+                        </span>{' '}
                         {action.name}
                     </BlurrableButton>
                 </Grid>
@@ -296,7 +307,7 @@ const Layer = ({
                         disabled={isReadOnly}
                         style={{ marginLeft: 'auto' }}
                     >
-                        <DeleteIcon sx={{ fontSize:'16px', color:'#888' }} />
+                        <DeleteIcon sx={{ fontSize: '16px', color: '#888' }} />
                     </IconButton>
                 </Grid>
             </Box>
@@ -313,10 +324,9 @@ const Gambit = ({
     combos,
     createLayerKeyCount,
 }: GambitProps) => {
-
     useEffect(() => {
-        handleCreateLayer ();
-    }, [createLayerKeyCount])
+        handleCreateLayer();
+    }, [createLayerKeyCount]);
 
     const handleCreateLayer = () => {
         // insert layer at lowest priority
@@ -342,7 +352,8 @@ const Gambit = ({
                     }}
                     disabled={isReadOnly}
                 >
-                    <AddIcon sx={{mr:'3px'}}/>{'Layer'}
+                    <AddIcon sx={{ mr: '3px' }} />
+                    {'Layer'}
                 </Button>
             </Grid>
         </>
@@ -444,7 +455,7 @@ const Gambit = ({
                 style={{
                     display: 'flex',
                     flexDirection: 'row',
-                    marginBottom:'4px',
+                    marginBottom: '4px',
                 }}
             >
                 {isReadOnly ? <></> : componentAddLayer}
@@ -459,7 +470,7 @@ const Gambit = ({
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
                             >
-                                <Grid container sx={{mb:1}}>
+                                <Grid container sx={{ mb: 1 }}>
                                     <Box
                                         sx={{
                                             display: 'flex',
@@ -468,17 +479,25 @@ const Gambit = ({
                                             // pl: '0.5rem',
                                             width: '100%',
                                             color: '#999',
-                                            fontSize:'13px',
+                                            fontSize: '13px',
                                         }}
                                     >
                                         <Grid item xs={1}>
-                                            <div style={{textAlign:'center'}}>Order</div>
+                                            <div
+                                                style={{ textAlign: 'center' }}
+                                            >
+                                                Order
+                                            </div>
                                         </Grid>
                                         <Grid item xs={4}>
-                                            <div style={{paddingLeft:'8px'}}>Condition</div>
+                                            <div style={{ paddingLeft: '8px' }}>
+                                                Condition
+                                            </div>
                                         </Grid>
                                         <Grid item xs={6}>
-                                        <div style={{paddingLeft:'8px'}}>Action</div>
+                                            <div style={{ paddingLeft: '8px' }}>
+                                                Action
+                                            </div>
                                         </Grid>
                                         <Grid item xs={1}>
                                             {/* Remove */}

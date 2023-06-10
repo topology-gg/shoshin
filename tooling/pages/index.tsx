@@ -269,8 +269,11 @@ export default function Home() {
             if (swipeableViewIndex == 1 && treeEditor != 0) {
                 console.log('new thought');
                 setNewThoughtClicks((prev) => prev + 1);
-            }
-            else if (swipeableViewIndex == 1 && workingTab == EditorTabName.Gambit && editorMode != EditorMode.ReadOnly) {
+            } else if (
+                swipeableViewIndex == 1 &&
+                workingTab == EditorTabName.Gambit &&
+                editorMode != EditorMode.ReadOnly
+            ) {
                 console.log('new layer');
                 setCreateLayerKeyCount((prev) => prev + 1);
             }
@@ -1205,12 +1208,12 @@ export default function Home() {
                   { key: ';', keyName: ';', description: '❮ Tab' },
                   { key: "'", keyName: "'", description: '❯ Tab' },
               ].concat(
-                treeEditor != 0
-                    ? [{ key: '/', keyName: '/', description: 'New Thought' }]
-                    :
-                workingTab == EditorTabName.Gambit && editorMode != EditorMode.ReadOnly ? [
-                    { key: '/', keyName: '/', description: 'New Layer' },
-                ] : []
+                  treeEditor != 0
+                      ? [{ key: '/', keyName: '/', description: 'New Thought' }]
+                      : workingTab == EditorTabName.Gambit &&
+                        editorMode != EditorMode.ReadOnly
+                      ? [{ key: '/', keyName: '/', description: 'New Layer' }]
+                      : []
               )
             : swipeableViewIndex == 2
             ? [

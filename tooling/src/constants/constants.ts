@@ -154,8 +154,8 @@ export enum Character {
 }
 
 export interface Action {
-    name: string,
-    unicode: string
+    name: string;
+    unicode: string;
 }
 
 export enum KeysToActionsJessica {
