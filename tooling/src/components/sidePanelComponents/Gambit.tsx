@@ -39,7 +39,7 @@ const actionIndexToAction = (action: number, characterIndex): Action => {
             '_',
             ' '
         );
-        console.log('name=', name);
+        // console.log('name=', name);
         return {
             name: name,
             // unicode: '&#129354;',
@@ -69,7 +69,6 @@ interface GambitProps {
     character: Character;
     conditions: Condition[];
     combos: number[][];
-    createLayerKeyCount: number;
 }
 
 interface LayerProps {
@@ -322,11 +321,7 @@ const Gambit = ({
     character,
     conditions,
     combos,
-    createLayerKeyCount,
 }: GambitProps) => {
-    useEffect(() => {
-        handleCreateLayer();
-    }, [createLayerKeyCount]);
 
     const handleCreateLayer = () => {
         // insert layer at lowest priority

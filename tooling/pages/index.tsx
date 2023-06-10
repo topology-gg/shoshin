@@ -91,7 +91,7 @@ import {
 } from '../src/constants/starter_agent';
 import MidScreenKeybinding from '../src/components/MidScreenKeybinding';
 import { KeyboardShortcut } from '../src/types/UI';
-import { Layer, layersToAgentComponents } from '../src/types/Layer';
+import { Layer, defaultLayer, layersToAgentComponents } from '../src/types/Layer';
 
 //@ts-ignore
 const Game = dynamic(() => import('../src/Game/PhaserGame'), {
@@ -158,8 +158,6 @@ export default function Home() {
     const [realTimeCharacter, setRealTimeCharacter] = useState<number>(0);
 
     const [layers, setLayers] = useState<Layer[]>([]);
-
-    const [createLayerKeyCount, setCreateLayerKeyCount] = useState<number>(0);
 
     // React states for warnings
     const [isConditionWarningTextOn, setConditionWarningTextOn] =
@@ -275,7 +273,7 @@ export default function Home() {
                 editorMode != EditorMode.ReadOnly
             ) {
                 console.log('new layer');
-                setCreateLayerKeyCount((prev) => prev + 1);
+                setLayers([...layers, defaultLayer]);
             }
         }
     };
@@ -983,7 +981,6 @@ export default function Home() {
                     newThoughtClicks={newThoughtClicks}
                     layers={layers}
                     setLayers={setLayers}
-                    createLayerKeyCount={createLayerKeyCount}
                 />
             </CharacterContext.Provider>
         </LayerContext.Provider>

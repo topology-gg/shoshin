@@ -78,7 +78,6 @@ interface EditorViewProps {
     newThoughtClicks: number;
     layers: Layer[];
     setLayers: (layers: Layer[]) => void;
-    createLayerKeyCount: number;
 }
 
 const EditorView = ({
@@ -126,7 +125,6 @@ const EditorView = ({
     newThoughtClicks,
     layers,
     setLayers,
-    createLayerKeyCount,
 }: EditorViewProps) => {
     const isReadOnly = editorMode == EditorMode.ReadOnly;
     const [openContractInformation, setOpenContractInformation] =
@@ -155,7 +153,6 @@ const EditorView = ({
                         character={character}
                         conditions={conditions}
                         combos={combos}
-                        createLayerKeyCount={createLayerKeyCount}
                     />
                 );
             }
