@@ -22,7 +22,7 @@ namespace ns_antoc_dynamics {
 
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
 
-    const JUMP_VEL_Y_FP = 600 * ns_dynamics.SCALE_FP;
+    const JUMP_VEL_Y_FP = 275 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_antoc_character_dimension {
