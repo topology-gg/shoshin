@@ -203,13 +203,13 @@ func _euler_forward_no_hitbox {range_check_ptr}(
                 assert acc_fp_x = 0;
             }
         } else {
-            // apply gravity
+            // for y-axis, apply gravity
             assert acc_fp_y = ns_dynamics.GRAVITY_ACC_FP;
             assert acc_fp_x = 0;
             assert vel_fp_y = physics_state.vel_fp.y;
 
-            // touchdown
-            if (counter == 9) {
+            // for x-axis, zero velocity if already touched down
+            if (physics_state.pos.y == 0) {
                 assert vel_fp_x = 0;
             } else {
                 assert vel_fp_x = physics_state.vel_fp.x;
