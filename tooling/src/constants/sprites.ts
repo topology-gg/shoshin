@@ -452,5 +452,11 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
                 hitboxOffset: { left: [56, -58], right: [40, -58] },
             },
         ],
+        jump: [
+            {
+                size: [135, 146],
+                hitboxOffset: { left: [56, -58], right: [60, -65] },
+            },
+        ]
     },
 };

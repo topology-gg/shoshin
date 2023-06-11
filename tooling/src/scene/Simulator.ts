@@ -192,6 +192,11 @@ export default class Simulator extends Phaser.Scene {
             'images/jessica/walk_forward/spritesheet.png',
             'images/jessica/walk_forward/spritesheet.json'
         );
+        this.load.atlas(
+            `jessica-jump`,
+            'images/jessica/jump/spritesheet.png',
+            'images/jessica/jump/spritesheet.json'
+        );
 
         this.load.image(
             'arena_bg',
@@ -514,7 +519,7 @@ export default class Simulator extends Phaser.Scene {
         this.setPlayerTwoCharacter(characterType1);
         this.setPlayerOneFrame(agentFrame0);
         this.setPlayerTwoFrame(agentFrame1);
-
+        console.log('agentFrame0:', agentFrame0)
         if (isLast) {
             const integrity_P1 = agentFrame0.body_state.integrity;
             const integrity_P2 = agentFrame1.body_state.integrity;
