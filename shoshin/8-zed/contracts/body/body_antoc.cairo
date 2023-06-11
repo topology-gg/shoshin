@@ -73,6 +73,9 @@ func _body_antoc {range_check_ptr}(
             if (intent == ns_antoc_action.DASH_BACKWARD) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
             }
+            if (intent == ns_antoc_action.JUMP) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // otherwise stay in IDLE but increment counter modulo duration
@@ -273,6 +276,9 @@ func _body_antoc {range_check_ptr}(
             if (intent == ns_antoc_action.DASH_BACKWARD) {
                     return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
             }
+            if (intent == ns_antoc_action.JUMP) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // continue moving forward
@@ -324,6 +330,9 @@ func _body_antoc {range_check_ptr}(
             if (intent == ns_antoc_action.DASH_BACKWARD) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
             }
+            if (intent == ns_antoc_action.JUMP) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // continue moving forward
@@ -352,6 +361,12 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.DASH_FORWARD) {
 
+        if (enough_stamina == TRUE) {
+            if (intent == ns_antoc_action.JUMP) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
+
         // note: not cancellable into attack because of sword's heaviness
         // note: not able to reverse to the opposite dash immediately
         if (counter == ns_antoc_body_state_duration.DASH_FORWARD - 1) {
@@ -369,6 +384,12 @@ func _body_antoc {range_check_ptr}(
     // Dash backward
     //
     if (state == ns_antoc_body_state.DASH_BACKWARD) {
+
+        if (enough_stamina == TRUE) {
+            if (intent == ns_antoc_action.JUMP) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
 
         // note: not cancellable into attack because of sword's heaviness
         // note: not able to reverse to the opposite dash immediately
@@ -404,6 +425,25 @@ func _body_antoc {range_check_ptr}(
 
         // else stay in CLASH and increment counter
         return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, counter + 1, integrity, stamina, dir, FALSE) );
+    }
+
+    //
+    // Jump
+    // note: is interruptible
+    //
+    if (state == ns_antoc_body_state.JUMP) {
+
+        // if (stimulus == ns_stimulus.KNOCKED) {
+        //     return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
+        // }
+
+        // if counter is full => return to IDLE
+        if (counter == ns_antoc_body_state_duration.JUMP - 1) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        }
+
+        // else stay in CLASH and increment counter
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     // handle exception
