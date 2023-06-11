@@ -262,15 +262,12 @@ export default class RealTime extends Platformer {
                 // attack # 3
                 this.player_action =
                     characterActionToNumber['jessica']['Sidecut'];
-            }
-            else if (this.keyboard.c.isDown) {
+            } else if (this.keyboard.c.isDown) {
                 // jump
-                // this.player_action =
-                const action =
+                this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ]['Jump'];
-                console.log('jump, action =', action)
             }
         }
         if (this.keyboard.period.isDown) {

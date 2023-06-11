@@ -457,6 +457,6 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
                 size: [135, 146],
                 hitboxOffset: { left: [56, -58], right: [60, -65] },
             },
-        ]
+        ],
     },
 };

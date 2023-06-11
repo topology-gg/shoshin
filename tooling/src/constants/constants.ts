@@ -261,7 +261,7 @@ export const ActionDetailJessica: CharacterActions = {
     MoveBackward: { id: 6, duration: 1 },
     DashForward: { id: 7, duration: 1 },
     DashBackward: { id: 8, duration: 1 },
-    Jump: {id: 9, duration: 6 },
+    Jump: { id: 9, duration: 6 },
 };
 
 export const ActionDetailAntoc: CharacterActions = {
