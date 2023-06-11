@@ -23,7 +23,7 @@ namespace ns_jessica_dynamics {
 
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
 
-    const JUMP_VEL_Y_FP = 1000 * ns_dynamics.SCALE_FP;
+    const JUMP_VEL_Y_FP = 350 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_jessica_character_dimension {
@@ -83,7 +83,7 @@ namespace ns_jessica_body_state_duration {
     const MOVE_BACKWARD = 6;
     const DASH_FORWARD = 4;
     const DASH_BACKWARD = 4;
-    const JUMP = 7;
+    const JUMP = 6;
 }
 
 namespace ns_jessica_body_state {
