@@ -121,6 +121,11 @@ export default class Simulator extends Phaser.Scene {
             'images/antoc/clash/spritesheet.png',
             'images/antoc/clash/spritesheet.json'
         );
+        this.load.atlas(
+            `antoc-jump`,
+            'images/antoc/jump/spritesheet.png',
+            'images/antoc/jump/spritesheet.json'
+        );
 
         this.load.atlas(
             `jessica-knocked`,

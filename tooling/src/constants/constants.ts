@@ -150,6 +150,7 @@ export enum KeysToActionsAntoc {
     'A' = 'MoveBackward',
     'E' = 'DashForward',
     'Q' = 'DashBackward',
+    'C' = 'Jump',
 }
 
 // Mapping such that { 'Rest' : '-' }
@@ -273,6 +274,7 @@ export const ActionDetailAntoc: CharacterActions = {
     MoveBackward: { id: 5, duration: 1 },
     DashForward: { id: 6, duration: 4 },
     DashBackward: { id: 7, duration: 4 },
+    Jump: { id: 9, duration: 6 },
 };
 
 export const CHARACTER_ACTIONS_DETAIL: CharacterActions[] = [
@@ -295,6 +297,8 @@ export const ACTIONS_ICON_MAP = {
     MoveBackward: 'arrow_back',
     DashForward: 'keyboard_double_arrow_right',
     DashBackward: 'keyboard_double_arrow_left',
+
+    Jump: 'arrow_upward',
 };
 
 export const MAX_COMBO_SIZE = 10;

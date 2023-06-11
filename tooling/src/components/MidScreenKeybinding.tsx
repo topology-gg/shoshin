@@ -20,7 +20,7 @@ const JESSICA_KEYS = [
 const ANTOC_KEYS = [
     ['q', '', 'e', '', '', '', ''],
     ['a', 's', 'd', '', 'j', 'k', ''],
-    ['', '', '', '', '', '', '.'],
+    ['', '', '', 'c', '', '', '.'],
 ];
 
 const MidScreenKeybinding = ({
