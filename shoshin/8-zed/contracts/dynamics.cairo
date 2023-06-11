@@ -220,8 +220,8 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     }
 
     if (state == JUMP) {
-        if (counter == 0) {
-            // apply momentum at first frame
+        if (counter == 1) {
+            // apply momentum at second frame
             assert vel_fp_y = JUMP_VEL_Y_FP;
             assert vel_fp_x = physics_state.vel_fp.x;
             assert acc_fp_y = 0;

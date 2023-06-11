@@ -93,11 +93,11 @@ func calculate_stamina_change{range_check_ptr}(stamina : felt, intent : felt, ma
                 let (updated_stamina, enough_stamina)= _settle_stamina_change(stamina, ns_common_stamina_effect.MOVE_BACKWARD, max_stamina);
                 return (updated_stamina, enough_stamina);
             }
-            if (intent == ns_jessica_action.STEP_FORWARD) {
+            if (intent == ns_antoc_action.STEP_FORWARD) {
                 let (updated_stamina, enough_stamina)= _settle_stamina_change(stamina, ns_antoc_stamina_effect.STEP_FORWARD, max_stamina);
                 return (updated_stamina, enough_stamina);
             }
-            if (intent == ns_jessica_action.JUMP) {
+            if (intent == ns_antoc_action.JUMP) {
                 let (updated_stamina, enough_stamina)= _settle_stamina_change(stamina, ns_common_stamina_effect.JUMP, max_stamina);
                 return (updated_stamina, enough_stamina);
             }

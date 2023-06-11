@@ -464,6 +464,26 @@ func _body_jessica {range_check_ptr}(
         return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
+    //
+    // Jump
+    // note: is interruptible
+    //
+    if (state == ns_jessica_body_state.JUMP) {
+
+        // if (stimulus == ns_stimulus.KNOCKED) {
+        //     return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
+        // }
+
+        // if counter is full => return to IDLE
+        if (counter == ns_jessica_body_state_duration.JUMP - 1) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        }
+
+        // else stay in CLASH and increment counter
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, counter + 1, integrity, stamina, dir, FALSE) );
+    }
+
+
     with_attr error_message("Input body state is not recognized.") {
         assert 0 = 1;
     }
