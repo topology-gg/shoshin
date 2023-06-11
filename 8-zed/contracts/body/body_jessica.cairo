@@ -277,7 +277,12 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
         }
 
-        // else stay in KNOCKED and increment counter
+        // if reach counter==5 and still in air => remain in counter==5
+        if (counter == 5 and stimulus != ns_stimulus.GROUND) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, counter, integrity, stamina, dir, FALSE) );
+        }
+
+        // else increment counter
         return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
@@ -470,9 +475,9 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.JUMP) {
 
-        // if (stimulus == ns_stimulus.KNOCKED) {
-        //     return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
-        // }
+        if (stimulus == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
+        }
 
         // if counter is full => return to IDLE
         if (counter == ns_jessica_body_state_duration.JUMP - 1) {

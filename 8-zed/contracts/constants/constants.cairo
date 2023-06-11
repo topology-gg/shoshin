@@ -53,6 +53,7 @@ namespace ns_stimulus {
     const HURT = 1;
     const KNOCKED = 2;
     const CLASH = 3;
+    const GROUND = 4;
 }
 
 namespace ns_hitbox {
