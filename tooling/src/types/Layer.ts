@@ -36,7 +36,7 @@ const getActionCondition = (
     console.log(character, key, duration);
 
     let terminatingCondition;
-    if (key == 'MoveForward' || key == 'MoveBackward') {
+    if (key == 'MoveForward' || key == 'MoveBackward' || key == 'Block') {
         return (terminatingCondition = getNotCondition(
             layerIndex,
             layer.condition
