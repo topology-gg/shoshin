@@ -229,10 +229,8 @@ export default function Home() {
                 // in Editor tab
                 setWorkingTab((prev) => {
                     if (prev == EditorTabName.Profile) return prev;
-                    else if (prev == EditorTabName.Gambit)
-                        return EditorTabName.Profile;
                     else if (prev == EditorTabName.Mind)
-                        return EditorTabName.Gambit;
+                        return EditorTabName.Profile;
                     else if (prev == EditorTabName.Combos)
                         return EditorTabName.Mind;
                     else return EditorTabName.Combos;
@@ -256,9 +254,7 @@ export default function Home() {
                         return EditorTabName.Conditions;
                     else if (prev == EditorTabName.Mind)
                         return EditorTabName.Combos;
-                    else if (prev == EditorTabName.Gambit)
-                        return EditorTabName.Mind;
-                    else return EditorTabName.Gambit;
+                    else return EditorTabName.Profile;
                 });
             } else if (swipeableViewIndex == 2) {
                 // in Reference tab
@@ -273,7 +269,7 @@ export default function Home() {
                 setNewThoughtClicks((prev) => prev + 1);
             } else if (
                 swipeableViewIndex == 1 &&
-                workingTab == EditorTabName.Gambit &&
+                workingTab == EditorTabName.Mind &&
                 editorMode != EditorMode.ReadOnly
             ) {
                 console.log('new layer');
@@ -1258,7 +1254,7 @@ export default function Home() {
               ].concat(
                   treeEditor != 0
                       ? [{ key: '/', keyName: '/', description: 'New Thought' }]
-                      : workingTab == EditorTabName.Gambit &&
+                      : workingTab == EditorTabName.Mind &&
                         editorMode != EditorMode.ReadOnly
                       ? [{ key: '/', keyName: '/', description: 'New Layer' }]
                       : []
