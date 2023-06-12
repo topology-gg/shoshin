@@ -412,13 +412,19 @@ func produce_stimulus_given_conditions {range_check_ptr} (
         }
     }
 
-    // (hit) when hit, KNOCKED if critical integrity or in mid air, HURT otherwise
+    // (hit) when hit, HURT if critical integrity  in mid air, HURT otherwise
     let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
     if (bool_self_hit == 1) {
-        if (is_integrity_critical == 0 and bool_self_ground == 1) {
-            return ns_stimulus.HURT;
+        // hit when in mid-air => knocked
+        if (bool_self_ground == 0) {
+            return ns_stimulus.KNOCKED;
         }
-        return ns_stimulus.KNOCKED;
+        // hit when grounded but critical integrity => knocked
+        if (is_integrity_critical == 0) {
+            return ns_stimulus.KNOCKED;
+        }
+        // otherwise => hurt
+        return ns_stimulus.HURT;
     }
 
     // if grounded, return GROUND stimulus

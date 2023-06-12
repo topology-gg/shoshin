@@ -475,6 +475,7 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.JUMP) {
 
+        // can be knocked
         if (stimulus == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
         }
