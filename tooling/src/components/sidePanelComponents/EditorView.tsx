@@ -313,7 +313,7 @@ const EditorView = ({
                         }
                         placement="top"
                     >
-                        <div style={{ marginBottom: '1rem' }}>
+                        <div style={{ marginBottom: '1rem', display: 'none' }}>
                             <ButtonOptionList
                                 buttonLabel={
                                     <>
