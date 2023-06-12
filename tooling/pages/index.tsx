@@ -324,20 +324,46 @@ export default function Home() {
      * Save and restore agent locally
      */
     useEffect(() => {
-        // Only save when in edit mode
+        // Only save when in edit mode and a buildable agent is created (don't save an agent the cant be compiled)
         if (editorMode === EditorMode.Edit) {
-            localStorage.setItem('agent', JSON.stringify(newAgent));
+            localStorage.setItem('layers', JSON.stringify(layers));
+            localStorage.setItem(
+                'character',
+                JSON.stringify(Object.keys(Character).indexOf(character))
+            );
             localStorage.setItem('agentName', agentName);
+            console.log('conditions are', conditions);
+            if (conditions) {
+                localStorage.setItem('conditions', JSON.stringify(conditions));
+            }
+            if (combos) {
+                localStorage.setItem('combos', JSON.stringify(combos));
+            }
+            console.log('new agent condition', conditions);
         }
     }, [newAgent, agentName, editorMode]);
 
     useEffect(() => {
         // Restore if any data found in localStorage
-        const storedAgent = localStorage.getItem('agent');
-        if (storedAgent) {
-            setAgentInPanelToAgent(JSON.parse(storedAgent));
+        const storedLayers = localStorage.getItem('layers');
+        const storedConditions = localStorage.getItem('conditions');
+        const storedCombos = localStorage.getItem('combos');
+        if (storedLayers !== null && storedLayers !== undefined) {
+            setLayers(JSON.parse(storedLayers));
+            //setAgentInPanelToAgent(JSON.parse(storedAgent));
             setAgentName(localStorage.getItem('agentName'));
+            const character =
+                parseInt(localStorage.getItem('character')) == 0
+                    ? Character.Jessica
+                    : Character.Antoc;
+            setCharacter(character);
             setEditorMode(EditorMode.Edit);
+            if (storedConditions) {
+                setConditions(JSON.parse(storedConditions));
+            }
+            if (storedCombos) {
+                setCombos(JSON.parse(storedCombos));
+            }
         }
     }, []);
 
