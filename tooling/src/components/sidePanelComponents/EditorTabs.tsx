@@ -13,7 +13,7 @@ import {
 // export enum for tab names
 export enum EditorTabName {
     Profile = 'Profile',
-    Gambit = 'Gambit',
+    Mind_Internal = 'Mind_Internal',
     Mind = 'Mind',
     Combos = 'Combos',
     Conditions = 'Conditions',
@@ -39,6 +39,8 @@ const EditorTabs = ({ workingTab, handleClickTab }) => {
     const handleTabChange = (e: React.SyntheticEvent<Element>, value: any) => {
         handleClickTab(value);
     };
+
+    const INTERNAL_MODE = process.env.NEXT_PUBLIC_IS_INTERNAL;
 
     return (
         // <MuiTabs
@@ -68,19 +70,22 @@ const EditorTabs = ({ workingTab, handleClickTab }) => {
                 Profile
             </button>
             <button
-                onClick={(event) =>
-                    handleTabChange(event, EditorTabName.Gambit)
-                }
-                style={tabStyle(workingTab, EditorTabName.Gambit)}
-            >
-                Gambit
-            </button>
-            <button
                 onClick={(event) => handleTabChange(event, EditorTabName.Mind)}
                 style={tabStyle(workingTab, EditorTabName.Mind)}
             >
                 Mind
             </button>
+            {INTERNAL_MODE ? (
+                <button
+                    onClick={(event) =>
+                        handleTabChange(event, EditorTabName.Mind_Internal)
+                    }
+                    style={tabStyle(workingTab, EditorTabName.Mind_Internal)}
+                >
+                    Mind Internal
+                </button>
+            ) : null}
+
             <button
                 onClick={(event) =>
                     handleTabChange(event, EditorTabName.Combos)

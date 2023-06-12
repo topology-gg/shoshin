@@ -443,7 +443,7 @@ const Gambit = ({
             }}
         >
             <Typography sx={{ fontSize: '17px' }} variant="overline">
-                <span style={{ marginRight: '8px' }}>&#129504;</span>Gambit
+                <span style={{ marginRight: '8px' }}>&#129504;</span>Mind
             </Typography>
             <div
                 style={{

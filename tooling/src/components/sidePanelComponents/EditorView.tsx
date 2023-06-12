@@ -144,7 +144,7 @@ const EditorView = ({
                 );
             }
 
-            case EditorTabName.Gambit: {
+            case EditorTabName.Mind: {
                 return (
                     <Gambit
                         layers={layers}
@@ -156,7 +156,7 @@ const EditorView = ({
                     />
                 );
             }
-            case EditorTabName.Mind: {
+            case EditorTabName.Mind_Internal: {
                 return (
                     (!treeEditor && (
                         <GambitMs
