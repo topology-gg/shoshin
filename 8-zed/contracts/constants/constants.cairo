@@ -26,6 +26,7 @@ namespace ns_common_stamina_effect {
     const MOVE_FORWARD = 25; // replenish stamina
     const MOVE_BACKWARD = 25; // replenish stamina
     const BLOCK = -25; // consumes stamina
+    const JUMP = -25; // consumes stamina
 
     // These values are applied in the first frame of body state
     const DASH_FORWARD = -200; // consumes stamina
@@ -52,6 +53,7 @@ namespace ns_stimulus {
     const HURT = 1;
     const KNOCKED = 2;
     const CLASH = 3;
+    const GROUND = 4;
 }
 
 namespace ns_hitbox {

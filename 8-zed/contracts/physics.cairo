@@ -303,6 +303,7 @@ func _physicality{range_check_ptr}(
         bool_self_block_active = bool_body_in_block_0,
         bool_opp_atk_active = bool_body_in_atk_active_1,
         bool_opp_block_active = bool_body_in_block_1,
+        bool_self_ground = bool_agent_0_ground,
         self_integrity = curr_body_state_0.integrity,
         self_character_type = character_type_0,
         opp_character_type = character_type_1,
@@ -317,6 +318,7 @@ func _physicality{range_check_ptr}(
         bool_self_block_active = bool_body_in_block_1,
         bool_opp_atk_active = bool_body_in_atk_active_0,
         bool_opp_block_active = bool_body_in_block_0,
+        bool_self_ground = bool_agent_1_ground,
         self_integrity = curr_body_state_1.integrity,
         self_character_type = character_type_1,
         opp_character_type = character_type_0,
@@ -341,6 +343,7 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     bool_self_block_active: felt,
     bool_opp_atk_active: felt,
     bool_opp_block_active: felt,
+    bool_self_ground: felt,
     self_integrity: felt,
     self_character_type: felt,
     opp_character_type: felt,
@@ -409,17 +412,24 @@ func produce_stimulus_given_conditions {range_check_ptr} (
         }
     }
 
-    // (hit) when hit, HURT if not in critical integrity, KNOCKED otherwise
+    // (hit) when hit, HURT if critical integrity  in mid air, HURT otherwise
     let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
     if (bool_self_hit == 1) {
-        // if (bool_self_block_active == 1) {
-        //     return ns_stimulus.NULL;
-        // }
-        if (is_integrity_critical == 1) {
+        // hit when in mid-air => knocked
+        if (bool_self_ground == 0) {
             return ns_stimulus.KNOCKED;
-        } else {
-            return ns_stimulus.HURT;
         }
+        // hit when grounded but critical integrity => knocked
+        if (is_integrity_critical == 0) {
+            return ns_stimulus.KNOCKED;
+        }
+        // otherwise => hurt
+        return ns_stimulus.HURT;
+    }
+
+    // if grounded, return GROUND stimulus
+    if (bool_self_ground == 1) {
+        return ns_stimulus.GROUND;
     }
 
     // null stimulus otherwise
