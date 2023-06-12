@@ -22,6 +22,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
     DASH_FORWARD: felt,
     DASH_BACKWARD: felt,
     KNOCKED: felt,
+    JUMP: felt,
     MAX_VEL_MOVE_FP: felt,
     MIN_VEL_MOVE_FP: felt,
     MAX_VEL_DASH_FP: felt,
@@ -31,6 +32,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
     KNOCK_VEL_X_FP: felt,
     KNOCK_VEL_Y_FP: felt,
     DEACC_FP: felt,
+    JUMP_VEL_Y_FP: felt,
     BODY_KNOCKED_ADJUST_W: felt,
 ) {
     if (character_type == ns_character_type.JESSICA) {
@@ -40,6 +42,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_jessica_body_state.DASH_FORWARD,
             ns_jessica_body_state.DASH_BACKWARD,
             ns_jessica_body_state.KNOCKED,
+            ns_jessica_body_state.JUMP,
             ns_jessica_dynamics.MAX_VEL_MOVE_FP,
             ns_jessica_dynamics.MIN_VEL_MOVE_FP,
             ns_jessica_dynamics.MAX_VEL_DASH_FP,
@@ -49,6 +52,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_jessica_dynamics.KNOCK_VEL_X_FP,
             ns_jessica_dynamics.KNOCK_VEL_Y_FP,
             ns_jessica_dynamics.DEACC_FP,
+            ns_jessica_dynamics.JUMP_VEL_Y_FP,
             ns_jessica_character_dimension.BODY_KNOCKED_ADJUST_W,
         );
     } else {
@@ -58,6 +62,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_antoc_body_state.DASH_FORWARD,
             ns_antoc_body_state.DASH_BACKWARD,
             ns_antoc_body_state.KNOCKED,
+            ns_antoc_body_state.JUMP,
             ns_antoc_dynamics.MAX_VEL_MOVE_FP,
             ns_antoc_dynamics.MIN_VEL_MOVE_FP,
             ns_antoc_dynamics.MAX_VEL_DASH_FP,
@@ -67,6 +72,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_antoc_dynamics.KNOCK_VEL_X_FP,
             ns_antoc_dynamics.KNOCK_VEL_Y_FP,
             ns_antoc_dynamics.DEACC_FP,
+            ns_antoc_dynamics.JUMP_VEL_Y_FP,
             ns_antoc_character_dimension.BODY_KNOCKED_ADJUST_W,
         );
     }
@@ -95,6 +101,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         DASH_FORWARD: felt,
         DASH_BACKWARD: felt,
         KNOCKED: felt,
+        JUMP: felt,
         MAX_VEL_MOVE_FP: felt,
         MIN_VEL_MOVE_FP: felt,
         MAX_VEL_DASH_FP: felt,
@@ -104,6 +111,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         KNOCK_VEL_X_FP: felt,
         KNOCK_VEL_Y_FP: felt,
         DEACC_FP: felt,
+        JUMP_VEL_Y_FP: felt,
         BODY_KNOCKED_ADJUST_W: felt,
     ) = _character_specific_constants (character_type);
 
@@ -139,7 +147,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
 
     if (state == DASH_FORWARD) {
         // prepare the dash on first frame
-        // dash with vel = DASH_VEL_FP 
+        // dash with vel = DASH_VEL_FP
         local vel;
         if (dir == 1) {
             assert vel = DASH_VEL_FP;
@@ -159,7 +167,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
 
     if (state == DASH_BACKWARD) {
         // prepare the dash on first frame
-        // dash with vel = DASH_VEL_FP 
+        // dash with vel = DASH_VEL_FP
         local vel;
         if (dir == 1) {
             assert vel = (-1) * DASH_VEL_FP;
@@ -195,30 +203,45 @@ func _euler_forward_no_hitbox {range_check_ptr}(
                 assert acc_fp_x = 0;
             }
         } else {
-            // apply gravity
+            // for y-axis, apply gravity
             assert acc_fp_y = ns_dynamics.GRAVITY_ACC_FP;
             assert acc_fp_x = 0;
             assert vel_fp_y = physics_state.vel_fp.y;
-            if (counter == 9) {
+
+            // for x-axis, zero velocity if already touched down
+            if (physics_state.pos.y == 0) {
                 assert vel_fp_x = 0;
             } else {
                 assert vel_fp_x = physics_state.vel_fp.x;
             }
         }
 
-        jmp update_vel_knocked;
+        jmp update_vel_knocked_jump;
     }
 
-    // # otherwise, deaccelerate dramatically
-    // if sign_vel_x == 1:
-    //     assert acc_fp_x = -1 * ns_dynamics.DEACC_FP
-    // else:
-    //     if sign_vel_x == -1:
-    //         assert acc_fp_x = ns_dynamics.DEACC_FP
-    //     else:
-    //         assert acc_fp_x = 0
-    //     end
-    // end
+    if (state == JUMP) {
+        if (counter == 1) {
+            // apply momentum at second frame
+            assert vel_fp_y = JUMP_VEL_Y_FP;
+            assert vel_fp_x = physics_state.vel_fp.x;
+            assert acc_fp_y = 0;
+            assert acc_fp_x = 0;
+        } else {
+            // apply gravity
+            assert acc_fp_y = ns_dynamics.GRAVITY_ACC_FP;
+            assert acc_fp_x = 0;
+            assert vel_fp_y = physics_state.vel_fp.y;
+
+            // touchdown
+            if (counter == 5) {
+                assert vel_fp_x = 0;
+            } else {
+                assert vel_fp_x = physics_state.vel_fp.x;
+            }
+        }
+
+        jmp update_vel_knocked_jump;
+    }
 
     // otherwise, set velocity to zero (instant stop)
     return (
@@ -243,7 +266,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     tempvar range_check_ptr = range_check_ptr;
     jmp update_pos;
 
-    update_vel_knocked:
+    update_vel_knocked_jump:
     // reusing dash's max & min velocity for knocked physics for now
     // note: only x-axis velocity is capped by max & min
     let (vel_fp_nxt_: Vec2) = _euler_forward_vel_no_hitbox(
@@ -438,7 +461,7 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
 
         local back_off_x_0_scaled;
         local back_off_x_1_scaled;
-        // avoid division by 0 if abs_relative_vx_fp == 0 
+        // avoid division by 0 if abs_relative_vx_fp == 0
         // use direction in order to set the sign for back_off_x_i_scaled
         if (abs_relative_vx_fp == 0) {
             let abs_distance_fp_half = abs_distance_fp_fp / 2;
