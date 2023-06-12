@@ -53,6 +53,7 @@ export const bodyStateNumberToName = {
         100: 'walk_backward',
         110: 'dash_forward',
         120: 'dash_backward',
+        130: 'jump',
     },
     antoc: {
         0: 'idle',
@@ -66,6 +67,8 @@ export const bodyStateNumberToName = {
         1110: 'dash_forward',
         1120: 'dash_backward',
         1130: 'clash',
+        1140: 'step_forward',
+        1150: 'jump',
     },
 };
 
@@ -168,6 +171,7 @@ export enum KeysToActionsJessica {
     'A' = 'MoveBackward',
     'E' = 'DashForward',
     'Q' = 'DashBackward',
+    'C' = 'Jump',
 }
 
 export enum KeysToActionsAntoc {
@@ -179,6 +183,7 @@ export enum KeysToActionsAntoc {
     'A' = 'MoveBackward',
     'E' = 'DashForward',
     'Q' = 'DashBackward',
+    'C' = 'Jump',
 }
 
 // Mapping such that { 'Rest' : '-' }
@@ -207,6 +212,7 @@ export enum ActionsJessica {
     MoveBackward = 6,
     DashForward = 7,
     DashBackward = 8,
+    Jump = 9,
 }
 
 export enum ActionsAntoc {
@@ -218,6 +224,8 @@ export enum ActionsAntoc {
     MoveBackward = 5,
     DashForward = 6,
     DashBackward = 7,
+    StepForward = 8,
+    Jump = 9,
 }
 
 export const characterActionToNumber = {
@@ -231,6 +239,7 @@ export const characterActionToNumber = {
         MoveBackward: 6,
         DashForward: 7,
         DashBackward: 8,
+        Jump: 9,
     },
     antoc: {
         Rest: 0,
@@ -241,6 +250,8 @@ export const characterActionToNumber = {
         MoveBackward: 5,
         DashForward: 6,
         DashBackward: 7,
+        StepForward: 8,
+        Jump: 9,
     },
 };
 export function getIntentNameByCharacterTypeAndNumber(
@@ -284,6 +295,7 @@ export const ActionDetailJessica: CharacterActions = {
     MoveBackward: { id: 6, duration: 1 },
     DashForward: { id: 7, duration: 1 },
     DashBackward: { id: 8, duration: 1 },
+    Jump: { id: 9, duration: 6 },
 };
 
 export const ActionDetailAntoc: CharacterActions = {
@@ -295,6 +307,7 @@ export const ActionDetailAntoc: CharacterActions = {
     MoveBackward: { id: 5, duration: 1 },
     DashForward: { id: 6, duration: 4 },
     DashBackward: { id: 7, duration: 4 },
+    Jump: { id: 9, duration: 6 },
 };
 
 export const CHARACTER_ACTIONS_DETAIL: CharacterActions[] = [
@@ -317,6 +330,8 @@ export const ACTIONS_ICON_MAP = {
     MoveBackward: 'arrow_back',
     DashForward: 'keyboard_double_arrow_right',
     DashBackward: 'keyboard_double_arrow_left',
+
+    Jump: 'arrow_upward',
 };
 
 export const MAX_COMBO_SIZE = 20;

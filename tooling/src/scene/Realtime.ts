@@ -159,6 +159,7 @@ export default class RealTime extends Platformer {
             space: Phaser.Input.Keyboard.KeyCodes.SPACE,
             period: Phaser.Input.Keyboard.KeyCodes.PERIOD,
             // f: Phaser.Input.Keyboard.KeyCodes.F,
+            c: Phaser.Input.Keyboard.KeyCodes.C,
         });
         this.set_player_character(this.character_type_0);
         this.scene.scene.events.on('pause', () => {
@@ -261,6 +262,12 @@ export default class RealTime extends Platformer {
                 // attack # 3
                 this.player_action =
                     characterActionToNumber['jessica']['Sidecut'];
+            } else if (this.keyboard.c.isDown) {
+                // jump
+                this.player_action =
+                    characterActionToNumber[
+                        this.character_type_0 == 1 ? 'antoc' : 'jessica'
+                    ]['Jump'];
             }
         }
         if (this.keyboard.period.isDown) {

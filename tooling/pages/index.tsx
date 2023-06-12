@@ -320,6 +320,27 @@ export default function Home() {
         layers,
     ]);
 
+    /**
+     * Save and restore agent locally
+     */
+    useEffect(() => {
+        // Only save when in edit mode
+        if (editorMode === EditorMode.Edit) {
+            localStorage.setItem('agent', JSON.stringify(newAgent));
+            localStorage.setItem('agentName', agentName);
+        }
+    }, [newAgent, agentName, editorMode]);
+
+    useEffect(() => {
+        // Restore if any data found in localStorage
+        const storedAgent = localStorage.getItem('agent');
+        if (storedAgent) {
+            setAgentInPanelToAgent(JSON.parse(storedAgent));
+            setAgentName(localStorage.getItem('agentName'));
+            setEditorMode(EditorMode.Edit);
+        }
+    }, []);
+
     const { runCairoSimulation } = useRunCairoSimulation(p1, p2);
     const { runEvaluateCondition } = useEvaluateCondition();
     const ctx = useContext(ShoshinWASMContext);
