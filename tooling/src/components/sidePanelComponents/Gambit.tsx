@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
     Box,
     Button,
+    Chip,
     Grid,
     ListItemText,
     MenuItem,
@@ -84,7 +85,9 @@ interface LayerProps {
         isCombo: boolean,
         comboDuration: number
     ) => void;
-    handleChooseCondition: (condition: Condition) => void;
+    // -1 index is a new condition
+    handleChooseCondition: (condition: Condition, index: number) => void;
+    handleRemoveCondition: (layerIndex: number, conditionIndex: number) => void;
 }
 
 const DraggableLayer = ({
@@ -96,6 +99,7 @@ const DraggableLayer = ({
     combos,
     handleChooseAction,
     handleChooseCondition,
+    handleRemoveCondition,
     handleRemoveLayer,
 }: LayerProps) => {
     return (
@@ -120,6 +124,7 @@ const DraggableLayer = ({
                         handleChooseAction={handleChooseAction}
                         handleChooseCondition={handleChooseCondition}
                         handleRemoveLayer={handleRemoveLayer}
+                        handleRemoveCondition={handleRemoveCondition}
                     />
                 </div>
             )}
@@ -136,9 +141,12 @@ const Layer = ({
     combos,
     handleChooseAction,
     handleChooseCondition,
+    handleRemoveCondition,
     handleRemoveLayer,
 }: LayerProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+    const [conditionIndex, changeConditionIndex] = useState<number>(-1);
 
     const [conditionAnchorEl, setConditionAnchorEl] =
         useState<null | HTMLElement>(null);
@@ -174,7 +182,7 @@ const Layer = ({
     };
 
     const onConditionSelect = (condition: Condition) => {
-        handleChooseCondition(condition);
+        handleChooseCondition(condition, conditionIndex);
         setAnchorEl(null);
     };
 
@@ -186,12 +194,34 @@ const Layer = ({
     };
 
     const handleConditionClick = (
-        event: React.MouseEvent<HTMLButtonElement>
+        event: React.MouseEvent<HTMLDivElement | HTMLButtonElement>
     ) => {
-        let id = event.currentTarget.id.split('-');
-        let menuIndex = parseInt(id[id.length - 1]);
+        const targetId = event.currentTarget.id;
+        let id = targetId.split('-');
+
+        let menuIndex = parseInt(id[id.length - 2]);
         currentConditionMenu = menuIndex;
+
+        let secondItem = id[id.length - 1];
+        if (secondItem == `new`) {
+            changeConditionIndex(-1);
+        } else {
+            let conditionIndex = parseInt(secondItem);
+            changeConditionIndex(conditionIndex);
+        }
+
         setConditionAnchorEl(event.currentTarget);
+    };
+
+    const handleRemoveConditionClick = (
+        event: React.MouseEvent<HTMLDivElement | HTMLButtonElement>
+    ) => {
+        const targetId = event.currentTarget.parentElement.id;
+        let id = targetId.split('-');
+
+        let layerIndex = parseInt(id[id.length - 2]);
+        let conditionIndex = parseInt(id[id.length - 1]);
+        handleRemoveCondition(layerIndex, conditionIndex);
     };
 
     const handleCloseActionDropdown = () => {
@@ -225,23 +255,29 @@ const Layer = ({
                     </div>
                 </Grid>
                 <Grid item xs={4}>
-                    <BlurrableButton
-                        className={'gambitButton conditionButton'}
-                        key={`${i}`}
-                        id={`condition-btn-${i}`}
+                    {layer.conditions.map((condition, index) => (
+                        <Chip
+                            label={condition.displayName}
+                            className={'gambitButton conditionButton'}
+                            key={`${i}`}
+                            id={`condition-btn-${i}-${index}`}
+                            onClick={handleConditionClick}
+                            onDelete={
+                                layer.conditions.length > 1
+                                    ? handleRemoveConditionClick
+                                    : undefined
+                            }
+                            style={{
+                                fontFamily: 'Raleway',
+                            }}
+                        />
+                    ))}
+                    <IconButton
                         onClick={handleConditionClick}
-                        style={{
-                            fontFamily: 'Raleway',
-                            fontSize: '14px',
-                            padding: '8px 14px',
-                            lineHeight: '9px',
-                        }}
+                        id={`condition-btn-${i}-new`}
                     >
-                        <span style={{ marginRight: '7px' }}>
-                            {'\u{1F4D0}'}
-                        </span>
-                        {layer.condition.displayName}
-                    </BlurrableButton>
+                        <AddIcon sx={{ mr: '3px' }} />
+                    </IconButton>
                 </Grid>
                 <Menu
                     id={`conditions-menu-${i}`}
@@ -401,12 +437,26 @@ const Gambit = ({
         setLayers(updatedLayers);
     };
 
-    const handleChooseCondition = (condition) => {
+    const handleChooseCondition = (condition, conditionIndex) => {
+        let updatedLayers = [...layers];
+
+        if (conditionIndex == -1) {
+            updatedLayers[currentConditionMenu].conditions.push(condition);
+        } else {
+            updatedLayers[currentConditionMenu].conditions[conditionIndex] =
+                condition;
+        }
+        setLayers(updatedLayers);
+    };
+
+    const handleRemoveCondition = (layerIndex, conditionIndex) => {
         let updatedLayers = layers.map((layer, index) => {
-            if (index == currentConditionMenu) {
+            if (index == layerIndex) {
+                let updatedConditions = [...layer.conditions];
+                updatedConditions.splice(conditionIndex, 1);
                 return {
                     ...layer,
-                    condition,
+                    conditions: updatedConditions,
                 };
             }
             return layer;
@@ -426,6 +476,7 @@ const Gambit = ({
                 character={character}
                 conditions={conditions}
                 handleChooseCondition={handleChooseCondition}
+                handleRemoveCondition={handleRemoveCondition}
                 combos={combos}
             />
         ));

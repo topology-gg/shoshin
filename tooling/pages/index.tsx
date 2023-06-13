@@ -328,14 +328,12 @@ export default function Home() {
                 JSON.stringify(Object.keys(Character).indexOf(character))
             );
             localStorage.setItem('agentName', agentName);
-            console.log('conditions are', conditions);
             if (conditions) {
                 localStorage.setItem('conditions', JSON.stringify(conditions));
             }
             if (combos) {
                 localStorage.setItem('combos', JSON.stringify(combos));
             }
-            console.log('new agent condition', conditions);
         }
     }, [newAgent, agentName, editorMode]);
 

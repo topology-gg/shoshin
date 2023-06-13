@@ -24,7 +24,6 @@ const getActionCondition = (
     });
 
     const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration - 1;
-    console.log(character, key, duration);
 
     if (key == 'MoveForward' || key == 'MoveBackward' || key == 'Block') {
         return getInverseCondition(layerIndex, layer.conditions);
@@ -84,7 +83,6 @@ export const layersToAgentComponents = (
         : [];
 
     const rootConditions = layers.map((layer) => {
-        console.log('get root conditions', layer);
         return appendConditions(layer.conditions);
     });
 
@@ -171,41 +169,35 @@ const getNode = (
 };
 
 const getAppendedElements = (conditions: Condition[]): any[] => {
-    return conditions.map((condition, i) => {
-        let conditionElements = [
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            ...condition.elements,
-            {
-                value: ')',
-                type: 'Operator',
-            },
-        ];
+    console.log('input conditions', conditions);
+    let res = conditions
+        .map((condition) => condition.elements)
+        .reduce((acc, elements, i) => {
+            // indexes [0, 1, 2] and length = 3
+            // yes 0, yes 1, no 2
+            if (i < conditions.length - 1) {
+                const andElement = {
+                    value: Operator.And,
+                    type: ElementType.Operator,
+                };
+                return [...acc, ...elements, andElement];
+            }
+            return [...acc, ...elements];
+        }, []);
 
-        // indexes [0, 1, 2] and length = 3
-        // yes 0, yes 1, no 2
-        if (i < conditions.length - 1) {
-            conditionElements.push({
-                value: 'AND',
-                type: 'Operator',
-            });
-        }
-        return conditionElements;
-    });
+    console.log('appended elements', res);
+    return res;
 };
 
 const appendConditions = (conditions: Condition[]) => {
     const elementsAppended = getAppendedElements(conditions);
-    console.log('appended conditions', appendConditions);
     return {
         elements: [
             {
                 value: Operator.OpenParenthesis,
                 type: ElementType.Operator,
             },
-            ...elementsAppended.flat(),
+            ...elementsAppended,
             {
                 value: Operator.CloseParenthesis,
                 type: ElementType.Operator,
@@ -228,7 +220,7 @@ const getInverseCondition = (id: number, conditions: Condition[]) => {
                 value: Operator.OpenParenthesis,
                 type: ElementType.Operator,
             },
-            ...elementsAppended.flat(),
+            ...elementsAppended,
             {
                 value: Operator.CloseParenthesis,
                 type: ElementType.Operator,
