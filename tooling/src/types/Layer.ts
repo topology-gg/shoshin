@@ -1,20 +1,11 @@
-import {
-    CHARACTERS_ACTIONS,
-    CHARACTER_ACTIONS_DETAIL,
-    actionstoBodyState,
-} from '../constants/constants';
-import {
-    Condition,
-    ElementType,
-    Operator,
-    generateConditionKey,
-} from './Condition';
+import { CHARACTER_ACTIONS_DETAIL } from '../constants/constants';
+import { Condition, ElementType, Operator } from './Condition';
 import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
 
 //TODO - make conditions appendable,
 export interface Layer {
-    condition: Condition;
+    conditions: Condition[];
     action: {
         //Id is either that action decimal number or combo decimal number (both are defined in shoshin smart contracts)
         id: number;
@@ -35,17 +26,10 @@ const getActionCondition = (
     const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration - 1;
     console.log(character, key, duration);
 
-    let terminatingCondition;
     if (key == 'MoveForward' || key == 'MoveBackward' || key == 'Block') {
-        return (terminatingCondition = getNotCondition(
-            layerIndex,
-            layer.condition
-        ));
+        return getInverseCondition(layerIndex, layer.conditions);
     } else {
-        return (terminatingCondition = getIsFinishedCondition(
-            duration,
-            layerIndex
-        ));
+        return getIsFinishedCondition(duration, layerIndex);
     }
 };
 //given layers gets all needed mental states, conditions and trees to build an agent using the state machine structure
@@ -68,19 +52,8 @@ export const layersToAgentComponents = (
     ];
 
     let unflattenedConditions = layers.map((layer, i) => {
-        //action to bodystate
-        const bodyState = actionstoBodyState[character][layer.action.id];
-
         let terminatingCondition;
-        const action_name = CHARACTERS_ACTIONS[character][layer.action.id];
-        if (action_name == 'Block') {
-            // block needs to be handled differently because its body counter saturates at 3 until intent changes
-            // when blocking, termination condition is the inverse of the condition for this layer
-            terminatingCondition = getInverseCondition(
-                layer.condition,
-                layer.action.id
-            );
-        } else if (layer.action.isCombo == true) {
+        if (layer.action.isCombo == true) {
             //if combo, we need to get combo length, and put in the action for the node
             terminatingCondition = getIsComboFinishedCondition(
                 layer.action.comboDuration,
@@ -110,7 +83,10 @@ export const layersToAgentComponents = (
         ? unflattenedConditions.flat()
         : [];
 
-    const rootConditions = layers.map((layer) => layer.condition);
+    const rootConditions = layers.map((layer) => {
+        console.log('get root conditions', layer);
+        return appendConditions(layer.conditions);
+    });
 
     //@ts-ignore
     const trees = [
@@ -128,10 +104,9 @@ export const layersToAgentComponents = (
 // Condition keys have to be a unique number
 // Unique encoding for each condition type and layer index is unique amongst layers
 const conditionKeyEncoding = {
-    inverse: 12321,
     interrupt: 909,
     finished: 808,
-    not: 303,
+    inverse: 303,
 };
 
 //condtions to transition to action
@@ -195,13 +170,9 @@ const getNode = (
     ];
 };
 
-const getNotCondition = (id: number, condition: Condition) => {
-    return {
-        elements: [
-            {
-                value: '!',
-                type: 'Operator',
-            },
+const getAppendedElements = (conditions: Condition[]): any[] => {
+    return conditions.map((condition, i) => {
+        let conditionElements = [
             {
                 value: '(',
                 type: 'Operator',
@@ -211,14 +182,42 @@ const getNotCondition = (id: number, condition: Condition) => {
                 value: ')',
                 type: 'Operator',
             },
-        ],
-        displayName: 'is_condition_not_false',
-        key: `${conditionKeyEncoding.finished}${id}`,
-    };
+        ];
+
+        // indexes [0, 1, 2] and length = 3
+        // yes 0, yes 1, no 2
+        if (i < conditions.length - 1) {
+            conditionElements.push({
+                value: 'AND',
+                type: 'Operator',
+            });
+        }
+        return conditionElements;
+    });
 };
 
-const getInverseCondition = (condition: Condition, id: number): Condition => {
-    // create and return !(condition)
+const appendConditions = (conditions: Condition[]) => {
+    const elementsAppended = getAppendedElements(conditions);
+    console.log('appended conditions', appendConditions);
+    return {
+        elements: [
+            {
+                value: Operator.OpenParenthesis,
+                type: ElementType.Operator,
+            },
+            ...elementsAppended.flat(),
+            {
+                value: Operator.CloseParenthesis,
+                type: ElementType.Operator,
+            },
+        ],
+        displayName: 'actionCondition',
+        key: `${conditions[0].key}`,
+    };
+};
+const getInverseCondition = (id: number, conditions: Condition[]) => {
+    const elementsAppended = getAppendedElements(conditions);
+
     return {
         elements: [
             {
@@ -229,13 +228,13 @@ const getInverseCondition = (condition: Condition, id: number): Condition => {
                 value: Operator.OpenParenthesis,
                 type: ElementType.Operator,
             },
-            ...condition.elements,
+            ...elementsAppended.flat(),
             {
                 value: Operator.CloseParenthesis,
                 type: ElementType.Operator,
             },
         ],
-        displayName: 'inverse_'.concat(condition.displayName),
+        displayName: 'is_condition_not_false',
         key: `${conditionKeyEncoding.inverse}${id}`,
     };
 };
@@ -545,7 +544,7 @@ const exampleMS = [
 
 export const defaultLayer: Layer = {
     //@ts-ignore
-    condition: alwaysTrueCondition,
+    conditions: [alwaysTrueCondition],
     action: {
         id: 0,
         isCombo: false,
