@@ -72,6 +72,34 @@ export const bodyStateNumberToName = {
     },
 };
 
+const actionsToBodyStateJessica = {
+    0: 0,
+    1: 10,
+    2: 20,
+    3: 30,
+    4: 40,
+    5: 90,
+    6: 100,
+    7: 110,
+    8: 120,
+};
+
+const actionsToBodyStateAntoc = {
+    0: 0,
+    1: 1010,
+    2: 1020,
+    3: 1040,
+    4: 1090,
+    5: 1100,
+    6: 1110,
+    7: 1120,
+};
+
+export const actionstoBodyState = [
+    actionsToBodyStateJessica,
+    actionsToBodyStateAntoc,
+];
+
 export const adjustmentForCharacter = (
     characterName: string,
     bodyStateName: string,
@@ -126,6 +154,11 @@ export const adjustmentForCharacter = (
 export enum Character {
     Jessica = 'Jessica',
     Antoc = 'Antoc',
+}
+
+export interface Action {
+    name: string;
+    unicode: string;
 }
 
 export enum KeysToActionsJessica {
@@ -301,7 +334,7 @@ export const ACTIONS_ICON_MAP = {
     Jump: 'arrow_upward',
 };
 
-export const MAX_COMBO_SIZE = 10;
+export const MAX_COMBO_SIZE = 20;
 
 export const INITIAL_MENTAL_STATES: MentalState[] = [
     { state: 'MS IDLE', action: ActionsJessica['Rest'] },

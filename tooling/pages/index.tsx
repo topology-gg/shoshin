@@ -1,6 +1,13 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import React, { useEffect, useMemo, useState, useContext, useRef } from 'react';
+import React, {
+    useEffect,
+    useMemo,
+    useState,
+    useContext,
+    useRef,
+    createContext,
+} from 'react';
 import {
     Accordion,
     AccordionDetails,
@@ -84,11 +91,19 @@ import {
 } from '../src/constants/starter_agent';
 import MidScreenKeybinding from '../src/components/MidScreenKeybinding';
 import { KeyboardShortcut } from '../src/types/UI';
+import {
+    Layer,
+    defaultLayer,
+    layersToAgentComponents,
+} from '../src/types/Layer';
 
 //@ts-ignore
 const Game = dynamic(() => import('../src/Game/PhaserGame'), {
     ssr: false,
 });
+
+export const LayerContext = createContext([]);
+export const CharacterContext = createContext(Character.Jessica);
 
 export default function Home() {
     // Constants
@@ -145,6 +160,8 @@ export default function Home() {
 
     const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation);
     const [realTimeCharacter, setRealTimeCharacter] = useState<number>(0);
+
+    const [layers, setLayers] = useState<Layer[]>([]);
 
     // React states for warnings
     const [isConditionWarningTextOn, setConditionWarningTextOn] =
@@ -237,8 +254,7 @@ export default function Home() {
                         return EditorTabName.Conditions;
                     else if (prev == EditorTabName.Mind)
                         return EditorTabName.Combos;
-                    else if (prev == EditorTabName.Profile)
-                        return EditorTabName.Mind;
+                    else return EditorTabName.Profile;
                 });
             } else if (swipeableViewIndex == 2) {
                 // in Reference tab
@@ -249,8 +265,15 @@ export default function Home() {
             }
         } else if (e.key == '/') {
             if (swipeableViewIndex == 1 && treeEditor != 0) {
-                console.log('new thought!');
+                console.log('new thought');
                 setNewThoughtClicks((prev) => prev + 1);
+            } else if (
+                swipeableViewIndex == 1 &&
+                workingTab == EditorTabName.Mind &&
+                editorMode != EditorMode.ReadOnly
+            ) {
+                console.log('new layer');
+                setLayers([...layers, defaultLayer]);
             }
         }
     };
@@ -290,26 +313,53 @@ export default function Home() {
         trees,
         conditions,
         initialMentalState,
+        layers,
     ]);
 
     /**
      * Save and restore agent locally
      */
     useEffect(() => {
-        // Only save when in edit mode
+        // Only save when in edit mode and a buildable agent is created (don't save an agent the cant be compiled)
         if (editorMode === EditorMode.Edit) {
-            localStorage.setItem('agent', JSON.stringify(newAgent));
+            localStorage.setItem('layers', JSON.stringify(layers));
+            localStorage.setItem(
+                'character',
+                JSON.stringify(Object.keys(Character).indexOf(character))
+            );
             localStorage.setItem('agentName', agentName);
+            console.log('conditions are', conditions);
+            if (conditions) {
+                localStorage.setItem('conditions', JSON.stringify(conditions));
+            }
+            if (combos) {
+                localStorage.setItem('combos', JSON.stringify(combos));
+            }
+            console.log('new agent condition', conditions);
         }
     }, [newAgent, agentName, editorMode]);
 
     useEffect(() => {
         // Restore if any data found in localStorage
-        const storedAgent = localStorage.getItem('agent');
-        if (storedAgent) {
-            setAgentInPanelToAgent(JSON.parse(storedAgent));
+        const storedLayers = localStorage.getItem('layers');
+        const storedConditions = localStorage.getItem('conditions');
+        const storedCombos = localStorage.getItem('combos');
+        if (storedLayers !== null && storedLayers !== undefined) {
+            setLayers(JSON.parse(storedLayers));
+            //setAgentInPanelToAgent(JSON.parse(storedAgent));
             setAgentName(localStorage.getItem('agentName'));
+            const character =
+                parseInt(localStorage.getItem('character')) == 0
+                    ? Character.Jessica
+                    : Character.Antoc;
+            setCharacter(character);
             setEditorMode(EditorMode.Edit);
+            if (storedConditions) {
+                setConditions(JSON.parse(storedConditions));
+            }
+            if (storedCombos) {
+                setCombos(JSON.parse(storedCombos));
+            }
         }
     }, []);
 
@@ -781,12 +831,22 @@ export default function Home() {
 
     function handleBuildAgent() {
         let char = Object.keys(Character).indexOf(character);
+
+        console.log(layers);
+        //given layers
+        const {
+            mentalStates: generatedMs,
+            conditions: generatedConditions,
+            trees: generatedTrees,
+        } = layersToAgentComponents(layers, char);
+
+        //todo remove trees
         return buildAgent(
-            mentalStates,
+            generatedMs,
             combos,
-            trees,
-            conditions,
-            initialMentalState,
+            generatedTrees,
+            generatedConditions,
+            0,
             char
         );
     }
@@ -907,62 +967,70 @@ export default function Home() {
     const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 
     let EditorViewComponent = (
-        <EditorView
-            editorMode={editorMode}
-            settingModalOpen={settingModalOpen}
-            setSettingModalOpen={(bool) => setSettingModalOpen(() => bool)}
-            studyAgent={(agent: Agent) => {
-                setEditorMode(() => EditorMode.ReadOnly);
-                setAgentInPanelToAgent(agent);
-            }}
-            buildNewAgentFromBlank={() => {
-                setEditorMode(() => EditorMode.Edit);
-                setAgentInPanelToAgent(STARTER_AGENT);
-            }}
-            buildNewAgentFromAgent={(agent: Agent) => {
-                setEditorMode(() => EditorMode.Edit);
-                setAgentInPanelToAgent(agent);
-            }}
-            agentName={agentName}
-            setAgentName={setAgentName}
-            workingTab={workingTab}
-            handleClickTab={setWorkingTab}
-            character={character}
-            setCharacter={(value) => {
-                console.log('setCharacter:', value);
-                setCharacter(value);
-            }}
-            mentalStates={mentalStates}
-            initialMentalState={initialMentalState}
-            handleSetInitialMentalState={setInitialMentalState}
-            combos={combos}
-            handleValidateCombo={handleValidateCombo}
-            handleAddMentalState={handleAddMentalState}
-            handleClickRemoveMentalState={handleClickRemoveMentalState}
-            handleSetMentalStateAction={handleSetMentalStateAction}
-            treeEditor={treeEditor}
-            handleClickTreeEditor={handleClickTreeEditor}
-            trees={trees}
-            handleUpdateTree={handleUpdateTree}
-            conditions={conditions}
-            handleSaveCondition={saveCondition}
-            handleUpdateCondition={handleUpdateCondition}
-            handleConfirmCondition={handleConfirmCondition}
-            handleClickDeleteCondition={handleClickDeleteCondition}
-            conditionUnderEditIndex={conditionUnderEditIndex}
-            setConditionUnderEditIndex={setConditionUnderEditIndex}
-            isConditionWarningTextOn={isConditionWarningTextOn}
-            conditionWarningText={conditionWarningText}
-            isTreeEditorWarningTextOn={isTreeEditorWarningTextOn}
-            treeEditorWarningText={treeEditorWarningText}
-            handleRemoveConditionElement={handleRemoveConditionElement}
-            handleSubmitAgent={handleSubmitAgent}
-            agents={agents}
-            txPending={txPending}
-            txHash={hash}
-            txStatusText={txStatusText}
-            newThoughtClicks={newThoughtClicks}
-        />
+        <LayerContext.Provider value={layers}>
+            <CharacterContext.Provider value={character}>
+                <EditorView
+                    editorMode={editorMode}
+                    settingModalOpen={settingModalOpen}
+                    setSettingModalOpen={(bool) =>
+                        setSettingModalOpen(() => bool)
+                    }
+                    studyAgent={(agent: Agent) => {
+                        setEditorMode(() => EditorMode.ReadOnly);
+                        setAgentInPanelToAgent(agent);
+                    }}
+                    buildNewAgentFromBlank={() => {
+                        setEditorMode(() => EditorMode.Edit);
+                        setAgentInPanelToAgent(STARTER_AGENT);
+                    }}
+                    buildNewAgentFromAgent={(agent: Agent) => {
+                        setEditorMode(() => EditorMode.Edit);
+                        setAgentInPanelToAgent(agent);
+                    }}
+                    agentName={agentName}
+                    setAgentName={setAgentName}
+                    workingTab={workingTab}
+                    handleClickTab={setWorkingTab}
+                    character={character}
+                    setCharacter={(value) => {
+                        console.log('setCharacter:', value);
+                        setCharacter(value);
+                    }}
+                    mentalStates={mentalStates}
+                    initialMentalState={initialMentalState}
+                    handleSetInitialMentalState={setInitialMentalState}
+                    combos={combos}
+                    handleValidateCombo={handleValidateCombo}
+                    handleAddMentalState={handleAddMentalState}
+                    handleClickRemoveMentalState={handleClickRemoveMentalState}
+                    handleSetMentalStateAction={handleSetMentalStateAction}
+                    treeEditor={treeEditor}
+                    handleClickTreeEditor={handleClickTreeEditor}
+                    trees={trees}
+                    handleUpdateTree={handleUpdateTree}
+                    conditions={conditions}
+                    handleSaveCondition={saveCondition}
+                    handleUpdateCondition={handleUpdateCondition}
+                    handleConfirmCondition={handleConfirmCondition}
+                    handleClickDeleteCondition={handleClickDeleteCondition}
+                    conditionUnderEditIndex={conditionUnderEditIndex}
+                    setConditionUnderEditIndex={setConditionUnderEditIndex}
+                    isConditionWarningTextOn={isConditionWarningTextOn}
+                    conditionWarningText={conditionWarningText}
+                    isTreeEditorWarningTextOn={isTreeEditorWarningTextOn}
+                    treeEditorWarningText={treeEditorWarningText}
+                    handleRemoveConditionElement={handleRemoveConditionElement}
+                    handleSubmitAgent={handleSubmitAgent}
+                    agents={agents}
+                    txPending={txPending}
+                    txHash={hash}
+                    txStatusText={txStatusText}
+                    newThoughtClicks={newThoughtClicks}
+                    layers={layers}
+                    setLayers={setLayers}
+                />
+            </CharacterContext.Provider>
+        </LayerContext.Provider>
     );
 
     const [swipeableViewIndex, setSwipeableViewIndex] = useState(0);
@@ -1186,6 +1254,9 @@ export default function Home() {
               ].concat(
                   treeEditor != 0
                       ? [{ key: '/', keyName: '/', description: 'New Thought' }]
+                      : workingTab == EditorTabName.Mind &&
+                        editorMode != EditorMode.ReadOnly
+                      ? [{ key: '/', keyName: '/', description: 'New Layer' }]
                       : []
               )
             : swipeableViewIndex == 2
