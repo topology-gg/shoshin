@@ -48,14 +48,18 @@ func is_in_various_states_given_character_type {range_check_ptr}(
     }
 }
 
-func get_hitbox_dimension{range_check_ptr} (character_type: felt, counter: felt) -> (
+func get_hitbox_dimension{range_check_ptr} (
+    character_type: felt,
+    body_state: felt,
+    body_counter: felt
+) -> (
     body_dimension: Vec2
 ) {
     if (character_type == ns_character_type.JESSICA) {
-        return ns_jessica_hitbox.get_body_hitbox_dimension(counter);
+        return ns_jessica_hitbox.get_body_hitbox_dimension(body_state, body_counter);
     }
     if (character_type == ns_character_type.ANTOC) {
-        return ns_antoc_hitbox.get_body_hitbox_dimension(counter);
+        return ns_antoc_hitbox.get_body_hitbox_dimension(body_state, body_counter);
     }
 
     with_attr error_message("Character type is not recognized.") {
@@ -206,26 +210,38 @@ func _physicality{range_check_ptr}(
     }
 
     // # determine body dimension (knocked state has a wider hitbox)
-    local body_dim_0: Vec2;
-    local body_dim_1: Vec2;
+    // local body_dim_0: Vec2;
+    // local body_dim_1: Vec2;
 
-    if (bool_body_in_knocked_0 == 1) {
-        let (body_dimension_0) = get_hitbox_dimension(character_type_0, curr_body_state_0.counter);
-        assert body_dim_0 = body_dimension_0;
-        tempvar range_check_ptr = range_check_ptr;
-    } else {
-        assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H);
-        tempvar range_check_ptr = range_check_ptr;
-    }
+    let (body_dim_0) = get_hitbox_dimension (
+        character_type_0,
+        curr_body_state_0.state,
+        curr_body_state_0.counter
+    );
 
-    if (bool_body_in_knocked_1 == 1) {
-        let (body_dimension_1) = get_hitbox_dimension(character_type_1, curr_body_state_1.counter);
-        assert body_dim_1 = body_dimension_1;
-        tempvar range_check_ptr = range_check_ptr;
-    } else {
-        assert body_dim_1 = Vec2 (ns_antoc_character_dimension.BODY_HITBOX_W, ns_antoc_character_dimension.BODY_HITBOX_H);
-        tempvar range_check_ptr = range_check_ptr;
-    }
+    let (body_dim_1) = get_hitbox_dimension (
+        character_type_1,
+        curr_body_state_1.state,
+        curr_body_state_1.counter
+    );
+
+    // if (bool_body_in_knocked_0 == 1) {
+    //     let (body_dimension_0) = get_hitbox_dimension(character_type_0, curr_body_state_0.counter);
+    //     assert body_dim_0 = body_dimension_0;
+    //     tempvar range_check_ptr = range_check_ptr;
+    // } else {
+    //     assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H);
+    //     tempvar range_check_ptr = range_check_ptr;
+    // }
+
+    // if (bool_body_in_knocked_1 == 1) {
+    //     let (body_dimension_1) = get_hitbox_dimension(character_type_1, curr_body_state_1.counter);
+    //     assert body_dim_1 = body_dimension_1;
+    //     tempvar range_check_ptr = range_check_ptr;
+    // } else {
+    //     assert body_dim_1 = Vec2 (ns_antoc_character_dimension.BODY_HITBOX_W, ns_antoc_character_dimension.BODY_HITBOX_H);
+    //     tempvar range_check_ptr = range_check_ptr;
+    // }
 
     local hitboxes_0: Hitboxes = Hitboxes(
         action = Rectangle (action_origin_0, action_dimension_0),

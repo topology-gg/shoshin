@@ -28,12 +28,23 @@ namespace ns_antoc_dynamics {
 namespace ns_antoc_character_dimension {
     const BODY_HITBOX_W = 50;
     const BODY_HITBOX_H = 116;
+
     const BODY_KNOCKED_EARLY_HITBOX_W = 60;
     const BODY_KNOCKED_LATE_HITBOX_W = 116;
     const BODY_KNOCKED_GROUND_HITBOX_W = 70;
     const BODY_KNOCKED_EARLY_HITBOX_H = 120;
     const BODY_KNOCKED_LATE_HITBOX_H = 50;
     const BODY_KNOCKED_GROUND_HITBOX_H = 100;
+
+    const BODY_DASH_FORWARD_0_W = 70;
+    const BODY_DASH_FORWARD_1_W = 80;
+    const BODY_DASH_FORWARD_2_W = 80;
+    const BODY_DASH_FORWARD_3_W = 67;
+    const BODY_DASH_FORWARD_0_H = 105;
+    const BODY_DASH_FORWARD_1_H = 97;
+    const BODY_DASH_FORWARD_2_H = 97;
+    const BODY_DASH_FORWARD_3_H = 100;
+
     const HORI_HITBOX_W = 90;
     const HORI_HITBOX_H = 90;
     const HORI_HITBOX_Y = BODY_HITBOX_H / 2;
@@ -177,25 +188,48 @@ namespace ns_antoc_body_state_qualifiers {
 }
 
 namespace ns_antoc_hitbox {
-    func get_body_hitbox_dimension {range_check_ptr}(counter: felt) -> (
+    func get_body_hitbox_dimension {range_check_ptr}(
+        body_state: felt,
+        body_counter: felt
+    ) -> (
         body_dimension: Vec2
     ) {
         alloc_locals;
 
-        let is_counter_le_0 = is_le(counter, 0);
-        if (is_counter_le_0== 1) {
-            return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H));
+        // knocked
+        if (body_state == ns_antoc_body_state.KNOCKED) {
+            let is_counter_le_0 = is_le(body_counter, 0);
+            if (is_counter_le_0== 1) {
+                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H));
+            }
+
+            let is_counter_le_7 = is_le(body_counter, 7);
+            if (is_counter_le_7 == 1) {
+                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_LATE_HITBOX_H));
+            }
+
+            if (body_counter == 8) {
+                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_KNOCKED_GROUND_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_GROUND_HITBOX_H));
+            }
+
+            return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_HITBOX_W, ns_antoc_character_dimension.BODY_HITBOX_H));
         }
 
-        let is_counter_le_7 = is_le(counter, 7);
-        if (is_counter_le_7 == 1) {
-            return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_LATE_HITBOX_H));
+        // dash forward
+        if (body_state == ns_antoc_body_state.DASH_FORWARD) {
+            if (body_counter == 0) {
+                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_DASH_FORWARD_0_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_0_H));
+            }
+            if (body_counter == 1) {
+                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_DASH_FORWARD_1_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_1_H));
+            }
+            if (body_counter == 2) {
+                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_DASH_FORWARD_2_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_2_H));
+            }
+            return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_DASH_FORWARD_3_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_3_H));
         }
 
-        if (counter == 8) {
-            return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_KNOCKED_GROUND_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_GROUND_HITBOX_H));
-        }
-
+        // otherwise
         return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_HITBOX_W, ns_antoc_character_dimension.BODY_HITBOX_H));
     }
 }
