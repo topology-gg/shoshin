@@ -455,19 +455,19 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         sidecut: [
             {
                 size: [239, 141],
-                hitboxOffset: { left: [20, -50], right: [80, -55] },
+                hitboxOffset: { left: [20, -60], right: [80, -60] },
             },
         ],
         slash: [
             {
                 size: [181, 183],
-                hitboxOffset: { left: [25, -78], right: [80, -80] },
+                hitboxOffset: { left: [25, -80], right: [75, -80] },
             },
         ],
         upswing: [
             {
                 size: [205, 167],
-                hitboxOffset: { left: [28, -70], right: [70, -65] },
+                hitboxOffset: { left: [28, -78], right: [72, -78] },
             },
         ],
         walk_backward: [

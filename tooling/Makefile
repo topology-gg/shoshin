@@ -1,4 +1,4 @@
-.PHONY: clean build new_bytecode build_bytecode
+.PHONY: clean build new_bytecode build_bytecode format
 
 build: clean
 	npm run build:wasm && npm i --force && npm run dev
