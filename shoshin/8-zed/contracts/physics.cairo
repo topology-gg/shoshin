@@ -48,7 +48,7 @@ func is_in_various_states_given_character_type {range_check_ptr}(
     }
 }
 
-func get_hitbox_dimension{range_check_ptr} (
+func get_body_hitbox_dimension{range_check_ptr} (
     character_type: felt,
     body_state: felt,
     body_counter: felt
@@ -66,6 +66,58 @@ func get_hitbox_dimension{range_check_ptr} (
         assert 0 = 1;
     }
     return ( body_dimension = Vec2(0,0) );
+}
+
+func get_action_hitbox{range_check_ptr} (
+    character_type: felt,
+    bool_is_active: felt,
+    bool_is_attack_active: felt,
+    bool_is_block_active: felt,
+    dir: felt,
+    pos_x: felt,
+    pos_y: felt,
+    body_hitbox_dimension: Vec2,
+    body_state: felt,
+    body_counter: felt
+) -> (
+    action_hitbox: Rectangle
+) {
+
+    if (character_type == ns_character_type.JESSICA) {
+        return ns_jessica_hitbox.get_action_hitbox(
+            bool_is_active,
+            bool_is_attack_active,
+            bool_is_block_active,
+            dir,
+            pos_x,
+            pos_y,
+            body_hitbox_dimension,
+            body_state,
+            body_counter
+        );
+    }
+    if (character_type == ns_character_type.ANTOC) {
+        return ns_antoc_hitbox.get_action_hitbox(
+            bool_is_active,
+            bool_is_attack_active,
+            bool_is_block_active,
+            dir,
+            pos_x,
+            pos_y,
+            body_hitbox_dimension,
+            body_state,
+            body_counter
+        );
+    }
+
+    with_attr error_message("Character type is not recognized.") {
+        assert 0 = 1;
+    }
+    return (action_hitbox = Rectangle(
+            Vec2(0, 0),
+            Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM),
+    ));
+
 }
 
 func _physicality{range_check_ptr}(
@@ -118,138 +170,77 @@ func _physicality{range_check_ptr}(
         bool_body_in_active_1: felt,
     ) = is_in_various_states_given_character_type (character_type_1, curr_body_state_1.state, curr_body_state_1.counter);
 
-    local action_origin_0: Vec2;
-    local action_dimension_0: Vec2;
-    local is_action_0_attack: felt;
-    local action_origin_1: Vec2;
-    local action_dimension_1: Vec2;
-    local is_action_1_attack: felt;
-
-    // TODO: hitbox dimensions should be decoded from attack type per character type!!
-
-    if (bool_body_in_active_0 == 1) {
-        if (bool_body_in_atk_active_0 == 1) {
-            if (curr_body_state_0.dir == 1) {
-                // # facing right
-                assert action_origin_0 = Vec2(
-                    candidate_physics_state_0.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W - ns_hitbox.NUDGE,
-                    candidate_physics_state_0.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
-                );
-            } else {
-                // # facing left
-                assert action_origin_0 = Vec2(
-                    candidate_physics_state_0.pos.x - ns_jessica_character_dimension.SLASH_HITBOX_W + ns_hitbox.NUDGE,
-                    candidate_physics_state_0.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
-                );
-            }
-            assert action_dimension_0 = Vec2 (ns_jessica_character_dimension.SLASH_HITBOX_W, ns_jessica_character_dimension.SLASH_HITBOX_H);
-            assert is_action_0_attack = 1;
-        }
-        if (bool_body_in_block_0 == 1) {
-            if (curr_body_state_0.dir == 1) {
-                // # facing right
-                assert action_origin_0 = Vec2(
-                    candidate_physics_state_0.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W - ns_hitbox.NUDGE,
-                    candidate_physics_state_0.pos.y + ns_jessica_character_dimension.BLOCK_HITBOX_Y
-                );
-            } else {
-                // # facing left
-                assert action_origin_0 = Vec2(
-                    candidate_physics_state_0.pos.x - ns_jessica_character_dimension.BLOCK_HITBOX_W + ns_hitbox.NUDGE,
-                    candidate_physics_state_0.pos.y + ns_jessica_character_dimension.BLOCK_HITBOX_Y
-                );
-            }
-            assert action_dimension_0 = Vec2 (ns_jessica_character_dimension.BLOCK_HITBOX_W, ns_jessica_character_dimension.BLOCK_HITBOX_H);
-            assert is_action_0_attack = 0;
-        }
-    } else {
-        assert action_origin_0 = Vec2 (ns_scene.BIGNUM, ns_scene.BIGNUM);
-        assert action_dimension_0 = Vec2 (0, 0);
-        assert is_action_0_attack = 0;
-    }
-
-    if (bool_body_in_active_1 == 1) {
-        if (bool_body_in_atk_active_1 == 1) {
-            if (curr_body_state_1.dir == 1) {
-                // # facing right
-                assert action_origin_1 = Vec2(
-                    candidate_physics_state_1.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W - ns_hitbox.NUDGE,
-                    candidate_physics_state_1.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
-                );
-            } else {
-                // # facing left
-                assert action_origin_1 = Vec2(
-                    candidate_physics_state_1.pos.x - ns_jessica_character_dimension.SLASH_HITBOX_W + ns_hitbox.NUDGE,
-                    candidate_physics_state_1.pos.y + ns_jessica_character_dimension.SLASH_HITBOX_Y
-                );
-            }
-            assert action_dimension_1 = Vec2 (ns_jessica_character_dimension.SLASH_HITBOX_W, ns_jessica_character_dimension.SLASH_HITBOX_H);
-            assert is_action_1_attack = 1;
-        }
-        if (bool_body_in_block_1 == 1) {
-            if (curr_body_state_1.dir == 1) {
-                // # facing right
-                assert action_origin_1 = Vec2(
-                    candidate_physics_state_1.pos.x + ns_jessica_character_dimension.BODY_HITBOX_W - ns_hitbox.NUDGE,
-                    candidate_physics_state_1.pos.y + ns_jessica_character_dimension.BLOCK_HITBOX_Y
-                );
-            } else {
-                // # facing left
-                assert action_origin_1 = Vec2(
-                    candidate_physics_state_1.pos.x - ns_jessica_character_dimension.BLOCK_HITBOX_W + ns_hitbox.NUDGE,
-                    candidate_physics_state_1.pos.y + ns_jessica_character_dimension.BLOCK_HITBOX_Y
-                );
-            }
-            assert action_dimension_1 = Vec2 (ns_jessica_character_dimension.BLOCK_HITBOX_W, ns_jessica_character_dimension.BLOCK_HITBOX_H);
-            assert is_action_1_attack = 0;
-        }
-    } else {
-        assert action_origin_1 = Vec2 (ns_scene.BIGNUM, ns_scene.BIGNUM);
-        assert action_dimension_1 = Vec2 (0, 0);
-        assert is_action_1_attack = 0;
-    }
-
-    // # determine body dimension (knocked state has a wider hitbox)
-    // local body_dim_0: Vec2;
-    // local body_dim_1: Vec2;
-
-    let (body_dim_0) = get_hitbox_dimension (
+    // compute body hitboxes
+    let (body_dim_0) = get_body_hitbox_dimension (
         character_type_0,
         curr_body_state_0.state,
         curr_body_state_0.counter
     );
-
-    let (body_dim_1) = get_hitbox_dimension (
+    let (body_dim_1) = get_body_hitbox_dimension (
         character_type_1,
         curr_body_state_1.state,
         curr_body_state_1.counter
     );
 
-    // if (bool_body_in_knocked_0 == 1) {
-    //     let (body_dimension_0) = get_hitbox_dimension(character_type_0, curr_body_state_0.counter);
-    //     assert body_dim_0 = body_dimension_0;
-    //     tempvar range_check_ptr = range_check_ptr;
-    // } else {
-    //     assert body_dim_0 = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H);
-    //     tempvar range_check_ptr = range_check_ptr;
-    // }
+    // compute action hitboxes
+    let (action_0: Rectangle) = get_action_hitbox (
+        character_type_0,
+        bool_body_in_active_0,
+        bool_body_in_atk_active_0,
+        bool_body_in_block_0,
+        curr_body_state_0.dir,
+        candidate_physics_state_0.pos.x,
+        candidate_physics_state_0.pos.y,
+        body_dim_0,
+        curr_body_state_0.state,
+        curr_body_state_0.counter
+    );
+    let (action_1: Rectangle) = get_action_hitbox (
+        character_type_1,
+        bool_body_in_active_1,
+        bool_body_in_atk_active_1,
+        bool_body_in_block_1,
+        curr_body_state_1.dir,
+        candidate_physics_state_1.pos.x,
+        candidate_physics_state_1.pos.y,
+        body_dim_1,
+        curr_body_state_1.state,
+        curr_body_state_1.counter
+    );
 
-    // if (bool_body_in_knocked_1 == 1) {
-    //     let (body_dimension_1) = get_hitbox_dimension(character_type_1, curr_body_state_1.counter);
-    //     assert body_dim_1 = body_dimension_1;
-    //     tempvar range_check_ptr = range_check_ptr;
-    // } else {
-    //     assert body_dim_1 = Vec2 (ns_antoc_character_dimension.BODY_HITBOX_W, ns_antoc_character_dimension.BODY_HITBOX_H);
-    //     tempvar range_check_ptr = range_check_ptr;
-    // }
+    // compute is_action_x_attack flags
+    local is_action_0_attack: felt;
+    local is_action_1_attack: felt;
+    if (bool_body_in_active_0 == 1) {
+        if (bool_body_in_atk_active_0 == 1) {
+            assert is_action_0_attack = 1;
+        }
+        if (bool_body_in_block_0 == 1) {
+            assert is_action_0_attack = 0;
+        }
+    } else {
+        assert is_action_0_attack = 0;
+    }
 
+    if (bool_body_in_active_1 == 1) {
+        if (bool_body_in_atk_active_1 == 1) {
+            assert is_action_1_attack = 1;
+        }
+        if (bool_body_in_block_1 == 1) {
+            assert is_action_1_attack = 0;
+        }
+    } else {
+        assert is_action_1_attack = 0;
+    }
+
+    // assemble the hitboxes
     local hitboxes_0: Hitboxes = Hitboxes(
-        action = Rectangle (action_origin_0, action_dimension_0),
+        action = action_0,
         body = Rectangle (candidate_physics_state_0.pos, body_dim_0)
     );
 
     local hitboxes_1: Hitboxes = Hitboxes(
-        action = Rectangle (action_origin_1, action_dimension_1),
+        action = action_1,
         body = Rectangle (candidate_physics_state_1.pos, body_dim_1)
     );
 
@@ -436,7 +427,7 @@ func produce_stimulus_given_conditions {range_check_ptr} (
             return ns_stimulus.KNOCKED;
         }
         // hit when grounded but critical integrity => knocked
-        if (is_integrity_critical == 0) {
+        if (is_integrity_critical == 1) {
             return ns_stimulus.KNOCKED;
         }
         // otherwise => hurt
