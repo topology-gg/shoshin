@@ -1,11 +1,19 @@
 import { CHARACTER_ACTIONS_DETAIL } from '../constants/constants';
-import { Condition, ElementType, Operator } from './Condition';
+import {
+    Condition,
+    ConditionElement,
+    ElementType,
+    Operator,
+} from './Condition';
 import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
 
-//TODO - make conditions appendable,
+//Layer conditions have extra metadate while they are being edited
+interface LayerCondition extends Condition {
+    isInverted: boolean;
+}
 export interface Layer {
-    conditions: Condition[];
+    conditions: LayerCondition[];
     action: {
         //Id is either that action decimal number or combo decimal number (both are defined in shoshin smart contracts)
         id: number;
@@ -36,13 +44,29 @@ export const layersToAgentComponents = (
     layers: Layer[],
     character: number
 ): { mentalStates: MentalState[]; conditions: Condition[]; trees: Tree[] } => {
+    const layersInverted = layers.map((layer) => {
+        const updatedConditions = layer.conditions.map((condition) => {
+            if (condition.isInverted) {
+                return {
+                    ...condition,
+                    elements: getInverseConditionElements(condition.elements),
+                };
+            }
+            return condition;
+        });
+
+        return {
+            ...layer,
+            conditions: updatedConditions,
+        };
+    });
     const startMentalState: MentalState = {
         state: 'Start',
         action: 0,
     };
 
     const generatedMentalStates = [
-        ...layers.map((layer, i) => {
+        ...layersInverted.map((layer, i) => {
             return {
                 state: `ms_${i}`,
                 action: layer.action.id,
@@ -50,7 +74,7 @@ export const layersToAgentComponents = (
         }),
     ];
 
-    let unflattenedConditions = layers.map((layer, i) => {
+    let unflattenedConditions = layersInverted.map((layer, i) => {
         let terminatingCondition;
         if (layer.action.isCombo == true) {
             //if combo, we need to get combo length, and put in the action for the node
@@ -82,7 +106,7 @@ export const layersToAgentComponents = (
         ? unflattenedConditions.flat()
         : [];
 
-    const rootConditions = layers.map((layer) => {
+    const rootConditions = layersInverted.map((layer) => {
         return appendConditions(layer.conditions);
     });
 
@@ -207,25 +231,30 @@ const appendConditions = (conditions: Condition[]) => {
         key: `${conditions[0].key}`,
     };
 };
+
+const getInverseConditionElements = (conditionElements: ConditionElement[]) => {
+    return [
+        {
+            value: Operator.Not,
+            type: ElementType.Operator,
+        },
+        {
+            value: Operator.OpenParenthesis,
+            type: ElementType.Operator,
+        },
+        ...conditionElements,
+        {
+            value: Operator.CloseParenthesis,
+            type: ElementType.Operator,
+        },
+    ];
+};
+
 const getInverseCondition = (id: number, conditions: Condition[]) => {
     const elementsAppended = getAppendedElements(conditions);
 
     return {
-        elements: [
-            {
-                value: Operator.Not,
-                type: ElementType.Operator,
-            },
-            {
-                value: Operator.OpenParenthesis,
-                type: ElementType.Operator,
-            },
-            ...elementsAppended,
-            {
-                value: Operator.CloseParenthesis,
-                type: ElementType.Operator,
-            },
-        ],
+        elements: getInverseConditionElements(elementsAppended),
         displayName: 'is_condition_not_false',
         key: `${conditionKeyEncoding.inverse}${id}`,
     };
@@ -395,6 +424,7 @@ const alwaysTrueCondition = {
     ],
     displayName: 'always_true',
     key: '1686113964152',
+    isInverted: false,
 };
 
 const interruptCondtions = {

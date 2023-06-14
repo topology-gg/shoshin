@@ -24,6 +24,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import BlurrableListItemText from '../ui/BlurrableListItemText';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
+// I think we can just parse this index from id={....}
 let currentMenu = 0;
 let currentConditionMenu = 0;
 
@@ -88,8 +89,10 @@ interface LayerProps {
     // -1 index is a new condition
     handleChooseCondition: (condition: Condition, index: number) => void;
     handleRemoveCondition: (layerIndex: number, conditionIndex: number) => void;
+    handleInvertCondition: (layerIndex: number, conditionIndex: number) => void;
 }
 
+//probably can use spread operator for props
 const DraggableLayer = ({
     layer,
     index,
@@ -101,6 +104,7 @@ const DraggableLayer = ({
     handleChooseCondition,
     handleRemoveCondition,
     handleRemoveLayer,
+    handleInvertCondition,
 }: LayerProps) => {
     return (
         <Draggable draggableId={index.toString()} index={index}>
@@ -125,10 +129,68 @@ const DraggableLayer = ({
                         handleChooseCondition={handleChooseCondition}
                         handleRemoveLayer={handleRemoveLayer}
                         handleRemoveCondition={handleRemoveCondition}
+                        handleInvertCondition={handleInvertCondition}
                     />
                 </div>
             )}
         </Draggable>
+    );
+};
+
+//override right click for conditions
+const ConditionContextMenu = ({
+    children,
+    handleInvertCondition,
+    layerIndex,
+    conditionIndex,
+}) => {
+    const [contextMenu, setContextMenu] = React.useState<{
+        mouseX: number;
+        mouseY: number;
+    } | null>(null);
+
+    const handleContextMenu = (event: React.MouseEvent) => {
+        event.preventDefault();
+        setContextMenu(
+            contextMenu === null
+                ? {
+                      mouseX: event.clientX + 2,
+                      mouseY: event.clientY - 6,
+                  }
+                : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+                  // Other native context menus might behave different.
+                  // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+                  null
+        );
+    };
+
+    const handleClose = () => {
+        setContextMenu(null);
+    };
+
+    const handleInvertClick = (event) => {
+        handleInvertCondition(layerIndex, conditionIndex);
+        setContextMenu(null);
+    };
+
+    return (
+        <div onContextMenu={handleContextMenu} style={{ width: 'fit-content' }}>
+            {children}
+            <Menu
+                open={contextMenu !== null}
+                onClose={handleClose}
+                anchorReference="anchorPosition"
+                anchorPosition={
+                    contextMenu !== null
+                        ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                        : undefined
+                }
+            >
+                <MenuItem onClick={handleInvertClick}>
+                    Invert Condition
+                </MenuItem>
+            </Menu>
+        </div>
     );
 };
 
@@ -143,6 +205,7 @@ const Layer = ({
     handleChooseCondition,
     handleRemoveCondition,
     handleRemoveLayer,
+    handleInvertCondition,
 }: LayerProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -256,22 +319,34 @@ const Layer = ({
                 </Grid>
                 <Grid item xs={4}>
                     {layer.conditions.map((condition, index) => (
-                        <Chip
-                            label={condition.displayName}
-                            className={'gambitButton conditionButton'}
-                            key={`${i}`}
-                            id={`condition-btn-${i}-${index}`}
-                            onClick={handleConditionClick}
-                            onDelete={
-                                layer.conditions.length > 1
-                                    ? handleRemoveConditionClick
-                                    : undefined
-                            }
-                            style={{
-                                fontFamily: 'Raleway',
-                            }}
-                        />
+                        <ConditionContextMenu
+                            handleInvertCondition={handleInvertCondition}
+                            layerIndex={i}
+                            conditionIndex={index}
+                        >
+                            <Chip
+                                label={condition.displayName}
+                                variant="outlined"
+                                className={
+                                    condition.isInverted
+                                        ? 'gambitButton invertedConditionButton'
+                                        : 'gambitButton conditionButton'
+                                }
+                                key={`${i}`}
+                                id={`condition-btn-${i}-${index}`}
+                                onClick={handleConditionClick}
+                                onDelete={
+                                    layer.conditions.length > 1
+                                        ? handleRemoveConditionClick
+                                        : undefined
+                                }
+                                style={{
+                                    fontFamily: 'Raleway',
+                                }}
+                            />
+                        </ConditionContextMenu>
                     ))}
+
                     <IconButton
                         onClick={handleConditionClick}
                         id={`condition-btn-${i}-new`}
@@ -464,6 +539,20 @@ const Gambit = ({
         setLayers(updatedLayers);
     };
 
+    const handleInvertCondition = (layerIndex, conditionIndex) => {
+        let updatedLayers = [...layers];
+
+        if (
+            conditionIndex >= 0 &&
+            conditionIndex <= updatedLayers[layerIndex].conditions.length
+        ) {
+            updatedLayers[layerIndex].conditions[conditionIndex].isInverted =
+                !updatedLayers[layerIndex].conditions[conditionIndex]
+                    .isInverted;
+        }
+        setLayers(updatedLayers);
+    };
+
     const LayerList = React.memo(function LayerList({ layers }: any) {
         return layers.map((layer: Layer, index: number) => (
             <DraggableLayer
@@ -477,6 +566,7 @@ const Gambit = ({
                 conditions={conditions}
                 handleChooseCondition={handleChooseCondition}
                 handleRemoveCondition={handleRemoveCondition}
+                handleInvertCondition={handleInvertCondition}
                 combos={combos}
             />
         ));
