@@ -18,7 +18,7 @@ import {
     CHARACTERS_ACTIONS,
 } from '../../constants/constants';
 import BlurrableButton from '../ui/BlurrableButton';
-import { Layer, defaultLayer } from '../../types/Layer';
+import { Layer, alwaysTrueCondition, defaultLayer } from '../../types/Layer';
 import { Condition } from '../../types/Condition';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import BlurrableListItemText from '../ui/BlurrableListItemText';
@@ -347,12 +347,15 @@ const Layer = ({
                         </ConditionContextMenu>
                     ))}
 
-                    <IconButton
-                        onClick={handleConditionClick}
-                        id={`condition-btn-${i}-new`}
-                    >
-                        <AddIcon sx={{ mr: '3px' }} />
-                    </IconButton>
+                    {layer.conditions.length >= 1 &&
+                    !Object.is(layer.conditions[0], alwaysTrueCondition) ? (
+                        <IconButton
+                            onClick={handleConditionClick}
+                            id={`condition-btn-${i}-new`}
+                        >
+                            <AddIcon sx={{ mr: '3px' }} />
+                        </IconButton>
+                    ) : null}
                 </Grid>
                 <Menu
                     id={`conditions-menu-${i}`}
@@ -434,8 +437,12 @@ const Gambit = ({
     combos,
 }: GambitProps) => {
     const handleCreateLayer = () => {
+        console.log('default layer is ', defaultLayer);
+
+        // We need to make a deep copy otherwise this exported object is reassigned
+        const deepCopy = JSON.parse(JSON.stringify(defaultLayer));
         // insert layer at lowest priority
-        setLayers([...layers, defaultLayer]);
+        setLayers([...layers, deepCopy]);
     };
 
     let characterIndex = Object.keys(Character).indexOf(character);

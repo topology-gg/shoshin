@@ -399,7 +399,7 @@ const getInterruptedCondition = (character: number, id: number) => {
 };
 
 // These are conditions but typescript wants enum
-const alwaysTrueCondition = {
+export const alwaysTrueCondition = {
     elements: [
         {
             value: '(',

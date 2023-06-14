@@ -273,7 +273,9 @@ export default function Home() {
                 editorMode != EditorMode.ReadOnly
             ) {
                 console.log('new layer');
-                setLayers([...layers, defaultLayer]);
+                // We need to make a deep copy otherwise this exported object is reassigned
+                const deepCopy = JSON.parse(JSON.stringify(defaultLayer));
+                setLayers([...layers, deepCopy]);
             }
         }
     };
