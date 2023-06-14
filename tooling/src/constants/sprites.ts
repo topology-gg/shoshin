@@ -243,7 +243,19 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         dash_forward: [
             {
                 size: [193, 142],
-                hitboxOffset: { left: [90, -50], right: [11, -50] },
+                hitboxOffset: { left: [115, -50], right: [26, -50] },
+            },
+            {
+                size: [193, 142],
+                hitboxOffset: { left: [115, -50], right: [45, -50] },
+            },
+            {
+                size: [193, 142],
+                hitboxOffset: { left: [115, -50], right: [45, -50] },
+            },
+            {
+                size: [193, 142],
+                hitboxOffset: { left: [100, -50], right: [35, -50] },
             },
         ],
         hori: [
@@ -255,7 +267,7 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         idle: [
             {
                 size: [180, 142],
-                hitboxOffset: { left: [92, -54], right: [10, -54] },
+                hitboxOffset: { left: [92, -54], right: [8, -54] },
             },
         ],
         knocked: [
@@ -363,7 +375,19 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         dash_forward: [
             {
                 size: [113, 104],
-                hitboxOffset: { left: [40, -50], right: [60, -50] },
+                hitboxOffset: { left: [50, -50], right: [60, -50] },
+            },
+            {
+                size: [113, 104],
+                hitboxOffset: { left: [72, -50], right: [68, -50] },
+            },
+            {
+                size: [113, 104],
+                hitboxOffset: { left: [95, -50], right: [75, -50] },
+            },
+            {
+                size: [113, 104],
+                hitboxOffset: { left: [95, -50], right: [75, -50] },
             },
         ],
         hurt: [

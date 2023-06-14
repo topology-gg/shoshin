@@ -1,4 +1,4 @@
-.PHONY: clean build
+.PHONY: clean build new_bytecode build_bytecode
 
 build: clean
 	npm run build:wasm && npm i --force && npm run dev
@@ -8,3 +8,11 @@ clean:
 
 format:
 	npm run format:fix
+
+new_bytecode:
+	cp ../shoshin/compiled_shoshin.json wasm/shoshin/src/bytecode_shoshin.json
+
+build_bytecode:
+	npm run build:wasm
+
+update: new_bytecode build_bytecode
