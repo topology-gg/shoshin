@@ -382,7 +382,12 @@ export default class Simulator extends Phaser.Scene {
         player.setX(pos.x + spriteLeftAdjustment - hitboxW / 2);
         player.setY(-pos.y + spriteTopAdjustment);
 
-        console.log('setTexture:', characterName, bodyStateName, bodyStateCounter)
+        console.log(
+            'setTexture:',
+            characterName,
+            bodyStateName,
+            bodyStateCounter
+        );
         player.setTexture(
             `${characterName}-${bodyStateName}`,
             `frame_${bodyStateCounter}.png`
