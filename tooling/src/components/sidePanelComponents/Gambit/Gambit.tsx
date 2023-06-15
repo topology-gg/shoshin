@@ -327,7 +327,6 @@ const Layer = ({
                         >
                             <Chip
                                 label={condition.displayName}
-                                variant="outlined"
                                 className={
                                     !condition.isInverted
                                         ? `${styles.gambitButton} ${styles.conditionButton}`
