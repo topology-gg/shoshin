@@ -329,9 +329,9 @@ const Layer = ({
                                 label={condition.displayName}
                                 variant="outlined"
                                 className={
-                                    condition.isInverted
-                                        ? `${styles.gambitButton} ${styles.invertedConditionButton}`
-                                        : `${styles.gambitButton} ${styles.conditionButton}`
+                                    !condition.isInverted
+                                        ? `${styles.gambitButton} ${styles.conditionButton}`
+                                        : `${styles.gambitButton} ${styles.invertedConditionButton}`
                                 }
                                 key={`${i}`}
                                 id={`condition-btn-${i}-${index}`}
