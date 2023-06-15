@@ -307,6 +307,7 @@ export const ActionDetailAntoc: CharacterActions = {
     MoveBackward: { id: 5, duration: 1 },
     DashForward: { id: 6, duration: 4 },
     DashBackward: { id: 7, duration: 4 },
+    StepForward: { id: 8, duration: 2 },
     Jump: { id: 9, duration: 6 },
 };
 

@@ -352,6 +352,12 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
                 hitboxOffset: { left: [13, -102], right: [87, -102] },
             },
         ],
+        step_forward: [
+            {
+                size: [343, 239],
+                hitboxOffset: { left: [31, -102], right: [112, -102] },
+            },
+        ],
     },
     jessica: {
         block: [

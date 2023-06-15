@@ -1,0 +1,95 @@
+{
+	"frames": {
+		"frame_0.png": {
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 343,
+				"h": 239
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 343,
+				"h": 239
+			},
+			"sourceSize": {
+				"w": 343,
+				"h": 239
+			}
+		},
+        "frame_1.png": {
+			"frame": {
+				"x": 344,
+				"y": 1,
+				"w": 343,
+				"h": 239
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 343,
+				"h": 239
+			},
+			"sourceSize": {
+				"w": 343,
+				"h": 239
+			}
+		},
+        "frame_2.png": {
+			"frame": {
+				"x": 687,
+				"y": 1,
+				"w": 343,
+				"h": 239
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 343,
+				"h": 239
+			},
+			"sourceSize": {
+				"w": 343,
+				"h": 239
+			}
+		},
+        "frame_3.png": {
+			"frame": {
+				"x": 1030,
+				"y": 1,
+				"w": 343,
+				"h": 239
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 343,
+				"h": 239
+			},
+			"sourceSize": {
+				"w": 343,
+				"h": 239
+			}
+		}
+	},
+	"meta": {
+		"app": "https://codeshack.io/images-sprite-sheet-generator/",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 1372,
+			"h": 239
+		},
+		"scale": "1"
+	}
+}
