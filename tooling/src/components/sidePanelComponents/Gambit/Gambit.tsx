@@ -16,12 +16,13 @@ import {
     Action,
     Character,
     CHARACTERS_ACTIONS,
-} from '../../constants/constants';
-import BlurrableButton from '../ui/BlurrableButton';
-import { Layer, alwaysTrueCondition, defaultLayer } from '../../types/Layer';
-import { Condition } from '../../types/Condition';
+} from '../../../constants/constants';
+import BlurrableButton from '../../ui/BlurrableButton';
+import { Layer, alwaysTrueCondition, defaultLayer } from '../../../types/Layer';
+import { Condition } from '../../../types/Condition';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import BlurrableListItemText from '../ui/BlurrableListItemText';
+import BlurrableListItemText from '../../ui/BlurrableListItemText';
+import styles from './Gambit.module.css';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 // I think we can just parse this index from id={....}
@@ -329,8 +330,8 @@ const Layer = ({
                                 variant="outlined"
                                 className={
                                     condition.isInverted
-                                        ? 'gambitButton invertedConditionButton'
-                                        : 'gambitButton conditionButton'
+                                        ? `${styles.gambitButton} ${styles.invertedConditionButton}`
+                                        : `${styles.gambitButton} ${styles.conditionButton}`
                                 }
                                 key={`${i}`}
                                 id={`condition-btn-${i}-${index}`}
@@ -379,7 +380,7 @@ const Layer = ({
                 </Menu>
                 <Grid item xs={6}>
                     <BlurrableButton
-                        className={'gambitButton actionButton'}
+                        className={`${styles.gambitButton} ${styles.actionButton}`}
                         key={`${i}`}
                         id={`condition-btn-${i}`}
                         onClick={handleClick}
