@@ -213,6 +213,11 @@ export default class Simulator extends Phaser.Scene {
             'images/jessica/jump/spritesheet.png',
             'images/jessica/jump/spritesheet.json'
         );
+        this.load.atlas(
+            `jessica-gatotsu`,
+            'images/jessica/gatotsu/spritesheet.png',
+            'images/jessica/gatotsu/spritesheet.json'
+        );
 
         this.load.image(
             'arena_bg',

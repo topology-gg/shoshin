@@ -54,6 +54,7 @@ export const bodyStateNumberToName = {
         110: 'dash_forward',
         120: 'dash_backward',
         130: 'jump',
+        140: 'gatotsu',
     },
     antoc: {
         0: 'idle',
@@ -171,7 +172,8 @@ export enum KeysToActionsJessica {
     'A' = 'MoveBackward',
     'E' = 'DashForward',
     'Q' = 'DashBackward',
-    'C' = 'Jump',
+    'W' = 'Jump',
+    'Z' = 'Gatotsu',
 }
 
 export enum KeysToActionsAntoc {
@@ -183,7 +185,7 @@ export enum KeysToActionsAntoc {
     'A' = 'MoveBackward',
     'E' = 'DashForward',
     'Q' = 'DashBackward',
-    'C' = 'Jump',
+    'W' = 'Jump',
 }
 
 // Mapping such that { 'Rest' : '-' }
@@ -213,6 +215,7 @@ export enum ActionsJessica {
     DashForward = 7,
     DashBackward = 8,
     Jump = 9,
+    Gatotsu = 10,
 }
 
 export enum ActionsAntoc {
@@ -240,6 +243,7 @@ export const characterActionToNumber = {
         DashForward: 7,
         DashBackward: 8,
         Jump: 9,
+        Gatotsu: 10,
     },
     antoc: {
         Rest: 0,
@@ -296,6 +300,7 @@ export const ActionDetailJessica: CharacterActions = {
     DashForward: { id: 7, duration: 1 },
     DashBackward: { id: 8, duration: 1 },
     Jump: { id: 9, duration: 6 },
+    Gatotsu: { id: 10, duration: 8 },
 };
 
 export const ActionDetailAntoc: CharacterActions = {
