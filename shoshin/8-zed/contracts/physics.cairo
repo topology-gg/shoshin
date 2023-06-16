@@ -16,7 +16,7 @@ from contracts.constants.constants import (
     ns_hitbox,
 )
 from contracts.constants.constants_jessica import (
-    ns_jessica_character_dimension, ns_jessica_body_state_qualifiers, ns_jessica_hitbox
+    ns_jessica_character_dimension, ns_jessica_body_state_qualifiers, ns_jessica_hitbox, ns_jessica_body_state
 )
 from contracts.constants.constants_antoc import (
     ns_antoc_character_dimension, ns_antoc_body_state_qualifiers, ns_antoc_hitbox
@@ -314,6 +314,8 @@ func _physicality{range_check_ptr}(
         self_integrity = curr_body_state_0.integrity,
         self_character_type = character_type_0,
         opp_character_type = character_type_1,
+        self_body_state = curr_body_state_0.state,
+        opp_body_state = curr_body_state_1.state
     );
 
     let curr_stimulus_1 = produce_stimulus_given_conditions (
@@ -329,6 +331,8 @@ func _physicality{range_check_ptr}(
         self_integrity = curr_body_state_1.integrity,
         self_character_type = character_type_1,
         opp_character_type = character_type_0,
+        self_body_state = curr_body_state_1.state,
+        opp_body_state = curr_body_state_0.state
     );
 
     return (
@@ -354,6 +358,8 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     self_integrity: felt,
     self_character_type: felt,
     opp_character_type: felt,
+    self_body_state: felt,
+    opp_body_state: felt
 ) -> felt {
     alloc_locals;
 
@@ -364,11 +370,17 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     if (bool_self_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
         // self is jessica & opp is jessica
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.JESSICA) {
+            if (self_body_state == ns_jessica_body_state.GATOTSU) {
+                return ns_stimulus.NULL;
+            }
             return ns_stimulus.CLASH;
         }
 
         // self is jessica & opp is antoc
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
+            if (self_body_state == ns_jessica_body_state.GATOTSU) {
+                return ns_stimulus.CLASH;
+            }
             return ns_stimulus.KNOCKED;
         }
 
@@ -387,6 +399,10 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     if (bool_self_block_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
         // self is jessica & opp is jessica
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.JESSICA) {
+            // jessica's gatotsu destroy's jessica's block
+            if (opp_body_state == ns_jessica_body_state.GATOTSU) {
+                return ns_stimulus.KNOCKED;
+            }
             return ns_stimulus.NULL;
         }
 
@@ -397,6 +413,10 @@ func produce_stimulus_given_conditions {range_check_ptr} (
 
         // self is antoc & opp is jessica
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
+            // jessica's gatotsu breaks antoc's block
+            if (opp_body_state == ns_jessica_body_state.GATOTSU) {
+                return ns_stimulus.CLASH;
+            }
             return ns_stimulus.NULL;
         }
 
@@ -412,18 +432,28 @@ func produce_stimulus_given_conditions {range_check_ptr} (
             return ns_stimulus.CLASH;
         }
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
+            if (self_body_state == ns_jessica_body_state.GATOTSU) {
+                return ns_stimulus.NULL;
+            }
             return ns_stimulus.KNOCKED;
         }
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
+            if (opp_body_state == ns_jessica_body_state.GATOTSU) {
+                return ns_stimulus.KNOCKED;
+            }
             return ns_stimulus.CLASH;
         }
     }
 
-    // (hit) when hit, HURT if critical integrity  in mid air, HURT otherwise
+    // getting hit
     let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
     if (bool_self_hit == 1) {
         // hit when in mid-air => knocked
         if (bool_self_ground == 0) {
+            return ns_stimulus.KNOCKED;
+        }
+        // hit by gatotsu => knocked
+        if (opp_body_state == ns_jessica_body_state.GATOTSU) {
             return ns_stimulus.KNOCKED;
         }
         // hit when grounded but critical integrity => knocked
