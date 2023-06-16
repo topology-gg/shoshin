@@ -118,6 +118,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         KNOCKED: felt,
         JUMP: felt,
         STEP_FORWARD: felt,
+        GATOTSU: felt,
 
         MAX_VEL_MOVE_FP: felt,
         MIN_VEL_MOVE_FP: felt,
@@ -130,6 +131,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         DEACC_FP: felt,
         JUMP_VEL_Y_FP: felt,
         STEP_FORWARD_VEL_X_FP: felt,
+        GATOTSU_VEL_X_FP: felt,
         BODY_KNOCKED_ADJUST_W: felt,
     ) = _character_specific_constants (character_type);
 
@@ -234,7 +236,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
             }
         }
 
-        jmp update_vel_knocked_jump;
+        jmp update_vel_knocked_jump_gatotsu;
     }
 
     if (state == JUMP) {
@@ -258,7 +260,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
             }
         }
 
-        jmp update_vel_knocked_jump;
+        jmp update_vel_knocked_jump_gatotsu;
     }
 
     if (state == STEP_FORWARD) {
@@ -284,16 +286,20 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     if (state == GATOTSU) {
         local vel;
         if (dir == 1) {
-            assert vel = DASH_VEL_FP;
+            assert vel = GATOTSU_VEL_X_FP;
         } else {
-            assert vel = (-1) * DASH_VEL_FP;
+            assert vel = (-1) * GATOTSU_VEL_X_FP;
         }
         if (counter == 4) {
             assert vel_fp_nxt = Vec2(vel, 0);
         } else {
-            assert vel_fp_nxt = physics_state.vel_fp;
+            if (counter == 5) {
+                assert vel_fp_nxt = Vec2(vel/10, 0);
+            } else {
+                assert vel_fp_nxt = Vec2(0, 0);
+            }
         }
-        assert acc_fp_x = ns_dynamics.FRICTION_ACC_FP;
+        assert acc_fp_x = 0;
         assert acc_fp_y = 0;
         tempvar range_check_ptr = range_check_ptr;
         jmp update_pos;
@@ -322,7 +328,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     tempvar range_check_ptr = range_check_ptr;
     jmp update_pos;
 
-    update_vel_knocked_jump:
+    update_vel_knocked_jump_gatotsu:
     // reusing dash's max & min velocity for knocked physics for now
     // note: only x-axis velocity is capped by max & min
     let (vel_fp_nxt_: Vec2) = _euler_forward_vel_no_hitbox(

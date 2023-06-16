@@ -25,7 +25,7 @@ namespace ns_jessica_dynamics {
 
     const JUMP_VEL_Y_FP = 350 * ns_dynamics.SCALE_FP;
 
-    const GATOTSU_VEL_X_FP = 450 * ns_dynamics.SCALE_FP;
+    const GATOTSU_VEL_X_FP = 1200 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_jessica_character_dimension {
@@ -64,9 +64,9 @@ namespace ns_jessica_character_dimension {
     const BLOCK_HITBOX_H = 60;
     const BLOCK_HITBOX_Y = BODY_HITBOX_H / 2;
 
-    const GATOTSU_HITBOX_W = 40;
+    const GATOTSU_HITBOX_W = 80;
     const GATOTSU_HITBOX_H = 20;
-    const GATOTSU_HITBOX_Y = BODY_HITBOX_H / 2;
+    const GATOTSU_HITBOX_Y = BODY_HITBOX_H / 2 + 10;
 
     const BODY_KNOCKED_ADJUST_W = BODY_KNOCKED_LATE_HITBOX_W - BODY_HITBOX_W;
 }
@@ -110,7 +110,7 @@ namespace ns_jessica_body_state_duration {
     const DASH_FORWARD = 4;
     const DASH_BACKWARD = 4;
     const JUMP = 6;
-    const GATOTSU = 8;
+    const GATOTSU = 7;
 }
 
 namespace ns_jessica_body_state {
@@ -158,15 +158,15 @@ namespace ns_jessica_body_state_qualifiers {
             return 0;
         }
 
+        if (counter == 3) {
+            return 1;
+        }
+
         if (counter == 4) {
             return 1;
         }
 
         if (counter == 5) {
-            return 1;
-        }
-
-        if (counter == 6) {
             return 1;
         }
 
@@ -198,7 +198,8 @@ namespace ns_jessica_body_state_qualifiers {
         let bool_body_in_slash_active   = is_in_slash_active (state, counter);
         let bool_body_in_upswing_active = is_in_upswing_active (state, counter);
         let bool_body_in_sidecut_active = is_in_sidecut_active (state, counter);
-        let bool_body_in_atk_active     = bool_body_in_slash_active + bool_body_in_upswing_active + bool_body_in_sidecut_active;
+        let bool_body_in_gatotsu_active = is_in_gatotsu_active (state, counter);
+        let bool_body_in_atk_active     = bool_body_in_slash_active + bool_body_in_upswing_active + bool_body_in_sidecut_active + bool_body_in_gatotsu_active;
         let bool_body_in_knocked        = is_in_knocked (state);
         let bool_body_in_block          = is_in_block_active (state, counter);
         let bool_body_in_active         = bool_body_in_atk_active + bool_body_in_block;
