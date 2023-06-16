@@ -3,6 +3,7 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.bool import (TRUE, FALSE)
+from starkware.cairo.common.math_cmp import is_le
 from contracts.constants.constants import (
     BodyState, ns_stimulus, ns_stamina, ns_character_type, HURT_EFFECT, KNOCKED_EFFECT, CLASH_EFFECT
 )
