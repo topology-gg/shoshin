@@ -9,6 +9,7 @@ import {
     MAX_COMBO_SIZE,
     CHARACTER_ACTIONS_DETAIL,
     ACTIONS_TO_KEYS,
+    ACTION_UNICODE_MAP,
 } from '../../constants/constants';
 
 const ComboEditor = ({
@@ -28,6 +29,7 @@ const ComboEditor = ({
     );
 
     const handleInsertInstruction = (action) => {
+        console.log('action:', action);
         if (editingCombo.length > MAX_COMBO_SIZE) {
             return;
         } else {
@@ -112,25 +114,15 @@ const ComboEditor = ({
                                 >
                                     <div
                                         key={`iconized-action-${key_i}`}
-                                        style={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            textAlign: 'center',
-                                            width: '2.5rem',
-                                            marginRight: '0.3rem',
-                                            padding: '0.3rem',
-                                            border: '1px solid #CCCCCC',
-                                            borderRadius: '0.8rem',
-                                            transitionDuration: '50ms',
-                                            cursor: 'pointer',
+                                        className={'comboActionDiv'}
+                                        onClick={() => {
+                                            handleInsertInstruction(key_i);
                                         }}
                                     >
-                                        <i
-                                            className="material-icons"
-                                            style={{ fontSize: '1rem' }}
-                                        >
-                                            {ACTIONS_ICON_MAP[key]}
-                                        </i>
+                                        <span style={{}}>
+                                            {ACTION_UNICODE_MAP[key]}
+                                        </span>
+
                                         <p
                                             style={{
                                                 marginTop: '0.1rem',

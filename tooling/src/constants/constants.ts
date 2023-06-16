@@ -171,7 +171,7 @@ export enum KeysToActionsJessica {
     'A' = 'MoveBackward',
     'E' = 'DashForward',
     'Q' = 'DashBackward',
-    'C' = 'Jump',
+    'W' = 'Jump',
 }
 
 export enum KeysToActionsAntoc {
@@ -183,7 +183,8 @@ export enum KeysToActionsAntoc {
     'A' = 'MoveBackward',
     'E' = 'DashForward',
     'Q' = 'DashBackward',
-    'C' = 'Jump',
+    'F' = 'StepForward',
+    'W' = 'Jump',
 }
 
 // Mapping such that { 'Rest' : '-' }
@@ -315,6 +316,27 @@ export const CHARACTER_ACTIONS_DETAIL: CharacterActions[] = [
     ActionDetailJessica,
     ActionDetailAntoc,
 ];
+
+export const ACTION_UNICODE_MAP = {
+    Rest: '\u{1F9D8}',
+    Slash: '\u{1F5E1}',
+    Upswing: '\u{1F5E1}',
+    Sidecut: '\u{1F5E1}',
+
+    Hori: '\u{1F5E1}',
+    Vert: '\u{1F5E1}',
+
+    Block: '\u{1F6E1}',
+
+    MoveForward: '\u{1F6B6}',
+    MoveBackward: '\u{1F6B6}',
+    DashForward: '\u{1F406}',
+    DashBackward: '\u{1F406}',
+
+    StepForward: '\u{1F43E}',
+
+    Jump: '\u{1F998}',
+};
 
 export const ACTIONS_ICON_MAP = {
     Rest: 'close',

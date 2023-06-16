@@ -355,3 +355,20 @@ th, td {
 .actionButton:hover {
     background-color: #A8E4A088;
 }
+
+.comboActionDiv {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 4rem;
+    margin-right: 0.3rem;
+    padding: 0.3rem;
+    border: 1px solid #CCC;
+    border-radius: 0.8rem;
+    transition-duration: 50ms;
+    cursor: pointer;
+    background-color: #EEE;
+}
+.comboActionDiv:hover {
+    background-color: #F8F8F8;
+}
