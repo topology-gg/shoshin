@@ -1,5 +1,5 @@
-import React, { useState, KeyboardEventHandler } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import React, { useState, KeyboardEventHandler, SyntheticEvent } from 'react';
+import { Box, Button, Input, Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import SingleAction from './SingleAction';
 import NewAction from './NewAction';
@@ -27,28 +27,30 @@ const ComboEditor = ({
         isNaN(parseInt(a))
     );
 
-    const handleInsertInstruction = (action) => {
-        if (editingCombo.length > MAX_COMBO_SIZE) {
-            return;
-        } else {
-            setEditingCombo((prev) => {
-                let action_int = parseInt(action, 10);
-                let prev_copy = JSON.parse(JSON.stringify(prev));
-                if (!isNaN(action_int)) {
-                    prev_copy.push(action_int);
-                }
-                return prev_copy;
-            });
-        }
+    const handleActionDoubleClick = (index) => {
+        console.log('handled', index);
+        setEditingCombo((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy.splice(index, 1);
+            return prev_copy;
+        });
+
+        handleValidateCombo(editingCombo, selectedIndex);
     };
-    const handleKeyDown: KeyboardEventHandler = (event) => {
-        if (event.code === 'Backspace') {
-            // Backspace - Remove last instruction
-            setEditingCombo((prev) => {
-                const new_program = prev.slice(0, -1);
-                return new_program;
-            });
-        }
+
+    const handleActionAddClick = (e: SyntheticEvent<HTMLDivElement>) => {
+        //id is iconized-action-${key_i}
+        const action_int = parseInt(e.currentTarget.id.split('-')[2]);
+        //const action_int = actions[index];
+        setEditingCombo((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            if (!isNaN(action_int)) {
+                prev_copy.push(action_int);
+            }
+            return prev_copy;
+        });
+
+        handleValidateCombo(editingCombo, selectedIndex);
     };
 
     return (
@@ -112,6 +114,7 @@ const ComboEditor = ({
                                 >
                                     <div
                                         key={`iconized-action-${key_i}`}
+                                        id={`iconized-action-${key_i}`}
                                         style={{
                                             display: 'flex',
                                             flexDirection: 'column',
@@ -124,6 +127,7 @@ const ComboEditor = ({
                                             transitionDuration: '50ms',
                                             cursor: 'pointer',
                                         }}
+                                        onClick={handleActionAddClick}
                                     >
                                         <i
                                             className="material-icons"
@@ -163,44 +167,16 @@ const ComboEditor = ({
                             disabled={isReadOnly}
                             action={action}
                             characterIndex={characterIndex}
+                            onDoubleClick={handleActionDoubleClick}
+                            actionIndex={index}
                         />
                     ))}
 
-                    {isReadOnly ? (
-                        <></>
-                    ) : (
-                        <>
-                            <NewAction
-                                disabled={isReadOnly}
-                                onInsert={handleInsertInstruction}
-                                onKeyDown={handleKeyDown}
-                                onSelect={() => {
-                                    setSelectedNewAction(true);
-                                }}
-                                onBlur={() => {
-                                    setSelectedNewAction(false);
-                                }}
-                                selected={selectedNewAction}
-                                characterIndex={characterIndex}
-                            />
-                            {displayButton && (
-                                <Button
-                                    variant="outlined"
-                                    onClick={() => {
-                                        handleValidateCombo(
-                                            editingCombo,
-                                            selectedIndex
-                                        );
-                                        setEditingCombo([]);
-                                        setSelectedIndex(null);
-                                    }}
-                                    disabled={isReadOnly}
-                                >
-                                    Confirm
-                                </Button>
-                            )}
-                        </>
-                    )}
+                    {editingCombo.length == 0 ? (
+                        <Typography variant="body1" color="textSecondary">
+                            Click an action to add, double click to remove
+                        </Typography>
+                    ) : null}
                 </div>
             </Box>
         </Box>
