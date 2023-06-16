@@ -22,6 +22,8 @@ namespace ns_antoc_dynamics {
 
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
 
+    const STEP_FORWARD_VEL_X_FP = 400 * ns_dynamics.SCALE_FP;
+
     const JUMP_VEL_Y_FP = 275 * ns_dynamics.SCALE_FP;
 }
 
@@ -37,13 +39,20 @@ namespace ns_antoc_character_dimension {
     const BODY_KNOCKED_GROUND_HITBOX_H = 100;
 
     const BODY_DASH_FORWARD_0_W = 70;
-    const BODY_DASH_FORWARD_1_W = 80;
-    const BODY_DASH_FORWARD_2_W = 80;
-    const BODY_DASH_FORWARD_3_W = 67;
     const BODY_DASH_FORWARD_0_H = 105;
+    const BODY_DASH_FORWARD_1_W = 80;
     const BODY_DASH_FORWARD_1_H = 97;
+    const BODY_DASH_FORWARD_2_W = 80;
     const BODY_DASH_FORWARD_2_H = 97;
+    const BODY_DASH_FORWARD_3_W = 67;
     const BODY_DASH_FORWARD_3_H = 100;
+
+    const BODY_STEP_FORWARD_0_W = 72;
+    const BODY_STEP_FORWARD_0_H = 107;
+    const BODY_STEP_FORWARD_1_W = 72;
+    const BODY_STEP_FORWARD_1_H = 89;
+    const BODY_STEP_FORWARD_2_W = 72;
+    const BODY_STEP_FORWARD_2_H = 107;
 
     const HORI_HITBOX_W = 45;
     const HORI_HITBOX_H = 45;
@@ -82,7 +91,7 @@ namespace ns_antoc_action {
 namespace ns_antoc_stamina_effect {
     const HORI = -100;
     const VERT = -100;
-    const STEP_FORWARD = -25;
+    const STEP_FORWARD = -75;
 }
 
 namespace ns_antoc_body_state_duration {
@@ -97,7 +106,7 @@ namespace ns_antoc_body_state_duration {
     const DASH_FORWARD = 4;
     const DASH_BACKWARD = 4;
     const CLASH = 5;
-    const FORWARD_STEP = 4;
+    const STEP_FORWARD = 3;
     const JUMP = 7;
 }
 
@@ -113,7 +122,7 @@ namespace ns_antoc_body_state {
     const DASH_FORWARD = 1110;  // 9 frames
     const DASH_BACKWARD = 1120;  // 9 frames
     const CLASH = 1130; // 5 frames
-    const FORWARD_STEP = 1140; // 4 frames
+    const STEP_FORWARD = 1140; // 3 frames
     const JUMP = 1150; // 7 frames
 }
 
@@ -233,6 +242,17 @@ namespace ns_antoc_hitbox {
                 return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_DASH_FORWARD_2_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_2_H));
             }
             return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_DASH_FORWARD_3_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_3_H));
+        }
+
+        // step forward
+        if (body_state == ns_antoc_body_state.STEP_FORWARD) {
+            if (body_counter == 0) {
+                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_STEP_FORWARD_0_W, ns_antoc_character_dimension.BODY_STEP_FORWARD_0_H));
+            }
+            if (body_counter == 1) {
+                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_STEP_FORWARD_1_W, ns_antoc_character_dimension.BODY_STEP_FORWARD_1_H));
+            }
+            return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_STEP_FORWARD_2_W, ns_antoc_character_dimension.BODY_STEP_FORWARD_2_H));
         }
 
         // otherwise

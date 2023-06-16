@@ -23,6 +23,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
     DASH_BACKWARD: felt,
     KNOCKED: felt,
     JUMP: felt,
+    STEP_FORWARD: felt,
+
     MAX_VEL_MOVE_FP: felt,
     MIN_VEL_MOVE_FP: felt,
     MAX_VEL_DASH_FP: felt,
@@ -33,6 +35,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
     KNOCK_VEL_Y_FP: felt,
     DEACC_FP: felt,
     JUMP_VEL_Y_FP: felt,
+    STEP_FORWARD_VEL_X_FP: felt,
     BODY_KNOCKED_ADJUST_W: felt,
 ) {
     if (character_type == ns_character_type.JESSICA) {
@@ -43,6 +46,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_jessica_body_state.DASH_BACKWARD,
             ns_jessica_body_state.KNOCKED,
             ns_jessica_body_state.JUMP,
+            ns_antoc_body_state.STEP_FORWARD,
+
             ns_jessica_dynamics.MAX_VEL_MOVE_FP,
             ns_jessica_dynamics.MIN_VEL_MOVE_FP,
             ns_jessica_dynamics.MAX_VEL_DASH_FP,
@@ -53,6 +58,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_jessica_dynamics.KNOCK_VEL_Y_FP,
             ns_jessica_dynamics.DEACC_FP,
             ns_jessica_dynamics.JUMP_VEL_Y_FP,
+            0,
             ns_jessica_character_dimension.BODY_KNOCKED_ADJUST_W,
         );
     } else {
@@ -63,6 +69,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_antoc_body_state.DASH_BACKWARD,
             ns_antoc_body_state.KNOCKED,
             ns_antoc_body_state.JUMP,
+            ns_antoc_body_state.STEP_FORWARD,
+
             ns_antoc_dynamics.MAX_VEL_MOVE_FP,
             ns_antoc_dynamics.MIN_VEL_MOVE_FP,
             ns_antoc_dynamics.MAX_VEL_DASH_FP,
@@ -73,6 +81,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_antoc_dynamics.KNOCK_VEL_Y_FP,
             ns_antoc_dynamics.DEACC_FP,
             ns_antoc_dynamics.JUMP_VEL_Y_FP,
+            ns_antoc_dynamics.STEP_FORWARD_VEL_X_FP,
             ns_antoc_character_dimension.BODY_KNOCKED_ADJUST_W,
         );
     }
@@ -102,6 +111,8 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         DASH_BACKWARD: felt,
         KNOCKED: felt,
         JUMP: felt,
+        STEP_FORWARD: felt,
+
         MAX_VEL_MOVE_FP: felt,
         MIN_VEL_MOVE_FP: felt,
         MAX_VEL_DASH_FP: felt,
@@ -112,6 +123,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         KNOCK_VEL_Y_FP: felt,
         DEACC_FP: felt,
         JUMP_VEL_Y_FP: felt,
+        STEP_FORWARD_VEL_X_FP: felt,
         BODY_KNOCKED_ADJUST_W: felt,
     ) = _character_specific_constants (character_type);
 
@@ -146,7 +158,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     }
 
     if (state == DASH_FORWARD) {
-        // prepare the dash on first frame
+        // prepare the dash at counter==1
         // dash with vel = DASH_VEL_FP
         local vel;
         if (dir == 1) {
@@ -166,7 +178,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     }
 
     if (state == DASH_BACKWARD) {
-        // prepare the dash on first frame
+        // prepare the dash at counter==1
         // dash with vel = DASH_VEL_FP
         local vel;
         if (dir == 1) {
@@ -221,7 +233,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
 
     if (state == JUMP) {
         if (counter == 1) {
-            // apply momentum at second frame
+            // apply momentum at counter==1
             assert vel_fp_y = JUMP_VEL_Y_FP;
             assert vel_fp_x = physics_state.vel_fp.x;
             assert acc_fp_y = 0;
@@ -241,6 +253,26 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         }
 
         jmp update_vel_knocked_jump;
+    }
+
+    if (state == STEP_FORWARD) {
+        // prepare the step forward at counter==0
+        // dash with vel = STEP_FORWARD_VEL_X_FP
+        local vel;
+        if (dir == 1) {
+            assert vel = STEP_FORWARD_VEL_X_FP;
+        } else {
+            assert vel = (-1) * STEP_FORWARD_VEL_X_FP;
+        }
+        if (counter == 0) {
+            assert vel_fp_nxt = Vec2(vel, 0);
+        } else {
+            assert vel_fp_nxt = Vec2(0, 0);
+        }
+        assert acc_fp_x = 0;
+        assert acc_fp_y = 0;
+        tempvar range_check_ptr = range_check_ptr;
+        jmp update_pos;
     }
 
     // otherwise, set velocity to zero (instant stop)

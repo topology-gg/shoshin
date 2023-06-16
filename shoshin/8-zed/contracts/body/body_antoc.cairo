@@ -76,6 +76,9 @@ func _body_antoc {range_check_ptr}(
             if (intent == ns_antoc_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
             }
+            if (intent == ns_antoc_action.STEP_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.STEP_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // otherwise stay in IDLE but increment counter modulo duration
@@ -195,10 +198,14 @@ func _body_antoc {range_check_ptr}(
             }
         }
 
-        // if intent remains BLOCK
-        if (intent == ns_antoc_action.BLOCK) {
-            // check stamina
-            if(enough_stamina == TRUE){
+        if(enough_stamina == TRUE){
+            // cancel-able into STEP FORWARD - let's see what happens
+            if (intent == ns_antoc_action.STEP_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.STEP_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+
+            // if intent remains BLOCK
+            if (intent == ns_antoc_action.BLOCK) {
                 if (counter == 2) {
                     // if counter reaches active frame (3rd frame; counter == 2) => stay in active frame
                     return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, counter, integrity, updated_stamina, dir, FALSE) );
@@ -284,6 +291,9 @@ func _body_antoc {range_check_ptr}(
             if (intent == ns_antoc_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
             }
+            if (intent == ns_antoc_action.STEP_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.STEP_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // continue moving forward
@@ -337,6 +347,9 @@ func _body_antoc {range_check_ptr}(
             }
             if (intent == ns_antoc_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.STEP_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.STEP_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
             }
         }
 
@@ -448,8 +461,39 @@ func _body_antoc {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
         }
 
-        // else stay in CLASH and increment counter
+        // else stay in JUMP and increment counter
         return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, counter + 1, integrity, stamina, dir, FALSE) );
+    }
+
+    //
+    // STEP_FORWARD
+    // note: is cancel-able into fast VERT
+    // note: is interruptible by being hit
+    //
+    if (state == ns_antoc_body_state.STEP_FORWARD) {
+
+        // interruptible by stimulus
+        if (stimulus == ns_stimulus.HURT) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, hurt_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
+        }
+
+        // if having enough stamina => fast cancel into VERT active frame (counter==3)
+        if (enough_stamina == TRUE) {
+            if (intent == ns_antoc_action.VERT) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 3, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
+
+        // if counter is full => return to IDLE
+        if (counter == ns_antoc_body_state_duration.STEP_FORWARD - 1) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        }
+
+        // else stay in STEP_FORWARD and increment counter
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.STEP_FORWARD, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     // handle exception
