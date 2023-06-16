@@ -213,6 +213,11 @@ export default class Simulator extends Phaser.Scene {
             'images/jessica/jump/spritesheet.png',
             'images/jessica/jump/spritesheet.json'
         );
+        this.load.atlas(
+            `jessica-gatotsu`,
+            'images/jessica/gatotsu/spritesheet.png',
+            'images/jessica/gatotsu/spritesheet.json'
+        );
 
         this.load.image(
             'arena_bg',
@@ -516,6 +521,7 @@ export default class Simulator extends Phaser.Scene {
         const characterType1 = testJson?.agent_1.type;
         const agentFrame0 = testJson?.agent_0.frames[animationFrame];
         const agentFrame1 = testJson?.agent_1.frames[animationFrame];
+        const fightLength = testJson?.agent_0.frames.length;
 
         this.updateScene(
             characterType0,
@@ -524,7 +530,7 @@ export default class Simulator extends Phaser.Scene {
             agentFrame1,
             animationFrame == 0,
             showDebug,
-            animationFrame == 119
+            animationFrame == fightLength - 1
         );
     }
 
