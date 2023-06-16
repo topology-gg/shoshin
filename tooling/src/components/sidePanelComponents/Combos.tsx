@@ -41,7 +41,7 @@ const Combos = ({ isReadOnly, character, combos, handleValidateCombo }) => {
                     {combos.map((combo, index) => (
                         <MenuItem value={index}>Combo {index}</MenuItem>
                     ))}
-                    <MenuItem value={null} disabled={isReadOnly}>
+                    <MenuItem value={combos.length} disabled={isReadOnly}>
                         New Combo
                     </MenuItem>
                 </Select>

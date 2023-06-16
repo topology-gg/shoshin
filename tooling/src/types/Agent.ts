@@ -30,8 +30,13 @@ export function buildAgent(
     initialMentalState,
     character
 ) {
+    //console.log('ms', mentalStates);
+    //console.log('tree', trees);
+    //console.log('conditions', conditions);
     let agent: Agent = {};
-    agent.combos = combos;
+
+    // Replace empty combos with null input
+    agent.combos = combos.map((combo) => (combo.length == 0 ? [0] : combo));
     agent.mentalStatesNames = mentalStates.map((ms) => ms.state);
     agent.initialState = initialMentalState;
 
@@ -81,6 +86,8 @@ export function buildAgent(
 
     agent.actions = mentalStates.map((ms) => ms.action);
     agent.character = character;
+
+    //console.log('agent', agent);
     return agent;
 }
 

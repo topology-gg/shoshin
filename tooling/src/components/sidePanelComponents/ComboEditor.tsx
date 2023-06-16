@@ -28,30 +28,32 @@ const ComboEditor = ({
         isNaN(parseInt(a))
     );
 
+    //remove an action
     const handleActionDoubleClick = (index) => {
         console.log('handled', index);
-        setEditingCombo((prev) => {
-            let prev_copy = JSON.parse(JSON.stringify(prev));
-            prev_copy.splice(index, 1);
-            return prev_copy;
-        });
 
-        handleValidateCombo(editingCombo, selectedIndex);
+        let prev_copy = JSON.parse(JSON.stringify(editingCombo));
+        prev_copy.splice(index, 1);
+
+        setEditingCombo(prev_copy);
+
+        handleValidateCombo(prev_copy, selectedIndex);
     };
 
     const handleActionAddClick = (e: SyntheticEvent<HTMLDivElement>) => {
         //id is iconized-action-${key_i}
         const action_int = parseInt(e.currentTarget.id.split('-')[2]);
         //const action_int = actions[index];
-        setEditingCombo((prev) => {
-            let prev_copy = JSON.parse(JSON.stringify(prev));
-            if (!isNaN(action_int)) {
-                prev_copy.push(action_int);
-            }
-            return prev_copy;
-        });
 
-        handleValidateCombo(editingCombo, selectedIndex);
+        console.log('editing combo', editingCombo);
+        console.log('selected index', selectedIndex);
+
+        let prev_copy = JSON.parse(JSON.stringify(editingCombo));
+        if (!isNaN(action_int)) {
+            prev_copy.push(action_int);
+        }
+        setEditingCombo(prev_copy);
+        handleValidateCombo(prev_copy, selectedIndex);
     };
 
     return (

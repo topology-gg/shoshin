@@ -810,23 +810,20 @@ export default function Home() {
     }
 
     function handleValidateCombo(combo: number[], index: number) {
-        if (combo.length > 0) {
-            if (index === null) {
-                setCombos((prev) => {
-                    let prev_copy: number[][] = JSON.parse(
-                        JSON.stringify(prev)
-                    );
-                    prev_copy.push(combo);
-                    return prev_copy;
-                });
-                return;
-            }
-            setCombos((prev) => {
-                let prev_copy = JSON.parse(JSON.stringify(prev));
-                prev_copy[index] = combo;
-                return prev_copy;
-            });
+        let shimmedCombo = [];
+
+        if (combo.length == 0) {
+            shimmedCombo = combo;
+        } else {
+            shimmedCombo == combo;
         }
+        console.log('combo', combo);
+        console.log('index', index);
+        setCombos((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy[index] = combo;
+            return prev_copy;
+        });
     }
 
     function handleBuildAgent() {
