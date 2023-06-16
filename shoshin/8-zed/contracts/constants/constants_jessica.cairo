@@ -24,6 +24,8 @@ namespace ns_jessica_dynamics {
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
 
     const JUMP_VEL_Y_FP = 350 * ns_dynamics.SCALE_FP;
+
+    const GATOTSU_VEL_X_FP = 450 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_jessica_character_dimension {
@@ -62,6 +64,10 @@ namespace ns_jessica_character_dimension {
     const BLOCK_HITBOX_H = 60;
     const BLOCK_HITBOX_Y = BODY_HITBOX_H / 2;
 
+    const GATOTSU_HITBOX_W = 40;
+    const GATOTSU_HITBOX_H = 20;
+    const GATOTSU_HITBOX_Y = BODY_HITBOX_H / 2;
+
     const BODY_KNOCKED_ADJUST_W = BODY_KNOCKED_LATE_HITBOX_W - BODY_HITBOX_W;
 }
 
@@ -80,15 +86,15 @@ namespace ns_jessica_action {
 
     const JUMP = 9;
 
-    const COMBO = 10;
+    const GATOTSU = 10;
 }
 
 namespace ns_jessica_stamina_effect {
-    const SLASH = -100;
+    const SLASH = -75;
     const UPSWING = -100;
-    const SIDECUT = -100;
+    const SIDECUT = -50;
+    const GATOTSU = -350;
 }
-
 
 namespace ns_jessica_body_state_duration {
     const IDLE = 5;
@@ -104,6 +110,7 @@ namespace ns_jessica_body_state_duration {
     const DASH_FORWARD = 4;
     const DASH_BACKWARD = 4;
     const JUMP = 6;
+    const GATOTSU = 8;
 }
 
 namespace ns_jessica_body_state {
@@ -120,6 +127,7 @@ namespace ns_jessica_body_state {
     const DASH_FORWARD = 110;  // 5 frames
     const DASH_BACKWARD = 120;  // 5 frames
     const JUMP = 130; // 7 frames
+    const GATOTSU = 140;
 }
 
 namespace ns_jessica_body_state_qualifiers {
@@ -142,6 +150,26 @@ namespace ns_jessica_body_state_qualifiers {
         if (state == ns_jessica_body_state.SIDECUT and counter == 2) {
             return 1;
         }
+        return 0;
+    }
+
+    func is_in_gatotsu_active {range_check_ptr}(state: felt, counter: felt) -> felt {
+        if (state != ns_jessica_body_state.GATOTSU) {
+            return 0;
+        }
+
+        if (counter == 4) {
+            return 1;
+        }
+
+        if (counter == 5) {
+            return 1;
+        }
+
+        if (counter == 6) {
+            return 1;
+        }
+
         return 0;
     }
 
@@ -228,6 +256,10 @@ namespace ns_jessica_hitbox {
             return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_3_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_3_H));
         }
 
+        // gatotsu
+        // TODO
+
+
         // otherwise
         return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H));
     }
@@ -264,9 +296,15 @@ namespace ns_jessica_hitbox {
                         assert ATTACK_HITBOX_W = ns_jessica_character_dimension.UPSWING_HITBOX_W;
                         assert ATTACK_HITBOX_H = ns_jessica_character_dimension.UPSWING_HITBOX_H;
                     } else {
-                        assert ATTACK_HITBOX_Y = ns_jessica_character_dimension.SIDECUT_HITBOX_Y;
-                        assert ATTACK_HITBOX_W = ns_jessica_character_dimension.SIDECUT_HITBOX_W;
-                        assert ATTACK_HITBOX_H = ns_jessica_character_dimension.SIDECUT_HITBOX_H;
+                        if (body_state == ns_jessica_body_state.SIDECUT) {
+                            assert ATTACK_HITBOX_Y = ns_jessica_character_dimension.SIDECUT_HITBOX_Y;
+                            assert ATTACK_HITBOX_W = ns_jessica_character_dimension.SIDECUT_HITBOX_W;
+                            assert ATTACK_HITBOX_H = ns_jessica_character_dimension.SIDECUT_HITBOX_H;
+                        } else {
+                            assert ATTACK_HITBOX_Y = ns_jessica_character_dimension.GATOTSU_HITBOX_Y;
+                            assert ATTACK_HITBOX_W = ns_jessica_character_dimension.GATOTSU_HITBOX_W;
+                            assert ATTACK_HITBOX_H = ns_jessica_character_dimension.GATOTSU_HITBOX_H;
+                        }
                     }
                 }
 
