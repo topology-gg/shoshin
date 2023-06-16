@@ -66,6 +66,9 @@ export default class Simulator extends Phaser.Scene {
     }
 
     preload() {
+        //
+        // Antoc
+        //
         this.load.atlas(
             `antoc-idle`,
             'images/antoc/idle/spritesheet.png',
@@ -126,7 +129,15 @@ export default class Simulator extends Phaser.Scene {
             'images/antoc/jump/spritesheet.png',
             'images/antoc/jump/spritesheet.json'
         );
+        this.load.atlas(
+            `antoc-step_forward`,
+            'images/antoc/step_forward/spritesheet.png',
+            'images/antoc/step_forward/spritesheet.json'
+        );
 
+        //
+        // Jessica
+        //
         this.load.atlas(
             `jessica-knocked`,
             'images/jessica/knocked/spritesheet.png',
@@ -371,6 +382,12 @@ export default class Simulator extends Phaser.Scene {
         player.setX(pos.x + spriteLeftAdjustment - hitboxW / 2);
         player.setY(-pos.y + spriteTopAdjustment);
 
+        console.log(
+            'setTexture:',
+            characterName,
+            bodyStateName,
+            bodyStateCounter
+        );
         player.setTexture(
             `${characterName}-${bodyStateName}`,
             `frame_${bodyStateCounter}.png`

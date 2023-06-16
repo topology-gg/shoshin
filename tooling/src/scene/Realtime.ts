@@ -155,11 +155,10 @@ export default class RealTime extends Platformer {
             j: Phaser.Input.Keyboard.KeyCodes.J,
             k: Phaser.Input.Keyboard.KeyCodes.K,
             l: Phaser.Input.Keyboard.KeyCodes.L,
-            // w: Phaser.Input.Keyboard.KeyCodes.W,
+            w: Phaser.Input.Keyboard.KeyCodes.W,
             space: Phaser.Input.Keyboard.KeyCodes.SPACE,
             period: Phaser.Input.Keyboard.KeyCodes.PERIOD,
-            // f: Phaser.Input.Keyboard.KeyCodes.F,
-            c: Phaser.Input.Keyboard.KeyCodes.C,
+            f: Phaser.Input.Keyboard.KeyCodes.F,
         });
         this.set_player_character(this.character_type_0);
         this.scene.scene.events.on('pause', () => {
@@ -259,15 +258,19 @@ export default class RealTime extends Platformer {
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ]['DashForward'];
             } else if (this.keyboard.l.isDown && this.character_type_0 == 0) {
-                // attack # 3
+                // jessica's attack # 3
                 this.player_action =
                     characterActionToNumber['jessica']['Sidecut'];
-            } else if (this.keyboard.c.isDown) {
+            } else if (this.keyboard.w.isDown) {
                 // jump
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ]['Jump'];
+            } else if (this.keyboard.f.isDown && this.character_type_0 == 1) {
+                // antoc' step forward
+                this.player_action =
+                    characterActionToNumber['antoc']['StepForward'];
             }
         }
         if (this.keyboard.period.isDown) {
