@@ -15,6 +15,7 @@ import {
     Action,
     Character,
     CHARACTERS_ACTIONS,
+    ACTION_UNICODE_MAP,
 } from '../../constants/constants';
 import BlurrableButton from '../ui/BlurrableButton';
 import { Layer, defaultLayer } from '../../types/Layer';
@@ -39,20 +40,10 @@ const actionIndexToAction = (action: number, characterIndex): Action => {
             '_',
             ' '
         );
-        // console.log('name=', name);
+
         return {
             name: name,
-            // unicode: '&#129354;',
-            unicode:
-                name == 'Rest'
-                    ? '\u{1F9D8}'
-                    : name == 'Block'
-                    ? '\u{1F6E1}'
-                    : name.includes('Move')
-                    ? '\u{1F6B6}'
-                    : name.includes('Dash')
-                    ? '\u{1F3C3}'
-                    : '\u{1F5E1}',
+            unicode: ACTION_UNICODE_MAP[name],
         };
     } else {
         return {

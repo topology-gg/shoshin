@@ -352,6 +352,12 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
                 hitboxOffset: { left: [13, -102], right: [87, -102] },
             },
         ],
+        step_forward: [
+            {
+                size: [343, 239],
+                hitboxOffset: { left: [31, -102], right: [112, -102] },
+            },
+        ],
     },
     jessica: {
         block: [
@@ -486,6 +492,36 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
             {
                 size: [135, 146],
                 hitboxOffset: { left: [33, -63], right: [67, -63] },
+            },
+        ],
+        gatotsu: [
+            {
+                size: [205, 167],
+                hitboxOffset: { left: [28, -75], right: [76, -75] },
+            },
+            {
+                size: [205, 167],
+                hitboxOffset: { left: [28, -75], right: [76, -75] },
+            },
+            {
+                size: [205, 167],
+                hitboxOffset: { left: [28, -75], right: [76, -75] },
+            },
+            {
+                size: [205, 167],
+                hitboxOffset: { left: [28, -75], right: [60, -75] },
+            },
+            {
+                size: [205, 167],
+                hitboxOffset: { left: [28, -75], right: [60, -75] },
+            },
+            {
+                size: [205, 167],
+                hitboxOffset: { left: [28, -75], right: [60, -75] },
+            },
+            {
+                size: [205, 167],
+                hitboxOffset: { left: [28, -75], right: [76, -75] },
             },
         ],
     },
