@@ -1,7 +1,7 @@
 import React, { useState, KeyboardEventHandler, SyntheticEvent } from 'react';
 import { Box, Button, Input, Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
-import SingleAction from './SingleAction';
+import SingleAction, { DraggableSingleAction } from './SingleAction';
 import NewAction from './NewAction';
 import {
     CHARACTERS_ACTIONS,
@@ -11,6 +11,7 @@ import {
     ACTIONS_TO_KEYS,
     ACTION_UNICODE_MAP,
 } from '../../constants/constants';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 const ComboEditor = ({
     isReadOnly,
@@ -55,6 +56,25 @@ const ComboEditor = ({
         setEditingCombo(prev_copy);
         handleValidateCombo(prev_copy, selectedIndex);
     };
+
+    //Reorder combos in an action
+    function onDragEnd(result) {
+        const { draggableId, source, destination } = result;
+
+        if (!destination) {
+            return;
+        }
+
+        if (destination.index === source.index) {
+            return;
+        }
+
+        let prev_copy = JSON.parse(JSON.stringify(editingCombo));
+        const [removedItem] = prev_copy.splice(source.index, 1);
+        prev_copy.splice(destination.index, 0, removedItem);
+
+        setEditingCombo(prev_copy);
+    }
 
     return (
         <Box
@@ -151,17 +171,34 @@ const ComboEditor = ({
                         display: 'flex',
                     }}
                 >
-                    {editingCombo.map((action, index) => (
-                        <SingleAction
-                            key={`action-${index}`}
-                            disabled={isReadOnly}
-                            action={action}
-                            characterIndex={characterIndex}
-                            onDoubleClick={handleActionDoubleClick}
-                            actionIndex={index}
-                        />
-                    ))}
-
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <Droppable
+                            droppableId="droppable"
+                            direction="horizontal"
+                        >
+                            {(provided) => (
+                                <div
+                                    style={{ width: '100%' }}
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                >
+                                    {editingCombo.map((action, index) => (
+                                        <DraggableSingleAction
+                                            key={`action-${index}`}
+                                            disabled={isReadOnly}
+                                            action={action}
+                                            characterIndex={characterIndex}
+                                            onDoubleClick={
+                                                handleActionDoubleClick
+                                            }
+                                            actionIndex={index}
+                                        />
+                                    ))}
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
                     {editingCombo.length == 0 ? (
                         <Typography variant="body1" color="textSecondary">
                             Click an action to add, double click to remove

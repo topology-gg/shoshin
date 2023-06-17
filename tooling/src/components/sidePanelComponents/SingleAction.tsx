@@ -5,6 +5,7 @@ import {
     CHARACTER_ACTIONS_DETAIL,
 } from '../../constants/constants';
 import ActionToken from './ActionToken';
+import { Draggable } from 'react-beautiful-dnd';
 
 const SingleAction = ({
     disabled,
@@ -42,6 +43,37 @@ const SingleAction = ({
                 </i>
             </ActionToken>
         </div>
+    );
+};
+
+export const DraggableSingleAction = ({
+    disabled,
+    action,
+    characterIndex,
+    onDoubleClick,
+    actionIndex,
+}) => {
+    return (
+        <Draggable draggableId={actionIndex.toString()} index={onDoubleClick}>
+            {(provided) => (
+                <span
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    style={{
+                        ...provided.draggableProps.style,
+                    }}
+                    {...provided.dragHandleProps}
+                >
+                    <SingleAction
+                        disabled={disabled}
+                        action={action}
+                        characterIndex={characterIndex}
+                        onDoubleClick={onDoubleClick}
+                        actionIndex={actionIndex}
+                    />
+                </span>
+            )}
+        </Draggable>
     );
 };
 
