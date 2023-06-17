@@ -178,7 +178,7 @@ const ComboEditor = ({
                         >
                             {(provided) => (
                                 <div
-                                    style={{ width: '100%' }}
+                                    style={{ width: '100%', display: 'flex' }}
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
                                 >

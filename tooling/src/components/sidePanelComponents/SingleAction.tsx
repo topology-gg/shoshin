@@ -54,9 +54,9 @@ export const DraggableSingleAction = ({
     actionIndex,
 }) => {
     return (
-        <Draggable draggableId={actionIndex.toString()} index={onDoubleClick}>
+        <Draggable draggableId={actionIndex.toString()} index={actionIndex}>
             {(provided) => (
-                <span
+                <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     style={{
@@ -71,7 +71,7 @@ export const DraggableSingleAction = ({
                         onDoubleClick={onDoubleClick}
                         actionIndex={actionIndex}
                     />
-                </span>
+                </div>
             )}
         </Draggable>
     );
