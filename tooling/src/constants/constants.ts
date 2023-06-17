@@ -286,7 +286,7 @@ interface CharacterAction {
     active?: number[];
 }
 
-interface CharacterActions {
+export interface CharacterActions {
     [key: string]: CharacterAction;
 }
 
@@ -298,8 +298,8 @@ export const ActionDetailJessica: CharacterActions = {
     Block: { id: 4, duration: 3, active: [2] },
     MoveForward: { id: 5, duration: 1 },
     MoveBackward: { id: 6, duration: 1 },
-    DashForward: { id: 7, duration: 1 },
-    DashBackward: { id: 8, duration: 1 },
+    DashForward: { id: 7, duration: 4 },
+    DashBackward: { id: 8, duration: 4 },
     Jump: { id: 9, duration: 6 },
     Gatotsu: { id: 10, duration: 8 },
 };

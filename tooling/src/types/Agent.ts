@@ -2,8 +2,14 @@ import { parseConditionToLeaf, Condition } from './Condition';
 import Leaf, { flattenLeaf, unwrapLeafToTree } from './Leaf';
 import { MentalState, parseTree, updateMentalStates } from './MentalState';
 import { Tree } from './Tree';
-import { FRAME_COUNT, PRIME } from '../constants/constants';
+import {
+    CHARACTERS_ACTIONS,
+    CHARACTER_ACTIONS_DETAIL,
+    FRAME_COUNT,
+    PRIME,
+} from '../constants/constants';
 import { encodeStringToFelt } from './utils';
+import { addActionBuffersToCombo } from './Combos';
 
 export default interface Agent {
     mentalStatesNames?: string[];
@@ -28,7 +34,7 @@ export function buildAgent(
     trees: Tree[],
     conditions: Condition[],
     initialMentalState,
-    character
+    character: number
 ) {
     //console.log('ms', mentalStates);
     //console.log('tree', trees);
@@ -36,7 +42,18 @@ export function buildAgent(
     let agent: Agent = {};
 
     // Replace empty combos with null input
-    agent.combos = combos.map((combo) => (combo.length == 0 ? [0] : combo));
+    agent.combos = combos
+        //In the editor empty combos are valid, A user should expect an empty combo to perform idle
+        .map((combo) => (combo.length == 0 ? [0] : combo))
+        //Ensures each action is done to completion
+        .map((combo) =>
+            addActionBuffersToCombo(
+                combo,
+                CHARACTER_ACTIONS_DETAIL[character],
+                CHARACTERS_ACTIONS[character]
+            )
+        );
+
     agent.mentalStatesNames = mentalStates.map((ms) => ms.state);
     agent.initialState = initialMentalState;
 
