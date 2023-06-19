@@ -29,6 +29,7 @@ import {
     isOperatorWithDoubleOperands,
     conditionElementToStr,
     validateConditionName,
+    conditionTypeToEmoji,
 } from '../../types/Condition';
 import PerceptibleList from './PerceptibleList';
 import { BodystatesAntoc, BodystatesJessica } from '../../types/Condition';
@@ -213,16 +214,21 @@ const Conditions = ({
                         >
                             {conditions
                                 .slice(0, conditions.length - 1)
-                                .map((_, i) => (
+                                .map((condition, i) => (
                                     <MenuItem value={i}>
-                                        {conditions[i].displayName || `C${i}`}
+                                        <span style={{ marginRight: '7px' }}>
+                                            {conditionTypeToEmoji(
+                                                condition.type
+                                            )}
+                                        </span>
+                                        {condition.displayName || `C${i}`}
                                     </MenuItem>
                                 ))}
                             <MenuItem
                                 value={conditions.length - 1}
                                 disabled={isReadOnly}
                             >
-                                New Condition
+                                Create New Condition
                             </MenuItem>
                         </Select>
                     </Box>

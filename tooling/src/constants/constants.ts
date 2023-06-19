@@ -341,6 +341,8 @@ export const ACTION_UNICODE_MAP = {
     StepForward: '\u{1F43E}',
 
     Jump: '\u{1F998}',
+
+    Gatotsu: '\u{1F525}',
 };
 
 export const ACTIONS_ICON_MAP = {

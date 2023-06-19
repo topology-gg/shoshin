@@ -19,7 +19,7 @@ import {
 } from '../../constants/constants';
 import BlurrableButton from '../ui/BlurrableButton';
 import { Layer, defaultLayer } from '../../types/Layer';
-import { Condition } from '../../types/Condition';
+import { Condition, conditionTypeToEmoji } from '../../types/Condition';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import BlurrableListItemText from '../ui/BlurrableListItemText';
 
@@ -229,7 +229,7 @@ const Layer = ({
                         }}
                     >
                         <span style={{ marginRight: '7px' }}>
-                            {'\u{1F4D0}'}
+                            {conditionTypeToEmoji(layer.condition.type)}
                         </span>
                         {layer.condition.displayName}
                     </BlurrableButton>
@@ -248,6 +248,9 @@ const Layer = ({
                                         onConditionSelect(condition);
                                     }}
                                 >
+                                    <span style={{ marginRight: '7px' }}>
+                                        {conditionTypeToEmoji(condition.type)}
+                                    </span>
                                     {condition.displayName}
                                 </BlurrableListItemText>
                             </MenuItem>
@@ -269,7 +272,7 @@ const Layer = ({
                     >
                         <span style={{ marginRight: '7px' }}>
                             {action.unicode}
-                        </span>{' '}
+                        </span>
                         {action.name}
                     </BlurrableButton>
                 </Grid>
@@ -285,6 +288,9 @@ const Layer = ({
                                 <BlurrableListItemText
                                     onClick={(e) => onActionSelect(action)}
                                 >
+                                    <span style={{ marginRight: '7px' }}>
+                                        {ACTION_UNICODE_MAP[action]}
+                                    </span>
                                     {action.replaceAll('_', ' ')}
                                 </BlurrableListItemText>
                             </MenuItem>

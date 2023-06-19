@@ -50,16 +50,13 @@ const conditions = [
             },
         ],
         key: '0',
-        displayName: 'close',
+        displayName: 'closer than 80',
+        type: 'spacing',
     },
     {
         elements: [
             {
-                value: 80,
-                type: 'Constant',
-            },
-            {
-                value: '<=',
+                value: '(',
                 type: 'Operator',
             },
             {
@@ -88,170 +85,27 @@ const conditions = [
             },
             {
                 value: '|',
+                type: 'Operator',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 100,
+                type: 'Constant',
+            },
+            {
+                value: ')',
                 type: 'Operator',
             },
         ],
-        displayName: 'not_close',
         key: '1',
+        displayName: 'closer than 100',
+        type: 'spacing',
     },
     {
         elements: [
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: 10,
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: 20,
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: 30,
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: 1010,
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: 1020,
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'AND',
-                type: 'Operator',
-            },
             {
                 value: '(',
                 type: 'Operator',
@@ -289,12 +143,8 @@ const conditions = [
                 type: 'Operator',
             },
             {
-                value: 80,
+                value: 120,
                 type: 'Constant',
-            },
-            {
-                value: ')',
-                type: 'Operator',
             },
             {
                 value: ')',
@@ -302,18 +152,11 @@ const conditions = [
             },
         ],
         key: '2',
-        displayName: 'close_and_opp_attacking',
+        displayName: 'closer than 120',
+        type: 'spacing',
     },
     {
         elements: [
-            {
-                value: '!',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
             {
                 value: '(',
                 type: 'Operator',
@@ -430,13 +273,10 @@ const conditions = [
                 value: ')',
                 type: 'Operator',
             },
-            {
-                value: ')',
-                type: 'Operator',
-            },
         ],
-        displayName: 'opp_not_attacking',
+        displayName: 'they are attacking',
         key: '3',
+        type: 'their state',
     },
     {
         elements: [
@@ -486,7 +326,35 @@ const conditions = [
             },
         ],
         key: '4',
-        displayName: 'blocking',
+        displayName: 'they are blocking',
+        type: 'their state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 9,
+                type: 'Perceptible',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 200,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        key: '5',
+        displayName: 'my stamina lower than 200',
+        type: 'my stats',
     },
     {
         elements: [
@@ -511,8 +379,90 @@ const conditions = [
                 type: 'Operator',
             },
         ],
-        key: '5',
-        displayName: 'self_low_stamina',
+        key: '6',
+        displayName: 'my stamina lower than 300',
+        type: 'my stats',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 9,
+                type: 'Perceptible',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 400,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        key: '7',
+        displayName: 'my stamina lower than 400',
+        type: 'my stats',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 9,
+                type: 'Perceptible',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 500,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        key: '8',
+        displayName: 'my stamina lower than 500',
+        type: 'my stats',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 109,
+                type: 'Perceptible',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 200,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        key: '9',
+        displayName: 'their stamina lower than 200',
+        type: 'their stats',
     },
     {
         elements: [
@@ -537,8 +487,63 @@ const conditions = [
                 type: 'Operator',
             },
         ],
-        key: '6',
-        displayName: 'opp_low_stamina',
+        key: '10',
+        displayName: 'their stamina lower than 300',
+        type: 'their stats',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 109,
+                type: 'Perceptible',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 400,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        key: '11',
+        displayName: 'their stamina lower than 400',
+        type: 'their stats',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 109,
+                type: 'Perceptible',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 500,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        key: '12',
+        displayName: 'their stamina lower than 500',
+        type: 'their stats',
     },
 ];
 

@@ -4,7 +4,17 @@ export interface Condition {
     elements: ConditionElement[];
     key?: string;
     displayName?: string;
+    type?: string;
 }
+
+export const conditionTypeToEmoji = (conditionType: string) => {
+    if (!conditionType) return '\u{2B50}';
+
+    if (conditionType == 'spacing') return '\u{1F4D0}';
+    else if (conditionType.includes('stats')) return '\u{1F321}';
+    else if (conditionType.includes('state')) return '\u{1F9D8}';
+    else return '\u{2B50}';
+};
 
 export interface ConditionElement {
     value?: number | Operator | Perceptible;
