@@ -7,9 +7,11 @@ import PropTypes from 'prop-types';
 import { useLayoutEffect } from '../hooks/useIsomorphicLayoutEffect';
 import styles from './Game.module.css';
 import Simulator from '../scene/Simulator';
-import { GameModes, PhaserGameProps } from '../types/Simulator';
 import RealTime from '../scene/Realtime';
+import UI from '../scene/UI';
+import { GameModes, PhaserGameProps } from '../types/Simulator';
 import { ShoshinWASMContext } from '../context/wasm-shoshin';
+import eventsCenter from './EventsCenter';
 
 // Many shamefull @ts-ignore(s) in this file. It is not easy to know if game or scene is defined from outside the PhaserGame
 const Game = ({
@@ -105,6 +107,9 @@ const Game = ({
 
             g.scene.add('realtime', RealTime);
             g.scene.add('simulator', Simulator);
+            g.scene.add('ui', UI);
+
+            g.scene.start('ui');
             if (isRealTime) {
                 g.scene.start('realtime');
             } else {
@@ -163,6 +168,10 @@ const Game = ({
         if (scene !== null && scene !== undefined) {
             scene.changeScene(gameMode, ctx, realTimeOptions.setPlayerStatuses);
         }
+
+        if (isRealTime) eventsCenter.emit('timer-reset');
+        else eventsCenter.emit('timer-hide');
+
     }, [isRealTime]);
 
     React.useEffect(() => {
