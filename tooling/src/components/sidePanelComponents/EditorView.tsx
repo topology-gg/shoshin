@@ -25,6 +25,7 @@ import { Layer } from '../../types/Layer';
 import Gambit from './Gambit';
 import { GambitMs } from './GambitMs';
 import { GambitTree } from './GambitTreeEditor';
+import { Action } from '../../types/Action';
 
 interface EditorViewProps {
     editorMode: EditorMode;
@@ -40,8 +41,8 @@ interface EditorViewProps {
     mentalStates: MentalState[];
     initialMentalState: number;
     handleSetInitialMentalState: (initialMentalState: number) => void;
-    combos: number[][];
-    handleValidateCombo: (combo: number[], index: number) => void;
+    combos: Action[][];
+    handleValidateCombo: (combo: Action[], index: number) => void;
     character: Character;
     setCharacter: (character: Character) => void;
     handleAddMentalState: (new_state: string) => void;

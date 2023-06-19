@@ -1,30 +1,27 @@
 import React from 'react';
-import {
-    ACTIONS_ICON_MAP,
-    CHARACTERS_ACTIONS,
-    CHARACTER_ACTIONS_DETAIL,
-} from '../../constants/constants';
+import { ACTIONS_ICON_MAP } from '../../constants/constants';
 import ActionToken from './ActionToken';
+import { Action } from '../../types/Action';
+
+interface SingleAction {
+    disabled: boolean;
+    action: Action;
+    //Todo : add the rest types
+    [key: string]: any;
+}
 
 const SingleAction = ({
     disabled,
     action,
-    characterIndex,
     onDoubleClick,
     actionIndex,
-}) => {
-    const actionDuration =
-        CHARACTER_ACTIONS_DETAIL[characterIndex][
-            CHARACTERS_ACTIONS[characterIndex][action]
-        ].duration;
-
+}: SingleAction) => {
     //1.1 rem per frame
-
     const handleDoubleClick = () => {
         console.log('double click');
         onDoubleClick(actionIndex);
     };
-    const width = actionDuration * 1.1;
+    const width = action.frames.duration * 1.1;
     return (
         <div onDoubleClick={handleDoubleClick}>
             <ActionToken
@@ -34,11 +31,7 @@ const SingleAction = ({
                 width={width}
             >
                 <i className="material-icons" style={{ fontSize: '1rem' }}>
-                    {
-                        ACTIONS_ICON_MAP[
-                            CHARACTERS_ACTIONS[characterIndex][action]
-                        ]
-                    }
+                    {ACTIONS_ICON_MAP[action.display.name]}
                 </i>
             </ActionToken>
         </div>

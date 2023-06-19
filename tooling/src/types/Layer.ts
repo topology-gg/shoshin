@@ -1,8 +1,8 @@
 import {
-    CHARACTERS_ACTIONS,
     CHARACTER_ACTIONS_DETAIL,
     actionstoBodyState,
 } from '../constants/constants';
+import { CHARACTERS_ACTIONS } from './Action';
 import {
     Condition,
     ElementType,
@@ -72,7 +72,9 @@ export const layersToAgentComponents = (
         const bodyState = actionstoBodyState[character][layer.action.id];
 
         let terminatingCondition;
-        const action_name = CHARACTERS_ACTIONS[character][layer.action.id];
+        const action_name = CHARACTERS_ACTIONS[character].find(
+            (action) => action.id
+        ).display.name;
         if (action_name == 'Block') {
             // block needs to be handled differently because its body counter saturates at 3 until intent changes
             // when blocking, termination condition is the inverse of the condition for this layer

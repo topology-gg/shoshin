@@ -1,16 +1,20 @@
-import React, { useState, KeyboardEventHandler, SyntheticEvent } from 'react';
-import { Box, Button, Input, Typography } from '@mui/material';
+import React, { useState, SyntheticEvent } from 'react';
+import { Box, Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
-import NewAction from './NewAction';
 import {
-    CHARACTERS_ACTIONS,
-    ACTIONS_ICON_MAP,
-    MAX_COMBO_SIZE,
     CHARACTER_ACTIONS_DETAIL,
     ACTIONS_TO_KEYS,
     ACTION_UNICODE_MAP,
 } from '../../constants/constants';
 import Actions from '../ComboEditor/Actions';
+import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
+
+interface ComboEditor {
+    isReadOnly: boolean;
+    editingCombo: Action[];
+    //Todo : add the rest types
+    [key: string]: any;
+}
 
 const ComboEditor = ({
     isReadOnly,
@@ -21,12 +25,10 @@ const ComboEditor = ({
     setSelectedIndex,
     handleValidateCombo,
     displayButton,
-}) => {
+}: ComboEditor) => {
     const [selectedNewAction, setSelectedNewAction] = useState<boolean>(false);
 
-    let actions = Object.keys(CHARACTERS_ACTIONS[characterIndex]).filter((a) =>
-        isNaN(parseInt(a))
-    );
+    let actions = CHARACTERS_ACTIONS[characterIndex];
 
     //remove an action
     const handleActionDoubleClick = (index) => {
@@ -48,9 +50,10 @@ const ComboEditor = ({
         console.log('editing combo', editingCombo);
         console.log('selected index', selectedIndex);
 
-        let prev_copy = JSON.parse(JSON.stringify(editingCombo));
+        let prev_copy: Action[] = JSON.parse(JSON.stringify(editingCombo));
         if (!isNaN(action_int)) {
-            prev_copy.push(action_int);
+            let action = CHARACTERS_ACTIONS[characterIndex][action_int];
+            prev_copy.push(action);
         }
         setEditingCombo(prev_copy);
         handleValidateCombo(prev_copy, selectedIndex);
@@ -76,71 +79,65 @@ const ComboEditor = ({
                         justifyContent: 'center',
                     }}
                 >
-                    {actions.map((key, key_i) => {
-                        if (!key.includes('COMBO')) {
-                            const frameString =
-                                CHARACTER_ACTIONS_DETAIL[characterIndex][key]
-                                    .duration == 1
-                                    ? 'frame'
-                                    : 'frames';
-                            const actionDuration =
-                                CHARACTER_ACTIONS_DETAIL[characterIndex][key]
-                                    .duration;
-                            let actionActiveFramesString =
-                                CHARACTER_ACTIONS_DETAIL[characterIndex][
-                                    key
-                                ].active?.join(', ');
-                            if (actionActiveFramesString != null) {
-                                actionActiveFramesString =
-                                    'Active Frame # : ' +
-                                    actionActiveFramesString +
-                                    '. ';
-                            }
+                    {actions.map((action, index) => {
+                        console.log('action ', action);
+                        const frameString =
+                            action.frames.duration == 1 ? 'frame' : 'frames';
+                        const actionDuration = action.frames.duration;
+                        let actionActiveFramesString = action.frames?.active
+                            ?.length
+                            ? action.frames?.active[0].toString()
+                            : null;
 
-                            return (
-                                <Tooltip
-                                    key={`${key}`}
-                                    title={
-                                        <React.Fragment>
-                                            <Typography color="inherit">{`${key.replaceAll(
-                                                '_',
-                                                ' '
-                                            )}`}</Typography>
-                                            <p>
-                                                <em>{'Duration : '}</em>{' '}
-                                                <b>{actionDuration}</b>{' '}
-                                                {`${frameString}`}.{' '}
-                                            </p>
-                                            <p>{actionActiveFramesString}</p>
-                                        </React.Fragment>
-                                    }
-                                >
-                                    <div
-                                        key={`iconized-action-${key_i}`}
-                                        id={`iconized-action-${key_i}`}
-                                        className={'comboActionDiv'}
-                                        onClick={handleActionAddClick}
-                                    >
-                                        <span style={{}}>
-                                            {ACTION_UNICODE_MAP[key]}
-                                        </span>
-
-                                        <p
-                                            style={{
-                                                marginTop: '0.1rem',
-                                                marginBottom: '0',
-                                            }}
-                                        >
-                                            {
-                                                ACTIONS_TO_KEYS[characterIndex][
-                                                    key
-                                                ]
-                                            }
-                                        </p>
-                                    </div>
-                                </Tooltip>
-                            );
+                        if (actionActiveFramesString != null) {
+                            actionActiveFramesString =
+                                'Active Frame # : ' +
+                                actionActiveFramesString +
+                                '. ';
                         }
+
+                        return (
+                            <Tooltip
+                                key={`${action.id}`}
+                                title={
+                                    <React.Fragment>
+                                        <Typography color="inherit">
+                                            {action.display.name}
+                                        </Typography>
+                                        <p>
+                                            <em>{'Duration : '}</em>{' '}
+                                            <b>{actionDuration}</b>{' '}
+                                            {`${frameString}`}.{' '}
+                                        </p>
+                                        <p>{actionActiveFramesString}</p>
+                                    </React.Fragment>
+                                }
+                            >
+                                <div
+                                    key={`iconized-action-${index}`}
+                                    id={`iconized-action-${index}`}
+                                    className={'comboActionDiv'}
+                                    onClick={handleActionAddClick}
+                                >
+                                    <span style={{}}>
+                                        {action.display.unicode}
+                                    </span>
+
+                                    <p
+                                        style={{
+                                            marginTop: '0.1rem',
+                                            marginBottom: '0',
+                                        }}
+                                    >
+                                        {
+                                            ACTIONS_TO_KEYS[characterIndex][
+                                                action.display.name
+                                            ]
+                                        }
+                                    </p>
+                                </div>
+                            </Tooltip>
+                        );
                     })}
                 </Box>
                 <div

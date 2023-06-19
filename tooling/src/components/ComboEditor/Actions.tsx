@@ -6,14 +6,21 @@ import {
     Droppable,
 } from 'react-beautiful-dnd';
 import SingleAction from '../sidePanelComponents/SingleAction';
+import { Action } from '../../types/Action';
+
+interface Actions {
+    isReadOnly: boolean;
+    combo: Action[];
+    //Todo : add the rest types
+    [key: string]: any;
+}
 
 const Actions = ({
-    characterIndex,
     combo,
     handleActionDoubleClick,
     isReadOnly,
     onChange,
-}) => {
+}: Actions) => {
     //Reorder combos in an action
     function onDragEnd(result) {
         const { draggableId, source, destination } = result;
@@ -47,13 +54,12 @@ const Actions = ({
                     key={`action-${rubric.source.index}`}
                     disabled={isReadOnly}
                     action={combo[rubric.source.index]}
-                    characterIndex={characterIndex}
                     onDoubleClick={handleActionDoubleClick}
                     actionIndex={rubric.source.index}
                 />
             </div>
         ),
-        [combo, isReadOnly, characterIndex, handleActionDoubleClick]
+        [combo, isReadOnly, handleActionDoubleClick]
     );
 
     return (

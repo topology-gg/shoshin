@@ -96,6 +96,7 @@ import {
     defaultLayer,
     layersToAgentComponents,
 } from '../src/types/Layer';
+import { Action } from '../src/types/Action';
 
 //@ts-ignore
 const Game = dynamic(() => import('../src/Game/PhaserGame'), {
@@ -145,7 +146,7 @@ export default function Home() {
 
     // React states for tracking the New Agent being edited in the right panel
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
-    const [combos, setCombos] = useState<number[][]>(
+    const [combos, setCombos] = useState<Action[][]>(
         INITIAL_AGENT_COMPONENTS.combos
     );
     const [mentalStates, setMentalStates] = useState<MentalState[]>(
@@ -809,14 +810,9 @@ export default function Home() {
         });
     }
 
-    function handleValidateCombo(combo: number[], index: number) {
+    function handleValidateCombo(combo: Action[], index: number) {
         let shimmedCombo = [];
 
-        if (combo.length == 0) {
-            shimmedCombo = combo;
-        } else {
-            shimmedCombo == combo;
-        }
         console.log('combo', combo);
         console.log('index', index);
         setCombos((prev) => {
