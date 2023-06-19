@@ -171,7 +171,6 @@ const Game = ({
 
         if (isRealTime) eventsCenter.emit('timer-reset');
         else eventsCenter.emit('timer-hide');
-
     }, [isRealTime]);
 
     React.useEffect(() => {

@@ -11,7 +11,7 @@ import Agent from '../types/Agent';
 import { RealTimeFrameScene } from '../types/Frame';
 import { GameModes } from '../types/Simulator';
 import Platformer from './Simulator';
-import eventsCenter from '../Game/EventsCenter'
+import eventsCenter from '../Game/EventsCenter';
 
 export default class RealTime extends Platformer {
     state: RealTimeFrameScene = InitialRealTimeFrameScene;
@@ -325,7 +325,9 @@ export default class RealTime extends Platformer {
             // emit event for UI scene
             eventsCenter.emit(
                 'timer-change',
-                Math.round(this.gameTimer.repeatCount * this.tickLatencyInSecond)
+                Math.round(
+                    this.gameTimer.repeatCount * this.tickLatencyInSecond
+                )
             );
 
             this.setPlayerStatuses({
