@@ -30,9 +30,17 @@ const SingleAction = ({
                 selected={false}
                 width={width}
             >
-                <i className="material-icons" style={{ fontSize: '1rem' }}>
-                    {ACTIONS_ICON_MAP[action.display.name]}
-                </i>
+                <span style={{}}>{action.display.unicode}</span>
+                {/* <p
+                    style={{
+                        marginTop: '0.1rem',
+                        marginBottom: '0',
+                    }}
+                >
+                    {
+                        action.display.name
+                    }
+                </p> */}
             </ActionToken>
         </div>
     );

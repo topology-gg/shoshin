@@ -72,7 +72,7 @@ const Jump: Action = {
 };
 const Gatotsu: Action = {
     id: 10,
-    display: { name: 'Gatotsu', unicode: '' },
+    display: { name: 'Gatotsu', unicode: '\u{1F985}' },
     frames: { duration: 7 },
 };
 
