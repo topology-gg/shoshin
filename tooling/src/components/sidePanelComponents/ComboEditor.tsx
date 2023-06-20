@@ -1,4 +1,4 @@
-import React, { useState, SyntheticEvent } from 'react';
+import React, { useState, SyntheticEvent, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import { ACTIONS_TO_KEYS } from '../../constants/constants';
@@ -24,6 +24,37 @@ const ComboEditor = ({
     const [selectedNewAction, setSelectedNewAction] = useState<boolean>(false);
 
     let actions = CHARACTERS_ACTIONS[characterIndex];
+
+    const handleKeyPress = (ev: KeyboardEvent) => {
+        const key = ev.key.toUpperCase();
+
+        console.log('keypress', key);
+
+        if (key.includes('BACKSPACE')) {
+            let prev_copy = editingCombo.slice(0, -1);
+            setEditingCombo(prev_copy);
+            handleValidateCombo(prev_copy, selectedIndex);
+            return;
+        }
+        const action = CHARACTERS_ACTIONS[characterIndex].find(
+            (action) => action.key == key
+        );
+
+        if (action !== undefined) {
+            let prev_copy: Action[] = JSON.parse(JSON.stringify(editingCombo));
+            prev_copy.push(action);
+            setEditingCombo(prev_copy);
+            handleValidateCombo(prev_copy, selectedIndex);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [editingCombo]);
 
     //remove an action
     const handleActionDoubleClick = (index) => {

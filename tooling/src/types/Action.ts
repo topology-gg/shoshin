@@ -12,68 +12,90 @@ export interface Action {
         duration: number;
         active?: number[];
     };
+    key: string;
 }
 
 export const defaultAction: Action = {
     id: 0,
     display: { name: 'Rest', unicode: '\u{1F9D8}' },
     frames: { duration: 1 },
+    key: '-',
 };
 
 const Rest: Action = {
     id: 0,
     display: { name: 'Rest', unicode: '\u{1F9D8}' },
     frames: { duration: 1 },
+    key: '-',
 };
 const Slash: Action = {
     id: 1,
     display: { name: 'Slash', unicode: '\u{1F5E1}' },
     frames: { duration: 5, active: [3] },
+    key: 'J',
 };
+
 const Upswing: Action = {
     id: 2,
     display: { name: 'Upswing', unicode: '\u{1F5E1}' },
     frames: { duration: 5, active: [3] },
+    key: 'K',
 };
+
 const Sidecut: Action = {
     id: 3,
     display: { name: 'Sidecut', unicode: '\u{1F5E1}' },
     frames: { duration: 5, active: [3] },
+    key: 'L',
 };
+
 const Block: Action = {
     id: 4,
     display: { name: 'Block', unicode: '\u{1F6E1}' },
     frames: { duration: 3, active: [2] },
+    key: 'S',
 };
+
 const MoveForward: Action = {
     id: 5,
     display: { name: 'MoveForward', unicode: '\u{1F6B6}' },
     frames: { duration: 1 },
+    key: 'D',
 };
+
 const MoveBackward: Action = {
     id: 6,
     display: { name: 'MoveBackward', unicode: '\u{1F6B6}' },
     frames: { duration: 1 },
+    key: 'A',
 };
+
 const DashForward: Action = {
     id: 7,
     display: { name: 'DashForward', unicode: '\u{1F406}' },
     frames: { duration: 4 },
+    key: 'E',
 };
+
 const DashBackward: Action = {
     id: 8,
     display: { name: 'DashBackward', unicode: '\u{1F406}' },
     frames: { duration: 4 },
+    key: 'Q',
 };
+
 const Jump: Action = {
     id: 9,
     display: { name: 'Jump', unicode: '\u{1F998}' },
     frames: { duration: 6 },
+    key: 'W',
 };
+
 const Gatotsu: Action = {
     id: 10,
     display: { name: 'Gatotsu', unicode: '' },
     frames: { duration: 7 },
+    key: 'Z',
 };
 
 const JessicaActions = [
@@ -94,51 +116,70 @@ const AntocRest: Action = {
     id: 0,
     display: { name: 'Rest', unicode: '\u{1F9D8}' },
     frames: { duration: 1 },
+    key: '-',
 };
+
 export const Hori: Action = {
     id: 1,
     display: { name: 'Hori', unicode: '\u{1F5E1}' },
     frames: { duration: 7, active: [2, 3] },
+    key: 'J',
 };
+
 const Vert: Action = {
     id: 2,
     display: { name: 'Vert', unicode: '\u{1F5E1}' },
     frames: { duration: 10, active: [4, 5] },
+    key: 'K',
 };
+
 export const AntocBlock: Action = {
     id: 3,
     display: { name: 'Block', unicode: '\u{1F6E1}' },
     frames: { duration: 6, active: [2, 3, 4, 5] },
+    key: 'S',
 };
+
 const AntocMoveForward: Action = {
     id: 4,
     display: { name: 'MoveForward', unicode: '\u{1F6B6}' },
     frames: { duration: 1 },
+    key: 'D',
 };
+
 export const AntocMoveBackward: Action = {
     id: 5,
     display: { name: 'MoveBackward', unicode: '\u{1F6B6}' },
     frames: { duration: 1 },
+    key: 'A',
 };
+
 const AntocDashForward: Action = {
     id: 6,
     display: { name: 'DashForward', unicode: '\u{1F406}' },
     frames: { duration: 4 },
+    key: 'E',
 };
+
 const AntocDashBackward: Action = {
     id: 7,
     display: { name: 'DashBackward', unicode: '\u{1F406}' },
     frames: { duration: 4 },
+    key: 'Q',
 };
+
 const StepForward: Action = {
     id: 8,
     display: { name: 'StepForward', unicode: '\u{1F43E}' },
     frames: { duration: 3 },
+    key: 'F',
 };
+
 const AntocJump: Action = {
     id: 9,
     display: { name: 'Jump', unicode: '\u{1F998}' },
     frames: { duration: 7 },
+    key: 'W',
 };
 
 const AntocActions = [
