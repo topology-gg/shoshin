@@ -4,7 +4,7 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.bool import (TRUE, FALSE)
 from starkware.cairo.common.math import unsigned_div_rem
-from starkware.cairo.common.math_cmp import is_le
+from starkware.cairo.common.math_cmp import is_le, is_nn_le
 from contracts.constants.constants import (
     BodyState, ns_stimulus, ns_stamina, ns_character_type, HURT_EFFECT, KNOCKED_EFFECT, CLASH_EFFECT
 )
@@ -45,10 +45,10 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.IDLE) {
 
         // body responds to stimulus first
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -101,13 +101,13 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.SLASH) {
 
         // body responds to stimulus first
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.CLASH) {
+        if (stimulus_type == ns_stimulus.CLASH) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -137,13 +137,13 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.UPSWING) {
 
         // body responds to stimulus first
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.CLASH) {
+        if (stimulus_type == ns_stimulus.CLASH) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -172,13 +172,13 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.SIDECUT) {
 
         // body responds to stimulus first
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.CLASH) {
+        if (stimulus_type == ns_stimulus.CLASH) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -207,10 +207,10 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.BLOCK) {
 
         // body responds to stimulus first
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -240,10 +240,10 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.CLASH) {
 
         // body responds to stimulus first
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -283,7 +283,7 @@ func _body_jessica {range_check_ptr}(
         }
 
         // if reach counter==5 and still in air => remain in counter==5
-        if (counter == 5 and stimulus != ns_stimulus.GROUND) {
+        if (counter == 5 and stimulus_type != ns_stimulus.GROUND) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, counter, integrity, stamina, dir, FALSE) );
         }
 
@@ -297,10 +297,10 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.MOVE_FORWARD) {
 
         // interruptible by stimulus
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -348,10 +348,10 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.MOVE_BACKWARD) {
 
         // interruptible by stimulus
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -481,7 +481,7 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.JUMP) {
 
         // can be knocked
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -499,13 +499,14 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.GATOTSU) {
 
-        // hurtible before counter==4
-        let is_counter_le_3 = is_le (counter, 3);
-        if (is_counter_le_3 == 1) {
-            if (stimulus == ns_stimulus.HURT) {
+        // hurtible if counter is 0,1,2,5,6
+        let is_counter_le_2 = is_le (counter, 2);
+        let is_counter_5_or_6 = is_nn_le (counter-5, 1);
+        if (is_counter_le_2 == 1 and is_counter_5_or_6 == 1) {
+            if (stimulus_type == ns_stimulus.HURT) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
             }
-            if (stimulus == ns_stimulus.KNOCKED) {
+            if (stimulus_type == ns_stimulus.KNOCKED) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
             }
         }

@@ -92,10 +92,10 @@ namespace ns_antoc_stamina_effect {
 }
 
 namespace ns_antoc_stimulus {
-    const BLOCK_KNOCK_DAMAGE = -50;
-    const CLASH_KNOCK_DAMAGE = -75;
-    const HORI_DAMAGE = -100;
-    const VERT_DAMAGE = -150;
+    const BLOCK_KNOCK_DAMAGE = 50;
+    const CLASH_KNOCK_DAMAGE = 75;
+    const HORI_DAMAGE = 100;
+    const VERT_DAMAGE = 150;
 }
 
 namespace ns_antoc_body_state_duration {

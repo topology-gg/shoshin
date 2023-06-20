@@ -44,10 +44,10 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.IDLE) {
         // body responds to stimulus first
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity , stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -97,19 +97,18 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.HORI) {
 
         // body responds to stimulus first
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.CLASH) {
+        if (stimulus_type == ns_stimulus.CLASH) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
         // note: clash does not interrupt Antoc's attack because of sword's heaviness;
         //       need to balance this carefully
-        // if (stimulus == ns_stimulus.CLASH) {
 
         // by default finishing the animation; go to frame 1 if intent is HORI at last frame
         if (counter == ns_antoc_body_state_duration.HORI - 1) {
@@ -136,19 +135,18 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.VERT) {
 
         // body responds to stimulus first
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.CLASH) {
+        if (stimulus_type == ns_stimulus.CLASH) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
         // note: clash does not interrupt Antoc's attack because of sword's heaviness;
         //       need to balance this carefully
-        // if (stimulus == ns_stimulus.CLASH) {
 
         // body responds to intent
         // VERT=>HORI fast transition: able to go directly to HORI's first frame at VERT's frame 8, 9, or 10
@@ -191,10 +189,10 @@ func _body_antoc {range_check_ptr}(
         // interruptable by being attacked
         let is_in_block_active = ns_antoc_body_state_qualifiers.is_in_block_active(state, counter);
         if (is_in_block_active == 0) {
-            if (stimulus == ns_stimulus.HURT) {
+            if (stimulus_type == ns_stimulus.HURT) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
             }
-            if (stimulus == ns_stimulus.KNOCKED) {
+            if (stimulus_type == ns_stimulus.KNOCKED) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
             }
         }
@@ -249,7 +247,7 @@ func _body_antoc {range_check_ptr}(
         }
 
         // if reach counter==6 and still in air => remain in counter==6
-        if (counter == 6 and stimulus != ns_stimulus.GROUND) {
+        if (counter == 6 and stimulus_type != ns_stimulus.GROUND) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, counter, integrity, stamina, dir, FALSE) );
         }
 
@@ -263,10 +261,10 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.MOVE_FORWARD) {
 
         // interruptible by stimulus
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -322,10 +320,10 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.MOVE_BACKWARD) {
 
         // interruptible by stimulus
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -430,10 +428,10 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.CLASH) {
 
         // interruptible by stimulus
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -453,7 +451,7 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.JUMP) {
 
         // can be knocked
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
@@ -474,10 +472,10 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.STEP_FORWARD) {
 
         // interruptible by stimulus
-        if (stimulus == ns_stimulus.HURT) {
+        if (stimulus_type == ns_stimulus.HURT) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
         }
-        if (stimulus == ns_stimulus.KNOCKED) {
+        if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
