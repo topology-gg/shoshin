@@ -103,6 +103,7 @@ const ComboEditor = ({
                                         <p>{actionActiveFramesString}</p>
                                     </React.Fragment>
                                 }
+                                placement="top"
                             >
                                 <div
                                     key={`iconized-action-${index}`}
