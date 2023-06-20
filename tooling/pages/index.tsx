@@ -1120,10 +1120,6 @@ export default function Home() {
                         handleClick={handleMidScreenControlClick}
                         handleSlideChange={(evt) => {
                             if (animationState == 'Run') return;
-                            console.log(
-                                'handleSlideChange::value',
-                                evt.target.value
-                            );
                             const slide_val: number = parseInt(
                                 evt.target.value
                             );
