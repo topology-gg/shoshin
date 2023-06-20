@@ -19,8 +19,6 @@ export const addActionBuffersToCombo = (
                 ? customDurations[character][action.id]
                 : action.frames.duration;
 
-        console.log('duration', duration);
-
         for (let i = 0; i < duration; i++) {
             temp.push(0);
         }

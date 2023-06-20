@@ -37,7 +37,6 @@ export function buildAgent(
     //console.log('conditions', conditions);
     let agent: Agent = {};
 
-    console.log('in combos', combos);
     // Replace empty combos with null input
     agent.combos = combos
         //In the editor empty combos are valid, A user should expect an empty combo to perform idle
@@ -45,7 +44,6 @@ export function buildAgent(
         //Ensures each action is done to completion
         .map((combo) => addActionBuffersToCombo(combo, character));
 
-    console.log('agent combos', agent.combos);
     agent.mentalStatesNames = mentalStates.map((ms) => ms.state);
     agent.initialState = initialMentalState;
 

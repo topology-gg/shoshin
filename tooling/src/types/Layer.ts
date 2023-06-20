@@ -33,7 +33,6 @@ const getActionCondition = (
     });
 
     const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration - 1;
-    console.log(character, key, duration);
 
     let terminatingCondition;
     if (key == 'MoveForward' || key == 'MoveBackward' || key == 'Block') {
@@ -84,8 +83,6 @@ export const layersToAgentComponents = (
         } else if (layer.action.isCombo == true) {
             //if combo, we need to get combo length, and put in the action for the node
 
-            console.log('character', character);
-            console.log('action.id', layer.action.id);
             const comboDuration = combos[layer.action.id - 101].reduce(
                 (acc, a) =>
                     acc +
@@ -95,7 +92,6 @@ export const layersToAgentComponents = (
                 0
             );
 
-            console.log('combo duration', comboDuration);
             terminatingCondition = getIsComboFinishedCondition(
                 comboDuration,
                 layer.action.id
