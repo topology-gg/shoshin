@@ -1,5 +1,3 @@
-%lang starknet
-
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
 namespace ns_character_type {
@@ -13,7 +11,7 @@ namespace ns_dynamics {
     const SCALE_FP_SQRT = 10 ** 2;
     const DT_FP = 10 ** 3;  // 0.1
 
-    const GRAVITY_ACC_FP = -2100 * ns_dynamics.SCALE_FP;
+    const GRAVITY_ACC_FP = (-2100) * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_stamina {
@@ -22,15 +20,15 @@ namespace ns_stamina {
 
 namespace ns_common_stamina_effect {
     // These values are applied every frame in the body state
-    const NULL = 50; // replenish stamina
-    const MOVE_FORWARD = 25; // replenish stamina
-    const MOVE_BACKWARD = 25; // replenish stamina
-    const BLOCK = -25; // consumes stamina
-    const JUMP = -25; // consumes stamina
+    const NULL = 50;  // replenish stamina
+    const MOVE_FORWARD = 25;  // replenish stamina
+    const MOVE_BACKWARD = 25;  // replenish stamina
+    const BLOCK = -25;  // consumes stamina
+    const JUMP = -25;  // consumes stamina
 
     // These values are applied in the first frame of body state
-    const DASH_FORWARD = -200; // consumes stamina
-    const DASH_BACKWARD = -200; // consumes stamina
+    const DASH_FORWARD = -200;  // consumes stamina
+    const DASH_BACKWARD = -200;  // consumes stamina
 }
 
 namespace ns_integrity {
@@ -97,7 +95,7 @@ struct BodyState {
     integrity: felt,
     stamina: felt,
     dir: felt,
-    fatigued : felt,
+    fatigued: felt,
 }
 
 struct PhysicsState {
@@ -140,8 +138,8 @@ struct RealTimeAgent {
     physics_state: PhysicsState,
     stimulus: felt,
     hitboxes: Hitboxes,
-    mental_state : felt,
-    combo_info : RealTimeComboInfo,
+    mental_state: felt,
+    combo_info: RealTimeComboInfo,
 }
 
 struct FrameScene {
@@ -196,11 +194,10 @@ namespace ns_perceptibles {
 //
 // Metadata
 //
-struct Metadata{
-    character_type_0 : felt,
-    character_type_1 : felt,
+struct Metadata {
+    character_type_0: felt,
+    character_type_1: felt,
 }
-
 
 const HURT_EFFECT = 100;
 const KNOCKED_EFFECT = 200;

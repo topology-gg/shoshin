@@ -1,14 +1,9 @@
-%lang starknet
-
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math_cmp import is_le
-from contracts.constants.constants import (
-    ns_dynamics, Vec2, Rectangle, ns_hitbox, ns_scene
-)
+from cairo_test.constants.constants import ns_dynamics, Vec2, Rectangle, ns_hitbox, ns_scene
 
 namespace ns_jessica_dynamics {
-
     // dt = 0.1; one frame from static to max vel; two frames from minus max vel to positive max vel
     const MOVE_ACC_FP = 1200 * ns_dynamics.SCALE_FP;
     const MAX_VEL_MOVE_FP = 120 * ns_dynamics.SCALE_FP;
@@ -73,9 +68,9 @@ namespace ns_jessica_action {
     const SIDECUT = 3;
     const BLOCK = 4;
 
-    const MOVE_FORWARD  = 5;
+    const MOVE_FORWARD = 5;
     const MOVE_BACKWARD = 6;
-    const DASH_FORWARD  = 7;
+    const DASH_FORWARD = 7;
     const DASH_BACKWARD = 8;
 
     const JUMP = 9;
@@ -113,59 +108,58 @@ namespace ns_jessica_body_state_duration {
 }
 
 namespace ns_jessica_body_state {
-    const IDLE = 0; // 5 frames
-    const SLASH = 10; // 5 frames
+    const IDLE = 0;  // 5 frames
+    const SLASH = 10;  // 5 frames
     const UPSWING = 20;  // 5 frames
     const SIDECUT = 30;  // 5 frames
-    const BLOCK = 40; // 3 frames
-    const CLASH = 50; // 4 frames;
-    const HURT = 60; // 3 frames
-    const KNOCKED = 70; // 11 frames
+    const BLOCK = 40;  // 3 frames
+    const CLASH = 50;  // 4 frames;
+    const HURT = 60;  // 3 frames
+    const KNOCKED = 70;  // 11 frames
     const MOVE_FORWARD = 90;  // 8 frames
     const MOVE_BACKWARD = 100;  // 6 frames
     const DASH_FORWARD = 110;  // 5 frames
     const DASH_BACKWARD = 120;  // 5 frames
-    const JUMP = 130; // 7 frames
+    const JUMP = 130;  // 7 frames
 }
 
 namespace ns_jessica_body_state_qualifiers {
-
-    func is_in_slash_active {range_check_ptr}(state: felt, counter: felt) -> felt {
+    func is_in_slash_active{range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_jessica_body_state.SLASH and counter == 2) {
             return 1;
         }
         return 0;
     }
 
-    func is_in_upswing_active {range_check_ptr}(state: felt, counter: felt) -> felt {
+    func is_in_upswing_active{range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_jessica_body_state.UPSWING and counter == 2) {
             return 1;
         }
         return 0;
     }
 
-    func is_in_sidecut_active {range_check_ptr}(state: felt, counter: felt) -> felt {
+    func is_in_sidecut_active{range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_jessica_body_state.SIDECUT and counter == 2) {
             return 1;
         }
         return 0;
     }
 
-    func is_in_block_active {range_check_ptr}(state: felt, counter: felt) -> felt {
+    func is_in_block_active{range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_jessica_body_state.BLOCK and counter == 1) {
             return 1;
         }
         return 0;
     }
 
-    func is_in_knocked {range_check_ptr}(state: felt) -> felt {
+    func is_in_knocked{range_check_ptr}(state: felt) -> felt {
         if (state != ns_jessica_body_state.KNOCKED) {
             return 0;
         }
         return 1;
     }
 
-    func is_in_various_states {range_check_ptr}(state: felt, counter: felt) -> (
+    func is_in_various_states{range_check_ptr}(state: felt, counter: felt) -> (
         bool_body_in_atk_active: felt,
         bool_body_in_knocked: felt,
         bool_body_in_block: felt,
@@ -173,29 +167,22 @@ namespace ns_jessica_body_state_qualifiers {
     ) {
         alloc_locals;
 
-        let bool_body_in_slash_active   = is_in_slash_active (state, counter);
-        let bool_body_in_upswing_active = is_in_upswing_active (state, counter);
-        let bool_body_in_sidecut_active = is_in_sidecut_active (state, counter);
-        let bool_body_in_atk_active     = bool_body_in_slash_active + bool_body_in_upswing_active + bool_body_in_sidecut_active;
-        let bool_body_in_knocked        = is_in_knocked (state);
-        let bool_body_in_block          = is_in_block_active (state, counter);
-        let bool_body_in_active         = bool_body_in_atk_active + bool_body_in_block;
+        let bool_body_in_slash_active = is_in_slash_active(state, counter);
+        let bool_body_in_upswing_active = is_in_upswing_active(state, counter);
+        let bool_body_in_sidecut_active = is_in_sidecut_active(state, counter);
+        let bool_body_in_atk_active = bool_body_in_slash_active + bool_body_in_upswing_active + bool_body_in_sidecut_active;
+        let bool_body_in_knocked = is_in_knocked(state);
+        let bool_body_in_block = is_in_block_active(state, counter);
+        let bool_body_in_active = bool_body_in_atk_active + bool_body_in_block;
 
         return (
-            bool_body_in_atk_active,
-            bool_body_in_knocked,
-            bool_body_in_block,
-            bool_body_in_active,
+            bool_body_in_atk_active, bool_body_in_knocked, bool_body_in_block, bool_body_in_active,
         );
     }
 }
 
 namespace ns_jessica_hitbox {
-
-    func get_body_hitbox_dimension {range_check_ptr}(
-        body_state: felt,
-        body_counter: felt
-    ) -> (
+    func get_body_hitbox_dimension{range_check_ptr}(body_state: felt, body_counter: felt) -> (
         body_dimension: Vec2
     ) {
         alloc_locals;
@@ -204,41 +191,59 @@ namespace ns_jessica_hitbox {
         if (body_state == ns_jessica_body_state.KNOCKED) {
             let is_counter_le_1 = is_le(body_counter, 1);
             if (is_counter_le_1 == 1) {
-                return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H));
+                return (
+                    body_dimension=Vec2(ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H),
+                );
             }
 
             let is_counter_le_6 = is_le(body_counter, 6);
             if (is_counter_le_6 == 1) {
-                return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H));
+                return (
+                    body_dimension=Vec2(ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H),
+                );
             }
 
             // the last frame right before idle can use the idle hitbox for now
             if (body_counter == 10) {
-                return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H));
+                return (
+                    body_dimension=Vec2(ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H),
+                );
             }
 
-            return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_GROUND_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_GROUND_HITBOX_H));
+            return (
+                body_dimension=Vec2(ns_jessica_character_dimension.BODY_KNOCKED_GROUND_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_GROUND_HITBOX_H),
+            );
         }
 
         // dash forward
         if (body_state == ns_jessica_body_state.DASH_FORWARD) {
             if (body_counter == 0) {
-                return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_0_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_0_H));
+                return (
+                    body_dimension=Vec2(ns_jessica_character_dimension.BODY_DASH_FORWARD_0_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_0_H),
+                );
             }
             if (body_counter == 1) {
-                return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_1_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_1_H));
+                return (
+                    body_dimension=Vec2(ns_jessica_character_dimension.BODY_DASH_FORWARD_1_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_1_H),
+                );
             }
             if (body_counter == 2) {
-                return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_2_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_2_H));
+                return (
+                    body_dimension=Vec2(ns_jessica_character_dimension.BODY_DASH_FORWARD_2_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_2_H),
+                );
             }
-            return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_3_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_3_H));
+            return (
+                body_dimension=Vec2(ns_jessica_character_dimension.BODY_DASH_FORWARD_3_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_3_H),
+            );
         }
 
         // otherwise
-        return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H));
+        return (
+            body_dimension=Vec2(ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H),
+        );
     }
 
-    func get_action_hitbox {range_check_ptr}(
+    func get_action_hitbox{range_check_ptr}(
         bool_is_active: felt,
         bool_is_attack_active: felt,
         bool_is_block_active: felt,
@@ -247,16 +252,12 @@ namespace ns_jessica_hitbox {
         pos_y: felt,
         body_hitbox_dimension: Vec2,
         body_state: felt,
-        body_counter: felt
-    ) -> (
-        action_hitbox: Rectangle
-    ) {
+        body_counter: felt,
+    ) -> (action_hitbox: Rectangle) {
         alloc_locals;
 
         if (bool_is_active == 1) {
-
             if (bool_is_attack_active == 1) {
-
                 local ATTACK_HITBOX_Y: felt;
                 local ATTACK_HITBOX_W: felt;
                 local ATTACK_HITBOX_H: felt;
@@ -277,59 +278,65 @@ namespace ns_jessica_hitbox {
                 }
 
                 if (dir == 1) {
-                    return (action_hitbox = Rectangle(
+                    return (
+                        action_hitbox=Rectangle(
                         Vec2(
                             pos_x + body_hitbox_dimension.x - ns_hitbox.NUDGE,
                             pos_y + ATTACK_HITBOX_Y
+                            ),
+                        Vec2(ATTACK_HITBOX_W, ATTACK_HITBOX_H)
                         ),
-                        Vec2 (ATTACK_HITBOX_W, ATTACK_HITBOX_H)
-                    ));
+                    );
                 } else {
-                    return (action_hitbox = Rectangle(
+                    return (
+                        action_hitbox=Rectangle(
                         Vec2(
                             pos_x - ATTACK_HITBOX_W + ns_hitbox.NUDGE,
                             pos_y + ATTACK_HITBOX_Y
+                            ),
+                        Vec2(ATTACK_HITBOX_W, ATTACK_HITBOX_H)
                         ),
-                        Vec2 (ATTACK_HITBOX_W, ATTACK_HITBOX_H)
-                    ));
+                    );
                 }
             }
 
             if (bool_is_block_active == 1) {
                 if (dir == 1) {
-                    return (action_hitbox = Rectangle(
+                    return (
+                        action_hitbox=Rectangle(
                         Vec2(
                             pos_x + body_hitbox_dimension.x - ns_hitbox.NUDGE,
                             pos_y + ns_jessica_character_dimension.BLOCK_HITBOX_Y
-                        ),
-                        Vec2 (
+                            ),
+                        Vec2(
                             ns_jessica_character_dimension.BLOCK_HITBOX_W,
                             ns_jessica_character_dimension.BLOCK_HITBOX_H
-                        )
-                    ));
+                            )
+                        ),
+                    );
                 } else {
-                    return (action_hitbox = Rectangle(
+                    return (
+                        action_hitbox=Rectangle(
                         Vec2(
                             pos_x - ns_jessica_character_dimension.BLOCK_HITBOX_W + ns_hitbox.NUDGE,
                             pos_y + ns_jessica_character_dimension.BLOCK_HITBOX_Y
-                        ),
-                        Vec2 (
+                            ),
+                        Vec2(
                             ns_jessica_character_dimension.BLOCK_HITBOX_W,
                             ns_jessica_character_dimension.BLOCK_HITBOX_H
-                        )
-                    ));
+                            )
+                        ),
+                    );
                 }
             }
-
         }
 
         // otherwise no action hitbox
-        return (action_hitbox = Rectangle(
-            origin = Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM),
-            dimension = Vec2(0, 0)
-        ));
-
+        return (
+            action_hitbox=Rectangle(
+            origin=Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM),
+            dimension=Vec2(0, 0)
+            ),
+        );
     }
-
 }
-
