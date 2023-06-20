@@ -3,11 +3,8 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.bool import (TRUE, FALSE)
-<<<<<<< HEAD
 from starkware.cairo.common.math import unsigned_div_rem
-=======
 from starkware.cairo.common.math_cmp import is_le
->>>>>>> main
 from contracts.constants.constants import (
     BodyState, ns_stimulus, ns_stamina, ns_character_type, HURT_EFFECT, KNOCKED_EFFECT, CLASH_EFFECT
 )
@@ -506,10 +503,10 @@ func _body_jessica {range_check_ptr}(
         let is_counter_le_3 = is_le (counter, 3);
         if (is_counter_le_3 == 1) {
             if (stimulus == ns_stimulus.HURT) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, hurt_integrity, stamina, dir, FALSE) );
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
             }
             if (stimulus == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
             }
         }
 
