@@ -36,6 +36,7 @@ const actionIndexToAction = (action: number, characterIndex): Action => {
             frames: {
                 duration: 1,
             },
+            key: '-',
         };
     }
 };
