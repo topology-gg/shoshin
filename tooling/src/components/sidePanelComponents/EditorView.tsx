@@ -79,6 +79,8 @@ interface EditorViewProps {
     newThoughtClicks: number;
     layers: Layer[];
     setLayers: (layers: Layer[]) => void;
+    selectedCombo: number;
+    handleChangeSelectedCombo: (comboIndex: number) => void;
 }
 
 const EditorView = ({
@@ -126,6 +128,8 @@ const EditorView = ({
     newThoughtClicks,
     layers,
     setLayers,
+    selectedCombo,
+    handleChangeSelectedCombo,
 }: EditorViewProps) => {
     const isReadOnly = editorMode == EditorMode.ReadOnly;
     const [openContractInformation, setOpenContractInformation] =
@@ -186,6 +190,8 @@ const EditorView = ({
                         character={character}
                         combos={combos}
                         handleValidateCombo={handleValidateCombo}
+                        selectedCombo={selectedCombo}
+                        handleChangeSelectedCombo={handleChangeSelectedCombo}
                     ></Combos>
                 );
             }

@@ -18,7 +18,6 @@ const ComboEditor = ({
     setEditingCombo,
     characterIndex,
     selectedIndex,
-    setSelectedIndex,
     handleValidateCombo,
     displayButton,
 }: ComboEditor) => {

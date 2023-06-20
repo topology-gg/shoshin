@@ -2,11 +2,20 @@ import React, { useState } from 'react';
 import { Box, Typography, Select, MenuItem } from '@mui/material';
 import { Character } from '../../constants/constants';
 import ComboEditor from './ComboEditor';
+import { Action } from '../../types/Action';
 
-const Combos = ({ isReadOnly, character, combos, handleValidateCombo }) => {
-    const [editingCombo, setEditingCombo] = useState<number[]>([]);
+const Combos = ({
+    isReadOnly,
+    character,
+    combos,
+    handleValidateCombo,
+    selectedCombo: selectedIndex,
+    handleChangeSelectedCombo,
+}) => {
+    const [editingCombo, setEditingCombo] = useState<Action[]>(
+        combos.length ? combos[selectedIndex] : []
+    );
     // If the selectedIndex is null, it means the "New Combo" is selected
-    const [selectedIndex, setSelectedIndex] = useState<number>(null);
 
     let characterIndex = Object.keys(Character).indexOf(character);
 
@@ -34,7 +43,7 @@ const Combos = ({ isReadOnly, character, combos, handleValidateCombo }) => {
                     onChange={(event) => {
                         const comboIndex: number | null = event.target
                             .value as number;
-                        setSelectedIndex(comboIndex);
+                        handleChangeSelectedCombo(comboIndex);
                         setEditingCombo(combos[comboIndex] || []);
                     }}
                 >
@@ -61,7 +70,6 @@ const Combos = ({ isReadOnly, character, combos, handleValidateCombo }) => {
                 setEditingCombo={setEditingCombo}
                 characterIndex={characterIndex}
                 selectedIndex={selectedIndex}
-                setSelectedIndex={setSelectedIndex}
                 handleValidateCombo={handleValidateCombo}
                 displayButton={true}
             ></ComboEditor>

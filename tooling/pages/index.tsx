@@ -149,6 +149,8 @@ export default function Home() {
     const [combos, setCombos] = useState<Action[][]>(
         INITIAL_AGENT_COMPONENTS.combos
     );
+    const [selectedCombo, changeSelectedCombo] = useState<number>(0);
+
     const [mentalStates, setMentalStates] = useState<MentalState[]>(
         INITIAL_AGENT_COMPONENTS.mentalStates
     );
@@ -1024,6 +1026,8 @@ export default function Home() {
                     newThoughtClicks={newThoughtClicks}
                     layers={layers}
                     setLayers={setLayers}
+                    selectedCombo={selectedCombo}
+                    handleChangeSelectedCombo={changeSelectedCombo}
                 />
             </CharacterContext.Provider>
         </LayerContext.Provider>
