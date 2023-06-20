@@ -1,13 +1,8 @@
-%lang starknet
-
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.math_cmp import is_le
-from contracts.constants.constants import (
-    ns_dynamics, Vec2, Rectangle, ns_hitbox, ns_scene
-)
+from cairo_test.constants.constants import ns_dynamics, Vec2, Rectangle, ns_hitbox, ns_scene
 
 namespace ns_antoc_dynamics {
-
     // dt = 0.1; one frame from static to max vel; two frames from minus max vel to positive max vel
     const MOVE_ACC_FP = 1000 * ns_dynamics.SCALE_FP;
     const MAX_VEL_MOVE_FP = 100 * ns_dynamics.SCALE_FP;
@@ -105,7 +100,7 @@ namespace ns_antoc_body_state_duration {
     const IDLE = 5;
     const HORI = 7;
     const VERT = 10;
-    const BLOCK = 6; // active for counter == 1,2,3,4
+    const BLOCK = 6;  // active for counter == 1,2,3,4
     const HURT = 2;
     const KNOCKED = 11;
     const MOVE_FORWARD = 7;
@@ -118,24 +113,23 @@ namespace ns_antoc_body_state_duration {
 }
 
 namespace ns_antoc_body_state {
-    const IDLE = 0;      // 5 frames
-    const HORI = 1010;     // 7 frames
+    const IDLE = 0;  // 5 frames
+    const HORI = 1010;  // 7 frames
     const VERT = 1020;  // 10 frames
-    const BLOCK = 1040;    // 6 frames
-    const HURT = 1050;     // 3 frames
+    const BLOCK = 1040;  // 6 frames
+    const HURT = 1050;  // 3 frames
     const KNOCKED = 1060;  // 11 frames
     const MOVE_FORWARD = 1090;  // 7 frames
     const MOVE_BACKWARD = 1100;  // 6 frames
     const DASH_FORWARD = 1110;  // 9 frames
     const DASH_BACKWARD = 1120;  // 9 frames
-    const CLASH = 1130; // 5 frames
-    const STEP_FORWARD = 1140; // 3 frames
-    const JUMP = 1150; // 7 frames
+    const CLASH = 1130;  // 5 frames
+    const STEP_FORWARD = 1140;  // 3 frames
+    const JUMP = 1150;  // 7 frames
 }
 
 namespace ns_antoc_body_state_qualifiers {
-
-    func is_in_hori_active {range_check_ptr}(state: felt, counter: felt) -> felt {
+    func is_in_hori_active{range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_antoc_body_state.HORI) {
             if (counter == 1) {
                 return 1;
@@ -147,7 +141,7 @@ namespace ns_antoc_body_state_qualifiers {
         return 0;
     }
 
-    func is_in_vert_active {range_check_ptr}(state: felt, counter: felt) -> felt {
+    func is_in_vert_active{range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_antoc_body_state.VERT) {
             if (counter == 3) {
                 return 1;
@@ -159,7 +153,7 @@ namespace ns_antoc_body_state_qualifiers {
         return 0;
     }
 
-    func is_in_block_active {range_check_ptr}(state: felt, counter: felt) -> felt {
+    func is_in_block_active{range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_antoc_body_state.BLOCK) {
             if (counter == 1) {
                 return 1;
@@ -177,14 +171,14 @@ namespace ns_antoc_body_state_qualifiers {
         return 0;
     }
 
-    func is_in_knocked {range_check_ptr}(state: felt) -> felt {
+    func is_in_knocked{range_check_ptr}(state: felt) -> felt {
         if (state != ns_antoc_body_state.KNOCKED) {
             return 0;
         }
         return 1;
     }
 
-    func is_in_various_states {range_check_ptr}(state: felt, counter: felt) -> (
+    func is_in_various_states{range_check_ptr}(state: felt, counter: felt) -> (
         bool_body_in_atk_active: felt,
         bool_body_in_knocked: felt,
         bool_body_in_block: felt,
@@ -192,28 +186,21 @@ namespace ns_antoc_body_state_qualifiers {
     ) {
         alloc_locals;
 
-        let bool_body_in_hori_active   = is_in_hori_active (state, counter);
-        let bool_body_in_vert_active   = is_in_vert_active (state, counter);
-        let bool_body_in_atk_active    = bool_body_in_hori_active + bool_body_in_vert_active;
-        let bool_body_in_knocked       = is_in_knocked (state);
-        let bool_body_in_block         = is_in_block_active (state, counter);
-        let bool_body_in_active        = bool_body_in_atk_active + bool_body_in_block;
+        let bool_body_in_hori_active = is_in_hori_active(state, counter);
+        let bool_body_in_vert_active = is_in_vert_active(state, counter);
+        let bool_body_in_atk_active = bool_body_in_hori_active + bool_body_in_vert_active;
+        let bool_body_in_knocked = is_in_knocked(state);
+        let bool_body_in_block = is_in_block_active(state, counter);
+        let bool_body_in_active = bool_body_in_atk_active + bool_body_in_block;
 
         return (
-            bool_body_in_atk_active,
-            bool_body_in_knocked,
-            bool_body_in_block,
-            bool_body_in_active,
+            bool_body_in_atk_active, bool_body_in_knocked, bool_body_in_block, bool_body_in_active,
         );
     }
 }
 
 namespace ns_antoc_hitbox {
-
-    func get_body_hitbox_dimension {range_check_ptr}(
-        body_state: felt,
-        body_counter: felt
-    ) -> (
+    func get_body_hitbox_dimension{range_check_ptr}(body_state: felt, body_counter: felt) -> (
         body_dimension: Vec2
     ) {
         alloc_locals;
@@ -221,52 +208,76 @@ namespace ns_antoc_hitbox {
         // knocked
         if (body_state == ns_antoc_body_state.KNOCKED) {
             let is_counter_le_0 = is_le(body_counter, 0);
-            if (is_counter_le_0== 1) {
-                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H));
+            if (is_counter_le_0 == 1) {
+                return (
+                    body_dimension=Vec2(ns_antoc_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H),
+                );
             }
 
             let is_counter_le_7 = is_le(body_counter, 7);
             if (is_counter_le_7 == 1) {
-                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_LATE_HITBOX_H));
+                return (
+                    body_dimension=Vec2(ns_antoc_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_LATE_HITBOX_H),
+                );
             }
 
             if (body_counter == 8) {
-                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_KNOCKED_GROUND_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_GROUND_HITBOX_H));
+                return (
+                    body_dimension=Vec2(ns_antoc_character_dimension.BODY_KNOCKED_GROUND_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_GROUND_HITBOX_H),
+                );
             }
 
-            return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_HITBOX_W, ns_antoc_character_dimension.BODY_HITBOX_H));
+            return (
+                body_dimension=Vec2(ns_antoc_character_dimension.BODY_HITBOX_W, ns_antoc_character_dimension.BODY_HITBOX_H),
+            );
         }
 
         // dash forward
         if (body_state == ns_antoc_body_state.DASH_FORWARD) {
             if (body_counter == 0) {
-                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_DASH_FORWARD_0_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_0_H));
+                return (
+                    body_dimension=Vec2(ns_antoc_character_dimension.BODY_DASH_FORWARD_0_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_0_H),
+                );
             }
             if (body_counter == 1) {
-                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_DASH_FORWARD_1_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_1_H));
+                return (
+                    body_dimension=Vec2(ns_antoc_character_dimension.BODY_DASH_FORWARD_1_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_1_H),
+                );
             }
             if (body_counter == 2) {
-                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_DASH_FORWARD_2_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_2_H));
+                return (
+                    body_dimension=Vec2(ns_antoc_character_dimension.BODY_DASH_FORWARD_2_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_2_H),
+                );
             }
-            return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_DASH_FORWARD_3_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_3_H));
+            return (
+                body_dimension=Vec2(ns_antoc_character_dimension.BODY_DASH_FORWARD_3_W, ns_antoc_character_dimension.BODY_DASH_FORWARD_3_H),
+            );
         }
 
         // step forward
         if (body_state == ns_antoc_body_state.STEP_FORWARD) {
             if (body_counter == 0) {
-                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_STEP_FORWARD_0_W, ns_antoc_character_dimension.BODY_STEP_FORWARD_0_H));
+                return (
+                    body_dimension=Vec2(ns_antoc_character_dimension.BODY_STEP_FORWARD_0_W, ns_antoc_character_dimension.BODY_STEP_FORWARD_0_H),
+                );
             }
             if (body_counter == 1) {
-                return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_STEP_FORWARD_1_W, ns_antoc_character_dimension.BODY_STEP_FORWARD_1_H));
+                return (
+                    body_dimension=Vec2(ns_antoc_character_dimension.BODY_STEP_FORWARD_1_W, ns_antoc_character_dimension.BODY_STEP_FORWARD_1_H),
+                );
             }
-            return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_STEP_FORWARD_2_W, ns_antoc_character_dimension.BODY_STEP_FORWARD_2_H));
+            return (
+                body_dimension=Vec2(ns_antoc_character_dimension.BODY_STEP_FORWARD_2_W, ns_antoc_character_dimension.BODY_STEP_FORWARD_2_H),
+            );
         }
 
         // otherwise
-        return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_HITBOX_W, ns_antoc_character_dimension.BODY_HITBOX_H));
+        return (
+            body_dimension=Vec2(ns_antoc_character_dimension.BODY_HITBOX_W, ns_antoc_character_dimension.BODY_HITBOX_H),
+        );
     }
 
-    func get_action_hitbox {range_check_ptr}(
+    func get_action_hitbox{range_check_ptr}(
         bool_is_active: felt,
         bool_is_attack_active: felt,
         bool_is_block_active: felt,
@@ -275,16 +286,12 @@ namespace ns_antoc_hitbox {
         pos_y: felt,
         body_hitbox_dimension: Vec2,
         body_state: felt,
-        body_counter: felt
-    ) -> (
-        action_hitbox: Rectangle
-    ) {
+        body_counter: felt,
+    ) -> (action_hitbox: Rectangle) {
         alloc_locals;
 
         if (bool_is_active == 1) {
-
             if (bool_is_attack_active == 1) {
-
                 local ATTACK_HITBOX_Y: felt;
                 local ATTACK_HITBOX_W: felt;
                 local ATTACK_HITBOX_H: felt;
@@ -299,58 +306,65 @@ namespace ns_antoc_hitbox {
                 }
 
                 if (dir == 1) {
-                    return (action_hitbox = Rectangle(
+                    return (
+                        action_hitbox=Rectangle(
                         Vec2(
                             pos_x + body_hitbox_dimension.x - ns_hitbox.NUDGE,
                             pos_y + ATTACK_HITBOX_Y
+                            ),
+                        Vec2(ATTACK_HITBOX_W, ATTACK_HITBOX_H)
                         ),
-                        Vec2 (ATTACK_HITBOX_W, ATTACK_HITBOX_H)
-                    ));
+                    );
                 } else {
-                    return (action_hitbox = Rectangle(
+                    return (
+                        action_hitbox=Rectangle(
                         Vec2(
                             pos_x - ATTACK_HITBOX_W + ns_hitbox.NUDGE,
                             pos_y + ATTACK_HITBOX_Y
+                            ),
+                        Vec2(ATTACK_HITBOX_W, ATTACK_HITBOX_H)
                         ),
-                        Vec2 (ATTACK_HITBOX_W, ATTACK_HITBOX_H)
-                    ));
+                    );
                 }
             }
 
             if (bool_is_block_active == 1) {
                 if (dir == 1) {
-                    return (action_hitbox = Rectangle(
+                    return (
+                        action_hitbox=Rectangle(
                         Vec2(
                             pos_x + body_hitbox_dimension.x - ns_hitbox.NUDGE,
                             pos_y + ns_antoc_character_dimension.BLOCK_HITBOX_Y
-                        ),
-                        Vec2 (
+                            ),
+                        Vec2(
                             ns_antoc_character_dimension.BLOCK_HITBOX_W,
                             ns_antoc_character_dimension.BLOCK_HITBOX_H
-                        )
-                    ));
+                            )
+                        ),
+                    );
                 } else {
-                    return (action_hitbox = Rectangle(
+                    return (
+                        action_hitbox=Rectangle(
                         Vec2(
                             pos_x - ns_antoc_character_dimension.BLOCK_HITBOX_W + ns_hitbox.NUDGE,
                             pos_y + ns_antoc_character_dimension.BLOCK_HITBOX_Y
-                        ),
-                        Vec2 (
+                            ),
+                        Vec2(
                             ns_antoc_character_dimension.BLOCK_HITBOX_W,
                             ns_antoc_character_dimension.BLOCK_HITBOX_H
-                        )
-                    ));
+                            )
+                        ),
+                    );
                 }
             }
-
         }
 
         // otherwise no action hitbox
-        return (action_hitbox = Rectangle(
-            origin = Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM),
-            dimension = Vec2(0, 0)
-        ));
-
+        return (
+            action_hitbox=Rectangle(
+            origin=Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM),
+            dimension=Vec2(0, 0)
+            ),
+        );
     }
-
 }
