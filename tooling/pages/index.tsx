@@ -96,7 +96,7 @@ import {
     defaultLayer,
     layersToAgentComponents,
 } from '../src/types/Layer';
-import { Action } from '../src/types/Action';
+import { Action, CHARACTERS_ACTIONS } from '../src/types/Action';
 
 //@ts-ignore
 const Game = dynamic(() => import('../src/Game/PhaserGame'), {
@@ -811,8 +811,6 @@ export default function Home() {
     }
 
     function handleValidateCombo(combo: Action[], index: number) {
-        let shimmedCombo = [];
-
         console.log('combo', combo);
         console.log('index', index);
         setCombos((prev) => {
@@ -831,7 +829,7 @@ export default function Home() {
             mentalStates: generatedMs,
             conditions: generatedConditions,
             trees: generatedTrees,
-        } = layersToAgentComponents(layers, char);
+        } = layersToAgentComponents(layers, char, combos);
 
         //todo remove trees
         return buildAgent(
@@ -891,7 +889,15 @@ export default function Home() {
     function setAgentInPanelToAgent(agent: Agent) {
         // parse the given agent into new values for the React states
         setInitialMentalState(() => agent.initialState);
-        setCombos(() => agent.combos);
+        setCombos(() =>
+            agent.combos.map((combo) =>
+                combo.map((action) =>
+                    CHARACTERS_ACTIONS[agent.character].find(
+                        (a) => a.id == action
+                    )
+                )
+            )
+        );
         setMentalStates(
             agent.mentalStatesNames
                 .map((s, i) => [s, agent.actions[i]] as [string, number])
@@ -927,9 +933,6 @@ export default function Home() {
             return cond;
         });
         setAgentName(() => '');
-        setCharacter(() =>
-            agent.character == 0 ? Character.Jessica : Character.Antoc
-        );
         setConditionUnderEditIndex(() => 0);
     }
 

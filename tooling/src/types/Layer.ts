@@ -2,7 +2,7 @@ import {
     CHARACTER_ACTIONS_DETAIL,
     actionstoBodyState,
 } from '../constants/constants';
-import { CHARACTERS_ACTIONS } from './Action';
+import { Action, CHARACTERS_ACTIONS } from './Action';
 import {
     Condition,
     ElementType,
@@ -19,7 +19,6 @@ export interface Layer {
         //Id is either that action decimal number or combo decimal number (both are defined in shoshin smart contracts)
         id: number;
         isCombo: boolean;
-        comboDuration: number;
     };
 }
 
@@ -48,10 +47,12 @@ const getActionCondition = (
         ));
     }
 };
+
 //given layers gets all needed mental states, conditions and trees to build an agent using the state machine structure
 export const layersToAgentComponents = (
     layers: Layer[],
-    character: number
+    character: number,
+    combos: Action[][]
 ): { mentalStates: MentalState[]; conditions: Condition[]; trees: Tree[] } => {
     const startMentalState: MentalState = {
         state: 'Start',
@@ -84,8 +85,17 @@ export const layersToAgentComponents = (
             );
         } else if (layer.action.isCombo == true) {
             //if combo, we need to get combo length, and put in the action for the node
+
+            console.log('combos', combos);
+            console.log('action.id', layer.action.id);
+            const comboDuration = combos[layer.action.id - 101].reduce(
+                (acc, a) => acc + a.frames.duration,
+                0
+            );
+
+            console.log('combo duration', comboDuration);
             terminatingCondition = getIsComboFinishedCondition(
-                layer.action.comboDuration,
+                comboDuration,
                 layer.action.id
             );
         } else {

@@ -1,11 +1,7 @@
 import React, { useState, SyntheticEvent } from 'react';
 import { Box, Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
-import {
-    CHARACTER_ACTIONS_DETAIL,
-    ACTIONS_TO_KEYS,
-    ACTION_UNICODE_MAP,
-} from '../../constants/constants';
+import { ACTIONS_TO_KEYS } from '../../constants/constants';
 import Actions from '../ComboEditor/Actions';
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 
@@ -32,8 +28,6 @@ const ComboEditor = ({
 
     //remove an action
     const handleActionDoubleClick = (index) => {
-        console.log('handled', index);
-
         let prev_copy = JSON.parse(JSON.stringify(editingCombo));
         prev_copy.splice(index, 1);
 
@@ -46,9 +40,6 @@ const ComboEditor = ({
         //id is iconized-action-${key_i}
         const action_int = parseInt(e.currentTarget.id.split('-')[2]);
         //const action_int = actions[index];
-
-        console.log('editing combo', editingCombo);
-        console.log('selected index', selectedIndex);
 
         let prev_copy: Action[] = JSON.parse(JSON.stringify(editingCombo));
         if (!isNaN(action_int)) {
@@ -80,7 +71,6 @@ const ComboEditor = ({
                     }}
                 >
                     {actions.map((action, index) => {
-                        console.log('action ', action);
                         const frameString =
                             action.frames.duration == 1 ? 'frame' : 'frames';
                         const actionDuration = action.frames.duration;

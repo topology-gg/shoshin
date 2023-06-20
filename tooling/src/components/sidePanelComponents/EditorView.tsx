@@ -164,6 +164,7 @@ const EditorView = ({
                             layers={layers}
                             character={character}
                             handleClickTreeEditor={handleClickTreeEditor}
+                            combos={combos}
                         />
                     )) ||
                     (!!treeEditor && (
@@ -172,6 +173,7 @@ const EditorView = ({
                             layers={layers}
                             character={character}
                             handleClickTreeEditor={handleClickTreeEditor}
+                            combos={combos}
                         />
                     ))
                 );
