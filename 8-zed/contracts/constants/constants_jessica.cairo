@@ -97,10 +97,10 @@ namespace ns_jessica_stamina_effect {
 }
 
 namespace ns_jessica_stimulus {
-    const SLASH_DAMAGE = -75;
-    const UPSWING_DAMAGE = -75;
-    const SIDECUT_DAMAGE = -75;
-    const GATOTSU_DAMAGE = -150;
+    const SLASH_DAMAGE = 75;
+    const UPSWING_DAMAGE = 75;
+    const SIDECUT_DAMAGE = 75;
+    const GATOTSU_DAMAGE = 150;
 }
 
 namespace ns_jessica_body_state_duration {

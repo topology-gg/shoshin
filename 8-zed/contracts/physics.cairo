@@ -367,7 +367,7 @@ func produce_damage_given_opp_body_state {range_check_ptr} (
         return ns_jessica_stimulus.GATOTSU_DAMAGE;
     }
 
-    with_attr error_message("opponent body state is not recognized.") {
+    with_attr error_message("opponent body state '{opp_body_state}' is not valid for produce_damage_given_opp_body_state()") {
         assert 0 = 1;
     }
     return 0;
@@ -475,15 +475,16 @@ func produce_stimulus_given_conditions {range_check_ptr} (
 
     // getting hit
     let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
-    let damage = produce_damage_given_opp_body_state (opp_body_state);
     if (bool_self_hit == 1) {
+        let damage = produce_damage_given_opp_body_state (opp_body_state);
+
         // hit when in mid-air => knocked
         if (bool_self_ground == 0) {
             return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + damage;
         }
         // hit by gatotsu => knocked
         if (opp_body_state == ns_jessica_body_state.GATOTSU) {
-            return ns_stimulus.KNOCKED;
+            return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + damage;
         }
         // hit when grounded but critical integrity => knocked
         if (is_integrity_critical == 1) {
