@@ -3,7 +3,11 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.bool import (TRUE, FALSE)
+<<<<<<< HEAD
 from starkware.cairo.common.math import unsigned_div_rem
+=======
+from starkware.cairo.common.math_cmp import is_le
+>>>>>>> main
 from contracts.constants.constants import (
     BodyState, ns_stimulus, ns_stamina, ns_character_type, HURT_EFFECT, KNOCKED_EFFECT, CLASH_EFFECT
 )
@@ -79,6 +83,9 @@ func _body_jessica {range_check_ptr}(
             }
             if (intent == ns_jessica_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.GATOTSU) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.GATOTSU, 0, integrity, updated_stamina, dir, FALSE) );
             }
         }
 
@@ -490,6 +497,30 @@ func _body_jessica {range_check_ptr}(
         return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
+    //
+    // Gatotsu
+    //
+    if (state == ns_jessica_body_state.GATOTSU) {
+
+        // hurtible before counter==4
+        let is_counter_le_3 = is_le (counter, 3);
+        if (is_counter_le_3 == 1) {
+            if (stimulus == ns_stimulus.HURT) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, hurt_integrity, stamina, dir, FALSE) );
+            }
+            if (stimulus == ns_stimulus.KNOCKED) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, knocked_integrity, stamina, dir, FALSE) );
+            }
+        }
+
+        // if counter is full => return to IDLE
+        if (counter == ns_jessica_body_state_duration.GATOTSU - 1) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        }
+
+        // else stay in GATOTSU and increment counter
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.GATOTSU, counter + 1, integrity, stamina, dir, FALSE) );
+    }
 
     with_attr error_message("Input body state is not recognized.") {
         assert 0 = 1;

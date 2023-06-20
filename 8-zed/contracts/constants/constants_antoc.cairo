@@ -83,14 +83,11 @@ namespace ns_antoc_action {
 
     const STEP_FORWARD = 8;
     const JUMP = 9;
-
-    // noncents : can this action be removed?
-    const COMBO = 10;
 }
 
 namespace ns_antoc_stamina_effect {
     const HORI = -100;
-    const VERT = -100;
+    const VERT = -150;
     const STEP_FORWARD = -75;
 }
 
