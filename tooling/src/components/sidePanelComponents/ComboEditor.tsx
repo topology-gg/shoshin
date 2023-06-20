@@ -90,7 +90,9 @@ const ComboEditor = ({
                 mt: '2rem',
             }}
         >
-            <Typography variant="overline">Combo Actions</Typography>
+            <Typography variant="body1" color="textSecondary" sx={{ mb: 1 }}>
+                Available Actions:
+            </Typography>
             <Box>
                 <Box
                     style={{
@@ -132,6 +134,7 @@ const ComboEditor = ({
                                         <p>{actionActiveFramesString}</p>
                                     </React.Fragment>
                                 }
+                                placement="top"
                             >
                                 <div
                                     key={`iconized-action-${index}`}
