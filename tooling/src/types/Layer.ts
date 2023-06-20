@@ -3,6 +3,7 @@ import {
     actionstoBodyState,
 } from '../constants/constants';
 import { Action, CHARACTERS_ACTIONS } from './Action';
+import { customDurations } from './Combos';
 import {
     Condition,
     ElementType,
@@ -69,9 +70,6 @@ export const layersToAgentComponents = (
     ];
 
     let unflattenedConditions = layers.map((layer, i) => {
-        //action to bodystate
-        const bodyState = actionstoBodyState[character][layer.action.id];
-
         let terminatingCondition;
         const action_name = CHARACTERS_ACTIONS[character].find(
             (action) => action.id
@@ -86,10 +84,14 @@ export const layersToAgentComponents = (
         } else if (layer.action.isCombo == true) {
             //if combo, we need to get combo length, and put in the action for the node
 
-            console.log('combos', combos);
+            console.log('character', character);
             console.log('action.id', layer.action.id);
             const comboDuration = combos[layer.action.id - 101].reduce(
-                (acc, a) => acc + a.frames.duration,
+                (acc, a) =>
+                    acc +
+                    (customDurations[character][a.id] == undefined
+                        ? a.frames.duration + 1
+                        : a.frames.duration),
                 0
             );
 

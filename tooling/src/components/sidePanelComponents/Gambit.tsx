@@ -57,11 +57,7 @@ interface LayerProps {
     conditions: Condition[];
     combos: Action[][];
     handleRemoveLayer: (index: number) => void;
-    handleChooseAction: (
-        actionName: string,
-        isCombo: boolean,
-        comboDuration: number
-    ) => void;
+    handleChooseAction: (actionName: string, isCombo: boolean) => void;
     handleChooseCondition: (condition: Condition) => void;
 }
 
@@ -135,18 +131,10 @@ const Layer = ({
 
     const onActionSelect = (action: string) => {
         if (!action.includes('Combo')) {
-            handleChooseAction(action, false, -1);
+            handleChooseAction(action, false);
         } else {
             let comboNumber = parseInt(action.split(' ')[1]);
-            const comboDuration = combos[comboNumber].reduce(
-                (acc, action) => acc + action.frames.duration,
-                0
-            );
-            handleChooseAction(
-                (101 + comboNumber).toString(),
-                true,
-                comboDuration
-            );
+            handleChooseAction((101 + comboNumber).toString(), true);
         }
 
         setAnchorEl(null);
@@ -357,24 +345,18 @@ const Gambit = ({
         setLayers(updatedArray);
     };
 
-    const handleChooseAction = (
-        actionName: string,
-        isCombo: boolean,
-        comboDuration: number
-    ) => {
-        console.log('action name', actionName);
+    const handleChooseAction = (actionName: string, isCombo: boolean) => {
         let updatedLayers: Layer[] = layers.map((layer, index) => {
             if (index == currentMenu) {
                 return {
                     ...layer,
                     action: {
                         id: isCombo
-                            ? actionName
+                            ? parseInt(actionName)
                             : CHARACTERS_ACTIONS[characterIndex].find(
                                   (e) => e.display.name == actionName
                               ).id || 0,
                         isCombo,
-                        comboDuration,
                     },
                 };
             }
