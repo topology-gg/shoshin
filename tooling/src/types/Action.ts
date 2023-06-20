@@ -65,20 +65,15 @@ const DashBackward: Action = {
     display: { name: 'DashBackward', unicode: '\u{1F406}' },
     frames: { duration: 4 },
 };
-const StepForward: Action = {
-    id: 9,
-    display: { name: 'StepForward', unicode: '\u{1F43E}' },
-    frames: { duration: 3 },
-};
 const Jump: Action = {
-    id: 10,
+    id: 9,
     display: { name: 'Jump', unicode: '\u{1F998}' },
     frames: { duration: 6 },
 };
 const Gatotsu: Action = {
-    id: 11,
+    id: 10,
     display: { name: 'Gatotsu', unicode: '' },
-    frames: { duration: 8 },
+    frames: { duration: 7 },
 };
 
 const JessicaActions = [
@@ -135,10 +130,15 @@ const AntocDashBackward: Action = {
     display: { name: 'DashBackward', unicode: '\u{1F406}' },
     frames: { duration: 4 },
 };
+const StepForward: Action = {
+    id: 8,
+    display: { name: 'StepForward', unicode: '\u{1F43E}' },
+    frames: { duration: 3 },
+};
 const AntocJump: Action = {
     id: 9,
     display: { name: 'Jump', unicode: '\u{1F998}' },
-    frames: { duration: 6 },
+    frames: { duration: 7 },
 };
 
 const AntocActions = [
