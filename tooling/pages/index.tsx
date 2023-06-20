@@ -133,9 +133,7 @@ export default function Home() {
     const [treeEditor, setTreeEditor] = useState<number>(0);
     const [conditionUnderEditIndex, setConditionUnderEditIndex] =
         useState<number>(0);
-    const [editorMode, setEditorMode] = useState<EditorMode>(
-        EditorMode.ReadOnly
-    );
+    const [editorMode, setEditorMode] = useState<EditorMode>(EditorMode.Edit);
 
     const [playerStatuses, setPlayerStatuses] = useState<PlayerStatuses>({
         integrity_0: 1000,
@@ -900,6 +898,7 @@ export default function Home() {
                 )
             )
         );
+        setLayers([]);
         setMentalStates(
             agent.mentalStatesNames
                 .map((s, i) => [s, agent.actions[i]] as [string, number])
