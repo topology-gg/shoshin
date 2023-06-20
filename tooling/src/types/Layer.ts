@@ -563,6 +563,5 @@ export const defaultLayer: Layer = {
     action: {
         id: 0,
         isCombo: false,
-        comboDuration: -1,
     },
 };

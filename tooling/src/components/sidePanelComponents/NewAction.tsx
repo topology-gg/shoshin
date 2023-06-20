@@ -1,11 +1,9 @@
 import { Add } from '@mui/icons-material';
 import { InputBase } from '@mui/material';
 import React, { ChangeEventHandler, useEffect, useRef, useState } from 'react';
-import {
-    CHARACTERS_ACTIONS,
-    CHARACTERS_ACTION_KEYBINDINGS,
-} from '../../constants/constants';
+import { CHARACTERS_ACTION_KEYBINDINGS } from '../../constants/constants';
 import ActionToken from './ActionToken';
+import { CHARACTERS_ACTIONS } from '../../types/Action';
 
 const NewAction = ({
     disabled,
