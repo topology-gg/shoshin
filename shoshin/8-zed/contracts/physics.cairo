@@ -398,11 +398,17 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     if (bool_self_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
         // self is jessica & opp is jessica
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.JESSICA) {
+            if (self_body_state == ns_jessica_body_state.GATOTSU) {
+                return 0;
+            }
             return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
         }
 
         // self is jessica & opp is antoc
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
+            if (self_body_state == ns_jessica_body_state.GATOTSU) {
+                return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
+            }
             return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + ns_antoc_stimulus.BLOCK_KNOCK_DAMAGE;
         }
 
@@ -421,6 +427,10 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     if (bool_self_block_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
         // self is jessica & opp is jessica
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.JESSICA) {
+            // jessica's gatotsu destroy's jessica's block
+            if (opp_body_state == ns_jessica_body_state.GATOTSU) {
+                return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + ns_jessica_stimulus.GATOTSU_DAMAGE;
+            }
             return 0;
         }
 
@@ -431,6 +441,10 @@ func produce_stimulus_given_conditions {range_check_ptr} (
 
         // self is antoc & opp is jessica
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
+            // jessica's gatotsu breaks antoc's block
+            if (opp_body_state == ns_jessica_body_state.GATOTSU) {
+                return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
+            }
             return 0;
         }
 
@@ -446,20 +460,30 @@ func produce_stimulus_given_conditions {range_check_ptr} (
             return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
         }
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
+            if (self_body_state == ns_jessica_body_state.GATOTSU) {
+                return 0;
+            }
             return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + ns_antoc_stimulus.CLASH_KNOCK_DAMAGE;
         }
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
+            if (opp_body_state == ns_jessica_body_state.GATOTSU) {
+                return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + ns_jessica_stimulus.GATOTSU_DAMAGE;
+            }
             return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
         }
     }
 
-    // (hit) when hit, HURT if critical integrity in mid air, HURT otherwise
+    // getting hit
     let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
     let damage = produce_damage_given_opp_body_state (opp_body_state);
     if (bool_self_hit == 1) {
         // hit when in mid-air => knocked
         if (bool_self_ground == 0) {
             return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + damage;
+        }
+        // hit by gatotsu => knocked
+        if (opp_body_state == ns_jessica_body_state.GATOTSU) {
+            return ns_stimulus.KNOCKED;
         }
         // hit when grounded but critical integrity => knocked
         if (is_integrity_critical == 1) {
