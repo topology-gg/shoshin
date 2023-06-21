@@ -25,6 +25,13 @@ export const CONTRACT_ADDRESS =
 export const ENTRYPOINT_FIGHT = 'loop';
 export const ENTRYPOINT_AGENT_SUBMISSION = 'submit_agent';
 
+// Simulation related constants
+export const TICK_IN_SECONDS = 0.07;
+export const SIMULATION_TIME_IN_SECONDS = 30;
+export const FRAME_COUNT = Math.round(
+    SIMULATION_TIME_IN_SECONDS / TICK_IN_SECONDS
+);
+
 // UI-related sizes and enums
 export const SIMULATOR_W = 1000;
 export const SIMULATOR_H = 300;
@@ -56,6 +63,7 @@ export const bodyStateNumberToName = {
         120: 'dash_backward',
         130: 'jump',
         140: 'gatotsu',
+        150: 'low_kick',
     },
     antoc: {
         0: 'idle',
@@ -71,6 +79,7 @@ export const bodyStateNumberToName = {
         1130: 'clash',
         1140: 'step_forward',
         1150: 'jump',
+        1160: 'low_kick',
     },
 };
 
@@ -169,7 +178,8 @@ export enum KeysToActionsJessica {
     'E' = 'DashForward',
     'Q' = 'DashBackward',
     'W' = 'Jump',
-    'Z' = 'Gatotsu',
+    'N' = 'Gatotsu',
+    'U' = 'LowKick',
 }
 
 export enum KeysToActionsAntoc {
@@ -183,6 +193,7 @@ export enum KeysToActionsAntoc {
     'Q' = 'DashBackward',
     'F' = 'StepForward',
     'W' = 'Jump',
+    'U' = 'LowKick',
 }
 
 // Mapping such that { 'Rest' : '-' }
@@ -241,6 +252,7 @@ export const characterActionToNumber = {
         DashBackward: 8,
         Jump: 9,
         Gatotsu: 10,
+        LowKick: 11,
     },
     antoc: {
         Rest: 0,
@@ -253,6 +265,7 @@ export const characterActionToNumber = {
         DashBackward: 7,
         StepForward: 8,
         Jump: 9,
+        LowKick: 11,
     },
 };
 export function getIntentNameByCharacterTypeAndNumber(
@@ -266,9 +279,6 @@ export function getIntentNameByCharacterTypeAndNumber(
     const object = characterActionToNumber[characterType];
     return Object.keys(object).find((key) => object[key] === number);
 }
-
-// Simulation related constants
-export const FRAME_COUNT = 120;
 
 export const CHARACTERS_ACTION_KEYBINDINGS: any[] = [
     KeysToActionsJessica,
@@ -297,6 +307,7 @@ export const ActionDetailJessica: CharacterActions = {
     DashBackward: { id: 8, duration: 4 },
     Jump: { id: 9, duration: 6 },
     Gatotsu: { id: 10, duration: 8 },
+    LowKick: { id: 11, duration: 6 },
 };
 
 export const ActionDetailAntoc: CharacterActions = {
@@ -310,6 +321,7 @@ export const ActionDetailAntoc: CharacterActions = {
     DashBackward: { id: 7, duration: 4 },
     StepForward: { id: 8, duration: 3 },
     Jump: { id: 9, duration: 6 },
+    LowKick: { id: 11, duration: 6 },
 };
 
 export const CHARACTER_ACTIONS_DETAIL: CharacterActions[] = [
@@ -336,25 +348,8 @@ export const ACTION_UNICODE_MAP = {
     StepForward: '\u{1F43E}',
 
     Jump: '\u{1F998}',
-};
 
-export const ACTIONS_ICON_MAP = {
-    Rest: 'close',
-
-    Slash: 'local_dining',
-    Upswing: 'swipe_vertical',
-    Sidecut: 'swipe_left',
-
-    Hori: 'local_dining',
-    Vert: 'swipe_vertical',
-
-    Block: 'block',
-    MoveForward: 'arrow_forward',
-    MoveBackward: 'arrow_back',
-    DashForward: 'keyboard_double_arrow_right',
-    DashBackward: 'keyboard_double_arrow_left',
-
-    Jump: 'arrow_upward',
+    LowKick: '\u{1F986}',
 };
 
 export const MAX_COMBO_SIZE = 20;

@@ -18,9 +18,13 @@ import styles from './Gambit.module.css';
 let currentMenu = 0;
 let currentConditionMenu = 0;
 
-const actionIndexToAction = (action: number, characterIndex): Action => {
+const actionIndexToAction = (
+    action: number,
+    characterIndex: number
+): Action => {
     if (action < 100) {
-        return CHARACTERS_ACTIONS[characterIndex][action];
+        // find the Action whose id matches action the number
+        return CHARACTERS_ACTIONS[characterIndex].find((e) => e.id == action);
     } else {
         return {
             id: -1,
