@@ -17,7 +17,7 @@ jobs:
     - name: Set current date as env variable
       run: echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag shoshin_tooling_backend:$TIMESTAMP
+      run: docker build . --tag registry.digitalocean.com/shoshin-tooling-backend/shoshin_tooling_backend:$TIMESTAMP
     - name: GitHub Action for DigitalOcean - doctl
       uses: digitalocean/action-doctl@v2.3.0
       with:
@@ -27,4 +27,4 @@ jobs:
       run: doctl registry login --expiry-seconds 600
 
     - name: Push to Digital Ocean Registry
-      run: docker push shoshin_tooling_backend:$TIMESTAMP
+      run: docker push registry.digitalocean.com/shoshin-tooling-backend/shoshin_tooling_backend:$TIMESTAMP
