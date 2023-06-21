@@ -11,44 +11,32 @@ import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Menu from '@mui/material/Menu';
-import {
-    Action,
-    Character,
-    CHARACTERS_ACTIONS,
-    ACTION_UNICODE_MAP,
-} from '../../constants/constants';
+import { Character, ACTION_UNICODE_MAP } from '../../constants/constants';
 import BlurrableButton from '../ui/BlurrableButton';
 import { Layer, defaultLayer } from '../../types/Layer';
 import { Condition } from '../../types/Condition';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import BlurrableListItemText from '../ui/BlurrableListItemText';
+import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 let currentMenu = 0;
 let currentConditionMenu = 0;
 
-const actionToStr = (action: number, characterIndex) => {
-    if (action < 100) {
-        return CHARACTERS_ACTIONS[characterIndex][action]?.replace('_', ' ');
-    }
-    return `Combo ${action - 101}`;
-};
-
 const actionIndexToAction = (action: number, characterIndex): Action => {
     if (action < 100) {
-        const name = CHARACTERS_ACTIONS[characterIndex][action]?.replace(
-            '_',
-            ' '
-        );
-
-        return {
-            name: name,
-            unicode: ACTION_UNICODE_MAP[name],
-        };
+        return CHARACTERS_ACTIONS[characterIndex][action];
     } else {
         return {
-            name: `Combo ${action - 101}`,
-            unicode: '\u{1F4BE}',
+            id: -1,
+            display: {
+                name: `Combo ${action - 101}`,
+                unicode: '\u{1F4BE}',
+            },
+            frames: {
+                duration: 1,
+            },
+            key: '-',
         };
     }
 };
@@ -59,7 +47,7 @@ interface GambitProps {
     setLayers: (layers: Layer[]) => void;
     character: Character;
     conditions: Condition[];
-    combos: number[][];
+    combos: Action[][];
 }
 
 interface LayerProps {
@@ -68,13 +56,9 @@ interface LayerProps {
     isReadOnly: boolean;
     character: Character;
     conditions: Condition[];
-    combos: number[][];
+    combos: Action[][];
     handleRemoveLayer: (index: number) => void;
-    handleChooseAction: (
-        actionName: string,
-        isCombo: boolean,
-        comboDuration: number
-    ) => void;
+    handleChooseAction: (actionName: string, isCombo: boolean) => void;
     handleChooseCondition: (condition: Condition) => void;
 }
 
@@ -140,9 +124,7 @@ const Layer = ({
 
     const conditionsOpen = Boolean(conditionAnchorEl);
 
-    let actions = Object.keys(CHARACTERS_ACTIONS[characterIndex]).filter((a) =>
-        isNaN(parseInt(a))
-    );
+    let actions = CHARACTERS_ACTIONS[characterIndex].map((a) => a.display.name);
 
     combos.forEach((_, i) => {
         actions.push(`Combo ${i}`);
@@ -150,15 +132,10 @@ const Layer = ({
 
     const onActionSelect = (action: string) => {
         if (!action.includes('Combo')) {
-            handleChooseAction(action, false, -1);
+            handleChooseAction(action, false);
         } else {
             let comboNumber = parseInt(action.split(' ')[1]);
-            const comboDuration = combos[comboNumber].length;
-            handleChooseAction(
-                (101 + comboNumber).toString(),
-                true,
-                comboDuration
-            );
+            handleChooseAction((101 + comboNumber).toString(), true);
         }
 
         setAnchorEl(null);
@@ -268,9 +245,9 @@ const Layer = ({
                         }}
                     >
                         <span style={{ marginRight: '7px' }}>
-                            {action.unicode}
+                            {action.display.unicode}
                         </span>{' '}
-                        {action.name}
+                        {action.display.name}
                     </BlurrableButton>
                 </Grid>
                 <Menu
@@ -369,21 +346,18 @@ const Gambit = ({
         setLayers(updatedArray);
     };
 
-    const handleChooseAction = (
-        actionName: string,
-        isCombo: boolean,
-        comboDuration: number
-    ) => {
-        let updatedLayers = layers.map((layer, index) => {
+    const handleChooseAction = (actionName: string, isCombo: boolean) => {
+        let updatedLayers: Layer[] = layers.map((layer, index) => {
             if (index == currentMenu) {
                 return {
                     ...layer,
                     action: {
                         id: isCombo
-                            ? actionName
-                            : CHARACTERS_ACTIONS[characterIndex][actionName],
+                            ? parseInt(actionName)
+                            : CHARACTERS_ACTIONS[characterIndex].find(
+                                  (e) => e.display.name == actionName
+                              ).id || 0,
                         isCombo,
-                        comboDuration,
                     },
                 };
             }

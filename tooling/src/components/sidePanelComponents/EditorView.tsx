@@ -24,6 +24,7 @@ import { Layer } from '../../types/Layer';
 import Gambit from './Gambit';
 import { GambitMs } from './GambitMs';
 import { GambitTree } from './GambitTreeEditor';
+import { Action } from '../../types/Action';
 import { RestartAlt } from '@mui/icons-material';
 
 interface EditorViewProps {
@@ -40,8 +41,8 @@ interface EditorViewProps {
     mentalStates: MentalState[];
     initialMentalState: number;
     handleSetInitialMentalState: (initialMentalState: number) => void;
-    combos: number[][];
-    handleValidateCombo: (combo: number[], index: number) => void;
+    combos: Action[][];
+    handleValidateCombo: (combo: Action[], index: number) => void;
     character: Character;
     setCharacter: (character: Character) => void;
     handleAddMentalState: (new_state: string) => void;
@@ -78,6 +79,8 @@ interface EditorViewProps {
     newThoughtClicks: number;
     layers: Layer[];
     setLayers: (layers: Layer[]) => void;
+    selectedCombo: number;
+    handleChangeSelectedCombo: (comboIndex: number) => void;
 }
 
 const EditorView = ({
@@ -125,6 +128,8 @@ const EditorView = ({
     newThoughtClicks,
     layers,
     setLayers,
+    selectedCombo,
+    handleChangeSelectedCombo,
 }: EditorViewProps) => {
     const isReadOnly = editorMode == EditorMode.ReadOnly;
     const [openContractInformation, setOpenContractInformation] =
@@ -163,6 +168,7 @@ const EditorView = ({
                             layers={layers}
                             character={character}
                             handleClickTreeEditor={handleClickTreeEditor}
+                            combos={combos}
                         />
                     )) ||
                     (!!treeEditor && (
@@ -171,6 +177,7 @@ const EditorView = ({
                             layers={layers}
                             character={character}
                             handleClickTreeEditor={handleClickTreeEditor}
+                            combos={combos}
                         />
                     ))
                 );
@@ -183,6 +190,8 @@ const EditorView = ({
                         character={character}
                         combos={combos}
                         handleValidateCombo={handleValidateCombo}
+                        selectedCombo={selectedCombo}
+                        handleChangeSelectedCombo={handleChangeSelectedCombo}
                     ></Combos>
                 );
             }

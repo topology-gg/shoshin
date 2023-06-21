@@ -1,3 +1,4 @@
+import { Action, AntocBlock, AntocMoveBackward, Hori } from '../types/Action';
 import Agent, { buildAgent } from '../types/Agent';
 import {
     ElementType,
@@ -157,11 +158,6 @@ export enum Character {
     Antoc = 'Antoc',
 }
 
-export interface Action {
-    name: string;
-    unicode: string;
-}
-
 export enum KeysToActionsJessica {
     '-' = 'Rest',
     'J' = 'Slash',
@@ -278,7 +274,6 @@ export const CHARACTERS_ACTION_KEYBINDINGS: any[] = [
     KeysToActionsJessica,
     KeysToActionsAntoc,
 ];
-export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc];
 
 interface CharacterAction {
     id: number;
@@ -286,7 +281,7 @@ interface CharacterAction {
     active?: number[];
 }
 
-interface CharacterActions {
+export interface CharacterActions {
     [key: string]: CharacterAction;
 }
 
@@ -298,8 +293,8 @@ export const ActionDetailJessica: CharacterActions = {
     Block: { id: 4, duration: 3, active: [2] },
     MoveForward: { id: 5, duration: 1 },
     MoveBackward: { id: 6, duration: 1 },
-    DashForward: { id: 7, duration: 1 },
-    DashBackward: { id: 8, duration: 1 },
+    DashForward: { id: 7, duration: 4 },
+    DashBackward: { id: 8, duration: 4 },
     Jump: { id: 9, duration: 6 },
     Gatotsu: { id: 10, duration: 8 },
 };
@@ -728,7 +723,7 @@ const MENTAL_STATES_OFFENSIVE_AGENT: MentalState[] = [
     { state: 'MS BLOCK', action: ActionsAntoc['Block'] },
     { state: 'MS CLOSER', action: ActionsAntoc['MoveForward'] },
 ];
-const COMBOS_OFFENSIVE_AGENT: number[][] = [[1, 1, 1, 1, 1, 1, 1]];
+const COMBOS_OFFENSIVE_AGENT: Action[][] = [[Hori]];
 export const OFFENSIVE_AGENT: Agent = buildAgent(
     MENTAL_STATES_OFFENSIVE_AGENT,
     COMBOS_OFFENSIVE_AGENT,
@@ -768,9 +763,16 @@ const MENTAL_STATES_DEFENSIVE_AGENT: MentalState[] = [
     { state: 'MS BLOCK', action: 101 },
     { state: 'MS RETRAIT', action: 102 },
 ];
-const COMBOS_DEFENSIVE_AGENT: number[][] = [
-    [3, 3, 3, 3, 3, 3],
-    [5, 5, 5, 5, 5, 5],
+const COMBOS_DEFENSIVE_AGENT: Action[][] = [
+    [AntocBlock, AntocBlock, AntocBlock, , AntocBlock],
+    [
+        AntocMoveBackward,
+        AntocMoveBackward,
+        AntocMoveBackward,
+        AntocMoveBackward,
+        ,
+        AntocMoveBackward,
+    ],
 ];
 export const DEFENSIVE_AGENT: Agent = buildAgent(
     MENTAL_STATES_DEFENSIVE_AGENT,

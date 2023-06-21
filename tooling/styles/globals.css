@@ -360,7 +360,7 @@ th, td {
     display: flex;
     flex-direction: column;
     text-align: center;
-    width: 4rem;
+    width: 6rem;
     margin-right: 0.3rem;
     padding: 0.3rem;
     border: 1px solid #CCC;
