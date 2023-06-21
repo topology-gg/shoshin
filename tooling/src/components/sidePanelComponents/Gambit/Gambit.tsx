@@ -3,7 +3,6 @@ import {
     Box,
     Button,
     Chip,
-    ChipProps,
     Grid,
     ListItemText,
     MenuItem,
@@ -23,16 +22,6 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import BlurrableListItemText from '../../ui/BlurrableListItemText';
 import { Action, CHARACTERS_ACTIONS } from '../../../types/Action';
 import styles from './Gambit.module.css';
-
-interface StyledChipProps extends ChipProps {
-    isInverted?: boolean;
-}
-
-const StyledChip = styled(Chip, {
-    shouldForwardProp: (prop) => prop !== 'success',
-})<StyledChipProps>(({ isInverted, theme }) => ({
-    backgroundColor: 'red',
-}));
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 // I think we can just parse this index from id={....}
