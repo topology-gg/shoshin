@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag $image_name
+      run: docker build . --file Dockerfile --tag ${{ env.image_name }}
     - name: GitHub Action for DigitalOcean - doctl
       uses: digitalocean/action-doctl@v2.3.0
       with:
@@ -28,4 +28,4 @@ jobs:
       run: doctl registry login --expiry-seconds 600
 
     - name: Push to Digital Ocean Registry
-      run: docker push $image_name
+      run: docker push ${{ env.image_name }}
