@@ -17,7 +17,12 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag shoshin_tooling_backend:$(date +%s)
     - name: GitHub Action for DigitalOcean - doctl
-    uses: digitalocean/action-doctl@v2.3.0
-    with:
-      # DigitalOcean API Token
-      token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      uses: digitalocean/action-doctl@v2.3.0
+      with:
+        # DigitalOcean API Token
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    - name: Login to Digital Ocean Registry
+      run: doctl registry login --expiry-seconds 600
+
+    - name: Push to Digital Ocean Registry
+      run: docker push 
