@@ -1335,6 +1335,9 @@ export default function Home() {
                 </Alert>
             </Snackbar>
             <Box sx={{ flex: 1, pt: 1, pb: 8 }}>
+                {
+                    'StyledEngineProvider has MUI inject its css first which allows className css to display properly in production https://github.com/vercel/next.js/discussions/32565#discussioncomment-1822688'
+                }
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={theme}>
                         <SwipeableViews
