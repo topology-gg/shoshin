@@ -34,6 +34,8 @@ submission_coll = "shoshin-dogfooding-submission"
 metadata_coll = "shoshin-dogfooding-metadata"
 scenes_coll = "shoshin-dogfooding-scenes"
 
+apibara_auth_token = os.getenv('APIBARA_AUTH_TOKEN')
+
 
 class ShoshinIndexer(StarkNetIndexer):
     def __init__(self):
@@ -143,6 +145,7 @@ async def run_indexer(server_url=None, mongo_url=None, restart=None):
         config=IndexerRunnerConfiguration(
             stream_url=server_url,
             storage_url=mongo_url,
+            token=apibara_auth_token
         ),
         reset_state=restart,
     )
