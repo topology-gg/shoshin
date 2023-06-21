@@ -72,6 +72,9 @@ func _body_jessica {range_check_ptr}(
             if (intent == ns_jessica_action.SIDECUT) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, updated_stamina, dir, FALSE) );
             }
+            if (intent == ns_jessica_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE) );
+            }
             if (intent == ns_jessica_action.DASH_FORWARD) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
             }
@@ -318,6 +321,9 @@ func _body_jessica {range_check_ptr}(
             if (intent == ns_jessica_action.SIDECUT) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir, FALSE) );
             }
+            if (intent == ns_jessica_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE) );
+            }
             if (intent == ns_jessica_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
             }
@@ -369,6 +375,9 @@ func _body_jessica {range_check_ptr}(
             if (intent == ns_jessica_action.SIDECUT) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, stamina, dir, FALSE) );
             }
+            if (intent == ns_jessica_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE) );
+            }
             if (intent == ns_jessica_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
             }
@@ -400,7 +409,6 @@ func _body_jessica {range_check_ptr}(
     //       need to add cost such as stamina consumption
     //
     if (state == ns_jessica_body_state.DASH_FORWARD) {
-
 
         if(enough_stamina == TRUE) {
             // interruptible by offensive intent
@@ -518,6 +526,47 @@ func _body_jessica {range_check_ptr}(
 
         // else stay in GATOTSU and increment counter
         return ( body_state_nxt = BodyState(ns_jessica_body_state.GATOTSU, counter + 1, integrity, stamina, dir, FALSE) );
+    }
+
+    //
+    // Low kick
+    //
+    if (state == ns_jessica_body_state.LOW_KICK) {
+
+        // body responds to stimulus first
+        if (stimulus_type == ns_stimulus.HURT) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+
+        // body responds to intent
+        // LOW_KICK at recovery frame is cancellable into UPSWING's counter==1 or DASH_BACKWARD's counter==0
+        if ((counter-4) * (counter-5) == 0 and enough_stamina == TRUE) {
+            if (intent == ns_jessica_action.UPSWING) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 1, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
+
+        // after the last frame, go to *second frame* if intent is LOW_KICK
+        if (counter == ns_jessica_body_state_duration.LOW_KICK - 1) {
+            if (intent == ns_jessica_action.LOW_KICK and enough_stamina == TRUE) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            // otherwise return to IDLE
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        } else {
+            // increment counter
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LOW_KICK, counter + 1, integrity, stamina, dir, FALSE) );
+        }
+
     }
 
     with_attr error_message("Input body state is not recognized.") {
