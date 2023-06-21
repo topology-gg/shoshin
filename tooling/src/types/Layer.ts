@@ -1,7 +1,3 @@
-import {
-    CHARACTER_ACTIONS_DETAIL,
-    actionstoBodyState,
-} from '../constants/constants';
 import { Action, CHARACTERS_ACTIONS } from './Action';
 import { customDurations } from './Combos';
 import {
@@ -31,14 +27,26 @@ const getActionCondition = (
     layerIndex: number,
     character: number
 ) => {
-    let key = Object.keys(CHARACTER_ACTIONS_DETAIL[character]).find((key) => {
-        return CHARACTER_ACTIONS_DETAIL[character][key].id == layer.action.id;
-    });
+    const action = CHARACTERS_ACTIONS[character].find(
+        (action) => action.id == layer.action.id
+    );
+    const actionName = action.display.name;
+    const duration = action.frames.duration - 1;
 
-    const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration - 1;
-
-    if (key == 'MoveForward' || key == 'MoveBackward' || key == 'Block') {
-        return getInverseCondition(layerIndex, layer.conditions);
+    console.log('action', action);
+    // block needs to be handled differently because its body counter saturates at 3 until intent changes
+    // when blocking, termination condition is the inverse of the condition for this layer
+    if (
+        actionName.includes('MoveForward') ||
+        actionName.includes('MoveBackward') ||
+        actionName.includes('Block')
+    ) {
+        const inverseCondition = getInverseCondition(
+            layerIndex,
+            layer.conditions
+        );
+        console.log('inverse condition', inverseCondition);
+        return inverseCondition;
     } else {
         return getIsFinishedCondition(duration, layerIndex);
     }
@@ -82,17 +90,7 @@ export const layersToAgentComponents = (
 
     let unflattenedConditions = layersInverted.map((layer, i) => {
         let terminatingCondition;
-        const action_name = CHARACTERS_ACTIONS[character].find(
-            (action) => action.id
-        ).display.name;
-        if (action_name == 'Block') {
-            // block needs to be handled differently because its body counter saturates at 3 until intent changes
-            // when blocking, termination condition is the inverse of the condition for this layer
-            terminatingCondition = getInverseCondition(
-                layer.action.id,
-                layer.conditions
-            );
-        } else if (layer.action.isCombo == true) {
+        if (layer.action.isCombo == true) {
             //if combo, we need to get combo length, and put in the action for the node
 
             const comboDuration = combos[layer.action.id - 101].reduce(
