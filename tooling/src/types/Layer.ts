@@ -1,4 +1,9 @@
-import { CHARACTER_ACTIONS_DETAIL } from '../constants/constants';
+import {
+    CHARACTER_ACTIONS_DETAIL,
+    actionstoBodyState,
+} from '../constants/constants';
+import { Action, CHARACTERS_ACTIONS } from './Action';
+import { customDurations } from './Combos';
 import {
     Condition,
     ConditionElement,
@@ -18,7 +23,6 @@ export interface Layer {
         //Id is either that action decimal number or combo decimal number (both are defined in shoshin smart contracts)
         id: number;
         isCombo: boolean;
-        comboDuration: number;
     };
 }
 
@@ -39,10 +43,12 @@ const getActionCondition = (
         return getIsFinishedCondition(duration, layerIndex);
     }
 };
+
 //given layers gets all needed mental states, conditions and trees to build an agent using the state machine structure
 export const layersToAgentComponents = (
     layers: Layer[],
-    character: number
+    character: number,
+    combos: Action[][]
 ): { mentalStates: MentalState[]; conditions: Condition[]; trees: Tree[] } => {
     const layersInverted = layers.map((layer) => {
         const updatedConditions = layer.conditions.map((condition) => {
@@ -76,10 +82,30 @@ export const layersToAgentComponents = (
 
     let unflattenedConditions = layersInverted.map((layer, i) => {
         let terminatingCondition;
-        if (layer.action.isCombo == true) {
+        const action_name = CHARACTERS_ACTIONS[character].find(
+            (action) => action.id
+        ).display.name;
+        if (action_name == 'Block') {
+            // block needs to be handled differently because its body counter saturates at 3 until intent changes
+            // when blocking, termination condition is the inverse of the condition for this layer
+            terminatingCondition = getInverseCondition(
+                layer.condition,
+                layer.action.id
+            );
+        } else if (layer.action.isCombo == true) {
             //if combo, we need to get combo length, and put in the action for the node
+
+            const comboDuration = combos[layer.action.id - 101].reduce(
+                (acc, a) =>
+                    acc +
+                    (customDurations[character][a.id] == undefined
+                        ? a.frames.duration + 1
+                        : a.frames.duration),
+                0
+            );
+
             terminatingCondition = getIsComboFinishedCondition(
-                layer.action.comboDuration,
+                comboDuration,
                 layer.action.id
             );
         } else {
@@ -570,6 +596,5 @@ export const defaultLayer: Layer = {
     action: {
         id: 0,
         isCombo: false,
-        comboDuration: -1,
     },
 };

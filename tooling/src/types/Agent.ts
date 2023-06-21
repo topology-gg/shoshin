@@ -4,6 +4,8 @@ import { MentalState, parseTree, updateMentalStates } from './MentalState';
 import { Tree } from './Tree';
 import { FRAME_COUNT, PRIME } from '../constants/constants';
 import { encodeStringToFelt } from './utils';
+import { addActionBuffersToCombo } from './Combos';
+import { Action, defaultAction } from './Action';
 
 export default interface Agent {
     mentalStatesNames?: string[];
@@ -24,14 +26,24 @@ export interface LeagueAgent extends Agent {
 // action linked to this state), combos, conditions, initial mental state and character
 export function buildAgent(
     mentalStates: MentalState[],
-    combos: number[][],
+    combos: Action[][],
     trees: Tree[],
     conditions: Condition[],
     initialMentalState,
-    character
+    character: number
 ) {
+    //console.log('ms', mentalStates);
+    //console.log('tree', trees);
+    //console.log('conditions', conditions);
     let agent: Agent = {};
-    agent.combos = combos;
+
+    // Replace empty combos with null input
+    agent.combos = combos
+        //In the editor empty combos are valid, A user should expect an empty combo to perform idle
+        .map((combo) => (combo.length == 0 ? [defaultAction] : combo))
+        //Ensures each action is done to completion
+        .map((combo) => addActionBuffersToCombo(combo, character));
+
     agent.mentalStatesNames = mentalStates.map((ms) => ms.state);
     agent.initialState = initialMentalState;
 
@@ -81,6 +93,8 @@ export function buildAgent(
 
     agent.actions = mentalStates.map((ms) => ms.action);
     agent.character = character;
+
+    //console.log('agent', agent);
     return agent;
 }
 

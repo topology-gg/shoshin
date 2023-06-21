@@ -3,7 +3,6 @@ import { Box, Button, Link, Tooltip, Typography, styled } from '@mui/material';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import SportsMartialArtsIcon from '@mui/icons-material/SportsMartialArts';
-import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import BuildIcon from '@mui/icons-material/Build';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import PublishIcon from '@mui/icons-material/Publish';
@@ -25,6 +24,8 @@ import { Layer } from '../../types/Layer';
 import Gambit from './Gambit/Gambit';
 import { GambitMs } from './GambitMs';
 import { GambitTree } from './GambitTreeEditor';
+import { Action } from '../../types/Action';
+import { RestartAlt } from '@mui/icons-material';
 
 interface EditorViewProps {
     editorMode: EditorMode;
@@ -40,8 +41,8 @@ interface EditorViewProps {
     mentalStates: MentalState[];
     initialMentalState: number;
     handleSetInitialMentalState: (initialMentalState: number) => void;
-    combos: number[][];
-    handleValidateCombo: (combo: number[], index: number) => void;
+    combos: Action[][];
+    handleValidateCombo: (combo: Action[], index: number) => void;
     character: Character;
     setCharacter: (character: Character) => void;
     handleAddMentalState: (new_state: string) => void;
@@ -78,6 +79,8 @@ interface EditorViewProps {
     newThoughtClicks: number;
     layers: Layer[];
     setLayers: (layers: Layer[]) => void;
+    selectedCombo: number;
+    handleChangeSelectedCombo: (comboIndex: number) => void;
 }
 
 const EditorView = ({
@@ -125,6 +128,8 @@ const EditorView = ({
     newThoughtClicks,
     layers,
     setLayers,
+    selectedCombo,
+    handleChangeSelectedCombo,
 }: EditorViewProps) => {
     const isReadOnly = editorMode == EditorMode.ReadOnly;
     const [openContractInformation, setOpenContractInformation] =
@@ -163,6 +168,7 @@ const EditorView = ({
                             layers={layers}
                             character={character}
                             handleClickTreeEditor={handleClickTreeEditor}
+                            combos={combos}
                         />
                     )) ||
                     (!!treeEditor && (
@@ -171,6 +177,7 @@ const EditorView = ({
                             layers={layers}
                             character={character}
                             handleClickTreeEditor={handleClickTreeEditor}
+                            combos={combos}
                         />
                     ))
                 );
@@ -183,6 +190,8 @@ const EditorView = ({
                         character={character}
                         combos={combos}
                         handleValidateCombo={handleValidateCombo}
+                        selectedCombo={selectedCombo}
+                        handleChangeSelectedCombo={handleChangeSelectedCombo}
                     ></Combos>
                 );
             }
@@ -286,7 +295,7 @@ const EditorView = ({
                     <Tooltip
                         title={
                             <Typography fontSize={13}>
-                                Build an agent from scratch
+                                Start an agent from scratch
                             </Typography>
                         }
                         placement="top"
@@ -295,12 +304,15 @@ const EditorView = ({
                             <Button
                                 id="button-option-list-button"
                                 onClick={() => {
-                                    console.log('Build new Agent from blank');
-                                    buildNewAgentFromBlank();
+                                    console.log('Build new Agent from scratch');
+                                    const confirmed = confirm(
+                                        'Are you sure you want to reset the agent and start from scratch?'
+                                    );
+                                    if (confirmed) buildNewAgentFromBlank();
                                 }}
                                 variant="outlined"
                             >
-                                <AccessibilityNewIcon sx={{}} />
+                                <RestartAlt sx={{}} />
                             </Button>
                         </div>
                     </Tooltip>

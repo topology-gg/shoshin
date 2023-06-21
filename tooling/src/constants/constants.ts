@@ -1,3 +1,4 @@
+import { Action, AntocBlock, AntocMoveBackward, Hori } from '../types/Action';
 import Agent, { buildAgent } from '../types/Agent';
 import {
     ElementType,
@@ -54,6 +55,7 @@ export const bodyStateNumberToName = {
         110: 'dash_forward',
         120: 'dash_backward',
         130: 'jump',
+        140: 'gatotsu',
     },
     antoc: {
         0: 'idle',
@@ -156,11 +158,6 @@ export enum Character {
     Antoc = 'Antoc',
 }
 
-export interface Action {
-    name: string;
-    unicode: string;
-}
-
 export enum KeysToActionsJessica {
     '-' = 'Rest',
     'J' = 'Slash',
@@ -171,7 +168,8 @@ export enum KeysToActionsJessica {
     'A' = 'MoveBackward',
     'E' = 'DashForward',
     'Q' = 'DashBackward',
-    'C' = 'Jump',
+    'W' = 'Jump',
+    'Z' = 'Gatotsu',
 }
 
 export enum KeysToActionsAntoc {
@@ -183,7 +181,8 @@ export enum KeysToActionsAntoc {
     'A' = 'MoveBackward',
     'E' = 'DashForward',
     'Q' = 'DashBackward',
-    'C' = 'Jump',
+    'F' = 'StepForward',
+    'W' = 'Jump',
 }
 
 // Mapping such that { 'Rest' : '-' }
@@ -213,6 +212,7 @@ export enum ActionsJessica {
     DashForward = 7,
     DashBackward = 8,
     Jump = 9,
+    Gatotsu = 10,
 }
 
 export enum ActionsAntoc {
@@ -240,6 +240,7 @@ export const characterActionToNumber = {
         DashForward: 7,
         DashBackward: 8,
         Jump: 9,
+        Gatotsu: 10,
     },
     antoc: {
         Rest: 0,
@@ -273,7 +274,6 @@ export const CHARACTERS_ACTION_KEYBINDINGS: any[] = [
     KeysToActionsJessica,
     KeysToActionsAntoc,
 ];
-export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc];
 
 interface CharacterAction {
     id: number;
@@ -281,7 +281,7 @@ interface CharacterAction {
     active?: number[];
 }
 
-interface CharacterActions {
+export interface CharacterActions {
     [key: string]: CharacterAction;
 }
 
@@ -293,9 +293,10 @@ export const ActionDetailJessica: CharacterActions = {
     Block: { id: 4, duration: 3, active: [2] },
     MoveForward: { id: 5, duration: 1 },
     MoveBackward: { id: 6, duration: 1 },
-    DashForward: { id: 7, duration: 1 },
-    DashBackward: { id: 8, duration: 1 },
+    DashForward: { id: 7, duration: 4 },
+    DashBackward: { id: 8, duration: 4 },
     Jump: { id: 9, duration: 6 },
+    Gatotsu: { id: 10, duration: 8 },
 };
 
 export const ActionDetailAntoc: CharacterActions = {
@@ -307,6 +308,7 @@ export const ActionDetailAntoc: CharacterActions = {
     MoveBackward: { id: 5, duration: 1 },
     DashForward: { id: 6, duration: 4 },
     DashBackward: { id: 7, duration: 4 },
+    StepForward: { id: 8, duration: 3 },
     Jump: { id: 9, duration: 6 },
 };
 
@@ -314,6 +316,27 @@ export const CHARACTER_ACTIONS_DETAIL: CharacterActions[] = [
     ActionDetailJessica,
     ActionDetailAntoc,
 ];
+
+export const ACTION_UNICODE_MAP = {
+    Rest: '\u{1F9D8}',
+    Slash: '\u{1F5E1}',
+    Upswing: '\u{1F5E1}',
+    Sidecut: '\u{1F5E1}',
+
+    Hori: '\u{1F5E1}',
+    Vert: '\u{1F5E1}',
+
+    Block: '\u{1F6E1}',
+
+    MoveForward: '\u{1F6B6}',
+    MoveBackward: '\u{1F6B6}',
+    DashForward: '\u{1F406}',
+    DashBackward: '\u{1F406}',
+
+    StepForward: '\u{1F43E}',
+
+    Jump: '\u{1F998}',
+};
 
 export const ACTIONS_ICON_MAP = {
     Rest: 'close',
@@ -700,7 +723,7 @@ const MENTAL_STATES_OFFENSIVE_AGENT: MentalState[] = [
     { state: 'MS BLOCK', action: ActionsAntoc['Block'] },
     { state: 'MS CLOSER', action: ActionsAntoc['MoveForward'] },
 ];
-const COMBOS_OFFENSIVE_AGENT: number[][] = [[1, 1, 1, 1, 1, 1, 1]];
+const COMBOS_OFFENSIVE_AGENT: Action[][] = [[Hori]];
 export const OFFENSIVE_AGENT: Agent = buildAgent(
     MENTAL_STATES_OFFENSIVE_AGENT,
     COMBOS_OFFENSIVE_AGENT,
@@ -740,9 +763,16 @@ const MENTAL_STATES_DEFENSIVE_AGENT: MentalState[] = [
     { state: 'MS BLOCK', action: 101 },
     { state: 'MS RETRAIT', action: 102 },
 ];
-const COMBOS_DEFENSIVE_AGENT: number[][] = [
-    [3, 3, 3, 3, 3, 3],
-    [5, 5, 5, 5, 5, 5],
+const COMBOS_DEFENSIVE_AGENT: Action[][] = [
+    [AntocBlock, AntocBlock, AntocBlock, , AntocBlock],
+    [
+        AntocMoveBackward,
+        AntocMoveBackward,
+        AntocMoveBackward,
+        AntocMoveBackward,
+        ,
+        AntocMoveBackward,
+    ],
 ];
 export const DEFENSIVE_AGENT: Agent = buildAgent(
     MENTAL_STATES_DEFENSIVE_AGENT,

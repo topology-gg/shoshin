@@ -149,7 +149,7 @@ const Game = ({
             if (realTimeOptions.agentOpponent) {
                 scene.set_opponent_agent(realTimeOptions.agentOpponent);
             }
-            if (realTimeOptions.playerCharacter) {
+            if (realTimeOptions.playerCharacter != null) {
                 scene.set_player_character(realTimeOptions.playerCharacter);
             }
         }

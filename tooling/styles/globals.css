@@ -323,3 +323,23 @@ td {
     padding-right: 20px;
     padding-bottom: 20px;
 }
+.actionButton:hover {
+    background-color: #a8e4a088;
+}
+
+.comboActionDiv {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 6rem;
+    margin-right: 0.3rem;
+    padding: 0.3rem;
+    border: 1px solid #ccc;
+    border-radius: 0.8rem;
+    transition-duration: 50ms;
+    cursor: pointer;
+    background-color: #eee;
+}
+.comboActionDiv:hover {
+    background-color: #f8f8f8;
+}

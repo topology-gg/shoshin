@@ -7,6 +7,7 @@ export const GambitTree = ({
     layers,
     character,
     handleClickTreeEditor,
+    combos,
 }) => {
     let char = Object.keys(Character).indexOf(character);
 
@@ -15,7 +16,7 @@ export const GambitTree = ({
         mentalStates: generatedMs,
         conditions: generatedConditions,
         trees: generatedTrees,
-    } = layersToAgentComponents(layers, char);
+    } = layersToAgentComponents(layers, char, combos);
 
     /*     console.log('generatedMs', generatedMs);
     console.log('generatedConditions', generatedConditions);
