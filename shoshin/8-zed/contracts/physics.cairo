@@ -16,10 +16,10 @@ from contracts.constants.constants import (
     ns_hitbox,
 )
 from contracts.constants.constants_jessica import (
-    ns_jessica_character_dimension, ns_jessica_body_state_qualifiers, ns_jessica_hitbox, ns_jessica_body_state
+    ns_jessica_character_dimension, ns_jessica_body_state_qualifiers, ns_jessica_hitbox, ns_jessica_stimulus, ns_jessica_body_state
 )
 from contracts.constants.constants_antoc import (
-    ns_antoc_character_dimension, ns_antoc_body_state_qualifiers, ns_antoc_hitbox
+    ns_antoc_character_dimension, ns_antoc_body_state_qualifiers, ns_antoc_hitbox, ns_antoc_stimulus, ns_antoc_body_state
 )
 from contracts.dynamics import _euler_forward_no_hitbox, _euler_forward_consider_hitbox
 
@@ -345,6 +345,34 @@ func _physicality{range_check_ptr}(
     );
 }
 
+func produce_damage_given_opp_body_state {range_check_ptr} (
+    opp_body_state: felt
+) -> felt {
+    if (opp_body_state == ns_antoc_body_state.HORI) {
+        return ns_antoc_stimulus.HORI_DAMAGE;
+    }
+    if (opp_body_state == ns_antoc_body_state.VERT) {
+        return ns_antoc_stimulus.VERT_DAMAGE;
+    }
+    if (opp_body_state == ns_jessica_body_state.SLASH) {
+        return ns_jessica_stimulus.SLASH_DAMAGE;
+    }
+    if (opp_body_state == ns_jessica_body_state.UPSWING) {
+        return ns_jessica_stimulus.UPSWING_DAMAGE;
+    }
+    if (opp_body_state == ns_jessica_body_state.SIDECUT) {
+        return ns_jessica_stimulus.SIDECUT_DAMAGE;
+    }
+    if (opp_body_state == ns_jessica_body_state.GATOTSU) {
+        return ns_jessica_stimulus.GATOTSU_DAMAGE;
+    }
+
+    with_attr error_message("opponent body state '{opp_body_state}' is not valid for produce_damage_given_opp_body_state()") {
+        assert 0 = 1;
+    }
+    return 0;
+}
+
 func produce_stimulus_given_conditions {range_check_ptr} (
     bool_self_hit: felt,
     bool_opp_hit: felt,
@@ -371,27 +399,27 @@ func produce_stimulus_given_conditions {range_check_ptr} (
         // self is jessica & opp is jessica
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.JESSICA) {
             if (self_body_state == ns_jessica_body_state.GATOTSU) {
-                return ns_stimulus.NULL;
+                return 0;
             }
-            return ns_stimulus.CLASH;
+            return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
         }
 
         // self is jessica & opp is antoc
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             if (self_body_state == ns_jessica_body_state.GATOTSU) {
-                return ns_stimulus.CLASH;
+                return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
             }
-            return ns_stimulus.KNOCKED;
+            return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + ns_antoc_stimulus.BLOCK_KNOCK_DAMAGE;
         }
 
         // self is antoc & opp is jessica
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
-            return ns_stimulus.CLASH;
+            return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
         }
 
         // self is antoc & opp is antoc
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.ANTOC) {
-            return ns_stimulus.KNOCKED;
+            return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + ns_antoc_stimulus.BLOCK_KNOCK_DAMAGE;
         }
     }
 
@@ -401,76 +429,78 @@ func produce_stimulus_given_conditions {range_check_ptr} (
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.JESSICA) {
             // jessica's gatotsu destroy's jessica's block
             if (opp_body_state == ns_jessica_body_state.GATOTSU) {
-                return ns_stimulus.KNOCKED;
+                return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + ns_jessica_stimulus.GATOTSU_DAMAGE;
             }
-            return ns_stimulus.NULL;
+            return 0;
         }
 
         // self is jessica & opp is antoc
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
-            return ns_stimulus.CLASH;
+            return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
         }
 
         // self is antoc & opp is jessica
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
             // jessica's gatotsu breaks antoc's block
             if (opp_body_state == ns_jessica_body_state.GATOTSU) {
-                return ns_stimulus.CLASH;
+                return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
             }
-            return ns_stimulus.NULL;
+            return 0;
         }
 
         // self is antoc & opp is antoc
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.ANTOC) {
-            return ns_stimulus.NULL;
+            return 0;
         }
     }
 
     // self attacks into opp's attack
     if (bool_self_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == opp_character_type) {
-            return ns_stimulus.CLASH;
+            return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
         }
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             if (self_body_state == ns_jessica_body_state.GATOTSU) {
-                return ns_stimulus.NULL;
+                return 0;
             }
-            return ns_stimulus.KNOCKED;
+            return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + ns_antoc_stimulus.CLASH_KNOCK_DAMAGE;
         }
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
             if (opp_body_state == ns_jessica_body_state.GATOTSU) {
-                return ns_stimulus.KNOCKED;
+                return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + ns_jessica_stimulus.GATOTSU_DAMAGE;
             }
-            return ns_stimulus.CLASH;
+            return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
         }
     }
 
     // getting hit
     let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
     if (bool_self_hit == 1) {
+        let damage = produce_damage_given_opp_body_state (opp_body_state);
+
         // hit when in mid-air => knocked
         if (bool_self_ground == 0) {
-            return ns_stimulus.KNOCKED;
+            return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + damage;
         }
         // hit by gatotsu => knocked
         if (opp_body_state == ns_jessica_body_state.GATOTSU) {
-            return ns_stimulus.KNOCKED;
+            return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + damage;
         }
         // hit when grounded but critical integrity => knocked
         if (is_integrity_critical == 1) {
-            return ns_stimulus.KNOCKED;
+            return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + damage;
         }
         // otherwise => hurt
-        return ns_stimulus.HURT;
+        return ns_stimulus.HURT * ns_stimulus.ENCODING + damage;
     }
 
     // if grounded, return GROUND stimulus
     if (bool_self_ground == 1) {
-        return ns_stimulus.GROUND;
+        return ns_stimulus.GROUND * ns_stimulus.ENCODING;
     }
 
     // null stimulus otherwise
-    return ns_stimulus.NULL;
+    return 0;
 }
 
 func _test_rectangle_overlap {range_check_ptr}(rect_0: Rectangle, rect_1: Rectangle) -> (

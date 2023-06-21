@@ -55,6 +55,9 @@ namespace ns_stimulus {
     const KNOCKED = 2;
     const CLASH = 3;
     const GROUND = 4;
+    const ENCODING = 10000;
+
+    const CLASH_DAMAGE = 10;
 }
 
 namespace ns_hitbox {
