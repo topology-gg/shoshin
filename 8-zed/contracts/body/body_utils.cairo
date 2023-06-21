@@ -6,13 +6,22 @@ from contracts.constants.constants import (ns_common_stamina_effect, ns_stamina,
 from contracts.constants.constants_antoc import (ns_antoc_stamina_effect, ns_antoc_action)
 from contracts.constants.constants_jessica import (ns_jessica_stamina_effect, ns_jessica_action)
 
+func calculate_integrity_change{range_check_ptr}(integrity: felt, damage: felt) -> felt {
+    let new_integrity = integrity - damage;
+    let bool_le_0 = is_le (new_integrity, 0);
+    if (bool_le_0 == 1) {
+        return 0;
+    } else {
+        return new_integrity;
+    }
+}
 
 func calculate_default_stamina{range_check_ptr}(stamina : felt, character_type : felt) -> felt {
     if (character_type == ns_character_type.JESSICA) {
         let (updated_stamina_default_recovery, _) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, ns_stamina.INIT_STAMINA);
         return updated_stamina_default_recovery;
 
-    }else{
+    } else {
         let ( updated_stamina_default_recovery, _ ) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, ns_stamina.INIT_STAMINA);
         return updated_stamina_default_recovery;
     }
