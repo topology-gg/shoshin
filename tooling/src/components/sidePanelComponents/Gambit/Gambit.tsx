@@ -1,20 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import {
-    Box,
-    Button,
-    Chip,
-    Grid,
-    ListItemText,
-    MenuItem,
-    Typography,
-    makeStyles,
-    styled,
-} from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Button, Chip, Grid, MenuItem, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Menu from '@mui/material/Menu';
-import { Character, ACTION_UNICODE_MAP } from '../../../constants/constants';
+import { Character } from '../../../constants/constants';
 import BlurrableButton from '../../ui/BlurrableButton';
 import { Layer, defaultLayer, alwaysTrueCondition } from '../../../types/Layer';
 import { Condition } from '../../../types/Condition';
@@ -289,43 +279,50 @@ const Layer = ({
                     </div>
                 </Grid>
                 <Grid item xs={4}>
-                    {layer.conditions.map((condition, index) => (
-                        <ConditionContextMenu
-                            handleInvertCondition={handleInvertCondition}
-                            layerIndex={i}
-                            conditionIndex={index}
-                        >
-                            <Chip
-                                label={condition.displayName}
-                                className={
-                                    !condition.isInverted
-                                        ? `${styles.gambitButton} ${styles.conditionButton}`
-                                        : `${styles.gambitButton} ${styles.invertedConditionButton}`
-                                }
-                                key={`${i}`}
-                                id={`condition-btn-${i}-${index}`}
-                                onClick={handleConditionClick}
-                                onDelete={
-                                    layer.conditions.length > 1
-                                        ? handleRemoveConditionClick
-                                        : undefined
-                                }
-                                style={{
-                                    fontFamily: 'Raleway',
-                                }}
-                            />
-                        </ConditionContextMenu>
-                    ))}
+                    <Box
+                        display="flex"
+                        flexDirection="row"
+                        alignItems="center"
+                        flexWrap={'wrap'}
+                    >
+                        {layer.conditions.map((condition, index) => (
+                            <ConditionContextMenu
+                                handleInvertCondition={handleInvertCondition}
+                                layerIndex={i}
+                                conditionIndex={index}
+                            >
+                                <Chip
+                                    label={condition.displayName}
+                                    className={
+                                        !condition.isInverted
+                                            ? `${styles.gambitButton} ${styles.conditionButton}`
+                                            : `${styles.gambitButton} ${styles.invertedConditionButton}`
+                                    }
+                                    key={`${i}`}
+                                    id={`condition-btn-${i}-${index}`}
+                                    onClick={handleConditionClick}
+                                    onDelete={
+                                        layer.conditions.length > 1
+                                            ? handleRemoveConditionClick
+                                            : undefined
+                                    }
+                                    style={{
+                                        fontFamily: 'Raleway',
+                                    }}
+                                />
+                            </ConditionContextMenu>
+                        ))}
 
-                    {layer.conditions.length >= 1 &&
-                    !Object.is(layer.conditions[0], alwaysTrueCondition) ? (
-                        <IconButton
-                            onClick={handleConditionClick}
-                            id={`condition-btn-${i}-new`}
-                        >
-                            <AddIcon sx={{ mr: '3px' }} />
-                        </IconButton>
-                    ) : null}
+                        {layer.conditions.length >= 1 &&
+                        !Object.is(layer.conditions[0], alwaysTrueCondition) ? (
+                            <IconButton
+                                onClick={handleConditionClick}
+                                id={`condition-btn-${i}-new`}
+                            >
+                                <AddIcon sx={{ mr: '3px' }} />
+                            </IconButton>
+                        ) : null}
+                    </Box>
                 </Grid>
                 <Menu
                     id={`conditions-menu-${i}`}
