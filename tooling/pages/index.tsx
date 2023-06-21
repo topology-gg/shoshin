@@ -16,6 +16,7 @@ import {
     Box,
     Button,
     Snackbar,
+    StyledEngineProvider,
     ThemeProvider,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -1334,41 +1335,51 @@ export default function Home() {
                 </Alert>
             </Snackbar>
             <Box sx={{ flex: 1, pt: 1, pb: 8 }}>
-                <ThemeProvider theme={theme}>
-                    <SwipeableViews
-                        index={swipeableViewIndex}
-                        containerStyle={{
-                            transition:
-                                'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s',
-                        }}
-                        // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
-                        // a fix for the issue: first index change doesn't animate (swipe)
-                    >
-                        <SwipeableContent>{FightView}</SwipeableContent>
-                        <SwipeableContent>
-                            {EditorViewComponent}
-                        </SwipeableContent>
-                        <SwipeableContent
-                            sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}
+                <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={theme}>
+                        <SwipeableViews
+                            index={swipeableViewIndex}
+                            containerStyle={{
+                                transition:
+                                    'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s',
+                            }}
+                            // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
+                            // a fix for the issue: first index change doesn't animate (swipe)
                         >
-                            <ContractInformationView
-                                contractInformationTabIndex={
-                                    contractInformationTabIndex
-                                }
-                                setContractInformationTabIndex={(tabIndex) =>
-                                    setContractInformationTabIndex(
-                                        (_) => tabIndex
-                                    )
-                                }
-                            />
-                        </SwipeableContent>
-                        <SwipeableContent
-                            sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}
-                        >
-                            <WalletConnectView />
-                        </SwipeableContent>
-                    </SwipeableViews>
-                </ThemeProvider>
+                            <SwipeableContent>{FightView}</SwipeableContent>
+                            <SwipeableContent>
+                                {EditorViewComponent}
+                            </SwipeableContent>
+                            <SwipeableContent
+                                sx={{
+                                    paddingLeft: '10rem',
+                                    paddingRight: '10rem',
+                                }}
+                            >
+                                <ContractInformationView
+                                    contractInformationTabIndex={
+                                        contractInformationTabIndex
+                                    }
+                                    setContractInformationTabIndex={(
+                                        tabIndex
+                                    ) =>
+                                        setContractInformationTabIndex(
+                                            (_) => tabIndex
+                                        )
+                                    }
+                                />
+                            </SwipeableContent>
+                            <SwipeableContent
+                                sx={{
+                                    paddingLeft: '10rem',
+                                    paddingRight: '10rem',
+                                }}
+                            >
+                                <WalletConnectView />
+                            </SwipeableContent>
+                        </SwipeableViews>
+                    </ThemeProvider>
+                </StyledEngineProvider>
             </Box>
         </div>
     );
