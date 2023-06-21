@@ -12,6 +12,7 @@ import Agent from '../types/Agent';
 import { RealTimeFrameScene } from '../types/Frame';
 import { GameModes } from '../types/Simulator';
 import Platformer from './Simulator';
+import eventsCenter from '../Game/EventsCenter';
 
 export default class RealTime extends Platformer {
     state: RealTimeFrameScene = InitialRealTimeFrameScene;
@@ -168,6 +169,8 @@ export default class RealTime extends Platformer {
         this.scene.scene.events.on('pause', () => {
             this.toggleInputs(false);
         });
+
+        eventsCenter.emit('timer-reset');
     }
 
     startMatch() {
@@ -327,6 +330,14 @@ export default class RealTime extends Platformer {
             const integrity_1 = newState.agent_1.body_state.integrity;
             const stamina_0 = newState.agent_0.body_state.stamina;
             const stamina_1 = newState.agent_1.body_state.stamina;
+
+            // emit event for UI scene
+            eventsCenter.emit(
+                'timer-change',
+                Math.round(
+                    this.gameTimer.repeatCount * this.tickLatencyInSecond
+                )
+            );
 
             this.setPlayerStatuses({
                 integrity_0,
