@@ -134,6 +134,11 @@ export default class Simulator extends Phaser.Scene {
             'images/antoc/step_forward/spritesheet.png',
             'images/antoc/step_forward/spritesheet.json'
         );
+        this.load.atlas(
+            `antoc-low_kick`,
+            'images/antoc/low_kick/spritesheet.png',
+            'images/antoc/low_kick/spritesheet.json'
+        );
 
         //
         // Jessica
@@ -217,6 +222,11 @@ export default class Simulator extends Phaser.Scene {
             `jessica-gatotsu`,
             'images/jessica/gatotsu/spritesheet.png',
             'images/jessica/gatotsu/spritesheet.json'
+        );
+        this.load.atlas(
+            `jessica-low_kick`,
+            'images/jessica/low_kick/spritesheet.png',
+            'images/jessica/low_kick/spritesheet.json'
         );
 
         this.load.image(

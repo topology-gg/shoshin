@@ -95,7 +95,13 @@ const Gatotsu: Action = {
     id: 10,
     display: { name: 'Gatotsu', unicode: '\u{1F985}' },
     frames: { duration: 7 },
-    key: 'Z',
+    key: 'N',
+};
+const JessicaLowKick: Action = {
+    id: 11,
+    display: { name: 'LowKick', unicode: '\u{1F9B6}' },
+    frames: { duration: 6 },
+    key: 'U',
 };
 
 const JessicaActions = [
@@ -110,6 +116,7 @@ const JessicaActions = [
     DashBackward,
     Jump,
     Gatotsu,
+    JessicaLowKick,
 ];
 
 const AntocRest: Action = {
@@ -182,6 +189,13 @@ const AntocJump: Action = {
     key: 'W',
 };
 
+const AntocLowKick: Action = {
+    id: 11,
+    display: { name: 'LowKick', unicode: '\u{1F9B6}' },
+    frames: { duration: 6 },
+    key: 'U',
+};
+
 const AntocActions = [
     AntocRest,
     Hori,
@@ -193,6 +207,7 @@ const AntocActions = [
     AntocDashBackward,
     StepForward,
     AntocJump,
+    AntocLowKick,
 ];
 
 export const CHARACTERS_ACTIONS = [JessicaActions, AntocActions];

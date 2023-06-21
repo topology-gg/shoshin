@@ -1,5 +1,4 @@
 import React from 'react';
-import { ACTIONS_ICON_MAP } from '../../constants/constants';
 import ActionToken from './ActionToken';
 import { Action } from '../../types/Action';
 
