@@ -3,10 +3,13 @@ import {
     Box,
     Button,
     Chip,
+    ChipProps,
     Grid,
     ListItemText,
     MenuItem,
     Typography,
+    makeStyles,
+    styled,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
@@ -20,7 +23,16 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import BlurrableListItemText from '../../ui/BlurrableListItemText';
 import { Action, CHARACTERS_ACTIONS } from '../../../types/Action';
 import styles from './Gambit.module.css';
-import ConditionChip from './ConditionChip';
+
+interface StyledChipProps extends ChipProps {
+    isInverted?: boolean;
+}
+
+const StyledChip = styled(Chip, {
+    shouldForwardProp: (prop) => prop !== 'success',
+})<StyledChipProps>(({ isInverted, theme }) => ({
+    backgroundColor: 'red',
+}));
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 // I think we can just parse this index from id={....}
@@ -294,8 +306,13 @@ const Layer = ({
                             layerIndex={i}
                             conditionIndex={index}
                         >
-                            <ConditionChip
+                            <Chip
                                 label={condition.displayName}
+                                className={
+                                    !condition.isInverted
+                                        ? `${styles.gambitButton} ${styles.conditionButton}`
+                                        : `${styles.gambitButton} ${styles.invertedConditionButton}`
+                                }
                                 key={`${i}`}
                                 id={`condition-btn-${i}-${index}`}
                                 onClick={handleConditionClick}
@@ -307,7 +324,6 @@ const Layer = ({
                                 style={{
                                     fontFamily: 'Raleway',
                                 }}
-                                isInverted={condition.isInverted}
                             />
                         </ConditionContextMenu>
                     ))}
