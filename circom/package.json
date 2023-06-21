@@ -19,7 +19,7 @@
     "semantic-release": "semantic-release",
     "test:watch": "jest --watch",
     "test": "jest --coverage",
-    "build-test-circuits": "./circuits/__tests__/compile_tests.sh && jest --coverage circuits/**",
+    "build-test-circuits": "./circuits/__tests__/compile_tests.sh",
     "typecheck": "tsc --noEmit"
   },
   "license": "MIT",
@@ -38,6 +38,7 @@
     "codecov"
   ],
   "dependencies": {
+    "@cedoor/smt": "^0.1.7",
     "circom_tester": "^0.0.19",
     "circomlib": "^2.0.5",
     "circomlib-matrix": "^1.0.2",

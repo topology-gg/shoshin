@@ -1,21 +1,24 @@
 import { ts_dag_evaluator } from '../../ts_evaluator';
 import { dag_to_circom } from '../../compile/json_compiler';
 
-//@ts-ignore
-import { groth16 } from 'snarkjs';
 import path from 'path';
 //@ts-ignore
 import { wasm as wasm_tester } from 'circom_tester';
 
 //@ts-ignore
-import { F1Field, Scalar } from 'ffjavascript';
+import { Scalar } from 'ffjavascript';
 
 //@ts-ignore
-import { buildBabyjub } from 'circomlibjs';
-import { gen_random_dag } from './random_program_utils';
-import { pad_array_to_len, range } from '../../utils';
+import {
+  gen_random_dag_collection,
+  gen_random_dag,
+} from './random_program_utils';
 import { CircomCompilerOutInfo } from '../../types';
+import { gen_fd_proof_inputs } from '../../fd_proof_artifact_gen';
+import { gen_merkle_tree } from '../../fd_merkle_tree';
+import { gen_circom_randomness } from '../../utils';
 
+const N_MIND_STATES = 8;
 const MAX_CONSTANTS = 4;
 const MAX_DICT = 4;
 const MAX_TRACE = 30;
@@ -23,9 +26,20 @@ const MAX_TRACE = 30;
 const p = Scalar.fromString(
   '21888242871839275222246405745257275088548364400416034343698204186575808495617'
 );
-const Fr = new F1Field(p);
 
-const load_FD_circuit = async () => {
+const load_FD_Wrapper_circuit = async () => {
+  const p = path.join(
+    __dirname,
+    '../../../circuits/__tests__/circuits',
+    'fd_wrapper_tester.circom'
+  );
+  const circuit = await wasm_tester(p);
+  await circuit.loadSymbols();
+  await circuit.loadConstraints();
+  return circuit;
+};
+
+const load_FD_Emulator_circuit = async () => {
   const p = path.join(
     __dirname,
     '../../../circuits/__tests__/circuits',
@@ -40,7 +54,7 @@ const load_FD_circuit = async () => {
 /**
  * Create random DAGs and ensure that the Circom's output equals to that of the TS Emulator
  */
-describe('random DAG tests', () => {
+describe('random DAG tests for only FD Emulator', () => {
   it(
     'Should test 100 fuzzing samples of smallish circuits',
     async () => {
@@ -48,7 +62,7 @@ describe('random DAG tests', () => {
       let n_test_run = 0;
       while (n_test_run < n_tests) {
         // We need to reload the circuit or we get odd errors
-        const circuit = await load_FD_circuit();
+        const circuit = await load_FD_Emulator_circuit();
         const max_n_traces_fuzzing = 1000;
         const { dag, dict } = gen_random_dag(
           MAX_CONSTANTS,
@@ -94,6 +108,64 @@ describe('random DAG tests', () => {
         }
       }
       console.log(`Successfully ran ${n_test_run} tests`);
+    },
+    60000 * 20 // twenty minutes for the testing
+  );
+});
+
+describe('random DAG tests for FD Emulator and Wrapper', () => {
+  it(
+    'Should test all FDs for a given mind',
+    async () => {
+      // We need to reload the circuit or we get odd errors
+      const max_n_traces_fuzzing = 1000;
+      const fds = gen_random_dag_collection(
+        N_MIND_STATES,
+        MAX_CONSTANTS,
+        MAX_DICT,
+        max_n_traces_fuzzing,
+        MAX_CONSTANTS,
+        MAX_DICT,
+        MAX_TRACE
+      );
+
+      const fds_circom = fds.map(f =>
+        dag_to_circom(f.dag, f.dict, MAX_CONSTANTS, MAX_DICT, MAX_TRACE)
+      );
+
+      const fds_circom_with_randomness = await Promise.all(
+        fds_circom.map(async fd => {
+          return { fd, randomness: await gen_circom_randomness() };
+        })
+      );
+
+      const n_levels = Math.ceil(Math.log2(N_MIND_STATES)) + 1;
+      const merkle_tree = await gen_merkle_tree(
+        fds_circom_with_randomness,
+        n_levels
+      );
+
+      for (let i = 0; i < N_MIND_STATES; i++) {
+        const { dag, dict } = fds[i];
+        const mind = i;
+        const mind_randomness = await gen_circom_randomness();
+        const fd_randomness = fds_circom_with_randomness[i].randomness;
+        const circom_inp = await gen_fd_proof_inputs(
+          merkle_tree,
+          dag,
+          dict,
+          mind,
+          mind_randomness,
+          fd_randomness,
+          MAX_CONSTANTS,
+          MAX_DICT,
+          MAX_TRACE
+        );
+
+        const circuit = await load_FD_Wrapper_circuit();
+        const witness = await circuit.calculateWitness({ ...circom_inp }, true);
+        circuit.assertOut(witness, { out: 1 });
+      }
     },
     60000 * 20 // twenty minutes for the testing
   );
