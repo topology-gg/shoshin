@@ -89,8 +89,8 @@ export const layersToAgentComponents = (
             // block needs to be handled differently because its body counter saturates at 3 until intent changes
             // when blocking, termination condition is the inverse of the condition for this layer
             terminatingCondition = getInverseCondition(
-                layer.condition,
-                layer.action.id
+                layer.action.id,
+                layer.conditions
             );
         } else if (layer.action.isCombo == true) {
             //if combo, we need to get combo length, and put in the action for the node
