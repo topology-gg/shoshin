@@ -1,0 +1,23 @@
+name: Digital Ocean Deploy
+
+on:
+  push:
+    branches: [ "cicd" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag shoshin_tooling_backend:$(date +%s)
+    - name: GitHub Action for DigitalOcean - doctl
+    uses: digitalocean/action-doctl@v2.3.0
+    with:
+      # DigitalOcean API Token
+      token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
