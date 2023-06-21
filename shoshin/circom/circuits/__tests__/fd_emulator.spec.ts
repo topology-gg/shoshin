@@ -57,7 +57,7 @@ export enum OpCodes {
 }
 
 describe('FD Emulator Circuit test', () => {
-  it.only("Test basic FD function for sanity's sake", async () => {
+  it("Test basic FD function for sanity's sake", async () => {
     const circuit = await load_FD_circuit();
     // Compute abs(-10) + (30 / -10) = 7
     // 3 traces, 6 inputs

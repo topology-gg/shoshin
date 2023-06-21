@@ -26,13 +26,35 @@ export interface OpTrace {
   op_code: OpCodes;
 }
 
-export interface CircomMapping {
-  n_inputs: number;
-  n_traces: number;
+/**
+ * The Circom form of the *description* of the function
+ */
+export interface CircomCanonicalFD {
   op_traces: OpTrace[];
   inputs_constant: number[];
+}
+
+export interface CircomMapping extends CircomCanonicalFD {
+  n_inputs: number;
+  n_traces: number;
   dict: number[];
   compiler_info?: CircomCompilerOutInfo[];
+}
+
+/**
+ * @brief A basic merkle tree
+ *
+ * Index 0 is set to null. Then, index 1 is the root.
+ * Also, for index i, the left child is 2 * i and the right is 2 * i + 1.
+ * Thus, starting from the root (index 1), we can easily traverse the tree.
+ * This also has the nice feature of the second half of the tree being composed onlyj
+ * of leaves
+ */
+export type MerkleTree = bigint[];
+
+export enum MerkleTreePosition {
+  LEFT = 0,
+  RIGHT = 1,
 }
 
 // Leaf index
@@ -65,4 +87,14 @@ export type DagDict = { [node_key: number]: number };
 export enum CircomCompilerOutInfo {
   TRUNCATED_DICT,
   TRUNCATED_TRACES,
+  TRUNCATED_CONSTANTS,
+}
+
+export const CIRCOM_PRIME = BigInt(
+  '21888242871839275222246405745257275088548364400416034343698204186575808495617'
+).valueOf();
+
+export interface MerkleProof {
+  siblings: bigint[];
+  sibling_pos: number[];
 }
