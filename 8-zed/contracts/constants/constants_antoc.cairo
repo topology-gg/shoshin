@@ -62,6 +62,10 @@ namespace ns_antoc_character_dimension {
     const VERT_HITBOX_H = BODY_HITBOX_H + 35;
     const VERT_HITBOX_Y = 0;
 
+    const LOW_KICK_HITBOX_W = 68;
+    const LOW_KICK_HITBOX_H = 16;
+    const LOW_KICK_HITBOX_Y = 27;
+
     const BLOCK_HITBOX_W = 30;
     const BLOCK_HITBOX_H = 85;
     const BLOCK_HITBOX_Y = BODY_HITBOX_H / 2;
@@ -83,12 +87,15 @@ namespace ns_antoc_action {
 
     const STEP_FORWARD = 8;
     const JUMP = 9;
+
+    const LOW_KICK = 11;
 }
 
 namespace ns_antoc_stamina_effect {
-    const HORI = -100;
-    const VERT = -150;
+    const HORI = -75;
+    const VERT = -100;
     const STEP_FORWARD = -75;
+    const LOW_KICK = -75;
 }
 
 namespace ns_antoc_stimulus {
@@ -96,6 +103,7 @@ namespace ns_antoc_stimulus {
     const CLASH_KNOCK_DAMAGE = 75;
     const HORI_DAMAGE = 100;
     const VERT_DAMAGE = 150;
+    const LOW_KICK_DAMAGE = 50;
 }
 
 namespace ns_antoc_body_state_duration {
@@ -112,6 +120,7 @@ namespace ns_antoc_body_state_duration {
     const CLASH = 5;
     const STEP_FORWARD = 3;
     const JUMP = 7;
+    const LOW_KICK = 6;
 }
 
 namespace ns_antoc_body_state {
@@ -128,30 +137,28 @@ namespace ns_antoc_body_state {
     const CLASH = 1130; // 5 frames
     const STEP_FORWARD = 1140; // 3 frames
     const JUMP = 1150; // 7 frames
+    const LOW_KICK = 1160;
 }
 
 namespace ns_antoc_body_state_qualifiers {
 
     func is_in_hori_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state == ns_antoc_body_state.HORI) {
-            if (counter == 1) {
-                return 1;
-            }
-            // if (counter == 2) {
-            //     return 1;
-            // }
+        if (state == ns_antoc_body_state.HORI and counter == 1) {
+            return 1;
         }
         return 0;
     }
 
     func is_in_vert_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state == ns_antoc_body_state.VERT) {
-            if (counter == 3) {
-                return 1;
-            }
-            // if (counter == 4) {
-            //     return 1;
-            // }
+        if (state == ns_antoc_body_state.VERT and counter == 3) {
+            return 1;
+        }
+        return 0;
+    }
+
+    func is_in_low_kick_active {range_check_ptr}(state: felt, counter: felt) -> felt {
+        if (state == ns_antoc_body_state.LOW_KICK and counter == 3) {
+            return 1;
         }
         return 0;
     }
@@ -191,7 +198,8 @@ namespace ns_antoc_body_state_qualifiers {
 
         let bool_body_in_hori_active   = is_in_hori_active (state, counter);
         let bool_body_in_vert_active   = is_in_vert_active (state, counter);
-        let bool_body_in_atk_active    = bool_body_in_hori_active + bool_body_in_vert_active;
+        let bool_body_in_low_kick      = is_in_low_kick_active (state, counter);
+        let bool_body_in_atk_active    = bool_body_in_hori_active + bool_body_in_vert_active + bool_body_in_low_kick;
         let bool_body_in_knocked       = is_in_knocked (state);
         let bool_body_in_block         = is_in_block_active (state, counter);
         let bool_body_in_active        = bool_body_in_atk_active + bool_body_in_block;
@@ -290,9 +298,16 @@ namespace ns_antoc_hitbox {
                     assert ATTACK_HITBOX_W = ns_antoc_character_dimension.HORI_HITBOX_W;
                     assert ATTACK_HITBOX_H = ns_antoc_character_dimension.HORI_HITBOX_H;
                 } else {
-                    assert ATTACK_HITBOX_Y = ns_antoc_character_dimension.VERT_HITBOX_Y;
-                    assert ATTACK_HITBOX_W = ns_antoc_character_dimension.VERT_HITBOX_W;
-                    assert ATTACK_HITBOX_H = ns_antoc_character_dimension.VERT_HITBOX_H;
+                    if (body_state == ns_antoc_body_state.VERT) {
+                        assert ATTACK_HITBOX_Y = ns_antoc_character_dimension.VERT_HITBOX_Y;
+                        assert ATTACK_HITBOX_W = ns_antoc_character_dimension.VERT_HITBOX_W;
+                        assert ATTACK_HITBOX_H = ns_antoc_character_dimension.VERT_HITBOX_H;
+                    } else {
+                        assert ATTACK_HITBOX_Y = ns_antoc_character_dimension.LOW_KICK_HITBOX_Y;
+                        assert ATTACK_HITBOX_W = ns_antoc_character_dimension.LOW_KICK_HITBOX_W;
+                        assert ATTACK_HITBOX_H = ns_antoc_character_dimension.LOW_KICK_HITBOX_H;
+                    }
+
                 }
 
                 if (dir == 1) {
