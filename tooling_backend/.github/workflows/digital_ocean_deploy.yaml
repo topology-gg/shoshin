@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  image_name: shoshin_tooling_backend:$(date +%s)
-
 jobs:
 
   build:
@@ -17,8 +14,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Set current date as env variable
+      run: echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ env.image_name }}
+      run: docker build . --file Dockerfile --tag shoshin_tooling_backend:$TIMESTAMP
     - name: GitHub Action for DigitalOcean - doctl
       uses: digitalocean/action-doctl@v2.3.0
       with:
@@ -28,4 +27,4 @@ jobs:
       run: doctl registry login --expiry-seconds 600
 
     - name: Push to Digital Ocean Registry
-      run: docker push ${{ env.image_name }}
+      run: docker push shoshin_tooling_backend:$TIMESTAMP
