@@ -325,7 +325,11 @@ export default function Home() {
      */
     useEffect(() => {
         // Only save when in edit mode and a buildable agent is created (don't save an agent the cant be compiled)
-        if (editorMode === EditorMode.Edit) {
+        if (
+            editorMode === EditorMode.Edit &&
+            layers !== null &&
+            layers.length > 0
+        ) {
             localStorage.setItem('layers', JSON.stringify(layers));
             localStorage.setItem(
                 'character',
@@ -346,6 +350,8 @@ export default function Home() {
         const storedLayers = localStorage.getItem('layers');
         const storedConditions = localStorage.getItem('conditions');
         const storedCombos = localStorage.getItem('combos');
+
+        console.log('stored layers', storedLayers);
         if (storedLayers !== null && storedLayers !== undefined) {
             setLayers(JSON.parse(storedLayers));
             //setAgentInPanelToAgent(JSON.parse(storedAgent));
