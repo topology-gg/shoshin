@@ -464,6 +464,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         stimulus_1: felt,
         hitboxes_0: Hitboxes,
         hitboxes_1: Hitboxes,
+        new_dir_0: felt,
+        new_dir_1: felt,
     ) = _physicality(
         character_type_0     = character_type_0,
         character_type_1     = character_type_1,
@@ -479,7 +481,14 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     assert arr_frames[idx] = FrameScene(
         agent_0 = Frame (
             mental_state  = agent_state_0,
-            body_state    = body_state_0,
+            body_state=BodyState(
+                state = body_state_0.state,
+                counter = body_state_0.counter,
+                integrity = body_state_0.integrity,
+                stamina = body_state_0.stamina,
+                dir = new_dir_0,
+                fatigued = body_state_0.fatigued,
+            ),
             physics_state = physics_state_0,
             action        = a_0,
             stimulus      = stimulus_0,
@@ -491,7 +500,14 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         ),
         agent_1 = Frame (
             mental_state  = agent_state_1,
-            body_state    = body_state_1,
+            body_state=BodyState(
+                state = body_state_1.state,
+                counter = body_state_1.counter,
+                integrity = body_state_1.integrity,
+                stamina = body_state_1.stamina,
+                dir = new_dir_1,
+                fatigued = body_state_1.fatigued,
+            ),
             physics_state = physics_state_1,
             action        = a_1,
             stimulus      = stimulus_1,
@@ -738,6 +754,8 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         stimulus_1: felt,
         hitboxes_0: Hitboxes,
         hitboxes_1: Hitboxes,
+        new_dir_0: felt,
+        new_dir_1: felt,
     ) = _physicality(
         character_type_0     = agent_0_character_type,
         character_type_1     = agent_1_character_type,
@@ -759,13 +777,27 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
     // For player agent mental_state and other frame members are not relevent
     assert real_time_frame_scenes[0] = RealTimeFrameScene(
         agent_0=RealTimePlayer(
-            body_state=body_state_0,
+            body_state=BodyState(
+                state = body_state_0.state,
+                counter = body_state_0.counter,
+                integrity = body_state_0.integrity,
+                stamina = body_state_0.stamina,
+                dir = new_dir_0,
+                fatigued = body_state_0.fatigued,
+            ),
             physics_state=physics_state_0,
             stimulus=stimulus_0,
             hitboxes=hitboxes_0,
         ),
         agent_1=RealTimeAgent(
-            body_state=body_state_1,
+            body_state=BodyState(
+                state = body_state_1.state,
+                counter = body_state_1.counter,
+                integrity = body_state_1.integrity,
+                stamina = body_state_1.stamina,
+                dir = new_dir_1,
+                fatigued = body_state_1.fatigued,
+            ),
             physics_state=physics_state_1,
             stimulus=stimulus_1,
             hitboxes=hitboxes_1,
