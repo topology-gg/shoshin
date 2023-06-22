@@ -437,6 +437,7 @@ const ConditionEditor = ({
                     wordWrap: 'on',
                     fontSize: 16,
                     lineNumbers: 'off',
+                    // readOnly: true,
                 }}
                 //@ts-ignore
                 onMount={handleEditorDidMount}

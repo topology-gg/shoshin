@@ -7,13 +7,17 @@ export interface Condition {
     type?: string;
 }
 
-export const conditionTypeToEmoji = (conditionType: string) => {
-    if (!conditionType) return '\u{2B50}';
-
-    if (conditionType == 'spacing') return '\u{1F4D0}';
-    else if (conditionType.includes('stats')) return '\u{1F321}';
-    else if (conditionType.includes('state')) return '\u{1F9D8}';
-    else return '\u{2B50}';
+export const conditionTypeToEmojiFile = (conditionType: string) => {
+    if (!conditionType) return '/images/emojis/star.png';
+    if (conditionType == 'spacing')
+        return '/images/emojis/triangular_ruler.png';
+    else if (conditionType.includes('state'))
+        return '/images/emojis/woman_lotus.png';
+    else if (conditionType.includes('health'))
+        return '/images/emojis/red_heart.png';
+    else if (conditionType.includes('stamina'))
+        return '/images/emojis/battery.png';
+    else return '/images/emojis/light_bulb.png';
 };
 
 export interface ConditionElement {

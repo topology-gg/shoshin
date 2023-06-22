@@ -29,11 +29,12 @@ import {
     isOperatorWithDoubleOperands,
     conditionElementToStr,
     validateConditionName,
-    conditionTypeToEmoji,
+    conditionTypeToEmojiFile,
 } from '../../types/Condition';
 import PerceptibleList from './PerceptibleList';
 import { BodystatesAntoc, BodystatesJessica } from '../../types/Condition';
 import ConditionEditor from '../ConditionEditor';
+import { conditionEmojiElement } from './Gambit/Gambit';
 
 // Interfaces
 
@@ -213,15 +214,18 @@ const Conditions = ({
                             }
                         >
                             {conditions
-                                .slice(0, conditions.length - 1)
+                                // .slice(0, conditions.length)
                                 .map((condition, i) => (
                                     <MenuItem value={i}>
-                                        <span style={{ marginRight: '7px' }}>
-                                            {conditionTypeToEmoji(
+                                        <Box>
+                                            {conditionEmojiElement(
                                                 condition.type
                                             )}
-                                        </span>
-                                        {condition.displayName || `C${i}`}
+                                            <div style={{ marginLeft: '25px' }}>
+                                                {condition.displayName ||
+                                                    `C${i}`}
+                                            </div>
+                                        </Box>
                                     </MenuItem>
                                 ))}
                             <MenuItem

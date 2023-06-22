@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { Box, Button, Chip, Grid, MenuItem, Typography } from '@mui/material';
+import {
+    Box,
+    Button,
+    Chip,
+    Grid,
+    MenuItem,
+    Select,
+    Typography,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -7,16 +15,52 @@ import Menu from '@mui/material/Menu';
 import { ACTION_UNICODE_MAP, Character } from '../../../constants/constants';
 import BlurrableButton from '../../ui/BlurrableButton';
 import { Layer, defaultLayer, alwaysTrueCondition } from '../../../types/Layer';
-import { Condition, conditionTypeToEmoji } from '../../../types/Condition';
+import { Condition, conditionTypeToEmojiFile } from '../../../types/Condition';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import BlurrableListItemText from '../../ui/BlurrableListItemText';
 import { Action, CHARACTERS_ACTIONS } from '../../../types/Action';
 import styles from './Gambit.module.css';
+import { VerticalAlignCenter } from '@mui/icons-material';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 // I think we can just parse this index from id={....}
 let currentMenu = 0;
 let currentConditionMenu = 0;
+
+let gridOrderPortion = 1;
+let gridConditionPortion = 5;
+let gridActionPortion = 5;
+let gridRemovePortion = 1;
+
+export const conditionElement = (
+    conditionName: string,
+    conditionType: string
+) => {
+    return (
+        <Box>
+            {conditionEmojiElement(conditionType)}
+            <div style={{ marginLeft: '25px' }}>{conditionName}</div>
+        </Box>
+    );
+};
+export const conditionEmojiElement = (conditionType: string) => {
+    const filePath = conditionTypeToEmojiFile(conditionType);
+    // doing the following to make sure image is vertically centered; sometimes css feels like dark magic
+    // solution from: https://stackoverflow.com/a/11716065
+    return (
+        <img
+            src={filePath}
+            height="15px"
+            style={{
+                position: 'absolute',
+                marginTop: 'auto',
+                marginBottom: 'auto',
+                top: '0',
+                bottom: '0',
+            }}
+        />
+    );
+};
 
 const actionIndexToAction = (
     action: number,
@@ -269,20 +313,18 @@ const Layer = ({
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    // ml: '2rem',
-                    // pl: '0.5rem',
                     width: '100%',
                     border: '1px solid #ddd',
                     marginBottom: '4px',
                     borderRadius: '20px',
                 }}
             >
-                <Grid item xs={1}>
+                <Grid item xs={gridOrderPortion}>
                     <div style={{ textAlign: 'center', fontSize: '13px' }}>
                         {i + 1}
                     </div>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={gridConditionPortion}>
                     <Box
                         display="flex"
                         flexDirection="row"
@@ -296,7 +338,10 @@ const Layer = ({
                                 conditionIndex={index}
                             >
                                 <Chip
-                                    label={condition.displayName}
+                                    label={conditionElement(
+                                        condition.displayName,
+                                        condition.type
+                                    )}
                                     className={
                                         !condition.isInverted
                                             ? `${styles.gambitButton} ${styles.conditionButton}`
@@ -312,6 +357,9 @@ const Layer = ({
                                     }
                                     style={{
                                         fontFamily: 'Raleway',
+                                        fontSize: '14px',
+                                        verticalAlign: 'middle',
+                                        padding: '0',
                                     }}
                                 />
                             </ConditionContextMenu>
@@ -323,7 +371,7 @@ const Layer = ({
                                 onClick={handleConditionClick}
                                 id={`condition-btn-${i}-new`}
                             >
-                                <AddIcon sx={{ mr: '3px' }} />
+                                <AddIcon />
                             </IconButton>
                         ) : null}
                     </Box>
@@ -333,8 +381,14 @@ const Layer = ({
                     anchorEl={conditionAnchorEl}
                     open={conditionsOpen}
                     onClose={(e) => handleCloseConditionDropdown()}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 220,
+                        },
+                    }}
                 >
                     {conditions.map((condition) => {
+                        console.log('conditions', conditions);
                         return (
                             <MenuItem>
                                 <BlurrableListItemText
@@ -342,16 +396,17 @@ const Layer = ({
                                         onConditionSelect(condition);
                                     }}
                                 >
-                                    <span style={{ marginRight: '7px' }}>
-                                        {conditionTypeToEmoji(condition.type)}
-                                    </span>
-                                    {condition.displayName}
+                                    {conditionElement(
+                                        condition.displayName,
+                                        condition.type
+                                    )}
                                 </BlurrableListItemText>
                             </MenuItem>
                         );
                     })}
                 </Menu>
-                <Grid item xs={6}>
+
+                <Grid item xs={gridActionPortion}>
                     <BlurrableButton
                         className={`${styles.gambitButton} ${styles.actionButton}`}
                         key={`${i}`}
@@ -391,7 +446,7 @@ const Layer = ({
                         );
                     })}
                 </Menu>
-                <Grid item xs={1}>
+                <Grid item xs={gridRemovePortion}>
                     <IconButton
                         onClick={(_) => handleRemoveLayer(i)}
                         disabled={isReadOnly}
@@ -598,24 +653,24 @@ const Gambit = ({
                                             fontSize: '13px',
                                         }}
                                     >
-                                        <Grid item xs={1}>
+                                        <Grid item xs={gridOrderPortion}>
                                             <div
                                                 style={{ textAlign: 'center' }}
                                             >
                                                 Order
                                             </div>
                                         </Grid>
-                                        <Grid item xs={4}>
+                                        <Grid item xs={gridConditionPortion}>
                                             <div style={{ paddingLeft: '8px' }}>
                                                 Condition
                                             </div>
                                         </Grid>
-                                        <Grid item xs={6}>
+                                        <Grid item xs={gridActionPortion}>
                                             <div style={{ paddingLeft: '8px' }}>
                                                 Action
                                             </div>
                                         </Grid>
-                                        <Grid item xs={1}>
+                                        <Grid item xs={gridRemovePortion}>
                                             {/* Remove */}
                                         </Grid>
                                     </Box>

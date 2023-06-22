@@ -94,14 +94,14 @@ const EditorTabs = ({ workingTab, handleClickTab }) => {
             >
                 Combos
             </button>
-            <button
+            {/* <button
                 onClick={(event) =>
                     handleTabChange(event, EditorTabName.Conditions)
                 }
                 style={tabStyle(workingTab, EditorTabName.Conditions)}
             >
                 Conditions
-            </button>
+            </button> */}
         </Box>
     );
 };

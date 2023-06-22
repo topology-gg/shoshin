@@ -89,6 +89,7 @@ import { ShoshinWASMContext } from '../src/context/wasm-shoshin';
 import {
     INITIAL_AGENT_COMPONENTS,
     STARTER_AGENT,
+    PRESET_CONDITIONS,
 } from '../src/constants/starter_agent';
 import MidScreenKeybinding from '../src/components/MidScreenKeybinding';
 import { KeyboardShortcut } from '../src/types/UI';
@@ -108,6 +109,7 @@ export const LayerContext = createContext([]);
 export const CharacterContext = createContext(Character.Jessica);
 
 export default function Home() {
+    console.log('STARTER_AGENT:', STARTER_AGENT);
     // Constants
     const LATENCY = 70;
     const runnable = true;
@@ -354,7 +356,7 @@ export default function Home() {
         console.log('stored layers', storedLayers);
         if (storedLayers !== null && storedLayers !== undefined) {
             setLayers(JSON.parse(storedLayers));
-            //setAgentInPanelToAgent(JSON.parse(storedAgent));
+
             setAgentName(localStorage.getItem('agentName'));
             const character =
                 parseInt(localStorage.getItem('character')) == 0
@@ -927,6 +929,7 @@ export default function Home() {
             return tree;
         });
         setConditions(() => {
+            console.log('setConditions', agent.conditions);
             let cond: Condition[] = agent.conditions.map((x, i) => {
                 let conditionName = agent.conditionNames[i]
                     ? agent.conditionNames[i]
@@ -970,6 +973,14 @@ export default function Home() {
 
     const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 
+    const resetAgent = () => {
+        setLayers((_) => []);
+        setAgentName((_) => '');
+        setCharacter(Character.Jessica);
+        setConditions((_) => PRESET_CONDITIONS);
+        setCombos((_) => []);
+    };
+
     let EditorViewComponent = (
         <LayerContext.Provider value={layers}>
             <CharacterContext.Provider value={character}>
@@ -985,7 +996,7 @@ export default function Home() {
                     }}
                     buildNewAgentFromBlank={() => {
                         setEditorMode(() => EditorMode.Edit);
-                        setAgentInPanelToAgent(STARTER_AGENT);
+                        resetAgent();
                     }}
                     buildNewAgentFromAgent={(agent: Agent) => {
                         setEditorMode(() => EditorMode.Edit);
