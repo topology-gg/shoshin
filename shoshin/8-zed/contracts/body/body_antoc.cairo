@@ -68,6 +68,9 @@ func _body_antoc {range_check_ptr}(
             if (intent == ns_antoc_action.VERT) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, updated_stamina, dir, FALSE) );
             }
+            if (intent == ns_antoc_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE) );
+            }
             if (intent == ns_antoc_action.DASH_FORWARD) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
             }
@@ -158,7 +161,7 @@ func _body_antoc {range_check_ptr}(
             }
         }
 
-        // by default finishing the animation; go to frame 1 if intent is VERT at last frame
+        // by default finishing the animation; go to the first frame if intent is VERT at last frame
         if (counter == ns_antoc_body_state_duration.VERT - 1) {
             if (intent == ns_antoc_action.VERT) {
                 // return to first frame
@@ -186,17 +189,15 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.BLOCK) {
 
-        // interruptable by being attacked
-        let is_in_block_active = ns_antoc_body_state_qualifiers.is_in_block_active(state, counter);
-        if (is_in_block_active == 0) {
-            if (stimulus_type == ns_stimulus.HURT) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
-            }
-            if (stimulus_type == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
-            }
+        // body responds to stimulus first
+        if (stimulus_type == ns_stimulus.HURT) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
+        // body responds to intent
         if(enough_stamina == TRUE){
             // cancel-able into STEP FORWARD - let's see what happens
             if (intent == ns_antoc_action.STEP_FORWARD) {
@@ -275,11 +276,12 @@ func _body_antoc {range_check_ptr}(
         if(enough_stamina == TRUE){
             if (intent == ns_antoc_action.HORI) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, updated_stamina, dir, FALSE) );
-
             }
             if (intent == ns_antoc_action.VERT) {
-                    return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, updated_stamina, dir, FALSE) );
-
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE) );
             }
             if (intent == ns_antoc_action.DASH_FORWARD) {
                     return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
@@ -337,6 +339,9 @@ func _body_antoc {range_check_ptr}(
             }
             if (intent == ns_antoc_action.VERT) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE) );
             }
             if (intent == ns_antoc_action.DASH_FORWARD) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
@@ -479,10 +484,13 @@ func _body_antoc {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
-        // if having enough stamina => fast cancel into VERT active frame (counter==3)
+        // if having enough stamina => fast cancel into VERT's active frame (counter==3) or LOW_KICK's active frame (counter==3)
         if (enough_stamina == TRUE) {
             if (intent == ns_antoc_action.VERT) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 3, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 3, integrity, updated_stamina, dir, FALSE) );
             }
         }
 
@@ -493,6 +501,48 @@ func _body_antoc {range_check_ptr}(
 
         // else stay in STEP_FORWARD and increment counter
         return ( body_state_nxt = BodyState(ns_antoc_body_state.STEP_FORWARD, counter + 1, integrity, stamina, dir, FALSE) );
+    }
+
+    //
+    // LOW KICK
+    //
+    if (state == ns_antoc_body_state.LOW_KICK) {
+
+        // body responds to stimulus first
+        if (stimulus_type == ns_stimulus.HURT) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+
+        // body responds to intent
+        // LOW_KICK at recovery frame is cancellable into either STEP FORWARD or DASH BACKWARD
+        if ((counter-4) * (counter-5) == 0 and enough_stamina == TRUE) {
+            if (intent == ns_antoc_action.STEP_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.STEP_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
+
+        // by default finishing the animation; go to the *second frame* if intent is LOW_KICK at last frame
+        if (counter == ns_antoc_body_state_duration.LOW_KICK - 1) {
+            if (intent == ns_antoc_action.LOW_KICK and enough_stamina == TRUE) {
+                // restart from second frame
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 2, integrity, updated_stamina, dir, FALSE) );
+            }
+            // otherwise return to IDLE
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        }
+
+        // otherwise increment counter
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, counter + 1, integrity, stamina, dir, FALSE) );
+
     }
 
     // handle exception

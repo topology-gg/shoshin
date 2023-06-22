@@ -354,6 +354,9 @@ func produce_damage_given_opp_body_state {range_check_ptr} (
     if (opp_body_state == ns_antoc_body_state.VERT) {
         return ns_antoc_stimulus.VERT_DAMAGE;
     }
+    if (opp_body_state == ns_antoc_body_state.LOW_KICK) {
+        return ns_antoc_stimulus.LOW_KICK_DAMAGE;
+    }
     if (opp_body_state == ns_jessica_body_state.SLASH) {
         return ns_jessica_stimulus.SLASH_DAMAGE;
     }
@@ -365,6 +368,9 @@ func produce_damage_given_opp_body_state {range_check_ptr} (
     }
     if (opp_body_state == ns_jessica_body_state.GATOTSU) {
         return ns_jessica_stimulus.GATOTSU_DAMAGE;
+    }
+    if (opp_body_state == ns_jessica_body_state.LOW_KICK) {
+        return ns_jessica_stimulus.LOW_KICK_DAMAGE;
     }
 
     with_attr error_message("opponent body state '{opp_body_state}' is not valid for produce_damage_given_opp_body_state()") {

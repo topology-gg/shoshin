@@ -43,6 +43,10 @@ func calculate_stamina_change{range_check_ptr}(stamina : felt, intent : felt, ma
                 let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_jessica_stamina_effect.SIDECUT, max_stamina);
                 return (updated_stamina, enough_stamina);
             }
+            if (intent == ns_jessica_action.LOW_KICK){
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_jessica_stamina_effect.LOW_KICK, max_stamina);
+                return (updated_stamina, enough_stamina);
+            }
             if (intent == ns_jessica_action.BLOCK) {
                 let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.BLOCK, max_stamina);
                 return (updated_stamina, enough_stamina);
@@ -84,6 +88,10 @@ func calculate_stamina_change{range_check_ptr}(stamina : felt, intent : felt, ma
             }
             if (intent == ns_antoc_action.VERT){
                 let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_antoc_stamina_effect.VERT, max_stamina);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_antoc_action.LOW_KICK){
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_antoc_stamina_effect.LOW_KICK, max_stamina);
                 return (updated_stamina, enough_stamina);
             }
             if (intent == ns_antoc_action.BLOCK) {

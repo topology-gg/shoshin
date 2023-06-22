@@ -60,6 +60,10 @@ namespace ns_jessica_character_dimension {
     const SIDECUT_HITBOX_H = BODY_HITBOX_H * 2 / 4;
     const SIDECUT_HITBOX_Y = BODY_HITBOX_H / 4;
 
+    const LOW_KICK_HITBOX_W = 45;
+    const LOW_KICK_HITBOX_H = 20;
+    const LOW_KICK_HITBOX_Y = 7;
+
     const BLOCK_HITBOX_W = 20;
     const BLOCK_HITBOX_H = 60;
     const BLOCK_HITBOX_Y = BODY_HITBOX_H / 2;
@@ -87,13 +91,16 @@ namespace ns_jessica_action {
     const JUMP = 9;
 
     const GATOTSU = 10;
+
+    const LOW_KICK = 11;
 }
 
 namespace ns_jessica_stamina_effect {
-    const SLASH = -75;
-    const UPSWING = -100;
-    const SIDECUT = -50;
-    const GATOTSU = -350;
+    const SLASH = -50;
+    const UPSWING = -70;
+    const SIDECUT = -30;
+    const GATOTSU = -200;
+    const LOW_KICK = -50;
 }
 
 namespace ns_jessica_stimulus {
@@ -101,6 +108,7 @@ namespace ns_jessica_stimulus {
     const UPSWING_DAMAGE = 75;
     const SIDECUT_DAMAGE = 75;
     const GATOTSU_DAMAGE = 150;
+    const LOW_KICK_DAMAGE = 50;
 }
 
 namespace ns_jessica_body_state_duration {
@@ -118,6 +126,7 @@ namespace ns_jessica_body_state_duration {
     const DASH_BACKWARD = 4;
     const JUMP = 6;
     const GATOTSU = 7;
+    const LOW_KICK = 6;
 }
 
 namespace ns_jessica_body_state {
@@ -135,6 +144,7 @@ namespace ns_jessica_body_state {
     const DASH_BACKWARD = 120;  // 5 frames
     const JUMP = 130; // 7 frames
     const GATOTSU = 140;
+    const LOW_KICK = 150;
 }
 
 namespace ns_jessica_body_state_qualifiers {
@@ -180,6 +190,13 @@ namespace ns_jessica_body_state_qualifiers {
         return 0;
     }
 
+    func is_in_low_kick_active {range_check_ptr}(state: felt, counter: felt) -> felt {
+        if (state == ns_jessica_body_state.LOW_KICK and counter == 3) {
+            return 1;
+        }
+        return 0;
+    }
+
     func is_in_block_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_jessica_body_state.BLOCK and counter == 1) {
             return 1;
@@ -206,7 +223,8 @@ namespace ns_jessica_body_state_qualifiers {
         let bool_body_in_upswing_active = is_in_upswing_active (state, counter);
         let bool_body_in_sidecut_active = is_in_sidecut_active (state, counter);
         let bool_body_in_gatotsu_active = is_in_gatotsu_active (state, counter);
-        let bool_body_in_atk_active     = bool_body_in_slash_active + bool_body_in_upswing_active + bool_body_in_sidecut_active + bool_body_in_gatotsu_active;
+        let bool_body_in_low_kick_active = is_in_low_kick_active (state, counter);
+        let bool_body_in_atk_active     = bool_body_in_slash_active + bool_body_in_upswing_active + bool_body_in_sidecut_active + bool_body_in_gatotsu_active + bool_body_in_low_kick_active;
         let bool_body_in_knocked        = is_in_knocked (state);
         let bool_body_in_block          = is_in_block_active (state, counter);
         let bool_body_in_active         = bool_body_in_atk_active + bool_body_in_block;
@@ -309,9 +327,15 @@ namespace ns_jessica_hitbox {
                             assert ATTACK_HITBOX_W = ns_jessica_character_dimension.SIDECUT_HITBOX_W;
                             assert ATTACK_HITBOX_H = ns_jessica_character_dimension.SIDECUT_HITBOX_H;
                         } else {
-                            assert ATTACK_HITBOX_Y = ns_jessica_character_dimension.GATOTSU_HITBOX_Y;
-                            assert ATTACK_HITBOX_W = ns_jessica_character_dimension.GATOTSU_HITBOX_W;
-                            assert ATTACK_HITBOX_H = ns_jessica_character_dimension.GATOTSU_HITBOX_H;
+                            if (body_state == ns_jessica_body_state.GATOTSU) {
+                                assert ATTACK_HITBOX_Y = ns_jessica_character_dimension.GATOTSU_HITBOX_Y;
+                                assert ATTACK_HITBOX_W = ns_jessica_character_dimension.GATOTSU_HITBOX_W;
+                                assert ATTACK_HITBOX_H = ns_jessica_character_dimension.GATOTSU_HITBOX_H;
+                            } else {
+                                assert ATTACK_HITBOX_Y = ns_jessica_character_dimension.LOW_KICK_HITBOX_Y;
+                                assert ATTACK_HITBOX_W = ns_jessica_character_dimension.LOW_KICK_HITBOX_W;
+                                assert ATTACK_HITBOX_H = ns_jessica_character_dimension.LOW_KICK_HITBOX_H;
+                            }
                         }
                     }
                 }
