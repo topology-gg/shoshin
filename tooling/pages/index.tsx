@@ -16,6 +16,7 @@ import {
     Box,
     Button,
     Snackbar,
+    StyledEngineProvider,
     ThemeProvider,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -274,7 +275,9 @@ export default function Home() {
                 editorMode != EditorMode.ReadOnly
             ) {
                 console.log('new layer');
-                setLayers([...layers, defaultLayer]);
+                // We need to make a deep copy otherwise this exported object is reassigned
+                const deepCopy = JSON.parse(JSON.stringify(defaultLayer));
+                setLayers([...layers, deepCopy]);
             }
         }
     };
@@ -322,21 +325,23 @@ export default function Home() {
      */
     useEffect(() => {
         // Only save when in edit mode and a buildable agent is created (don't save an agent the cant be compiled)
-        if (editorMode === EditorMode.Edit) {
+        if (
+            editorMode === EditorMode.Edit &&
+            layers !== null &&
+            layers.length > 0
+        ) {
             localStorage.setItem('layers', JSON.stringify(layers));
             localStorage.setItem(
                 'character',
                 JSON.stringify(Object.keys(Character).indexOf(character))
             );
             localStorage.setItem('agentName', agentName);
-            console.log('conditions are', conditions);
             if (conditions) {
                 localStorage.setItem('conditions', JSON.stringify(conditions));
             }
             if (combos) {
                 localStorage.setItem('combos', JSON.stringify(combos));
             }
-            console.log('new agent condition', conditions);
         }
     }, [newAgent, agentName, editorMode]);
 
@@ -345,6 +350,8 @@ export default function Home() {
         const storedLayers = localStorage.getItem('layers');
         const storedConditions = localStorage.getItem('conditions');
         const storedCombos = localStorage.getItem('combos');
+
+        console.log('stored layers', storedLayers);
         if (storedLayers !== null && storedLayers !== undefined) {
             setLayers(JSON.parse(storedLayers));
             //setAgentInPanelToAgent(JSON.parse(storedAgent));
@@ -1334,41 +1341,51 @@ export default function Home() {
                 </Alert>
             </Snackbar>
             <Box sx={{ flex: 1, pt: 1, pb: 8 }}>
-                <ThemeProvider theme={theme}>
-                    <SwipeableViews
-                        index={swipeableViewIndex}
-                        containerStyle={{
-                            transition:
-                                'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s',
-                        }}
-                        // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
-                        // a fix for the issue: first index change doesn't animate (swipe)
-                    >
-                        <SwipeableContent>{FightView}</SwipeableContent>
-                        <SwipeableContent>
-                            {EditorViewComponent}
-                        </SwipeableContent>
-                        <SwipeableContent
-                            sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}
+                <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={theme}>
+                        <SwipeableViews
+                            index={swipeableViewIndex}
+                            containerStyle={{
+                                transition:
+                                    'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s',
+                            }}
+                            // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
+                            // a fix for the issue: first index change doesn't animate (swipe)
                         >
-                            <ContractInformationView
-                                contractInformationTabIndex={
-                                    contractInformationTabIndex
-                                }
-                                setContractInformationTabIndex={(tabIndex) =>
-                                    setContractInformationTabIndex(
-                                        (_) => tabIndex
-                                    )
-                                }
-                            />
-                        </SwipeableContent>
-                        <SwipeableContent
-                            sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}
-                        >
-                            <WalletConnectView />
-                        </SwipeableContent>
-                    </SwipeableViews>
-                </ThemeProvider>
+                            <SwipeableContent>{FightView}</SwipeableContent>
+                            <SwipeableContent>
+                                {EditorViewComponent}
+                            </SwipeableContent>
+                            <SwipeableContent
+                                sx={{
+                                    paddingLeft: '10rem',
+                                    paddingRight: '10rem',
+                                }}
+                            >
+                                <ContractInformationView
+                                    contractInformationTabIndex={
+                                        contractInformationTabIndex
+                                    }
+                                    setContractInformationTabIndex={(
+                                        tabIndex
+                                    ) =>
+                                        setContractInformationTabIndex(
+                                            (_) => tabIndex
+                                        )
+                                    }
+                                />
+                            </SwipeableContent>
+                            <SwipeableContent
+                                sx={{
+                                    paddingLeft: '10rem',
+                                    paddingRight: '10rem',
+                                }}
+                            >
+                                <WalletConnectView />
+                            </SwipeableContent>
+                        </SwipeableViews>
+                    </ThemeProvider>
+                </StyledEngineProvider>
             </Box>
         </div>
     );

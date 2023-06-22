@@ -21,7 +21,7 @@ import { Tree } from '../../types/Tree';
 import { Condition, ConditionElement } from '../../types/Condition';
 import { CircularProgress } from '@mui/material';
 import { Layer } from '../../types/Layer';
-import Gambit from './Gambit';
+import Gambit from './Gambit/Gambit';
 import { GambitMs } from './GambitMs';
 import { GambitTree } from './GambitTreeEditor';
 import { Action } from '../../types/Action';
