@@ -2,6 +2,7 @@
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
+from starkware.cairo.common.math import sign
 from starkware.cairo.common.math_cmp import is_le, is_not_zero
 from contracts.constants.constants import (
     ns_character_type,
@@ -134,6 +135,8 @@ func _physicality{range_check_ptr}(
     curr_stimulus_1: felt,
     hitboxes_0: Hitboxes,
     hitboxes_1: Hitboxes,
+    new_dir_0: felt,
+    new_dir_1: felt,
 ) {
     alloc_locals;
 
@@ -142,7 +145,8 @@ func _physicality{range_check_ptr}(
     // 2. Create hitboxes (body, action, environment)
     // 3. Test hitbox overlaps
     // 4. Movement second pass, incorporating hitbox overlap (final positions) to produce charcater state
-    // 5. Produce stimuli
+    // 5. Handle direction switching
+    // 6. Produce stimuli
 
     //
     // 1. Movement first pass (candidate positions)
@@ -298,7 +302,32 @@ func _physicality{range_check_ptr}(
     );
 
     //
-    // 5. Produce stimuli
+    // 5. Handle direction switching
+    // note: dir==1 when facing right;
+    //       direction needs switching when either
+    //       (1) p2 on the right facing right (dir==1), and p1 on the left facing left (dir==0), or
+    //       (2) p1 on the right facing right (dir==1), and p2 on the left facing left (dir==0).
+    //
+    let sign_p2_p1_x_diff = sign (curr_physics_state_1.pos.x - curr_physics_state_0.pos.x);
+    let sign_p1_p2_dir_diff = sign (curr_body_state_0.dir - curr_body_state_1.dir);
+
+    // For (1), sign_p2_p1_x_diff is positive, and sign_p1_p2_dir_diff is negative
+    // For (2), sign_p2_p1_x_diff is negative, and sign_p1_p2_dir_diff is positive
+    // hence when sign_p2_p1_x_diff and sign_p1_p2_dir_diff differ, direction switching is needed
+    local new_dir_0: felt;
+    local new_dir_1: felt;
+    if (sign_p2_p1_x_diff != sign_p1_p2_dir_diff) {
+        // switch direction
+        assert new_dir_0 = curr_body_state_1.dir;
+        assert new_dir_1 = curr_body_state_0.dir;
+    } else {
+        // don't switch direction
+        assert new_dir_0 = curr_body_state_0.dir;
+        assert new_dir_1 = curr_body_state_1.dir;
+    }
+
+    //
+    // 6. Produce stimuli
     // (NULL / HURT / KNOCKED / CLASH)
     //
     let curr_stimulus_0 = produce_stimulus_given_conditions (
@@ -342,6 +371,8 @@ func _physicality{range_check_ptr}(
         curr_stimulus_1,
         hitboxes_0,
         hitboxes_1,
+        new_dir_0,
+        new_dir_1,
     );
 }
 
