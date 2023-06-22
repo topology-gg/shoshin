@@ -20,6 +20,17 @@ const HITBOX_STROKE_WIDTH = 1.5;
 
 const PLAYER_POINTER_DIM = 20;
 
+enum CombatEvent {
+    Block = 'Block',
+}
+
+interface BattleEvent {
+    timestamp: number;
+    event: CombatEvent;
+    eventCount: number;
+    textObject: Phaser.GameObjects.Text;
+}
+
 interface PlayerPointer {
     cir: Phaser.GameObjects.Arc;
     text: Phaser.GameObjects.Text;
@@ -56,6 +67,9 @@ export default class Simulator extends Phaser.Scene {
     endTextP1Won: Phaser.GameObjects.Text;
     endTextP2Won: Phaser.GameObjects.Text;
     endTextDraw: Phaser.GameObjects.Text;
+
+    player_one_combat_log: BattleEvent;
+    player_two_combat_log: BattleEvent;
 
     readonly STROKE_STYLE_BODY_HITBOX = 0x7cfc00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
@@ -681,6 +695,12 @@ export default class Simulator extends Phaser.Scene {
                 this.endTextDraw.setVisible(true);
             }
         } else {
+            this.battleText(
+                characterType0,
+                characterType1,
+                agentFrame0,
+                agentFrame1
+            );
             this.endTextDraw.setVisible(false);
             this.endTextP1Won.setVisible(false);
             this.endTextP2Won.setVisible(false);
@@ -705,6 +725,78 @@ export default class Simulator extends Phaser.Scene {
             this.setPlayerTwoPointer(agentFrame1);
         } else {
             this.hideDebug();
+        }
+    }
+
+    createBattleLogText(player_index, event, count) {
+        const x = this.scale.width * 0.5;
+        const y = this.scale.height * 0.5;
+
+        return this.add.text(x, y, 'Block', {
+            fontFamily: 'Oswald',
+            fontSize: '48px',
+            color: '#FFFB37',
+            fontStyle: 'italic',
+            stroke: '#000000',
+            strokeThickness: 3,
+            shadow: {
+                stroke: false,
+                offsetX: 10,
+                color: '#0000008F',
+                fill: true,
+                offsetY: 7,
+                blur: 6,
+            },
+            padding: { left: null, right: 30 },
+        });
+    }
+
+    addEventToBattleLog(playerIndex: number, event: CombatEvent) {
+        const repeatEvent = this.player_one_combat_log?.event == event;
+        const eventCount = repeatEvent
+            ? this.player_one_combat_log.eventCount + 1
+            : 0;
+        const eventText = this.createBattleLogText(
+            playerIndex,
+            event,
+            eventCount
+        );
+        this.player_one_combat_log = {
+            timestamp: Date.now(),
+            event,
+            eventCount: eventCount,
+            textObject: eventText,
+        };
+    }
+
+    battleText(
+        characterType0: number,
+        characterType1: number,
+        agentFrame0: FrameLike,
+        agentFrame1: FrameLike
+    ) {
+        const p1BodyState =
+            bodyStateNumberToName[characterType0 == 0 ? 'jessica' : 'antoc'][
+                agentFrame0.body_state.state
+            ];
+        const p2BodyState =
+            bodyStateNumberToName[characterType1 == 0 ? 'jessica' : 'antoc'][
+                agentFrame1.body_state.state
+            ];
+
+        if (
+            (p1BodyState === 'block' && p2BodyState === 'knocked') ||
+            (p1BodyState === 'block' && p2BodyState === 'clash')
+        ) {
+            this.addEventToBattleLog(0, CombatEvent.Block);
+        }
+
+        if (
+            (p2BodyState === 'block' && p1BodyState === 'knocked') ||
+            (p2BodyState === 'block' && p1BodyState === 'clash')
+        ) {
+            console.log('block p2');
+            this.addEventToBattleLog(1, CombatEvent.Block);
         }
     }
 }
