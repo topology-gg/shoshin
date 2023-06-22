@@ -364,9 +364,10 @@ export default function Home() {
                     : Character.Antoc;
             setCharacter(character);
             setEditorMode(EditorMode.Edit);
-            if (storedConditions) {
-                setConditions(JSON.parse(storedConditions));
-            }
+            // if (storedConditions) {
+            //     setConditions(JSON.parse(storedConditions));
+            // }
+            setConditions((_) => PRESET_CONDITIONS); // always shows preset conditions for now (condition editing disabled)
             if (storedCombos) {
                 setCombos(JSON.parse(storedCombos));
             }
