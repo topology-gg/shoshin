@@ -26,12 +26,12 @@ namespace ns_common_stamina_effect {
     const NULL = 50; // replenish stamina
     const MOVE_FORWARD = 25; // replenish stamina
     const MOVE_BACKWARD = 25; // replenish stamina
-    const BLOCK = -25; // consumes stamina
+    const BLOCK = -5; // consumes stamina
     const JUMP = -25; // consumes stamina
 
     // These values are applied in the first frame of body state
-    const DASH_FORWARD = -200; // consumes stamina
-    const DASH_BACKWARD = -200; // consumes stamina
+    const DASH_FORWARD = -100; // consumes stamina
+    const DASH_BACKWARD = -100; // consumes stamina
 }
 
 namespace ns_integrity {
