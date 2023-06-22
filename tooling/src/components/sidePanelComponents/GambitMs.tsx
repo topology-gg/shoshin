@@ -6,7 +6,12 @@ import { layersToAgentComponents } from '../../types/Layer';
 import { Character } from '../../constants/constants';
 
 //Read only Mental State window to show layers instantiated as state machine
-export const GambitMs = ({ layers, character, handleClickTreeEditor }) => {
+export const GambitMs = ({
+    layers,
+    character,
+    handleClickTreeEditor,
+    combos,
+}) => {
     let char = Object.keys(Character).indexOf(character);
 
     console.log('layers', layers);
@@ -15,7 +20,7 @@ export const GambitMs = ({ layers, character, handleClickTreeEditor }) => {
         mentalStates: generatedMs,
         conditions: generatedConditions,
         trees: generatedTrees,
-    } = layersToAgentComponents(layers, char);
+    } = layersToAgentComponents(layers, char, combos);
 
     /*     console.log('generatedMs', generatedMs);
     console.log('generatedConditions', generatedConditions);

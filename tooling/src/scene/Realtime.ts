@@ -3,6 +3,7 @@ import {
     IDLE_AGENT,
     InitialRealTimeFrameScene,
     OFFENSIVE_AGENT,
+    TICK_IN_SECONDS,
     characterActionToNumber,
 } from '../constants/constants';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
@@ -11,6 +12,7 @@ import Agent from '../types/Agent';
 import { RealTimeFrameScene } from '../types/Frame';
 import { GameModes } from '../types/Simulator';
 import Platformer from './Simulator';
+import eventsCenter from '../Game/EventsCenter';
 
 export default class RealTime extends Platformer {
     state: RealTimeFrameScene = InitialRealTimeFrameScene;
@@ -37,7 +39,7 @@ export default class RealTime extends Platformer {
 
     private isFirstTick: boolean = true;
 
-    private tickLatencyInSecond = 0.07;
+    private tickLatencyInSecond = TICK_IN_SECONDS;
 
     private setPlayerStatuses: (playerStatuses: StatusBarPanelProps) => void =
         () => {};
@@ -159,12 +161,16 @@ export default class RealTime extends Platformer {
             space: Phaser.Input.Keyboard.KeyCodes.SPACE,
             period: Phaser.Input.Keyboard.KeyCodes.PERIOD,
             f: Phaser.Input.Keyboard.KeyCodes.F,
+            n: Phaser.Input.Keyboard.KeyCodes.N,
             z: Phaser.Input.Keyboard.KeyCodes.Z,
+            u: Phaser.Input.Keyboard.KeyCodes.U,
         });
         this.set_player_character(this.character_type_0);
         this.scene.scene.events.on('pause', () => {
             this.toggleInputs(false);
         });
+
+        eventsCenter.emit('timer-reset');
     }
 
     startMatch() {
@@ -272,10 +278,16 @@ export default class RealTime extends Platformer {
                 // antoc's step forward
                 this.player_action =
                     characterActionToNumber['antoc']['StepForward'];
-            } else if (this.keyboard.z.isDown && this.character_type_0 == 0) {
+            } else if (this.keyboard.n.isDown && this.character_type_0 == 0) {
                 // jessica's gatotsu
                 this.player_action =
                     characterActionToNumber['jessica']['Gatotsu'];
+            } else if (this.keyboard.u.isDown) {
+                // low_kick
+                this.player_action =
+                    characterActionToNumber[
+                        this.character_type_0 == 1 ? 'antoc' : 'jessica'
+                    ]['LowKick'];
             }
         }
         if (this.keyboard.period.isDown) {
@@ -318,6 +330,14 @@ export default class RealTime extends Platformer {
             const integrity_1 = newState.agent_1.body_state.integrity;
             const stamina_0 = newState.agent_0.body_state.stamina;
             const stamina_1 = newState.agent_1.body_state.stamina;
+
+            // emit event for UI scene
+            eventsCenter.emit(
+                'timer-change',
+                Math.round(
+                    this.gameTimer.repeatCount * this.tickLatencyInSecond
+                )
+            );
 
             this.setPlayerStatuses({
                 integrity_0,

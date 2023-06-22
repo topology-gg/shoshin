@@ -15,7 +15,6 @@ import {
 import { Box } from '@mui/system';
 import React from 'react';
 import {
-    CHARACTERS_ACTIONS,
     DT_FP,
     SCALE_FP,
     bodyStateNumberToName,
@@ -24,6 +23,7 @@ import {
 import { TestJson } from '../types/Frame';
 import Agent from '../types/Agent';
 import { KeywordMentalState, KeywordBodyState } from './ui/Keyword';
+import { CHARACTERS_ACTIONS } from '../types/Action';
 
 type FrameInspectorProps = {
     p1: Agent;
@@ -160,7 +160,11 @@ const FrameInspector = ({
                                                                     0
                                                                         ? characterLeftType
                                                                         : characterRightType
-                                                                ][num]
+                                                                ].find(
+                                                                    (a) =>
+                                                                        a.id ==
+                                                                        num
+                                                                ).display.name
                                                             }
                                                         </div>
                                                     );
@@ -182,7 +186,11 @@ const FrameInspector = ({
                                                                     0
                                                                         ? characterLeftType
                                                                         : characterRightType
-                                                                ][num]
+                                                                ].find(
+                                                                    (a) =>
+                                                                        a.id ==
+                                                                        num
+                                                                ).display.name
                                                             }
                                                         </div>
                                                     );

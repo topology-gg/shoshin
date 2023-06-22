@@ -1,3 +1,4 @@
+import { Action, AntocBlock, AntocMoveBackward, Hori } from '../types/Action';
 import Agent, { buildAgent } from '../types/Agent';
 import {
     ElementType,
@@ -23,6 +24,13 @@ export const CONTRACT_ADDRESS =
     '0x01cf7516698237ed0b41440d2849759b88e8a2ad66238ff1267e5143e3ada5b8';
 export const ENTRYPOINT_FIGHT = 'loop';
 export const ENTRYPOINT_AGENT_SUBMISSION = 'submit_agent';
+
+// Simulation related constants
+export const TICK_IN_SECONDS = 0.07;
+export const SIMULATION_TIME_IN_SECONDS = 30;
+export const FRAME_COUNT = Math.round(
+    SIMULATION_TIME_IN_SECONDS / TICK_IN_SECONDS
+);
 
 // UI-related sizes and enums
 export const SIMULATOR_W = 1000;
@@ -55,6 +63,7 @@ export const bodyStateNumberToName = {
         120: 'dash_backward',
         130: 'jump',
         140: 'gatotsu',
+        150: 'low_kick',
     },
     antoc: {
         0: 'idle',
@@ -70,6 +79,7 @@ export const bodyStateNumberToName = {
         1130: 'clash',
         1140: 'step_forward',
         1150: 'jump',
+        1160: 'low_kick',
     },
 };
 
@@ -157,11 +167,6 @@ export enum Character {
     Antoc = 'Antoc',
 }
 
-export interface Action {
-    name: string;
-    unicode: string;
-}
-
 export enum KeysToActionsJessica {
     '-' = 'Rest',
     'J' = 'Slash',
@@ -173,7 +178,8 @@ export enum KeysToActionsJessica {
     'E' = 'DashForward',
     'Q' = 'DashBackward',
     'W' = 'Jump',
-    'Z' = 'Gatotsu',
+    'N' = 'Gatotsu',
+    'U' = 'LowKick',
 }
 
 export enum KeysToActionsAntoc {
@@ -187,6 +193,7 @@ export enum KeysToActionsAntoc {
     'Q' = 'DashBackward',
     'F' = 'StepForward',
     'W' = 'Jump',
+    'U' = 'LowKick',
 }
 
 // Mapping such that { 'Rest' : '-' }
@@ -245,6 +252,7 @@ export const characterActionToNumber = {
         DashBackward: 8,
         Jump: 9,
         Gatotsu: 10,
+        LowKick: 11,
     },
     antoc: {
         Rest: 0,
@@ -257,6 +265,7 @@ export const characterActionToNumber = {
         DashBackward: 7,
         StepForward: 8,
         Jump: 9,
+        LowKick: 11,
     },
 };
 export function getIntentNameByCharacterTypeAndNumber(
@@ -271,14 +280,10 @@ export function getIntentNameByCharacterTypeAndNumber(
     return Object.keys(object).find((key) => object[key] === number);
 }
 
-// Simulation related constants
-export const FRAME_COUNT = 120;
-
 export const CHARACTERS_ACTION_KEYBINDINGS: any[] = [
     KeysToActionsJessica,
     KeysToActionsAntoc,
 ];
-export const CHARACTERS_ACTIONS: any[] = [ActionsJessica, ActionsAntoc];
 
 interface CharacterAction {
     id: number;
@@ -286,7 +291,7 @@ interface CharacterAction {
     active?: number[];
 }
 
-interface CharacterActions {
+export interface CharacterActions {
     [key: string]: CharacterAction;
 }
 
@@ -298,10 +303,11 @@ export const ActionDetailJessica: CharacterActions = {
     Block: { id: 4, duration: 3, active: [2] },
     MoveForward: { id: 5, duration: 1 },
     MoveBackward: { id: 6, duration: 1 },
-    DashForward: { id: 7, duration: 1 },
-    DashBackward: { id: 8, duration: 1 },
+    DashForward: { id: 7, duration: 4 },
+    DashBackward: { id: 8, duration: 4 },
     Jump: { id: 9, duration: 6 },
     Gatotsu: { id: 10, duration: 8 },
+    LowKick: { id: 11, duration: 6 },
 };
 
 export const ActionDetailAntoc: CharacterActions = {
@@ -315,6 +321,7 @@ export const ActionDetailAntoc: CharacterActions = {
     DashBackward: { id: 7, duration: 4 },
     StepForward: { id: 8, duration: 3 },
     Jump: { id: 9, duration: 6 },
+    LowKick: { id: 11, duration: 6 },
 };
 
 export const CHARACTER_ACTIONS_DETAIL: CharacterActions[] = [
@@ -343,25 +350,8 @@ export const ACTION_UNICODE_MAP = {
     Jump: '\u{1F998}',
 
     Gatotsu: '\u{1F525}',
-};
 
-export const ACTIONS_ICON_MAP = {
-    Rest: 'close',
-
-    Slash: 'local_dining',
-    Upswing: 'swipe_vertical',
-    Sidecut: 'swipe_left',
-
-    Hori: 'local_dining',
-    Vert: 'swipe_vertical',
-
-    Block: 'block',
-    MoveForward: 'arrow_forward',
-    MoveBackward: 'arrow_back',
-    DashForward: 'keyboard_double_arrow_right',
-    DashBackward: 'keyboard_double_arrow_left',
-
-    Jump: 'arrow_upward',
+    LowKick: '\u{1F986}',
 };
 
 export const MAX_COMBO_SIZE = 20;
@@ -730,7 +720,7 @@ const MENTAL_STATES_OFFENSIVE_AGENT: MentalState[] = [
     { state: 'MS BLOCK', action: ActionsAntoc['Block'] },
     { state: 'MS CLOSER', action: ActionsAntoc['MoveForward'] },
 ];
-const COMBOS_OFFENSIVE_AGENT: number[][] = [[1, 1, 1, 1, 1, 1, 1]];
+const COMBOS_OFFENSIVE_AGENT: Action[][] = [[Hori]];
 export const OFFENSIVE_AGENT: Agent = buildAgent(
     MENTAL_STATES_OFFENSIVE_AGENT,
     COMBOS_OFFENSIVE_AGENT,
@@ -770,9 +760,16 @@ const MENTAL_STATES_DEFENSIVE_AGENT: MentalState[] = [
     { state: 'MS BLOCK', action: 101 },
     { state: 'MS RETRAIT', action: 102 },
 ];
-const COMBOS_DEFENSIVE_AGENT: number[][] = [
-    [3, 3, 3, 3, 3, 3],
-    [5, 5, 5, 5, 5, 5],
+const COMBOS_DEFENSIVE_AGENT: Action[][] = [
+    [AntocBlock, AntocBlock, AntocBlock, , AntocBlock],
+    [
+        AntocMoveBackward,
+        AntocMoveBackward,
+        AntocMoveBackward,
+        AntocMoveBackward,
+        ,
+        AntocMoveBackward,
+    ],
 ];
 export const DEFENSIVE_AGENT: Agent = buildAgent(
     MENTAL_STATES_DEFENSIVE_AGENT,

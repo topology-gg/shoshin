@@ -13,16 +13,17 @@ import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Menu from '@mui/material/Menu';
 import { MentalState } from '../../types/MentalState';
-import { Character, CHARACTERS_ACTIONS } from '../../constants/constants';
+import { Character } from '../../constants/constants';
 import { getMentalStatesNames } from '../../types/Tree';
 import MentalStatesGraph from './MentalStatesGraph';
 import BlurrableButton from '../ui/BlurrableButton';
+import { CHARACTERS_ACTIONS } from '../../types/Action';
 
 let currentMenu = 0;
 
 const actionToStr = (action: number, characterIndex) => {
     if (action < 100) {
-        return CHARACTERS_ACTIONS[characterIndex][action]?.replace('_', ' ');
+        return CHARACTERS_ACTIONS[characterIndex][action].display.name;
     }
     return `Combo ${action - 101}`;
 };

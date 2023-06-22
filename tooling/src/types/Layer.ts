@@ -1,25 +1,24 @@
-import {
-    CHARACTERS_ACTIONS,
-    CHARACTER_ACTIONS_DETAIL,
-    actionstoBodyState,
-} from '../constants/constants';
+import { Action, CHARACTERS_ACTIONS } from './Action';
+import { customDurations } from './Combos';
 import {
     Condition,
+    ConditionElement,
     ElementType,
     Operator,
-    generateConditionKey,
 } from './Condition';
 import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
 
-//TODO - make conditions appendable,
+//Layer conditions have extra metadate while they are being edited
+interface LayerCondition extends Condition {
+    isInverted: boolean;
+}
 export interface Layer {
-    condition: Condition;
+    conditions: LayerCondition[];
     action: {
         //Id is either that action decimal number or combo decimal number (both are defined in shoshin smart contracts)
         id: number;
         isCombo: boolean;
-        comboDuration: number;
     };
 }
 
@@ -28,38 +27,60 @@ const getActionCondition = (
     layerIndex: number,
     character: number
 ) => {
-    let key = Object.keys(CHARACTER_ACTIONS_DETAIL[character]).find((key) => {
-        return CHARACTER_ACTIONS_DETAIL[character][key].id == layer.action.id;
-    });
+    const action = CHARACTERS_ACTIONS[character].find(
+        (action) => action.id == layer.action.id
+    );
+    const actionName = action.display.name;
+    const duration = action.frames.duration - 1;
 
-    const duration = CHARACTER_ACTIONS_DETAIL[character][key].duration - 1;
-    console.log(character, key, duration);
-
-    let terminatingCondition;
-    if (key == 'MoveForward' || key == 'MoveBackward' || key == 'Block') {
-        return (terminatingCondition = getNotCondition(
+    console.log('action', action);
+    // block needs to be handled differently because its body counter saturates at 3 until intent changes
+    // when blocking, termination condition is the inverse of the condition for this layer
+    if (
+        actionName.includes('MoveForward') ||
+        actionName.includes('MoveBackward') ||
+        actionName.includes('Block')
+    ) {
+        const inverseCondition = getInverseCondition(
             layerIndex,
-            layer.condition
-        ));
+            layer.conditions
+        );
+        console.log('inverse condition', inverseCondition);
+        return inverseCondition;
     } else {
-        return (terminatingCondition = getIsFinishedCondition(
-            duration,
-            layerIndex
-        ));
+        return getIsFinishedCondition(duration, layerIndex);
     }
 };
+
 //given layers gets all needed mental states, conditions and trees to build an agent using the state machine structure
 export const layersToAgentComponents = (
     layers: Layer[],
-    character: number
+    character: number,
+    combos: Action[][]
 ): { mentalStates: MentalState[]; conditions: Condition[]; trees: Tree[] } => {
+    const layersInverted = layers.map((layer) => {
+        const updatedConditions = layer.conditions.map((condition) => {
+            if (condition.isInverted) {
+                return {
+                    ...condition,
+                    elements: getInverseConditionElements(condition.elements),
+                };
+            }
+            return condition;
+        });
+
+        return {
+            ...layer,
+            conditions: updatedConditions,
+        };
+    });
     const startMentalState: MentalState = {
         state: 'Start',
         action: 0,
     };
 
     const generatedMentalStates = [
-        ...layers.map((layer, i) => {
+        ...layersInverted.map((layer, i) => {
             return {
                 state: `ms_${i}`,
                 action: layer.action.id,
@@ -67,23 +88,22 @@ export const layersToAgentComponents = (
         }),
     ];
 
-    let unflattenedConditions = layers.map((layer, i) => {
-        //action to bodystate
-        const bodyState = actionstoBodyState[character][layer.action.id];
-
+    let unflattenedConditions = layersInverted.map((layer, i) => {
         let terminatingCondition;
-        const action_name = CHARACTERS_ACTIONS[character][layer.action.id];
-        if (action_name == 'Block') {
-            // block needs to be handled differently because its body counter saturates at 3 until intent changes
-            // when blocking, termination condition is the inverse of the condition for this layer
-            terminatingCondition = getInverseCondition(
-                layer.condition,
-                layer.action.id
-            );
-        } else if (layer.action.isCombo == true) {
+        if (layer.action.isCombo == true) {
             //if combo, we need to get combo length, and put in the action for the node
+
+            const comboDuration = combos[layer.action.id - 101].reduce(
+                (acc, a) =>
+                    acc +
+                    (customDurations[character][a.id] == undefined
+                        ? a.frames.duration + 1
+                        : a.frames.duration),
+                0
+            );
+
             terminatingCondition = getIsComboFinishedCondition(
-                layer.action.comboDuration,
+                comboDuration,
                 layer.action.id
             );
         } else {
@@ -110,7 +130,9 @@ export const layersToAgentComponents = (
         ? unflattenedConditions.flat()
         : [];
 
-    const rootConditions = layers.map((layer) => layer.condition);
+    const rootConditions = layersInverted.map((layer) => {
+        return appendConditions(layer.conditions);
+    });
 
     //@ts-ignore
     const trees = [
@@ -128,10 +150,9 @@ export const layersToAgentComponents = (
 // Condition keys have to be a unique number
 // Unique encoding for each condition type and layer index is unique amongst layers
 const conditionKeyEncoding = {
-    inverse: 12321,
     interrupt: 909,
     finished: 808,
-    not: 303,
+    inverse: 303,
 };
 
 //condtions to transition to action
@@ -195,47 +216,70 @@ const getNode = (
     ];
 };
 
-const getNotCondition = (id: number, condition: Condition) => {
-    return {
-        elements: [
-            {
-                value: '!',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            ...condition.elements,
-            {
-                value: ')',
-                type: 'Operator',
-            },
-        ],
-        displayName: 'is_condition_not_false',
-        key: `${conditionKeyEncoding.finished}${id}`,
-    };
+const getAppendedElements = (conditions: Condition[]): any[] => {
+    console.log('input conditions', conditions);
+    let res = conditions
+        .map((condition) => condition.elements)
+        .reduce((acc, elements, i) => {
+            // indexes [0, 1, 2] and length = 3
+            // yes 0, yes 1, no 2
+            if (i < conditions.length - 1) {
+                const andElement = {
+                    value: Operator.And,
+                    type: ElementType.Operator,
+                };
+                return [...acc, ...elements, andElement];
+            }
+            return [...acc, ...elements];
+        }, []);
+
+    console.log('appended elements', res);
+    return res;
 };
 
-const getInverseCondition = (condition: Condition, id: number): Condition => {
-    // create and return !(condition)
+const appendConditions = (conditions: Condition[]) => {
+    const elementsAppended = getAppendedElements(conditions);
     return {
         elements: [
-            {
-                value: Operator.Not,
-                type: ElementType.Operator,
-            },
             {
                 value: Operator.OpenParenthesis,
                 type: ElementType.Operator,
             },
-            ...condition.elements,
+            ...elementsAppended,
             {
                 value: Operator.CloseParenthesis,
                 type: ElementType.Operator,
             },
         ],
-        displayName: 'inverse_'.concat(condition.displayName),
+        displayName: 'actionCondition',
+        key: `${conditions[0].key}`,
+    };
+};
+
+const getInverseConditionElements = (conditionElements: ConditionElement[]) => {
+    return [
+        {
+            value: Operator.Not,
+            type: ElementType.Operator,
+        },
+        {
+            value: Operator.OpenParenthesis,
+            type: ElementType.Operator,
+        },
+        ...conditionElements,
+        {
+            value: Operator.CloseParenthesis,
+            type: ElementType.Operator,
+        },
+    ];
+};
+
+const getInverseCondition = (id: number, conditions: Condition[]) => {
+    const elementsAppended = getAppendedElements(conditions);
+
+    return {
+        elements: getInverseConditionElements(elementsAppended),
+        displayName: 'is_condition_not_false',
         key: `${conditionKeyEncoding.inverse}${id}`,
     };
 };
@@ -379,7 +423,7 @@ const getInterruptedCondition = (character: number, id: number) => {
 };
 
 // These are conditions but typescript wants enum
-const alwaysTrueCondition = {
+export const alwaysTrueCondition = {
     elements: [
         {
             value: '(',
@@ -404,6 +448,7 @@ const alwaysTrueCondition = {
     ],
     displayName: 'always_true',
     key: '1686113964152',
+    isInverted: false,
 };
 
 const interruptCondtions = {
@@ -545,10 +590,9 @@ const exampleMS = [
 
 export const defaultLayer: Layer = {
     //@ts-ignore
-    condition: alwaysTrueCondition,
+    conditions: [alwaysTrueCondition],
     action: {
         id: 0,
         isCombo: false,
-        comboDuration: -1,
     },
 };

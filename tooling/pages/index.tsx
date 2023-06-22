@@ -16,6 +16,7 @@ import {
     Box,
     Button,
     Snackbar,
+    StyledEngineProvider,
     ThemeProvider,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -96,6 +97,7 @@ import {
     defaultLayer,
     layersToAgentComponents,
 } from '../src/types/Layer';
+import { Action, CHARACTERS_ACTIONS } from '../src/types/Action';
 
 //@ts-ignore
 const Game = dynamic(() => import('../src/Game/PhaserGame'), {
@@ -143,9 +145,11 @@ export default function Home() {
 
     // React states for tracking the New Agent being edited in the right panel
     const [initialMentalState, setInitialMentalState] = useState<number>(0);
-    const [combos, setCombos] = useState<number[][]>(
+    const [combos, setCombos] = useState<Action[][]>(
         INITIAL_AGENT_COMPONENTS.combos
     );
+    const [selectedCombo, changeSelectedCombo] = useState<number>(0);
+
     const [mentalStates, setMentalStates] = useState<MentalState[]>(
         INITIAL_AGENT_COMPONENTS.mentalStates
     );
@@ -271,7 +275,9 @@ export default function Home() {
                 editorMode != EditorMode.ReadOnly
             ) {
                 console.log('new layer');
-                setLayers([...layers, defaultLayer]);
+                // We need to make a deep copy otherwise this exported object is reassigned
+                const deepCopy = JSON.parse(JSON.stringify(defaultLayer));
+                setLayers([...layers, deepCopy]);
             }
         }
     };
@@ -319,21 +325,23 @@ export default function Home() {
      */
     useEffect(() => {
         // Only save when in edit mode and a buildable agent is created (don't save an agent the cant be compiled)
-        if (editorMode === EditorMode.Edit) {
+        if (
+            editorMode === EditorMode.Edit &&
+            layers !== null &&
+            layers.length > 0
+        ) {
             localStorage.setItem('layers', JSON.stringify(layers));
             localStorage.setItem(
                 'character',
                 JSON.stringify(Object.keys(Character).indexOf(character))
             );
             localStorage.setItem('agentName', agentName);
-            console.log('conditions are', conditions);
             if (conditions) {
                 localStorage.setItem('conditions', JSON.stringify(conditions));
             }
             if (combos) {
                 localStorage.setItem('combos', JSON.stringify(combos));
             }
-            console.log('new agent condition', conditions);
         }
     }, [newAgent, agentName, editorMode]);
 
@@ -342,6 +350,8 @@ export default function Home() {
         const storedLayers = localStorage.getItem('layers');
         const storedConditions = localStorage.getItem('conditions');
         const storedCombos = localStorage.getItem('combos');
+
+        console.log('stored layers', storedLayers);
         if (storedLayers !== null && storedLayers !== undefined) {
             setLayers(JSON.parse(storedLayers));
             //setAgentInPanelToAgent(JSON.parse(storedAgent));
@@ -807,24 +817,14 @@ export default function Home() {
         });
     }
 
-    function handleValidateCombo(combo: number[], index: number) {
-        if (combo.length > 0) {
-            if (index === null) {
-                setCombos((prev) => {
-                    let prev_copy: number[][] = JSON.parse(
-                        JSON.stringify(prev)
-                    );
-                    prev_copy.push(combo);
-                    return prev_copy;
-                });
-                return;
-            }
-            setCombos((prev) => {
-                let prev_copy = JSON.parse(JSON.stringify(prev));
-                prev_copy[index] = combo;
-                return prev_copy;
-            });
-        }
+    function handleValidateCombo(combo: Action[], index: number) {
+        console.log('combo', combo);
+        console.log('index', index);
+        setCombos((prev) => {
+            let prev_copy = JSON.parse(JSON.stringify(prev));
+            prev_copy[index] = combo;
+            return prev_copy;
+        });
     }
 
     function handleBuildAgent() {
@@ -836,7 +836,7 @@ export default function Home() {
             mentalStates: generatedMs,
             conditions: generatedConditions,
             trees: generatedTrees,
-        } = layersToAgentComponents(layers, char);
+        } = layersToAgentComponents(layers, char, combos);
 
         //todo remove trees
         return buildAgent(
@@ -896,8 +896,16 @@ export default function Home() {
     function setAgentInPanelToAgent(agent: Agent) {
         // parse the given agent into new values for the React states
         setInitialMentalState(() => agent.initialState);
+        setCombos(() =>
+            agent.combos.map((combo) =>
+                combo.map((action) =>
+                    CHARACTERS_ACTIONS[agent.character].find(
+                        (a) => a.id == action
+                    )
+                )
+            )
+        );
         setLayers([]);
-        setCombos(() => agent.combos);
         setMentalStates(
             agent.mentalStatesNames
                 .map((s, i) => [s, agent.actions[i]] as [string, number])
@@ -933,9 +941,6 @@ export default function Home() {
             return cond;
         });
         setAgentName(() => '');
-        setCharacter(() =>
-            agent.character == 0 ? Character.Jessica : Character.Antoc
-        );
         setConditionUnderEditIndex(() => 0);
     }
 
@@ -1027,6 +1032,8 @@ export default function Home() {
                     newThoughtClicks={newThoughtClicks}
                     layers={layers}
                     setLayers={setLayers}
+                    selectedCombo={selectedCombo}
+                    handleChangeSelectedCombo={changeSelectedCombo}
                 />
             </CharacterContext.Provider>
         </LayerContext.Provider>
@@ -1120,10 +1127,6 @@ export default function Home() {
                         handleClick={handleMidScreenControlClick}
                         handleSlideChange={(evt) => {
                             if (animationState == 'Run') return;
-                            console.log(
-                                'handleSlideChange::value',
-                                evt.target.value
-                            );
                             const slide_val: number = parseInt(
                                 evt.target.value
                             );
@@ -1338,41 +1341,51 @@ export default function Home() {
                 </Alert>
             </Snackbar>
             <Box sx={{ flex: 1, pt: 1, pb: 8 }}>
-                <ThemeProvider theme={theme}>
-                    <SwipeableViews
-                        index={swipeableViewIndex}
-                        containerStyle={{
-                            transition:
-                                'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s',
-                        }}
-                        // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
-                        // a fix for the issue: first index change doesn't animate (swipe)
-                    >
-                        <SwipeableContent>{FightView}</SwipeableContent>
-                        <SwipeableContent>
-                            {EditorViewComponent}
-                        </SwipeableContent>
-                        <SwipeableContent
-                            sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}
+                <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={theme}>
+                        <SwipeableViews
+                            index={swipeableViewIndex}
+                            containerStyle={{
+                                transition:
+                                    'transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s',
+                            }}
+                            // ^reference to this magical fix: https://github.com/oliviertassinari/react-swipeable-views/issues/599#issuecomment-657601754
+                            // a fix for the issue: first index change doesn't animate (swipe)
                         >
-                            <ContractInformationView
-                                contractInformationTabIndex={
-                                    contractInformationTabIndex
-                                }
-                                setContractInformationTabIndex={(tabIndex) =>
-                                    setContractInformationTabIndex(
-                                        (_) => tabIndex
-                                    )
-                                }
-                            />
-                        </SwipeableContent>
-                        <SwipeableContent
-                            sx={{ paddingLeft: '10rem', paddingRight: '10rem' }}
-                        >
-                            <WalletConnectView />
-                        </SwipeableContent>
-                    </SwipeableViews>
-                </ThemeProvider>
+                            <SwipeableContent>{FightView}</SwipeableContent>
+                            <SwipeableContent>
+                                {EditorViewComponent}
+                            </SwipeableContent>
+                            <SwipeableContent
+                                sx={{
+                                    paddingLeft: '10rem',
+                                    paddingRight: '10rem',
+                                }}
+                            >
+                                <ContractInformationView
+                                    contractInformationTabIndex={
+                                        contractInformationTabIndex
+                                    }
+                                    setContractInformationTabIndex={(
+                                        tabIndex
+                                    ) =>
+                                        setContractInformationTabIndex(
+                                            (_) => tabIndex
+                                        )
+                                    }
+                                />
+                            </SwipeableContent>
+                            <SwipeableContent
+                                sx={{
+                                    paddingLeft: '10rem',
+                                    paddingRight: '10rem',
+                                }}
+                            >
+                                <WalletConnectView />
+                            </SwipeableContent>
+                        </SwipeableViews>
+                    </ThemeProvider>
+                </StyledEngineProvider>
             </Box>
         </div>
     );
