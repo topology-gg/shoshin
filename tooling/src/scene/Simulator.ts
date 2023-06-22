@@ -5,6 +5,7 @@ import { FrameLike, RealTimeFrameScene, Rectangle } from '../types/Frame';
 import { SimulatorProps } from '../types/Simulator';
 import { GameModes } from '../types/Simulator';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
+import eventsCenter from '../Game/EventsCenter';
 
 const ARENA_WIDTH = 1000;
 const DEFAULT_ZOOM = 1.7;
@@ -22,13 +23,13 @@ const PLAYER_POINTER_DIM = 20;
 
 enum CombatEvent {
     Block = 'Block',
+    Clash = 'Clash',
 }
 
 interface BattleEvent {
-    timestamp: number;
+    frameIndex: number;
     event: CombatEvent;
     eventCount: number;
-    textObject: Phaser.GameObjects.Text;
 }
 
 interface PlayerPointer {
@@ -665,6 +666,27 @@ export default class Simulator extends Phaser.Scene {
             showDebug,
             animationFrame == fightLength - 1
         );
+
+        this.battleText(
+            characterType0,
+            characterType1,
+            agentFrame0,
+            agentFrame1,
+            animationFrame
+        );
+
+        console.log('p2 frameIndex', this.player_two_combat_log?.frameIndex);
+        console.log('animation frame', animationFrame);
+        if (this.player_one_combat_log?.frameIndex + 10 <= animationFrame) {
+            console.log('emit remove event');
+            eventsCenter.emit('player-event-remove', 1);
+            this.player_one_combat_log == undefined;
+        }
+        if (this.player_two_combat_log?.frameIndex + 10 <= animationFrame) {
+            console.log('emit remove event p2');
+            eventsCenter.emit('player-event-remove', 2);
+            this.player_two_combat_log == undefined;
+        }
     }
 
     updateScene(
@@ -695,12 +717,6 @@ export default class Simulator extends Phaser.Scene {
                 this.endTextDraw.setVisible(true);
             }
         } else {
-            this.battleText(
-                characterType0,
-                characterType1,
-                agentFrame0,
-                agentFrame1
-            );
             this.endTextDraw.setVisible(false);
             this.endTextP1Won.setVisible(false);
             this.endTextP2Won.setVisible(false);
@@ -728,52 +744,45 @@ export default class Simulator extends Phaser.Scene {
         }
     }
 
-    createBattleLogText(player_index, event, count) {
-        const x = this.scale.width * 0.5;
-        const y = this.scale.height * 0.5;
-
-        return this.add.text(x, y, 'Block', {
-            fontFamily: 'Oswald',
-            fontSize: '48px',
-            color: '#FFFB37',
-            fontStyle: 'italic',
-            stroke: '#000000',
-            strokeThickness: 3,
-            shadow: {
-                stroke: false,
-                offsetX: 10,
-                color: '#0000008F',
-                fill: true,
-                offsetY: 7,
-                blur: 6,
-            },
-            padding: { left: null, right: 30 },
-        });
-    }
-
-    addEventToBattleLog(playerIndex: number, event: CombatEvent) {
+    addEventToBattleLog(
+        playerIndex: number,
+        event: CombatEvent,
+        frameIndex: number
+    ) {
         const repeatEvent = this.player_one_combat_log?.event == event;
         const eventCount = repeatEvent
             ? this.player_one_combat_log.eventCount + 1
             : 0;
-        const eventText = this.createBattleLogText(
-            playerIndex,
-            event,
+
+        if (playerIndex == 0) {
+            this.player_one_combat_log = {
+                frameIndex,
+                event,
+                eventCount: eventCount,
+            };
+        } else {
+            this.player_two_combat_log = {
+                frameIndex,
+                event,
+                eventCount: eventCount,
+            };
+        }
+
+        console.log('emit event create');
+        eventsCenter.emit(
+            'player-event-create',
+            playerIndex + 1,
+            event.toString(),
             eventCount
         );
-        this.player_one_combat_log = {
-            timestamp: Date.now(),
-            event,
-            eventCount: eventCount,
-            textObject: eventText,
-        };
     }
 
     battleText(
         characterType0: number,
         characterType1: number,
         agentFrame0: FrameLike,
-        agentFrame1: FrameLike
+        agentFrame1: FrameLike,
+        currentFrame: number
     ) {
         const p1BodyState =
             bodyStateNumberToName[characterType0 == 0 ? 'jessica' : 'antoc'][
@@ -788,15 +797,18 @@ export default class Simulator extends Phaser.Scene {
             (p1BodyState === 'block' && p2BodyState === 'knocked') ||
             (p1BodyState === 'block' && p2BodyState === 'clash')
         ) {
-            this.addEventToBattleLog(0, CombatEvent.Block);
+            this.addEventToBattleLog(0, CombatEvent.Block, currentFrame);
         }
 
         if (
             (p2BodyState === 'block' && p1BodyState === 'knocked') ||
             (p2BodyState === 'block' && p1BodyState === 'clash')
         ) {
-            console.log('block p2');
-            this.addEventToBattleLog(1, CombatEvent.Block);
+            this.addEventToBattleLog(1, CombatEvent.Block, currentFrame);
+        }
+
+        if (p2BodyState === 'clash' && p1BodyState === 'clash') {
+            this.addEventToBattleLog(0, CombatEvent.Clash, currentFrame);
         }
     }
 }
