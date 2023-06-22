@@ -1,0 +1,28 @@
+name: Digital Ocean Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set current date as env variable
+      run: echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
+    - name: Build the Docker image
+      run: docker build . --tag registry.digitalocean.com/shoshin-tooling-backend/shoshin_tooling_backend:latest
+    - name: GitHub Action for DigitalOcean - doctl
+      uses: digitalocean/action-doctl@v2.3.0
+      with:
+        # DigitalOcean API Token
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    - name: Login to Digital Ocean Registry
+      run: doctl registry login --expiry-seconds 600
+
+    - name: Push to Digital Ocean Registry
+      run: docker push registry.digitalocean.com/shoshin-tooling-backend/shoshin_tooling_backend:latest
