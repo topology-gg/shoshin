@@ -60,6 +60,8 @@ export default class Simulator extends Phaser.Scene {
     readonly STROKE_STYLE_BODY_HITBOX = 0x7cfc00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
 
+    spark: Phaser.GameObjects.Sprite;
+
     //context only relevent for realtime atm, but I strongly think simulator will have wasm calls soon
     changeScene(
         scene: GameModes,
@@ -249,6 +251,16 @@ export default class Simulator extends Phaser.Scene {
             'arena_bg',
             'images/bg/shoshin-bg-large-transparent.png'
         );
+
+        // effects
+        this.load.spritesheet(
+            'spark',
+            'images/effects/spark/spritesheet.png',
+            {
+                frameWidth: 730,
+                frameHeight: 731
+            }
+        );
     }
 
     initializeCameraSettings() {
@@ -288,7 +300,21 @@ export default class Simulator extends Phaser.Scene {
         return centeredText;
     }
 
+    initializeEffects() {
+        const config = {
+            key: "sparkAnim",
+            frameRate: 7,
+            frames: this.anims.generateFrameNumbers("spark", {start:0, end:6}),
+            repeat: 100
+        }
+        this.anims.create(config);
+        const sprite = this.add.sprite(100, -100, 'spark').setScale(0.2);
+        sprite.play('sparkAnim');
+    }
+
     intitialize() {
+        this.initializeEffects();
+
         const yDisplacementFromCenterToGround = -150;
         let bg = this.add.image(0, 20, 'arena_bg');
         bg.setScale(0.3, 0.2).setPosition(
