@@ -25,6 +25,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
     JUMP: felt,
     STEP_FORWARD: felt,
     GATOTSU: felt,
+    LAUNCHED: felt,
 
     MAX_VEL_MOVE_FP: felt,
     MIN_VEL_MOVE_FP: felt,
@@ -38,6 +39,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
     JUMP_VEL_Y_FP: felt,
     STEP_FORWARD_VEL_X_FP: felt,
     GATOTSU_VEL_X_FP: felt,
+    LAUNCHED_VEL_X_FP: felt,
+    LAUNCHED_VEL_Y_FP: felt,
     BODY_KNOCKED_ADJUST_W: felt,
 ) {
     if (character_type == ns_character_type.JESSICA) {
@@ -50,6 +53,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_jessica_body_state.JUMP,
             ns_antoc_body_state.STEP_FORWARD,
             ns_jessica_body_state.GATOTSU,
+            ns_antoc_body_state.LAUNCHED,
 
             ns_jessica_dynamics.MAX_VEL_MOVE_FP,
             ns_jessica_dynamics.MIN_VEL_MOVE_FP,
@@ -63,6 +67,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_jessica_dynamics.JUMP_VEL_Y_FP,
             0,
             ns_jessica_dynamics.GATOTSU_VEL_X_FP,
+            0,
+            0,
             ns_jessica_character_dimension.BODY_KNOCKED_ADJUST_W,
         );
     } else {
@@ -75,6 +81,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_antoc_body_state.JUMP,
             ns_antoc_body_state.STEP_FORWARD,
             ns_jessica_body_state.GATOTSU,
+            ns_antoc_body_state.LAUNCHED,
 
             ns_antoc_dynamics.MAX_VEL_MOVE_FP,
             ns_antoc_dynamics.MIN_VEL_MOVE_FP,
@@ -88,6 +95,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_antoc_dynamics.JUMP_VEL_Y_FP,
             ns_antoc_dynamics.STEP_FORWARD_VEL_X_FP,
             0,
+            ns_antoc_dynamics.LAUNCHED_VEL_X_FP,
+            ns_antoc_dynamics.LAUNCHED_VEL_Y_FP,
             ns_antoc_character_dimension.BODY_KNOCKED_ADJUST_W,
         );
     }
@@ -119,6 +128,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         JUMP: felt,
         STEP_FORWARD: felt,
         GATOTSU: felt,
+        LAUNCHED: felt,
 
         MAX_VEL_MOVE_FP: felt,
         MIN_VEL_MOVE_FP: felt,
@@ -132,6 +142,8 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         JUMP_VEL_Y_FP: felt,
         STEP_FORWARD_VEL_X_FP: felt,
         GATOTSU_VEL_X_FP: felt,
+        LAUNCHED_VEL_X_FP: felt,
+        LAUNCHED_VEL_Y_FP: felt,
         BODY_KNOCKED_ADJUST_W: felt,
     ) = _character_specific_constants (character_type);
 
@@ -303,6 +315,40 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         assert acc_fp_y = 0;
         tempvar range_check_ptr = range_check_ptr;
         jmp update_pos;
+    }
+
+    if (state == LAUNCHED) {
+
+        if (counter == 0) {
+            // apply momentum at first frame depending on direction
+            if (dir == 1) {
+                // facing right
+                assert vel_fp_y = LAUNCHED_VEL_Y_FP;
+                assert vel_fp_x = (-1) * LAUNCHED_VEL_X_FP;
+                assert acc_fp_y = 0;
+                assert acc_fp_x = 0;
+            } else {
+                // facing left
+                assert vel_fp_y = LAUNCHED_VEL_Y_FP;
+                assert vel_fp_x = LAUNCHED_VEL_X_FP;
+                assert acc_fp_y = 0;
+                assert acc_fp_x = 0;
+            }
+        } else {
+            // for y-axis, apply gravity
+            assert acc_fp_y = ns_dynamics.GRAVITY_ACC_FP;
+            assert acc_fp_x = 0;
+            assert vel_fp_y = physics_state.vel_fp.y;
+
+            // for x-axis, zero velocity if already touched down
+            if (physics_state.pos.y == 0) {
+                assert vel_fp_x = 0;
+            } else {
+                assert vel_fp_x = physics_state.vel_fp.x;
+            }
+        }
+
+        jmp update_vel_knocked_jump_gatotsu;
     }
 
     // otherwise, set velocity to zero (instant stop)

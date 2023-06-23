@@ -50,6 +50,9 @@ func _body_antoc {range_check_ptr}(
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
 
         // body responds to intent; locomotive action has lowest priority
         if (intent == ns_antoc_action.MOVE_FORWARD) {
@@ -106,6 +109,9 @@ func _body_antoc {range_check_ptr}(
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
         if (stimulus_type == ns_stimulus.CLASH) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
         }
@@ -143,6 +149,9 @@ func _body_antoc {range_check_ptr}(
         }
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
         if (stimulus_type == ns_stimulus.CLASH) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
@@ -196,6 +205,9 @@ func _body_antoc {range_check_ptr}(
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
 
         // body responds to intent
         if(enough_stamina == TRUE){
@@ -223,9 +235,20 @@ func _body_antoc {range_check_ptr}(
 
     //
     // Hurt
-    // note: uninterruptible
+    // note: interruptible
     //
     if (state == ns_antoc_body_state.HURT) {
+
+        // interruptible by stimulus
+        if (stimulus_type == ns_stimulus.HURT) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
 
         // if counter is full => return to IDLE
         if (counter == ns_antoc_body_state_duration.HURT - 1) {
@@ -238,9 +261,20 @@ func _body_antoc {range_check_ptr}(
 
     //
     // Knocked
-    // note: uninterruptible
+    // note: interruptible
     //
     if (state == ns_antoc_body_state.KNOCKED) {
+
+        // interruptible by stimulus
+        if (stimulus_type == ns_stimulus.HURT) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
 
         // if counter is full => return to Idle
         if (counter == ns_antoc_body_state_duration.KNOCKED - 1) {
@@ -267,6 +301,9 @@ func _body_antoc {range_check_ptr}(
         }
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
@@ -327,6 +364,9 @@ func _body_antoc {range_check_ptr}(
         }
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
@@ -428,7 +468,7 @@ func _body_antoc {range_check_ptr}(
 
     //
     // Clash
-    // note: is interruptible
+    // note: interruptible
     //
     if (state == ns_antoc_body_state.CLASH) {
 
@@ -438,6 +478,9 @@ func _body_antoc {range_check_ptr}(
         }
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
         // if counter is full => return to IDLE
@@ -458,6 +501,10 @@ func _body_antoc {range_check_ptr}(
         // can be knocked
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        // can be launched
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
         // if counter is full => return to IDLE
@@ -482,6 +529,9 @@ func _body_antoc {range_check_ptr}(
         }
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
         // if having enough stamina => fast cancel into VERT's active frame (counter==3) or LOW_KICK's active frame (counter==3)
@@ -515,6 +565,9 @@ func _body_antoc {range_check_ptr}(
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
         if (stimulus_type == ns_stimulus.CLASH) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
         }
@@ -543,6 +596,35 @@ func _body_antoc {range_check_ptr}(
         // otherwise increment counter
         return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, counter + 1, integrity, stamina, dir, FALSE) );
 
+    }
+
+    //
+    // Launched
+    // note: interruptible
+    //
+    if (state == ns_antoc_body_state.LAUNCHED) {
+
+        // can be knocked
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        // can be juggled
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+
+        // if counter is full => return to Idle
+        if (counter == ns_antoc_body_state_duration.LAUNCHED - 1) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        }
+
+        // if reach counter==6 and still in air => remain in counter==6
+        if (counter == 6 and stimulus_type != ns_stimulus.GROUND) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, counter, integrity, stamina, dir, FALSE) );
+        }
+
+        // else stay in LAUNCHED and increment counter
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     // handle exception
