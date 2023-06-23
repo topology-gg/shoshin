@@ -566,6 +566,10 @@ let conditions = [
                 type: 'Operator',
             },
             {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
                 value: '(',
                 type: 'Operator',
             },
@@ -586,6 +590,10 @@ let conditions = [
                 type: 'Operator',
             },
             {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
                 value: '(',
                 type: 'Operator',
             },
@@ -603,6 +611,10 @@ let conditions = [
             },
             {
                 value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
                 type: 'Operator',
             },
             {
