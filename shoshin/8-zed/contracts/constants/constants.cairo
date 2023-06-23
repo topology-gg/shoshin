@@ -40,8 +40,8 @@ namespace ns_integrity {
 }
 
 namespace ns_scene {
-    const X_MAX = 400;
-    const X_MIN = -400;
+    const X_MAX = 800;
+    const X_MIN = -800;
     const BIGNUM = 2000;
 }
 
@@ -55,6 +55,8 @@ namespace ns_stimulus {
     const KNOCKED = 2;
     const CLASH = 3;
     const GROUND = 4;
+    const LAUNCHED = 5;
+
     const ENCODING = 10000;
 
     const CLASH_DAMAGE = 10;
