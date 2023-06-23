@@ -24,6 +24,7 @@ const PLAYER_POINTER_DIM = 20;
 enum CombatEvent {
     Block = 'Block',
     Clash = 'Clash',
+    Combo = 'Combo',
 }
 
 interface BattleEvent {
@@ -74,6 +75,11 @@ export default class Simulator extends Phaser.Scene {
 
     readonly STROKE_STYLE_BODY_HITBOX = 0x7cfc00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
+
+    player_one_action_confirm = false;
+    player_two_action_confirm = false;
+
+    last_accessed_frame = 0;
 
     //context only relevent for realtime atm, but I strongly think simulator will have wasm calls soon
     changeScene(
@@ -675,17 +681,29 @@ export default class Simulator extends Phaser.Scene {
             animationFrame
         );
 
-        console.log('p2 frameIndex', this.player_two_combat_log?.frameIndex);
-        console.log('animation frame', animationFrame);
-        if (this.player_one_combat_log?.frameIndex + 10 <= animationFrame) {
-            console.log('emit remove event');
+        const rewound = this.last_accessed_frame > animationFrame;
+        this.last_accessed_frame = animationFrame;
+        if (
+            this.player_one_combat_log?.frameIndex + 50 <= animationFrame ||
+            rewound
+        ) {
             eventsCenter.emit('player-event-remove', 1);
-            this.player_one_combat_log == undefined;
+            this.player_one_combat_log = undefined;
         }
-        if (this.player_two_combat_log?.frameIndex + 10 <= animationFrame) {
-            console.log('emit remove event p2');
+        if (
+            this.player_two_combat_log?.frameIndex + 50 <= animationFrame ||
+            rewound
+        ) {
             eventsCenter.emit('player-event-remove', 2);
-            this.player_two_combat_log == undefined;
+            this.player_two_combat_log = undefined;
+        }
+
+        if (agentFrame0.body_state.counter == 0) {
+            this.player_one_action_confirm = false;
+        }
+
+        if (agentFrame1.body_state.counter == 0) {
+            this.player_two_action_confirm = false;
         }
     }
 
@@ -749,10 +767,12 @@ export default class Simulator extends Phaser.Scene {
         event: CombatEvent,
         frameIndex: number
     ) {
-        const repeatEvent = this.player_one_combat_log?.event == event;
-        const eventCount = repeatEvent
-            ? this.player_one_combat_log.eventCount + 1
-            : 0;
+        const combatLog =
+            playerIndex == 0
+                ? this.player_one_combat_log
+                : this.player_two_combat_log;
+        const repeatEvent = combatLog?.event == event;
+        const eventCount = repeatEvent ? combatLog?.eventCount + 1 : 0;
 
         if (playerIndex == 0) {
             this.player_one_combat_log = {
@@ -768,13 +788,29 @@ export default class Simulator extends Phaser.Scene {
             };
         }
 
-        console.log('emit event create');
-        eventsCenter.emit(
-            'player-event-create',
-            playerIndex + 1,
-            event.toString(),
-            eventCount
-        );
+        //Invalidate other players combo/action
+        if (playerIndex == 0) {
+            eventsCenter.emit('player-event-remove', 2);
+            this.player_two_combat_log = undefined;
+        } else {
+            eventsCenter.emit('player-event-remove', 1);
+            this.player_one_combat_log = undefined;
+        }
+
+        if (!(event == CombatEvent.Combo && eventCount == 0)) {
+            eventsCenter.emit(
+                'player-event-create',
+                playerIndex + 1,
+                event.toString(),
+                eventCount
+            );
+        }
+    }
+
+    getBodyStateFromFrame(characterType: number, agentFrame: FrameLike) {
+        return bodyStateNumberToName[characterType == 0 ? 'jessica' : 'antoc'][
+            agentFrame.body_state.state
+        ];
     }
 
     battleText(
@@ -784,31 +820,105 @@ export default class Simulator extends Phaser.Scene {
         agentFrame1: FrameLike,
         currentFrame: number
     ) {
-        const p1BodyState =
-            bodyStateNumberToName[characterType0 == 0 ? 'jessica' : 'antoc'][
-                agentFrame0.body_state.state
-            ];
-        const p2BodyState =
-            bodyStateNumberToName[characterType1 == 0 ? 'jessica' : 'antoc'][
-                agentFrame1.body_state.state
-            ];
+        const p1BodyState = this.getBodyStateFromFrame(
+            characterType0,
+            agentFrame0
+        );
+        const p2BodyState = this.getBodyStateFromFrame(
+            characterType1,
+            agentFrame1
+        );
+
+        //Each action can register once
+        // Track changing actions or action counter hitting 0
+        // An event log is based off of current action, bodyState of each
 
         if (
-            (p1BodyState === 'block' && p2BodyState === 'knocked') ||
-            (p1BodyState === 'block' && p2BodyState === 'clash')
+            p2BodyState === 'clash' &&
+            p1BodyState === 'clash' &&
+            agentFrame0.body_state.counter == 0 &&
+            agentFrame1.body_state.counter == 0
         ) {
-            this.addEventToBattleLog(0, CombatEvent.Block, currentFrame);
-        }
-
-        if (
-            (p2BodyState === 'block' && p1BodyState === 'knocked') ||
-            (p2BodyState === 'block' && p1BodyState === 'clash')
-        ) {
-            this.addEventToBattleLog(1, CombatEvent.Block, currentFrame);
-        }
-
-        if (p2BodyState === 'clash' && p1BodyState === 'clash') {
             this.addEventToBattleLog(0, CombatEvent.Clash, currentFrame);
+            return;
         }
+
+        const p1ActionConfirm = this.battleTextPerPlayer(
+            this.player_one_action_confirm,
+            p1BodyState,
+            p2BodyState,
+            agentFrame1.body_state.counter,
+            0,
+            currentFrame,
+            this.player_one_combat_log
+        );
+
+        this.player_one_action_confirm = p1ActionConfirm
+            ? true
+            : this.player_one_action_confirm;
+        const p2ActionConfirm = this.battleTextPerPlayer(
+            this.player_one_action_confirm,
+            p2BodyState,
+            p1BodyState,
+            agentFrame0.body_state.counter,
+            1,
+            currentFrame,
+            this.player_two_combat_log
+        );
+
+        this.player_two_action_confirm = p2ActionConfirm
+            ? true
+            : this.player_two_action_confirm;
+    }
+
+    battleTextPerPlayer(
+        confirm: boolean,
+        selfBodyState: string,
+        otherBodyState: string,
+        otherBodyCounter: number,
+        playerIndex: number,
+        currentFrame: number,
+        combatLog: BattleEvent
+    ) {
+        let newActionConfirm = false;
+
+        if (!confirm) {
+            if (
+                ((selfBodyState === 'block' && otherBodyState === 'knocked') ||
+                    (selfBodyState === 'block' &&
+                        otherBodyState === 'clash')) &&
+                otherBodyCounter == 0
+            ) {
+                newActionConfirm = true;
+                this.addEventToBattleLog(
+                    playerIndex,
+                    CombatEvent.Block,
+                    currentFrame
+                );
+            } else if (
+                (otherBodyState === 'knocked' || otherBodyState == 'hurt') &&
+                otherBodyCounter == 0
+            ) {
+                newActionConfirm = true;
+                if (
+                    combatLog == undefined ||
+                    combatLog.event !== CombatEvent.Combo
+                ) {
+                    this.addEventToBattleLog(
+                        playerIndex,
+                        CombatEvent.Combo,
+                        currentFrame
+                    );
+                } else {
+                    this.addEventToBattleLog(
+                        playerIndex,
+                        CombatEvent.Combo,
+                        currentFrame
+                    );
+                }
+            }
+        }
+
+        return newActionConfirm;
     }
 }

@@ -33,7 +33,7 @@ export default {
             padding: { left: null, right: 30 },
         });
 
-        this.PlayerTwoEvent = this.add.text(625, 60, '', {
+        this.PlayerTwoEvent = this.add.text(600, 60, '', {
             fontFamily: 'Oswald',
             fontSize: '48px',
             color: '#FFFB37',
@@ -85,13 +85,12 @@ export default {
             this.timerText.setVisible(false);
         },
 
-        // Note Hot reloading nullifies these text boxes, we should create new one rather than edit existing
+        // Note Next JS Hot/Fast reloading nullifies these text boxes, we should create new one rather than edit existing
         onPlayerEventCreate: function (
             playerIndex: number,
             eventText: string,
             eventCount: number
         ) {
-            console.log('don quixote', playerIndex, eventText, eventCount);
             if (playerIndex == 1) {
                 this.PlayerOneEvent?.setText(
                     eventCount > 0
@@ -109,6 +108,7 @@ export default {
 
         onPlayerEventRemove: function (playerIndex: number) {
             console.log('remove event ', playerIndex);
+
             if (playerIndex == 1) {
                 this.PlayerOneEvent?.setText(``);
             } else {
