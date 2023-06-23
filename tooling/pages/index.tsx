@@ -1077,14 +1077,40 @@ export default function Home() {
                         variant="text"
                         onClick={() => toggleGameMode()}
                         style={{
-                            padding: '6px',
-                            width: '100px',
+                            padding: '10px',
                             margin: '0 auto',
+                            borderRadius: '20px',
                         }}
                     >
-                        {gameMode == GameModes.simulation
+                        Toggle Game Mode:
+                        <span
+                            style={{
+                                fontSize: '15px',
+                                margin: '0 10px',
+                                color:
+                                    gameMode == GameModes.simulation
+                                        ? '#000'
+                                        : '#ddd',
+                            }}
+                        >
+                            Simulation
+                        </span>
+                        /
+                        <span
+                            style={{
+                                fontSize: '15px',
+                                margin: '0 10px',
+                                color:
+                                    gameMode == GameModes.simulation
+                                        ? '#ddd'
+                                        : '#000',
+                            }}
+                        >
+                            Real Time
+                        </span>
+                        {/* {gameMode == GameModes.simulation
                             ? 'Simulation'
-                            : 'Real Time'}
+                            : 'Real Time'} */}
                     </Button>
                 ) : null}
 
