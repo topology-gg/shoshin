@@ -6,7 +6,7 @@ import { SimulatorProps } from '../types/Simulator';
 import { GameModes } from '../types/Simulator';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
 
-const ARENA_WIDTH = 1000;
+const ARENA_WIDTH = 1600;
 const DEFAULT_ZOOM = 1.7;
 
 const DEFAULT_CAMERA_HEIGHT = 400;
@@ -447,7 +447,8 @@ export default class Simulator extends Phaser.Scene {
         const pos = physicsState.pos;
         const hitboxW = frame.hitboxes.body.dimension.x;
 
-        const bodyStateName = bodyStateNumberToName[characterName][bodyState];
+        let bodyStateName = bodyStateNumberToName[characterName][bodyState];
+        if (bodyStateName == 'launched') bodyStateName = 'knocked'; // launched uses the animation of knocked
         const direction = bodyStateDir == 1 ? 'right' : 'left';
 
         //Calculating offsets for frame

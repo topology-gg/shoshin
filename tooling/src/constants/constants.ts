@@ -80,6 +80,7 @@ export const bodyStateNumberToName = {
         1140: 'step_forward',
         1150: 'jump',
         1160: 'low_kick',
+        1170: 'launched',
     },
 };
 
