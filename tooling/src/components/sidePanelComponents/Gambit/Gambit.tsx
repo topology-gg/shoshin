@@ -366,7 +366,10 @@ const Layer = ({
                         ))}
 
                         {layer.conditions.length >= 1 &&
-                        !( JSON.stringify(layer.conditions[0])===JSON.stringify(alwaysTrueCondition) ) ? (
+                        !(
+                            JSON.stringify(layer.conditions[0]) ===
+                            JSON.stringify(alwaysTrueCondition)
+                        ) ? (
                             <IconButton
                                 onClick={handleConditionClick}
                                 id={`condition-btn-${i}-new`}

@@ -1417,7 +1417,9 @@ preset_conditions.forEach(function (condition, condition_i, theArray) {
         theArray[condition_i].displayName
     );
 });
-const conditions: Condition[] = [alwaysTrueCondition as Condition].concat(preset_conditions as Condition[]);
+const conditions: Condition[] = [alwaysTrueCondition as Condition].concat(
+    preset_conditions as Condition[]
+);
 
 const trees: Tree[] = [
     {

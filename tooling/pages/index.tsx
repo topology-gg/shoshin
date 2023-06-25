@@ -158,7 +158,7 @@ export default function Home() {
     const [trees, setTrees] = useState<Tree[]>(INITIAL_AGENT_COMPONENTS.trees);
     const [conditions, setConditions] =
         //@ts-ignore
-        useState<Condition[]>(INITIAL_AGENT_COMPONENTS.conditions);
+        useState<Condition[]>(PRESET_CONDITIONS);
     const [agentName, setAgentName] = useState<string>('');
     const [character, setCharacter] = useState<Character>(Character.Jessica);
 
