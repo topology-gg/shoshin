@@ -247,7 +247,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
                 assert vel_fp_x = physics_state.vel_fp.x;
             }
         }
-
+        tempvar range_check_ptr = range_check_ptr;
         jmp update_vel_knocked_jump_gatotsu;
     }
 
@@ -271,7 +271,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
                 assert vel_fp_x = physics_state.vel_fp.x;
             }
         }
-
+        tempvar range_check_ptr = range_check_ptr;
         jmp update_vel_knocked_jump_gatotsu;
     }
 
@@ -317,23 +317,31 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         jmp update_pos;
     }
 
+    let (local residue_vel_x_fp, _) = signed_div_rem(physics_state.vel_fp.x * 11, 4, ns_dynamics.RANGE_CHECK_BOUND);
+    let (local residue_vel_y_fp, _) = unsigned_div_rem(physics_state.pos.y * ns_dynamics.SCALE_FP * ns_dynamics.SCALE_FP, ns_dynamics.DT_FP * 3);
     if (state == LAUNCHED) {
 
         if (counter == 0) {
             // apply momentum at first frame depending on direction
             if (dir == 1) {
                 // facing right
-                assert vel_fp_y = LAUNCHED_VEL_Y_FP;
-                assert vel_fp_x = (-1) * LAUNCHED_VEL_X_FP;
+                assert vel_fp_y = LAUNCHED_VEL_Y_FP - residue_vel_y_fp;
+                assert vel_fp_x = (-1) * LAUNCHED_VEL_X_FP + residue_vel_x_fp;
+                // assert vel_fp_y = LAUNCHED_VEL_Y_FP;
+                // assert vel_fp_x = (-1) * LAUNCHED_VEL_X_FP;
                 assert acc_fp_y = 0;
                 assert acc_fp_x = 0;
             } else {
                 // facing left
-                assert vel_fp_y = LAUNCHED_VEL_Y_FP;
-                assert vel_fp_x = LAUNCHED_VEL_X_FP;
+                assert vel_fp_y = LAUNCHED_VEL_Y_FP - residue_vel_y_fp;
+                assert vel_fp_x = LAUNCHED_VEL_X_FP + residue_vel_x_fp;
+                // assert vel_fp_y = LAUNCHED_VEL_Y_FP;
+                // assert vel_fp_x = LAUNCHED_VEL_X_FP;
                 assert acc_fp_y = 0;
                 assert acc_fp_x = 0;
             }
+
+            tempvar range_check_ptr = range_check_ptr;
         } else {
             // for y-axis, apply gravity
             assert acc_fp_y = ns_dynamics.GRAVITY_ACC_FP;
@@ -346,8 +354,10 @@ func _euler_forward_no_hitbox {range_check_ptr}(
             } else {
                 assert vel_fp_x = physics_state.vel_fp.x;
             }
-        }
 
+            tempvar range_check_ptr = range_check_ptr;
+        }
+        tempvar range_check_ptr = range_check_ptr;
         jmp update_vel_knocked_jump_gatotsu;
     }
 
