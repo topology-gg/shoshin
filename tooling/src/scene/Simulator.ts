@@ -5,6 +5,7 @@ import { FrameLike, RealTimeFrameScene, Rectangle } from '../types/Frame';
 import { SimulatorProps } from '../types/Simulator';
 import { GameModes } from '../types/Simulator';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
+import { BodystatesAntoc } from '../types/Condition';
 
 const ARENA_WIDTH = 1000;
 const DEFAULT_ZOOM = 1.7;
@@ -19,6 +20,8 @@ const CAMERA_REACTION_TIME = 50;
 const HITBOX_STROKE_WIDTH = 1.5;
 
 const PLAYER_POINTER_DIM = 20;
+
+const EFFECT_FRAME_RATE = 60;
 
 interface PlayerPointer {
     cir: Phaser.GameObjects.Arc;
@@ -60,7 +63,7 @@ export default class Simulator extends Phaser.Scene {
     readonly STROKE_STYLE_BODY_HITBOX = 0x7cfc00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
 
-    spark: Phaser.GameObjects.Sprite;
+    sparkSprite: Phaser.GameObjects.Sprite
 
     //context only relevent for realtime atm, but I strongly think simulator will have wasm calls soon
     changeScene(
@@ -253,14 +256,10 @@ export default class Simulator extends Phaser.Scene {
         );
 
         // effects
-        this.load.spritesheet(
-            'spark',
-            'images/effects/spark/spritesheet.png',
-            {
-                frameWidth: 730,
-                frameHeight: 731
-            }
-        );
+        this.load.spritesheet('spark', 'images/effects/spark/spritesheet.png', {
+            frameWidth: 730,
+            frameHeight: 731,
+        });
     }
 
     initializeCameraSettings() {
@@ -302,14 +301,17 @@ export default class Simulator extends Phaser.Scene {
 
     initializeEffects() {
         const config = {
-            key: "sparkAnim",
-            frameRate: 7,
-            frames: this.anims.generateFrameNumbers("spark", {start:0, end:6}),
-            repeat: 100
-        }
+            key: 'sparkAnim',
+            frameRate: EFFECT_FRAME_RATE,
+            frames: this.anims.generateFrameNumbers('spark', {
+                start: 0,
+                end: 6,
+            }),
+            repeat: 0,
+            hideOnComplete: true,
+        };
         this.anims.create(config);
-        const sprite = this.add.sprite(100, -100, 'spark').setScale(0.2);
-        sprite.play('sparkAnim');
+        this.sparkSprite = this.add.sprite(0, 0, 'spark').setScale(0.1).setVisible(false).setDepth(100);
     }
 
     intitialize() {
@@ -679,6 +681,16 @@ export default class Simulator extends Phaser.Scene {
         );
     }
 
+    updateEffects(frames: FrameLike[]) {
+        // check if any player is in hurt state with counter==1
+        if (frames[1].body_state.state == BodystatesAntoc.Hurt) {
+            const x = frames[1].hitboxes.body.origin.x;
+            const y = frames[1].hitboxes.body.origin.y - frames[1].hitboxes.body.dimension.y/2;
+            console.log('hurt! at', x, y);
+            this.sparkSprite.setPosition(x, y).setVisible(true).play('sparkAnim',);
+        }
+    }
+
     updateScene(
         characterType0: number,
         characterType1: number,
@@ -692,6 +704,7 @@ export default class Simulator extends Phaser.Scene {
         this.setPlayerTwoCharacter(characterType1);
         this.setPlayerOneFrame(agentFrame0);
         this.setPlayerTwoFrame(agentFrame1);
+        this.updateEffects([agentFrame0, agentFrame1]);
 
         if (isLast) {
             const integrity_P1 = agentFrame0.body_state.integrity;
