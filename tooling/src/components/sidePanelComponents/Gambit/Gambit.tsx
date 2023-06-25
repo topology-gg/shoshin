@@ -366,7 +366,7 @@ const Layer = ({
                         ))}
 
                         {layer.conditions.length >= 1 &&
-                        !Object.is(layer.conditions[0], alwaysTrueCondition) ? (
+                        !( JSON.stringify(layer.conditions[0])===JSON.stringify(alwaysTrueCondition) ) ? (
                             <IconButton
                                 onClick={handleConditionClick}
                                 id={`condition-btn-${i}-new`}
@@ -388,7 +388,6 @@ const Layer = ({
                     }}
                 >
                     {conditions.map((condition) => {
-                        console.log('conditions', conditions);
                         return (
                             <MenuItem>
                                 <BlurrableListItemText

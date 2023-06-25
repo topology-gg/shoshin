@@ -1,5 +1,6 @@
 import Agent, { buildAgent } from '../types/Agent';
 import { Condition } from '../types/Condition';
+import { alwaysTrueCondition } from '../types/Layer';
 import { Direction, Tree } from '../types/Tree';
 
 // source: https://stackoverflow.com/a/40958850
@@ -17,32 +18,32 @@ function simpleHash(str: string) {
     return hash;
 }
 
-let conditions = [
-    {
-        elements: [
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 1,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: 1,
-                type: 'Perceptible',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-        ],
-        displayName: 'Always true',
-    },
+let preset_conditions = [
+    // {
+    //     elements: [
+    //         {
+    //             value: '(',
+    //             type: 'Operator',
+    //         },
+    //         {
+    //             value: 1,
+    //             type: 'Perceptible',
+    //         },
+    //         {
+    //             value: '==',
+    //             type: 'Operator',
+    //         },
+    //         {
+    //             value: 1,
+    //             type: 'Perceptible',
+    //         },
+    //         {
+    //             value: ')',
+    //             type: 'Operator',
+    //         },
+    //     ],
+    //     displayName: 'Always true',
+    // },
     {
         elements: [
             {
@@ -1411,11 +1412,12 @@ let conditions = [
     },
 ];
 
-conditions.forEach(function (condition, condition_i, theArray) {
+preset_conditions.forEach(function (condition, condition_i, theArray) {
     theArray[condition_i]['key'] = simpleHash(
         theArray[condition_i].displayName
     );
 });
+const conditions: Condition[] = [alwaysTrueCondition as Condition].concat(preset_conditions as Condition[]);
 
 const trees: Tree[] = [
     {

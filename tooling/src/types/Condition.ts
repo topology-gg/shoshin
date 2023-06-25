@@ -5,6 +5,7 @@ export interface Condition {
     key?: string;
     displayName?: string;
     type?: string;
+    isInverted?: boolean;
 }
 
 export const conditionTypeToEmojiFile = (conditionType: string) => {
