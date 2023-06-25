@@ -63,7 +63,7 @@ export default class Simulator extends Phaser.Scene {
     readonly STROKE_STYLE_BODY_HITBOX = 0x7cfc00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
 
-    sparkSprite: Phaser.GameObjects.Sprite
+    sparkSprite: Phaser.GameObjects.Sprite;
 
     //context only relevent for realtime atm, but I strongly think simulator will have wasm calls soon
     changeScene(
@@ -311,7 +311,11 @@ export default class Simulator extends Phaser.Scene {
             hideOnComplete: true,
         };
         this.anims.create(config);
-        this.sparkSprite = this.add.sprite(0, 0, 'spark').setScale(0.1).setVisible(false).setDepth(100);
+        this.sparkSprite = this.add
+            .sprite(0, 0, 'spark')
+            .setScale(0.1)
+            .setVisible(false)
+            .setDepth(100);
     }
 
     intitialize() {
@@ -685,9 +689,14 @@ export default class Simulator extends Phaser.Scene {
         // check if any player is in hurt state with counter==1
         if (frames[1].body_state.state == BodystatesAntoc.Hurt) {
             const x = frames[1].hitboxes.body.origin.x;
-            const y = frames[1].hitboxes.body.origin.y - frames[1].hitboxes.body.dimension.y/2;
+            const y =
+                frames[1].hitboxes.body.origin.y -
+                frames[1].hitboxes.body.dimension.y / 2;
             console.log('hurt! at', x, y);
-            this.sparkSprite.setPosition(x, y).setVisible(true).play('sparkAnim',);
+            this.sparkSprite
+                .setPosition(x, y)
+                .setVisible(true)
+                .play('sparkAnim');
         }
     }
 
