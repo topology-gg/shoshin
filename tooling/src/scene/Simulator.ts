@@ -79,7 +79,7 @@ export default class Simulator extends Phaser.Scene {
     readonly STROKE_STYLE_BODY_HITBOX = 0x7cfc00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
 
-    sparkSprite: Phaser.GameObjects.Sprite;
+    sparkSprites: Phaser.GameObjects.Sprite[];
 
     player_one_action_confirm = false;
     player_two_action_confirm = false;
@@ -332,12 +332,18 @@ export default class Simulator extends Phaser.Scene {
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
         };
         this.anims.create(config);
-        this.sparkSprite = this.add
-            .sprite(0, 0, 'spark')
-            .setScale(0.2)
-            .setVisible(false)
-            .setAlpha(0.7)
-            .setDepth(100);
+
+        this.sparkSprites = [];
+        [0, 1].forEach((_) => {
+            this.sparkSprites.push(
+                this.add
+                    .sprite(0, 0, 'spark')
+                    .setScale(0.2)
+                    .setVisible(false)
+                    .setAlpha(0.7)
+                    .setDepth(100)
+            );
+        });
     }
 
     intitialize() {
@@ -757,11 +763,13 @@ export default class Simulator extends Phaser.Scene {
             [0, 1],
             [1, 0],
         ].forEach((e) => {
-            const subjectPrevFrame: FrameLike = prevFrames[e[0]];
-            const objectPrevFrame: FrameLike = prevFrames[e[1]];
+            const subjectIndex = e[0];
+            const objectIndex = e[1];
+            const subjectPrevFrame: FrameLike = prevFrames[subjectIndex];
+            const objectPrevFrame: FrameLike = prevFrames[objectIndex];
 
-            const subjectFrame: FrameLike = frames[e[0]];
-            const objectFrame: FrameLike = frames[e[1]];
+            const subjectFrame: FrameLike = frames[subjectIndex];
+            const objectFrame: FrameLike = frames[objectIndex];
 
             const sparkBodyStates = [
                 BodystatesAntoc.Hurt,
@@ -796,7 +804,7 @@ export default class Simulator extends Phaser.Scene {
                         objectPrevFrame.hitboxes.action.dimension.y / 2);
 
                 // console.log('Play spark at', x, y);
-                this.sparkSprite
+                this.sparkSprites[subjectIndex]
                     .setPosition(x, y)
                     .setVisible(true)
                     .play('sparkAnim');
