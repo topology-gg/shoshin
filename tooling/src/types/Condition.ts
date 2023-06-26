@@ -4,7 +4,22 @@ export interface Condition {
     elements: ConditionElement[];
     key?: string;
     displayName?: string;
+    type?: string;
+    isInverted?: boolean;
 }
+
+export const conditionTypeToEmojiFile = (conditionType: string) => {
+    if (!conditionType) return '/images/emojis/star.png';
+    if (conditionType == 'spacing')
+        return '/images/emojis/triangular_ruler.png';
+    else if (conditionType.includes('state'))
+        return '/images/emojis/woman_lotus.png';
+    else if (conditionType.includes('health'))
+        return '/images/emojis/red_heart.png';
+    else if (conditionType.includes('stamina'))
+        return '/images/emojis/battery.png';
+    else return '/images/emojis/light_bulb.png';
+};
 
 export interface ConditionElement {
     value?: number | Operator | Perceptible;

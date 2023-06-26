@@ -350,6 +350,8 @@ export const ACTION_UNICODE_MAP = {
 
     Jump: '\u{1F998}',
 
+    Gatotsu: '\u{1F525}',
+
     LowKick: '\u{1F986}',
 };
 

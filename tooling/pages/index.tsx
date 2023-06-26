@@ -89,6 +89,7 @@ import { ShoshinWASMContext } from '../src/context/wasm-shoshin';
 import {
     INITIAL_AGENT_COMPONENTS,
     STARTER_AGENT,
+    PRESET_CONDITIONS,
 } from '../src/constants/starter_agent';
 import MidScreenKeybinding from '../src/components/MidScreenKeybinding';
 import { KeyboardShortcut } from '../src/types/UI';
@@ -108,6 +109,7 @@ export const LayerContext = createContext([]);
 export const CharacterContext = createContext(Character.Jessica);
 
 export default function Home() {
+    console.log('STARTER_AGENT:', STARTER_AGENT);
     // Constants
     const LATENCY = 70;
     const runnable = true;
@@ -156,7 +158,7 @@ export default function Home() {
     const [trees, setTrees] = useState<Tree[]>(INITIAL_AGENT_COMPONENTS.trees);
     const [conditions, setConditions] =
         //@ts-ignore
-        useState<Condition[]>(INITIAL_AGENT_COMPONENTS.conditions);
+        useState<Condition[]>(PRESET_CONDITIONS);
     const [agentName, setAgentName] = useState<string>('');
     const [character, setCharacter] = useState<Character>(Character.Jessica);
 
@@ -354,7 +356,7 @@ export default function Home() {
         console.log('stored layers', storedLayers);
         if (storedLayers !== null && storedLayers !== undefined) {
             setLayers(JSON.parse(storedLayers));
-            //setAgentInPanelToAgent(JSON.parse(storedAgent));
+
             setAgentName(localStorage.getItem('agentName'));
             const character =
                 parseInt(localStorage.getItem('character')) == 0
@@ -362,9 +364,10 @@ export default function Home() {
                     : Character.Antoc;
             setCharacter(character);
             setEditorMode(EditorMode.Edit);
-            if (storedConditions) {
-                setConditions(JSON.parse(storedConditions));
-            }
+            // if (storedConditions) {
+            //     setConditions(JSON.parse(storedConditions));
+            // }
+            setConditions((_) => PRESET_CONDITIONS); // always shows preset conditions for now (condition editing disabled)
             if (storedCombos) {
                 setCombos(JSON.parse(storedCombos));
             }
@@ -927,6 +930,7 @@ export default function Home() {
             return tree;
         });
         setConditions(() => {
+            console.log('setConditions', agent.conditions);
             let cond: Condition[] = agent.conditions.map((x, i) => {
                 let conditionName = agent.conditionNames[i]
                     ? agent.conditionNames[i]
@@ -970,6 +974,14 @@ export default function Home() {
 
     const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 
+    const resetAgent = () => {
+        setLayers((_) => []);
+        setAgentName((_) => '');
+        setCharacter(Character.Jessica);
+        setConditions((_) => PRESET_CONDITIONS);
+        setCombos((_) => []);
+    };
+
     let EditorViewComponent = (
         <LayerContext.Provider value={layers}>
             <CharacterContext.Provider value={character}>
@@ -985,7 +997,7 @@ export default function Home() {
                     }}
                     buildNewAgentFromBlank={() => {
                         setEditorMode(() => EditorMode.Edit);
-                        setAgentInPanelToAgent(STARTER_AGENT);
+                        resetAgent();
                     }}
                     buildNewAgentFromAgent={(agent: Agent) => {
                         setEditorMode(() => EditorMode.Edit);
@@ -1065,14 +1077,40 @@ export default function Home() {
                         variant="text"
                         onClick={() => toggleGameMode()}
                         style={{
-                            padding: '6px',
-                            width: '100px',
+                            padding: '10px',
                             margin: '0 auto',
+                            borderRadius: '20px',
                         }}
                     >
-                        {gameMode == GameModes.simulation
+                        Toggle Game Mode:
+                        <span
+                            style={{
+                                fontSize: '15px',
+                                margin: '0 10px',
+                                color:
+                                    gameMode == GameModes.simulation
+                                        ? '#000'
+                                        : '#ddd',
+                            }}
+                        >
+                            Simulation
+                        </span>
+                        /
+                        <span
+                            style={{
+                                fontSize: '15px',
+                                margin: '0 10px',
+                                color:
+                                    gameMode == GameModes.simulation
+                                        ? '#ddd'
+                                        : '#000',
+                            }}
+                        >
+                            Real Time
+                        </span>
+                        {/* {gameMode == GameModes.simulation
                             ? 'Simulation'
-                            : 'Real Time'}
+                            : 'Real Time'} */}
                     </Button>
                 ) : null}
 
