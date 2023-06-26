@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
+//SceneSingle was throwing an error when I started to put scene components as children
 import SceneSingle from './SceneSingle';
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
+import TitleMenu from '../TitleMenu/menu';
+import MainMenu from '../MainMenu/MainMenu';
+import ChooseCharacter from '../ChooseCharacter/ChooseCharacter';
+import ChooseOpponent from '../ChooseOpponent/ChooseOpponent';
+import MainScene from '../SimulationScene/MainScene';
 
 const Scenes = {
     LOGO: 'logo',
@@ -14,76 +20,21 @@ const Scenes = {
 type Scene = (typeof Scenes)[keyof typeof Scenes];
 
 const SceneSelector = () => {
-    const [scene, setScene] = useState<Scene>('logo');
+    const [scene, setScene] = useState<Scene>(Scenes.MAIN_SCENE);
 
     useEffect(() => {
         setTimeout(() => {
-            setScene('wallet_connect');
+            //setScene('wallet_connect');
         }, 2000);
     }, []);
 
     return (
         <Box sx={{ position: 'relative' }}>
-            <SceneSingle active={scene === Scenes.LOGO}>
-                <div>Logo</div>
-            </SceneSingle>
-            <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
-                <div>
-                    <div>Logo</div>
-                    <Button onClick={() => setScene(Scenes.MAIN_MENU)}>
-                        Connect wallet
-                    </Button>
-                </div>
-            </SceneSingle>
-            <SceneSingle active={scene === Scenes.MAIN_MENU}>
-                <div>
-                    <div>Main menu</div>
-                    <Button onClick={() => setScene(Scenes.CHOOSE_CHARACTER)}>
-                        Play
-                    </Button>
-                </div>
-            </SceneSingle>
-            <SceneSingle active={scene === Scenes.CHOOSE_CHARACTER}>
-                <div>
-                    <div>
-                        Character 1
-                        <Button
-                            onClick={() => setScene(Scenes.CHOOSE_OPPONENT)}
-                        >
-                            Choose
-                        </Button>
-                    </div>
-                    <div>
-                        Character 2
-                        <Button
-                            onClick={() => setScene(Scenes.CHOOSE_OPPONENT)}
-                        >
-                            Choose
-                        </Button>
-                    </div>
-                </div>
-            </SceneSingle>
-            <SceneSingle active={scene === Scenes.CHOOSE_OPPONENT}>
-                <div>
-                    <div>
-                        Opponent 1
-                        <Button onClick={() => setScene(Scenes.MAIN_SCENE)}>
-                            Choose
-                        </Button>
-                    </div>
-                    <div>
-                        Opponent 2
-                        <Button onClick={() => setScene(Scenes.MAIN_SCENE)}>
-                            Choose
-                        </Button>
-                    </div>
-                </div>
-            </SceneSingle>
-            <SceneSingle active={scene === Scenes.MAIN_SCENE}>
-                <div>
-                    <div>Main scene</div>
-                </div>
-            </SceneSingle>
+            {scene === Scenes.WALLET_CONNECT ? <TitleMenu /> : null}
+            {scene === Scenes.MAIN_MENU ? <MainMenu /> : null}
+            {scene === Scenes.CHOOSE_CHARACTER ? <ChooseCharacter /> : null}
+            {scene === Scenes.CHOOSE_OPPONENT ? <ChooseOpponent /> : null}
+            {scene === Scenes.MAIN_SCENE ? <MainScene /> : null}
         </Box>
     );
 };

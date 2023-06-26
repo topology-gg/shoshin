@@ -1,0 +1,20 @@
+.characterGrid {
+    display: flex;
+    overflow-x: scroll;
+    scroll-behavior: smooth;
+    width: 100%;
+    padding: 16px;
+}
+
+.characterBox {
+    width: 400px;
+    flex-shrink: 0;
+    margin-right: 16px;
+    cursor: pointer;
+    border: 1px solid lightgray;
+    padding: 16px;
+}
+
+.characterBox:hover {
+    background-color: lightgray;
+}

@@ -1,0 +1,95 @@
+import {
+    Box,
+    Button,
+    MenuItem,
+    Select,
+    Typography,
+    styled,
+} from '@mui/material';
+import styles from './MainMenu.module.css';
+
+const StyledBox = styled(Box)`
+    border: 1px solid black;
+    padding: 16px;
+    transition: background-color 0.3s, color 0.3s;
+
+    &:hover {
+        background-color: lightgray;
+        color: white;
+        cursor: pointer;
+    }
+
+    &.selected {
+        background-color: gray;
+        color: white;
+    }
+`;
+
+const ChooseCharacter = () => {
+    return (
+        <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            height="100vh"
+            width={'100%'}
+        >
+            <Typography variant="h5" gutterBottom>
+                Choose your character
+            </Typography>
+
+            <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="100vh"
+            >
+                <StyledBox
+                    width="400px"
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    className="character-box"
+                >
+                    <Typography variant="h4">Jessica</Typography>
+                    <img
+                        src="images/jessica/idle/right/frame_0.png"
+                        alt="Image 1"
+                        height="200px"
+                    />
+                    <Typography variant="body2">
+                        Additional descriptive text
+                    </Typography>
+                </StyledBox>
+                <StyledBox
+                    width="400px"
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    className="character-box"
+                    marginLeft={'10px'}
+                >
+                    <Typography variant="h4">Antoc</Typography>
+                    <img
+                        src="images/antoc/idle/left/frame_0.png"
+                        alt="Image 2"
+                        height="220px"
+                        style={{
+                            objectFit: 'cover',
+                            marginTop: '-10px',
+                            marginBottom: '-10px',
+                        }}
+                    />
+                    <Typography variant="body2">
+                        Additional descriptive text
+                    </Typography>
+                </StyledBox>
+            </Box>
+        </Box>
+    );
+};
+
+export default ChooseCharacter;

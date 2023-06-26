@@ -1,0 +1,7 @@
+.MenuButton {
+    width: 25%;
+    color: black;
+    outline: 1px black solid;
+    margin-bottom: 1px;
+    border-radius: 0%;
+}
