@@ -15,10 +15,48 @@ export default {
             .setOrigin(0.5, 0.5)
             .setVisible(false);
 
+        this.PlayerOneEvent = this.add.text(25, 60, '', {
+            fontFamily: 'Oswald',
+            fontSize: '48px',
+            color: '#FFFB37',
+            fontStyle: 'italic',
+            stroke: '#000000',
+            strokeThickness: 3,
+            shadow: {
+                stroke: false,
+                offsetX: 10,
+                color: '#0000008F',
+                fill: true,
+                offsetY: 7,
+                blur: 6,
+            },
+            padding: { left: null, right: 30 },
+        });
+
+        this.PlayerTwoEvent = this.add.text(600, 60, '', {
+            fontFamily: 'Oswald',
+            fontSize: '48px',
+            color: '#FFFB37',
+            fontStyle: 'italic',
+            stroke: '#000000',
+            strokeThickness: 3,
+            shadow: {
+                stroke: false,
+                offsetX: 10,
+                color: '#0000008F',
+                fill: true,
+                offsetY: 7,
+                blur: 6,
+            },
+            padding: { left: null, right: 30 },
+        });
+
         eventsCenter
             .on('timer-change', this.onTimerChange, this)
             .on('timer-reset', this.onTimerReset, this)
-            .on('timer-hide', this.onTimerHide, this);
+            .on('timer-hide', this.onTimerHide, this)
+            .on('player-event-create', this.onPlayerEventCreate, this)
+            .on('player-event-remove', this.onPlayerEventRemove, this);
 
         // this.scene.get('play').events
         // eventsCenter
@@ -45,6 +83,37 @@ export default {
 
         onTimerHide: function () {
             this.timerText.setVisible(false);
+        },
+
+        // Note Next JS Hot/Fast reloading nullifies these text boxes, we should create new one rather than edit existing
+        onPlayerEventCreate: function (
+            playerIndex: number,
+            eventText: string,
+            eventCount: number
+        ) {
+            if (playerIndex == 1) {
+                this.PlayerOneEvent?.setText(
+                    eventCount > 0
+                        ? `${eventText} x${eventCount + 1}`
+                        : eventText
+                );
+            } else {
+                this.PlayerTwoEvent?.setText(
+                    eventCount > 0
+                        ? `${eventText} x${eventCount + 1}`
+                        : eventText
+                );
+            }
+        },
+
+        onPlayerEventRemove: function (playerIndex: number) {
+            console.log('remove event ', playerIndex);
+
+            if (playerIndex == 1) {
+                this.PlayerOneEvent?.setText(``);
+            } else {
+                this.PlayerTwoEvent?.setText(``);
+            }
         },
 
         //
