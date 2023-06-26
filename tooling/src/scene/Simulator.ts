@@ -494,6 +494,7 @@ export default class Simulator extends Phaser.Scene {
         characterName: string
     ) {
         // Extract from frame
+        console.log('setPlayerFrameHelper, frame=', frame);
         const bodyState = frame.body_state.state;
         const bodyStateCounter = frame.body_state.counter;
         const bodyStateDir = frame.body_state.dir;

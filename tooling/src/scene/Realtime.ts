@@ -15,6 +15,7 @@ import Platformer from './Simulator';
 import eventsCenter from '../Game/EventsCenter';
 
 export default class RealTime extends Platformer {
+    prevState: RealTimeFrameScene = InitialRealTimeFrameScene;
     state: RealTimeFrameScene = InitialRealTimeFrameScene;
 
     private player_action: number = 5;
@@ -316,10 +317,13 @@ export default class RealTime extends Platformer {
 
         this.player_action = 0;
         if (newState) {
+            this.prevState = this.state;
             this.state = newState;
             this.updateScene(
                 this.character_type_0,
                 this.opponent.character,
+                this.prevState.agent_0,
+                this.prevState.agent_1,
                 newState.agent_0,
                 newState.agent_1,
                 false,
