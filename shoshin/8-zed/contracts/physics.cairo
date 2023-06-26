@@ -376,6 +376,15 @@ func _physicality{range_check_ptr}(
     );
 }
 
+func is_opp_body_state_launching {range_check_ptr} (
+    opp_body_state: felt
+) -> felt {
+    if (opp_body_state == ns_jessica_body_state.UPSWING) {
+        return 1;
+    }
+    return 0;
+}
+
 func produce_damage_given_opp_body_state {range_check_ptr} (
     opp_body_state: felt
 ) -> felt {
@@ -514,19 +523,33 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
     if (bool_self_hit == 1) {
         let damage = produce_damage_given_opp_body_state (opp_body_state);
+        let bool_is_opp_body_state_launching = is_opp_body_state_launching(opp_body_state);
 
-        // hit when in mid-air => knocked
-        if (bool_self_ground == 0) {
+        // if in air
+        if (bool_self_ground == 0){
+            // if hit by launching attack => launched again in air (juggled)
+            if (bool_is_opp_body_state_launching == 1) {
+                return ns_stimulus.LAUNCHED * ns_stimulus.ENCODING + damage;
+            }
+            // otherwise, hit when in mid-air => knocked
             return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + damage;
         }
+
         // hit by gatotsu => knocked
         if (opp_body_state == ns_jessica_body_state.GATOTSU) {
             return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + damage;
         }
+
+        // if hit by launching attack => launched from ground
+        if (bool_is_opp_body_state_launching == 1) {
+            return ns_stimulus.LAUNCHED * ns_stimulus.ENCODING + damage;
+        }
+
         // hit when grounded but critical integrity => knocked
         if (is_integrity_critical == 1) {
             return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + damage;
         }
+
         // otherwise => hurt
         return ns_stimulus.HURT * ns_stimulus.ENCODING + damage;
     }
