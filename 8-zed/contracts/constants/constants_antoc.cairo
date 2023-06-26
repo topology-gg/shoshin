@@ -17,8 +17,11 @@ namespace ns_antoc_dynamics {
     const MIN_VEL_DASH_FP = (-900) * ns_dynamics.SCALE_FP;
     const DASH_VEL_FP = 900 * ns_dynamics.SCALE_FP;
 
-    const KNOCK_VEL_X_FP = 150 * ns_dynamics.SCALE_FP;
+    const KNOCK_VEL_X_FP = 250 * ns_dynamics.SCALE_FP;
     const KNOCK_VEL_Y_FP = 400 * ns_dynamics.SCALE_FP;
+
+    const LAUNCHED_VEL_X_FP = 10 * ns_dynamics.SCALE_FP;
+    const LAUNCHED_VEL_Y_FP = 600 * ns_dynamics.SCALE_FP;
 
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
 
@@ -121,6 +124,7 @@ namespace ns_antoc_body_state_duration {
     const STEP_FORWARD = 3;
     const JUMP = 7;
     const LOW_KICK = 6;
+    const LAUNCHED = 11;
 }
 
 namespace ns_antoc_body_state {
@@ -137,7 +141,8 @@ namespace ns_antoc_body_state {
     const CLASH = 1130; // 5 frames
     const STEP_FORWARD = 1140; // 3 frames
     const JUMP = 1150; // 7 frames
-    const LOW_KICK = 1160;
+    const LOW_KICK = 1160; // 6 frames
+    const LAUNCHED = 1170; // 11 frames
 }
 
 namespace ns_antoc_body_state_qualifiers {
@@ -188,6 +193,13 @@ namespace ns_antoc_body_state_qualifiers {
         return 1;
     }
 
+    func is_in_launched {range_check_ptr}(state: felt) -> felt {
+        if (state != ns_antoc_body_state.LAUNCHED) {
+            return 0;
+        }
+        return 1;
+    }
+
     func is_in_various_states {range_check_ptr}(state: felt, counter: felt) -> (
         bool_body_in_atk_active: felt,
         bool_body_in_knocked: felt,
@@ -200,7 +212,10 @@ namespace ns_antoc_body_state_qualifiers {
         let bool_body_in_vert_active   = is_in_vert_active (state, counter);
         let bool_body_in_low_kick      = is_in_low_kick_active (state, counter);
         let bool_body_in_atk_active    = bool_body_in_hori_active + bool_body_in_vert_active + bool_body_in_low_kick;
-        let bool_body_in_knocked       = is_in_knocked (state);
+
+        let bool_body_knocked          = is_in_knocked (state);
+        let bool_body_launched         = is_in_launched(state);
+        let bool_body_in_knocked       = bool_body_knocked + bool_body_launched;
         let bool_body_in_block         = is_in_block_active (state, counter);
         let bool_body_in_active        = bool_body_in_atk_active + bool_body_in_block;
 
@@ -224,7 +239,7 @@ namespace ns_antoc_hitbox {
         alloc_locals;
 
         // knocked
-        if (body_state == ns_antoc_body_state.KNOCKED) {
+        if ( (body_state-ns_antoc_body_state.KNOCKED) * (body_state-ns_antoc_body_state.LAUNCHED) == 0 ) {
             let is_counter_le_0 = is_le(body_counter, 0);
             if (is_counter_le_0== 1) {
                 return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_antoc_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H));
