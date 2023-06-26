@@ -34,17 +34,39 @@ let gridRemovePortion = 1;
 
 export const conditionElement = (
     conditionName: string,
-    conditionType: string
+    conditionType: string,
+    isInverted: boolean = false
 ) => {
     return (
         <Box>
-            {conditionEmojiElement(conditionType)}
+            {!isInverted
+                ? conditionEmojiElement(conditionType)
+                : invertedConditionEmojiElement()}
             <div style={{ marginLeft: '25px' }}>{conditionName}</div>
         </Box>
     );
 };
 export const conditionEmojiElement = (conditionType: string) => {
     const filePath = conditionTypeToEmojiFile(conditionType);
+    // doing the following to make sure image is vertically centered; sometimes css feels like dark magic
+    // solution from: https://stackoverflow.com/a/11716065
+    return (
+        <img
+            src={filePath}
+            height="15px"
+            style={{
+                position: 'absolute',
+                marginTop: 'auto',
+                marginBottom: 'auto',
+                top: '0',
+                bottom: '0',
+            }}
+        />
+    );
+};
+
+const invertedConditionEmojiElement = () => {
+    const filePath = '/images/emojis/stop_sign.png';
     // doing the following to make sure image is vertically centered; sometimes css feels like dark magic
     // solution from: https://stackoverflow.com/a/11716065
     return (
@@ -340,7 +362,8 @@ const Layer = ({
                                 <Chip
                                     label={conditionElement(
                                         condition.displayName,
-                                        condition.type
+                                        condition.type,
+                                        condition.isInverted
                                     )}
                                     className={
                                         !condition.isInverted
