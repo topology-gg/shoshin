@@ -5,7 +5,7 @@ import { FrameLike, RealTimeFrameScene, Rectangle } from '../types/Frame';
 import { SimulatorProps } from '../types/Simulator';
 import { GameModes } from '../types/Simulator';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
-import { BodystatesAntoc } from '../types/Condition';
+import { BodystatesAntoc, BodystatesJessica } from '../types/Condition';
 import eventsCenter from '../Game/EventsCenter';
 
 const ARENA_WIDTH = 1000;
@@ -22,7 +22,7 @@ const HITBOX_STROKE_WIDTH = 1.5;
 
 const PLAYER_POINTER_DIM = 20;
 
-const EFFECT_FRAME_RATE = 60;
+const EFFECT_FRAME_RATE = 30;
 
 enum CombatEvent {
     Block = 'Block',
@@ -329,13 +329,14 @@ export default class Simulator extends Phaser.Scene {
                 end: 6,
             }),
             repeat: 0,
-            hideOnComplete: true,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
         };
         this.anims.create(config);
         this.sparkSprite = this.add
             .sprite(0, 0, 'spark')
-            .setScale(0.1)
+            .setScale(0.2)
             .setVisible(false)
+            .setAlpha(0.7)
             .setDepth(100);
     }
 
@@ -691,6 +692,14 @@ export default class Simulator extends Phaser.Scene {
     }: SimulatorProps) {
         const characterType0 = testJson?.agent_0.type;
         const characterType1 = testJson?.agent_1.type;
+        const agentPrevFrame0 =
+            testJson?.agent_0.frames[
+                animationFrame == 0 ? 0 : animationFrame - 1
+            ];
+        const agentPrevFrame1 =
+            testJson?.agent_1.frames[
+                animationFrame == 0 ? 0 : animationFrame - 1
+            ];
         const agentFrame0 = testJson?.agent_0.frames[animationFrame];
         const agentFrame1 = testJson?.agent_1.frames[animationFrame];
         const fightLength = testJson?.agent_0.frames.length;
@@ -698,6 +707,8 @@ export default class Simulator extends Phaser.Scene {
         this.updateScene(
             characterType0,
             characterType1,
+            agentPrevFrame0,
+            agentPrevFrame1,
             agentFrame0,
             agentFrame1,
             animationFrame == 0,
@@ -739,24 +750,64 @@ export default class Simulator extends Phaser.Scene {
         }
     }
 
-    updateEffects(frames: FrameLike[]) {
+    updateEffects(prevFrames, frames: FrameLike[]) {
         // check if any player is in hurt state with counter==1
-        if (frames[1].body_state.state == BodystatesAntoc.Hurt) {
-            const x = frames[1].hitboxes.body.origin.x;
-            const y =
-                frames[1].hitboxes.body.origin.y -
-                frames[1].hitboxes.body.dimension.y / 2;
-            console.log('hurt! at', x, y);
-            this.sparkSprite
-                .setPosition(x, y)
-                .setVisible(true)
-                .play('sparkAnim');
-        }
+        [
+            [0, 1],
+            [1, 0],
+        ].forEach((e) => {
+            const subjectPrevFrame: FrameLike = prevFrames[e[0]];
+            const objectPrevFrame: FrameLike = prevFrames[e[1]];
+
+            const subjectFrame: FrameLike = frames[e[0]];
+            const objectFrame: FrameLike = frames[e[1]];
+
+            const sparkBodyStates = [
+                BodystatesAntoc.Hurt,
+                BodystatesJessica.Hurt,
+                BodystatesAntoc.Knocked,
+                BodystatesJessica.Knocked,
+                BodystatesAntoc.Clash,
+                BodystatesJessica.Clash,
+            ];
+
+            // if subject body state matches one of sparkBodyStates, and subject body counter==0 (first frame)
+            if (
+                sparkBodyStates.includes(subjectFrame.body_state.state) &&
+                subjectFrame.body_state.counter == 0
+            ) {
+                // position spark effect's x at x-center of the attacked (subject) body
+                const x =
+                    subjectFrame.hitboxes.body.origin.x +
+                    subjectFrame.hitboxes.body.dimension.x / 2;
+
+                // position spark effect's y at the y of the attacker's (object) action hitbox y-center in the previous frame (when the hit registered)
+                // note: phaser's y axis points downward on screen
+                console.log(
+                    'subject body origin y',
+                    subjectFrame.hitboxes.body.origin.y,
+                    'object prev action origin y',
+                    objectPrevFrame.hitboxes.action.origin.y
+                );
+                const y =
+                    -1 *
+                    (objectPrevFrame.hitboxes.action.origin.y +
+                        objectPrevFrame.hitboxes.action.dimension.y / 2);
+
+                // console.log('Play spark at', x, y);
+                this.sparkSprite
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('sparkAnim');
+            }
+        });
     }
 
     updateScene(
         characterType0: number,
         characterType1: number,
+        agentPrevFrame0: FrameLike,
+        agentPrevFrame1: FrameLike,
         agentFrame0: FrameLike,
         agentFrame1: FrameLike,
         isBeginning: boolean = true,
@@ -767,7 +818,10 @@ export default class Simulator extends Phaser.Scene {
         this.setPlayerTwoCharacter(characterType1);
         this.setPlayerOneFrame(agentFrame0);
         this.setPlayerTwoFrame(agentFrame1);
-        this.updateEffects([agentFrame0, agentFrame1]);
+        this.updateEffects(
+            [agentPrevFrame0, agentPrevFrame1],
+            [agentFrame0, agentFrame1]
+        );
 
         if (isLast) {
             const integrity_P1 = agentFrame0.body_state.integrity;
