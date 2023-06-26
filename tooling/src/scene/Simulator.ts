@@ -792,12 +792,12 @@ export default class Simulator extends Phaser.Scene {
 
                 // position spark effect's y at the y of the attacker's (object) action hitbox y-center in the previous frame (when the hit registered)
                 // note: phaser's y axis points downward on screen
-                console.log(
+                /*   console.log(
                     'subject body origin y',
                     subjectFrame.hitboxes.body.origin.y,
                     'object prev action origin y',
                     objectPrevFrame.hitboxes.action.origin.y
-                );
+                ); */
                 const y =
                     -1 *
                     (objectPrevFrame.hitboxes.action.origin.y +
