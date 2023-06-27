@@ -37,7 +37,7 @@ export interface Opponent {
     medal: Medal;
 }
 
-enum Medal {
+export enum Medal {
     NONE = 'None',
     GOLD = 'Gold',
     SILVER = 'Silver',

@@ -24,6 +24,8 @@ import FrameInspector from '../FrameInspector';
 import FrameDecisionPathViewer from '../FrameDecisionPathViewer';
 import Gambit from '../sidePanelComponents/Gambit/Gambit';
 import { Condition } from '../../types/Condition';
+import SquareOverlayMenu from './SuccessMenu';
+import { Medal } from '../layout/SceneSelector';
 
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
@@ -158,7 +160,6 @@ const SimulationScene = (props: SimulationProps) => {
     };
 
     function handleMidScreenControlClick(operation: string) {
-        console.log('op', operation);
         if (operation == 'NextFrame' && animationState != 'Run') {
             animationStepForward(N_FRAMES);
         } else if (operation == 'PrevFrame' && animationState != 'Run') {
@@ -217,10 +218,35 @@ const SimulationScene = (props: SimulationProps) => {
         });
     }
 
+    const beatAgent =
+        output !== undefined
+            ? output.agent_1[output.agent_1.length - 1].body_state.stamina == 0
+            : false;
+
+    let performance = Medal.NONE;
+    const hpRemaining =
+        output !== undefined
+            ? output.agent_0[output.agent_0.length - 1].body_state.integrity
+            : 0;
+    if (hpRemaining === 1000) {
+        performance = Medal.GOLD;
+    } else if (hpRemaining >= 500) {
+        performance = Medal.SILVER;
+    } else {
+        performance = Medal.BRONZE;
+    }
+
     return (
         <div id={'mother'}>
             {' '}
             <div className={styles.main}>
+                {beatAgent ? (
+                    <SquareOverlayMenu
+                        opponentName={opponent.character}
+                        performance={performance}
+                    />
+                ) : null}
+
                 <Box
                     sx={{
                         display: 'flex',
