@@ -1,14 +1,8 @@
-import {
-    Box,
-    Button,
-    MenuItem,
-    Select,
-    Typography,
-    styled,
-} from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import styles from './MainMenu.module.css';
+import { GameModes } from '../../types/Simulator';
 
-const MainMenu = () => {
+const MainMenu = ({ transition }) => {
     return (
         <Box
             display="flex"
@@ -25,6 +19,7 @@ const MainMenu = () => {
                 className={styles.MenuButton}
                 color="primary"
                 size="large"
+                onClick={() => transition(GameModes.simulation)}
             >
                 Play
             </Button>
@@ -34,7 +29,7 @@ const MainMenu = () => {
                 color="primary"
                 size="large"
                 fullWidth
-                disabled={true}
+                onClick={() => transition(GameModes.realtime)}
             >
                 Arcade Mode
             </Button>

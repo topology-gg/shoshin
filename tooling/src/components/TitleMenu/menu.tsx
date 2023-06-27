@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import styles from './menu.module.css';
-const TitleMenu = () => {
+const TitleMenu = ({ transitionMainMenu }) => {
     return (
         <Box
             display="flex"
@@ -8,12 +8,13 @@ const TitleMenu = () => {
             alignItems="center"
             justifyContent="center"
             height="100vh"
+            onClick={() => transitionMainMenu()}
         >
             <Typography variant="h4" component="h1" gutterBottom>
                 Shoshin
             </Typography>
             <Typography component="h1" gutterBottom color="textSecondary">
-                Press any key to continue
+                Click to continue
             </Typography>
             <video
                 className={styles.backgroundVideo}

@@ -1,27 +1,21 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     Typography,
     Box,
     AccordionDetails,
     Accordion,
-    Button,
     AccordionSummary,
-    Grid,
 } from '@mui/material';
 import styles from '../../../styles/Home.module.css';
 import { FrameScene, TestJson } from '../../types/Frame';
-import Agent, { buildAgent } from '../../types/Agent';
+import Agent, { PlayerAgent, buildAgent } from '../../types/Agent';
 import StatusBarPanel, {
     StatusBarPanelProps as PlayerStatuses,
 } from '../../../src/components/StatusBar';
-import { INITIAL_AGENT_COMPONENTS } from '../../constants/starter_agent';
 import { Action } from '../../types/Action';
-import { MentalState } from '../../types/MentalState';
-import { Tree } from '../../types/Tree';
 import { Character } from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
 import useRunCairoSimulation from '../../hooks/useRunCairoSimulation';
-import MidScreenKeybinding from '../MidScreenKeybinding';
 import dynamic from 'next/dynamic';
 import { GameModes } from '../../types/Simulator';
 import MidScreenControl from '../MidScreenControl';
@@ -29,14 +23,21 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FrameInspector from '../FrameInspector';
 import FrameDecisionPathViewer from '../FrameDecisionPathViewer';
 import Gambit from '../sidePanelComponents/Gambit/Gambit';
+import { Condition } from '../../types/Condition';
 
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
 });
 
+interface SimulationProps {
+    player: PlayerAgent;
+    setPlayerAgent: (playerAgent: PlayerAgent) => void;
+    opponent: Agent;
+}
 //We need Players agent and opponent
-const SimulationScene = () => {
+const SimulationScene = (props: SimulationProps) => {
+    const { player, setPlayerAgent, opponent } = props;
     // Constants
     const LATENCY = 70;
     const runnable = true;
@@ -45,9 +46,7 @@ const SimulationScene = () => {
     const [output, setOuput] = useState<FrameScene>();
     const [simulationError, setSimulationError] = useState();
     const [p1, setP1] = useState<Agent>();
-    const [p1Label, setP1Label] = useState<string>('');
-    const [p2, setP2] = useState<Agent>();
-    const [p2Label, setP2Label] = useState<string>('');
+    const [p2] = useState<Agent>(opponent);
     const [loop, setLoop] = useState<NodeJS.Timer>();
     const [animationFrame, setAnimationFrame] = useState<number>(0);
     const [animationState, setAnimationState] = useState<string>('Stop');
@@ -63,42 +62,20 @@ const SimulationScene = () => {
     });
 
     // React states for tracking the New Agent being edited in the right panel
-    const [initialMentalState, setInitialMentalState] = useState<number>(0);
-    const [combos, setCombos] = useState<Action[][]>(
-        INITIAL_AGENT_COMPONENTS.combos
-    );
-    const [selectedCombo, changeSelectedCombo] = useState<number>(0);
+    const [combos, setCombos] = useState<Action[][]>(player.combos);
 
-    const [mentalStates, setMentalStates] = useState<MentalState[]>(
-        INITIAL_AGENT_COMPONENTS.mentalStates
-    );
-    const [trees, setTrees] = useState<Tree[]>(INITIAL_AGENT_COMPONENTS.trees);
     const [conditions, setConditions] =
         //@ts-ignore
-        useState<Condition[]>(INITIAL_AGENT_COMPONENTS.conditions);
-    const [agentName, setAgentName] = useState<string>('');
-    const [character, setCharacter] = useState<Character>(Character.Jessica);
+        useState<Condition[]>(player.conditions);
 
-    const [layers, setLayers] = useState<Layer[]>([]);
+    const [character, setCharacter] = useState<Character>(player.character);
 
-    const newAgent: Agent = useMemo(() => {
+    const [layers, setLayers] = useState<Layer[]>(player.layers);
+
+    useMemo(() => {
         let builtAgent = handleBuildAgent();
-        if (p1Label === 'your agent') {
-            setP1(builtAgent);
-        }
-        if (p2Label === 'your agent') {
-            setP2(builtAgent);
-        }
-        return builtAgent;
-    }, [
-        character,
-        mentalStates,
-        combos,
-        trees,
-        conditions,
-        initialMentalState,
-        layers,
-    ]);
+        setP1(builtAgent);
+    }, [character, combos, conditions, layers]);
 
     function handleBuildAgent() {
         let char = Object.keys(Character).indexOf(character);
@@ -120,6 +97,18 @@ const SimulationScene = () => {
             char
         );
     }
+
+    useEffect(() => {
+        if (output) {
+            console.log('caught output:', output);
+            setTestJson((_) => {
+                return {
+                    agent_0: { frames: output.agent_0, type: p1.character },
+                    agent_1: { frames: output.agent_1, type: p2.character },
+                };
+            });
+        }
+    }, [output]);
 
     useEffect(() => {
         const integrity_0 = testJson
@@ -163,6 +152,7 @@ const SimulationScene = () => {
     };
 
     function handleMidScreenControlClick(operation: string) {
+        console.log('op', operation);
         if (operation == 'NextFrame' && animationState != 'Run') {
             animationStepForward(N_FRAMES);
         } else if (operation == 'PrevFrame' && animationState != 'Run') {
@@ -225,151 +215,165 @@ const SimulationScene = () => {
         <div>
             {' '}
             <div className={styles.main}>
-                <Grid container spacing={2}>
-                    <Grid item xs={0} md={0} lg={2} xl={2}></Grid>
-                    <Grid item xs={12} md={12} lg={6} xl={6}>
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                            }}
-                        >
-                            <StatusBarPanel
-                                integrity_0={playerStatuses.integrity_0}
-                                integrity_1={playerStatuses.integrity_1}
-                                stamina_0={playerStatuses.stamina_0}
-                                stamina_1={playerStatuses.stamina_1}
-                            />
-                            <Game
-                                testJson={testJson}
-                                animationFrame={animationFrame}
-                                animationState={animationState}
-                                showDebug={checkedShowDebugInfo}
-                                gameMode={GameModes.simulation}
-                                realTimeOptions={{
-                                    playerCharacter: 0,
-                                    agentOpponent: p2,
-                                    setPlayerStatuses,
-                                }}
-                                isInView={true}
-                            />
-                            <MidScreenControl
-                                runnable={!(p1 == null || p2 == null)}
-                                testJsonAvailable={testJson ? true : false}
-                                testJson={testJson}
-                                animationFrame={animationFrame}
-                                n_cycles={N_FRAMES}
-                                animationState={animationState}
-                                handleClick={handleMidScreenControlClick}
-                                handleSlideChange={(evt) => {
-                                    if (animationState == 'Run') return;
-                                    const slide_val: number = parseInt(
-                                        evt.target.value
-                                    );
-                                    setAnimationFrame(slide_val);
-                                }}
-                                checkedShowDebugInfo={checkedShowDebugInfo}
-                                handleChangeDebugInfo={() =>
-                                    setCheckedShowDebugInfo(
-                                        (_) => !checkedShowDebugInfo
-                                    )
-                                }
-                            />
-                            <div
-                                style={{
-                                    padding: '10px',
-                                    paddingBottom: '13px',
-                                    marginBottom: '16px',
-                                    border: '1px solid #777',
-                                    borderRadius: '20px',
-                                }}
-                            >
-                                <Accordion
-                                    key="accordion-frame-data"
-                                    style={{
-                                        boxShadow: 'none',
-                                        backgroundColor: '#ffffff00',
-                                    }}
-                                >
-                                    <AccordionSummary
-                                        expandIcon={<ExpandMoreIcon />}
-                                        aria-controls="panel1a-content"
-                                        id="panel1a-header"
-                                        sx={{ fontSize: '14px' }}
-                                    >
-                                        Frame Data
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        <FrameInspector
-                                            p1={p1}
-                                            p2={p2}
-                                            testJson={testJson}
-                                            animationFrame={animationFrame}
-                                        />
-                                    </AccordionDetails>
-                                </Accordion>
-                            </div>
-                            <div
-                                style={{
-                                    padding: '10px',
-                                    paddingBottom: '13px',
-                                    marginBottom: '16px',
-                                    border: '1px solid #777',
-                                    borderRadius: '20px',
-                                }}
-                            >
-                                <Accordion
-                                    key="accordion-agent-decision-logic"
-                                    style={{
-                                        boxShadow: 'none',
-                                        backgroundColor: '#ffffff00',
-                                    }}
-                                >
-                                    <AccordionSummary
-                                        expandIcon={<ExpandMoreIcon />}
-                                        aria-controls="panel1a-content"
-                                        id="panel1a-header"
-                                        sx={{ fontSize: '14px' }}
-                                    >
-                                        Agent Decision Logic
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        <FrameDecisionPathViewer
-                                            p1={p1}
-                                            p2={p2}
-                                            testJson={testJson}
-                                            animationFrame={animationFrame}
-                                        />
-                                    </AccordionDetails>
-                                </Accordion>
-                            </div>
-                        </div>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={4} xl={3}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start', // Adjust the justification as per your requirement
+                        alignItems: 'stretch', // Adjust the alignment as per your requirement
+                        gap: '16px', // Adjust the gap between items as per your requirement
+                    }}
+                >
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            width: '800px',
+                        }}
+                    >
                         <Box
                             sx={{
                                 display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'top',
-                                alignItems: 'left',
-                                borderRadius: '0px 20px 20px 20px',
-                                border: '1px solid #999999',
-                                padding: '0.5rem 0.5rem 2rem 0.5rem',
-                                width: '500px',
-                                overflow: 'scroll',
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
                             }}
                         >
-                            <Gambit
-                                layers={layers}
-                                setLayers={setLayers}
-                                isReadOnly={false}
-                                character={character}
-                                conditions={conditions}
-                                combos={combos}
-                            />
+                            <Typography>Jessica</Typography>
+                            <Typography>Antoc</Typography>
                         </Box>
-                    </Grid>
-                </Grid>
+                        <StatusBarPanel
+                            integrity_0={playerStatuses.integrity_0}
+                            integrity_1={playerStatuses.integrity_1}
+                            stamina_0={playerStatuses.stamina_0}
+                            stamina_1={playerStatuses.stamina_1}
+                        />
+                        <Game
+                            testJson={testJson}
+                            animationFrame={animationFrame}
+                            animationState={animationState}
+                            showDebug={checkedShowDebugInfo}
+                            gameMode={GameModes.simulation}
+                            realTimeOptions={{
+                                playerCharacter: 0,
+                                agentOpponent: p2,
+                                setPlayerStatuses,
+                            }}
+                            isInView={true}
+                        />
+                        <MidScreenControl
+                            runnable={!(p1 == null || p2 == null)}
+                            testJsonAvailable={testJson ? true : false}
+                            testJson={testJson}
+                            animationFrame={animationFrame}
+                            n_cycles={N_FRAMES}
+                            animationState={animationState}
+                            handleClick={handleMidScreenControlClick}
+                            handleSlideChange={(evt) => {
+                                if (animationState == 'Run') return;
+                                const slide_val: number = parseInt(
+                                    evt.target.value
+                                );
+                                setAnimationFrame(slide_val);
+                            }}
+                            checkedShowDebugInfo={checkedShowDebugInfo}
+                            handleChangeDebugInfo={() =>
+                                setCheckedShowDebugInfo(
+                                    (_) => !checkedShowDebugInfo
+                                )
+                            }
+                        />
+                        <div
+                            style={{
+                                padding: '10px',
+                                paddingBottom: '13px',
+                                marginBottom: '16px',
+                                border: '1px solid #777',
+                                borderRadius: '20px',
+                            }}
+                        >
+                            <Accordion
+                                key="accordion-frame-data"
+                                style={{
+                                    boxShadow: 'none',
+                                    backgroundColor: '#ffffff00',
+                                }}
+                            >
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel1a-content"
+                                    id="panel1a-header"
+                                    sx={{ fontSize: '14px' }}
+                                >
+                                    Frame Data
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <FrameInspector
+                                        p1={p1}
+                                        p2={p2}
+                                        testJson={testJson}
+                                        animationFrame={animationFrame}
+                                    />
+                                </AccordionDetails>
+                            </Accordion>
+                        </div>
+                        <div
+                            style={{
+                                padding: '10px',
+                                paddingBottom: '13px',
+                                marginBottom: '16px',
+                                border: '1px solid #777',
+                                borderRadius: '20px',
+                            }}
+                        >
+                            <Accordion
+                                key="accordion-agent-decision-logic"
+                                style={{
+                                    boxShadow: 'none',
+                                    backgroundColor: '#ffffff00',
+                                }}
+                            >
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel1a-content"
+                                    id="panel1a-header"
+                                    sx={{ fontSize: '14px' }}
+                                >
+                                    Agent Decision Logic
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <FrameDecisionPathViewer
+                                        p1={p1}
+                                        p2={p2}
+                                        testJson={testJson}
+                                        animationFrame={animationFrame}
+                                    />
+                                </AccordionDetails>
+                            </Accordion>
+                        </div>
+                    </div>
+
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'top',
+                            alignItems: 'left',
+                            borderRadius: '0 0 0 0',
+                            border: '1px solid #999999',
+                            padding: '0.5rem 0.5rem 2rem 0.5rem',
+                            width: '600px',
+                        }}
+                    >
+                        <Gambit
+                            layers={layers}
+                            setLayers={setLayers}
+                            isReadOnly={false}
+                            character={character}
+                            conditions={conditions}
+                            combos={combos}
+                        />
+                    </Box>
+                </Box>
             </div>
         </div>
     );
