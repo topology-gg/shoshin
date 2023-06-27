@@ -1,8 +1,10 @@
 import {
+    AppBar,
     Box,
     Button,
     MenuItem,
     Select,
+    Toolbar,
     Typography,
     styled,
 } from '@mui/material';
@@ -28,72 +30,86 @@ const StyledBox = styled(Box)`
 
 const ChooseCharacter = ({ transitionChooseOpponent }) => {
     return (
-        <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            height="100vh"
-            width={'100%'}
-        >
-            <Typography variant="h5" gutterBottom>
-                Choose your character
-            </Typography>
+        <div>
+            <AppBar
+                position="static"
+                style={{ background: 'transparent', boxShadow: 'none' }}
+            >
+                <Toolbar>
+                    <Typography color={'black'} variant="h6">
+                        Shoshin
+                    </Typography>
+                </Toolbar>
+            </AppBar>
 
             <Box
                 display="flex"
-                justifyContent="center"
+                flexDirection="column"
                 alignItems="center"
-                height="100vh"
+                justifyContent="center"
+                width={'100%'}
             >
-                <StyledBox
-                    width="400px"
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    className="character-box"
-                    onClick={() => transitionChooseOpponent(Character.Jessica)}
-                >
-                    <Typography variant="h4">Jessica</Typography>
-                    <img
-                        src="images/jessica/idle/right/frame_0.png"
-                        alt="Image 1"
-                        height="200px"
-                    />
-                    <Typography variant="h6">Progress 0%</Typography>
-                    <Typography variant="body2">
-                        Additional descriptive text
-                    </Typography>
-                </StyledBox>
-                <StyledBox
-                    width="400px"
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    className="character-box"
-                    marginLeft={'10px'}
-                    onClick={() => transitionChooseOpponent(Character.Antoc)}
-                >
-                    <Typography variant="h4">Antoc</Typography>
-                    <img
-                        src="images/antoc/idle/left/frame_0.png"
-                        alt="Image 2"
-                        height="220px"
-                        style={{
-                            objectFit: 'cover',
-                            marginTop: '-10px',
-                            marginBottom: '-10px',
-                        }}
-                    />
-                    <Typography variant="h6">Progress 0%</Typography>
-                    <Typography variant="body2">
-                        Additional descriptive text
-                    </Typography>
-                </StyledBox>
+                <Typography variant="h5" gutterBottom>
+                    Choose your character
+                </Typography>
+
+                <Box display="flex" justifyContent="center" alignItems="center">
+                    <StyledBox
+                        width="400px"
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        justifyContent="center"
+                        className="character-box"
+                        onClick={() =>
+                            transitionChooseOpponent(Character.Jessica)
+                        }
+                    >
+                        <Typography variant="h4">Jessica</Typography>
+                        <img
+                            src="images/jessica/idle/right/frame_0.png"
+                            alt="Image 1"
+                            height="200px"
+                        />
+                        <Typography variant="h6">Progress 0%</Typography>
+                        <Typography variant="body2">
+                            Additional descriptive text
+                        </Typography>
+                    </StyledBox>
+                    <StyledBox
+                        width="400px"
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        justifyContent="center"
+                        className="character-box"
+                        marginLeft={'10px'}
+                        onClick={() =>
+                            transitionChooseOpponent(Character.Antoc)
+                        }
+                    >
+                        <Typography variant="h4">Antoc</Typography>
+                        <img
+                            src="images/antoc/idle/left/frame_0.png"
+                            alt="Image 2"
+                            height="220px"
+                            style={{
+                                objectFit: 'cover',
+                                marginTop: '-10px',
+                                marginBottom: '-10px',
+                            }}
+                        />
+                        <Typography variant="h6">Progress 0%</Typography>
+                        <Typography variant="body2">
+                            Additional descriptive text
+                        </Typography>
+                    </StyledBox>
+                </Box>
+                <Button variant="contained" sx={{ marginTop: '30px' }}>
+                    Back
+                </Button>
             </Box>
-        </Box>
+        </div>
     );
 };
 

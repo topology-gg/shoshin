@@ -9,12 +9,16 @@ import ChooseOpponent from '../ChooseOpponent/ChooseOpponent';
 import MainScene from '../SimulationScene/MainScene';
 import { Character, IDLE_AGENT } from '../../constants/constants';
 import { INITIAL_AGENT_COMPONENTS } from '../../constants/starter_agent';
-import { Action } from '../../types/Action';
+import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 import { Layer } from '../../types/Layer';
 import Agent, { PlayerAgent } from '../../types/Agent';
 import Arcade from '../Arcade/Arcade';
 import { GameModes } from '../../types/Simulator';
 import { ShoshinWASMContext } from '../../context/wasm-shoshin';
+import {
+    AntocOpponents,
+    JessicaOpponents,
+} from '../ChooseOpponent/opponents/opponents';
 
 const Scenes = {
     LOGO: 'logo',
@@ -28,28 +32,41 @@ const Scenes = {
 
 type Scene = (typeof Scenes)[keyof typeof Scenes];
 
-interface Opponent {
+export interface Opponent {
     agent: Agent;
-    defeated: boolean;
+    medal: Medal;
 }
 
-interface Medal {
-    NONE: 'None';
-    GOLD: 'Gold';
-    SILVER: 'Silver';
-    BRONZE: 'Bronze';
+enum Medal {
+    NONE = 'None',
+    GOLD = 'Gold',
+    SILVER = 'Silver',
+    BRONZE = 'Bronze',
 }
+
 interface ShoshinPersistedState {
     playerAgents: {
         jessica?: PlayerAgent;
         antoc?: PlayerAgent;
     };
     opponents: {
-        jessica: { agent: Agent; medal: Medal }[];
-        antoc: { agent: Agent; medal: Medal }[];
+        jessica: Opponent[];
+        antoc: Opponent[];
     };
 }
 
+const deafaultState: ShoshinPersistedState = {
+    playerAgents: {
+        jessica: undefined,
+        antoc: undefined,
+    },
+    opponents: {
+        jessica: [],
+        antoc: [],
+    },
+};
+
+const StorageKey = 'PersistedGameState';
 const SceneSelector = () => {
     const [scene, setScene] = useState<Scene>(Scenes.WALLET_CONNECT);
 
@@ -72,19 +89,31 @@ const SceneSelector = () => {
         setScene(Scenes.CHOOSE_CHARACTER);
     };
 
+    const getLocalState = (): ShoshinPersistedState | null => {
+        const storedState = localStorage.getItem(StorageKey);
+        if (storedState !== undefined && storedState !== null) {
+            const state: ShoshinPersistedState = JSON.parse(storedState);
+        }
+
+        return null;
+    };
+
+    const setLocalState = (state: ShoshinPersistedState) => {
+        localStorage.setItem(StorageKey, JSON.stringify(state));
+    };
+
     const transitionChooseOpponent = (character: Character) => {
         console.log('character', character);
         setCharacter(character);
-        const storedState = localStorage.getItem('PersistedGameState');
-
-        if (storedState !== undefined && storedState !== null) {
-            const state: ShoshinPersistedState = JSON.parse(storedState);
-            const playerAgent: PlayerAgent =
-                state.playerAgents[character.toLowerCase()];
-            setPlayerAgent(playerAgent);
-        }
-
         setScene(Scenes.CHOOSE_OPPONENT);
+
+        const state = getLocalState();
+        if (!state) {
+            return;
+        }
+        const playerAgent: PlayerAgent =
+            state.playerAgents[character.toLowerCase()];
+        setPlayerAgent(playerAgent);
     };
 
     const transitionMainScene = (opponent: Agent) => {
@@ -107,12 +136,44 @@ const SceneSelector = () => {
         INITIAL_AGENT_COMPONENTS.combos
     );
 
+    useEffect(() => {
+        const state = getLocalState();
+        if (!state) {
+            const opponents =
+                character == Character.Jessica
+                    ? JessicaOpponents
+                    : AntocOpponents;
+            const addMedals = opponents.map((agent) => {
+                return { agent: agent, medal: Medal.NONE };
+            });
+            setOpponentChoices(addMedals);
+            return;
+        }
+
+        const opponentChoices = state.opponents[character.toLocaleLowerCase()];
+        if (opponentChoices) {
+            setOpponentChoices(opponentChoices);
+        }
+    }, [character]);
+
+    const [opponentChoices, setOpponentChoices] = useState<Opponent[]>();
+
     const [opponent, setOpponent] = useState<Agent>(IDLE_AGENT);
 
     const setPlayerAgent = (playerAgent: PlayerAgent) => {
         setLayers(playerAgent.layers);
         setConditions(playerAgent.conditions);
         setCombos(playerAgent.combos);
+
+        let updatedState = deafaultState;
+        const state = getLocalState();
+        if (state !== null) {
+            updatedState = state;
+        }
+
+        updatedState.playerAgents[character.toLocaleLowerCase()] = playerAgent;
+
+        setLocalState(updatedState);
     };
 
     const playerAgent: PlayerAgent = {
@@ -121,32 +182,9 @@ const SceneSelector = () => {
         conditions,
         combos,
     };
-    /* 
-    useEffect(() => {
-        // Restore if any data found in localStorage
-        const storedLayers = localStorage.getItem('layers');
-        const storedConditions = localStorage.getItem('conditions');
-        const storedCombos = localStorage.getItem('combos');
-
-        console.log('stored layers', storedLayers);
-        if (storedLayers !== null && storedLayers !== undefined) {
-            setLayers(JSON.parse(storedLayers));
-            //setAgentInPanelToAgent(JSON.parse(storedAgent));
-            const character =
-                parseInt(localStorage.getItem('character')) == 0
-                    ? Character.Jessica
-                    : Character.Antoc;
-            setCharacter(character);
-            if (storedConditions) {
-                setConditions(JSON.parse(storedConditions));
-            }
-            if (storedCombos) {
-                setCombos(JSON.parse(storedCombos));
-            }
-        }
-    }, []); */
 
     const characterIndex = character == Character.Jessica ? 0 : 1;
+
     return (
         <Box sx={{ position: 'relative' }}>
             {scene === Scenes.WALLET_CONNECT ? (
@@ -161,7 +199,10 @@ const SceneSelector = () => {
                 />
             ) : null}
             {scene === Scenes.CHOOSE_OPPONENT ? (
-                <ChooseOpponent transitionMainScene={transitionMainScene} />
+                <ChooseOpponent
+                    transitionMainScene={transitionMainScene}
+                    opponents={opponentChoices}
+                />
             ) : null}
             {scene === Scenes.MAIN_SCENE ? (
                 <MainScene

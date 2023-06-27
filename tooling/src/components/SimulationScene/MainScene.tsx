@@ -74,6 +74,12 @@ const SimulationScene = (props: SimulationProps) => {
 
     useMemo(() => {
         let builtAgent = handleBuildAgent();
+        setPlayerAgent({
+            layers,
+            combos,
+            conditions,
+            character,
+        });
         setP1(builtAgent);
     }, [character, combos, conditions, layers]);
 
@@ -212,7 +218,7 @@ const SimulationScene = (props: SimulationProps) => {
     }
 
     return (
-        <div>
+        <div id={'mother'}>
             {' '}
             <div className={styles.main}>
                 <Box
