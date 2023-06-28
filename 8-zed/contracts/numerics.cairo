@@ -9,6 +9,14 @@ const SCALE_FP = ns_dynamics.SCALE_FP;
 const SCALE_FP_SQRT = ns_dynamics.SCALE_FP_SQRT;
 const RANGE_CHECK_BOUND = ns_dynamics.RANGE_CHECK_BOUND;
 
+func bool_inv{range_check_ptr}(x: felt) -> felt {
+    if (x==0) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 //
 // Utility functions for fixed-point arithmetic
 //
