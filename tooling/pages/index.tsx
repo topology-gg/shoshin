@@ -1119,6 +1119,7 @@ export default function Home() {
                             !(p1 == null || p2 == null) &&
                             gameMode == GameModes.simulation
                         }
+                        playOnly={false}
                         testJsonAvailable={testJson ? true : false}
                         testJson={testJson}
                         animationFrame={animationFrame}
