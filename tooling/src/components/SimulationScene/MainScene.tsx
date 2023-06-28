@@ -76,6 +76,7 @@ const SimulationScene = (props: SimulationProps) => {
 
     useMemo(() => {
         let builtAgent = handleBuildAgent();
+        console.log('built agent', builtAgent);
         setPlayerAgent({
             layers,
             combos,
@@ -220,7 +221,8 @@ const SimulationScene = (props: SimulationProps) => {
 
     const beatAgent =
         output !== undefined
-            ? output.agent_1[output.agent_1.length - 1].body_state.stamina == 0
+            ? output.agent_1[output.agent_1.length - 1].body_state.integrity ==
+              0
             : false;
 
     let performance = Medal.NONE;
