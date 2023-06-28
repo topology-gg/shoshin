@@ -532,6 +532,13 @@ export default class Simulator extends Phaser.Scene {
             `${characterName}-${bodyStateName}`,
             `frame_${bodyStateCounter}.png`
         );
+
+        // TODO: handle direction switching
+        if (direction == 'right') {
+            player.setFlipX(false);
+        } else {
+            player.setFlipX(true);
+        }
     }
 
     private setPlayerOnePointer(frame: FrameLike) {
