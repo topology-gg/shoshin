@@ -107,6 +107,9 @@ const actionsToBodyStateAntoc = {
     7: 1120,
 };
 
+export const LEFT = 0;
+export const RIGHT = 1;
+
 export const actionstoBodyState = [
     actionsToBodyStateJessica,
     actionsToBodyStateAntoc,

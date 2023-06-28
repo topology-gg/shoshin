@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { bodyStateNumberToName } from '../constants/constants';
+import { bodyStateNumberToName, LEFT, RIGHT } from '../constants/constants';
 import { spriteDataPhaser } from '../constants/sprites';
 import { FrameLike, RealTimeFrameScene, Rectangle } from '../types/Frame';
 import { SimulatorProps } from '../types/Simulator';
@@ -23,6 +23,9 @@ const HITBOX_STROKE_WIDTH = 1.5;
 const PLAYER_POINTER_DIM = 20;
 
 const EFFECT_FRAME_RATE = 30;
+
+// Effects
+const JESSICA_SMOKE_SCALE = 0.1;
 
 enum CombatEvent {
     Block = 'Block',
@@ -80,6 +83,7 @@ export default class Simulator extends Phaser.Scene {
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
 
     sparkSprites: Phaser.GameObjects.Sprite[];
+    jessicaSmokeSprites: Phaser.GameObjects.Sprite[];
 
     player_one_action_confirm = false;
     player_two_action_confirm = false;
@@ -281,6 +285,10 @@ export default class Simulator extends Phaser.Scene {
             frameWidth: 730,
             frameHeight: 731,
         });
+        this.load.spritesheet('jessica-smoke', 'images/effects/jessica-smoke/spritesheet.png', {
+            frameWidth: 1251,
+            frameHeight: 1251,
+        });
     }
 
     initializeCameraSettings() {
@@ -321,7 +329,7 @@ export default class Simulator extends Phaser.Scene {
     }
 
     initializeEffects() {
-        const config = {
+        this.anims.create({
             key: 'sparkAnim',
             frameRate: EFFECT_FRAME_RATE,
             frames: this.anims.generateFrameNumbers('spark', {
@@ -330,11 +338,23 @@ export default class Simulator extends Phaser.Scene {
             }),
             repeat: 0,
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
-        };
-        this.anims.create(config);
+        });
+
+        this.anims.create({
+            key: 'jessicaSmokeAnim',
+            frameRate: 10,
+            frames: this.anims.generateFrameNumbers('jessica-smoke', {
+                start: 0,
+                end: 5,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
 
         this.sparkSprites = [];
+        this.jessicaSmokeSprites = [];
         [0, 1].forEach((_) => {
+
             this.sparkSprites.push(
                 this.add
                     .sprite(0, 0, 'spark')
@@ -343,6 +363,16 @@ export default class Simulator extends Phaser.Scene {
                     .setAlpha(0.7)
                     .setDepth(100)
             );
+            this.jessicaSmokeSprites.push(
+                this.add
+                    .sprite(0, 0, 'jessica-smoke')
+                    .setScale(JESSICA_SMOKE_SCALE)
+                    .setVisible(false)
+                    .setAlpha(1.0)
+                    .setDepth(100)
+                    .setFlipX(true)
+            );
+
         });
     }
 
@@ -811,6 +841,22 @@ export default class Simulator extends Phaser.Scene {
                     .play('sparkAnim');
             }
         });
+
+        [0,1].forEach(playerIndex => {
+            const frame = frames[playerIndex];
+            if ( (frame.body_state.state == BodystatesJessica.DashForward) && (frame.body_state.counter == 0) ) {
+                const x = frame.body_state.dir == RIGHT ?
+                    frame.physics_state.pos.x + 0.5 * this.jessicaSmokeSprites[playerIndex].width / 2 * JESSICA_SMOKE_SCALE :
+                    frame.physics_state.pos.x + frame.hitboxes.body.dimension.x - 0.5 * this.jessicaSmokeSprites[playerIndex].width / 2 * JESSICA_SMOKE_SCALE;
+                const y = -1 * frame.physics_state.pos.y - 25;
+
+                this.jessicaSmokeSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('jessicaSmokeAnim');
+
+            }
+        })
     }
 
     updateScene(
