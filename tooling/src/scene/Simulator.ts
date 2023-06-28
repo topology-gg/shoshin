@@ -285,10 +285,14 @@ export default class Simulator extends Phaser.Scene {
             frameWidth: 730,
             frameHeight: 731,
         });
-        this.load.spritesheet('jessica-smoke', 'images/effects/jessica-smoke/spritesheet.png', {
-            frameWidth: 1251,
-            frameHeight: 1251,
-        });
+        this.load.spritesheet(
+            'jessica-smoke',
+            'images/effects/jessica-smoke/spritesheet.png',
+            {
+                frameWidth: 1251,
+                frameHeight: 1251,
+            }
+        );
     }
 
     initializeCameraSettings() {
@@ -354,7 +358,6 @@ export default class Simulator extends Phaser.Scene {
         this.sparkSprites = [];
         this.jessicaSmokeSprites = [];
         [0, 1].forEach((_) => {
-
             this.sparkSprites.push(
                 this.add
                     .sprite(0, 0, 'spark')
@@ -372,7 +375,6 @@ export default class Simulator extends Phaser.Scene {
                     .setDepth(100)
                     .setFlipX(true)
             );
-
         });
     }
 
@@ -789,7 +791,9 @@ export default class Simulator extends Phaser.Scene {
     }
 
     updateEffects(prevFrames, frames: FrameLike[]) {
-        // check if any player is in hurt state with counter==1
+        //
+        // spark
+        //
         [
             [0, 1],
             [1, 0],
@@ -842,21 +846,52 @@ export default class Simulator extends Phaser.Scene {
             }
         });
 
-        [0,1].forEach(playerIndex => {
+        //
+        // jessica-smoke
+        //
+        [0, 1].forEach((playerIndex) => {
             const frame = frames[playerIndex];
-            if ( (frame.body_state.state == BodystatesJessica.DashForward) && (frame.body_state.counter == 0) ) {
-                const x = frame.body_state.dir == RIGHT ?
-                    frame.physics_state.pos.x + 0.5 * this.jessicaSmokeSprites[playerIndex].width / 2 * JESSICA_SMOKE_SCALE :
-                    frame.physics_state.pos.x + frame.hitboxes.body.dimension.x - 0.5 * this.jessicaSmokeSprites[playerIndex].width / 2 * JESSICA_SMOKE_SCALE;
+            if (
+                frame.body_state.state == BodystatesJessica.DashForward &&
+                frame.body_state.counter == 0
+            ) {
+                const x =
+                    frame.body_state.dir == RIGHT
+                        ? frame.physics_state.pos.x +
+                          ((0.5 * this.jessicaSmokeSprites[playerIndex].width) /
+                              2) *
+                              JESSICA_SMOKE_SCALE
+                        : frame.physics_state.pos.x +
+                          frame.hitboxes.body.dimension.x -
+                          ((0.5 * this.jessicaSmokeSprites[playerIndex].width) /
+                              2) *
+                              JESSICA_SMOKE_SCALE;
                 const y = -1 * frame.physics_state.pos.y - 25;
 
                 this.jessicaSmokeSprites[playerIndex]
                     .setPosition(x, y)
                     .setVisible(true)
-                    .play('jessicaSmokeAnim');
+                    .play('jessicaSmokeAnim')
+                    .setFlipX(frame.body_state.dir == RIGHT);
+            } else if (
+                frame.body_state.state == BodystatesJessica.DashBackward &&
+                frame.body_state.counter == 0
+            ) {
+                const x =
+                    frame.body_state.dir == RIGHT
+                        ? frame.physics_state.pos.x +
+                          frame.hitboxes.body.dimension.x / 2
+                        : frame.physics_state.pos.x +
+                          frame.hitboxes.body.dimension.x;
+                const y = -1 * frame.physics_state.pos.y - 25;
 
+                this.jessicaSmokeSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('jessicaSmokeAnim')
+                    .setFlipX(frame.body_state.dir == LEFT);
             }
-        })
+        });
     }
 
     updateScene(
