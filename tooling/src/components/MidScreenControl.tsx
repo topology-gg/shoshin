@@ -50,6 +50,7 @@ function findFrameNumbersAtKnocked(frames: Frame[]) {
 
 const MidScreenControl = ({
     runnable,
+    playOnly,
     testJsonAvailable,
     testJson,
     animationFrame,
@@ -131,9 +132,13 @@ const MidScreenControl = ({
                     size="small"
                     variant="outlined"
                     onClick={() => handleClick('ToggleRun')}
-                    disabled={!runnable}
+                    disabled={!runnable && !playOnly}
                 >
-                    {animationState != 'Run' ? <PlayArrow /> : <Pause />}
+                    {animationState != 'Run' || playOnly ? (
+                        <PlayArrow />
+                    ) : (
+                        <Pause />
+                    )}
                 </Button>
 
                 <Button

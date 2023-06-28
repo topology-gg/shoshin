@@ -13,7 +13,7 @@ import StatusBarPanel, {
     StatusBarPanelProps as PlayerStatuses,
 } from '../../../src/components/StatusBar';
 import { Action } from '../../types/Action';
-import { Character } from '../../constants/constants';
+import { Character, numberToCharacter } from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
 import useRunCairoSimulation from '../../hooks/useRunCairoSimulation';
 import dynamic from 'next/dynamic';
@@ -26,7 +26,7 @@ import Gambit from '../sidePanelComponents/Gambit/Gambit';
 import { Condition } from '../../types/Condition';
 import SquareOverlayMenu from './SuccessMenu';
 import { Medal, Opponent } from '../layout/SceneSelector';
-
+import mainSceneStyles from './MainScene.module.css';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -37,10 +37,13 @@ interface SimulationProps {
     setPlayerAgent: (playerAgent: PlayerAgent) => void;
     opponent: Agent;
     submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
+    onContinue: () => void;
+    onQuit: () => void;
 }
 //We need Players agent and opponent
 const SimulationScene = (props: SimulationProps) => {
-    const { player, setPlayerAgent, opponent, submitWin } = props;
+    const { player, setPlayerAgent, opponent, submitWin, onQuit, onContinue } =
+        props;
     // Constants
     const LATENCY = 70;
     const runnable = true;
@@ -171,7 +174,7 @@ const SimulationScene = (props: SimulationProps) => {
             animationStepBackward();
         } else if (operation == 'ToggleRun') {
             // If in Run => go to Pause
-            if (animationState == 'Run') {
+            if (animationState == 'Run' && !beatAgent) {
                 clearInterval(loop); // kill the timer
                 setAnimationState('Pause');
             }
@@ -242,15 +245,49 @@ const SimulationScene = (props: SimulationProps) => {
         performance = Medal.BRONZE;
     }
 
+    const [showVictory, changeShowVictory] = useState<boolean>(false);
+    useEffect(() => {
+        if (beatAgent) {
+            submitWin(player, { agent: opponent, medal: performance });
+        }
+    }, [beatAgent, animationFrame]);
+
+    useEffect(() => {
+        console.log('anim', animationFrame, N_FRAMES, beatAgent);
+        if (beatAgent && N_FRAMES - 1 === animationFrame) {
+            changeShowVictory(true);
+            changePlayedWinningReplay(true);
+        }
+    }, [animationFrame]);
+
+    const [playedWinningReplay, changePlayedWinningReplay] =
+        useState<boolean>(false);
+
+    //When entering scene play the fight by default
+    useEffect(() => {}, []);
+
+    //Maybe win submissions are done on win and continue click only navigates player
     const handleContinueClick = () => {
-        submitWin(player, { agent: opponent, medal: performance });
+        onContinue();
     };
 
+    const playOnly = !playedWinningReplay && beatAgent;
+
+    const overlayContainerClassName = playOnly
+        ? mainSceneStyles.overlayContainer
+        : '';
+
+    //Having this class be conditional on playOnly may not be needed
+    const overlayClassName = playOnly ? mainSceneStyles.overlay : '';
+
+    const p1Name = player.character;
+    const p2Name = numberToCharacter(opponent.character);
     return (
         <div id={'mother'}>
             {' '}
+            <div className={mainSceneStyles.overlayMenu}></div>
             <div className={styles.main}>
-                {beatAgent ? (
+                {showVictory ? (
                     <SquareOverlayMenu
                         opponentName={opponentName}
                         performance={performance}
@@ -274,37 +311,49 @@ const SimulationScene = (props: SimulationProps) => {
                             width: '800px',
                         }}
                     >
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                            }}
-                        >
-                            <Typography>Jessica</Typography>
-                            <Typography>Antoc</Typography>
-                        </Box>
-                        <StatusBarPanel
-                            integrity_0={playerStatuses.integrity_0}
-                            integrity_1={playerStatuses.integrity_1}
-                            stamina_0={playerStatuses.stamina_0}
-                            stamina_1={playerStatuses.stamina_1}
-                        />
-                        <Game
-                            testJson={testJson}
-                            animationFrame={animationFrame}
-                            animationState={animationState}
-                            showDebug={checkedShowDebugInfo}
-                            gameMode={GameModes.simulation}
-                            realTimeOptions={{
-                                playerCharacter: 0,
-                                agentOpponent: p2,
-                                setPlayerStatuses,
-                            }}
-                            isInView={true}
-                        />
+                        <div className={overlayContainerClassName}>
+                            <div className={overlayClassName}>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                    }}
+                                >
+                                    <Typography>{p1Name}</Typography>
+                                    <Typography>{p2Name}</Typography>
+                                </Box>
+
+                                <StatusBarPanel
+                                    integrity_0={playerStatuses.integrity_0}
+                                    integrity_1={playerStatuses.integrity_1}
+                                    stamina_0={playerStatuses.stamina_0}
+                                    stamina_1={playerStatuses.stamina_1}
+                                />
+
+                                <Game
+                                    testJson={testJson}
+                                    animationFrame={animationFrame}
+                                    animationState={animationState}
+                                    showDebug={checkedShowDebugInfo}
+                                    gameMode={GameModes.simulation}
+                                    realTimeOptions={{
+                                        playerCharacter: 0,
+                                        agentOpponent: p2,
+                                        setPlayerStatuses,
+                                    }}
+                                    isInView={true}
+                                />
+                            </div>
+                        </div>
+                        {playOnly ? (
+                            <div
+                                style={{ width: '800px', height: '400px' }}
+                            ></div>
+                        ) : null}
                         <MidScreenControl
-                            runnable={!(p1 == null || p2 == null)}
+                            runnable={!(p1 == null || p2 == null) && !playOnly}
+                            playOnly={playOnly}
                             testJsonAvailable={testJson ? true : false}
                             testJson={testJson}
                             animationFrame={animationFrame}

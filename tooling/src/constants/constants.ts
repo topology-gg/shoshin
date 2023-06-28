@@ -167,6 +167,13 @@ export enum Character {
     Antoc = 'Antoc',
 }
 
+export const numberToCharacter = (char: number) => {
+    if (char == 0) {
+        return Character.Jessica;
+    }
+    return Character.Antoc;
+};
+
 export enum KeysToActionsJessica {
     '-' = 'Rest',
     'J' = 'Slash',

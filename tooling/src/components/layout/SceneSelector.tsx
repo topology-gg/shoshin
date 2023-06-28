@@ -19,6 +19,7 @@ import {
     AntocOpponents,
     JessicaOpponents,
 } from '../ChooseOpponent/opponents/opponents';
+import MoveTutorial from '../MoveTutorial/MoveTutorial';
 
 const Scenes = {
     LOGO: 'logo',
@@ -28,6 +29,7 @@ const Scenes = {
     CHOOSE_OPPONENT: 'choose_opponent',
     MAIN_SCENE: 'main_scene',
     ARCADE: 'arcade',
+    MOVE_TUTORIAL: 'move_tutorial',
 } as const;
 
 type Scene = (typeof Scenes)[keyof typeof Scenes];
@@ -68,7 +70,7 @@ const deafaultState: ShoshinPersistedState = {
 
 const StorageKey = 'PersistedGameState';
 const SceneSelector = () => {
-    const [scene, setScene] = useState<Scene>(Scenes.WALLET_CONNECT);
+    const [scene, setScene] = useState<Scene>(Scenes.MOVE_TUTORIAL);
 
     const ctx = React.useContext(ShoshinWASMContext);
 
@@ -102,10 +104,9 @@ const SceneSelector = () => {
         localStorage.setItem(StorageKey, JSON.stringify(state));
     };
 
-    const transitionChooseOpponent = (character: Character) => {
-        console.log('character', character);
+    const onChooseCharacter = (character: Character) => {
         setCharacter(character);
-        setScene(Scenes.CHOOSE_OPPONENT);
+        setScene(Scenes.MOVE_TUTORIAL);
 
         const state = getLocalState();
         if (!state) {
@@ -114,6 +115,9 @@ const SceneSelector = () => {
         const playerAgent: PlayerAgent =
             state.playerAgents[character.toLowerCase()];
         setPlayerAgent(playerAgent);
+    };
+    const transitionChooseOpponent = () => {
+        setScene(Scenes.CHOOSE_OPPONENT);
     };
 
     const transitionMainScene = (opponent: Agent) => {
@@ -156,7 +160,7 @@ const SceneSelector = () => {
         }
     }, [character]);
 
-    const [opponentChoices, setOpponentChoices] = useState<Opponent[]>();
+    const [opponentChoices, setOpponentChoices] = useState<Opponent[]>([]);
 
     const [opponent, setOpponent] = useState<Agent>(IDLE_AGENT);
 
@@ -185,6 +189,13 @@ const SceneSelector = () => {
 
     const characterIndex = character == Character.Jessica ? 0 : 1;
 
+    const defeatedOpponents = opponentChoices.reduce(
+        (acc, opp) => acc + (opp.medal == Medal.NONE ? 0 : 1),
+        0
+    );
+    const characterProgress =
+        (100 * defeatedOpponents) / opponentChoices.length;
+
     const handleWin = (player: PlayerAgent, opponent: Opponent) => {
         let updatedState = deafaultState;
         const state = getLocalState();
@@ -192,20 +203,26 @@ const SceneSelector = () => {
             updatedState = state;
         }
 
-        updatedState.opponents = updatedState.opponents[
-            character.toLocaleLowerCase()
-        ].map((opp: Opponent) => {
-            if (opp.agent === opponent.agent) {
-                return opponent;
-            }
-            return opp;
-        });
+        if (updatedState.opponents[character.toLocaleLowerCase()]) {
+            updatedState.opponents = updatedState.opponents[
+                character.toLocaleLowerCase()
+            ].map((opp: Opponent) => {
+                if (opp.agent === opponent.agent) {
+                    return opponent;
+                }
+                return opp;
+            });
+        }
 
         updatedState.playerAgents[character.toLocaleLowerCase()] = player;
 
         setLocalState(updatedState);
-        setScene(Scenes.CHOOSE_CHARACTER);
     };
+
+    const onTransition = (scene: Scene) => {
+        setScene(scene);
+    };
+
     return (
         <Box sx={{ position: 'relative' }}>
             {scene === Scenes.WALLET_CONNECT ? (
@@ -215,14 +232,20 @@ const SceneSelector = () => {
                 <MainMenu transition={transitionChooseCharacter} />
             ) : null}
             {scene === Scenes.CHOOSE_CHARACTER ? (
-                <ChooseCharacter
-                    transitionChooseOpponent={transitionChooseOpponent}
-                />
+                <ChooseCharacter transitionChooseOpponent={onChooseCharacter} />
             ) : null}
             {scene === Scenes.CHOOSE_OPPONENT ? (
                 <ChooseOpponent
                     transitionMainScene={transitionMainScene}
                     opponents={opponentChoices}
+                    playerCharacter={character}
+                />
+            ) : null}
+            {scene === Scenes.MOVE_TUTORIAL ? (
+                <MoveTutorial
+                    character={character}
+                    firstVisit={true}
+                    onContinue={transitionChooseOpponent}
                 />
             ) : null}
             {scene === Scenes.MAIN_SCENE ? (
@@ -231,6 +254,8 @@ const SceneSelector = () => {
                     player={playerAgent}
                     opponent={opponent}
                     submitWin={handleWin}
+                    onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
+                    onQuit={() => onTransition(Scenes.MAIN_MENU)}
                 />
             ) : null}
             {scene === Scenes.ARCADE ? (

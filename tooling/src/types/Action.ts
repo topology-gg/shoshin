@@ -13,6 +13,10 @@ export interface Action {
         active?: number[];
     };
     key: string;
+    tutorial?: {
+        video: string;
+        description: string;
+    };
 }
 
 export const defaultAction: Action = {
@@ -33,6 +37,10 @@ const Slash: Action = {
     display: { name: 'Slash', unicode: '\u{1F5E1}' },
     frames: { duration: 5, active: [3] },
     key: 'J',
+    tutorial: {
+        video: './media/fight-intro.mp4',
+        description: 'A medium range attack that covers a large area',
+    },
 };
 
 const Upswing: Action = {
@@ -40,6 +48,10 @@ const Upswing: Action = {
     display: { name: 'Upswing', unicode: '\u{1F5E1}' },
     frames: { duration: 5, active: [3] },
     key: 'K',
+    tutorial: {
+        video: './media/tutorial/upswing.mp4',
+        description: 'Loren ipsum and whatnot',
+    },
 };
 
 const Sidecut: Action = {
@@ -47,6 +59,10 @@ const Sidecut: Action = {
     display: { name: 'Sidecut', unicode: '\u{1F5E1}' },
     frames: { duration: 5, active: [3] },
     key: 'L',
+    tutorial: {
+        video: './media/tutorial/sidecut.mp4',
+        description: 'A different lore ipsum',
+    },
 };
 
 const Block: Action = {

@@ -31,17 +31,6 @@ const StyledBox = styled(Box)`
 const ChooseCharacter = ({ transitionChooseOpponent }) => {
     return (
         <div>
-            <AppBar
-                position="static"
-                style={{ background: 'transparent', boxShadow: 'none' }}
-            >
-                <Toolbar>
-                    <Typography color={'black'} variant="h6">
-                        Shoshin
-                    </Typography>
-                </Toolbar>
-            </AppBar>
-
             <Box
                 display="flex"
                 flexDirection="column"
