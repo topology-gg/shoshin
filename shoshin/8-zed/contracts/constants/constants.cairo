@@ -2,6 +2,9 @@
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
+const LEFT = 0;
+const RIGHT = 1;
+
 namespace ns_character_type {
     const JESSICA = 0;
     const ANTOC = 1;
