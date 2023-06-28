@@ -25,7 +25,7 @@ import FrameDecisionPathViewer from '../FrameDecisionPathViewer';
 import Gambit from '../sidePanelComponents/Gambit/Gambit';
 import { Condition } from '../../types/Condition';
 import SquareOverlayMenu from './SuccessMenu';
-import { Medal } from '../layout/SceneSelector';
+import { Medal, Opponent } from '../layout/SceneSelector';
 
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
@@ -36,10 +36,11 @@ interface SimulationProps {
     player: PlayerAgent;
     setPlayerAgent: (playerAgent: PlayerAgent) => void;
     opponent: Agent;
+    submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
 }
 //We need Players agent and opponent
 const SimulationScene = (props: SimulationProps) => {
-    const { player, setPlayerAgent, opponent } = props;
+    const { player, setPlayerAgent, opponent, submitWin } = props;
     // Constants
     const LATENCY = 70;
     const runnable = true;
@@ -73,6 +74,9 @@ const SimulationScene = (props: SimulationProps) => {
     const [character, setCharacter] = useState<Character>(player.character);
 
     const [layers, setLayers] = useState<Layer[]>(player.layers);
+
+    const opponentName =
+        opponent.character == 0 ? Character.Jessica : Character.Antoc;
 
     useMemo(() => {
         let builtAgent = handleBuildAgent();
@@ -238,14 +242,19 @@ const SimulationScene = (props: SimulationProps) => {
         performance = Medal.BRONZE;
     }
 
+    const handleContinueClick = () => {
+        submitWin(player, { agent: opponent, medal: performance });
+    };
+
     return (
         <div id={'mother'}>
             {' '}
             <div className={styles.main}>
                 {beatAgent ? (
                     <SquareOverlayMenu
-                        opponentName={opponent.character}
+                        opponentName={opponentName}
                         performance={performance}
+                        handleContinueClick={handleContinueClick}
                     />
                 ) : null}
 

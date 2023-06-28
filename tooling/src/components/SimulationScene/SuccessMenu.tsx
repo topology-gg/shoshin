@@ -6,10 +6,12 @@ import { Medal } from '../layout/SceneSelector';
 interface SquareOverlayMenu {
     opponentName: string;
     performance: Medal;
+    handleContinueClick: () => void;
 }
 const SquareOverlayMenu = ({
     opponentName,
     performance,
+    handleContinueClick,
 }: SquareOverlayMenu) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -35,7 +37,7 @@ const SquareOverlayMenu = ({
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => {}}
+                        onClick={handleContinueClick}
                     >
                         Continue
                     </Button>

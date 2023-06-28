@@ -185,6 +185,27 @@ const SceneSelector = () => {
 
     const characterIndex = character == Character.Jessica ? 0 : 1;
 
+    const handleWin = (player: PlayerAgent, opponent: Opponent) => {
+        let updatedState = deafaultState;
+        const state = getLocalState();
+        if (state !== null) {
+            updatedState = state;
+        }
+
+        updatedState.opponents = updatedState.opponents[
+            character.toLocaleLowerCase()
+        ].map((opp: Opponent) => {
+            if (opp.agent === opponent.agent) {
+                return opponent;
+            }
+            return opp;
+        });
+
+        updatedState.playerAgents[character.toLocaleLowerCase()] = player;
+
+        setLocalState(updatedState);
+        setScene(Scenes.CHOOSE_CHARACTER);
+    };
     return (
         <Box sx={{ position: 'relative' }}>
             {scene === Scenes.WALLET_CONNECT ? (
@@ -209,6 +230,7 @@ const SceneSelector = () => {
                     setPlayerAgent={setPlayerAgent}
                     player={playerAgent}
                     opponent={opponent}
+                    submitWin={handleWin}
                 />
             ) : null}
             {scene === Scenes.ARCADE ? (
