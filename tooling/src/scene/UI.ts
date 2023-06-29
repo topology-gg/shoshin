@@ -1,4 +1,6 @@
 import eventsCenter from '../Game/EventsCenter';
+import { bodyStateNumberToName } from '../constants/constants';
+import { CHARACTERS_ACTIONS } from '../types/Action';
 import { Frame, FrameLike } from '../types/Frame';
 
 export default {
@@ -57,14 +59,14 @@ export default {
             .setAlpha(0.8);
 
         this.debug_info_objects = {};
-        const borderWidth = 220;
+        const borderWidth = 250;
         const borderHeight = 86.5;
         const borderStrokeWidth = 4;
         const topMargin = 10;
         const topPadding = 5;
         const leftMargin = 5;
         [0, 1].forEach((index) => {
-            const x = index == 0 ? 10 : 580;
+            const x = index == 0 ? 10 : 530;
             this.debug_info_objects[index] = {};
 
             this.debug_info_objects[index]['border'] = this.add
@@ -186,8 +188,12 @@ export default {
                 this.debug_info_objects[index]['border'].setVisible(true);
 
                 // body state
+                const state = frames[index].body_state.state;
+                const isAntoc = state > 1000;
+                const stateName =
+                    bodyStateNumberToName[isAntoc ? 'antoc' : 'jessica'][state];
                 this.debug_info_objects[index]['body_state']['data'].setText(
-                    `${frames[index].body_state.state}`
+                    stateName
                 );
                 this.debug_info_objects[index]['body_state']['desc'].setText(
                     'Body State'
@@ -196,9 +202,9 @@ export default {
                     true
                 );
 
-                // body counter
+                // body counter (display value+1 to start from 1)
                 this.debug_info_objects[index]['body_counter']['data'].setText(
-                    `${frames[index].body_state.counter}`
+                    `${frames[index].body_state.counter + 1}`
                 );
                 this.debug_info_objects[index]['body_counter']['desc'].setText(
                     'Body Frame'
@@ -208,8 +214,13 @@ export default {
                 );
 
                 // action
+                const action = (frames[index] as Frame).action;
+                const characterActions = CHARACTERS_ACTIONS[isAntoc ? 1 : 0];
+                const actionName = characterActions.find(
+                    (value) => value.id == action
+                ).display.name;
                 this.debug_info_objects[index]['action']['data'].setText(
-                    `${(frames[index] as Frame).action}`
+                    actionName
                 );
                 this.debug_info_objects[index]['action']['desc'].setText(
                     'Action'
