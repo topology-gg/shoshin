@@ -90,10 +90,17 @@ const Game = ({
                 type: Phaser.CANVAS,
                 parent: parent.current,
                 canvas: canvas.current,
-                width: 800,
-                height: 400,
                 // pixelArt: true,
                 autoCenter: true,
+                height: 800,
+                width: 450,
+                scale: {
+                    mode: 5,
+                    minWidth: '800',
+                    minHeight: '450',
+                    maxWidth: '1920',
+                    maxHeight: '1080',
+                },
                 backgroundColor: '#000000',
                 physics: {
                     default: 'arcade',
@@ -199,18 +206,31 @@ const Game = ({
         //render stuff
     }, [testJson, animationFrame, animationState, showDebug, ctx.wasm]);
 
-    return Phaser ? (
+    return (
         <div
-            className={`${styles.game} ${
-                styles[`game__${variant}`]
-            } ${className}`}
+            style={{
+                aspectRatio: '1.77',
+                position: 'relative',
+            }}
             ref={parent}
         >
-            <canvas ref={canvas} />
+            {Phaser ? (
+                <canvas
+                    style={{
+                        position: 'absolute',
+                        top: '0',
+                        left: '0',
+                        width: '100%',
+                        height: '100%',
+                    }}
+                    ref={canvas}
+                />
+            ) : null}
         </div>
-    ) : null;
+    );
 };
 
+//
 Game.propTypes = {
     tagName: PropTypes.string,
     className: PropTypes.string,

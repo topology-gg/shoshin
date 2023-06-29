@@ -282,7 +282,7 @@ const Layer = ({
                         {i + 1}
                     </div>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item md={6} xl={4}>
                     <Box
                         display="flex"
                         flexDirection="row"
@@ -348,7 +348,7 @@ const Layer = ({
                         );
                     })}
                 </Menu>
-                <Grid item xs={6}>
+                <Grid item md={4} xl={6}>
                     <BlurrableButton
                         className={`${styles.gambitButton} ${styles.actionButton}`}
                         key={`${i}`}
@@ -554,8 +554,6 @@ const Gambit = ({
                 flexDirection: 'column',
                 justifyContent: 'left',
                 alignItems: 'left',
-                pt: '1rem',
-                pl: '2rem',
             }}
         >
             <Typography sx={{ fontSize: '17px' }} variant="overline">
@@ -599,18 +597,15 @@ const Gambit = ({
                                                 Order
                                             </div>
                                         </Grid>
-                                        <Grid item xs={4}>
+                                        <Grid item md={6} xl={4}>
                                             <div style={{ paddingLeft: '8px' }}>
                                                 Condition
                                             </div>
                                         </Grid>
-                                        <Grid item xs={6}>
+                                        <Grid item md={4} xl={6}>
                                             <div style={{ paddingLeft: '8px' }}>
                                                 Action
                                             </div>
-                                        </Grid>
-                                        <Grid item xs={1}>
-                                            {/* Remove */}
                                         </Grid>
                                     </Box>
                                 </Grid>

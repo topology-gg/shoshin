@@ -5,6 +5,7 @@ import {
     AccordionDetails,
     Accordion,
     AccordionSummary,
+    Grid,
 } from '@mui/material';
 import styles from '../../../styles/Home.module.css';
 import { FrameScene, TestJson } from '../../types/Frame';
@@ -263,9 +264,7 @@ const SimulationScene = (props: SimulationProps) => {
     const [playedWinningReplay, changePlayedWinningReplay] =
         useState<boolean>(false);
 
-    //When entering scene play the fight by default
-    useEffect(() => {}, []);
-
+    //TODO : When entering scene play the fight by default
     //Maybe win submissions are done on win and continue click only navigates player
     const handleContinueClick = () => {
         onContinue();
@@ -283,7 +282,7 @@ const SimulationScene = (props: SimulationProps) => {
     const p1Name = player.character;
     const p2Name = numberToCharacter(opponent.character);
     return (
-        <div id={'mother'}>
+        <div id={'mother'} className={styles.container}>
             {' '}
             <div className={mainSceneStyles.overlayMenu}></div>
             <div className={styles.main}>
@@ -294,178 +293,172 @@ const SimulationScene = (props: SimulationProps) => {
                         handleContinueClick={handleContinueClick}
                     />
                 ) : null}
+                <Grid container spacing={{ md: 0, lg: 2 }}>
+                    <Grid item lg={0} xl={1} />
+                    <Grid item md={6} lg={6}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                width: '100%',
+                            }}
+                        >
+                            <div className={overlayContainerClassName}>
+                                <div className={overlayClassName}>
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                        }}
+                                    >
+                                        <Typography>{p1Name}</Typography>
+                                        <Typography>{p2Name}</Typography>
+                                    </Box>
 
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'flex-start', // Adjust the justification as per your requirement
-                        alignItems: 'stretch', // Adjust the alignment as per your requirement
-                        gap: '16px', // Adjust the gap between items as per your requirement
-                    }}
-                >
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            width: '800px',
-                        }}
-                    >
-                        <div className={overlayContainerClassName}>
-                            <div className={overlayClassName}>
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
+                                    <StatusBarPanel
+                                        integrity_0={playerStatuses.integrity_0}
+                                        integrity_1={playerStatuses.integrity_1}
+                                        stamina_0={playerStatuses.stamina_0}
+                                        stamina_1={playerStatuses.stamina_1}
+                                    />
+                                    <Game
+                                        testJson={testJson}
+                                        animationFrame={animationFrame}
+                                        animationState={animationState}
+                                        showDebug={checkedShowDebugInfo}
+                                        gameMode={GameModes.simulation}
+                                        realTimeOptions={{
+                                            playerCharacter: 0,
+                                            agentOpponent: p2,
+                                            setPlayerStatuses,
+                                        }}
+                                        isInView={true}
+                                    />
+                                </div>
+                            </div>
+                            {playOnly ? (
+                                <div style={{ height: '400px' }}></div>
+                            ) : null}
+                            <MidScreenControl
+                                runnable={
+                                    !(p1 == null || p2 == null) && !playOnly
+                                }
+                                playOnly={playOnly}
+                                testJsonAvailable={testJson ? true : false}
+                                testJson={testJson}
+                                animationFrame={animationFrame}
+                                n_cycles={N_FRAMES}
+                                animationState={animationState}
+                                handleClick={handleMidScreenControlClick}
+                                handleSlideChange={(evt) => {
+                                    if (animationState == 'Run') return;
+                                    const slide_val: number = parseInt(
+                                        evt.target.value
+                                    );
+                                    setAnimationFrame(slide_val);
+                                }}
+                                checkedShowDebugInfo={checkedShowDebugInfo}
+                                handleChangeDebugInfo={() =>
+                                    setCheckedShowDebugInfo(
+                                        (_) => !checkedShowDebugInfo
+                                    )
+                                }
+                            />
+                            <div
+                                style={{
+                                    padding: '10px',
+                                    paddingBottom: '13px',
+                                    marginBottom: '16px',
+                                    border: '1px solid #777',
+                                    borderRadius: '20px',
+                                }}
+                            >
+                                <Accordion
+                                    key="accordion-frame-data"
+                                    style={{
+                                        boxShadow: 'none',
+                                        backgroundColor: '#ffffff00',
                                     }}
                                 >
-                                    <Typography>{p1Name}</Typography>
-                                    <Typography>{p2Name}</Typography>
-                                </Box>
-
-                                <StatusBarPanel
-                                    integrity_0={playerStatuses.integrity_0}
-                                    integrity_1={playerStatuses.integrity_1}
-                                    stamina_0={playerStatuses.stamina_0}
-                                    stamina_1={playerStatuses.stamina_1}
-                                />
-
-                                <Game
-                                    testJson={testJson}
-                                    animationFrame={animationFrame}
-                                    animationState={animationState}
-                                    showDebug={checkedShowDebugInfo}
-                                    gameMode={GameModes.simulation}
-                                    realTimeOptions={{
-                                        playerCharacter: 0,
-                                        agentOpponent: p2,
-                                        setPlayerStatuses,
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        aria-controls="panel1a-content"
+                                        id="panel1a-header"
+                                        sx={{ fontSize: '14px' }}
+                                    >
+                                        Frame Data
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <FrameInspector
+                                            p1={p1}
+                                            p2={p2}
+                                            testJson={testJson}
+                                            animationFrame={animationFrame}
+                                        />
+                                    </AccordionDetails>
+                                </Accordion>
+                            </div>
+                            <div
+                                style={{
+                                    padding: '10px',
+                                    paddingBottom: '13px',
+                                    marginBottom: '16px',
+                                    border: '1px solid #777',
+                                    borderRadius: '20px',
+                                }}
+                            >
+                                <Accordion
+                                    key="accordion-agent-decision-logic"
+                                    style={{
+                                        boxShadow: 'none',
+                                        backgroundColor: '#ffffff00',
                                     }}
-                                    isInView={true}
-                                />
+                                >
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        aria-controls="panel1a-content"
+                                        id="panel1a-header"
+                                        sx={{ fontSize: '14px' }}
+                                    >
+                                        Agent Decision Logic
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <FrameDecisionPathViewer
+                                            p1={p1}
+                                            p2={p2}
+                                            testJson={testJson}
+                                            animationFrame={animationFrame}
+                                        />
+                                    </AccordionDetails>
+                                </Accordion>
                             </div>
                         </div>
-                        {playOnly ? (
-                            <div
-                                style={{ width: '800px', height: '400px' }}
-                            ></div>
-                        ) : null}
-                        <MidScreenControl
-                            runnable={!(p1 == null || p2 == null) && !playOnly}
-                            playOnly={playOnly}
-                            testJsonAvailable={testJson ? true : false}
-                            testJson={testJson}
-                            animationFrame={animationFrame}
-                            n_cycles={N_FRAMES}
-                            animationState={animationState}
-                            handleClick={handleMidScreenControlClick}
-                            handleSlideChange={(evt) => {
-                                if (animationState == 'Run') return;
-                                const slide_val: number = parseInt(
-                                    evt.target.value
-                                );
-                                setAnimationFrame(slide_val);
-                            }}
-                            checkedShowDebugInfo={checkedShowDebugInfo}
-                            handleChangeDebugInfo={() =>
-                                setCheckedShowDebugInfo(
-                                    (_) => !checkedShowDebugInfo
-                                )
-                            }
-                        />
-                        <div
-                            style={{
-                                padding: '10px',
-                                paddingBottom: '13px',
-                                marginBottom: '16px',
-                                border: '1px solid #777',
-                                borderRadius: '20px',
+                    </Grid>
+                    <Grid item md={6} lg={5} xl={4}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'top',
+                                alignItems: 'left',
+                                borderRadius: '0 0 0 0',
+                                border: '1px solid #999999',
+                                padding: '0.5rem 0.5rem 2rem 0.5rem',
+                                width: '100%',
                             }}
                         >
-                            <Accordion
-                                key="accordion-frame-data"
-                                style={{
-                                    boxShadow: 'none',
-                                    backgroundColor: '#ffffff00',
-                                }}
-                            >
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    aria-controls="panel1a-content"
-                                    id="panel1a-header"
-                                    sx={{ fontSize: '14px' }}
-                                >
-                                    Frame Data
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <FrameInspector
-                                        p1={p1}
-                                        p2={p2}
-                                        testJson={testJson}
-                                        animationFrame={animationFrame}
-                                    />
-                                </AccordionDetails>
-                            </Accordion>
-                        </div>
-                        <div
-                            style={{
-                                padding: '10px',
-                                paddingBottom: '13px',
-                                marginBottom: '16px',
-                                border: '1px solid #777',
-                                borderRadius: '20px',
-                            }}
-                        >
-                            <Accordion
-                                key="accordion-agent-decision-logic"
-                                style={{
-                                    boxShadow: 'none',
-                                    backgroundColor: '#ffffff00',
-                                }}
-                            >
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    aria-controls="panel1a-content"
-                                    id="panel1a-header"
-                                    sx={{ fontSize: '14px' }}
-                                >
-                                    Agent Decision Logic
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <FrameDecisionPathViewer
-                                        p1={p1}
-                                        p2={p2}
-                                        testJson={testJson}
-                                        animationFrame={animationFrame}
-                                    />
-                                </AccordionDetails>
-                            </Accordion>
-                        </div>
-                    </div>
-
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'top',
-                            alignItems: 'left',
-                            borderRadius: '0 0 0 0',
-                            border: '1px solid #999999',
-                            padding: '0.5rem 0.5rem 2rem 0.5rem',
-                            width: '600px',
-                        }}
-                    >
-                        <Gambit
-                            layers={layers}
-                            setLayers={setLayers}
-                            isReadOnly={false}
-                            character={character}
-                            conditions={conditions}
-                            combos={combos}
-                        />
-                    </Box>
-                </Box>
+                            <Gambit
+                                layers={layers}
+                                setLayers={setLayers}
+                                isReadOnly={false}
+                                character={character}
+                                conditions={conditions}
+                                combos={combos}
+                            />
+                        </Box>
+                    </Grid>
+                </Grid>
             </div>
         </div>
     );

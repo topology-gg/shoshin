@@ -115,7 +115,7 @@ const MidScreenControl = ({
                 borderRadius: 4,
                 boxShadow: 3,
                 maxWidth: 800,
-                width: 800,
+                minWidth: 400,
             }}
         >
             <Box
@@ -234,7 +234,7 @@ const MidScreenControl = ({
                 />
             </Box>
 
-            <Box sx={{ width: 600, mt: 3 }}>
+            <Box sx={{ minWidth: 400, mt: 3 }}>
                 <Slider
                     aria-label="Always visible"
                     value={animationFrame}
