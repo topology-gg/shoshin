@@ -500,7 +500,6 @@ export default class Simulator extends Phaser.Scene {
         characterName: string
     ) {
         // Extract from frame
-        console.log('setPlayerFrameHelper, frame=', frame);
         const bodyState = frame.body_state.state;
         const bodyStateCounter = frame.body_state.counter;
         const bodyStateDir = frame.body_state.dir;
@@ -870,12 +869,14 @@ export default class Simulator extends Phaser.Scene {
             this.setPlayerOnePointer(agentFrame0);
             this.setPlayerTwoPointer(agentFrame1);
 
-            eventsCenter.emit('onFrameDataShow',[agentFrame0, agentFrame1] as FrameLike[]);
-
+            eventsCenter.emit('frame-data-show', [
+                agentFrame0,
+                agentFrame1,
+            ] as FrameLike[]);
         } else {
             this.hideDebug();
 
-            eventsCenter.emit('onFrameDataHide',null);
+            eventsCenter.emit('frame-data-hide', null);
         }
     }
 

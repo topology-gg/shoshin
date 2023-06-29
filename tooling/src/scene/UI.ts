@@ -53,19 +53,51 @@ export default {
         });
 
         this.debug_info_objects = {};
-        [0,1].forEach(index => {
+        const borderWidth = 220;
+        const borderHeight = 86.5;
+        const borderStrokeWidth = 4;
+        const topMargin = 10;
+        const topPadding = 5;
+        const leftMargin = 5;
+        [0, 1].forEach((index) => {
+            const x = index == 0 ? 10 : 580;
             this.debug_info_objects[index] = {};
-            ['body_state', 'body_counter', 'action', 'position'].forEach( (stats, stats_i) => {
-                this.debug_info_objects[index][stats] = {};
-                const x = index == 0 ? 10 : 600;
-                const y = 10 * stats_i;
-                this.debug_info_objects[index][stats]['text'] = this.add.text(x, y, '', {
-                    fontFamily: 'sans-serif',
-                    fontSize: '18px',
-                    color: '#333333',
-                    // padding: { left: null, right: 30 },
-                });
-            })
+
+            this.debug_info_objects[index]['border'] =
+                this.add.rectangle(x+borderWidth/2-leftMargin, borderHeight/2+topMargin, borderWidth, borderHeight)
+                .setStrokeStyle(borderStrokeWidth, 0x0, 0.2)
+                .setVisible(false);
+
+            ['body_state', 'body_counter', 'action', 'position'].forEach(
+                (stats, stats_i) => {
+                    const rowHeight = 20.5;
+                    const y = rowHeight * stats_i + topMargin + topPadding;
+                    const descWidth = 120;
+
+                    this.debug_info_objects[index][stats] = {};
+
+                    this.debug_info_objects[index][stats]['bg'] =
+                        this.add.rectangle(x+borderWidth/2-5, y+7.5, borderWidth-5, rowHeight)
+                        .setFillStyle(0x0, stats_i%2==0 ? 0.6 : 0.7)
+                        .setStrokeStyle(0, 0x0, 0.0)
+                        .setVisible(false);
+
+                    this.debug_info_objects[index][stats]['desc'] =
+                        this.add.text(x, y, '', {
+                            fontFamily: 'sans-serif',
+                            fontSize: '15px',
+                            color: '#fff',
+                        });
+
+                    this.debug_info_objects[index][stats]['data'] =
+                        this.add.text(x + descWidth, y, '', {
+                            fontFamily: 'sans-serif',
+                            fontSize: '15px',
+                            fontStyle: 'bold',
+                            color: '#fff',
+                        });
+                }
+            );
         });
 
         eventsCenter
@@ -136,21 +168,52 @@ export default {
         },
 
         onFrameDataShow: function (frames: FrameLike[]) {
-            [0,1].forEach(index => {
-                this.debug_info_objects[index]['body_state']['text'].setText(`${frames[index].body_state.state}`);
-                this.debug_info_objects[index]['body_counter']['text'].setText(`${frames[index].body_state.counter}`);
-                this.debug_info_objects[index]['action']['text'].setText(`${ (frames[index] as Frame).action }`);
-                this.debug_info_objects[index]['position']['text'].setText(`(${frames[index].physics_state.pos.x},${frames[index].physics_state.pos.y})`);
-            })
+
+            [0, 1].forEach((index) => {
+                this.debug_info_objects[index]['border'].setVisible(true);
+
+                // body state
+                this.debug_info_objects[index]['body_state']['data'].setText(
+                    `${frames[index].body_state.state}`
+                );
+                this.debug_info_objects[index]['body_state']['desc'].setText('Body State');
+                this.debug_info_objects[index]['body_state']['bg'].setVisible(true);
+
+                // body counter
+                this.debug_info_objects[index]['body_counter']['data'].setText(
+                    `${frames[index].body_state.counter}`
+                );
+                this.debug_info_objects[index]['body_counter']['desc'].setText('Body Frame');
+                this.debug_info_objects[index]['body_counter']['bg'].setVisible(true);
+
+                // action
+                this.debug_info_objects[index]['action']['data'].setText(
+                    `${(frames[index] as Frame).action}`
+                );
+                this.debug_info_objects[index]['action']['desc'].setText('Action');
+                this.debug_info_objects[index]['action']['bg'].setVisible(true);
+
+                // position
+                this.debug_info_objects[index]['position']['data'].setText(
+                    `(${frames[index].physics_state.pos.x},${frames[index].physics_state.pos.y})`
+                );
+                this.debug_info_objects[index]['position']['desc'].setText('Position');
+                this.debug_info_objects[index]['position']['bg'].setVisible(true);
+
+            });
         },
 
         onFrameDataHide: function () {
-            [0,1].forEach(index => {
-                this.debug_info_objects[index]['body_state']['text'].setText('');
-                this.debug_info_objects[index]['body_counter']['text'].setText('');
-                this.debug_info_objects[index]['action']['text'].setText('');
-                this.debug_info_objects[index]['position']['text'].setText('');
-            })
+
+            [0, 1].forEach((index) => {
+                this.debug_info_objects[index]['border'].setVisible(false);
+
+                ['body_state', 'body_counter', 'action', 'position'].forEach (stats => {
+                    ['data', 'desc'].forEach (item => {
+                        this.debug_info_objects[index][stats][item].setText('')
+                    })
+                })
+            });
         },
 
         //
