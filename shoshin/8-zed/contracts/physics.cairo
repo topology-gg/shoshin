@@ -3,8 +3,10 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import sign
-from starkware.cairo.common.math_cmp import is_le, is_not_zero
+from starkware.cairo.common.math_cmp import is_le, is_not_zero, is_nn
 from contracts.constants.constants import (
+    LEFT,
+    RIGHT,
     ns_character_type,
     ns_scene,
     ns_stimulus,
@@ -303,28 +305,54 @@ func _physicality{range_check_ptr}(
 
     //
     // 5. Handle direction switching
-    // note: dir==1 when facing right;
+    // note: RIGHT (dir==1); LEFT (dir==0);
     //       direction needs switching when either
     //       (1) p2 on the right facing right (dir==1), and p1 on the left facing left (dir==0), or
     //       (2) p1 on the right facing right (dir==1), and p2 on the left facing left (dir==0).
     //
     let sign_p2_p1_x_diff = sign (curr_physics_state_1.pos.x - curr_physics_state_0.pos.x);
-    let sign_p1_p2_dir_diff = sign (curr_body_state_0.dir - curr_body_state_1.dir);
-
-    // For (1), sign_p2_p1_x_diff is positive, and sign_p1_p2_dir_diff is negative
-    // For (2), sign_p2_p1_x_diff is negative, and sign_p1_p2_dir_diff is positive
-    // hence when sign_p2_p1_x_diff and sign_p1_p2_dir_diff differ, direction switching is needed
     local new_dir_0: felt;
     local new_dir_1: felt;
-    if (sign_p2_p1_x_diff != sign_p1_p2_dir_diff) {
-        // switch direction
-        assert new_dir_0 = curr_body_state_1.dir;
-        assert new_dir_1 = curr_body_state_0.dir;
+
+    // only switch direction at the starting frame (counter==0) of the next move
+    if (curr_body_state_0.counter == 0) {
+
+        // if two characters happen to share the same x => don't handle direction switching now
+        if (sign_p2_p1_x_diff == 0) {
+            assert new_dir_0 = curr_body_state_0.dir;
+        } else {
+            // handle direction switching
+            if (sign_p2_p1_x_diff == 1) {
+                // p1 on the left, should face right
+                assert new_dir_0 = RIGHT;
+            } else {
+                assert new_dir_0 = LEFT;
+            }
+        }
     } else {
-        // don't switch direction
+        // maintain direction
         assert new_dir_0 = curr_body_state_0.dir;
+    }
+
+    if (curr_body_state_1.counter == 0) {
+
+        // if two characters happen to share the same x => don't handle direction switching now
+        if (sign_p2_p1_x_diff == 0) {
+            assert new_dir_1 = curr_body_state_1.dir;
+        } else {
+            // handle direction switching
+            if (sign_p2_p1_x_diff == 1) {
+                // p2 on the right, should face left
+                assert new_dir_1 = LEFT;
+            } else {
+                assert new_dir_1 = RIGHT;
+            }
+        }
+    } else {
+        // maintain direction
         assert new_dir_1 = curr_body_state_1.dir;
     }
+
 
     //
     // 6. Produce stimuli
