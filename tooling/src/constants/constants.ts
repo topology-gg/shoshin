@@ -115,6 +115,9 @@ export const actionstoBodyState = [
     actionsToBodyStateAntoc,
 ];
 
+export const LEFT = 0;
+export const RIGHT = 1;
+
 export const adjustmentForCharacter = (
     characterName: string,
     bodyStateName: string,

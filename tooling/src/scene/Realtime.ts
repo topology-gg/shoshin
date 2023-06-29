@@ -5,6 +5,8 @@ import {
     OFFENSIVE_AGENT,
     TICK_IN_SECONDS,
     characterActionToNumber,
+    LEFT,
+    RIGHT,
 } from '../constants/constants';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
 import { runRealTimeFromContext } from '../hooks/useRunRealtime';
@@ -234,13 +236,21 @@ export default class RealTime extends Platformer {
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
-                    ]['MoveBackward'];
+                    ][
+                        this.state.agent_0.body_state.dir == RIGHT
+                            ? 'MoveBackward'
+                            : 'MoveForward'
+                    ];
             } else if (this.keyboard.d.isDown) {
                 // move right
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
-                    ]['MoveForward'];
+                    ][
+                        this.state.agent_0.body_state.dir == RIGHT
+                            ? 'MoveForward'
+                            : 'MoveBackward'
+                    ];
             } else if (this.keyboard.j.isDown) {
                 //attack # 1
                 this.player_action =
@@ -254,17 +264,25 @@ export default class RealTime extends Platformer {
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ][this.character_type_0 == 1 ? 'Vert' : 'Upswing'];
             } else if (this.keyboard.q.isDown) {
-                // dash back
+                // dash left
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
-                    ]['DashBackward'];
+                    ][
+                        this.state.agent_0.body_state.dir == RIGHT
+                            ? 'DashBackward'
+                            : 'DashForward'
+                    ];
             } else if (this.keyboard.e.isDown) {
-                // dash forward
+                // dash right
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
-                    ]['DashForward'];
+                    ][
+                        this.state.agent_0.body_state.dir == RIGHT
+                            ? 'DashForward'
+                            : 'DashBackward'
+                    ];
             } else if (this.keyboard.l.isDown && this.character_type_0 == 0) {
                 // jessica's attack # 3
                 this.player_action =
