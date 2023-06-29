@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { bodyStateNumberToName } from '../constants/constants';
+import { bodyStateNumberToName, LEFT, RIGHT } from '../constants/constants';
 import { spriteDataPhaser } from '../constants/sprites';
 import { FrameLike, RealTimeFrameScene, Rectangle } from '../types/Frame';
 import { SimulatorProps } from '../types/Simulator';
@@ -7,6 +7,7 @@ import { GameModes } from '../types/Simulator';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
 import { BodystatesAntoc, BodystatesJessica } from '../types/Condition';
 import eventsCenter from '../Game/EventsCenter';
+import { Body } from 'matter';
 
 const ARENA_WIDTH = 1600;
 const DEFAULT_ZOOM = 1.7;
@@ -22,7 +23,10 @@ const HITBOX_STROKE_WIDTH = 1.5;
 
 const PLAYER_POINTER_DIM = 20;
 
-const EFFECT_FRAME_RATE = 30;
+// Effects
+const DASH_SMOKE_SCALE = 0.1;
+const JUMP_SMOKE_SCALE_X = 0.1;
+const JUMP_SMOKE_SCALE_Y = 0.09;
 
 enum CombatEvent {
     Block = 'Block',
@@ -80,6 +84,8 @@ export default class Simulator extends Phaser.Scene {
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
 
     sparkSprites: Phaser.GameObjects.Sprite[];
+    dashSmokeSprites: Phaser.GameObjects.Sprite[];
+    jumpSmokeSprites: Phaser.GameObjects.Sprite[];
 
     player_one_action_confirm = false;
     player_two_action_confirm = false;
@@ -281,6 +287,22 @@ export default class Simulator extends Phaser.Scene {
             frameWidth: 730,
             frameHeight: 731,
         });
+        this.load.spritesheet(
+            'dash-smoke',
+            'images/effects/dash-smoke/spritesheet.png',
+            {
+                frameWidth: 1251,
+                frameHeight: 1251,
+            }
+        );
+        this.load.spritesheet(
+            'jump-smoke',
+            'images/effects/jump-smoke/spritesheet.png',
+            {
+                frameWidth: 1182,
+                frameHeight: 1182,
+            }
+        );
     }
 
     initializeCameraSettings() {
@@ -321,26 +343,67 @@ export default class Simulator extends Phaser.Scene {
     }
 
     initializeEffects() {
-        const config = {
+        this.anims.create({
             key: 'sparkAnim',
-            frameRate: EFFECT_FRAME_RATE,
+            frameRate: 30,
             frames: this.anims.generateFrameNumbers('spark', {
                 start: 0,
                 end: 6,
             }),
             repeat: 0,
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
-        };
-        this.anims.create(config);
+        });
+
+        this.anims.create({
+            key: 'dashSmokeAnim',
+            frameRate: 10,
+            frames: this.anims.generateFrameNumbers('dash-smoke', {
+                start: 0,
+                end: 5,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
+        this.anims.create({
+            key: 'jumpSmokeAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('jump-smoke', {
+                start: 0,
+                end: 8,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
 
         this.sparkSprites = [];
+        this.dashSmokeSprites = [];
+        this.jumpSmokeSprites = [];
         [0, 1].forEach((_) => {
             this.sparkSprites.push(
                 this.add
                     .sprite(0, 0, 'spark')
                     .setScale(0.2)
                     .setVisible(false)
-                    .setAlpha(0.7)
+                    .setAlpha(0.9)
+                    .setDepth(100)
+            );
+            this.dashSmokeSprites.push(
+                this.add
+                    .sprite(0, 0, 'dash-smoke')
+                    .setScale(DASH_SMOKE_SCALE)
+                    .setVisible(false)
+                    .setAlpha(1.0)
+                    .setDepth(100)
+                    .setFlipX(true)
+            );
+
+            this.jumpSmokeSprites.push(
+                this.add
+                    .sprite(0, 0, 'jump-smoke')
+                    .setScale(JUMP_SMOKE_SCALE_X, JUMP_SMOKE_SCALE_Y)
+                    .setVisible(false)
+                    .setAlpha(1.0)
                     .setDepth(100)
             );
         });
@@ -759,7 +822,9 @@ export default class Simulator extends Phaser.Scene {
     }
 
     updateEffects(prevFrames, frames: FrameLike[]) {
-        // check if any player is in hurt state with counter==1
+        //
+        // spark
+        //
         [
             [0, 1],
             [1, 0],
@@ -809,6 +874,76 @@ export default class Simulator extends Phaser.Scene {
                     .setPosition(x, y)
                     .setVisible(true)
                     .play('sparkAnim');
+            }
+        });
+
+        //
+        // dash-smoke
+        //
+        const dashBodyStates = [
+            BodystatesJessica.DashForward,
+            BodystatesJessica.DashBackward,
+            BodystatesAntoc.DashForward,
+            BodystatesAntoc.DashBackward,
+        ];
+        [0, 1].forEach((playerIndex) => {
+            // get frame and qualify
+            const frame = frames[playerIndex];
+            if (frame.body_state.counter != 0) return;
+            if (!dashBodyStates.includes(frame.body_state.state)) return;
+
+            // configure sprite
+            const x =
+                frame.body_state.dir == RIGHT
+                    ? frame.physics_state.pos.x +
+                      (frame.body_state.state ==
+                          BodystatesJessica.DashForward ||
+                      frame.body_state.state == BodystatesAntoc.DashForward
+                          ? 25
+                          : 35)
+                    : frame.physics_state.pos.x +
+                      frame.hitboxes.body.dimension.x +
+                      (frame.body_state.state ==
+                          BodystatesJessica.DashForward ||
+                      frame.body_state.state == BodystatesAntoc.DashForward
+                          ? -25
+                          : -35);
+            const y = -1 * frame.physics_state.pos.y - 25;
+
+            // play animation
+            this.dashSmokeSprites[playerIndex]
+                .setPosition(x, y)
+                .setVisible(true)
+                .play('dashSmokeAnim')
+                .setFlipX(
+                    frame.body_state.dir ==
+                        (frame.body_state.state ==
+                            BodystatesJessica.DashForward ||
+                        frame.body_state.state == BodystatesAntoc.DashForward
+                            ? RIGHT
+                            : LEFT)
+                );
+        });
+
+        //
+        // jump-smoke
+        //
+        [0, 1].forEach((playerIndex) => {
+            const frame = frames[playerIndex];
+            if (
+                (frame.body_state.state == BodystatesAntoc.Jump ||
+                    frame.body_state.state == BodystatesJessica.Jump) &&
+                frame.body_state.counter == 0
+            ) {
+                const x =
+                    frame.physics_state.pos.x +
+                    frame.hitboxes.body.dimension.x / 2;
+                const y = -1 * frame.physics_state.pos.y - 10;
+
+                this.jumpSmokeSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('jumpSmokeAnim');
             }
         });
     }
