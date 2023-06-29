@@ -1,68 +1,40 @@
 import { Box, Button, Typography } from '@mui/material';
 import styles from './MainMenu.module.css';
 import { GameModes } from '../../types/Simulator';
+import ShoshinMenu, { ShoshinMenuItem } from './ShoshinMenu';
 
 const MainMenu = ({ transition }) => {
+    const items: ShoshinMenuItem[] = [
+        {
+            title: 'Play',
+            onClick: () => transition(GameModes.simulation),
+        },
+        {
+            title: 'Arcade Mode',
+            onClick: () => transition(GameModes.realtime),
+        },
+        {
+            title: 'About Shoshin',
+        },
+        {
+            title: 'Profile',
+        },
+        {
+            title: 'Settings',
+        },
+    ];
+
+    const title = 'Shoshin';
     return (
         <Box
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            height="100vh"
+            style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh', // Set the container height to 100% viewport height
+            }}
         >
-            <Typography variant="h4" gutterBottom>
-                Shoshin
-            </Typography>
-            <Button
-                variant="text"
-                className={styles.MenuButton}
-                color="primary"
-                size="large"
-                onClick={() => transition(GameModes.simulation)}
-            >
-                Play
-            </Button>
-            <Button
-                variant="text"
-                className={styles.MenuButton}
-                color="primary"
-                size="large"
-                fullWidth
-                onClick={() => transition(GameModes.realtime)}
-            >
-                Arcade Mode
-            </Button>
-            <Button
-                variant="text"
-                className={styles.MenuButton}
-                color="primary"
-                size="large"
-                fullWidth
-                disabled={true}
-            >
-                About Shoshin
-            </Button>
-            <Button
-                variant="text"
-                className={styles.MenuButton}
-                color="primary"
-                size="large"
-                fullWidth
-                disabled={true}
-            >
-                Profile
-            </Button>
-            <Button
-                variant="text"
-                className={styles.MenuButton}
-                color="primary"
-                size="large"
-                fullWidth
-                disabled={true}
-            >
-                Settings
-            </Button>
+            <ShoshinMenu menuTitle={title} menuItems={items} />
         </Box>
     );
 };

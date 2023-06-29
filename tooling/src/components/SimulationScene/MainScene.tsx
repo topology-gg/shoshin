@@ -28,6 +28,7 @@ import { Condition } from '../../types/Condition';
 import SquareOverlayMenu from './SuccessMenu';
 import { Medal, Opponent } from '../layout/SceneSelector';
 import mainSceneStyles from './MainScene.module.css';
+import PauseMenu from './PauseMenu';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -292,6 +293,9 @@ const SimulationScene = (props: SimulationProps) => {
                         performance={performance}
                         handleContinueClick={handleContinueClick}
                     />
+                ) : null}
+                {false ? (
+                    <PauseMenu onQuit={onQuit} onChooseCharacter={onContinue} />
                 ) : null}
                 <Grid container spacing={{ md: 0, lg: 2 }}>
                     <Grid item lg={0} xl={1} />
