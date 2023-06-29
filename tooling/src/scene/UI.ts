@@ -1,4 +1,5 @@
 import eventsCenter from '../Game/EventsCenter';
+import { Frame, FrameLike } from '../types/Frame';
 
 export default {
     key: 'ui',
@@ -51,12 +52,30 @@ export default {
             padding: { left: null, right: 30 },
         });
 
+        this.debug_info_objects = {};
+        [0,1].forEach(index => {
+            this.debug_info_objects[index] = {};
+            ['body_state', 'body_counter', 'action', 'position'].forEach( (stats, stats_i) => {
+                this.debug_info_objects[index][stats] = {};
+                const x = index == 0 ? 10 : 600;
+                const y = 10 * stats_i;
+                this.debug_info_objects[index][stats]['text'] = this.add.text(x, y, '', {
+                    fontFamily: 'sans-serif',
+                    fontSize: '18px',
+                    color: '#333333',
+                    // padding: { left: null, right: 30 },
+                });
+            })
+        });
+
         eventsCenter
             .on('timer-change', this.onTimerChange, this)
             .on('timer-reset', this.onTimerReset, this)
             .on('timer-hide', this.onTimerHide, this)
             .on('player-event-create', this.onPlayerEventCreate, this)
-            .on('player-event-remove', this.onPlayerEventRemove, this);
+            .on('player-event-remove', this.onPlayerEventRemove, this)
+            .on('frame-data-show', this.onFrameDataShow, this)
+            .on('frame-data-hide', this.onFrameDataHide, this);
 
         // this.scene.get('play').events
         // eventsCenter
@@ -114,6 +133,24 @@ export default {
             } else {
                 this.PlayerTwoEvent?.setText(``);
             }
+        },
+
+        onFrameDataShow: function (frames: FrameLike[]) {
+            [0,1].forEach(index => {
+                this.debug_info_objects[index]['body_state']['text'].setText(`${frames[index].body_state.state}`);
+                this.debug_info_objects[index]['body_counter']['text'].setText(`${frames[index].body_state.counter}`);
+                this.debug_info_objects[index]['action']['text'].setText(`${ (frames[index] as Frame).action }`);
+                this.debug_info_objects[index]['position']['text'].setText(`(${frames[index].physics_state.pos.x},${frames[index].physics_state.pos.y})`);
+            })
+        },
+
+        onFrameDataHide: function () {
+            [0,1].forEach(index => {
+                this.debug_info_objects[index]['body_state']['text'].setText('');
+                this.debug_info_objects[index]['body_counter']['text'].setText('');
+                this.debug_info_objects[index]['action']['text'].setText('');
+                this.debug_info_objects[index]['position']['text'].setText('');
+            })
         },
 
         //

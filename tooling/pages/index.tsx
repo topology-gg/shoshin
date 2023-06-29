@@ -109,7 +109,6 @@ export const LayerContext = createContext([]);
 export const CharacterContext = createContext(Character.Jessica);
 
 export default function Home() {
-    console.log('STARTER_AGENT:', STARTER_AGENT);
     // Constants
     const LATENCY = 70;
     const runnable = true;
