@@ -25,6 +25,11 @@
     font-variation-settings: 'wght' 400;
 }
 
+@font-face {
+    font-family: 'HVDPoster';
+    src: url('./fonts/HVD_Poster_PC/HVD_Poster.ttf') format('truetype');
+}
+
 html,
 body {
     padding: 0;

@@ -430,36 +430,36 @@ export default class Simulator extends Phaser.Scene {
             this.STROKE_STYLE_BODY_HITBOX,
             HITBOX_STROKE_WIDTH,
             0x0,
-            0.3
+            0.4
         );
         this.player_two_body_hitbox = this.addRectangleHelper(
             this.STROKE_STYLE_BODY_HITBOX,
             HITBOX_STROKE_WIDTH,
             0x0,
-            0.3
+            0.4
         );
         this.player_one_action_hitbox = this.addRectangleHelper(
             this.STROKE_STYLE_ACTION_HITBOX,
             HITBOX_STROKE_WIDTH,
             0x0,
-            0.3
+            0.4
         );
         this.player_two_action_hitbox = this.addRectangleHelper(
             this.STROKE_STYLE_ACTION_HITBOX,
             HITBOX_STROKE_WIDTH,
             0x0,
-            0.3
+            0.4
         );
 
         this.player_pointers = [];
         [0, 1].forEach((index) => {
             const cir = this.addCircleHelper(
                 0x0,
-                0.5,
+                1,
                 index == 0 ? 0xff0000 : 0x0000ff,
-                0.3
+                0.6
             );
-            const text = this.addTextHelper(0x555);
+            const text = this.addTextHelper('0x555');
             const playerPointer = {
                 cir: cir,
                 text: text,
@@ -467,10 +467,10 @@ export default class Simulator extends Phaser.Scene {
             this.player_pointers.push(playerPointer);
         });
 
-        this.player_one_body_hitbox_text = this.addTextHelper(0xfff);
-        this.player_two_body_hitbox_text = this.addTextHelper(0xfff);
-        this.player_one_action_hitbox_text = this.addTextHelper(0xfff);
-        this.player_two_action_hitbox_text = this.addTextHelper(0xfff);
+        this.player_one_body_hitbox_text = this.addTextHelper('0xfff');
+        this.player_two_body_hitbox_text = this.addTextHelper('0xfff');
+        this.player_one_action_hitbox_text = this.addTextHelper('0xfff');
+        this.player_two_action_hitbox_text = this.addTextHelper('0xfff');
 
         this.cameras.main.centerOn(0, yDisplacementFromCenterToGround);
         this.cameras.main.setBackgroundColor('#FFFFFF');
@@ -525,8 +525,8 @@ export default class Simulator extends Phaser.Scene {
         return tri;
     }
 
-    addTextHelper(colorHex: number) {
-        const text = this.add.text(0, 0, '', { color: colorHex.toString() });
+    addTextHelper(colorHexString: string) {
+        const text = this.add.text(0, 0, '', { color: '#fff' });
         text.setFontSize(12).setAlign('center');
         return text;
     }
@@ -563,7 +563,6 @@ export default class Simulator extends Phaser.Scene {
         characterName: string
     ) {
         // Extract from frame
-        console.log('setPlayerFrameHelper, frame=', frame);
         const bodyState = frame.body_state.state;
         const bodyStateCounter = frame.body_state.counter;
         const bodyStateDir = frame.body_state.dir;
@@ -1011,8 +1010,15 @@ export default class Simulator extends Phaser.Scene {
             this.setPlayerTwoActionHitbox(agentFrame1);
             this.setPlayerOnePointer(agentFrame0);
             this.setPlayerTwoPointer(agentFrame1);
+
+            eventsCenter.emit('frame-data-show', [
+                agentFrame0,
+                agentFrame1,
+            ] as FrameLike[]);
         } else {
             this.hideDebug();
+
+            eventsCenter.emit('frame-data-hide', null);
         }
     }
 
