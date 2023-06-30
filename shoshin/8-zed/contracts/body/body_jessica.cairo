@@ -504,6 +504,11 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
         }
 
+        // if reach counter==4 and still in air => remain in counter==4
+        if (counter == 4 and stimulus_type != ns_stimulus.GROUND) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, counter, integrity, stamina, dir, FALSE) );
+        }
+
         // else stay in JUMP and increment counter
         return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, counter + 1, integrity, stamina, dir, FALSE) );
     }
@@ -588,6 +593,11 @@ func _body_jessica {range_check_ptr}(
         // if counter is full => return to IDLE
         if (counter == ns_jessica_body_state_duration.BIRDSWING - 1) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        }
+
+        // if reach counter==5 and still in air => remain in counter==5
+        if (counter == 5 and stimulus_type != ns_stimulus.GROUND) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, counter, integrity, stamina, dir, FALSE) );
         }
 
         // else stay in BIRDSWING and increment counter

@@ -23,7 +23,7 @@ namespace ns_jessica_dynamics {
 
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
 
-    const JUMP_VEL_Y_FP = 350 * ns_dynamics.SCALE_FP;
+    const JUMP_VEL_Y_FP = 400 * ns_dynamics.SCALE_FP;
 
     const GATOTSU_VEL_X_FP = 1200 * ns_dynamics.SCALE_FP;
 }
