@@ -3,6 +3,7 @@ import {
     Box,
     Button,
     Chip,
+    Divider,
     Grid,
     MenuItem,
     Select,
@@ -21,6 +22,8 @@ import BlurrableListItemText from '../../ui/BlurrableListItemText';
 import { Action, CHARACTERS_ACTIONS } from '../../../types/Action';
 import styles from './Gambit.module.css';
 import { VerticalAlignCenter } from '@mui/icons-material';
+import Actions from '../../ComboEditor/Actions';
+import ComboEditor from '../ComboEditor';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 // I think we can just parse this index from id={....}
@@ -260,9 +263,27 @@ const Layer = ({
 
     let actions = CHARACTERS_ACTIONS[characterIndex].map((a) => a.display.name);
 
+    // Create new combo
+    // creates new combo
+    //Selecting action after creating combo
+    // Remove combo of that layer from array, decrement all combo references with higher index
+    // Edit Combo
+    // adds actions to a combo
+    // Copy combo and paste Combo
+    // copies a combo to another
+    // We can prune repeats in build agent :)
+
     combos.forEach((_, i) => {
         actions.push(`Combo ${i}`);
     });
+
+    const [editingCombo, setEditingCombo] = useState<number>(-1);
+
+    const createCombo = (event: React.MouseEvent<HTMLButtonElement>) => {
+        let id = event.currentTarget.id.split('-');
+        let menuIndex = parseInt(id[id.length - 1]);
+        setEditingCombo(menuIndex);
+    };
 
     const onActionSelect = (action: string) => {
         if (!action.includes('Combo')) {
@@ -328,19 +349,25 @@ const Layer = ({
 
     const action: Action = actionIndexToAction(layer.action.id, characterIndex);
 
+    console.log('combo', combos, layer.action);
+    const comboDisplay = layer.action.isCombo ? (
+        <ComboEditor
+            editingCombo={combos[layer.action.id - 101]}
+            isReadOnly={true}
+            characterIndex={characterIndex}
+        />
+    ) : null;
     return (
-        <Grid xs={12}>
-            <Box
-                key={`button-wrapper-${i}`}
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    width: '100%',
-                    border: '1px solid #ddd',
-                    marginBottom: '4px',
-                    borderRadius: '20px',
-                }}
-            >
+        <Box
+            key={`button-wrapper-${i}`}
+            sx={{
+                width: '100%',
+                border: '1px solid #ddd',
+                marginBottom: '4px',
+                borderRadius: '20px',
+            }}
+        >
+            <Grid container alignItems={'center'}>
                 <Grid item xs={gridOrderPortion}>
                     <div style={{ textAlign: 'center', fontSize: '13px' }}>
                         {i + 1}
@@ -470,6 +497,12 @@ const Layer = ({
                             </MenuItem>
                         );
                     })}
+                    <MenuItem>
+                        id={`actions-menu-${i}`}
+                        <BlurrableListItemText onClick={createCombo}>
+                            <Typography>+ Combo</Typography>
+                        </BlurrableListItemText>
+                    </MenuItem>
                 </Menu>
                 <Grid item xs={gridRemovePortion}>
                     <IconButton
@@ -480,8 +513,15 @@ const Layer = ({
                         <DeleteIcon sx={{ fontSize: '16px', color: '#888' }} />
                     </IconButton>
                 </Grid>
-            </Box>
-        </Grid>
+                <Grid item xs={12}>
+                    <Divider variant="middle" />
+                </Grid>
+                <Grid item xs={gridOrderPortion} />
+                <Grid item xs={gridActionPortion + gridConditionPortion}>
+                    {layer.action.isCombo ? comboDisplay : null}
+                </Grid>
+            </Grid>
+        </Box>
     );
 };
 
