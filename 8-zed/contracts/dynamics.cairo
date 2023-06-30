@@ -84,7 +84,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_antoc_body_state.STEP_FORWARD,
             ns_jessica_body_state.GATOTSU,
             ns_antoc_body_state.LAUNCHED,
-            ns_jessica_body_state.BIRDSWING,
+            ns_antoc_body_state.DROP_SLASH,
 
             ns_antoc_dynamics.MAX_VEL_MOVE_FP,
             ns_antoc_dynamics.MIN_VEL_MOVE_FP,

@@ -98,7 +98,7 @@ namespace ns_jessica_stamina_effect {
     const SLASH = 0;
     const UPSWING = 0;
     const SIDECUT = 0;
-    const GATOTSU = -200;
+    const GATOTSU = -250;
     const LOW_KICK = 0;
 }
 
