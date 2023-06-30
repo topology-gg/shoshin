@@ -16,12 +16,14 @@ namespace ns_dynamics {
     const SCALE_FP_SQRT = 10 ** 2;
     const DT_FP = 10 ** 3;  // 0.1
 
-    const GRAVITY_ACC_FP = -1700 * ns_dynamics.SCALE_FP;
+    const GRAVITY_ACC_FP = -2000 * ns_dynamics.SCALE_FP;
     const FRICTION_ACC_FP = -10000 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_stamina {
-    const INIT_STAMINA = 1000;
+    // full 1000
+    const INIT_STAMINA = 100;
+    const MAX_STAMINA = 1000;
 }
 
 namespace ns_common_stamina_effect {

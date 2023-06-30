@@ -21,9 +21,12 @@ namespace ns_jessica_dynamics {
     const KNOCK_VEL_X_FP = 150 * ns_dynamics.SCALE_FP;
     const KNOCK_VEL_Y_FP = 350 * ns_dynamics.SCALE_FP;
 
+    const LAUNCHED_VEL_X_FP = 20 * ns_dynamics.SCALE_FP;
+    const LAUNCHED_VEL_Y_FP = 600 * ns_dynamics.SCALE_FP;
+
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
 
-    const JUMP_VEL_Y_FP = 350 * ns_dynamics.SCALE_FP;
+    const JUMP_VEL_Y_FP = 400 * ns_dynamics.SCALE_FP;
 
     const GATOTSU_VEL_X_FP = 1200 * ns_dynamics.SCALE_FP;
 }
@@ -72,26 +75,25 @@ namespace ns_jessica_character_dimension {
     const GATOTSU_HITBOX_H = 20;
     const GATOTSU_HITBOX_Y = BODY_HITBOX_H / 2 + 10;
 
+    const BIRDSWING_HITBOX_W = 70;
+    const BIRDSWING_HITBOX_H = BODY_HITBOX_H * 2 / 4;
+    const BIRDSWING_HITBOX_Y = BODY_HITBOX_H / 4;
+
     const BODY_KNOCKED_ADJUST_W = BODY_KNOCKED_LATE_HITBOX_W - BODY_HITBOX_W;
 }
 
 namespace ns_jessica_action {
     const NULL = 0;
-
     const SLASH = 1;
     const UPSWING = 2;
     const SIDECUT = 3;
     const BLOCK = 4;
-
     const MOVE_FORWARD  = 5;
     const MOVE_BACKWARD = 6;
     const DASH_FORWARD  = 7;
     const DASH_BACKWARD = 8;
-
     const JUMP = 9;
-
     const GATOTSU = 10;
-
     const LOW_KICK = 11;
 }
 
@@ -109,6 +111,7 @@ namespace ns_jessica_stimulus {
     const SIDECUT_DAMAGE = 75;
     const GATOTSU_DAMAGE = 150;
     const LOW_KICK_DAMAGE = 50;
+    const BIRDSWING_DAMAGE = 75;
 }
 
 namespace ns_jessica_body_state_duration {
@@ -127,6 +130,8 @@ namespace ns_jessica_body_state_duration {
     const JUMP = 6;
     const GATOTSU = 7;
     const LOW_KICK = 6;
+    const BIRDSWING = 6;
+    const LAUNCHED = 11;
 }
 
 namespace ns_jessica_body_state {
@@ -145,6 +150,8 @@ namespace ns_jessica_body_state {
     const JUMP = 130; // 7 frames
     const GATOTSU = 140;
     const LOW_KICK = 150;
+    const BIRDSWING = 160;
+    const LAUNCHED = 170; // 11 frames
 }
 
 namespace ns_jessica_body_state_qualifiers {
@@ -197,6 +204,13 @@ namespace ns_jessica_body_state_qualifiers {
         return 0;
     }
 
+    func is_in_birdswing_active {range_check_ptr}(state: felt, counter: felt) -> felt {
+        if (state == ns_jessica_body_state.BIRDSWING and counter == 3) {
+            return 1;
+        }
+        return 0;
+    }
+
     func is_in_block_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_jessica_body_state.BLOCK and counter == 1) {
             return 1;
@@ -205,10 +219,17 @@ namespace ns_jessica_body_state_qualifiers {
     }
 
     func is_in_knocked {range_check_ptr}(state: felt) -> felt {
-        if (state != ns_jessica_body_state.KNOCKED) {
-            return 0;
+        if (state == ns_jessica_body_state.KNOCKED) {
+            return 1;
         }
-        return 1;
+        return 0;
+    }
+
+    func is_in_launched {range_check_ptr}(state: felt) -> felt {
+        if (state == ns_jessica_body_state.LAUNCHED) {
+            return 1;
+        }
+        return 0;
     }
 
     func is_in_various_states {range_check_ptr}(state: felt, counter: felt) -> (
@@ -224,8 +245,12 @@ namespace ns_jessica_body_state_qualifiers {
         let bool_body_in_sidecut_active = is_in_sidecut_active (state, counter);
         let bool_body_in_gatotsu_active = is_in_gatotsu_active (state, counter);
         let bool_body_in_low_kick_active = is_in_low_kick_active (state, counter);
-        let bool_body_in_atk_active     = bool_body_in_slash_active + bool_body_in_upswing_active + bool_body_in_sidecut_active + bool_body_in_gatotsu_active + bool_body_in_low_kick_active;
-        let bool_body_in_knocked        = is_in_knocked (state);
+        let bool_body_in_birdswing_active = is_in_birdswing_active (state, counter);
+        let bool_body_in_atk_active     = bool_body_in_slash_active + bool_body_in_upswing_active + bool_body_in_sidecut_active + bool_body_in_gatotsu_active + bool_body_in_low_kick_active + bool_body_in_birdswing_active;
+
+        let bool_body_knocked           = is_in_knocked (state);
+        let bool_body_launched          = is_in_launched(state);
+        let bool_body_in_knocked        = bool_body_knocked + bool_body_launched;
         let bool_body_in_block          = is_in_block_active (state, counter);
         let bool_body_in_active         = bool_body_in_atk_active + bool_body_in_block;
 
@@ -249,7 +274,7 @@ namespace ns_jessica_hitbox {
         alloc_locals;
 
         // knocked
-        if (body_state == ns_jessica_body_state.KNOCKED) {
+        if ( (body_state-ns_jessica_body_state.KNOCKED) * (body_state-ns_jessica_body_state.LAUNCHED) == 0 ) {
             let is_counter_le_1 = is_le(body_counter, 1);
             if (is_counter_le_1 == 1) {
                 return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H));
@@ -332,9 +357,15 @@ namespace ns_jessica_hitbox {
                                 assert ATTACK_HITBOX_W = ns_jessica_character_dimension.GATOTSU_HITBOX_W;
                                 assert ATTACK_HITBOX_H = ns_jessica_character_dimension.GATOTSU_HITBOX_H;
                             } else {
-                                assert ATTACK_HITBOX_Y = ns_jessica_character_dimension.LOW_KICK_HITBOX_Y;
-                                assert ATTACK_HITBOX_W = ns_jessica_character_dimension.LOW_KICK_HITBOX_W;
-                                assert ATTACK_HITBOX_H = ns_jessica_character_dimension.LOW_KICK_HITBOX_H;
+                                if (body_state == ns_jessica_body_state.LOW_KICK) {
+                                    assert ATTACK_HITBOX_Y = ns_jessica_character_dimension.LOW_KICK_HITBOX_Y;
+                                    assert ATTACK_HITBOX_W = ns_jessica_character_dimension.LOW_KICK_HITBOX_W;
+                                    assert ATTACK_HITBOX_H = ns_jessica_character_dimension.LOW_KICK_HITBOX_H;
+                                } else {
+                                    assert ATTACK_HITBOX_Y = ns_jessica_character_dimension.BIRDSWING_HITBOX_Y;
+                                    assert ATTACK_HITBOX_W = ns_jessica_character_dimension.BIRDSWING_HITBOX_W;
+                                    assert ATTACK_HITBOX_H = ns_jessica_character_dimension.BIRDSWING_HITBOX_H;
+                                }
                             }
                         }
                     }
