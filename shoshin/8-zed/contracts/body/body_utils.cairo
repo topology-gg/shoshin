@@ -18,11 +18,11 @@ func calculate_integrity_change{range_check_ptr}(integrity: felt, damage: felt) 
 
 func calculate_default_stamina{range_check_ptr}(stamina : felt, character_type : felt) -> felt {
     if (character_type == ns_character_type.JESSICA) {
-        let (updated_stamina_default_recovery, _) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, ns_stamina.INIT_STAMINA);
+        let (updated_stamina_default_recovery, _) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, ns_stamina.MAX_STAMINA);
         return updated_stamina_default_recovery;
 
     } else {
-        let ( updated_stamina_default_recovery, _ ) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, ns_stamina.INIT_STAMINA);
+        let ( updated_stamina_default_recovery, _ ) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, ns_stamina.MAX_STAMINA);
         return updated_stamina_default_recovery;
     }
 }

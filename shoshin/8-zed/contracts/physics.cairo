@@ -407,7 +407,7 @@ func _physicality{range_check_ptr}(
 func is_opp_body_state_launching {range_check_ptr} (
     opp_body_state: felt
 ) -> felt {
-    if (opp_body_state == ns_jessica_body_state.UPSWING) {
+    if ( (opp_body_state - ns_jessica_body_state.UPSWING) * (opp_body_state - ns_antoc_body_state.VERT) == 0 ) {
         return 1;
     }
     return 0;
@@ -425,6 +425,9 @@ func produce_damage_given_opp_body_state {range_check_ptr} (
     if (opp_body_state == ns_antoc_body_state.LOW_KICK) {
         return ns_antoc_stimulus.LOW_KICK_DAMAGE;
     }
+    if (opp_body_state == ns_antoc_body_state.DROP_SLASH) {
+        return ns_antoc_stimulus.DROP_SLASH_DAMAGE;
+    }
     if (opp_body_state == ns_jessica_body_state.SLASH) {
         return ns_jessica_stimulus.SLASH_DAMAGE;
     }
@@ -439,6 +442,9 @@ func produce_damage_given_opp_body_state {range_check_ptr} (
     }
     if (opp_body_state == ns_jessica_body_state.LOW_KICK) {
         return ns_jessica_stimulus.LOW_KICK_DAMAGE;
+    }
+    if (opp_body_state == ns_jessica_body_state.BIRDSWING) {
+        return ns_jessica_stimulus.BIRDSWING_DAMAGE;
     }
 
     with_attr error_message("opponent body state '{opp_body_state}' is not valid for produce_damage_given_opp_body_state()") {
