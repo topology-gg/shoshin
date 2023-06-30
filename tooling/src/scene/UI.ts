@@ -68,7 +68,7 @@ export default {
         const topPadding = 5;
         const leftMargin = 5;
         [0, 1].forEach((index) => {
-            const x = index == 0 ? 10 : 530;
+            const x = index == 0 ? 10 : PHASER_CANVAS_W - borderWidth - 5;
             this.debug_info_objects[index] = {};
 
             this.debug_info_objects[index]['border'] = this.add
