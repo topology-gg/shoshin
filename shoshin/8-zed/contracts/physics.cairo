@@ -407,7 +407,7 @@ func _physicality{range_check_ptr}(
 func is_opp_body_state_launching {range_check_ptr} (
     opp_body_state: felt
 ) -> felt {
-    if (opp_body_state == ns_jessica_body_state.UPSWING) {
+    if ( (opp_body_state - ns_jessica_body_state.UPSWING) * (opp_body_state - ns_antoc_body_state.VERT) == 0 ) {
         return 1;
     }
     return 0;

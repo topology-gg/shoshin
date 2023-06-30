@@ -54,7 +54,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_jessica_body_state.JUMP,
             ns_antoc_body_state.STEP_FORWARD,
             ns_jessica_body_state.GATOTSU,
-            ns_antoc_body_state.LAUNCHED,
+            ns_jessica_body_state.LAUNCHED,
             ns_jessica_body_state.BIRDSWING,
 
             ns_jessica_dynamics.MAX_VEL_MOVE_FP,
@@ -69,8 +69,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_jessica_dynamics.JUMP_VEL_Y_FP,
             0,
             ns_jessica_dynamics.GATOTSU_VEL_X_FP,
-            0,
-            0,
+            ns_jessica_dynamics.LAUNCHED_VEL_X_FP,
+            ns_jessica_dynamics.LAUNCHED_VEL_Y_FP,
             ns_jessica_character_dimension.BODY_KNOCKED_ADJUST_W,
         );
     } else {

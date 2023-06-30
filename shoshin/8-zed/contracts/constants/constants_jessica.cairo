@@ -21,6 +21,9 @@ namespace ns_jessica_dynamics {
     const KNOCK_VEL_X_FP = 150 * ns_dynamics.SCALE_FP;
     const KNOCK_VEL_Y_FP = 350 * ns_dynamics.SCALE_FP;
 
+    const LAUNCHED_VEL_X_FP = 20 * ns_dynamics.SCALE_FP;
+    const LAUNCHED_VEL_Y_FP = 600 * ns_dynamics.SCALE_FP;
+
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
 
     const JUMP_VEL_Y_FP = 400 * ns_dynamics.SCALE_FP;
@@ -128,6 +131,7 @@ namespace ns_jessica_body_state_duration {
     const GATOTSU = 7;
     const LOW_KICK = 6;
     const BIRDSWING = 6;
+    const LAUNCHED = 11;
 }
 
 namespace ns_jessica_body_state {
@@ -147,6 +151,7 @@ namespace ns_jessica_body_state {
     const GATOTSU = 140;
     const LOW_KICK = 150;
     const BIRDSWING = 160;
+    const LAUNCHED = 170; // 11 frames
 }
 
 namespace ns_jessica_body_state_qualifiers {
@@ -214,10 +219,17 @@ namespace ns_jessica_body_state_qualifiers {
     }
 
     func is_in_knocked {range_check_ptr}(state: felt) -> felt {
-        if (state != ns_jessica_body_state.KNOCKED) {
-            return 0;
+        if (state == ns_jessica_body_state.KNOCKED) {
+            return 1;
         }
-        return 1;
+        return 0;
+    }
+
+    func is_in_launched {range_check_ptr}(state: felt) -> felt {
+        if (state == ns_jessica_body_state.LAUNCHED) {
+            return 1;
+        }
+        return 0;
     }
 
     func is_in_various_states {range_check_ptr}(state: felt, counter: felt) -> (
@@ -235,7 +247,10 @@ namespace ns_jessica_body_state_qualifiers {
         let bool_body_in_low_kick_active = is_in_low_kick_active (state, counter);
         let bool_body_in_birdswing_active = is_in_birdswing_active (state, counter);
         let bool_body_in_atk_active     = bool_body_in_slash_active + bool_body_in_upswing_active + bool_body_in_sidecut_active + bool_body_in_gatotsu_active + bool_body_in_low_kick_active + bool_body_in_birdswing_active;
-        let bool_body_in_knocked        = is_in_knocked (state);
+
+        let bool_body_knocked           = is_in_knocked (state);
+        let bool_body_launched          = is_in_launched(state);
+        let bool_body_in_knocked        = bool_body_knocked + bool_body_launched;
         let bool_body_in_block          = is_in_block_active (state, counter);
         let bool_body_in_active         = bool_body_in_atk_active + bool_body_in_block;
 
@@ -259,7 +274,7 @@ namespace ns_jessica_hitbox {
         alloc_locals;
 
         // knocked
-        if (body_state == ns_jessica_body_state.KNOCKED) {
+        if ( (body_state-ns_jessica_body_state.KNOCKED) * (body_state-ns_jessica_body_state.LAUNCHED) == 0 ) {
             let is_counter_le_1 = is_le(body_counter, 1);
             if (is_counter_le_1 == 1) {
                 return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H));

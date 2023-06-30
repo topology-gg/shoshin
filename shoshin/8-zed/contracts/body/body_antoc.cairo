@@ -623,7 +623,7 @@ func _body_antoc {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
-        // if counter is full => return to Idle
+        // if counter is full => return to IDLE
         if (counter == ns_antoc_body_state_duration.LAUNCHED - 1) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
         }

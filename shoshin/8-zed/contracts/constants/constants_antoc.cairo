@@ -201,17 +201,17 @@ namespace ns_antoc_body_state_qualifiers {
     }
 
     func is_in_knocked {range_check_ptr}(state: felt) -> felt {
-        if (state != ns_antoc_body_state.KNOCKED) {
-            return 0;
+        if (state == ns_antoc_body_state.KNOCKED) {
+            return 1;
         }
-        return 1;
+        return 0;
     }
 
     func is_in_launched {range_check_ptr}(state: felt) -> felt {
-        if (state != ns_antoc_body_state.LAUNCHED) {
-            return 0;
+        if (state == ns_antoc_body_state.LAUNCHED) {
+            return 1;
         }
-        return 1;
+        return 0;
     }
 
     func is_in_various_states {range_check_ptr}(state: felt, counter: felt) -> (
