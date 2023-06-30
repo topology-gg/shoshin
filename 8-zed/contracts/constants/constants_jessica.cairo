@@ -98,11 +98,11 @@ namespace ns_jessica_action {
 }
 
 namespace ns_jessica_stamina_effect {
-    const SLASH = 0;
-    const UPSWING = 0;
-    const SIDECUT = 0;
-    const GATOTSU = -250;
-    const LOW_KICK = 0;
+    const SLASH = -50;
+    const UPSWING = -70;
+    const SIDECUT = -30;
+    const GATOTSU = -200;
+    const LOW_KICK = -50;
 }
 
 namespace ns_jessica_stimulus {
