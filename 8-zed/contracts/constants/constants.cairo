@@ -16,7 +16,7 @@ namespace ns_dynamics {
     const SCALE_FP_SQRT = 10 ** 2;
     const DT_FP = 10 ** 3;  // 0.1
 
-    const GRAVITY_ACC_FP = -1700 * ns_dynamics.SCALE_FP;
+    const GRAVITY_ACC_FP = -2000 * ns_dynamics.SCALE_FP;
     const FRICTION_ACC_FP = -10000 * ns_dynamics.SCALE_FP;
 }
 
@@ -29,13 +29,13 @@ namespace ns_stamina {
 namespace ns_common_stamina_effect {
     // These values are applied every frame in the body state
     const NULL = 0; // replenish stamina
-    const MOVE_FORWARD = 10; // replenish stamina
+    const MOVE_FORWARD = 1; // replenish stamina
     const MOVE_BACKWARD = 0; // replenish stamina
-    const BLOCK = -5; // consumes stamina
+    const BLOCK = -1; // consumes stamina
     const JUMP = 0; // consumes stamina
 
     // These values are applied in the first frame of body state
-    const DASH_FORWARD = 25; // consumes stamina
+    const DASH_FORWARD = 20; // consumes stamina
     const DASH_BACKWARD = 0; // consumes stamina
 }
 

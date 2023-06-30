@@ -27,7 +27,7 @@ namespace ns_antoc_dynamics {
 
     const STEP_FORWARD_VEL_X_FP = 400 * ns_dynamics.SCALE_FP;
 
-    const JUMP_VEL_Y_FP = 275 * ns_dynamics.SCALE_FP;
+    const JUMP_VEL_Y_FP = 400 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_antoc_character_dimension {
@@ -69,9 +69,9 @@ namespace ns_antoc_character_dimension {
     const LOW_KICK_HITBOX_H = 16;
     const LOW_KICK_HITBOX_Y = 27;
 
-    const DROP_SLASH_HITBOX_W = BODY_HITBOX_W * 2 + 15;
+    const DROP_SLASH_HITBOX_W = BODY_HITBOX_W * 2 + 20;
     const DROP_SLASH_HITBOX_H = BODY_HITBOX_H;
-    const DROP_SLASH_HITBOX_Y = 55;
+    const DROP_SLASH_HITBOX_Y = 40;
 
     const BLOCK_HITBOX_W = 30;
     const BLOCK_HITBOX_H = 85;
