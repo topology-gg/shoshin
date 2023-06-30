@@ -69,6 +69,7 @@ export const bodyStateNumberToName = {
         140: 'gatotsu',
         150: 'low_kick',
         160: 'birdswing',
+        170: 'launched',
     },
     antoc: {
         0: 'idle',

@@ -42,6 +42,10 @@ export default class RealTime extends Platformer {
 
     private isFirstTick: boolean = true;
 
+    private tick: number = 0;
+
+    private debugToggleLocked: boolean = false;
+
     private tickLatencyInSecond = TICK_IN_SECONDS;
 
     private setPlayerStatuses: (playerStatuses: StatusBarPanelProps) => void =
@@ -54,6 +58,8 @@ export default class RealTime extends Platformer {
     resetGameState() {
         this.state = InitialRealTimeFrameScene;
         this.isFirstTick = true;
+        this.tick = 0;
+        this.debugToggleLocked = false;
     }
 
     set_wasm_context(ctx: IShoshinWASMContext) {
@@ -309,8 +315,18 @@ export default class RealTime extends Platformer {
                     ]['LowKick'];
             }
         }
+
         if (this.keyboard.period.isDown) {
-            this.isDebug = !this.isDebug;
+            if (!this.debugToggleLocked) {
+                this.isDebug = !this.isDebug;
+
+                // debounce
+                this.debugToggleLocked = true;
+            }
+        }
+        if (this.keyboard.period.isUp) {
+            // debounce
+            this.debugToggleLocked = false;
         }
     }
 
@@ -331,6 +347,7 @@ export default class RealTime extends Platformer {
         );
 
         this.isFirstTick = false;
+        this.tick += 1;
         let newState: RealTimeFrameScene = out as RealTimeFrameScene;
 
         this.player_action = 0;
