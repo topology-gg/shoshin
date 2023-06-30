@@ -82,6 +82,7 @@ export const bodyStateNumberToName = {
         1150: 'jump',
         1160: 'low_kick',
         1170: 'launched',
+        1190: 'drop_slash',
     },
 };
 
@@ -798,13 +799,14 @@ export const MENTAL_STATES_COMBO_AGENT: MentalState[] = [
     { state: 'MS COMBO', action: 101 },
 ];
 
+const INIT_STAMINA = 100;
 export const InitialRealTimeFrameScene: RealTimeFrameScene = {
     agent_0: {
         body_state: {
             counter: 0,
             dir: 1,
             integrity: 1000,
-            stamina: 1000,
+            stamina: INIT_STAMINA,
             state: 0,
             fatigued: 0,
         },
@@ -851,7 +853,7 @@ export const InitialRealTimeFrameScene: RealTimeFrameScene = {
             counter: 0,
             dir: 0,
             integrity: 1000,
-            stamina: 1000,
+            stamina: INIT_STAMINA,
             state: 0,
             fatigued: 0,
         },

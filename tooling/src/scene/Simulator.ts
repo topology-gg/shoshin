@@ -187,6 +187,11 @@ export default class Simulator extends Phaser.Scene {
             'images/antoc/low_kick/spritesheet.png',
             'images/antoc/low_kick/spritesheet.json'
         );
+        this.load.atlas(
+            `antoc-drop_slash`,
+            'images/antoc/drop_slash/spritesheet.png',
+            'images/antoc/drop_slash/spritesheet.json'
+        );
 
         //
         // Jessica
@@ -874,18 +879,16 @@ export default class Simulator extends Phaser.Scene {
                     subjectFrame.hitboxes.body.origin.x +
                     subjectFrame.hitboxes.body.dimension.x / 2;
 
-                // position spark effect's y at the y of the attacker's (object) action hitbox y-center in the previous frame (when the hit registered)
+                // position spark effect's y at the y of the attacker's (object) action hitbox y-center in the previous frame (when the hit registered),
+                // upperbounded by the head of the attacked
                 // note: phaser's y axis points downward on screen
-                /*   console.log(
-                    'subject body origin y',
-                    subjectFrame.hitboxes.body.origin.y,
-                    'object prev action origin y',
-                    objectPrevFrame.hitboxes.action.origin.y
-                ); */
-                const y =
-                    -1 *
-                    (objectPrevFrame.hitboxes.action.origin.y +
-                        objectPrevFrame.hitboxes.action.dimension.y / 2);
+                const yAttackAction =
+                    objectPrevFrame.hitboxes.action.origin.y +
+                    objectPrevFrame.hitboxes.action.dimension.y / 2;
+                const yAttackedHead =
+                    subjectFrame.hitboxes.body.origin.y +
+                    subjectFrame.hitboxes.body.dimension.y;
+                const y = -1 * Math.min(yAttackAction, yAttackedHead);
 
                 // console.log('Play spark at', x, y);
                 this.sparkSprites[subjectIndex]
