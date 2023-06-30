@@ -51,6 +51,9 @@ func _body_jessica {range_check_ptr}(
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
 
         // body responds to intent; locomotive action has lowest priority
         if (intent == ns_jessica_action.MOVE_FORWARD) {
@@ -113,6 +116,9 @@ func _body_jessica {range_check_ptr}(
         if (stimulus_type == ns_stimulus.CLASH) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
         }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
 
         // by default finishing the animation; go to frame 1 if intent is SLASH at last frame
         if (counter == ns_jessica_body_state_duration.SLASH - 1) {
@@ -149,6 +155,9 @@ func _body_jessica {range_check_ptr}(
         if (stimulus_type == ns_stimulus.CLASH) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
         }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
 
         // by default finishing the animation; go to frame 1 if intent is UPSWING at last frame
         if (counter == ns_jessica_body_state_duration.UPSWING - 1) {
@@ -184,6 +193,9 @@ func _body_jessica {range_check_ptr}(
         if (stimulus_type == ns_stimulus.CLASH) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
         }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
 
         // by default finishing the animation; go to frame 1 if intent is SIDECUT at last frame
         if (counter == ns_jessica_body_state_duration.SIDECUT - 1) {
@@ -215,6 +227,9 @@ func _body_jessica {range_check_ptr}(
         }
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
         // body responds to intent
@@ -248,6 +263,9 @@ func _body_jessica {range_check_ptr}(
         }
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
         // if counter is full => return to IDLE
@@ -306,6 +324,9 @@ func _body_jessica {range_check_ptr}(
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
 
         // interruptible by agent intent (locomotive action has lowest priority)
         if(enough_stamina == TRUE){
@@ -359,6 +380,9 @@ func _body_jessica {range_check_ptr}(
         }
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
@@ -492,6 +516,9 @@ func _body_jessica {range_check_ptr}(
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
 
         // sidecut during counter==1/2/3 becomes birdswing's counter==0
         if (intent == ns_jessica_action.SIDECUT and (counter-1)*(counter-2)*(counter-3) == 0) {
@@ -528,6 +555,9 @@ func _body_jessica {range_check_ptr}(
             if (stimulus_type == ns_stimulus.KNOCKED) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
             }
+            if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
         }
 
         // if counter is full => return to IDLE
@@ -553,6 +583,9 @@ func _body_jessica {range_check_ptr}(
         }
         if (stimulus_type == ns_stimulus.CLASH) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
         // body responds to intent
@@ -589,6 +622,9 @@ func _body_jessica {range_check_ptr}(
         if (stimulus_type == ns_stimulus.KNOCKED) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
         }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
 
         // if counter is full => return to IDLE
         if (counter == ns_jessica_body_state_duration.BIRDSWING - 1) {
@@ -602,6 +638,35 @@ func _body_jessica {range_check_ptr}(
 
         // else stay in BIRDSWING and increment counter
         return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, counter + 1, integrity, stamina, dir, FALSE) );
+    }
+
+    //
+    // Launched
+    // note: interruptible
+    //
+    if (state == ns_jessica_body_state.LAUNCHED) {
+
+        // can be knocked
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        // can be juggled
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+
+        // if counter is full => return to IDLE
+        if (counter == ns_jessica_body_state_duration.LAUNCHED - 1) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        }
+
+        // if reach counter==5 and still in air => remain in counter==5
+        if (counter == 5 and stimulus_type != ns_stimulus.GROUND) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, counter, integrity, stamina, dir, FALSE) );
+        }
+
+        // else stay in LAUNCHED and increment counter
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     with_attr error_message("Input body state is not recognized.") {
