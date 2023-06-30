@@ -10,11 +10,11 @@ import eventsCenter from '../Game/EventsCenter';
 import { Body } from 'matter';
 
 const ARENA_WIDTH = 1600;
-const DEFAULT_ZOOM = 1.7;
+const DEFAULT_ZOOM = 2.4;
 
 const DEFAULT_CAMERA_HEIGHT = 400;
 const DEFAULT_CAMERA_CENTER_X = 25;
-const DEFAULT_CAMERA_CENTER_Y = -95;
+const DEFAULT_CAMERA_CENTER_Y = -100;
 const DEFAULT_CAMERA_LEFT = -ARENA_WIDTH / 2;
 const DEFAULT_CAMERA_TOP = DEFAULT_CAMERA_CENTER_Y - DEFAULT_CAMERA_HEIGHT / 2;
 const CAMERA_REACTION_TIME = 50;

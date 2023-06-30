@@ -25,6 +25,10 @@ export const CONTRACT_ADDRESS =
 export const ENTRYPOINT_FIGHT = 'loop';
 export const ENTRYPOINT_AGENT_SUBMISSION = 'submit_agent';
 
+// Phaser related constans
+export const PHASER_CANVAS_W = 1000;
+export const PHASER_CANVAS_H = Math.round((PHASER_CANVAS_W / 16) * 9);
+
 // Simulation related constants
 export const TICK_IN_SECONDS = 0.07;
 export const SIMULATION_TIME_IN_SECONDS = 30;

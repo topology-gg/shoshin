@@ -1,5 +1,5 @@
 import eventsCenter from '../Game/EventsCenter';
-import { bodyStateNumberToName } from '../constants/constants';
+import { PHASER_CANVAS_W, bodyStateNumberToName } from '../constants/constants';
 import { Action, CHARACTERS_ACTIONS } from '../types/Action';
 import { Frame, FrameLike } from '../types/Frame';
 
@@ -10,10 +10,12 @@ export default {
 
     create: function () {
         this.timerText = this.add
-            .text(400, 30, '--', {
-                fontSize: 24,
-                fontFamily: 'sans-serif',
-                fill: 'black',
+            .text(PHASER_CANVAS_W / 2, 40, '', {
+                fontSize: 54,
+                fontFamily: 'Oswald',
+                fill: '#FF7E00',
+                stroke: '#000000',
+                strokeThickness: 4,
             })
             .setOrigin(0.5, 0.5)
             .setVisible(false);
@@ -145,7 +147,7 @@ export default {
 
         onTimerReset: function () {
             this.timerText.setVisible(true);
-            this.timerText.setText('--');
+            this.timerText.setText('');
         },
 
         onTimerHide: function () {
