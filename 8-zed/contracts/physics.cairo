@@ -440,6 +440,9 @@ func produce_damage_given_opp_body_state {range_check_ptr} (
     if (opp_body_state == ns_jessica_body_state.LOW_KICK) {
         return ns_jessica_stimulus.LOW_KICK_DAMAGE;
     }
+    if (opp_body_state == ns_jessica_body_state.BIRDSWING) {
+        return ns_jessica_stimulus.BIRDSWING_DAMAGE;
+    }
 
     with_attr error_message("opponent body state '{opp_body_state}' is not valid for produce_damage_given_opp_body_state()") {
         assert 0 = 1;
