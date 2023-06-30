@@ -99,10 +99,10 @@ namespace ns_antoc_action {
 }
 
 namespace ns_antoc_stamina_effect {
-    const HORI = 0;
-    const VERT = 0;
-    const STEP_FORWARD = 0;
-    const LOW_KICK = 0;
+    const HORI = -75;
+    const VERT = -100;
+    const STEP_FORWARD = -75;
+    const LOW_KICK = -75;
 }
 
 namespace ns_antoc_stimulus {
