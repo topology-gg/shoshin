@@ -1,5 +1,4 @@
 // TODO : this type should have hitbox and active,inactive data
-// TODO : add keyboard keys for realtime
 export interface Action {
     // Id used to represent in Shoshin
     id: number;
@@ -11,6 +10,7 @@ export interface Action {
     frames: {
         duration: number;
         active?: number[];
+        interrupts?: { [key: number]: number };
     };
     key: string;
 }
@@ -73,7 +73,14 @@ const MoveBackward: Action = {
 const DashForward: Action = {
     id: 7,
     display: { name: 'DashForward', unicode: '\u{1F406}' },
-    frames: { duration: 4 },
+    frames: {
+        duration: 4,
+        interrupts: {
+            [Slash.id]: 2,
+            [Upswing.id]: 2,
+            [Sidecut.id]: 2,
+        },
+    },
     key: 'E',
 };
 
@@ -211,3 +218,24 @@ const AntocActions = [
 ];
 
 export const CHARACTERS_ACTIONS = [JessicaActions, AntocActions];
+
+const getActionDuration = (leftAction: Action, rightAction: Action) => {
+    let actionDuration = leftAction.frames.duration;
+    const shortenedDuration = leftAction.frames.interrupts[rightAction.id];
+    if (shortenedDuration !== undefined) {
+        actionDuration = shortenedDuration;
+    }
+    return actionDuration;
+};
+
+export const actionDurationInCombo = (
+    action: Action,
+    index: number,
+    combo: Action[]
+) => {
+    //Check if next action can interrupt the current action
+    if (index + 1 < combo.length && action.frames.interrupts !== undefined) {
+        return getActionDuration(action, combo[index + 1]);
+    }
+    return action.frames.duration;
+};
