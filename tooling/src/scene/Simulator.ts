@@ -578,7 +578,14 @@ export default class Simulator extends Phaser.Scene {
         let bodyStateName = bodyStateNumberToName[characterName][bodyState];
         if (bodyStateName == 'launched') bodyStateName = 'knocked'; // launched uses the animation of knocked
         const direction = bodyStateDir == 1 ? 'right' : 'left';
-        console.log('characterName', characterName, 'bodyState', bodyState, 'bodyStateName', bodyStateName);
+        console.log(
+            'characterName',
+            characterName,
+            'bodyState',
+            bodyState,
+            'bodyStateName',
+            bodyStateName
+        );
         //Calculating offsets for frame
         const spriteAdjustments =
             spriteDataPhaser[characterName][bodyStateName];

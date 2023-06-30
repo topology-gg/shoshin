@@ -1,6 +1,6 @@
 import eventsCenter from '../Game/EventsCenter';
 import { bodyStateNumberToName } from '../constants/constants';
-import { CHARACTERS_ACTIONS } from '../types/Action';
+import { Action, CHARACTERS_ACTIONS } from '../types/Action';
 import { Frame, FrameLike } from '../types/Frame';
 
 export default {
@@ -214,11 +214,15 @@ export default {
                 );
 
                 // action
+                console.log('frame', frames[index]);
                 const action = (frames[index] as Frame).action;
                 const characterActions = CHARACTERS_ACTIONS[isAntoc ? 1 : 0];
-                const actionName = characterActions.find(
+                const actionMatched: Action = characterActions.find(
                     (value) => value.id == action
-                ).display.name;
+                );
+                const actionName = actionMatched
+                    ? actionMatched.display.name
+                    : '-';
                 this.debug_info_objects[index]['action']['data'].setText(
                     actionName
                 );
