@@ -276,6 +276,11 @@ export default class Simulator extends Phaser.Scene {
             'images/jessica/low_kick/spritesheet.png',
             'images/jessica/low_kick/spritesheet.json'
         );
+        this.load.atlas(
+            `jessica-birdswing`,
+            'images/jessica/birdswing/spritesheet.png',
+            'images/jessica/birdswing/spritesheet.json'
+        );
 
         this.load.image(
             'arena_bg',
@@ -573,7 +578,7 @@ export default class Simulator extends Phaser.Scene {
         let bodyStateName = bodyStateNumberToName[characterName][bodyState];
         if (bodyStateName == 'launched') bodyStateName = 'knocked'; // launched uses the animation of knocked
         const direction = bodyStateDir == 1 ? 'right' : 'left';
-
+        console.log('characterName', characterName, 'bodyState', bodyState, 'bodyStateName', bodyStateName);
         //Calculating offsets for frame
         const spriteAdjustments =
             spriteDataPhaser[characterName][bodyStateName];

@@ -536,5 +536,11 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
                 hitboxOffset: { left: [33, -63], right: [67, -63] },
             },
         ],
+        birdswing: [
+            {
+                size: [259, 218],
+                hitboxOffset: { left: [33, -63], right: [67, -63] },
+            },
+        ],
     },
 };

@@ -64,6 +64,7 @@ export const bodyStateNumberToName = {
         130: 'jump',
         140: 'gatotsu',
         150: 'low_kick',
+        160: 'birdswing',
     },
     antoc: {
         0: 'idle',
@@ -114,9 +115,6 @@ export const actionstoBodyState = [
     actionsToBodyStateJessica,
     actionsToBodyStateAntoc,
 ];
-
-export const LEFT = 0;
-export const RIGHT = 1;
 
 export const adjustmentForCharacter = (
     characterName: string,
