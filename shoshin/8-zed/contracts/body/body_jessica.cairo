@@ -36,7 +36,7 @@ func _body_jessica {range_check_ptr}(
 
     // Calculate new stats and stat flag
     let updated_integrity = calculate_integrity_change (integrity, stimulus_damage);
-    let (updated_stamina, enough_stamina) = calculate_stamina_change (stamina, intent, ns_stamina.INIT_STAMINA, ns_character_type.JESSICA);
+    let (updated_stamina, enough_stamina) = calculate_stamina_change (stamina, intent, ns_stamina.MAX_STAMINA, ns_character_type.JESSICA);
     let is_fatigued = 1 - enough_stamina;
 
     //
@@ -90,7 +90,7 @@ func _body_jessica {range_check_ptr}(
         }
 
         // otherwise stay in IDLE but increment counter modulo duration
-        let (updated_stamina, _) = calculate_stamina_change(stamina, ns_jessica_action.NULL, ns_stamina.INIT_STAMINA, ns_character_type.JESSICA);
+        let (updated_stamina, _) = calculate_stamina_change(stamina, ns_jessica_action.NULL, ns_stamina.MAX_STAMINA, ns_character_type.JESSICA);
         if (counter == ns_jessica_body_state_duration.IDLE - 1) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, updated_stamina, dir, is_fatigued) );
         } else {
@@ -232,7 +232,7 @@ func _body_jessica {range_check_ptr}(
         }
 
         // otherwise return to IDLE
-        let (updated_stamina, _) = calculate_stamina_change(stamina, ns_jessica_action.BLOCK, ns_stamina.INIT_STAMINA, ns_character_type.JESSICA);
+        let (updated_stamina, _) = calculate_stamina_change(stamina, ns_jessica_action.BLOCK, ns_stamina.MAX_STAMINA, ns_character_type.JESSICA);
         return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, updated_stamina, dir, FALSE) );
     }
 
@@ -344,7 +344,7 @@ func _body_jessica {range_check_ptr}(
         }
 
         // otherwise return to idle
-        let (updated_stamina, _) = calculate_stamina_change(stamina, ns_jessica_action.MOVE_FORWARD, ns_stamina.INIT_STAMINA, ns_character_type.JESSICA);
+        let (updated_stamina, _) = calculate_stamina_change(stamina, ns_jessica_action.MOVE_FORWARD, ns_stamina.MAX_STAMINA, ns_character_type.JESSICA);
         return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, updated_stamina, dir, is_fatigued) );
     }
 
@@ -398,7 +398,7 @@ func _body_jessica {range_check_ptr}(
         }
 
         // otherwise return to idle
-        let (updated_stamina, _) = calculate_stamina_change(stamina, ns_jessica_action.MOVE_BACKWARD, ns_stamina.INIT_STAMINA, ns_character_type.JESSICA);
+        let (updated_stamina, _) = calculate_stamina_change(stamina, ns_jessica_action.MOVE_BACKWARD, ns_stamina.MAX_STAMINA, ns_character_type.JESSICA);
         return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, updated_stamina, dir, is_fatigued) );
     }
 

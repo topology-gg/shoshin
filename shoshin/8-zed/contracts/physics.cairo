@@ -425,6 +425,9 @@ func produce_damage_given_opp_body_state {range_check_ptr} (
     if (opp_body_state == ns_antoc_body_state.LOW_KICK) {
         return ns_antoc_stimulus.LOW_KICK_DAMAGE;
     }
+    if (opp_body_state == ns_antoc_body_state.DROP_SLASH) {
+        return ns_antoc_stimulus.DROP_SLASH_DAMAGE;
+    }
     if (opp_body_state == ns_jessica_body_state.SLASH) {
         return ns_jessica_stimulus.SLASH_DAMAGE;
     }
