@@ -22,8 +22,8 @@ namespace ns_dynamics {
 
 namespace ns_stamina {
     // full 1000
-    const INIT_STAMINA = 100;
-    const MAX_STAMINA = 1000;
+    const INIT_STAMINA = 1000;
+    const MAX_STAMINA  = 1000;
 }
 
 namespace ns_common_stamina_effect {
