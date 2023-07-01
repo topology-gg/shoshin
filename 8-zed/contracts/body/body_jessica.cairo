@@ -434,7 +434,8 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.DASH_FORWARD) {
 
-        if(enough_stamina == TRUE) {
+        // can cancel dash while grounded
+        if(enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND) {
             // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
                 // go straight to SLASH's active frame
@@ -455,9 +456,14 @@ func _body_jessica {range_check_ptr}(
             }
         }
 
-
-        // continue the dashing if not interrupted by an attack
+        // last frame reached
         if (counter == ns_jessica_body_state_duration.DASH_FORWARD - 1) {
+            // if not grounded => return to JUMP's counter==4
+            if (stimulus_type != ns_stimulus.GROUND) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 4, integrity, updated_stamina, dir, FALSE) );
+            }
+
+            // continue the dashing if not interrupted by an attack
             if(enough_stamina == TRUE and intent == ns_jessica_body_state_duration.DASH_FORWARD){
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
@@ -473,7 +479,8 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.DASH_BACKWARD) {
 
-        if(enough_stamina == TRUE){
+        // can cancel dash while grounded
+        if(enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND){
             // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
                 // go straight to SLASH's active frame
@@ -494,8 +501,15 @@ func _body_jessica {range_check_ptr}(
             }
         }
 
-        // continue the dashing if not interrupted by an attack
+
+        // last frame reached
         if (counter == ns_jessica_body_state_duration.DASH_BACKWARD - 1) {
+            // if not grounded => return to JUMP's counter==4
+            if (stimulus_type != ns_stimulus.GROUND) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 4, integrity, updated_stamina, dir, FALSE) );
+            }
+
+            // continue the dashing if not interrupted by an attack
             if(enough_stamina == TRUE and intent == ns_jessica_body_state_duration.DASH_BACKWARD) {
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
@@ -520,9 +534,20 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
-        // sidecut during counter!=0 becomes birdswing's counter==0
+        // SIDECUT during counter!=0 becomes birdswing's counter==0
         if (intent == ns_jessica_action.SIDECUT and counter != 0) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, 0, integrity, updated_stamina, dir, FALSE) );
+        }
+
+        // DASH FORWARD/BACKWARD during counter!=0/4/5 (ie counter==1/2/3) becomes dash forward/backward's counter==0
+        // note: this is to prevent multiple air dashes during the same jump
+        if ((counter-1) * (counter-2) * (counter-3) == 0) {
+            if (intent == ns_jessica_action.DASH_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // if counter is full => return to IDLE
