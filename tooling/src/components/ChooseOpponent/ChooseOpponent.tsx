@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Button } from '@mui/material';
+import { Typography, Box, Button, Chip } from '@mui/material';
 import styles from './ChooseOpponent.module.css';
 import Agent from '../../types/Agent';
 import { Medal, Opponent } from '../layout/SceneSelector';
 import { Character } from '../../constants/constants';
 import OpponentCarousel from './OpponentCarousel';
+import Tile, { TileContent } from '../ui/Tile';
 
 interface ChooseOpponentProps {
     opponents: Opponent[];
@@ -77,29 +78,35 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                     </Typography>
 
                     <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'flex-start',
+                            gap: 2,
+                        }}
                     >
-                        <Box
-                            width="400px"
-                            display="flex"
-                            flexDirection="column"
-                            alignItems="center"
-                            justifyContent="center"
-                            className="character-box"
-                        >
-                            <Typography variant="h4">Jessica</Typography>
-                            <img
-                                src="images/jessica/idle/right/frame_0.png"
-                                alt="Image 1"
-                                height="200px"
-                            />
-                            <Typography variant="h6">Progress 0%</Typography>
-                            <Typography variant="body2">
-                                Additional descriptive text
-                            </Typography>
-                        </Box>
+                        <Tile sx={{ width: 400 }} active>
+                            <TileContent>
+                                <Typography variant="h4">
+                                    Jessica{' '}
+                                    <Chip
+                                        color="primary"
+                                        label="Your character"
+                                    />
+                                </Typography>
+                                <img
+                                    src="images/jessica/idle/right/frame_0.png"
+                                    alt="Image 1"
+                                    height="200px"
+                                />
+                                <Typography variant="h6">
+                                    Progress 0%
+                                </Typography>
+                                <Typography variant="body2">
+                                    Additional descriptive text
+                                </Typography>
+                            </TileContent>
+                        </Tile>
                         <OpponentCarousel
                             opponents={opponents}
                             onOpponentChange={selectOpponent}

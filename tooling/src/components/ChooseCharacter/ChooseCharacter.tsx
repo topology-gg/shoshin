@@ -1,14 +1,8 @@
 import React from 'react';
 
-import {
-    Box,
-    Button,
-    CardActionArea,
-    CardContent,
-    Typography,
-} from '@mui/material';
+import { Box, Button, CardActionArea, Typography } from '@mui/material';
 import { Character } from '../../constants/constants';
-import Tile from '../ui/Tile';
+import Tile, { TileContent } from '../ui/Tile';
 
 const ChooseCharacter = React.forwardRef<
     HTMLDivElement,
@@ -42,13 +36,7 @@ const ChooseCharacter = React.forwardRef<
                                 transitionChooseOpponent(Character.Jessica)
                             }
                         >
-                            <CardContent
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                }}
-                            >
+                            <TileContent>
                                 <Typography variant="h4">Jessica</Typography>
                                 <img
                                     src="images/jessica/idle/right/frame_0.png"
@@ -61,7 +49,7 @@ const ChooseCharacter = React.forwardRef<
                                 <Typography variant="body2">
                                     Additional descriptive text
                                 </Typography>
-                            </CardContent>
+                            </TileContent>
                         </CardActionArea>
                     </Tile>
 
@@ -71,13 +59,7 @@ const ChooseCharacter = React.forwardRef<
                                 transitionChooseOpponent(Character.Antoc)
                             }
                         >
-                            <CardContent
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                }}
-                            >
+                            <TileContent>
                                 <Typography variant="h4">Antoc</Typography>
                                 <img
                                     src="images/antoc/idle/left/frame_0.png"
@@ -95,7 +77,7 @@ const ChooseCharacter = React.forwardRef<
                                 <Typography variant="body2">
                                     Additional descriptive text
                                 </Typography>
-                            </CardContent>
+                            </TileContent>
                         </CardActionArea>
                     </Tile>
                 </Box>

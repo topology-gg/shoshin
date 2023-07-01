@@ -8,8 +8,9 @@ import Button from '@mui/material/Button';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import SwipeableViews from 'react-swipeable-views';
-import { Medal, Opponent } from '../layout/SceneSelector';
+import { Opponent } from '../layout/SceneSelector';
 import { numberToCharacter } from '../../constants/constants';
+import Tile, { TileContent } from '../ui/Tile';
 
 const images = [
     {
@@ -68,53 +69,68 @@ function OpponentCarousel({
     const selectedOpponentObj = opponents[selectedOpponent];
 
     return (
-        <Box sx={{ maxWidth: 400, flexGrow: 1 }}>
-            <Paper
-                square
-                elevation={0}
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    height: 50,
-                    pl: 2,
-                    bgcolor: 'background.default',
-                }}
-            >
-                <Typography variant="h4">
-                    {opponents[selectedOpponent]
-                        ? numberToCharacter(selectedOpponentObj.agent.character)
-                        : 'No opponent'}
-                </Typography>
-            </Paper>
-            <SwipeableViews
-                axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                index={selectedOpponent}
-                onChangeIndex={handleStepChange}
-                enableMouseEvents
-            >
-                {opponents.map((oppponent, index) => (
-                    <div key={index}>
-                        {Math.abs(selectedOpponent - index) <= 2 ? (
+        <Box>
+            <Tile sx={{ maxWidth: 400, flexGrow: 1 }}>
+                <TileContent>
+                    <Paper
+                        square
+                        elevation={0}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            height: 50,
+                            pl: 2,
+                            bgcolor: 'background.default',
+                        }}
+                    >
+                        <Typography variant="h4">
+                            {opponents[selectedOpponent]
+                                ? numberToCharacter(
+                                      selectedOpponentObj.agent.character
+                                  )
+                                : 'No opponent'}
+                        </Typography>
+                    </Paper>
+                    <SwipeableViews
+                        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+                        index={selectedOpponent}
+                        onChangeIndex={handleStepChange}
+                        enableMouseEvents
+                    >
+                        {opponents.map((oppponent, index) => (
                             <Box
-                                component="img"
+                                key={index}
                                 sx={{
-                                    height: 200,
-                                    display: 'block',
-                                    maxWidth: 400,
-                                    overflow: 'hidden',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
                                 }}
-                                src={getCharSource(oppponent.agent.character)}
-                            />
-                        ) : null}
-                    </div>
-                ))}
-            </SwipeableViews>
-            <Typography>
-                Grade:{' '}
-                {opponents[selectedOpponent]
-                    ? opponents[selectedOpponent].medal
-                    : 'N/A'}
-            </Typography>
+                            >
+                                {Math.abs(selectedOpponent - index) <= 2 ? (
+                                    <Box
+                                        component="img"
+                                        sx={{
+                                            height: 200,
+                                            display: 'block',
+                                            maxWidth: 400,
+                                            overflow: 'hidden',
+                                        }}
+                                        src={getCharSource(
+                                            oppponent.agent.character
+                                        )}
+                                    />
+                                ) : null}
+                            </Box>
+                        ))}
+                    </SwipeableViews>
+                    <Typography>
+                        Grade:{' '}
+                        {opponents[selectedOpponent]
+                            ? opponents[selectedOpponent].medal
+                            : 'N/A'}
+                    </Typography>
+                </TileContent>
+            </Tile>
             <MobileStepper
                 steps={maxSteps}
                 position="static"
