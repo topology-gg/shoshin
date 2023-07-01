@@ -9,8 +9,16 @@ const SceneSingle = ({
     children: ReactElement;
 }) => {
     return (
-        <Fade in={active} style={{ position: 'absolute', top: 0, left: 0 }}>
-            {children}
+        <Fade in={active} timeout={1000}>
+            <div
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    overflowY: 'scroll',
+                }}
+            >
+                {children}
+            </div>
         </Fade>
     );
 };

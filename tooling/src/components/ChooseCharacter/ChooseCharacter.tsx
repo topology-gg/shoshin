@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
     AppBar,
     Box,
@@ -28,15 +30,21 @@ const StyledBox = styled(Box)`
     }
 `;
 
-const ChooseCharacter = ({ transitionChooseOpponent }) => {
+const ChooseCharacter = React.forwardRef<
+    HTMLDivElement,
+    { transitionChooseOpponent: (character: Character) => void }
+>(({ transitionChooseOpponent }, ref) => {
     return (
-        <div>
+        <div ref={ref}>
             <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                width={'100%'}
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '100vh',
+                }}
             >
                 <Typography variant="h5" gutterBottom>
                     Choose your character
@@ -100,6 +108,6 @@ const ChooseCharacter = ({ transitionChooseOpponent }) => {
             </Box>
         </div>
     );
-};
+});
 
 export default ChooseCharacter;

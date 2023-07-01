@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Typography,
     Box,
@@ -43,7 +43,7 @@ interface SimulationProps {
     onQuit: () => void;
 }
 //We need Players agent and opponent
-const SimulationScene = (props: SimulationProps) => {
+const SimulationScene = React.forwardRef((props: SimulationProps, ref) => {
     const { player, setPlayerAgent, opponent, submitWin, onQuit, onContinue } =
         props;
     // Constants
@@ -83,7 +83,7 @@ const SimulationScene = (props: SimulationProps) => {
     const opponentName =
         opponent.character == 0 ? Character.Jessica : Character.Antoc;
 
-    useMemo(() => {
+    useEffect(() => {
         let builtAgent = handleBuildAgent();
         console.log('built agent', builtAgent);
         setPlayerAgent({
@@ -283,7 +283,7 @@ const SimulationScene = (props: SimulationProps) => {
     const p1Name = player.character;
     const p2Name = numberToCharacter(opponent.character);
     return (
-        <div id={'mother'} className={styles.container}>
+        <div id={'mother'} className={styles.container} ref={ref}>
             {' '}
             <div className={mainSceneStyles.overlayMenu}></div>
             <div className={styles.main}>
@@ -466,6 +466,6 @@ const SimulationScene = (props: SimulationProps) => {
             </div>
         </div>
     );
-};
+});
 
 export default SimulationScene;

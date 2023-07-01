@@ -8,7 +8,6 @@ import Button from '@mui/material/Button';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import SwipeableViews from 'react-swipeable-views';
-import { autoPlay } from 'react-swipeable-views-utils';
 import { Medal, Opponent } from '../layout/SceneSelector';
 import { numberToCharacter } from '../../constants/constants';
 
@@ -37,38 +36,28 @@ const images = [
 
 interface OpponentCarouselProps {
     opponents: Opponent[];
-    setSelectedIndex: (index: number) => void;
-    index: number;
+    onOpponentChange: (index: number) => void;
+    selectedOpponent: number;
 }
 function OpponentCarousel({
     opponents,
-    setSelectedIndex,
-    index,
+    onOpponentChange,
+    selectedOpponent,
 }: OpponentCarouselProps) {
     const theme = useTheme();
-
-    const initialActiveStep = opponents.findIndex(
-        (opp) => opp.medal === Medal.NONE
-    );
-
-    const [activeStep, setActiveStep] = React.useState(initialActiveStep);
-
-    React.useEffect(() => {
-        setSelectedIndex(activeStep);
-    }, [activeStep]);
 
     const maxSteps = opponents.length;
 
     const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        onOpponentChange(selectedOpponent + 1);
     };
 
     const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+        onOpponentChange(selectedOpponent - 1);
     };
 
     const handleStepChange = (step: number) => {
-        setActiveStep(step);
+        onOpponentChange(step);
     };
 
     const getCharSource = (char: number) => {
@@ -76,6 +65,8 @@ function OpponentCarousel({
             ? 'images/jessica/idle/right/frame_0.png'
             : 'images/antoc/idle/right/frame_0.png';
     };
+    const selectedOpponentObj = opponents[selectedOpponent];
+
     return (
         <Box sx={{ maxWidth: 400, flexGrow: 1 }}>
             <Paper
@@ -90,18 +81,20 @@ function OpponentCarousel({
                 }}
             >
                 <Typography variant="h4">
-                    {numberToCharacter(opponents[activeStep].agent.character)}
+                    {opponents[selectedOpponent]
+                        ? numberToCharacter(selectedOpponentObj.agent.character)
+                        : 'No opponent'}
                 </Typography>
             </Paper>
             <SwipeableViews
                 axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                index={activeStep}
+                index={selectedOpponent}
                 onChangeIndex={handleStepChange}
                 enableMouseEvents
             >
                 {opponents.map((oppponent, index) => (
                     <div key={index}>
-                        {Math.abs(activeStep - index) <= 2 ? (
+                        {Math.abs(selectedOpponent - index) <= 2 ? (
                             <Box
                                 component="img"
                                 sx={{
@@ -116,16 +109,21 @@ function OpponentCarousel({
                     </div>
                 ))}
             </SwipeableViews>
-            <Typography>Grade: {opponents[activeStep].medal}</Typography>
+            <Typography>
+                Grade:{' '}
+                {opponents[selectedOpponent]
+                    ? opponents[selectedOpponent].medal
+                    : 'N/A'}
+            </Typography>
             <MobileStepper
                 steps={maxSteps}
                 position="static"
-                activeStep={activeStep}
+                activeStep={selectedOpponent}
                 nextButton={
                     <Button
                         size="small"
                         onClick={handleNext}
-                        disabled={activeStep === maxSteps - 1}
+                        disabled={selectedOpponent === maxSteps - 1}
                     >
                         Next
                         {theme.direction === 'rtl' ? (
@@ -139,7 +137,7 @@ function OpponentCarousel({
                     <Button
                         size="small"
                         onClick={handleBack}
-                        disabled={activeStep === 0}
+                        disabled={selectedOpponent === 0}
                     >
                         {theme.direction === 'rtl' ? (
                             <KeyboardArrowRight />

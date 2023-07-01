@@ -224,31 +224,31 @@ const SceneSelector = () => {
     };
 
     return (
-        <Box sx={{ position: 'relative' }}>
-            {scene === Scenes.WALLET_CONNECT ? (
+        <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
+            <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
                 <TitleMenu transitionMainMenu={transitionMainMenu} />
-            ) : null}
-            {scene === Scenes.MAIN_MENU ? (
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.MAIN_MENU}>
                 <MainMenu transition={transitionChooseCharacter} />
-            ) : null}
-            {scene === Scenes.CHOOSE_CHARACTER ? (
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.CHOOSE_CHARACTER}>
                 <ChooseCharacter transitionChooseOpponent={onChooseCharacter} />
-            ) : null}
-            {scene === Scenes.CHOOSE_OPPONENT ? (
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.CHOOSE_OPPONENT}>
                 <ChooseOpponent
                     transitionMainScene={transitionMainScene}
                     opponents={opponentChoices}
                     playerCharacter={character}
                 />
-            ) : null}
-            {scene === Scenes.MOVE_TUTORIAL ? (
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.MOVE_TUTORIAL}>
                 <MoveTutorial
                     character={character}
                     firstVisit={true}
                     onContinue={transitionChooseOpponent}
                 />
-            ) : null}
-            {scene === Scenes.MAIN_SCENE ? (
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.MAIN_SCENE}>
                 <MainScene
                     setPlayerAgent={setPlayerAgent}
                     player={playerAgent}
@@ -257,10 +257,13 @@ const SceneSelector = () => {
                     onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
                 />
-            ) : null}
-            {scene === Scenes.ARCADE ? (
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.ARCADE}>
                 <Arcade playerCharacter={characterIndex} opponent={opponent} />
-            ) : null}
+            </SceneSingle>
+            {/* {scene === Scenes.ARCADE ? (
+                <Arcade playerCharacter={characterIndex} opponent={opponent} />
+            ) : null} */}
         </Box>
     );
 };

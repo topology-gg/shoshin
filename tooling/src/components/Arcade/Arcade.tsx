@@ -17,48 +17,51 @@ interface ArcadeProps {
     playerCharacter: number;
     opponent: Agent;
 }
-const Arcade = ({ playerCharacter, opponent }: ArcadeProps) => {
-    const [playerStatuses, setPlayerStatuses] = useState<StatusBarPanelProps>({
-        integrity_0: 1000,
-        integrity_1: 1000,
-        stamina_0: 100,
-        stamina_1: 100,
-    });
+const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
+    ({ playerCharacter, opponent }, ref) => {
+        const [playerStatuses, setPlayerStatuses] =
+            useState<StatusBarPanelProps>({
+                integrity_0: 1000,
+                integrity_1: 1000,
+                stamina_0: 100,
+                stamina_1: 100,
+            });
 
-    const ctx = React.useContext(ShoshinWASMContext);
-    if (ctx.wasm == undefined) {
-        return <div> loading wasm context</div>;
-    }
-    return (
-        <div className={styles.main}>
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                }}
-            >
-                <StatusBarPanel
-                    integrity_0={playerStatuses.integrity_0}
-                    integrity_1={playerStatuses.integrity_1}
-                    stamina_0={playerStatuses.stamina_0}
-                    stamina_1={playerStatuses.stamina_1}
-                />
-                <Game
-                    testJson={undefined}
-                    animationFrame={undefined}
-                    animationState={undefined}
-                    showDebug={false}
-                    gameMode={GameModes.realtime}
-                    realTimeOptions={{
-                        playerCharacter,
-                        agentOpponent: opponent,
-                        setPlayerStatuses,
+        const ctx = React.useContext(ShoshinWASMContext);
+        if (ctx.wasm == undefined) {
+            return <div> loading wasm context</div>;
+        }
+        return (
+            <div className={styles.main} ref={ref}>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
                     }}
-                    isInView={true}
-                />
+                >
+                    <StatusBarPanel
+                        integrity_0={playerStatuses.integrity_0}
+                        integrity_1={playerStatuses.integrity_1}
+                        stamina_0={playerStatuses.stamina_0}
+                        stamina_1={playerStatuses.stamina_1}
+                    />
+                    <Game
+                        testJson={undefined}
+                        animationFrame={undefined}
+                        animationState={undefined}
+                        showDebug={false}
+                        gameMode={GameModes.realtime}
+                        realTimeOptions={{
+                            playerCharacter,
+                            agentOpponent: opponent,
+                            setPlayerStatuses,
+                        }}
+                        isInView={true}
+                    />
+                </div>
             </div>
-        </div>
-    );
-};
+        );
+    }
+);
 
 export default Arcade;
