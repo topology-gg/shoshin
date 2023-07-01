@@ -520,10 +520,9 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
-        // sidecut during counter==1/2/3 becomes birdswing's counter==0
-        if (intent == ns_jessica_action.SIDECUT and (counter-1)*(counter-2)*(counter-3) == 0) {
-            // go straight to BIRDSWING's counter==1
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, 1, integrity, updated_stamina, dir, FALSE) );
+        // sidecut during counter!=0 becomes birdswing's counter==0
+        if (intent == ns_jessica_action.SIDECUT and counter != 0) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, 0, integrity, updated_stamina, dir, FALSE) );
         }
 
         // if counter is full => return to IDLE
@@ -626,14 +625,15 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
-        // if counter is full => return to IDLE
+        // if counter is full =>
+        //   not grounded => go to JUMP's counter==4
+        //   otherwise return to IDLE
         if (counter == ns_jessica_body_state_duration.BIRDSWING - 1) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
-        }
-
-        // if reach counter==5 and still in air => remain in counter==5
-        if (counter == 5 and stimulus_type != ns_stimulus.GROUND) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, counter, integrity, stamina, dir, FALSE) );
+            if (stimulus_type != ns_stimulus.GROUND) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 4, integrity, stamina, dir, FALSE) );
+            } else {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+            }
         }
 
         // else stay in BIRDSWING and increment counter
