@@ -27,7 +27,7 @@ namespace ns_antoc_dynamics {
 
     const STEP_FORWARD_VEL_X_FP = 400 * ns_dynamics.SCALE_FP;
 
-    const JUMP_VEL_Y_FP = 400 * ns_dynamics.SCALE_FP;
+    const JUMP_VEL_Y_FP = 600 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_antoc_character_dimension {

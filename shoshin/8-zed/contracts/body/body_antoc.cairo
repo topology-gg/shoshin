@@ -652,14 +652,15 @@ func _body_antoc {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
-        // if counter is full => return to IDLE
+        // if counter is full
+        //   not grounded => go to JUMP's counter==4
+        //   otherwise return to IDLE
         if (counter == ns_antoc_body_state_duration.DROP_SLASH - 1) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
-        }
-
-        // if reach counter==5 and still in air => remain in counter==5
-        if (counter == 5 and stimulus_type != ns_stimulus.GROUND) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.DROP_SLASH, counter, integrity, stamina, dir, FALSE) );
+            if (stimulus_type != ns_stimulus.GROUND) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 4, integrity, stamina, dir, FALSE) );
+            } else {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+            }
         }
 
         // else stay in DROP_SLASH and increment counter
