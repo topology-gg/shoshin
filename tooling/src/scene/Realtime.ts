@@ -182,8 +182,6 @@ export default class RealTime extends Platformer {
 
         this.isGameRunning = true;
         this.startText.setVisible(false);
-
-        eventsCenter.emit('end-text-show', 'Draw!');
     }
 
     checkEndGame(integrityP1: number, integrityP2: number) {
