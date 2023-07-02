@@ -1,5 +1,5 @@
 import eventsCenter from '../Game/EventsCenter';
-import { PHASER_CANVAS_W, bodyStateNumberToName } from '../constants/constants';
+import { PHASER_CANVAS_W, PHASER_CANVAS_H, bodyStateNumberToName } from '../constants/constants';
 import { Action, CHARACTERS_ACTIONS } from '../types/Action';
 import { Frame, FrameLike } from '../types/Frame';
 
@@ -9,6 +9,28 @@ export default {
     plugins: ['InputPlugin'],
 
     create: function () {
+
+        this.endTextBg = this.add
+            .rectangle(
+                PHASER_CANVAS_W / 2,
+                PHASER_CANVAS_H / 2,
+                350,
+                200
+            )
+            .setFillStyle(0x222222, 0.95)
+            .setVisible(false);
+        this.endText = this.add
+            .text(
+                PHASER_CANVAS_W / 2,
+                PHASER_CANVAS_H / 2,
+                '',
+                {
+                    fontSize: 30,
+                    color: '#fff',
+                }
+            )
+            .setOrigin(0.5);
+
         this.timerText = this.add
             .text(PHASER_CANVAS_W / 2, 40, '', {
                 fontSize: 54,
@@ -125,7 +147,9 @@ export default {
             .on('player-event-create', this.onPlayerEventCreate, this)
             .on('player-event-remove', this.onPlayerEventRemove, this)
             .on('frame-data-show', this.onFrameDataShow, this)
-            .on('frame-data-hide', this.onFrameDataHide, this);
+            .on('frame-data-hide', this.onFrameDataHide, this)
+            .on('end-text-show', this.onEndTextShow, this)
+            .on('end-text-hide', this.onEndTextHide, this);
 
         // this.scene.get('play').events
         // eventsCenter
@@ -263,6 +287,16 @@ export default {
                     }
                 );
             });
+        },
+
+        onEndTextShow: function (text: string) {
+            this.endText.setText(text);
+            this.endTextBg.setVisible(true);
+        },
+
+        onEndTextHide: function () {
+            this.endText.setText('');
+            this.endTextBg.setVisible(false);
         },
 
         //

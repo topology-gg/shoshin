@@ -993,19 +993,23 @@ export default class Simulator extends Phaser.Scene {
             const integrity_P1 = agentFrame0.body_state.integrity;
             const integrity_P2 = agentFrame1.body_state.integrity;
             if (integrity_P1 < integrity_P2) {
-                this.endTextP2Won = this.createCenteredText('Player 2 won!');
-                this.endTextP2Won.setVisible(true);
+                eventsCenter.emit('end-text-show', 'Player 2 won!')
+                // this.endTextP2Won = this.createCenteredText('Player 2 won!');
+                // this.endTextP2Won.setVisible(true);
             } else if (integrity_P1 > integrity_P2) {
-                this.endTextP1Won = this.createCenteredText('Player 1 won!');
-                this.endTextP1Won.setVisible(true);
+                eventsCenter.emit('end-text-show', 'Player 1 won!')
+                // this.endTextP1Won = this.createCenteredText('Player 1 won!');
+                // this.endTextP1Won.setVisible(true);
             } else {
-                this.endTextDraw = this.createCenteredText('Draw!');
-                this.endTextDraw.setVisible(true);
+                eventsCenter.emit('end-text-show', 'Draw!')
+                // this.endTextDraw = this.createCenteredText('Draw!');
+                // this.endTextDraw.setVisible(true);
             }
         } else {
-            this.endTextDraw.setVisible(false);
-            this.endTextP1Won.setVisible(false);
-            this.endTextP2Won.setVisible(false);
+            eventsCenter.emit('end-text-hide')
+            // this.endTextDraw.setVisible(false);
+            // this.endTextP1Won.setVisible(false);
+            // this.endTextP2Won.setVisible(false);
 
             if (isBeginning) {
                 this.initializeCameraSettings();
