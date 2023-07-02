@@ -6,7 +6,11 @@ import {
     Operator,
     Perceptible,
 } from '../types/Condition';
-import { RealTimeFrameScene } from '../types/Frame';
+import {
+    RealTimeFrameScene,
+    STIMULUS_ENCODING,
+    StimulusType,
+} from '../types/Frame';
 import { MentalState } from '../types/MentalState';
 import { Direction, Tree } from '../types/Tree';
 
@@ -851,7 +855,7 @@ export const InitialRealTimeFrameScene: RealTimeFrameScene = {
                 y: 0,
             },
         },
-        stimulus: 0,
+        stimulus: StimulusType.GROUND * STIMULUS_ENCODING,
     },
     agent_1: {
         body_state: {
@@ -898,7 +902,7 @@ export const InitialRealTimeFrameScene: RealTimeFrameScene = {
                 y: 0,
             },
         },
-        stimulus: 0,
+        stimulus: StimulusType.GROUND * STIMULUS_ENCODING,
         mental_state: 0,
         combo_info: {
             combo_counter: 0,

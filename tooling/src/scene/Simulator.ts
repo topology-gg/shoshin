@@ -974,9 +974,18 @@ export default class Simulator extends Phaser.Scene {
         //
         // jump smoke, both take-off & landing
         //
+        const possibleLandingStates = [
+            BodystatesAntoc.Jump,
+            BodystatesAntoc.DropSlash,
+            BodystatesAntoc.Launched,
+            BodystatesJessica.Jump,
+            BodystatesJessica.BirdSwing,
+            BodystatesJessica.Launched,
+        ];
         [0, 1].forEach((playerIndex) => {
             const frame = frames[playerIndex];
             const prevFrame = prevFrames[playerIndex];
+            console.log('frame', frame, 'prevFrame', prevFrame);
             const stimulusType = Math.floor(frame.stimulus / STIMULUS_ENCODING);
             const prevStimulusType = Math.floor(
                 prevFrame.stimulus / STIMULUS_ENCODING
@@ -998,7 +1007,8 @@ export default class Simulator extends Phaser.Scene {
                     .play('jumpTakeoffSmokeAnim');
             } else if (
                 stimulusType == StimulusType.GROUND &&
-                prevStimulusType != StimulusType.GROUND
+                prevStimulusType != StimulusType.GROUND &&
+                possibleLandingStates.includes(frame.body_state.state)
             ) {
                 const x =
                     frame.physics_state.pos.x +
