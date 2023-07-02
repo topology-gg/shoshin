@@ -423,10 +423,17 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.DASH_FORWARD) {
 
-        // can cancel dash while grounded
+        // can cancel dash into JUMP's counter==0 while grounded
         if (enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND) {
             if (intent == ns_antoc_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
+
+        // can cancel dash into DROP_SLASH's counter==2 while not grounded
+        if (enough_stamina == TRUE and stimulus_type != ns_stimulus.GROUND) {
+            if (intent == ns_antoc_action.VERT) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DROP_SLASH, 2, integrity, updated_stamina, dir, FALSE) );
             }
         }
 
@@ -454,9 +461,17 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.DASH_BACKWARD) {
 
+        // can cancel dash into JUMP's counter==0 while grounded
         if (enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND) {
             if (intent == ns_antoc_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
+
+        // can cancel dash into DROP_SLASH's counter==2 while not grounded
+        if (enough_stamina == TRUE and stimulus_type != ns_stimulus.GROUND) {
+            if (intent == ns_antoc_action.VERT) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DROP_SLASH, 2, integrity, updated_stamina, dir, FALSE) );
             }
         }
 
