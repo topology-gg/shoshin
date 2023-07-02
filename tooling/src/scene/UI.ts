@@ -133,8 +133,14 @@ export default {
             .setVisible(false);
 
         this.endText = this.add
-            .text(PHASER_CANVAS_W / 2, PHASER_CANVAS_H / 2, '', {
+            .text(PHASER_CANVAS_W / 2, PHASER_CANVAS_H / 2 - 20, '', {
                 fontSize: 30,
+                color: '#fff',
+            })
+            .setOrigin(0.5);
+        this.endTextFootnote = this.add
+            .text(PHASER_CANVAS_W / 2, PHASER_CANVAS_H / 2 + 20, '', {
+                fontSize: 18,
                 color: '#fff',
             })
             .setOrigin(0.5);
@@ -288,12 +294,16 @@ export default {
             });
         },
 
-        onEndTextShow: function (text: string) {
+        onEndTextShow: function (text: string, footnote?: string) {
+            if (footnote) {
+                this.endTextFootnote.setText(footnote);
+            }
             this.endText.setText(text);
             this.endTextBg.setVisible(true);
         },
 
         onEndTextHide: function () {
+            this.endTextFootnote.setText('');
             this.endText.setText('');
             this.endTextBg.setVisible(false);
         },

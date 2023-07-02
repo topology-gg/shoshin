@@ -124,21 +124,6 @@ export default class RealTime extends Platformer {
 
         this.startText = this.createCenteredText('Press Space to start');
 
-        this.endTextP1Won = this.createCenteredText(
-            'Player 1 won!\nPress Space to restart'
-        );
-        this.endTextP1Won.setVisible(false);
-
-        this.endTextP2Won = this.createCenteredText(
-            'Player 2 won!\nPress Space to restart'
-        );
-        this.endTextP2Won.setVisible(false);
-
-        this.endTextDraw = this.createCenteredText(
-            'Draw!\nPress Space to restart'
-        );
-        this.endTextDraw.setVisible(false);
-
         this.initializeCameraSettings();
     }
 
@@ -197,23 +182,31 @@ export default class RealTime extends Platformer {
 
         this.isGameRunning = true;
         this.startText.setVisible(false);
-        this.endTextP1Won.setVisible(false);
-        this.endTextP2Won.setVisible(false);
-        this.endTextDraw.setVisible(false);
+
+        eventsCenter.emit('end-text-show', 'Draw!');
     }
 
     checkEndGame(integrityP1: number, integrityP2: number) {
-        if (integrityP1 == integrityP2) {
-            // draw
-            this.centerText(this.endTextDraw);
-            this.endTextDraw.setVisible(true);
-        } else if (integrityP1 < integrityP2) {
-            this.centerText(this.endTextP2Won);
-            this.endTextP2Won.setVisible(true);
+        if (integrityP1 < integrityP2) {
+            eventsCenter.emit(
+                'end-text-show',
+                'Player 2 won!',
+                'Press Space to restart'
+            );
+        } else if (integrityP1 > integrityP2) {
+            eventsCenter.emit(
+                'end-text-show',
+                'Player 1 won!',
+                'Press Space to restart'
+            );
         } else {
-            this.centerText(this.endTextP1Won);
-            this.endTextP1Won.setVisible(true);
+            eventsCenter.emit(
+                'end-text-show',
+                'Draw!',
+                'Press Space to restart'
+            );
         }
+
         this.gameTimer.destroy();
         this.isGameRunning = false;
     }
