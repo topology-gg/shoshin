@@ -73,10 +73,6 @@ export default class Simulator extends Phaser.Scene {
 
     player_pointers: PlayerPointer[];
 
-    endTextP1Won: Phaser.GameObjects.Text;
-    endTextP2Won: Phaser.GameObjects.Text;
-    endTextDraw: Phaser.GameObjects.Text;
-
     player_one_combat_log: BattleEvent;
     player_two_combat_log: BattleEvent;
 
@@ -485,15 +481,6 @@ export default class Simulator extends Phaser.Scene {
         this.cameras.main.centerOn(0, yDisplacementFromCenterToGround);
         this.cameras.main.setBackgroundColor('#FFFFFF');
         this.initializeCameraSettings();
-
-        this.endTextP1Won = this.createCenteredText('');
-        this.endTextP1Won.setVisible(false);
-
-        this.endTextP2Won = this.createCenteredText('');
-        this.endTextP2Won.setVisible(false);
-
-        this.endTextDraw = this.createCenteredText('');
-        this.endTextDraw.setVisible(false);
     }
     create() {
         this.intitialize();
@@ -993,23 +980,14 @@ export default class Simulator extends Phaser.Scene {
             const integrity_P1 = agentFrame0.body_state.integrity;
             const integrity_P2 = agentFrame1.body_state.integrity;
             if (integrity_P1 < integrity_P2) {
-                eventsCenter.emit('end-text-show', 'Player 2 won!')
-                // this.endTextP2Won = this.createCenteredText('Player 2 won!');
-                // this.endTextP2Won.setVisible(true);
+                eventsCenter.emit('end-text-show', 'Player 2 won!');
             } else if (integrity_P1 > integrity_P2) {
-                eventsCenter.emit('end-text-show', 'Player 1 won!')
-                // this.endTextP1Won = this.createCenteredText('Player 1 won!');
-                // this.endTextP1Won.setVisible(true);
+                eventsCenter.emit('end-text-show', 'Player 1 won!');
             } else {
-                eventsCenter.emit('end-text-show', 'Draw!')
-                // this.endTextDraw = this.createCenteredText('Draw!');
-                // this.endTextDraw.setVisible(true);
+                eventsCenter.emit('end-text-show', 'Draw!');
             }
         } else {
-            eventsCenter.emit('end-text-hide')
-            // this.endTextDraw.setVisible(false);
-            // this.endTextP1Won.setVisible(false);
-            // this.endTextP2Won.setVisible(false);
+            eventsCenter.emit('end-text-hide');
 
             if (isBeginning) {
                 this.initializeCameraSettings();
