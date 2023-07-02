@@ -1,7 +1,13 @@
 import Phaser from 'phaser';
 import { bodyStateNumberToName, LEFT, RIGHT } from '../constants/constants';
 import { spriteDataPhaser } from '../constants/sprites';
-import { FrameLike, RealTimeFrameScene, Rectangle } from '../types/Frame';
+import {
+    FrameLike,
+    RealTimeFrameScene,
+    Rectangle,
+    StimulusType,
+    STIMULUS_ENCODING,
+} from '../types/Frame';
 import { SimulatorProps } from '../types/Simulator';
 import { GameModes } from '../types/Simulator';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
@@ -26,6 +32,8 @@ const PLAYER_POINTER_DIM = 20;
 
 // Effects
 const DASH_SMOKE_SCALE = 0.1;
+const JUMP_TAKEOFF_SMOKE_SCALE_X = 0.7;
+const JUMP_TAKEOFF_SMOKE_SCALE_Y = 0.7;
 const JUMP_SMOKE_SCALE_X = 0.1;
 const JUMP_SMOKE_SCALE_Y = 0.09;
 
@@ -82,7 +90,8 @@ export default class Simulator extends Phaser.Scene {
 
     sparkSprites: Phaser.GameObjects.Sprite[];
     dashSmokeSprites: Phaser.GameObjects.Sprite[];
-    jumpSmokeSprites: Phaser.GameObjects.Sprite[];
+    jumpTakeoffSmokeSprites: Phaser.GameObjects.Sprite[];
+    jumpLandingSmokeSprites: Phaser.GameObjects.Sprite[];
 
     player_one_action_confirm = false;
     player_two_action_confirm = false;
@@ -302,12 +311,16 @@ export default class Simulator extends Phaser.Scene {
                 frameHeight: 1251,
             }
         );
+        this.load.spritesheet('smoke', 'images/effects/smoke/spritesheet.png', {
+            frameWidth: 1182,
+            frameHeight: 1182,
+        });
         this.load.spritesheet(
-            'jump-smoke',
-            'images/effects/jump-smoke/spritesheet.png',
+            'jump-takeoff-smoke',
+            'images/effects/jump-takeoff-smoke/spritesheet.png',
             {
-                frameWidth: 1182,
-                frameHeight: 1182,
+                frameWidth: 201,
+                frameHeight: 201,
             }
         );
     }
@@ -373,9 +386,9 @@ export default class Simulator extends Phaser.Scene {
         });
 
         this.anims.create({
-            key: 'jumpSmokeAnim',
+            key: 'smokeAnim',
             frameRate: 20,
-            frames: this.anims.generateFrameNumbers('jump-smoke', {
+            frames: this.anims.generateFrameNumbers('smoke', {
                 start: 0,
                 end: 8,
             }),
@@ -383,9 +396,21 @@ export default class Simulator extends Phaser.Scene {
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
         });
 
+        this.anims.create({
+            key: 'jumpTakeoffSmokeAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('jump-takeoff-smoke', {
+                start: 0,
+                end: 7,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
         this.sparkSprites = [];
         this.dashSmokeSprites = [];
-        this.jumpSmokeSprites = [];
+        this.jumpTakeoffSmokeSprites = [];
+        this.jumpLandingSmokeSprites = [];
         [0, 1].forEach((_) => {
             this.sparkSprites.push(
                 this.add
@@ -405,12 +430,24 @@ export default class Simulator extends Phaser.Scene {
                     .setFlipX(true)
             );
 
-            this.jumpSmokeSprites.push(
+            this.jumpTakeoffSmokeSprites.push(
                 this.add
-                    .sprite(0, 0, 'jump-smoke')
+                    .sprite(0, 0, 'jump-takeoff-smoke')
+                    .setScale(
+                        JUMP_TAKEOFF_SMOKE_SCALE_X,
+                        JUMP_TAKEOFF_SMOKE_SCALE_Y
+                    )
+                    .setVisible(false)
+                    .setAlpha(0.95)
+                    .setDepth(100)
+            );
+
+            this.jumpLandingSmokeSprites.push(
+                this.add
+                    .sprite(0, 0, 'smoke')
                     .setScale(JUMP_SMOKE_SCALE_X, JUMP_SMOKE_SCALE_Y)
                     .setVisible(false)
-                    .setAlpha(1.0)
+                    .setAlpha(0.9)
                     .setDepth(100)
             );
         });
@@ -425,8 +462,8 @@ export default class Simulator extends Phaser.Scene {
             0,
             bg.y + yDisplacementFromCenterToGround
         );
-        console.log('bg x, ', bg.x);
-        console.log('bg y ', bg.y);
+        // console.log('bg x, ', bg.x);
+        // console.log('bg y ', bg.y);
 
         const outOfBoundX = 2000;
         this.player_one = this.add.sprite(-outOfBoundX, 0, `antoc-idle`, 0);
@@ -571,14 +608,14 @@ export default class Simulator extends Phaser.Scene {
         let bodyStateName = bodyStateNumberToName[characterName][bodyState];
         if (bodyStateName == 'launched') bodyStateName = 'knocked'; // launched uses the animation of knocked
         const direction = bodyStateDir == 1 ? 'right' : 'left';
-        console.log(
-            'characterName',
-            characterName,
-            'bodyState',
-            bodyState,
-            'bodyStateName',
-            bodyStateName
-        );
+        // console.log(
+        //     'characterName',
+        //     characterName,
+        //     'bodyState',
+        //     bodyState,
+        //     'bodyStateName',
+        //     bodyStateName
+        // );
         //Calculating offsets for frame
         const spriteAdjustments =
             spriteDataPhaser[characterName][bodyStateName];
@@ -935,10 +972,16 @@ export default class Simulator extends Phaser.Scene {
         });
 
         //
-        // jump-smoke
+        // jump smoke, both take-off & landing
         //
         [0, 1].forEach((playerIndex) => {
             const frame = frames[playerIndex];
+            const prevFrame = prevFrames[playerIndex];
+            const stimulusType = Math.floor(frame.stimulus / STIMULUS_ENCODING);
+            const prevStimulusType = Math.floor(
+                prevFrame.stimulus / STIMULUS_ENCODING
+            );
+
             if (
                 (frame.body_state.state == BodystatesAntoc.Jump ||
                     frame.body_state.state == BodystatesJessica.Jump) &&
@@ -947,12 +990,25 @@ export default class Simulator extends Phaser.Scene {
                 const x =
                     frame.physics_state.pos.x +
                     frame.hitboxes.body.dimension.x / 2;
-                const y = -1 * frame.physics_state.pos.y - 10;
+                const y = -1 * frame.physics_state.pos.y - 40;
 
-                this.jumpSmokeSprites[playerIndex]
+                this.jumpTakeoffSmokeSprites[playerIndex]
                     .setPosition(x, y)
                     .setVisible(true)
-                    .play('jumpSmokeAnim');
+                    .play('jumpTakeoffSmokeAnim');
+            } else if (
+                stimulusType == StimulusType.GROUND &&
+                prevStimulusType != StimulusType.GROUND
+            ) {
+                const x =
+                    frame.physics_state.pos.x +
+                    frame.hitboxes.body.dimension.x / 2;
+                const y = -1 * frame.physics_state.pos.y - 10;
+
+                this.jumpLandingSmokeSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('smokeAnim');
             }
         });
     }

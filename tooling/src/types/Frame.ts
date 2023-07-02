@@ -43,6 +43,16 @@ interface ComboInfo {
     combo_counter: number;
 }
 
+export const STIMULUS_ENCODING = 10000;
+export enum StimulusType {
+    NULL = 0,
+    HURT = 1,
+    KNOCKED = 2,
+    CLASH = 3,
+    GROUND = 4,
+    LAUNCHED = 5,
+}
+
 export interface RealTimeAgent {
     body_state: BodyState;
     physics_state: PhysicsState;
