@@ -7,14 +7,79 @@ import {
 import { Action, CHARACTERS_ACTIONS } from '../types/Action';
 import { Frame, FrameLike } from '../types/Frame';
 
+const HP_BAR_COLOR = 0xf7a08c;
+const STAMINA_BAR_COLOR = 0xadd8e6;
+const STATS_BAR_W = 410;
+const STATS_BAR_H = 26;
+const STATS_BAR_X_OFFSET = 30;
+const STATS_BAR_Y_OFFSET = 30;
+const STATA_BAR_Y_SPACING = 15;
+const STATS_BAR_P1_LEFT_BOUND = STATS_BAR_X_OFFSET + STATS_BAR_W / 2;
+const STATS_BAR_P2_LEFT_BOUND =
+    PHASER_CANVAS_W - STATS_BAR_X_OFFSET - STATS_BAR_W / 2;
+const STATS_BAR_HP_Y = STATS_BAR_Y_OFFSET;
+const STATS_BAR_STAMINA_Y = STATS_BAR_HP_Y + STATS_BAR_H + STATA_BAR_Y_SPACING;
+const STATS_BAR_BG_BORDER_STROKEWIDTH = 1;
+
+export interface statsInfo {
+    hp: number;
+    stamina: number;
+}
+
 export default {
     key: 'ui',
 
     plugins: ['InputPlugin'],
 
     create: function () {
+        //
+        // Create hp and stamina bar
+        //
+        this.stats_bars = {};
+        [0, 1].forEach((playerIndex) => {
+            this.stats_bars[playerIndex] = {};
+            const x =
+                playerIndex == 0
+                    ? STATS_BAR_P1_LEFT_BOUND
+                    : STATS_BAR_P2_LEFT_BOUND;
+            this.stats_bars[playerIndex]['hp_bg'] = this.add
+                .rectangle(
+                    x,
+                    STATS_BAR_HP_Y,
+                    STATS_BAR_W + STATS_BAR_BG_BORDER_STROKEWIDTH,
+                    STATS_BAR_H + STATS_BAR_BG_BORDER_STROKEWIDTH
+                )
+                .setStrokeStyle(STATS_BAR_BG_BORDER_STROKEWIDTH, 0x0)
+                .setFillStyle(0x111111, 0.7)
+                .setVisible(false);
+
+            this.stats_bars[playerIndex]['hp'] = this.add
+                .rectangle(x, STATS_BAR_HP_Y, STATS_BAR_W, STATS_BAR_H)
+                .setFillStyle(HP_BAR_COLOR)
+                .setVisible(false);
+
+            this.stats_bars[playerIndex]['stamina_bg'] = this.add
+                .rectangle(
+                    x,
+                    STATS_BAR_STAMINA_Y,
+                    STATS_BAR_W + STATS_BAR_BG_BORDER_STROKEWIDTH,
+                    STATS_BAR_H + STATS_BAR_BG_BORDER_STROKEWIDTH
+                )
+                .setStrokeStyle(STATS_BAR_BG_BORDER_STROKEWIDTH, 0x0)
+                .setFillStyle(0x111111, 0.7)
+                .setVisible(false);
+
+            this.stats_bars[playerIndex]['stamina'] = this.add
+                .rectangle(x, STATS_BAR_STAMINA_Y, STATS_BAR_W, STATS_BAR_H)
+                .setFillStyle(STAMINA_BAR_COLOR)
+                .setVisible(false);
+        });
+
+        //
+        // Create timer countdown text
+        //
         this.timerText = this.add
-            .text(PHASER_CANVAS_W / 2, 40, '', {
+            .text(PHASER_CANVAS_W / 2, 50, '', {
                 fontSize: 54,
                 fontFamily: 'Oswald',
                 fill: '#FF7E00',
@@ -24,6 +89,9 @@ export default {
             .setOrigin(0.5, 0.5)
             .setVisible(false);
 
+        //
+        // Event alert for player 1
+        //
         this.PlayerOneEvent = this.add
             .text(25, 140, '', {
                 fontFamily: 'Oswald',
@@ -44,6 +112,9 @@ export default {
             })
             .setAlpha(0.8);
 
+        //
+        // Event alert for player 2
+        //
         this.PlayerTwoEvent = this.add
             .text(600, 140, '', {
                 fontFamily: 'Oswald',
@@ -64,6 +135,9 @@ export default {
             })
             .setAlpha(0.8);
 
+        //
+        // Frame data shown under debug mode
+        //
         this.debug_info_objects = {};
         const borderWidth = 250;
         const borderHeight = 86.5;
@@ -122,6 +196,9 @@ export default {
             );
         });
 
+        //
+        // End game message
+        //
         this.endTextBg = this.add
             .rectangle(
                 PHASER_CANVAS_W / 2,
@@ -131,7 +208,6 @@ export default {
             )
             .setFillStyle(0x222222, 0.95)
             .setVisible(false);
-
         this.endText = this.add
             .text(PHASER_CANVAS_W / 2, PHASER_CANVAS_H / 2 - 20, '', {
                 fontSize: 30,
@@ -145,6 +221,9 @@ export default {
             })
             .setOrigin(0.5);
 
+        //
+        // Register event handlers at events center
+        //
         eventsCenter
             .on('timer-change', this.onTimerChange, this)
             .on('timer-reset', this.onTimerReset, this)
@@ -154,7 +233,8 @@ export default {
             .on('frame-data-show', this.onFrameDataShow, this)
             .on('frame-data-hide', this.onFrameDataHide, this)
             .on('end-text-show', this.onEndTextShow, this)
-            .on('end-text-hide', this.onEndTextHide, this);
+            .on('end-text-hide', this.onEndTextHide, this)
+            .on('update-stats', this.onStatsUpdate, this);
 
         // this.scene.get('play').events
         // eventsCenter
@@ -170,20 +250,65 @@ export default {
     },
 
     extend: {
+        //
+        // Timer countdown handlers
+        //
         onTimerChange: function (value) {
             this.timerText.setText(`${value}`);
         },
-
         onTimerReset: function () {
             this.timerText.setVisible(true);
             this.timerText.setText('');
         },
-
         onTimerHide: function () {
             this.timerText.setVisible(false);
         },
 
-        // Note Next JS Hot/Fast reloading nullifies these text boxes, we should create new one rather than edit existing
+        //
+        // Stats handlers
+        //
+        onStatsUpdate: function (stats: statsInfo[]) {
+            // render P1 stats
+            this.stats_bars[0]['hp_bg'].setVisible(true);
+            this.stats_bars[0]['stamina_bg'].setVisible(true);
+            this.stats_bars[0]['hp']
+                .setSize((stats[0]['hp'] / 1000) * STATS_BAR_W, STATS_BAR_H)
+                .setPosition(
+                    STATS_BAR_P1_LEFT_BOUND +
+                        (1 - stats[0]['hp'] / 1000) * STATS_BAR_W,
+                    STATS_BAR_HP_Y
+                )
+                .setVisible(true);
+            this.stats_bars[0]['stamina']
+                .setSize(
+                    (stats[0]['stamina'] / 1000) * STATS_BAR_W,
+                    STATS_BAR_H
+                )
+                .setPosition(
+                    STATS_BAR_P1_LEFT_BOUND +
+                        (1 - stats[0]['stamina'] / 1000) * STATS_BAR_W,
+                    STATS_BAR_STAMINA_Y
+                )
+                .setVisible(true);
+
+            // render P2 stats
+            this.stats_bars[1]['hp_bg'].setVisible(true);
+            this.stats_bars[1]['stamina_bg'].setVisible(true);
+            this.stats_bars[1]['hp']
+                .setSize((stats[1]['hp'] / 1000) * STATS_BAR_W, STATS_BAR_H)
+                .setVisible(true);
+            this.stats_bars[1]['stamina']
+                .setSize(
+                    (stats[1]['stamina'] / 1000) * STATS_BAR_W,
+                    STATS_BAR_H
+                )
+                .setVisible(true);
+        },
+
+        //
+        // Event alert handlers
+        // Note: Next JS Hot/Fast reloading nullifies these text boxes, we should create new one rather than edit existing
+        //
         onPlayerEventCreate: function (
             playerIndex: number,
             eventText: string,
@@ -203,7 +328,6 @@ export default {
                 );
             }
         },
-
         onPlayerEventRemove: function (playerIndex: number) {
             console.log('remove event ', playerIndex);
 
@@ -214,6 +338,9 @@ export default {
             }
         },
 
+        //
+        // Frame data handlers
+        //
         onFrameDataShow: function (frames: FrameLike[]) {
             [0, 1].forEach((index) => {
                 this.debug_info_objects[index]['border'].setVisible(true);
@@ -294,6 +421,9 @@ export default {
             });
         },
 
+        //
+        // End game message handlers
+        //
         onEndTextShow: function (text: string, footnote?: string) {
             if (footnote) {
                 this.endTextFootnote.setText(footnote);
@@ -301,7 +431,6 @@ export default {
             this.endText.setText(text);
             this.endTextBg.setVisible(true);
         },
-
         onEndTextHide: function () {
             this.endTextFootnote.setText('');
             this.endText.setText('');

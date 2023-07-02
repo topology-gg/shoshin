@@ -1130,12 +1130,12 @@ export default function Home() {
                     />
                 )}
 
-                <StatusBarPanel
+                {/* <StatusBarPanel
                     integrity_0={playerStatuses.integrity_0}
                     integrity_1={playerStatuses.integrity_1}
                     stamina_0={playerStatuses.stamina_0}
                     stamina_1={playerStatuses.stamina_1}
-                />
+                /> */}
 
                 <Game
                     testJson={testJson}

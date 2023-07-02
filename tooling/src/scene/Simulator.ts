@@ -8,6 +8,7 @@ import { IShoshinWASMContext } from '../context/wasm-shoshin';
 import { BodystatesAntoc, BodystatesJessica } from '../types/Condition';
 import eventsCenter from '../Game/EventsCenter';
 import { Body } from 'matter';
+import { statsInfo } from './UI';
 
 const ARENA_WIDTH = 1600;
 const DEFAULT_ZOOM = 2.4;
@@ -967,15 +968,39 @@ export default class Simulator extends Phaser.Scene {
         showDebug: boolean = false,
         isLast: boolean = false
     ) {
+        //
+        // Draw characters
+        //
         this.setPlayerOneCharacter(characterType0);
         this.setPlayerTwoCharacter(characterType1);
         this.setPlayerOneFrame(agentFrame0);
         this.setPlayerTwoFrame(agentFrame1);
+
+        //
+        // Draw vfx
+        //
         this.updateEffects(
             [agentPrevFrame0, agentPrevFrame1],
             [agentFrame0, agentFrame1]
         );
 
+        //
+        // Draw stats
+        //
+        eventsCenter.emit('update-stats', [
+            {
+                hp: agentFrame0.body_state.integrity,
+                stamina: agentFrame0.body_state.stamina,
+            } as statsInfo,
+            {
+                hp: agentFrame1.body_state.integrity,
+                stamina: agentFrame1.body_state.stamina,
+            } as statsInfo,
+        ]);
+
+        //
+        // Draw end game messages
+        //
         if (isLast) {
             const integrity_P1 = agentFrame0.body_state.integrity;
             const integrity_P2 = agentFrame1.body_state.integrity;
@@ -999,6 +1024,9 @@ export default class Simulator extends Phaser.Scene {
             }
         }
 
+        //
+        // Handle frame data display
+        //
         if (showDebug) {
             this.showDebug();
             this.setPlayerOneBodyHitbox(agentFrame0);
