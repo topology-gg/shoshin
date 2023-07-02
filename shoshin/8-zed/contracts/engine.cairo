@@ -199,7 +199,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1, 0),
             physics_state = physics_state_0,
             action        = 0,
-            stimulus      = ns_stimulus.NULL,
+            stimulus      = ns_stimulus.GROUND * ns_stimulus.ENCODING,
             hitboxes      = Hitboxes(
                 action = null_rect,
                 body   = agent_0_body
@@ -214,7 +214,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0, 0),
             physics_state = physics_state_1,
             action        = 0,
-            stimulus      = ns_stimulus.NULL,
+            stimulus      = ns_stimulus.GROUND * ns_stimulus.ENCODING,
             hitboxes      = Hitboxes(
                 action = null_rect,
                 body   = agent_1_body

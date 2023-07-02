@@ -434,7 +434,7 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.DASH_FORWARD) {
 
-        // can cancel dash while grounded
+        // can cancel dash into grounded attacks / JUMP while grounded
         if(enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND) {
             // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
@@ -453,6 +453,13 @@ func _body_jessica {range_check_ptr}(
             // interruptible by jump
             if (intent == ns_jessica_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
+
+        // can cancel dash into BIRDSWING's counter==2 while not grounded
+        if(enough_stamina == TRUE and stimulus_type != ns_stimulus.GROUND) {
+            if (intent == ns_jessica_action.SIDECUT) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, 2, integrity, stamina, dir, FALSE) );
             }
         }
 
@@ -479,7 +486,7 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.DASH_BACKWARD) {
 
-        // can cancel dash while grounded
+        // can cancel dash into grounded attacks / JUMP while grounded
         if(enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND){
             // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
@@ -501,6 +508,12 @@ func _body_jessica {range_check_ptr}(
             }
         }
 
+        // can cancel dash into BIRDSWING's counter==2 while not grounded
+        if(enough_stamina == TRUE and stimulus_type != ns_stimulus.GROUND) {
+            if (intent == ns_jessica_action.SIDECUT) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, 2, integrity, stamina, dir, FALSE) );
+            }
+        }
 
         // last frame reached
         if (counter == ns_jessica_body_state_duration.DASH_BACKWARD - 1) {
