@@ -1,13 +1,5 @@
-import Head from 'next/head';
-import styles from '../styles/Home.module.css';
-import React, {
-    useEffect,
-    useMemo,
-    useState,
-    useContext,
-    useRef,
-    createContext,
-} from 'react';
+import * as amplitude from '@amplitude/analytics-browser';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
     Accordion,
     AccordionDetails,
@@ -19,17 +11,63 @@ import {
     StyledEngineProvider,
     ThemeProvider,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MidScreenControl from '../src/components/MidScreenControl';
-import EditorView from '../src/components/sidePanelComponents/EditorView';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import {
-    Frame,
-    FrameScene,
-    TestJson,
-    getFlattenedPerceptiblesFromFrame,
-    getSizeOfRealTimeInputScene,
-} from '../src/types/Frame';
-import { Tree, Direction } from '../src/types/Tree';
+    useAccount,
+    useConnectors,
+    useStarknetExecute,
+} from '@starknet-react/core';
+import dynamic from 'next/dynamic';
+import Head from 'next/head';
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
+import SwipeableViews from 'react-swipeable-views';
+import { bindKeyboard } from 'react-swipeable-views-utils';
+import { useAgents, useLeagueAgents } from '../lib/api';
+import FrameDecisionPathViewer from '../src/components/FrameDecisionPathViewer';
+import FrameInspector from '../src/components/FrameInspector';
+import MidScreenControl from '../src/components/MidScreenControl';
+import MidScreenKeybinding from '../src/components/MidScreenKeybinding';
+import MobileView from '../src/components/MobileView';
+import StatusBarPanel, {
+    StatusBarPanelProps as PlayerStatuses,
+} from '../src/components/StatusBar';
+import SwipeableContent from '../src/components/layout/SwipeableContent';
+import RegistrationPage from '../src/components/register/Register';
+import P1P2SettingPanel from '../src/components/settingsPanels/P1P2SettingPanel';
+import RealTimeSettingPanel from '../src/components/settingsPanels/RealTimeSettingPanel';
+import { AgentOption } from '../src/components/settingsPanels/settingsPanel';
+import ContractInformationView from '../src/components/sidePanelComponents/ContractInformationView';
+import { EditorTabName } from '../src/components/sidePanelComponents/EditorTabs';
+import EditorView from '../src/components/sidePanelComponents/EditorView';
+import WalletConnectView from '../src/components/sidePanelComponents/WalletConnectView';
+import {
+    CONTRACT_ADDRESS,
+    Character,
+    DEFENSIVE_AGENT,
+    ENTRYPOINT_AGENT_SUBMISSION,
+    EditorMode,
+    IDLE_AGENT,
+    OFFENSIVE_AGENT,
+} from '../src/constants/constants';
+import {
+    INITIAL_AGENT_COMPONENTS,
+    PRESET_CONDITIONS,
+} from '../src/constants/starter_agent';
+import { ShoshinWASMContext } from '../src/context/wasm-shoshin';
+import useEvaluateCondition from '../src/hooks/useEvaluateCondition';
+import useRunCairoSimulation from '../src/hooks/useRunCairoSimulation';
+import theme from '../src/theme/theme';
+import { Action, CHARACTERS_ACTIONS } from '../src/types/Action';
+import Agent, { agentToCalldata, buildAgent } from '../src/types/Agent';
 import {
     Condition,
     ConditionElement,
@@ -39,71 +77,58 @@ import {
     validateConditionName,
     verifyValidCondition,
 } from '../src/types/Condition';
-import { MentalState } from '../src/types/MentalState';
 import {
-    Character,
-    CONTRACT_ADDRESS,
-    DEFENSIVE_AGENT,
-    ENTRYPOINT_AGENT_SUBMISSION,
-    IDLE_AGENT,
-    OFFENSIVE_AGENT,
-    EditorMode,
-} from '../src/constants/constants';
-import Agent, { agentToCalldata, buildAgent } from '../src/types/Agent';
-import StatusBarPanel, {
-    StatusBarPanelProps as PlayerStatuses,
-} from '../src/components/StatusBar';
-import P1P2SettingPanel from '../src/components/settingsPanels/P1P2SettingPanel';
-import { AgentOption } from '../src/components/settingsPanels/settingsPanel';
-import FrameInspector from '../src/components/FrameInspector';
-import useRunCairoSimulation from '../src/hooks/useRunCairoSimulation';
-import useEvaluateCondition from '../src/hooks/useEvaluateCondition';
-import { useAgents, useLeagueAgents } from '../lib/api';
-import { SingleMetadata, splitSingleMetadata } from '../src/types/Metadata';
-import {
-    useAccount,
-    useConnectors,
-    useStarknetExecute,
-} from '@starknet-react/core';
-import { EditorTabName } from '../src/components/sidePanelComponents/EditorTabs';
-import Leaf, {
-    unwrapLeafToCondition,
-    unwrapLeafToTree,
-} from '../src/types/Leaf';
-import dynamic from 'next/dynamic';
-import SwipeableViews from 'react-swipeable-views';
-import { bindKeyboard } from 'react-swipeable-views-utils';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import ContractInformationView from '../src/components/sidePanelComponents/ContractInformationView';
-import WalletConnectView from '../src/components/sidePanelComponents/WalletConnectView';
-import SwipeableContent from '../src/components/layout/SwipeableContent';
-import theme from '../src/theme/theme';
-import FrameDecisionPathViewer from '../src/components/FrameDecisionPathViewer';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import MobileView from '../src/components/MobileView';
-import { GameModes } from '../src/types/Simulator';
-import RealTimeSettingPanel from '../src/components/settingsPanels/RealTimeSettingPanel';
-import RegistrationPage from '../src/components/register/Register';
-import { ShoshinWASMContext } from '../src/context/wasm-shoshin';
-import {
-    INITIAL_AGENT_COMPONENTS,
-    STARTER_AGENT,
-    PRESET_CONDITIONS,
-} from '../src/constants/starter_agent';
-import MidScreenKeybinding from '../src/components/MidScreenKeybinding';
-import { KeyboardShortcut } from '../src/types/UI';
+    Frame,
+    FrameScene,
+    TestJson,
+    getFlattenedPerceptiblesFromFrame,
+    getSizeOfRealTimeInputScene,
+} from '../src/types/Frame';
 import {
     Layer,
     defaultLayer,
     layersToAgentComponents,
 } from '../src/types/Layer';
-import { Action, CHARACTERS_ACTIONS } from '../src/types/Action';
-
+import Leaf, {
+    unwrapLeafToCondition,
+    unwrapLeafToTree,
+} from '../src/types/Leaf';
+import { MentalState } from '../src/types/MentalState';
+import { SingleMetadata, splitSingleMetadata } from '../src/types/Metadata';
+import { GameModes } from '../src/types/Simulator';
+import { Direction, Tree } from '../src/types/Tree';
+import { KeyboardShortcut } from '../src/types/UI';
+import styles from '../styles/Home.module.css';
 //@ts-ignore
 const Game = dynamic(() => import('../src/Game/PhaserGame'), {
     ssr: false,
 });
+
+import mixpanel from 'mixpanel-browser';
+import { GamePlayEvent, GamePlayTimer } from '../src/helpers/track';
+
+mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_PROJECT_TOKEN, {
+    track_pageview: true,
+    persistence: 'localStorage',
+});
+
+amplitude.init(process.env.NEXT_PUBLIC_AMPLITUDE_APIKEY, {
+    defaultTracking: {
+        attribution: true,
+        pageViews: true,
+        sessions: true,
+        formInteractions: false,
+        fileDownloads: false,
+    },
+});
+
+export const track = (event: GamePlayEvent) => {
+    mixpanel.track(event.name, event.data);
+    amplitude.track(event.name, event.data);
+};
+
+let gamePlayTimer = new GamePlayTimer(GameModes.simulation);
+gamePlayTimer.start();
 
 export const LayerContext = createContext([]);
 export const CharacterContext = createContext(Character.Jessica);
@@ -1055,11 +1080,24 @@ export default function Home() {
     // console.log('index.tsx::ctx', ctx)
 
     const toggleGameMode = () => {
+        let newMode: GameModes;
         if (gameMode == GameModes.simulation) {
             handleMidScreenControlClick('stop');
             setGameMode(GameModes.realtime);
+            newMode = GameModes.realtime;
         } else {
             setGameMode(GameModes.simulation);
+            newMode = GameModes.simulation;
+        }
+        try {
+            if (gamePlayTimer.isRunning()) {
+                gamePlayTimer.stop();
+                track(gamePlayTimer.getEvent());
+            }
+            gamePlayTimer = new GamePlayTimer(newMode);
+            gamePlayTimer.start();
+        } catch (error) {
+            console.log(error);
         }
     };
 
@@ -1352,7 +1390,23 @@ export default function Home() {
             <Tabs
                 value={swipeableViewIndex}
                 onChange={(event, newValue) =>
-                    setSwipeableViewIndex((_) => newValue)
+                    setSwipeableViewIndex((_) => {
+                        try {
+                            if (newValue != 0) {
+                                if (gamePlayTimer.isRunning()) {
+                                    gamePlayTimer.stop();
+                                    track(gamePlayTimer.getEvent());
+                                }
+                            } else {
+                                gamePlayTimer = new GamePlayTimer(gameMode);
+                                gamePlayTimer.start();
+                            }
+                        } catch (error) {
+                            console.error(error);
+                        }
+
+                        return newValue;
+                    })
                 }
                 aria-label="basic tabs example"
                 sx={{ mt: 2 }}

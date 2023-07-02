@@ -1,8 +1,8 @@
 import { Action, AntocBlock, AntocMoveBackward, Hori } from '../types/Action';
 import Agent, { buildAgent } from '../types/Agent';
 import {
-    ElementType,
     Condition,
+    ElementType,
     Operator,
     Perceptible,
 } from '../types/Condition';
@@ -114,9 +114,6 @@ export const actionstoBodyState = [
     actionsToBodyStateJessica,
     actionsToBodyStateAntoc,
 ];
-
-export const LEFT = 0;
-export const RIGHT = 1;
 
 export const adjustmentForCharacter = (
     characterName: string,
