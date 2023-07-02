@@ -13,17 +13,6 @@ export default {
     plugins: ['InputPlugin'],
 
     create: function () {
-        this.endTextBg = this.add
-            .rectangle(PHASER_CANVAS_W / 2, PHASER_CANVAS_H / 2, 350, 200)
-            .setFillStyle(0x222222, 0.95)
-            .setVisible(false);
-        this.endText = this.add
-            .text(PHASER_CANVAS_W / 2, PHASER_CANVAS_H / 2, '', {
-                fontSize: 30,
-                color: '#fff',
-            })
-            .setOrigin(0.5);
-
         this.timerText = this.add
             .text(PHASER_CANVAS_W / 2, 40, '', {
                 fontSize: 54,
@@ -132,6 +121,23 @@ export default {
                 }
             );
         });
+
+        this.endTextBg = this.add
+            .rectangle(
+                PHASER_CANVAS_W / 2,
+                PHASER_CANVAS_H / 2,
+                PHASER_CANVAS_W,
+                300
+            )
+            .setFillStyle(0x222222, 0.95)
+            .setVisible(false);
+
+        this.endText = this.add
+            .text(PHASER_CANVAS_W / 2, PHASER_CANVAS_H / 2, '', {
+                fontSize: 30,
+                color: '#fff',
+            })
+            .setOrigin(0.5);
 
         eventsCenter
             .on('timer-change', this.onTimerChange, this)
