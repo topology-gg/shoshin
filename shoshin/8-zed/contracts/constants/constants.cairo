@@ -17,7 +17,10 @@ namespace ns_dynamics {
     const DT_FP = 10 ** 3;  // 0.1
 
     const GRAVITY_ACC_FP = -2500 * ns_dynamics.SCALE_FP;
-    const FRICTION_ACC_FP = -10000 * ns_dynamics.SCALE_FP;
+    const FRICTION_ACC_FP = 500 * ns_dynamics.SCALE_FP;
+
+    const BACKOFF_VEL_X_FP = 200 * ns_dynamics.SCALE_FP;
+    const BLOCK_BACKOFF_VEL_X_FP = 75 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_stamina {
@@ -61,6 +64,7 @@ namespace ns_stimulus {
     const CLASH = 3;
     const GROUND = 4;
     const LAUNCHED = 5;
+    const GOOD_BLOCK = 6;
 
     const ENCODING = 10000;
 

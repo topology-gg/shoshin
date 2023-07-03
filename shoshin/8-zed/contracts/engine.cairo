@@ -473,6 +473,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         last_physics_state_1 = last_frame.agent_1.physics_state,
         curr_body_state_0    = body_state_0,
         curr_body_state_1    = body_state_1,
+        curr_stimulus_0      = last_frame.agent_0.stimulus,
+        curr_stimulus_1      = last_frame.agent_1.stimulus,
     );
 
     //
@@ -763,6 +765,8 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         last_physics_state_1 = agent_1_physics_state,
         curr_body_state_0    = body_state_0,
         curr_body_state_1    = body_state_1,
+        curr_stimulus_0      = agent_0_stimulus,
+        curr_stimulus_1      = agent_1_stimulus,
     );
 
 

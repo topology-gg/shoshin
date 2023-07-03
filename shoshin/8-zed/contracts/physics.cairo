@@ -130,6 +130,8 @@ func _physicality{range_check_ptr}(
     last_physics_state_1: PhysicsState,
     curr_body_state_0: BodyState,
     curr_body_state_1: BodyState,
+    curr_stimulus_0: felt,
+    curr_stimulus_1: felt,
 ) -> (
     curr_physics_state_0: PhysicsState,
     curr_physics_state_1: PhysicsState,
@@ -154,10 +156,10 @@ func _physicality{range_check_ptr}(
     // 1. Movement first pass (candidate positions)
     //
     let (candidate_physics_state_0) = _euler_forward_no_hitbox(
-        character_type_0, last_physics_state_0, curr_body_state_0
+        character_type_0, last_physics_state_0, curr_body_state_0, curr_stimulus_0
     );
     let (candidate_physics_state_1) = _euler_forward_no_hitbox(
-        character_type_1, last_physics_state_1, curr_body_state_1
+        character_type_1, last_physics_state_1, curr_body_state_1, curr_stimulus_1
     );
 
     //
@@ -511,12 +513,13 @@ func produce_stimulus_given_conditions {range_check_ptr} (
             if (opp_body_state == ns_jessica_body_state.GATOTSU) {
                 return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + ns_jessica_stimulus.GATOTSU_DAMAGE;
             }
-            return 0;
+            return ns_stimulus.GOOD_BLOCK * ns_stimulus.ENCODING + 0;
         }
 
         // self is jessica & opp is antoc
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
-            return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
+            // return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
+            return ns_stimulus.GOOD_BLOCK * ns_stimulus.ENCODING + 0;
         }
 
         // self is antoc & opp is jessica
@@ -525,12 +528,12 @@ func produce_stimulus_given_conditions {range_check_ptr} (
             if (opp_body_state == ns_jessica_body_state.GATOTSU) {
                 return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
             }
-            return 0;
+            return ns_stimulus.GOOD_BLOCK * ns_stimulus.ENCODING + 0;
         }
 
         // self is antoc & opp is antoc
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.ANTOC) {
-            return 0;
+            return ns_stimulus.GOOD_BLOCK * ns_stimulus.ENCODING + 0;
         }
     }
 
@@ -554,7 +557,7 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     }
 
     // getting hit
-    let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
+    // let is_integrity_critical = is_le (self_integrity, ns_integrity.CRITICAL_INTEGRITY);
     if (bool_self_hit == 1) {
         let damage = produce_damage_given_opp_body_state (opp_body_state);
         let bool_is_opp_body_state_launching = is_opp_body_state_launching(opp_body_state);
@@ -579,10 +582,10 @@ func produce_stimulus_given_conditions {range_check_ptr} (
             return ns_stimulus.LAUNCHED * ns_stimulus.ENCODING + damage;
         }
 
-        // hit when grounded but critical integrity => knocked
-        if (is_integrity_critical == 1) {
-            return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + damage;
-        }
+        // // hit when grounded but critical integrity => knocked
+        // if (is_integrity_critical == 1) {
+        //     return ns_stimulus.KNOCKED * ns_stimulus.ENCODING + damage;
+        // }
 
         // otherwise => hurt
         return ns_stimulus.HURT * ns_stimulus.ENCODING + damage;
