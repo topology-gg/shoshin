@@ -985,7 +985,8 @@ export default class Simulator extends Phaser.Scene {
         [0, 1].forEach((playerIndex) => {
             const frame = frames[playerIndex];
             const prevFrame = prevFrames[playerIndex];
-            console.log('frame', frame, 'prevFrame', prevFrame);
+            // console.log(playerIndex, 'stimulus', frame.stimulus);
+
             const stimulusType = Math.floor(frame.stimulus / STIMULUS_ENCODING);
             const prevStimulusType = Math.floor(
                 prevFrame.stimulus / STIMULUS_ENCODING
