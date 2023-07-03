@@ -170,8 +170,15 @@ const Game = ({
             scene.changeScene(gameMode, ctx, realTimeOptions.setPlayerStatuses);
         }
 
-        if (isRealTime) eventsCenter.emit('timer-reset');
-        else eventsCenter.emit('timer-hide');
+        if (isRealTime) {
+            eventsCenter.emit('timer-reset');
+            eventsCenter.emit('reset-stats');
+            eventsCenter.emit('end-text-hide');
+        } else {
+            eventsCenter.emit('timer-hide');
+            eventsCenter.emit('reset-stats');
+            eventsCenter.emit('end-text-hide');
+        }
     }, [isRealTime]);
 
     React.useEffect(() => {

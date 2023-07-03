@@ -234,7 +234,8 @@ export default {
             .on('frame-data-hide', this.onFrameDataHide, this)
             .on('end-text-show', this.onEndTextShow, this)
             .on('end-text-hide', this.onEndTextHide, this)
-            .on('update-stats', this.onStatsUpdate, this);
+            .on('update-stats', this.onStatsUpdate, this)
+            .on('reset-stats', this.onStatsReset, this);
 
         // this.scene.get('play').events
         // eventsCenter
@@ -303,6 +304,13 @@ export default {
                     STATS_BAR_H
                 )
                 .setVisible(true);
+        },
+
+        onStatsReset: function () {
+            this.onStatsUpdate([
+                { hp: 1000, stamina: 1000 },
+                { hp: 1000, stamina: 1000 },
+            ]);
         },
 
         //
