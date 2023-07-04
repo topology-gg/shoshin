@@ -4,6 +4,7 @@ import { useAccount, useConnectors } from '@starknet-react/core';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import * as amplitude from '@amplitude/analytics-browser';
 import { Button } from '@mui/material';
 import mixpanel from 'mixpanel-browser';
 import styles from './ConnectWallet.module.css';
@@ -52,6 +53,7 @@ export default function ConnectWallet() {
                     onClick={() => {
                         disconnect();
                         mixpanel.reset();
+                        amplitude.reset();   
                     } }
                 >
                     Disconnect
@@ -59,6 +61,7 @@ export default function ConnectWallet() {
             </div>
         );
         mixpanel.identify(address);
+        amplitude.setUserId(address);
     } else {
         const menu_items_sorted = []
             .concat(connectors)
