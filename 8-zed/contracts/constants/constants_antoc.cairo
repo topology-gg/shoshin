@@ -119,7 +119,7 @@ namespace ns_antoc_body_state_duration {
     const HORI = 7;
     const VERT = 10;
     const BLOCK = 6; // active for counter == 1,2,3,4
-    const HURT = 2;
+    const HURT = 4;
     const KNOCKED = 11;
     const MOVE_FORWARD = 7;
     const MOVE_BACKWARD = 6;
@@ -138,7 +138,7 @@ namespace ns_antoc_body_state {
     const HORI = 1010;     // 7 frames
     const VERT = 1020;  // 10 frames
     const BLOCK = 1040;    // 6 frames
-    const HURT = 1050;     // 3 frames
+    const HURT = 1050;     // 4 frames
     const KNOCKED = 1060;  // 11 frames
     const MOVE_FORWARD = 1090;  // 7 frames
     const MOVE_BACKWARD = 1100;  // 6 frames
