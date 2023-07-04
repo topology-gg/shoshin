@@ -32,6 +32,7 @@ const PLAYER_POINTER_DIM = 20;
 
 // Effects
 const DASH_SMOKE_SCALE = 0.1;
+const STEP_FORWARD_SMOKE_SCALE = 0.07;
 const JUMP_TAKEOFF_SMOKE_SCALE_X = 0.7;
 const JUMP_TAKEOFF_SMOKE_SCALE_Y = 0.7;
 const JUMP_SMOKE_SCALE_X = 0.1;
@@ -90,6 +91,7 @@ export default class Simulator extends Phaser.Scene {
 
     sparkSprites: Phaser.GameObjects.Sprite[];
     dashSmokeSprites: Phaser.GameObjects.Sprite[];
+    stepForwardSmokeSprites: Phaser.GameObjects.Sprite[];
     jumpTakeoffSmokeSprites: Phaser.GameObjects.Sprite[];
     jumpLandingSmokeSprites: Phaser.GameObjects.Sprite[];
 
@@ -376,7 +378,7 @@ export default class Simulator extends Phaser.Scene {
 
         this.anims.create({
             key: 'dashSmokeAnim',
-            frameRate: 10,
+            frameRate: 20,
             frames: this.anims.generateFrameNumbers('dash-smoke', {
                 start: 0,
                 end: 5,
@@ -409,6 +411,7 @@ export default class Simulator extends Phaser.Scene {
 
         this.sparkSprites = [];
         this.dashSmokeSprites = [];
+        this.stepForwardSmokeSprites = [];
         this.jumpTakeoffSmokeSprites = [];
         this.jumpLandingSmokeSprites = [];
         [0, 1].forEach((_) => {
@@ -425,6 +428,17 @@ export default class Simulator extends Phaser.Scene {
                     .sprite(0, 0, 'dash-smoke')
                     .setScale(DASH_SMOKE_SCALE)
                     .setVisible(false)
+                    .setAlpha(1.0)
+                    .setDepth(100)
+                    .setFlipX(true)
+            );
+
+            this.stepForwardSmokeSprites.push(
+                this.add
+                    .sprite(0, 0, 'dash-smoke')
+                    .setScale(STEP_FORWARD_SMOKE_SCALE)
+                    .setVisible(false)
+                    .setTint(0xff0000)
                     .setAlpha(1.0)
                     .setDepth(100)
                     .setFlipX(true)
@@ -958,6 +972,39 @@ export default class Simulator extends Phaser.Scene {
 
             // play animation
             this.dashSmokeSprites[playerIndex]
+                .setPosition(x, y)
+                .setVisible(true)
+                .play('dashSmokeAnim')
+                .setFlipX(
+                    frame.body_state.dir ==
+                        (frame.body_state.state ==
+                            BodystatesJessica.DashForward ||
+                        frame.body_state.state == BodystatesAntoc.DashForward
+                            ? RIGHT
+                            : LEFT)
+                );
+        });
+
+        //
+        // step-forward-smoke
+        //
+        const stepForwardBodyStates = [BodystatesAntoc.StepForward];
+        [0, 1].forEach((playerIndex) => {
+            // get frame and qualify
+            const frame = frames[playerIndex];
+            if (frame.body_state.counter != 0) return;
+            if (!stepForwardBodyStates.includes(frame.body_state.state)) return;
+
+            // configure sprite
+            const x =
+                frame.body_state.dir == RIGHT
+                    ? frame.physics_state.pos.x
+                    : frame.physics_state.pos.x +
+                      frame.hitboxes.body.dimension.x;
+            const y = -1 * frame.physics_state.pos.y - 15;
+
+            // play animation
+            this.stepForwardSmokeSprites[playerIndex]
                 .setPosition(x, y)
                 .setVisible(true)
                 .play('dashSmokeAnim')
