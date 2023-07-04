@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useAccount, useConnectors } from '@starknet-react/core';
-import { useTranslation } from 'react-i18next';
-import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import { useAccount, useConnectors } from '@starknet-react/core';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import styles from './ConnectWallet.module.css';
 import { Button } from '@mui/material';
+import mixpanel from 'mixpanel-browser';
+import styles from './ConnectWallet.module.css';
 
 // export default function ConnectWallet ({ modalOpen, handleOnOpen, handleOnClose }) {
 export default function ConnectWallet() {
@@ -48,12 +49,16 @@ export default function ConnectWallet() {
 
                 <MenuItem
                     sx={{ width: '100%', mt: 2, justifyContent: 'center' }}
-                    onClick={() => disconnect()}
+                    onClick={() => {
+                        disconnect();
+                        mixpanel.reset();
+                    } }
                 >
                     Disconnect
                 </MenuItem>
             </div>
         );
+        mixpanel.identify(address);
     } else {
         const menu_items_sorted = []
             .concat(connectors)
