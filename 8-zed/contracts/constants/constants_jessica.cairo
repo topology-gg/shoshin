@@ -98,20 +98,27 @@ namespace ns_jessica_action {
 }
 
 namespace ns_jessica_stamina_effect {
-    const SLASH = -50;
-    const UPSWING = -70;
-    const SIDECUT = -30;
-    const GATOTSU = -200;
-    const LOW_KICK = -50;
+
+    // whiff gives rage gain too
+    const SLASH = 5;
+    const UPSWING = 5;
+    const SIDECUT = 5;
+    const LOW_KICK = 5;
+    const BIRDSWING = 5;
+
+    // character special consumes rage, whether hit or whiff
+    const GATOTSU = -500;
 }
 
 namespace ns_jessica_stimulus {
     const SLASH_DAMAGE = 75;
     const UPSWING_DAMAGE = 75;
     const SIDECUT_DAMAGE = 75;
-    const GATOTSU_DAMAGE = 150;
     const LOW_KICK_DAMAGE = 50;
     const BIRDSWING_DAMAGE = 75;
+
+    // character special
+    const GATOTSU_DAMAGE = 250;
 }
 
 namespace ns_jessica_body_state_duration {
