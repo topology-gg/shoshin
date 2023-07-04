@@ -99,10 +99,12 @@ namespace ns_antoc_action {
 }
 
 namespace ns_antoc_stamina_effect {
-    const HORI = -75;
-    const VERT = -100;
-    const STEP_FORWARD = -75;
-    const LOW_KICK = -75;
+
+    // whiff gives rage gain too
+    const HORI = 5;
+    const VERT = 5;
+    const LOW_KICK = 5;
+    const STEP_FORWARD = 10;
 }
 
 namespace ns_antoc_stimulus {

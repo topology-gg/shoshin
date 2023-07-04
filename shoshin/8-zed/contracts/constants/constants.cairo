@@ -25,21 +25,21 @@ namespace ns_dynamics {
 
 namespace ns_stamina {
     // full 1000
-    const INIT_STAMINA = 1000;
+    const INIT_STAMINA = 100;
     const MAX_STAMINA  = 1000;
 }
 
 namespace ns_common_stamina_effect {
     // These values are applied every frame in the body state
-    const NULL = 50; // replenish stamina
-    const MOVE_FORWARD = 25; // replenish stamina
-    const MOVE_BACKWARD = 25; // replenish stamina
-    const BLOCK = -5; // consumes stamina
-    const JUMP = -25; // consumes stamina
+    const NULL = 0;
+    const MOVE_FORWARD = 2;
+    const MOVE_BACKWARD = 0;
+    const BLOCK = -5;
+    const JUMP = 0;
 
     // These values are applied in the first frame of body state
-    const DASH_FORWARD = -100; // consumes stamina
-    const DASH_BACKWARD = -100; // consumes stamina
+    const DASH_FORWARD = 20;
+    const DASH_BACKWARD = 0;
 }
 
 namespace ns_integrity {
