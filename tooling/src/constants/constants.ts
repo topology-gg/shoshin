@@ -808,7 +808,7 @@ export const MENTAL_STATES_COMBO_AGENT: MentalState[] = [
     { state: 'MS COMBO', action: 101 },
 ];
 
-const INIT_STAMINA = 1000;
+const INIT_STAMINA = 100;
 export const InitialRealTimeFrameScene: RealTimeFrameScene = {
     agent_0: {
         body_state: {
