@@ -10,11 +10,11 @@ import eventsCenter from '../Game/EventsCenter';
 import { Body } from 'matter';
 
 const ARENA_WIDTH = 1600;
-const DEFAULT_ZOOM = 1.7;
+const DEFAULT_ZOOM = 2.4;
 
 const DEFAULT_CAMERA_HEIGHT = 400;
 const DEFAULT_CAMERA_CENTER_X = 25;
-const DEFAULT_CAMERA_CENTER_Y = -95;
+const DEFAULT_CAMERA_CENTER_Y = -100;
 const DEFAULT_CAMERA_LEFT = -ARENA_WIDTH / 2;
 const DEFAULT_CAMERA_TOP = DEFAULT_CAMERA_CENTER_Y - DEFAULT_CAMERA_HEIGHT / 2;
 const CAMERA_REACTION_TIME = 50;
@@ -187,6 +187,11 @@ export default class Simulator extends Phaser.Scene {
             'images/antoc/low_kick/spritesheet.png',
             'images/antoc/low_kick/spritesheet.json'
         );
+        this.load.atlas(
+            `antoc-drop_slash`,
+            'images/antoc/drop_slash/spritesheet.png',
+            'images/antoc/drop_slash/spritesheet.json'
+        );
 
         //
         // Jessica
@@ -275,6 +280,11 @@ export default class Simulator extends Phaser.Scene {
             `jessica-low_kick`,
             'images/jessica/low_kick/spritesheet.png',
             'images/jessica/low_kick/spritesheet.json'
+        );
+        this.load.atlas(
+            `jessica-birdswing`,
+            'images/jessica/birdswing/spritesheet.png',
+            'images/jessica/birdswing/spritesheet.json'
         );
 
         this.load.image(
@@ -573,7 +583,14 @@ export default class Simulator extends Phaser.Scene {
         let bodyStateName = bodyStateNumberToName[characterName][bodyState];
         if (bodyStateName == 'launched') bodyStateName = 'knocked'; // launched uses the animation of knocked
         const direction = bodyStateDir == 1 ? 'right' : 'left';
-
+        console.log(
+            'characterName',
+            characterName,
+            'bodyState',
+            bodyState,
+            'bodyStateName',
+            bodyStateName
+        );
         //Calculating offsets for frame
         const spriteAdjustments =
             spriteDataPhaser[characterName][bodyStateName];
@@ -862,18 +879,16 @@ export default class Simulator extends Phaser.Scene {
                     subjectFrame.hitboxes.body.origin.x +
                     subjectFrame.hitboxes.body.dimension.x / 2;
 
-                // position spark effect's y at the y of the attacker's (object) action hitbox y-center in the previous frame (when the hit registered)
+                // position spark effect's y at the y of the attacker's (object) action hitbox y-center in the previous frame (when the hit registered),
+                // upperbounded by the head of the attacked
                 // note: phaser's y axis points downward on screen
-                /*   console.log(
-                    'subject body origin y',
-                    subjectFrame.hitboxes.body.origin.y,
-                    'object prev action origin y',
-                    objectPrevFrame.hitboxes.action.origin.y
-                ); */
-                const y =
-                    -1 *
-                    (objectPrevFrame.hitboxes.action.origin.y +
-                        objectPrevFrame.hitboxes.action.dimension.y / 2);
+                const yAttackAction =
+                    objectPrevFrame.hitboxes.action.origin.y +
+                    objectPrevFrame.hitboxes.action.dimension.y / 2;
+                const yAttackedHead =
+                    subjectFrame.hitboxes.body.origin.y +
+                    subjectFrame.hitboxes.body.dimension.y;
+                const y = -1 * Math.min(yAttackAction, yAttackedHead);
 
                 // console.log('Play spark at', x, y);
                 this.sparkSprites[subjectIndex]

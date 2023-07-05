@@ -1,6 +1,6 @@
 import eventsCenter from '../Game/EventsCenter';
-import { bodyStateNumberToName } from '../constants/constants';
-import { CHARACTERS_ACTIONS } from '../types/Action';
+import { PHASER_CANVAS_W, bodyStateNumberToName } from '../constants/constants';
+import { Action, CHARACTERS_ACTIONS } from '../types/Action';
 import { Frame, FrameLike } from '../types/Frame';
 
 export default {
@@ -10,10 +10,12 @@ export default {
 
     create: function () {
         this.timerText = this.add
-            .text(400, 30, '--', {
-                fontSize: 24,
-                fontFamily: 'sans-serif',
-                fill: 'black',
+            .text(PHASER_CANVAS_W / 2, 40, '', {
+                fontSize: 54,
+                fontFamily: 'Oswald',
+                fill: '#FF7E00',
+                stroke: '#000000',
+                strokeThickness: 4,
             })
             .setOrigin(0.5, 0.5)
             .setVisible(false);
@@ -66,7 +68,7 @@ export default {
         const topPadding = 5;
         const leftMargin = 5;
         [0, 1].forEach((index) => {
-            const x = index == 0 ? 10 : 530;
+            const x = index == 0 ? 10 : PHASER_CANVAS_W - borderWidth - 5;
             this.debug_info_objects[index] = {};
 
             this.debug_info_objects[index]['border'] = this.add
@@ -145,7 +147,7 @@ export default {
 
         onTimerReset: function () {
             this.timerText.setVisible(true);
-            this.timerText.setText('--');
+            this.timerText.setText('');
         },
 
         onTimerHide: function () {
@@ -214,11 +216,15 @@ export default {
                 );
 
                 // action
+                console.log('frame', frames[index]);
                 const action = (frames[index] as Frame).action;
                 const characterActions = CHARACTERS_ACTIONS[isAntoc ? 1 : 0];
-                const actionName = characterActions.find(
+                const actionMatched: Action = characterActions.find(
                     (value) => value.id == action
-                ).display.name;
+                );
+                const actionName = actionMatched
+                    ? actionMatched.display.name
+                    : '-';
                 this.debug_info_objects[index]['action']['data'].setText(
                     actionName
                 );
