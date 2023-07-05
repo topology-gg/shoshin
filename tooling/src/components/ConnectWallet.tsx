@@ -9,6 +9,24 @@ import { Button } from '@mui/material';
 import mixpanel from 'mixpanel-browser';
 import styles from './ConnectWallet.module.css';
 
+const setUserId = (address:string) => {
+    try {
+        mixpanel.identify(address);
+        amplitude.setUserId(address);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+const clearUserId = () => {
+    try {
+        mixpanel.reset();
+        amplitude.reset();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 // export default function ConnectWallet ({ modalOpen, handleOnOpen, handleOnClose }) {
 export default function ConnectWallet() {
     const { t } = useTranslation();
@@ -52,16 +70,14 @@ export default function ConnectWallet() {
                     sx={{ width: '100%', mt: 2, justifyContent: 'center' }}
                     onClick={() => {
                         disconnect();
-                        mixpanel.reset();
-                        amplitude.reset();   
-                    } }
+                        clearUserId();
+                    }}
                 >
                     Disconnect
                 </MenuItem>
             </div>
         );
-        mixpanel.identify(address);
-        amplitude.setUserId(address);
+        setUserId(address);
     } else {
         const menu_items_sorted = []
             .concat(connectors)
