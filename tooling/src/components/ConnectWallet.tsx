@@ -9,14 +9,14 @@ import { Button } from '@mui/material';
 import mixpanel from 'mixpanel-browser';
 import styles from './ConnectWallet.module.css';
 
-const setUserId = (address:string) => {
+const setUserId = (address: string) => {
     try {
         mixpanel.identify(address);
         amplitude.setUserId(address);
     } catch (error) {
         console.error(error);
     }
-}
+};
 
 const clearUserId = () => {
     try {
@@ -25,7 +25,7 @@ const clearUserId = () => {
     } catch (error) {
         console.error(error);
     }
-}
+};
 
 // export default function ConnectWallet ({ modalOpen, handleOnOpen, handleOnClose }) {
 export default function ConnectWallet() {

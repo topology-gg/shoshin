@@ -141,7 +141,7 @@ const onSwipeableViewChange = (index: number, gameMode: GameModes) => {
     } catch (error) {
         console.error(error);
     }
-}
+};
 
 let gamePlayTimer = new GamePlayTimer(GameModes.simulation);
 gamePlayTimer.start();
@@ -265,7 +265,7 @@ export default function Home() {
                     const newIndex = prev - 1;
                     onSwipeableViewChange(newIndex, gameMode);
                     return newIndex;
-                };
+                }
             });
         } else if (e.key == ']') {
             setSwipeableViewIndex((prev) => {
@@ -274,7 +274,7 @@ export default function Home() {
                     const newIndex = prev + 1;
                     onSwipeableViewChange(newIndex, gameMode);
                     return newIndex;
-                };
+                }
             });
         } else if (e.key == ';') {
             if (swipeableViewIndex == 1) {
