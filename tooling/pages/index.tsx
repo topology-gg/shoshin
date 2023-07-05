@@ -127,6 +127,22 @@ export const track = (event: GamePlayEvent) => {
     amplitude.track(event.name, event.data);
 };
 
+const onSwipeableViewChange = (index: number, gameMode: GameModes) => {
+    try {
+        if (index != 0) {
+            if (gamePlayTimer.isRunning()) {
+                gamePlayTimer.stop();
+                track(gamePlayTimer.getEvent());
+            }
+        } else {
+            gamePlayTimer = new GamePlayTimer(gameMode);
+            gamePlayTimer.start();
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 let gamePlayTimer = new GamePlayTimer(GameModes.simulation);
 gamePlayTimer.start();
 
@@ -245,12 +261,20 @@ export default function Home() {
         if (e.key == '[') {
             setSwipeableViewIndex((prev) => {
                 if (prev == 0) return prev;
-                else return prev - 1;
+                else {
+                    const newIndex = prev - 1;
+                    onSwipeableViewChange(newIndex, gameMode);
+                    return newIndex;
+                };
             });
         } else if (e.key == ']') {
             setSwipeableViewIndex((prev) => {
                 if (prev == 3) return prev;
-                else return prev + 1;
+                else {
+                    const newIndex = prev + 1;
+                    onSwipeableViewChange(newIndex, gameMode);
+                    return newIndex;
+                };
             });
         } else if (e.key == ';') {
             if (swipeableViewIndex == 1) {
@@ -1391,20 +1415,7 @@ export default function Home() {
                 value={swipeableViewIndex}
                 onChange={(event, newValue) =>
                     setSwipeableViewIndex((_) => {
-                        try {
-                            if (newValue != 0) {
-                                if (gamePlayTimer.isRunning()) {
-                                    gamePlayTimer.stop();
-                                    track(gamePlayTimer.getEvent());
-                                }
-                            } else {
-                                gamePlayTimer = new GamePlayTimer(gameMode);
-                                gamePlayTimer.start();
-                            }
-                        } catch (error) {
-                            console.error(error);
-                        }
-
+                        onSwipeableViewChange(newValue, gameMode);
                         return newValue;
                     })
                 }
