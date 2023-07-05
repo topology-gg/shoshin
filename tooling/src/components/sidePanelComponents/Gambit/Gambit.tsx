@@ -263,27 +263,9 @@ const Layer = ({
 
     let actions = CHARACTERS_ACTIONS[characterIndex].map((a) => a.display.name);
 
-    // Create new combo
-    // creates new combo
-    //Selecting action after creating combo
-    // Remove combo of that layer from array, decrement all combo references with higher index
-    // Edit Combo
-    // adds actions to a combo
-    // Copy combo and paste Combo
-    // copies a combo to another
-    // We can prune repeats in build agent :)
-
     combos.forEach((_, i) => {
         actions.push(`Combo ${i}`);
     });
-
-    const [editingCombo, setEditingCombo] = useState<number>(-1);
-
-    const createCombo = (event: React.MouseEvent<HTMLButtonElement>) => {
-        let id = event.currentTarget.id.split('-');
-        let menuIndex = parseInt(id[id.length - 1]);
-        setEditingCombo(menuIndex);
-    };
 
     const onActionSelect = (action: string) => {
         if (!action.includes('Combo')) {
@@ -497,12 +479,6 @@ const Layer = ({
                             </MenuItem>
                         );
                     })}
-                    <MenuItem>
-                        id={`actions-menu-${i}`}
-                        <BlurrableListItemText onClick={createCombo}>
-                            <Typography>+ Combo</Typography>
-                        </BlurrableListItemText>
-                    </MenuItem>
                 </Menu>
                 <Grid item xs={gridRemovePortion}>
                     <IconButton
