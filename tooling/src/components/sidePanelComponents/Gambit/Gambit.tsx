@@ -513,13 +513,6 @@ const Layer = ({
                         <DeleteIcon sx={{ fontSize: '16px', color: '#888' }} />
                     </IconButton>
                 </Grid>
-                <Grid item xs={12}>
-                    <Divider variant="middle" />
-                </Grid>
-                <Grid item xs={gridOrderPortion} />
-                <Grid item xs={gridActionPortion + gridConditionPortion}>
-                    {layer.action.isCombo ? comboDisplay : null}
-                </Grid>
             </Grid>
         </Box>
     );
