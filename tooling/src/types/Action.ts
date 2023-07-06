@@ -70,6 +70,18 @@ const MoveBackward: Action = {
     key: 'A',
 };
 
+const Jump: Action = {
+    id: 9,
+    display: { name: 'Jump', unicode: '\u{1F998}' },
+    frames: {
+        duration: 6,
+        interrupts: {
+            [Sidecut.id]: 3,
+        },
+    },
+    key: 'W',
+};
+
 const DashForward: Action = {
     id: 7,
     display: { name: 'DashForward', unicode: '\u{1F406}' },
@@ -79,6 +91,7 @@ const DashForward: Action = {
             [Slash.id]: 2,
             [Upswing.id]: 2,
             [Sidecut.id]: 2,
+            [Jump.id]: 2,
         },
     },
     key: 'E',
@@ -87,15 +100,16 @@ const DashForward: Action = {
 const DashBackward: Action = {
     id: 8,
     display: { name: 'DashBackward', unicode: '\u{1F406}' },
-    frames: { duration: 4 },
+    frames: {
+        duration: 4,
+        interrupts: {
+            [Slash.id]: 2,
+            [Upswing.id]: 2,
+            [Sidecut.id]: 2,
+            [Jump.id]: 2,
+        },
+    },
     key: 'Q',
-};
-
-const Jump: Action = {
-    id: 9,
-    display: { name: 'Jump', unicode: '\u{1F998}' },
-    frames: { duration: 6 },
-    key: 'W',
 };
 
 const Gatotsu: Action = {
@@ -185,14 +199,26 @@ const AntocDashBackward: Action = {
 const StepForward: Action = {
     id: 8,
     display: { name: 'StepForward', unicode: '\u{1F43E}' },
-    frames: { duration: 3 },
+    frames: {
+        duration: 3,
+        interrupts: {
+            [Vert.id]: 2,
+        },
+    },
     key: 'F',
 };
 
 const AntocJump: Action = {
     id: 9,
     display: { name: 'Jump', unicode: '\u{1F998}' },
-    frames: { duration: 7 },
+    frames: {
+        duration: 7,
+        interrupts: {
+            [Vert.id]: 4,
+            [AntocDashForward.id]: 4,
+            [AntocDashBackward.id]: 4,
+        },
+    },
     key: 'W',
 };
 
