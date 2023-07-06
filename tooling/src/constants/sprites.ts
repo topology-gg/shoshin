@@ -364,12 +364,18 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
                 hitboxOffset: { left: [63, -83], right: [37, -83] },
             },
         ],
+        drop_slash: [
+            {
+                size: [343, 244],
+                hitboxOffset: { left: [63, -83], right: [87, -100] },
+            },
+        ],
     },
     jessica: {
         block: [
             {
                 size: [103, 126],
-                hitboxOffset: { left: [52, -52], right: [49, -53] },
+                hitboxOffset: { left: [47, -53], right: [49, -53] },
             },
         ],
         clash: [
@@ -534,6 +540,12 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
             {
                 size: [135, 146],
                 hitboxOffset: { left: [33, -63], right: [67, -63] },
+            },
+        ],
+        birdswing: [
+            {
+                size: [259, 218],
+                hitboxOffset: { left: [10, -63], right: [87, -63] },
             },
         ],
     },

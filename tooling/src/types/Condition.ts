@@ -4,7 +4,22 @@ export interface Condition {
     elements: ConditionElement[];
     key?: string;
     displayName?: string;
+    type?: string;
+    isInverted?: boolean;
 }
+
+export const conditionTypeToEmojiFile = (conditionType: string) => {
+    if (!conditionType) return '/images/emojis/star.png';
+    if (conditionType == 'spacing')
+        return '/images/emojis/triangular_ruler.png';
+    else if (conditionType.includes('state'))
+        return '/images/emojis/woman_lotus.png';
+    else if (conditionType.includes('health'))
+        return '/images/emojis/red_heart.png';
+    else if (conditionType.includes('stamina'))
+        return '/images/emojis/battery.png';
+    else return '/images/emojis/light_bulb.png';
+};
 
 export interface ConditionElement {
     value?: number | Operator | Perceptible;
@@ -80,6 +95,9 @@ export enum BodystatesJessica {
     MoveBackward = 100,
     DashForward = 110,
     DashBackward = 120,
+    Jump = 130,
+    Gatotsu = 140,
+    LowKick = 150,
 }
 
 export enum BodystatesAntoc {
@@ -93,6 +111,10 @@ export enum BodystatesAntoc {
     MoveBackward = 1100,
     DashForward = 1110,
     DashBackward = 1120,
+    Clash = 1130,
+    StepForward = 1140,
+    Jump = 1150,
+    LowKick = 1160,
 }
 
 export enum Perceptible {

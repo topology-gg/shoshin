@@ -5,6 +5,8 @@ import {
     OFFENSIVE_AGENT,
     TICK_IN_SECONDS,
     characterActionToNumber,
+    LEFT,
+    RIGHT,
 } from '../constants/constants';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
 import { runRealTimeFromContext } from '../hooks/useRunRealtime';
@@ -17,6 +19,7 @@ import eventsCenter from '../Game/EventsCenter';
 import * as wasm from '../../wasm/shoshin/pkg/shoshin';
 
 export default class RealTime extends Platformer {
+    prevState: RealTimeFrameScene = InitialRealTimeFrameScene;
     state: RealTimeFrameScene = InitialRealTimeFrameScene;
 
     private player_action: number = 5;
@@ -41,6 +44,10 @@ export default class RealTime extends Platformer {
 
     private isFirstTick: boolean = true;
 
+    private tick: number = 0;
+
+    private debugToggleLocked: boolean = false;
+
     private tickLatencyInSecond = TICK_IN_SECONDS;
 
     private setPlayerStatuses: (playerStatuses: StatusBarPanelProps) => void =
@@ -53,6 +60,8 @@ export default class RealTime extends Platformer {
     resetGameState() {
         this.state = InitialRealTimeFrameScene;
         this.isFirstTick = true;
+        this.tick = 0;
+        this.debugToggleLocked = false;
     }
 
     set_wasm_context(ctx: IShoshinWASMContext) {
@@ -239,13 +248,21 @@ export default class RealTime extends Platformer {
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
-                    ]['MoveBackward'];
+                    ][
+                        this.state.agent_0.body_state.dir == RIGHT
+                            ? 'MoveBackward'
+                            : 'MoveForward'
+                    ];
             } else if (this.keyboard.d.isDown) {
                 // move right
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
-                    ]['MoveForward'];
+                    ][
+                        this.state.agent_0.body_state.dir == RIGHT
+                            ? 'MoveForward'
+                            : 'MoveBackward'
+                    ];
             } else if (this.keyboard.j.isDown) {
                 //attack # 1
                 this.player_action =
@@ -259,17 +276,25 @@ export default class RealTime extends Platformer {
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ][this.character_type_0 == 1 ? 'Vert' : 'Upswing'];
             } else if (this.keyboard.q.isDown) {
-                // dash back
+                // dash left
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
-                    ]['DashBackward'];
+                    ][
+                        this.state.agent_0.body_state.dir == RIGHT
+                            ? 'DashBackward'
+                            : 'DashForward'
+                    ];
             } else if (this.keyboard.e.isDown) {
-                // dash forward
+                // dash right
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
-                    ]['DashForward'];
+                    ][
+                        this.state.agent_0.body_state.dir == RIGHT
+                            ? 'DashForward'
+                            : 'DashBackward'
+                    ];
             } else if (this.keyboard.l.isDown && this.character_type_0 == 0) {
                 // jessica's attack # 3
                 this.player_action =
@@ -296,8 +321,18 @@ export default class RealTime extends Platformer {
                     ]['LowKick'];
             }
         }
+
         if (this.keyboard.period.isDown) {
-            this.isDebug = !this.isDebug;
+            if (!this.debugToggleLocked) {
+                this.isDebug = !this.isDebug;
+
+                // debounce
+                this.debugToggleLocked = true;
+            }
+        }
+        if (this.keyboard.period.isUp) {
+            // debounce
+            this.debugToggleLocked = false;
         }
     }
 
@@ -314,14 +349,18 @@ export default class RealTime extends Platformer {
         );
 
         this.isFirstTick = false;
+        this.tick += 1;
         let newState: RealTimeFrameScene = out as RealTimeFrameScene;
 
         this.player_action = 0;
         if (newState) {
+            this.prevState = this.state;
             this.state = newState;
             this.updateScene(
                 this.character_type_0,
                 this.opponent.character,
+                this.prevState.agent_0,
+                this.prevState.agent_1,
                 newState.agent_0,
                 newState.agent_1,
                 false,

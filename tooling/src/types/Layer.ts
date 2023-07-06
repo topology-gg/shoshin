@@ -446,7 +446,7 @@ export const alwaysTrueCondition = {
             type: 'Operator',
         },
     ],
-    displayName: 'always_true',
+    displayName: 'Always true',
     key: '1686113964152',
     isInverted: false,
 };

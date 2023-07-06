@@ -1,0 +1,135 @@
+{
+	"frames": {
+		"frame_0.png": {
+			"frame": {
+				"x": 344,
+				"y": 1,
+				"w": 343,
+				"h": 244
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 343,
+				"h": 244
+			},
+			"sourceSize": {
+				"w": 343,
+				"h": 244
+			}
+		},
+        "frame_1.png": {
+			"frame": {
+				"x": 687,
+				"y": 1,
+				"w": 343,
+				"h": 244
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 343,
+				"h": 244
+			},
+			"sourceSize": {
+				"w": 343,
+				"h": 244
+			}
+		},
+        "frame_2.png": {
+			"frame": {
+				"x": 1030,
+				"y": 1,
+				"w": 343,
+				"h": 244
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 343,
+				"h": 244
+			},
+			"sourceSize": {
+				"w": 343,
+				"h": 244
+			}
+		},
+        "frame_3.png": {
+			"frame": {
+				"x": 1373,
+				"y": 1,
+				"w": 343,
+				"h": 244
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 343,
+				"h": 244
+			},
+			"sourceSize": {
+				"w": 343,
+				"h": 244
+			}
+		},
+        "frame_4.png": {
+			"frame": {
+				"x": 1716,
+				"y": 1,
+				"w": 343,
+				"h": 244
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 343,
+				"h": 244
+			},
+			"sourceSize": {
+				"w": 343,
+				"h": 244
+			}
+		},
+        "frame_5.png": {
+			"frame": {
+				"x": 2059,
+				"y": 1,
+				"w": 343,
+				"h": 244
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 343,
+				"h": 244
+			},
+			"sourceSize": {
+				"w": 343,
+				"h": 244
+			}
+		}
+	},
+	"meta": {
+		"app": "https://codeshack.io/images-sprite-sheet-generator/",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 2744,
+			"h": 244
+		},
+		"scale": "1"
+	}
+}

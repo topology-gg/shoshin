@@ -1,17 +1,20 @@
 import Phaser from 'phaser';
-import { bodyStateNumberToName } from '../constants/constants';
+import { bodyStateNumberToName, LEFT, RIGHT } from '../constants/constants';
 import { spriteDataPhaser } from '../constants/sprites';
 import { FrameLike, RealTimeFrameScene, Rectangle } from '../types/Frame';
 import { SimulatorProps } from '../types/Simulator';
 import { GameModes } from '../types/Simulator';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
+import { BodystatesAntoc, BodystatesJessica } from '../types/Condition';
+import eventsCenter from '../Game/EventsCenter';
+import { Body } from 'matter';
 
-const ARENA_WIDTH = 1000;
-const DEFAULT_ZOOM = 1.7;
+const ARENA_WIDTH = 1600;
+const DEFAULT_ZOOM = 2.4;
 
 const DEFAULT_CAMERA_HEIGHT = 400;
 const DEFAULT_CAMERA_CENTER_X = 25;
-const DEFAULT_CAMERA_CENTER_Y = -95;
+const DEFAULT_CAMERA_CENTER_Y = -100;
 const DEFAULT_CAMERA_LEFT = -ARENA_WIDTH / 2;
 const DEFAULT_CAMERA_TOP = DEFAULT_CAMERA_CENTER_Y - DEFAULT_CAMERA_HEIGHT / 2;
 const CAMERA_REACTION_TIME = 50;
@@ -19,6 +22,23 @@ const CAMERA_REACTION_TIME = 50;
 const HITBOX_STROKE_WIDTH = 1.5;
 
 const PLAYER_POINTER_DIM = 20;
+
+// Effects
+const DASH_SMOKE_SCALE = 0.1;
+const JUMP_SMOKE_SCALE_X = 0.1;
+const JUMP_SMOKE_SCALE_Y = 0.09;
+
+enum CombatEvent {
+    Block = 'Block',
+    Clash = 'Clash',
+    Combo = 'Combo',
+}
+
+interface BattleEvent {
+    frameIndex: number;
+    event: CombatEvent;
+    eventCount: number;
+}
 
 interface PlayerPointer {
     cir: Phaser.GameObjects.Arc;
@@ -57,8 +77,20 @@ export default class Simulator extends Phaser.Scene {
     endTextP2Won: Phaser.GameObjects.Text;
     endTextDraw: Phaser.GameObjects.Text;
 
+    player_one_combat_log: BattleEvent;
+    player_two_combat_log: BattleEvent;
+
     readonly STROKE_STYLE_BODY_HITBOX = 0x7cfc00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
+
+    sparkSprites: Phaser.GameObjects.Sprite[];
+    dashSmokeSprites: Phaser.GameObjects.Sprite[];
+    jumpSmokeSprites: Phaser.GameObjects.Sprite[];
+
+    player_one_action_confirm = false;
+    player_two_action_confirm = false;
+
+    last_accessed_frame = 0;
 
     //context only relevent for realtime atm, but I strongly think simulator will have wasm calls soon
     changeScene(
@@ -155,6 +187,11 @@ export default class Simulator extends Phaser.Scene {
             'images/antoc/low_kick/spritesheet.png',
             'images/antoc/low_kick/spritesheet.json'
         );
+        this.load.atlas(
+            `antoc-drop_slash`,
+            'images/antoc/drop_slash/spritesheet.png',
+            'images/antoc/drop_slash/spritesheet.json'
+        );
 
         //
         // Jessica
@@ -244,10 +281,37 @@ export default class Simulator extends Phaser.Scene {
             'images/jessica/low_kick/spritesheet.png',
             'images/jessica/low_kick/spritesheet.json'
         );
+        this.load.atlas(
+            `jessica-birdswing`,
+            'images/jessica/birdswing/spritesheet.png',
+            'images/jessica/birdswing/spritesheet.json'
+        );
 
         this.load.image(
             'arena_bg',
             'images/bg/shoshin-bg-large-transparent.png'
+        );
+
+        // effects
+        this.load.spritesheet('spark', 'images/effects/spark/spritesheet.png', {
+            frameWidth: 730,
+            frameHeight: 731,
+        });
+        this.load.spritesheet(
+            'dash-smoke',
+            'images/effects/dash-smoke/spritesheet.png',
+            {
+                frameWidth: 1251,
+                frameHeight: 1251,
+            }
+        );
+        this.load.spritesheet(
+            'jump-smoke',
+            'images/effects/jump-smoke/spritesheet.png',
+            {
+                frameWidth: 1182,
+                frameHeight: 1182,
+            }
         );
     }
 
@@ -288,7 +352,76 @@ export default class Simulator extends Phaser.Scene {
         return centeredText;
     }
 
+    initializeEffects() {
+        this.anims.create({
+            key: 'sparkAnim',
+            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('spark', {
+                start: 0,
+                end: 6,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
+        this.anims.create({
+            key: 'dashSmokeAnim',
+            frameRate: 10,
+            frames: this.anims.generateFrameNumbers('dash-smoke', {
+                start: 0,
+                end: 5,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
+        this.anims.create({
+            key: 'jumpSmokeAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('jump-smoke', {
+                start: 0,
+                end: 8,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
+        this.sparkSprites = [];
+        this.dashSmokeSprites = [];
+        this.jumpSmokeSprites = [];
+        [0, 1].forEach((_) => {
+            this.sparkSprites.push(
+                this.add
+                    .sprite(0, 0, 'spark')
+                    .setScale(0.2)
+                    .setVisible(false)
+                    .setAlpha(0.9)
+                    .setDepth(100)
+            );
+            this.dashSmokeSprites.push(
+                this.add
+                    .sprite(0, 0, 'dash-smoke')
+                    .setScale(DASH_SMOKE_SCALE)
+                    .setVisible(false)
+                    .setAlpha(1.0)
+                    .setDepth(100)
+                    .setFlipX(true)
+            );
+
+            this.jumpSmokeSprites.push(
+                this.add
+                    .sprite(0, 0, 'jump-smoke')
+                    .setScale(JUMP_SMOKE_SCALE_X, JUMP_SMOKE_SCALE_Y)
+                    .setVisible(false)
+                    .setAlpha(1.0)
+                    .setDepth(100)
+            );
+        });
+    }
+
     intitialize() {
+        this.initializeEffects();
+
         const yDisplacementFromCenterToGround = -150;
         let bg = this.add.image(0, 20, 'arena_bg');
         bg.setScale(0.3, 0.2).setPosition(
@@ -307,36 +440,36 @@ export default class Simulator extends Phaser.Scene {
             this.STROKE_STYLE_BODY_HITBOX,
             HITBOX_STROKE_WIDTH,
             0x0,
-            0.3
+            0.4
         );
         this.player_two_body_hitbox = this.addRectangleHelper(
             this.STROKE_STYLE_BODY_HITBOX,
             HITBOX_STROKE_WIDTH,
             0x0,
-            0.3
+            0.4
         );
         this.player_one_action_hitbox = this.addRectangleHelper(
             this.STROKE_STYLE_ACTION_HITBOX,
             HITBOX_STROKE_WIDTH,
             0x0,
-            0.3
+            0.4
         );
         this.player_two_action_hitbox = this.addRectangleHelper(
             this.STROKE_STYLE_ACTION_HITBOX,
             HITBOX_STROKE_WIDTH,
             0x0,
-            0.3
+            0.4
         );
 
         this.player_pointers = [];
         [0, 1].forEach((index) => {
             const cir = this.addCircleHelper(
                 0x0,
-                0.5,
+                1,
                 index == 0 ? 0xff0000 : 0x0000ff,
-                0.3
+                0.6
             );
-            const text = this.addTextHelper(0x555);
+            const text = this.addTextHelper('0x555');
             const playerPointer = {
                 cir: cir,
                 text: text,
@@ -344,10 +477,10 @@ export default class Simulator extends Phaser.Scene {
             this.player_pointers.push(playerPointer);
         });
 
-        this.player_one_body_hitbox_text = this.addTextHelper(0xfff);
-        this.player_two_body_hitbox_text = this.addTextHelper(0xfff);
-        this.player_one_action_hitbox_text = this.addTextHelper(0xfff);
-        this.player_two_action_hitbox_text = this.addTextHelper(0xfff);
+        this.player_one_body_hitbox_text = this.addTextHelper('0xfff');
+        this.player_two_body_hitbox_text = this.addTextHelper('0xfff');
+        this.player_one_action_hitbox_text = this.addTextHelper('0xfff');
+        this.player_two_action_hitbox_text = this.addTextHelper('0xfff');
 
         this.cameras.main.centerOn(0, yDisplacementFromCenterToGround);
         this.cameras.main.setBackgroundColor('#FFFFFF');
@@ -402,8 +535,8 @@ export default class Simulator extends Phaser.Scene {
         return tri;
     }
 
-    addTextHelper(colorHex: number) {
-        const text = this.add.text(0, 0, '', { color: colorHex.toString() });
+    addTextHelper(colorHexString: string) {
+        const text = this.add.text(0, 0, '', { color: '#fff' });
         text.setFontSize(12).setAlign('center');
         return text;
     }
@@ -447,9 +580,17 @@ export default class Simulator extends Phaser.Scene {
         const pos = physicsState.pos;
         const hitboxW = frame.hitboxes.body.dimension.x;
 
-        const bodyStateName = bodyStateNumberToName[characterName][bodyState];
+        let bodyStateName = bodyStateNumberToName[characterName][bodyState];
+        if (bodyStateName == 'launched') bodyStateName = 'knocked'; // launched uses the animation of knocked
         const direction = bodyStateDir == 1 ? 'right' : 'left';
-
+        console.log(
+            'characterName',
+            characterName,
+            'bodyState',
+            bodyState,
+            'bodyStateName',
+            bodyStateName
+        );
         //Calculating offsets for frame
         const spriteAdjustments =
             spriteDataPhaser[characterName][bodyStateName];
@@ -470,6 +611,13 @@ export default class Simulator extends Phaser.Scene {
             `${characterName}-${bodyStateName}`,
             `frame_${bodyStateCounter}.png`
         );
+
+        // TODO: handle direction switching
+        if (direction == 'right') {
+            player.setFlipX(false);
+        } else {
+            player.setFlipX(true);
+        }
     }
 
     private setPlayerOnePointer(frame: FrameLike) {
@@ -638,6 +786,14 @@ export default class Simulator extends Phaser.Scene {
     }: SimulatorProps) {
         const characterType0 = testJson?.agent_0.type;
         const characterType1 = testJson?.agent_1.type;
+        const agentPrevFrame0 =
+            testJson?.agent_0.frames[
+                animationFrame == 0 ? 0 : animationFrame - 1
+            ];
+        const agentPrevFrame1 =
+            testJson?.agent_1.frames[
+                animationFrame == 0 ? 0 : animationFrame - 1
+            ];
         const agentFrame0 = testJson?.agent_0.frames[animationFrame];
         const agentFrame1 = testJson?.agent_1.frames[animationFrame];
         const fightLength = testJson?.agent_0.frames.length;
@@ -645,17 +801,179 @@ export default class Simulator extends Phaser.Scene {
         this.updateScene(
             characterType0,
             characterType1,
+            agentPrevFrame0,
+            agentPrevFrame1,
             agentFrame0,
             agentFrame1,
             animationFrame == 0,
             showDebug,
             animationFrame == fightLength - 1
         );
+
+        this.battleText(
+            characterType0,
+            characterType1,
+            agentFrame0,
+            agentFrame1,
+            animationFrame
+        );
+
+        const rewound = this.last_accessed_frame > animationFrame;
+        this.last_accessed_frame = animationFrame;
+        if (
+            this.player_one_combat_log?.frameIndex + 50 <= animationFrame ||
+            rewound
+        ) {
+            eventsCenter.emit('player-event-remove', 1);
+            this.player_one_combat_log = undefined;
+        }
+        if (
+            this.player_two_combat_log?.frameIndex + 50 <= animationFrame ||
+            rewound
+        ) {
+            eventsCenter.emit('player-event-remove', 2);
+            this.player_two_combat_log = undefined;
+        }
+
+        if (agentFrame0.body_state.counter == 0) {
+            this.player_one_action_confirm = false;
+        }
+
+        if (agentFrame1.body_state.counter == 0) {
+            this.player_two_action_confirm = false;
+        }
+    }
+
+    updateEffects(prevFrames, frames: FrameLike[]) {
+        //
+        // spark
+        //
+        [
+            [0, 1],
+            [1, 0],
+        ].forEach((e) => {
+            const subjectIndex = e[0];
+            const objectIndex = e[1];
+            const subjectPrevFrame: FrameLike = prevFrames[subjectIndex];
+            const objectPrevFrame: FrameLike = prevFrames[objectIndex];
+
+            const subjectFrame: FrameLike = frames[subjectIndex];
+            const objectFrame: FrameLike = frames[objectIndex];
+
+            const sparkBodyStates = [
+                BodystatesAntoc.Hurt,
+                BodystatesJessica.Hurt,
+                BodystatesAntoc.Knocked,
+                BodystatesJessica.Knocked,
+                BodystatesAntoc.Clash,
+                BodystatesJessica.Clash,
+            ];
+
+            // if subject body state matches one of sparkBodyStates, and subject body counter==0 (first frame)
+            if (
+                sparkBodyStates.includes(subjectFrame.body_state.state) &&
+                subjectFrame.body_state.counter == 0
+            ) {
+                // position spark effect's x at x-center of the attacked (subject) body
+                const x =
+                    subjectFrame.hitboxes.body.origin.x +
+                    subjectFrame.hitboxes.body.dimension.x / 2;
+
+                // position spark effect's y at the y of the attacker's (object) action hitbox y-center in the previous frame (when the hit registered),
+                // upperbounded by the head of the attacked
+                // note: phaser's y axis points downward on screen
+                const yAttackAction =
+                    objectPrevFrame.hitboxes.action.origin.y +
+                    objectPrevFrame.hitboxes.action.dimension.y / 2;
+                const yAttackedHead =
+                    subjectFrame.hitboxes.body.origin.y +
+                    subjectFrame.hitboxes.body.dimension.y;
+                const y = -1 * Math.min(yAttackAction, yAttackedHead);
+
+                // console.log('Play spark at', x, y);
+                this.sparkSprites[subjectIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('sparkAnim');
+            }
+        });
+
+        //
+        // dash-smoke
+        //
+        const dashBodyStates = [
+            BodystatesJessica.DashForward,
+            BodystatesJessica.DashBackward,
+            BodystatesAntoc.DashForward,
+            BodystatesAntoc.DashBackward,
+        ];
+        [0, 1].forEach((playerIndex) => {
+            // get frame and qualify
+            const frame = frames[playerIndex];
+            if (frame.body_state.counter != 0) return;
+            if (!dashBodyStates.includes(frame.body_state.state)) return;
+
+            // configure sprite
+            const x =
+                frame.body_state.dir == RIGHT
+                    ? frame.physics_state.pos.x +
+                      (frame.body_state.state ==
+                          BodystatesJessica.DashForward ||
+                      frame.body_state.state == BodystatesAntoc.DashForward
+                          ? 25
+                          : 35)
+                    : frame.physics_state.pos.x +
+                      frame.hitboxes.body.dimension.x +
+                      (frame.body_state.state ==
+                          BodystatesJessica.DashForward ||
+                      frame.body_state.state == BodystatesAntoc.DashForward
+                          ? -25
+                          : -35);
+            const y = -1 * frame.physics_state.pos.y - 25;
+
+            // play animation
+            this.dashSmokeSprites[playerIndex]
+                .setPosition(x, y)
+                .setVisible(true)
+                .play('dashSmokeAnim')
+                .setFlipX(
+                    frame.body_state.dir ==
+                        (frame.body_state.state ==
+                            BodystatesJessica.DashForward ||
+                        frame.body_state.state == BodystatesAntoc.DashForward
+                            ? RIGHT
+                            : LEFT)
+                );
+        });
+
+        //
+        // jump-smoke
+        //
+        [0, 1].forEach((playerIndex) => {
+            const frame = frames[playerIndex];
+            if (
+                (frame.body_state.state == BodystatesAntoc.Jump ||
+                    frame.body_state.state == BodystatesJessica.Jump) &&
+                frame.body_state.counter == 0
+            ) {
+                const x =
+                    frame.physics_state.pos.x +
+                    frame.hitboxes.body.dimension.x / 2;
+                const y = -1 * frame.physics_state.pos.y - 10;
+
+                this.jumpSmokeSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('jumpSmokeAnim');
+            }
+        });
     }
 
     updateScene(
         characterType0: number,
         characterType1: number,
+        agentPrevFrame0: FrameLike,
+        agentPrevFrame1: FrameLike,
         agentFrame0: FrameLike,
         agentFrame1: FrameLike,
         isBeginning: boolean = true,
@@ -666,6 +984,10 @@ export default class Simulator extends Phaser.Scene {
         this.setPlayerTwoCharacter(characterType1);
         this.setPlayerOneFrame(agentFrame0);
         this.setPlayerTwoFrame(agentFrame1);
+        this.updateEffects(
+            [agentPrevFrame0, agentPrevFrame1],
+            [agentFrame0, agentFrame1]
+        );
 
         if (isLast) {
             const integrity_P1 = agentFrame0.body_state.integrity;
@@ -703,8 +1025,175 @@ export default class Simulator extends Phaser.Scene {
             this.setPlayerTwoActionHitbox(agentFrame1);
             this.setPlayerOnePointer(agentFrame0);
             this.setPlayerTwoPointer(agentFrame1);
+
+            eventsCenter.emit('frame-data-show', [
+                agentFrame0,
+                agentFrame1,
+            ] as FrameLike[]);
         } else {
             this.hideDebug();
+
+            eventsCenter.emit('frame-data-hide', null);
         }
+    }
+
+    addEventToBattleLog(
+        playerIndex: number,
+        event: CombatEvent,
+        frameIndex: number
+    ) {
+        const combatLog =
+            playerIndex == 0
+                ? this.player_one_combat_log
+                : this.player_two_combat_log;
+        const repeatEvent = combatLog?.event == event;
+        const eventCount = repeatEvent ? combatLog?.eventCount + 1 : 0;
+
+        if (playerIndex == 0) {
+            this.player_one_combat_log = {
+                frameIndex,
+                event,
+                eventCount: eventCount,
+            };
+        } else {
+            this.player_two_combat_log = {
+                frameIndex,
+                event,
+                eventCount: eventCount,
+            };
+        }
+
+        //Invalidate other players combo/action
+        if (playerIndex == 0) {
+            eventsCenter.emit('player-event-remove', 2);
+            this.player_two_combat_log = undefined;
+        } else {
+            eventsCenter.emit('player-event-remove', 1);
+            this.player_one_combat_log = undefined;
+        }
+
+        if (!(event == CombatEvent.Combo && eventCount == 0)) {
+            eventsCenter.emit(
+                'player-event-create',
+                playerIndex + 1,
+                event.toString(),
+                eventCount
+            );
+        }
+    }
+
+    getBodyStateFromFrame(characterType: number, agentFrame: FrameLike) {
+        return bodyStateNumberToName[characterType == 0 ? 'jessica' : 'antoc'][
+            agentFrame.body_state.state
+        ];
+    }
+
+    battleText(
+        characterType0: number,
+        characterType1: number,
+        agentFrame0: FrameLike,
+        agentFrame1: FrameLike,
+        currentFrame: number
+    ) {
+        const p1BodyState = this.getBodyStateFromFrame(
+            characterType0,
+            agentFrame0
+        );
+        const p2BodyState = this.getBodyStateFromFrame(
+            characterType1,
+            agentFrame1
+        );
+
+        //Each action can register once
+        // Track changing actions or action counter hitting 0
+        // An event log is based off of current action, bodyState of each
+
+        if (
+            p2BodyState === 'clash' &&
+            p1BodyState === 'clash' &&
+            agentFrame0.body_state.counter == 0 &&
+            agentFrame1.body_state.counter == 0
+        ) {
+            this.addEventToBattleLog(0, CombatEvent.Clash, currentFrame);
+            return;
+        }
+
+        const p1ActionConfirm = this.battleTextPerPlayer(
+            this.player_one_action_confirm,
+            p1BodyState,
+            p2BodyState,
+            agentFrame1.body_state.counter,
+            0,
+            currentFrame,
+            this.player_one_combat_log
+        );
+
+        this.player_one_action_confirm = p1ActionConfirm
+            ? true
+            : this.player_one_action_confirm;
+        const p2ActionConfirm = this.battleTextPerPlayer(
+            this.player_one_action_confirm,
+            p2BodyState,
+            p1BodyState,
+            agentFrame0.body_state.counter,
+            1,
+            currentFrame,
+            this.player_two_combat_log
+        );
+
+        this.player_two_action_confirm = p2ActionConfirm
+            ? true
+            : this.player_two_action_confirm;
+    }
+
+    battleTextPerPlayer(
+        confirm: boolean,
+        selfBodyState: string,
+        otherBodyState: string,
+        otherBodyCounter: number,
+        playerIndex: number,
+        currentFrame: number,
+        combatLog: BattleEvent
+    ) {
+        let newActionConfirm = false;
+
+        if (!confirm) {
+            if (
+                ((selfBodyState === 'block' && otherBodyState === 'knocked') ||
+                    (selfBodyState === 'block' &&
+                        otherBodyState === 'clash')) &&
+                otherBodyCounter == 0
+            ) {
+                newActionConfirm = true;
+                this.addEventToBattleLog(
+                    playerIndex,
+                    CombatEvent.Block,
+                    currentFrame
+                );
+            } else if (
+                (otherBodyState === 'knocked' || otherBodyState == 'hurt') &&
+                otherBodyCounter == 0
+            ) {
+                newActionConfirm = true;
+                if (
+                    combatLog == undefined ||
+                    combatLog.event !== CombatEvent.Combo
+                ) {
+                    this.addEventToBattleLog(
+                        playerIndex,
+                        CombatEvent.Combo,
+                        currentFrame
+                    );
+                } else {
+                    this.addEventToBattleLog(
+                        playerIndex,
+                        CombatEvent.Combo,
+                        currentFrame
+                    );
+                }
+            }
+        }
+
+        return newActionConfirm;
     }
 }

@@ -196,25 +196,25 @@ const EditorView = ({
                     ></Combos>
                 );
             }
-            case EditorTabName.Conditions: {
-                return (
-                    <Conditions
-                        isReadOnly={isReadOnly}
-                        conditions={conditions}
-                        handleUpdateCondition={handleUpdateCondition}
-                        handleConfirmCondition={handleConfirmCondition}
-                        handleClickDeleteCondition={handleClickDeleteCondition}
-                        conditionUnderEditIndex={conditionUnderEditIndex}
-                        setConditionUnderEditIndex={setConditionUnderEditIndex}
-                        isWarningTextOn={isConditionWarningTextOn}
-                        warningText={conditionWarningText}
-                        handleRemoveConditionElement={
-                            handleRemoveConditionElement
-                        }
-                        handleSaveCondition={handleSaveCondition}
-                    />
-                );
-            }
+            // case EditorTabName.Conditions: {
+            //     return (
+            //         <Conditions
+            //             isReadOnly={isReadOnly}
+            //             conditions={conditions}
+            //             handleUpdateCondition={handleUpdateCondition}
+            //             handleConfirmCondition={handleConfirmCondition}
+            //             handleClickDeleteCondition={handleClickDeleteCondition}
+            //             conditionUnderEditIndex={conditionUnderEditIndex}
+            //             setConditionUnderEditIndex={setConditionUnderEditIndex}
+            //             isWarningTextOn={isConditionWarningTextOn}
+            //             warningText={conditionWarningText}
+            //             handleRemoveConditionElement={
+            //                 handleRemoveConditionElement
+            //             }
+            //             handleSaveCondition={handleSaveCondition}
+            //         />
+            //     );
+            // }
         }
     };
 
@@ -296,7 +296,7 @@ const EditorView = ({
                     <Tooltip
                         title={
                             <Typography fontSize={13}>
-                                Start an agent from scratch
+                                Reset & start agent from scratch
                             </Typography>
                         }
                         placement="top"
@@ -305,7 +305,6 @@ const EditorView = ({
                             <Button
                                 id="button-option-list-button"
                                 onClick={() => {
-                                    console.log('Build new Agent from scratch');
                                     const confirmed = confirm(
                                         'Are you sure you want to reset the agent and start from scratch?'
                                     );
