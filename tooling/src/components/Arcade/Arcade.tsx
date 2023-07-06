@@ -37,6 +37,7 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                     style={{
                         display: 'flex',
                         flexDirection: 'column',
+                        width: '800px',
                     }}
                 >
                     <StatusBarPanel

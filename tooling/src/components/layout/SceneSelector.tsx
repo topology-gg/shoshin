@@ -70,7 +70,7 @@ const deafaultState: ShoshinPersistedState = {
 
 const StorageKey = 'PersistedGameState';
 const SceneSelector = () => {
-    const [scene, setScene] = useState<Scene>(Scenes.WALLET_CONNECT);
+    const [scene, setScene] = useState<Scene>(Scenes.ARCADE);
 
     const ctx = React.useContext(ShoshinWASMContext);
 

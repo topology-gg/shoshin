@@ -14,13 +14,15 @@ import { GameModes } from '../types/Simulator';
 import Platformer from './Simulator';
 import eventsCenter from '../Game/EventsCenter';
 
+import * as wasm from '../../wasm/shoshin/pkg/shoshin';
+
 export default class RealTime extends Platformer {
     state: RealTimeFrameScene = InitialRealTimeFrameScene;
 
     private player_action: number = 5;
     private character_type_0: number = 0;
 
-    private wasmContext?: IShoshinWASMContext;
+    private wasmContext?: IShoshinWASMContext = { wasm };
 
     startText: Phaser.GameObjects.Text;
     endTextP1Won: Phaser.GameObjects.Text;
@@ -300,6 +302,7 @@ export default class RealTime extends Platformer {
     }
 
     run() {
+        console.log('this wasm context', this.wasmContext);
         let [out, err] = runRealTimeFromContext(
             this.wasmContext,
             this.state,
