@@ -4,7 +4,7 @@ import { GameModes } from '../../types/Simulator';
 
 export interface ShoshinMenuItem {
     title: string;
-    onClick?: (args?: string) => {};
+    onClick?: (args?: string) => void;
 }
 
 interface ShoshinMenuProps {

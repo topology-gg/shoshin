@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ForwardedRef, useEffect, useState } from 'react';
 import {
     Typography,
     Box,
@@ -43,7 +43,7 @@ interface SimulationProps {
     onQuit: () => void;
 }
 //We need Players agent and opponent
-const SimulationScene = React.forwardRef((props: SimulationProps, ref) => {
+const SimulationScene = React.forwardRef((props: SimulationProps, ref: ForwardedRef<HTMLDivElement>) => {
     const { player, setPlayerAgent, opponent, submitWin, onQuit, onContinue } =
         props;
     // Constants

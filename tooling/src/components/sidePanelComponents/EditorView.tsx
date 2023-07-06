@@ -158,6 +158,7 @@ const EditorView = ({
                         character={character}
                         conditions={conditions}
                         combos={combos}
+                        setCombos={() => {}}
                     />
                 );
             }
