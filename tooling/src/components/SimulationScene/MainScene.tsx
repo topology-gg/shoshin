@@ -219,16 +219,6 @@ const SimulationScene = React.forwardRef((props: SimulationProps, ref) => {
         }
     }
 
-    function handleValidateCombo(combo: Action[], index: number) {
-        console.log('combo', combo);
-        console.log('index', index);
-        setCombos((prev) => {
-            let prev_copy = JSON.parse(JSON.stringify(prev));
-            prev_copy[index] = combo;
-            return prev_copy;
-        });
-    }
-
     const beatAgent =
         output !== undefined
             ? output.agent_1[output.agent_1.length - 1].body_state.integrity ==
@@ -449,8 +439,8 @@ const SimulationScene = React.forwardRef((props: SimulationProps, ref) => {
                                 alignItems: 'left',
                                 borderRadius: '0 0 0 0',
                                 border: '1px solid #999999',
-                                padding: '0.5rem 0.5rem 2rem 0.5rem',
                                 width: '100%',
+                                height: '95vh',
                             }}
                         >
                             <Gambit
@@ -460,6 +450,7 @@ const SimulationScene = React.forwardRef((props: SimulationProps, ref) => {
                                 character={character}
                                 conditions={conditions}
                                 combos={combos}
+                                setCombos={setCombos}
                             />
                         </Box>
                     </Grid>

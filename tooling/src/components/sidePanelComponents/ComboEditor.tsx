@@ -8,6 +8,10 @@ import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 interface ComboEditor {
     isReadOnly: boolean;
     editingCombo: Action[];
+    characterIndex: number;
+    selectedIndex: number;
+    handleValidateCombo: (combo: Action[], index: number) => void;
+    setEditingCombo: (combo: Action[]) => void;
     //Todo : add the rest types
     [key: string]: any;
 }

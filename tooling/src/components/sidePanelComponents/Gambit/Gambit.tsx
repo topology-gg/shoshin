@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { Box, Button, Chip, Grid, MenuItem, Typography } from '@mui/material';
+import {
+    Box,
+    Button,
+    Chip,
+    Divider,
+    Grid,
+    MenuItem,
+    Typography,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -12,6 +20,8 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import BlurrableListItemText from '../../ui/BlurrableListItemText';
 import { Action, CHARACTERS_ACTIONS } from '../../../types/Action';
 import styles from './Gambit.module.css';
+import ComboEditor from '../ComboEditor';
+import CloseIcon from '@mui/icons-material/Close';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 // I think we can just parse this index from id={....}
@@ -47,6 +57,7 @@ interface GambitProps {
     character: Character;
     conditions: Condition[];
     combos: Action[][];
+    setCombos: (combo: Action[][]) => void;
 }
 
 interface LayerProps {
@@ -57,12 +68,17 @@ interface LayerProps {
     conditions: Condition[];
     combos: Action[][];
     handleRemoveLayer: (index: number) => void;
-    handleChooseAction: (actionName: string, isCombo: boolean) => void;
+    //Check if previously combo and close
+    handleChooseAction: (actionName: string, layerIndex: number) => void;
     // -1 index is a new condition
     handleChooseCondition: (condition: Condition, index: number) => void;
     handleRemoveCondition: (layerIndex: number, conditionIndex: number) => void;
     handleInvertCondition: (layerIndex: number, conditionIndex: number) => void;
+    //Layer either can make combo or edit the combo
+    handleChooseCombo: (layerIndex: number) => void;
 }
+
+//Select +Combo,
 
 //probably can use spread operator for props
 const DraggableLayer = ({
@@ -77,6 +93,7 @@ const DraggableLayer = ({
     handleRemoveCondition,
     handleRemoveLayer,
     handleInvertCondition,
+    handleChooseCombo,
 }: LayerProps) => {
     return (
         <Draggable draggableId={index.toString()} index={index}>
@@ -102,6 +119,7 @@ const DraggableLayer = ({
                         handleRemoveLayer={handleRemoveLayer}
                         handleRemoveCondition={handleRemoveCondition}
                         handleInvertCondition={handleInvertCondition}
+                        handleChooseCombo={handleChooseCombo}
                     />
                 </div>
             )}
@@ -178,6 +196,7 @@ const Layer = ({
     handleRemoveCondition,
     handleRemoveLayer,
     handleInvertCondition,
+    handleChooseCombo,
 }: LayerProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -193,17 +212,13 @@ const Layer = ({
     const conditionsOpen = Boolean(conditionAnchorEl);
 
     let actions = CHARACTERS_ACTIONS[characterIndex].map((a) => a.display.name);
-
-    combos.forEach((_, i) => {
-        actions.push(`Combo ${i}`);
-    });
+    actions.push(`Combo`);
 
     const onActionSelect = (action: string) => {
         if (!action.includes('Combo')) {
-            handleChooseAction(action, false);
+            handleChooseAction(action, i);
         } else {
-            let comboNumber = parseInt(action.split(' ')[1]);
-            handleChooseAction((101 + comboNumber).toString(), true);
+            handleChooseCombo(i);
         }
 
         setAnchorEl(null);
@@ -406,6 +421,7 @@ const Gambit = ({
     character,
     conditions,
     combos,
+    setCombos,
 }: GambitProps) => {
     const handleCreateLayer = () => {
         console.log('default layer is ', defaultLayer);
@@ -418,6 +434,17 @@ const Gambit = ({
 
     let characterIndex = Object.keys(Character).indexOf(character);
 
+    const [selectedCombo, changeSelectedCombo] = useState<number>(-1);
+
+    const usedLayersByCombo = layers
+        .reduce((acc: number[], layer, index) => {
+            let updated = acc;
+            if (layer.action.id == selectedCombo && layer.action.isCombo) {
+                updated.push(index);
+            }
+            return updated;
+        }, [])
+        .join(', ');
     let componentAddLayer = (
         <>
             <Grid
@@ -467,24 +494,63 @@ const Gambit = ({
         setLayers(updatedArray);
     };
 
-    const handleChooseAction = (actionName: string, isCombo: boolean) => {
-        let updatedLayers: Layer[] = layers.map((layer, index) => {
-            if (index == currentMenu) {
-                return {
-                    ...layer,
-                    action: {
-                        id: isCombo
-                            ? parseInt(actionName)
-                            : CHARACTERS_ACTIONS[characterIndex].find(
-                                  (e) => e.display.name == actionName
-                              ).id || 0,
-                        isCombo,
-                    },
-                };
-            }
-            return layer;
-        });
+    const handleChooseAction = (actionName: string, layerIndex: number) => {
+        const layer = layers[layerIndex];
+
+        let updatedLayers: Layer[] = JSON.parse(JSON.stringify(layers));
+
+        if (layer.action.isCombo == true) {
+            updatedLayers = updatedLayers.map((layer, index) => {
+                if (index < layerIndex && layer.action.isCombo == true) {
+                    return {
+                        ...layer,
+                        action: {
+                            id: layer.action.id - 1,
+                            isCombo: true,
+                        },
+                    };
+                }
+            });
+        }
+
+        updatedLayers[layerIndex] = {
+            ...layer,
+            action: {
+                id:
+                    CHARACTERS_ACTIONS[characterIndex].find(
+                        (e) => e.display.name == actionName
+                    ).id || 0,
+                isCombo: false,
+            },
+        };
+
+        combos.splice(layerIndex, 1);
+        setCombos(combos);
         setLayers(updatedLayers);
+    };
+
+    const handleSelectCombo = (layerIndex: number) => {
+        const layer = layers[layerIndex];
+
+        if (layer.action.isCombo) {
+            changeSelectedCombo(layer.action.id - 101);
+        } else {
+            let updatedLayers: Layer[] = layers.map((layer, index) => {
+                if (index == currentMenu) {
+                    return {
+                        ...layer,
+                        action: {
+                            id: 101 + combos.length,
+                            isCombo: true,
+                        },
+                    };
+                }
+                return layer;
+            });
+            setLayers(updatedLayers);
+            setCombos([...combos, []]);
+            changeSelectedCombo(combos.length);
+        }
     };
 
     const handleChooseCondition = (condition, conditionIndex) => {
@@ -543,80 +609,147 @@ const Gambit = ({
                 handleRemoveCondition={handleRemoveCondition}
                 handleInvertCondition={handleInvertCondition}
                 combos={combos}
+                handleChooseCombo={handleSelectCombo}
             />
         ));
     });
 
+    const closeComboEditor = () => {
+        changeSelectedCombo(-1);
+    };
+
+    function handleValidateCombo(combo: Action[], index: number) {
+        let prev_copy = JSON.parse(JSON.stringify(combos));
+        prev_copy[index] = combo;
+        setCombos(prev_copy);
+    }
+
+    console.log('combos', combos);
     return (
         <Box
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'left',
-                alignItems: 'left',
+                height: '100vh',
+                justifyContent: 'space-between',
             }}
         >
-            <Typography sx={{ fontSize: '17px' }} variant="overline">
-                <span style={{ marginRight: '8px' }}>&#129504;</span>Mind
-            </Typography>
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    marginBottom: '4px',
-                }}
-            >
-                {isReadOnly ? <></> : componentAddLayer}
-            </div>
+            <Box sx={{ padding: '0.5rem 0.5rem 2rem 0.5rem' }}>
+                <Typography sx={{ fontSize: '17px' }} variant="overline">
+                    <span style={{ marginRight: '8px' }}>&#129504;</span>Mind
+                </Typography>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        marginBottom: '4px',
+                    }}
+                >
+                    {isReadOnly ? <></> : componentAddLayer}
+                </div>
 
-            <Grid container>
-                <DragDropContext onDragEnd={onDragEnd}>
-                    <Droppable droppableId="droppable">
-                        {(provided) => (
-                            <div
-                                style={{ width: '100%' }}
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                            >
-                                <Grid container sx={{ mb: 1 }}>
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            // ml: '2rem',
-                                            // pl: '0.5rem',
-                                            width: '100%',
-                                            color: '#999',
-                                            fontSize: '13px',
-                                        }}
-                                    >
-                                        <Grid item xs={1}>
-                                            <div
-                                                style={{ textAlign: 'center' }}
-                                            >
-                                                Order
-                                            </div>
-                                        </Grid>
-                                        <Grid item md={6} xl={4}>
-                                            <div style={{ paddingLeft: '8px' }}>
-                                                Condition
-                                            </div>
-                                        </Grid>
-                                        <Grid item md={4} xl={6}>
-                                            <div style={{ paddingLeft: '8px' }}>
-                                                Action
-                                            </div>
-                                        </Grid>
-                                    </Box>
-                                </Grid>
+                <Grid container>
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <Droppable droppableId="droppable">
+                            {(provided) => (
+                                <div
+                                    style={{ width: '100%' }}
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                >
+                                    <Grid container sx={{ mb: 1 }}>
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                // ml: '2rem',
+                                                // pl: '0.5rem',
+                                                width: '100%',
+                                                color: '#999',
+                                                fontSize: '13px',
+                                            }}
+                                        >
+                                            <Grid item xs={1}>
+                                                <div
+                                                    style={{
+                                                        textAlign: 'center',
+                                                    }}
+                                                >
+                                                    Order
+                                                </div>
+                                            </Grid>
+                                            <Grid item md={6} xl={4}>
+                                                <div
+                                                    style={{
+                                                        paddingLeft: '8px',
+                                                    }}
+                                                >
+                                                    Condition
+                                                </div>
+                                            </Grid>
+                                            <Grid item md={4} xl={6}>
+                                                <div
+                                                    style={{
+                                                        paddingLeft: '8px',
+                                                    }}
+                                                >
+                                                    Action
+                                                </div>
+                                            </Grid>
+                                        </Box>
+                                    </Grid>
 
-                                <LayerList layers={layers} />
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                </DragDropContext>
-            </Grid>
+                                    <LayerList layers={layers} />
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
+                </Grid>
+            </Box>
+            {selectedCombo >= 0 && combos[selectedCombo] !== undefined ? (
+                <Box
+                    sx={{
+                        padding: '0.5rem 0.5rem 2rem 0.5rem',
+                        borderTop: '1px solid #999999',
+                        height: '40vh',
+                    }}
+                >
+                    <Box
+                        display={'flex'}
+                        justifyContent={'space-between'}
+                        width={'100%'}
+                    >
+                        <Typography
+                            sx={{ fontSize: '17px' }}
+                            variant="overline"
+                        >
+                            <span style={{ marginRight: '8px' }}>
+                                &#128165;
+                            </span>
+                            Editing Combo
+                        </Typography>
+                        <IconButton
+                            sx={{ color: '#999999' }}
+                            aria-label="delete"
+                            onClick={closeComboEditor}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
+                    <Typography>
+                        Used by layers : {usedLayersByCombo}
+                    </Typography>
+                    <ComboEditor
+                        editingCombo={combos[selectedCombo]}
+                        isReadOnly={false}
+                        characterIndex={characterIndex}
+                        selectedIndex={selectedCombo}
+                        handleValidateCombo={handleValidateCombo}
+                        setEditingCombo={() => {}}
+                    />
+                </Box>
+            ) : null}
         </Box>
     );
 };
