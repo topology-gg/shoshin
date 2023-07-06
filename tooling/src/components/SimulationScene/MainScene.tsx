@@ -84,6 +84,23 @@ const SimulationScene = React.forwardRef((props: SimulationProps, ref) => {
     const opponentName =
         opponent.character == 0 ? Character.Jessica : Character.Antoc;
 
+    const [openPauseMenu, changePauseMenu] = useState<boolean>(false);
+
+    const handleKeyPress = (ev: KeyboardEvent) => {
+        const key = ev.key.toUpperCase();
+
+        if (key.includes('ESCAPE')) {
+            changePauseMenu(!openPauseMenu);
+        }
+    };
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [openPauseMenu]);
+
     useEffect(() => {
         let builtAgent = handleBuildAgent();
         console.log('built agent', builtAgent);
@@ -285,7 +302,7 @@ const SimulationScene = React.forwardRef((props: SimulationProps, ref) => {
                         handleContinueClick={handleContinueClick}
                     />
                 ) : null}
-                {false ? (
+                {openPauseMenu ? (
                     <PauseMenu onQuit={onQuit} onChooseCharacter={onContinue} />
                 ) : null}
                 <Grid container spacing={{ md: 0, lg: 2 }}>

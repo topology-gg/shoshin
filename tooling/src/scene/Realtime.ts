@@ -174,6 +174,10 @@ export default class RealTime extends Platformer {
     }
 
     startMatch() {
+        if (!this.wasmContext || this.is_wasm_undefined()) {
+            console.log('no wasm context');
+            return;
+        }
         this.set_player_character(this.character_type_0);
         this.resetGameState();
 
@@ -296,11 +300,6 @@ export default class RealTime extends Platformer {
     }
 
     run() {
-        if (!this.wasmContext) {
-            console.log('no wasm context');
-            return;
-        }
-
         let [out, err] = runRealTimeFromContext(
             this.wasmContext,
             this.state,
