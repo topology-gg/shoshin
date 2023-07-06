@@ -54,7 +54,8 @@ const SimulationScene = React.forwardRef((props: SimulationProps, ref) => {
     const [output, setOuput] = useState<FrameScene>();
     const [simulationError, setSimulationError] = useState();
     const [p1, setP1] = useState<Agent>();
-    const [p2] = useState<Agent>(opponent);
+    const p2: Agent = opponent;
+
     const [loop, setLoop] = useState<NodeJS.Timer>();
     const [animationFrame, setAnimationFrame] = useState<number>(0);
     const [animationState, setAnimationState] = useState<string>('Stop');
