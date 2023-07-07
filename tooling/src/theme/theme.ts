@@ -28,13 +28,17 @@ const theme = createTheme({
             main: '#000000',
         },
         secondary: {
-            main: '#2d4249',
+            main: '#FC5954',
         },
         info: {
             main: '#848f98',
         },
         accent: {
             main: '#52af77',
+        },
+        background: {
+            default: '#FC5954',
+            paper: '#fff',
         },
     },
     components: {
@@ -48,6 +52,13 @@ const theme = createTheme({
                         color: '#fff',
                         transition: 'background 0.1s, color 0.1s',
                     },
+                },
+            },
+        },
+        MuiMobileStepper: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: 'transparent',
                 },
             },
         },

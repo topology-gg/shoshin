@@ -37,6 +37,7 @@ const MainMenu = React.forwardRef<
             justifyContent="center"
             alignItems="center"
             height="100vh"
+            sx={{ backgroundColor: 'background.default' }}
             ref={ref}
         >
             <ShoshinMenu menuTitle={title} menuItems={items} />

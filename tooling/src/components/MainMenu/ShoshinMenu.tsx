@@ -33,7 +33,6 @@ const ShoshinMenu = ({ menuTitle, menuItems }: ShoshinMenuProps) => {
             alignItems="center"
             height="30%"
             width="25%"
-            bgcolor="white"
         >
             <Typography variant="h4" gutterBottom>
                 {menuTitle}
