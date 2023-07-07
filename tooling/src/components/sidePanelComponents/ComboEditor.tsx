@@ -33,7 +33,7 @@ const ComboEditor = ({
 
         if (key.includes('BACKSPACE')) {
             let prev_copy = editingCombo.slice(0, -1);
-            setEditingCombo(prev_copy);
+            setEditingCombo?.(prev_copy);
             handleValidateCombo(prev_copy, selectedIndex);
             return;
         }
@@ -44,7 +44,7 @@ const ComboEditor = ({
         if (action !== undefined) {
             let prev_copy: Action[] = JSON.parse(JSON.stringify(editingCombo));
             prev_copy.push(action);
-            setEditingCombo(prev_copy);
+            setEditingCombo?.(prev_copy);
             handleValidateCombo(prev_copy, selectedIndex);
         }
     };
