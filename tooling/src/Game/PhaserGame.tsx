@@ -12,7 +12,6 @@ import UI from '../scene/UI';
 import { GameModes, PhaserGameProps } from '../types/Simulator';
 import { ShoshinWASMContext } from '../context/wasm-shoshin';
 import eventsCenter from './EventsCenter';
-import { PHASER_CANVAS_H, PHASER_CANVAS_W } from '../constants/constants';
 
 // Many shamefull @ts-ignore(s) in this file. It is not easy to know if game or scene is defined from outside the PhaserGame
 const Game = ({
@@ -92,11 +91,11 @@ const Game = ({
                 parent: parent.current,
                 canvas: canvas.current,
                 // pixelArt: true,
-                autoCenter: true,
-                height: 800,
-                width: 450,
+                height: 450,
+                width: 800,
                 scale: {
-                    mode: 5,
+                    mode: Phaser.Scale.FIT,
+                    autoCenter: Phaser.Scale.CENTER_BOTH,
                     minWidth: '800',
                     minHeight: '450',
                     maxWidth: '1920',

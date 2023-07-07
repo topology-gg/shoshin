@@ -1,5 +1,10 @@
 import Phaser from 'phaser';
-import { bodyStateNumberToName, LEFT, RIGHT } from '../constants/constants';
+import {
+    bodyStateNumberToName,
+    LEFT,
+    PHASER_CANVAS_W,
+    RIGHT,
+} from '../constants/constants';
 import { spriteDataPhaser } from '../constants/sprites';
 import { FrameLike, RealTimeFrameScene, Rectangle } from '../types/Frame';
 import { SimulatorProps } from '../types/Simulator';
@@ -315,6 +320,8 @@ export default class Simulator extends Phaser.Scene {
         );
     }
 
+    scaledZoom: number = DEFAULT_ZOOM;
+
     initializeCameraSettings() {
         // Initial camera setup
         // reference: https://stackoverflow.com/questions/56289506/phaser-3-how-to-create-smooth-zooming-effect
@@ -324,7 +331,19 @@ export default class Simulator extends Phaser.Scene {
             500,
             'Power2'
         );
-        this.cameras.main.zoomTo(DEFAULT_ZOOM, 500);
+
+        this.scaledZoom =
+            DEFAULT_ZOOM * (+this.game.config.width / PHASER_CANVAS_W);
+        this.cameras.main.zoomTo(this.scaledZoom, 500);
+
+        this.scale.on(
+            'resize',
+            (gameSize, baseSize, displaySize, resolution) => {
+                // Update camera dimensions based on new canvas size
+                this.scaledZoom =
+                    DEFAULT_ZOOM * (displaySize.width / PHASER_CANVAS_W);
+            }
+        );
 
         // Bounds are used to prevent panning horizontally past the sides of the background
         // https://newdocs.phaser.io/docs/3.55.2/Phaser.Cameras.Scene2D.BaseCamera#setBounds
@@ -766,8 +785,8 @@ export default class Simulator extends Phaser.Scene {
         // At the closest distance zoom is default, at further distances we zoom out till .9
         const calculatedZoom =
             charDistance < 400
-                ? DEFAULT_ZOOM
-                : DEFAULT_ZOOM - 0.3 * (charDistance / 800);
+                ? this.scaledZoom
+                : this.scaledZoom - 0.3 * (charDistance / 800);
         camera.zoomTo(calculatedZoom, CAMERA_REACTION_TIME);
 
         // pan to midpoint between characters
