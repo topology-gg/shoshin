@@ -621,6 +621,7 @@ export default class Simulator extends Phaser.Scene {
 
         let bodyStateName = bodyStateNumberToName[characterName][bodyState];
         if (bodyStateName == 'launched') bodyStateName = 'knocked'; // launched uses the animation of knocked
+        if (bodyStateName.includes('jump')) bodyStateName = 'jump'; // jump / jump_move_forward / jump_move_backward all use the animation of jump
         const direction = bodyStateDir == 1 ? 'right' : 'left';
         // console.log(
         //     'characterName',
@@ -1028,6 +1029,8 @@ export default class Simulator extends Phaser.Scene {
             BodystatesJessica.Jump,
             BodystatesJessica.BirdSwing,
             BodystatesJessica.Launched,
+            BodystatesJessica.JumpMoveForward,
+            BodystatesJessica.JumpMoveBackward,
         ];
         [0, 1].forEach((playerIndex) => {
             const frame = frames[playerIndex];

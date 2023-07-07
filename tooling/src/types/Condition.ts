@@ -100,6 +100,8 @@ export enum BodystatesJessica {
     LowKick = 150,
     BirdSwing = 160,
     Launched = 170,
+    JumpMoveForward = 180,
+    JumpMoveBackward = 190,
 }
 
 export enum BodystatesAntoc {

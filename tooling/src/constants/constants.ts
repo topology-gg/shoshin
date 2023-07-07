@@ -74,6 +74,8 @@ export const bodyStateNumberToName = {
         150: 'low_kick',
         160: 'birdswing',
         170: 'launched',
+        180: 'jump_move_forward',
+        190: 'jump_move_backward',
     },
     antoc: {
         0: 'idle',
@@ -92,6 +94,8 @@ export const bodyStateNumberToName = {
         1160: 'low_kick',
         1170: 'launched',
         1190: 'drop_slash',
+        1200: 'jump_move_forward',
+        1210: 'jump_move_backward',
     },
 };
 
