@@ -5,8 +5,8 @@ import { Action } from '../../types/Action';
 interface SingleAction {
     disabled: boolean;
     action: Action;
-    //Todo : add the rest types
-    [key: string]: any;
+    actionIndex: number;
+    onDoubleClick: (index: number) => void;
 }
 
 const SingleAction = ({

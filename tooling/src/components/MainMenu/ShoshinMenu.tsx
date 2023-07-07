@@ -1,6 +1,6 @@
-import { Box, Button, Typography } from '@mui/material';
-import styles from './MainMenu.module.css';
-import { GameModes } from '../../types/Simulator';
+import { Box } from '@mui/material';
+import ShoshinMenuButton from '../ui/ShoshinMenuButton';
+import s from './MainMenu.module.css';
 
 export interface ShoshinMenuItem {
     title: string;
@@ -14,10 +14,8 @@ interface ShoshinMenuProps {
 const ShoshinMenu = ({ menuTitle, menuItems }: ShoshinMenuProps) => {
     const buttons = menuItems.map((item) => {
         return (
-            <Button
+            <ShoshinMenuButton
                 variant="text"
-                className={styles.MenuButton}
-                color="primary"
                 size="large"
                 onClick={() =>
                     item.onClick !== undefined ? item.onClick() : {}
@@ -25,7 +23,7 @@ const ShoshinMenu = ({ menuTitle, menuItems }: ShoshinMenuProps) => {
                 disabled={item.onClick !== undefined ? false : true}
             >
                 {item.title}
-            </Button>
+            </ShoshinMenuButton>
         );
     });
     return (
@@ -36,12 +34,15 @@ const ShoshinMenu = ({ menuTitle, menuItems }: ShoshinMenuProps) => {
             alignItems="center"
             height="30%"
             width="25%"
-            bgcolor="white"
         >
-            <Typography variant="h4" gutterBottom>
-                {menuTitle}
-            </Typography>
-            {buttons}
+            <img
+                src="/images/logo/shoshin-logo-big.png"
+                alt="Shoshin by Topology"
+                className={s.logoImageBig}
+            />
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                {buttons}
+            </Box>
         </Box>
     );
 };

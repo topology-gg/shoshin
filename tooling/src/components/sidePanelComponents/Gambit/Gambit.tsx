@@ -823,7 +823,6 @@ const Gambit = ({
                         characterIndex={characterIndex}
                         selectedIndex={selectedCombo}
                         handleValidateCombo={handleValidateCombo}
-                        setEditingCombo={() => {}}
                     />
                 </Box>
             ) : null}

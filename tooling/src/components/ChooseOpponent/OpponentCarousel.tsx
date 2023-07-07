@@ -80,7 +80,6 @@ function OpponentCarousel({
                             alignItems: 'center',
                             height: 50,
                             pl: 2,
-                            bgcolor: 'background.default',
                         }}
                     >
                         <Typography variant="h4">
