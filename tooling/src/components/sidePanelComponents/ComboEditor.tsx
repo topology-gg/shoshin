@@ -11,9 +11,7 @@ interface ComboEditor {
     characterIndex: number;
     selectedIndex: number;
     handleValidateCombo: (combo: Action[], index: number) => void;
-    setEditingCombo: (combo: Action[]) => void;
-    //Todo : add the rest types
-    [key: string]: any;
+    setEditingCombo?: (combo: Action[]) => void;
 }
 
 const ComboEditor = ({
@@ -23,7 +21,6 @@ const ComboEditor = ({
     characterIndex,
     selectedIndex,
     handleValidateCombo,
-    displayButton,
 }: ComboEditor) => {
     const [selectedNewAction, setSelectedNewAction] = useState<boolean>(false);
 
@@ -65,7 +62,7 @@ const ComboEditor = ({
         let prev_copy = JSON.parse(JSON.stringify(editingCombo));
         prev_copy.splice(index, 1);
 
-        setEditingCombo(prev_copy);
+        setEditingCombo?.(prev_copy);
 
         handleValidateCombo(prev_copy, selectedIndex);
     };
@@ -80,7 +77,7 @@ const ComboEditor = ({
             let action = CHARACTERS_ACTIONS[characterIndex][action_int];
             prev_copy.push(action);
         }
-        setEditingCombo(prev_copy);
+        setEditingCombo?.(prev_copy);
         handleValidateCombo(prev_copy, selectedIndex);
     };
 
@@ -176,11 +173,13 @@ const ComboEditor = ({
                     }}
                 >
                     <Actions
-                        characterIndex={characterIndex}
                         handleActionDoubleClick={handleActionDoubleClick}
                         isReadOnly={isReadOnly}
                         combo={editingCombo}
-                        onChange={(newCombo) => setEditingCombo(newCombo)}
+                        onChange={(newCombo: Action[]) => {
+                            handleValidateCombo(newCombo, selectedIndex);
+                            setEditingCombo?.(newCombo);
+                        }}
                     />
                 </div>
                 <Typography

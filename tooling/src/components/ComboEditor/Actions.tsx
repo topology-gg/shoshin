@@ -4,6 +4,7 @@ import {
     Draggable,
     DraggableChildrenFn,
     Droppable,
+    OnDragEndResponder,
 } from 'react-beautiful-dnd';
 import SingleAction from '../sidePanelComponents/SingleAction';
 import { Action } from '../../types/Action';
@@ -11,8 +12,8 @@ import { Action } from '../../types/Action';
 interface Actions {
     isReadOnly: boolean;
     combo: Action[];
-    //Todo : add the rest types
-    [key: string]: any;
+    onChange: (actions: Action[]) => void;
+    handleActionDoubleClick: (index: number) => void;
 }
 
 const Actions = ({
@@ -22,8 +23,8 @@ const Actions = ({
     onChange,
 }: Actions) => {
     //Reorder combos in an action
-    function onDragEnd(result) {
-        const { draggableId, source, destination } = result;
+    const onDragEnd: OnDragEndResponder = (result) => {
+        const { source, destination } = result;
 
         if (!destination) {
             return;
@@ -38,7 +39,7 @@ const Actions = ({
         prev_copy.splice(destination.index, 0, removedItem);
 
         onChange(prev_copy);
-    }
+    };
 
     const renderAction = useCallback<DraggableChildrenFn>(
         (provided, _snapshot, rubric) => (
