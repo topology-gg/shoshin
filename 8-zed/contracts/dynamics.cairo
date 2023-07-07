@@ -30,6 +30,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
     HURT: felt,
     CLASH: felt,
     BLOCK: felt,
+    JUMP_MOVE_FORWARD: felt,
+    JUMP_MOVE_BACKWARD: felt,
 
     MAX_VEL_MOVE_FP: felt,
     MIN_VEL_MOVE_FP: felt,
@@ -63,6 +65,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_jessica_body_state.HURT,
             ns_jessica_body_state.CLASH,
             ns_jessica_body_state.BLOCK,
+            ns_jessica_body_state.JUMP_MOVE_FORWARD,
+            ns_jessica_body_state.JUMP_MOVE_BACKWARD,
 
             ns_jessica_dynamics.MAX_VEL_MOVE_FP,
             ns_jessica_dynamics.MIN_VEL_MOVE_FP,
@@ -96,6 +100,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_antoc_body_state.HURT,
             ns_antoc_body_state.CLASH,
             ns_antoc_body_state.BLOCK,
+            ns_jessica_body_state.JUMP_MOVE_FORWARD,
+            ns_jessica_body_state.JUMP_MOVE_BACKWARD,
 
             ns_antoc_dynamics.MAX_VEL_MOVE_FP,
             ns_antoc_dynamics.MIN_VEL_MOVE_FP,
@@ -150,6 +156,8 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         HURT: felt,
         CLASH: felt,
         BLOCK: felt,
+        JUMP_MOVE_FORWARD: felt,
+        JUMP_MOVE_BACKWARD: felt,
 
         MAX_VEL_MOVE_FP: felt,
         MIN_VEL_MOVE_FP: felt,
@@ -336,6 +344,54 @@ func _euler_forward_no_hitbox {range_check_ptr}(
                 assert vel_fp_x = 0;
             } else {
                 assert vel_fp_x = physics_state.vel_fp.x;
+            }
+        }
+        tempvar range_check_ptr = range_check_ptr;
+        jmp update_vel_knocked_jump_gatotsu;
+    }
+
+    if (state == JUMP_MOVE_FORWARD) {
+        // no lateral acceleration
+        assert acc_fp_x = 0;
+
+        // apply gravity
+        assert acc_fp_y = ns_dynamics.GRAVITY_ACC_FP;
+
+        // retain y velocity from last frame
+        assert vel_fp_y = physics_state.vel_fp.y;
+
+        // handle lateral movement in air / touch down
+        if (counter == 5) {
+            assert vel_fp_x = 0;
+        } else {
+            if (dir == RIGHT) {
+                assert vel_fp_x = ns_dynamics.IN_AIR_VEL_X_FP;
+            } else {
+                assert vel_fp_x = (-1) * ns_dynamics.IN_AIR_VEL_X_FP;
+            }
+        }
+        tempvar range_check_ptr = range_check_ptr;
+        jmp update_vel_knocked_jump_gatotsu;
+    }
+
+    if (state == JUMP_MOVE_BACKWARD) {
+        // no lateral acceleration
+        assert acc_fp_x = 0;
+
+        // apply gravity
+        assert acc_fp_y = ns_dynamics.GRAVITY_ACC_FP;
+
+        // retain y velocity from last frame
+        assert vel_fp_y = physics_state.vel_fp.y;
+
+        // handle lateral movement in air / touch down
+        if (counter == 5) {
+            assert vel_fp_x = 0;
+        } else {
+            if (dir == RIGHT) {
+                assert vel_fp_x = (-1) * ns_dynamics.IN_AIR_VEL_X_FP;
+            } else {
+                assert vel_fp_x = ns_dynamics.IN_AIR_VEL_X_FP;
             }
         }
         tempvar range_check_ptr = range_check_ptr;

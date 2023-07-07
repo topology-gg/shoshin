@@ -534,10 +534,10 @@ func _body_jessica {range_check_ptr}(
     }
 
     //
-    // Jump
+    // Jump / Jump Move Foward / Jump Move Backward
     // note: is interruptible
     //
-    if (state == ns_jessica_body_state.JUMP) {
+    if ((state-ns_jessica_body_state.JUMP)*(state-ns_jessica_body_state.JUMP_MOVE_FORWARD)*(state-ns_jessica_body_state.JUMP_MOVE_BACKWARD) == 0) {
 
         // can be knocked
         if (stimulus_type == ns_stimulus.KNOCKED) {
@@ -568,13 +568,23 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
         }
 
-        // if reach counter==4 and still in air => remain in counter==4
+        // if reach counter==4 and still in air => remain in the same state with counter==4
         if (counter == 4 and stimulus_type != ns_stimulus.GROUND) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, counter, integrity, stamina, dir, FALSE) );
+            return ( body_state_nxt = BodyState(state, counter, integrity, stamina, dir, FALSE) );
         }
 
-        // else stay in JUMP and increment counter
-        return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, counter + 1, integrity, stamina, dir, FALSE) );
+        // MOVE FORWARD/BACKWARD during counter!=0/5 (counter == 1/2/3/4) becomes JUMP_MOVE_FORWARD/BACKWARD's counter+1
+        if ((counter-1)*(counter-2)*(counter-3)*(counter-4) == 0) {
+            if (intent == ns_jessica_action.MOVE_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP_MOVE_FORWARD, counter+1, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.MOVE_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP_MOVE_BACKWARD, counter+1, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
+
+        // else stay in the same state and increment counter
+        return ( body_state_nxt = BodyState(state, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     //
