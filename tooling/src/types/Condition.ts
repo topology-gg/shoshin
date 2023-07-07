@@ -98,6 +98,10 @@ export enum BodystatesJessica {
     Jump = 130,
     Gatotsu = 140,
     LowKick = 150,
+    BirdSwing = 160,
+    Launched = 170,
+    JumpMoveForward = 180,
+    JumpMoveBackward = 190,
 }
 
 export enum BodystatesAntoc {
@@ -115,6 +119,8 @@ export enum BodystatesAntoc {
     StepForward = 1140,
     Jump = 1150,
     LowKick = 1160,
+    Launched = 1170,
+    DropSlash = 1190,
 }
 
 export enum Perceptible {
