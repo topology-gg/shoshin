@@ -8,7 +8,7 @@ import {
 } from './Condition';
 import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
-
+import { actionDurationInCombo } from './Action';
 //Layer conditions have extra metadate while they are being edited
 interface LayerCondition extends Condition {
     isInverted: boolean;
@@ -94,10 +94,10 @@ export const layersToAgentComponents = (
             //if combo, we need to get combo length, and put in the action for the node
 
             const comboDuration = combos[layer.action.id - 101].reduce(
-                (acc, a) =>
+                (acc, a, index, combo) =>
                     acc +
                     (customDurations[character][a.id] == undefined
-                        ? a.frames.duration + 1
+                        ? actionDurationInCombo(a, index, combo) + 1
                         : a.frames.duration),
                 0
             );

@@ -1,4 +1,4 @@
-import { Action, defaultAction } from './Action';
+import { Action, actionDurationInCombo, defaultAction } from './Action';
 
 // Adds buffers between each action to ensure each one is done
 // Jessica's slash is number 5 and it has 4 frames
@@ -7,7 +7,7 @@ export const addActionBuffersToCombo = (
     combo: Action[],
     character: number
 ): number[] => {
-    return combo.reduce((acc, action) => {
+    return combo.reduce((acc, action, index, combo) => {
         let temp = acc;
 
         temp.push(action.id);
@@ -17,7 +17,7 @@ export const addActionBuffersToCombo = (
         let duration =
             customDurations[character][action.id] !== undefined
                 ? customDurations[character][action.id]
-                : action.frames.duration;
+                : actionDurationInCombo(action, index, combo);
 
         for (let i = 0; i < duration; i++) {
             temp.push(0);
