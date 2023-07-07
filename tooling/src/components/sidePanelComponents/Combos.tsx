@@ -71,7 +71,6 @@ const Combos = ({
                 characterIndex={characterIndex}
                 selectedIndex={selectedIndex}
                 handleValidateCombo={handleValidateCombo}
-                displayButton={true}
             ></ComboEditor>
         </Box>
     );
