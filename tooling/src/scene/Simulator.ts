@@ -907,6 +907,8 @@ export default class Simulator extends Phaser.Scene {
                 BodystatesJessica.Knocked,
                 BodystatesAntoc.Clash,
                 BodystatesJessica.Clash,
+                BodystatesAntoc.Launched,
+                BodystatesJessica.Launched,
             ];
 
             // if subject body state matches one of sparkBodyStates, and subject body counter==0 (first frame)

@@ -429,9 +429,12 @@ export default class RealTime extends Platformer {
                 this.repeatCountLeft = this.gameTimer.repeatCount;
                 this.gameTimer.destroy();
 
+                // Stops vfx
+                this.anims.pauseAll();
+
                 // Start hitstopTimer, whose callback is self destruction + restart gameTimer with remaining repeatCount
                 this.hitstopTimer = this.time.addEvent({
-                    delay: 75, // ms
+                    delay: 100, // ms
                     callback: () => {
                         console.log('resume from hitstop!');
                         this.gameTimer = this.time.addEvent({
@@ -440,6 +443,7 @@ export default class RealTime extends Platformer {
                             repeat: this.repeatCountLeft,
                         });
                         this.hitstopTimer.destroy();
+                        this.anims.resumeAll();
                     },
                     repeat: 0, // hitstopTimer plays only once before self destruction
                 });
