@@ -524,7 +524,7 @@ func _body_antoc {range_check_ptr}(
     // Jump
     // note: is interruptible
     //
-    if (state == ns_antoc_body_state.JUMP) {
+    if ((state-ns_antoc_body_state.JUMP)*(state-ns_antoc_body_state.JUMP_MOVE_FORWARD)*(state-ns_antoc_body_state.JUMP_MOVE_BACKWARD) == 0) {
 
         // can be knocked
         if (stimulus_type == ns_stimulus.KNOCKED) {
@@ -559,6 +559,16 @@ func _body_antoc {range_check_ptr}(
         // if reach counter==4 and still in air => remain in counter==4
         if (counter == 4 and stimulus_type != ns_stimulus.GROUND) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, counter, integrity, stamina, dir, FALSE) );
+        }
+
+        // MOVE FORWARD/BACKWARD during counter!=0/5 (counter == 1/2/3/4) becomes JUMP_MOVE_FORWARD/BACKWARD's counter+1
+        if ((counter-1)*(counter-2)*(counter-3)*(counter-4) == 0) {
+            if (intent == ns_antoc_action.MOVE_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP_MOVE_FORWARD, counter+1, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.MOVE_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP_MOVE_BACKWARD, counter+1, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // else stay in JUMP and increment counter

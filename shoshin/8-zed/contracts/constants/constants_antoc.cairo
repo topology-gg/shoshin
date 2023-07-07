@@ -152,6 +152,8 @@ namespace ns_antoc_body_state {
     const LOW_KICK = 1160; // 6 frames
     const LAUNCHED = 1170; // 11 frames
     const DROP_SLASH = 1190; // 6 frames
+    const JUMP_MOVE_FORWARD = 1200;
+    const JUMP_MOVE_BACKWARD = 1210;
 }
 
 namespace ns_antoc_body_state_qualifiers {

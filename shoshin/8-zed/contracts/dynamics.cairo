@@ -100,8 +100,8 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_antoc_body_state.HURT,
             ns_antoc_body_state.CLASH,
             ns_antoc_body_state.BLOCK,
-            ns_jessica_body_state.JUMP_MOVE_FORWARD,
-            ns_jessica_body_state.JUMP_MOVE_BACKWARD,
+            ns_antoc_body_state.JUMP_MOVE_FORWARD,
+            ns_antoc_body_state.JUMP_MOVE_BACKWARD,
 
             ns_antoc_dynamics.MAX_VEL_MOVE_FP,
             ns_antoc_dynamics.MIN_VEL_MOVE_FP,
