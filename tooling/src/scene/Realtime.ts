@@ -7,6 +7,8 @@ import {
     characterActionToNumber,
     LEFT,
     RIGHT,
+    bodyStateNumberToName,
+    characterTypeToString,
 } from '../constants/constants';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
 import { runRealTimeFromContext } from '../hooks/useRunRealtime';
@@ -34,6 +36,7 @@ export default class RealTime extends Platformer {
     private isGamePaused: boolean;
 
     private gameTimer: Phaser.Time.TimerEvent;
+    private hitstopTimer: Phaser.Time.TimerEvent;
     private repeatCountLeft: number;
 
     private keyboard: any;
@@ -398,12 +401,51 @@ export default class RealTime extends Platformer {
                 this.isDebug
             );
 
-            const integrity_0 = newState.agent_0.body_state.integrity;
-            const integrity_1 = newState.agent_1.body_state.integrity;
-            const stamina_0 = newState.agent_0.body_state.stamina;
-            const stamina_1 = newState.agent_1.body_state.stamina;
+            // Handle hit-stop
+            // 1. check newState if any of the character is in counter==1 of HURT / KNOCKED / LAUNCH / CLASHED
+            // 2. if so, kill gameTimer after recording its repeatCount; start hitstopTimer, whose callBack is self destruction + restart gameTimer with remaining repeatCount
+            // 3. for the duration of hitstopTimer, also stop vfx animation via https://phaser.discourse.group/t/how-to-slow-down-the-frame-rate-animations-globally-slow-motion/11339/3
+            const p1_state: string =
+                bodyStateNumberToName[
+                    characterTypeToString[this.character_type_0]
+                ][newState.agent_0.body_state.state];
+            const p2_state: string =
+                bodyStateNumberToName[
+                    characterTypeToString[this.opponent.character]
+                ][newState.agent_1.body_state.state];
+            const hitstop_strings = ['hurt', 'knocked', 'launched', 'clash'];
+            const p1_needs_hitstop =
+                hitstop_strings.some(function (s) {
+                    return p1_state.indexOf(s) >= 0;
+                }) && newState.agent_0.body_state.counter == 1;
+            const p2_needs_hitstop =
+                hitstop_strings.some(function (s) {
+                    return p2_state.indexOf(s) >= 0;
+                }) && newState.agent_1.body_state.counter == 1;
+            if (p1_needs_hitstop || p2_needs_hitstop) {
+                console.log('should hitstop!');
 
-            // emit event for UI scene
+                // Kill gameTimer
+                this.repeatCountLeft = this.gameTimer.repeatCount;
+                this.gameTimer.destroy();
+
+                // Start hitstopTimer, whose callback is self destruction + restart gameTimer with remaining repeatCount
+                this.hitstopTimer = this.time.addEvent({
+                    delay: 75, // ms
+                    callback: () => {
+                        console.log('resume from hitstop!');
+                        this.gameTimer = this.time.addEvent({
+                            delay: this.tickLatencyInSecond * 1000, // ms
+                            callback: () => this.run(),
+                            repeat: this.repeatCountLeft,
+                        });
+                        this.hitstopTimer.destroy();
+                    },
+                    repeat: 0, // hitstopTimer plays only once before self destruction
+                });
+            }
+
+            // Emit event for UI scene
             const timeLeftDecimalString = (
                 this.gameTimer.repeatCount * this.tickLatencyInSecond
             )
@@ -416,6 +458,11 @@ export default class RealTime extends Platformer {
                 timeLeftSplit[1]
             );
 
+            // Set stats
+            const integrity_0 = newState.agent_0.body_state.integrity;
+            const integrity_1 = newState.agent_1.body_state.integrity;
+            const stamina_0 = newState.agent_0.body_state.stamina;
+            const stamina_1 = newState.agent_1.body_state.stamina;
             this.setPlayerStatuses({
                 integrity_0,
                 integrity_1,

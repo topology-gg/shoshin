@@ -51,6 +51,11 @@ export enum EditorMode {
     Edit = 'Edit',
 }
 
+// Character type
+export const JESSICA = 0;
+export const ANTOC = 1;
+export const characterTypeToString = ['jessica', 'antoc'];
+
 // Physics / numerics related constants
 export const SCALE_FP = 10 ** 4;
 export const DT_FP = 10 ** 3;
