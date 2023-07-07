@@ -31,8 +31,10 @@ export default class RealTime extends Platformer {
     endTextDraw: Phaser.GameObjects.Text;
 
     private isGameRunning: boolean;
+    private isGamePaused: boolean;
 
     private gameTimer: Phaser.Time.TimerEvent;
+    private repeatCountLeft: number;
 
     private keyboard: any;
 
@@ -45,6 +47,7 @@ export default class RealTime extends Platformer {
     private tick: number = 0;
 
     private debugToggleLocked: boolean = false;
+    private spaceLocked: boolean = false;
 
     private tickLatencyInSecond = TICK_IN_SECONDS;
 
@@ -60,6 +63,8 @@ export default class RealTime extends Platformer {
         this.isFirstTick = true;
         this.tick = 0;
         this.debugToggleLocked = false;
+        this.spaceLocked = false;
+        this.repeatCountLeft = -1;
     }
 
     set_wasm_context(ctx: IShoshinWASMContext) {
@@ -218,9 +223,46 @@ export default class RealTime extends Platformer {
     }
 
     update(t, ds) {
-        if (this.keyboard.space.isDown && !this.isGameRunning) {
-            this.startMatch();
+        if (this.keyboard.space.isDown) {
+            if (!this.isGameRunning) {
+                this.startMatch();
+
+                // debounce lock
+                this.spaceLocked = true;
+            } else {
+                if (!this.spaceLocked) {
+                    if (this.isGamePaused) {
+                        eventsCenter.emit('end-text-hide');
+
+                        // resume the game by creating the timer with `repeatCountLeft`
+                        this.gameTimer = this.time.addEvent({
+                            delay: this.tickLatencyInSecond * 1000, // ms
+                            callback: () => this.run(),
+                            repeat: this.repeatCountLeft,
+                        });
+                        this.isGamePaused = false;
+                        console.log('game resumed');
+                    } else {
+                        eventsCenter.emit('end-text-show', 'Paused', '');
+
+                        // pause the game by saving the remaining time and destroy the timer
+                        this.repeatCountLeft = this.gameTimer.repeatCount;
+                        console.log('repeatCountLeft', this.repeatCountLeft);
+                        this.gameTimer.destroy();
+                        this.isGamePaused = true;
+                        console.log('game paused');
+                    }
+
+                    // debounce lock
+                    this.spaceLocked = true;
+                }
+            }
         }
+        if (this.keyboard.space.isUp) {
+            // debounce release
+            this.spaceLocked = false;
+        }
+
         if (this.isGameRunning) {
             if (this.keyboard.s.isDown) {
                 //block
@@ -362,11 +404,16 @@ export default class RealTime extends Platformer {
             const stamina_1 = newState.agent_1.body_state.stamina;
 
             // emit event for UI scene
+            const timeLeftDecimalString = (
+                this.gameTimer.repeatCount * this.tickLatencyInSecond
+            )
+                .toFixed(1)
+                .toString();
+            const timeLeftSplit = timeLeftDecimalString.split('.');
             eventsCenter.emit(
                 'timer-change',
-                Math.round(
-                    this.gameTimer.repeatCount * this.tickLatencyInSecond
-                )
+                timeLeftSplit[0],
+                timeLeftSplit[1]
             );
 
             this.setPlayerStatuses({

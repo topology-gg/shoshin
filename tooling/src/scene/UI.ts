@@ -83,6 +83,16 @@ export default {
                 fontSize: 54,
                 fontFamily: 'Oswald',
                 fill: '#FF7E00',
+                stroke: '#111111',
+                strokeThickness: 5,
+            })
+            .setOrigin(0.5, 0.5)
+            .setVisible(false);
+        this.timerFractionalText = this.add
+            .text(PHASER_CANVAS_W / 2 + 33, 60, '', {
+                fontSize: 24,
+                fontFamily: 'Oswald',
+                fill: '#FF7E00',
                 stroke: '#000000',
                 strokeThickness: 4,
             })
@@ -254,15 +264,19 @@ export default {
         //
         // Timer countdown handlers
         //
-        onTimerChange: function (value) {
-            this.timerText.setText(`${value}`);
+        onTimerChange: function (whole, fractional) {
+            this.timerText.setText(`${whole}`);
+            this.timerFractionalText.setText(`.${fractional}`);
         },
         onTimerReset: function () {
             this.timerText.setVisible(true);
             this.timerText.setText('');
+            this.timerFractionalText.setVisible(true);
+            this.timerFractionalText.setText('');
         },
         onTimerHide: function () {
             this.timerText.setVisible(false);
+            this.timerFractionalText.setVisible(false);
         },
 
         //
