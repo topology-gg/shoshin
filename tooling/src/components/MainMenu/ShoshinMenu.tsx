@@ -1,5 +1,6 @@
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
+import s from './MainMenu.module.css';
 
 export interface ShoshinMenuItem {
     title: string;
@@ -34,9 +35,11 @@ const ShoshinMenu = ({ menuTitle, menuItems }: ShoshinMenuProps) => {
             height="30%"
             width="25%"
         >
-            <Typography variant="h4" gutterBottom>
-                {menuTitle}
-            </Typography>
+            <img
+                src="/images/logo/shoshin-logo-big.png"
+                alt="Shoshin by Topology"
+                className={s.logoImageBig}
+            />
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {buttons}
             </Box>

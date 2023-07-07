@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { Box, Button, Typography } from '@mui/material';
-import styles from './MainMenu.module.css';
+import { Box } from '@mui/material';
 import { GameModes } from '../../types/Simulator';
 import ShoshinMenu, { ShoshinMenuItem } from './ShoshinMenu';
 
@@ -37,7 +36,10 @@ const MainMenu = React.forwardRef<
             justifyContent="center"
             alignItems="center"
             height="100vh"
-            sx={{ backgroundColor: 'background.default' }}
+            sx={{
+                backgroundColor: 'background.default',
+                backgroundImage: 'url(/images/bg/shoshin-menu-bg.jpg)',
+            }}
             ref={ref}
         >
             <ShoshinMenu menuTitle={title} menuItems={items} />
