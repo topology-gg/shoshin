@@ -39,6 +39,8 @@ const MainMenu = React.forwardRef<
             sx={{
                 backgroundColor: 'background.default',
                 backgroundImage: 'url(/images/bg/shoshin-menu-bg.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: '50% 50%',
             }}
             ref={ref}
         >
