@@ -9,7 +9,7 @@ const SceneSingle = ({
     children: ReactElement;
 }) => {
     return (
-        <Fade in={active} timeout={1000}>
+        <Fade in={active} timeout={1000} unmountOnExit>
             <div
                 style={{
                     position: 'absolute',
