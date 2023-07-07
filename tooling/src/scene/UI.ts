@@ -80,19 +80,21 @@ export default {
         //
         this.timerText = this.add
             .text(PHASER_CANVAS_W / 2, 50, '', {
-                fontSize: 54,
+                fontSize: 62,
                 fontFamily: 'Oswald',
-                fill: '#FF7E00',
+                // fill: '#FF7E00',
+                fill: '#FEEEAA',
                 stroke: '#111111',
                 strokeThickness: 5,
             })
             .setOrigin(0.5, 0.5)
             .setVisible(false);
         this.timerFractionalText = this.add
-            .text(PHASER_CANVAS_W / 2 + 33, 60, '', {
+            .text(PHASER_CANVAS_W / 2 + 36, 60, '', {
                 fontSize: 24,
                 fontFamily: 'Oswald',
-                fill: '#FF7E00',
+                // fill: '#FF7E00',
+                fill: '#FEEEAA',
                 stroke: '#000000',
                 strokeThickness: 4,
             })
