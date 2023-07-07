@@ -159,6 +159,8 @@ namespace ns_jessica_body_state {
     const LOW_KICK = 150;
     const BIRDSWING = 160;
     const LAUNCHED = 170; // 11 frames
+    const JUMP_MOVE_FORWARD = 180;
+    const JUMP_MOVE_BACKWARD = 190;
 }
 
 namespace ns_jessica_body_state_qualifiers {
