@@ -64,14 +64,16 @@ const Combos = ({
                         </IconButton>
                     </div> */}
             </Box>
-            <ComboEditor
-                isReadOnly={isReadOnly}
-                editingCombo={editingCombo}
-                setEditingCombo={setEditingCombo}
-                characterIndex={characterIndex}
-                selectedIndex={selectedIndex}
-                handleValidateCombo={handleValidateCombo}
-            ></ComboEditor>
+            <Box width={'100%'}>
+                <ComboEditor
+                    isReadOnly={isReadOnly}
+                    editingCombo={editingCombo}
+                    setEditingCombo={setEditingCombo}
+                    characterIndex={characterIndex}
+                    selectedIndex={selectedIndex}
+                    handleValidateCombo={handleValidateCombo}
+                ></ComboEditor>
+            </Box>
         </Box>
     );
 };

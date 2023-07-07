@@ -1,17 +1,20 @@
 import React from 'react';
 import ActionToken from './ActionToken';
-import { Action } from '../../types/Action';
 
 interface SingleAction {
     disabled: boolean;
-    action: Action;
     actionIndex: number;
     onDoubleClick: (index: number) => void;
+    unicode: string;
+    duration: number;
+    //Todo : add the rest types
+    [key: string]: any;
 }
 
 const SingleAction = ({
     disabled,
-    action,
+    unicode,
+    duration,
     onDoubleClick,
     actionIndex,
 }: SingleAction) => {
@@ -20,7 +23,7 @@ const SingleAction = ({
         console.log('double click');
         onDoubleClick(actionIndex);
     };
-    const width = action.frames.duration * 1.1;
+    const width = duration * 1.1;
     return (
         <div onDoubleClick={handleDoubleClick}>
             <ActionToken
@@ -29,7 +32,7 @@ const SingleAction = ({
                 selected={false}
                 width={width}
             >
-                <span style={{}}>{action.display.unicode}</span>
+                <span style={{}}>{unicode}</span>
                 {/* <p
                     style={{
                         marginTop: '0.1rem',

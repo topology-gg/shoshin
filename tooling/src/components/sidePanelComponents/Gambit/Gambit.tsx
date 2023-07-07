@@ -3,6 +3,7 @@ import {
     Box,
     Button,
     Chip,
+    Divider,
     Grid,
     MenuItem,
     Select,
@@ -23,6 +24,7 @@ import styles from './Gambit.module.css';
 import ComboEditor from '../ComboEditor';
 import CloseIcon from '@mui/icons-material/Close';
 import { VerticalAlignCenter } from '@mui/icons-material';
+import Actions from '../../ComboEditor/Actions';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 // I think we can just parse this index from id={....}
@@ -336,18 +338,16 @@ const Layer = ({
     const action: Action = actionIndexToAction(layer.action.id, characterIndex);
 
     return (
-        <Grid xs={12}>
-            <Box
-                key={`button-wrapper-${i}`}
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    width: '100%',
-                    border: '1px solid #ddd',
-                    marginBottom: '4px',
-                    borderRadius: '20px',
-                }}
-            >
+        <Box
+            key={`button-wrapper-${i}`}
+            sx={{
+                width: '100%',
+                border: '1px solid #ddd',
+                marginBottom: '4px',
+                borderRadius: '20px',
+            }}
+        >
+            <Grid container alignItems={'center'}>
                 <Grid item xs={gridOrderPortion}>
                     <div style={{ textAlign: 'center', fontSize: '13px' }}>
                         {i + 1}
@@ -486,8 +486,8 @@ const Layer = ({
                         <DeleteIcon sx={{ fontSize: '16px', color: '#888' }} />
                     </IconButton>
                 </Grid>
-            </Box>
-        </Grid>
+            </Grid>
+        </Box>
     );
 };
 

@@ -7,7 +7,7 @@ import {
     OnDragEndResponder,
 } from 'react-beautiful-dnd';
 import SingleAction from '../sidePanelComponents/SingleAction';
-import { Action } from '../../types/Action';
+import { Action, actionDurationInCombo } from '../../types/Action';
 
 interface Actions {
     isReadOnly: boolean;
@@ -42,24 +42,30 @@ const Actions = ({
     };
 
     const renderAction = useCallback<DraggableChildrenFn>(
-        (provided, _snapshot, rubric) => (
-            <div
-                ref={provided.innerRef}
-                {...provided.draggableProps}
-                style={{
-                    ...provided.draggableProps.style,
-                }}
-                {...provided.dragHandleProps}
-            >
-                <SingleAction
-                    key={`action-${rubric.source.index}`}
-                    disabled={isReadOnly}
-                    action={combo[rubric.source.index]}
-                    onDoubleClick={handleActionDoubleClick}
-                    actionIndex={rubric.source.index}
-                />
-            </div>
-        ),
+        (provided, _snapshot, rubric) => {
+            const action = combo[rubric.source.index];
+            const index = rubric.source.index;
+            let actionDuration = actionDurationInCombo(action, index, combo);
+            return (
+                <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    style={{
+                        ...provided.draggableProps.style,
+                    }}
+                    {...provided.dragHandleProps}
+                >
+                    <SingleAction
+                        key={`action-${rubric.source.index}`}
+                        disabled={isReadOnly}
+                        unicode={action.display.unicode}
+                        duration={actionDuration}
+                        onDoubleClick={handleActionDoubleClick}
+                        actionIndex={rubric.source.index}
+                    />
+                </div>
+            );
+        },
         [combo, isReadOnly, handleActionDoubleClick]
     );
 

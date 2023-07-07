@@ -6,7 +6,11 @@ import {
     Operator,
     Perceptible,
 } from '../types/Condition';
-import { RealTimeFrameScene } from '../types/Frame';
+import {
+    RealTimeFrameScene,
+    STIMULUS_ENCODING,
+    StimulusType,
+} from '../types/Frame';
 import { MentalState } from '../types/MentalState';
 import { Direction, Tree } from '../types/Tree';
 
@@ -47,6 +51,11 @@ export enum EditorMode {
     Edit = 'Edit',
 }
 
+// Character type
+export const JESSICA = 0;
+export const ANTOC = 1;
+export const characterTypeToString = ['jessica', 'antoc'];
+
 // Physics / numerics related constants
 export const SCALE_FP = 10 ** 4;
 export const DT_FP = 10 ** 3;
@@ -70,6 +79,8 @@ export const bodyStateNumberToName = {
         150: 'low_kick',
         160: 'birdswing',
         170: 'launched',
+        180: 'jump_move_forward',
+        190: 'jump_move_backward',
     },
     antoc: {
         0: 'idle',
@@ -88,6 +99,8 @@ export const bodyStateNumberToName = {
         1160: 'low_kick',
         1170: 'launched',
         1190: 'drop_slash',
+        1200: 'jump_move_forward',
+        1210: 'jump_move_backward',
     },
 };
 
@@ -858,7 +871,7 @@ export const InitialRealTimeFrameScene: RealTimeFrameScene = {
                 y: 0,
             },
         },
-        stimulus: 0,
+        stimulus: StimulusType.GROUND * STIMULUS_ENCODING,
     },
     agent_1: {
         body_state: {
@@ -905,7 +918,7 @@ export const InitialRealTimeFrameScene: RealTimeFrameScene = {
                 y: 0,
             },
         },
-        stimulus: 0,
+        stimulus: StimulusType.GROUND * STIMULUS_ENCODING,
         mental_state: 0,
         combo_info: {
             combo_counter: 0,

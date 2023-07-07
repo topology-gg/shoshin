@@ -6,13 +6,20 @@ import {
     RIGHT,
 } from '../constants/constants';
 import { spriteDataPhaser } from '../constants/sprites';
-import { FrameLike, RealTimeFrameScene, Rectangle } from '../types/Frame';
+import {
+    FrameLike,
+    RealTimeFrameScene,
+    Rectangle,
+    StimulusType,
+    STIMULUS_ENCODING,
+} from '../types/Frame';
 import { SimulatorProps } from '../types/Simulator';
 import { GameModes } from '../types/Simulator';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
 import { BodystatesAntoc, BodystatesJessica } from '../types/Condition';
 import eventsCenter from '../Game/EventsCenter';
 import { Body } from 'matter';
+import { statsInfo } from './UI';
 
 const ARENA_WIDTH = 1600;
 const DEFAULT_ZOOM = 2.4;
@@ -30,6 +37,9 @@ const PLAYER_POINTER_DIM = 20;
 
 // Effects
 const DASH_SMOKE_SCALE = 0.1;
+const STEP_FORWARD_SMOKE_SCALE = 0.07;
+const JUMP_TAKEOFF_SMOKE_SCALE_X = 0.7;
+const JUMP_TAKEOFF_SMOKE_SCALE_Y = 0.7;
 const JUMP_SMOKE_SCALE_X = 0.1;
 const JUMP_SMOKE_SCALE_Y = 0.09;
 
@@ -78,10 +88,6 @@ export default class Simulator extends Phaser.Scene {
 
     player_pointers: PlayerPointer[];
 
-    endTextP1Won: Phaser.GameObjects.Text;
-    endTextP2Won: Phaser.GameObjects.Text;
-    endTextDraw: Phaser.GameObjects.Text;
-
     player_one_combat_log: BattleEvent;
     player_two_combat_log: BattleEvent;
 
@@ -90,7 +96,9 @@ export default class Simulator extends Phaser.Scene {
 
     sparkSprites: Phaser.GameObjects.Sprite[];
     dashSmokeSprites: Phaser.GameObjects.Sprite[];
-    jumpSmokeSprites: Phaser.GameObjects.Sprite[];
+    stepForwardSmokeSprites: Phaser.GameObjects.Sprite[];
+    jumpTakeoffSmokeSprites: Phaser.GameObjects.Sprite[];
+    jumpLandingSmokeSprites: Phaser.GameObjects.Sprite[];
 
     player_one_action_confirm = false;
     player_two_action_confirm = false;
@@ -310,12 +318,16 @@ export default class Simulator extends Phaser.Scene {
                 frameHeight: 1251,
             }
         );
+        this.load.spritesheet('smoke', 'images/effects/smoke/spritesheet.png', {
+            frameWidth: 1182,
+            frameHeight: 1182,
+        });
         this.load.spritesheet(
-            'jump-smoke',
-            'images/effects/jump-smoke/spritesheet.png',
+            'jump-takeoff-smoke',
+            'images/effects/jump-takeoff-smoke/spritesheet.png',
             {
-                frameWidth: 1182,
-                frameHeight: 1182,
+                frameWidth: 201,
+                frameHeight: 201,
             }
         );
     }
@@ -385,7 +397,7 @@ export default class Simulator extends Phaser.Scene {
 
         this.anims.create({
             key: 'dashSmokeAnim',
-            frameRate: 10,
+            frameRate: 20,
             frames: this.anims.generateFrameNumbers('dash-smoke', {
                 start: 0,
                 end: 5,
@@ -395,9 +407,9 @@ export default class Simulator extends Phaser.Scene {
         });
 
         this.anims.create({
-            key: 'jumpSmokeAnim',
+            key: 'smokeAnim',
             frameRate: 20,
-            frames: this.anims.generateFrameNumbers('jump-smoke', {
+            frames: this.anims.generateFrameNumbers('smoke', {
                 start: 0,
                 end: 8,
             }),
@@ -405,9 +417,22 @@ export default class Simulator extends Phaser.Scene {
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
         });
 
+        this.anims.create({
+            key: 'jumpTakeoffSmokeAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('jump-takeoff-smoke', {
+                start: 0,
+                end: 7,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
         this.sparkSprites = [];
         this.dashSmokeSprites = [];
-        this.jumpSmokeSprites = [];
+        this.stepForwardSmokeSprites = [];
+        this.jumpTakeoffSmokeSprites = [];
+        this.jumpLandingSmokeSprites = [];
         [0, 1].forEach((_) => {
             this.sparkSprites.push(
                 this.add
@@ -427,12 +452,35 @@ export default class Simulator extends Phaser.Scene {
                     .setFlipX(true)
             );
 
-            this.jumpSmokeSprites.push(
+            this.stepForwardSmokeSprites.push(
                 this.add
-                    .sprite(0, 0, 'jump-smoke')
+                    .sprite(0, 0, 'dash-smoke')
+                    .setScale(STEP_FORWARD_SMOKE_SCALE)
+                    .setVisible(false)
+                    .setTint(0xff0000)
+                    .setAlpha(1.0)
+                    .setDepth(100)
+                    .setFlipX(true)
+            );
+
+            this.jumpTakeoffSmokeSprites.push(
+                this.add
+                    .sprite(0, 0, 'jump-takeoff-smoke')
+                    .setScale(
+                        JUMP_TAKEOFF_SMOKE_SCALE_X,
+                        JUMP_TAKEOFF_SMOKE_SCALE_Y
+                    )
+                    .setVisible(false)
+                    .setAlpha(0.95)
+                    .setDepth(100)
+            );
+
+            this.jumpLandingSmokeSprites.push(
+                this.add
+                    .sprite(0, 0, 'smoke')
                     .setScale(JUMP_SMOKE_SCALE_X, JUMP_SMOKE_SCALE_Y)
                     .setVisible(false)
-                    .setAlpha(1.0)
+                    .setAlpha(0.9)
                     .setDepth(100)
             );
         });
@@ -447,8 +495,8 @@ export default class Simulator extends Phaser.Scene {
             0,
             bg.y + yDisplacementFromCenterToGround
         );
-        console.log('bg x, ', bg.x);
-        console.log('bg y ', bg.y);
+        // console.log('bg x, ', bg.x);
+        // console.log('bg y ', bg.y);
 
         const outOfBoundX = 2000;
         this.player_one = this.add.sprite(-outOfBoundX, 0, `antoc-idle`, 0);
@@ -504,15 +552,6 @@ export default class Simulator extends Phaser.Scene {
         this.cameras.main.centerOn(0, yDisplacementFromCenterToGround);
         this.cameras.main.setBackgroundColor('#FFFFFF');
         this.initializeCameraSettings();
-
-        this.endTextP1Won = this.createCenteredText('');
-        this.endTextP1Won.setVisible(false);
-
-        this.endTextP2Won = this.createCenteredText('');
-        this.endTextP2Won.setVisible(false);
-
-        this.endTextDraw = this.createCenteredText('');
-        this.endTextDraw.setVisible(false);
     }
     create() {
         this.intitialize();
@@ -601,15 +640,16 @@ export default class Simulator extends Phaser.Scene {
 
         let bodyStateName = bodyStateNumberToName[characterName][bodyState];
         if (bodyStateName == 'launched') bodyStateName = 'knocked'; // launched uses the animation of knocked
+        if (bodyStateName.includes('jump')) bodyStateName = 'jump'; // jump / jump_move_forward / jump_move_backward all use the animation of jump
         const direction = bodyStateDir == 1 ? 'right' : 'left';
-        console.log(
-            'characterName',
-            characterName,
-            'bodyState',
-            bodyState,
-            'bodyStateName',
-            bodyStateName
-        );
+        // console.log(
+        //     'characterName',
+        //     characterName,
+        //     'bodyState',
+        //     bodyState,
+        //     'bodyStateName',
+        //     bodyStateName
+        // );
         //Calculating offsets for frame
         const spriteAdjustments =
             spriteDataPhaser[characterName][bodyStateName];
@@ -886,6 +926,8 @@ export default class Simulator extends Phaser.Scene {
                 BodystatesJessica.Knocked,
                 BodystatesAntoc.Clash,
                 BodystatesJessica.Clash,
+                BodystatesAntoc.Launched,
+                BodystatesJessica.Launched,
             ];
 
             // if subject body state matches one of sparkBodyStates, and subject body counter==0 (first frame)
@@ -966,10 +1008,61 @@ export default class Simulator extends Phaser.Scene {
         });
 
         //
-        // jump-smoke
+        // step-forward-smoke
         //
+        const stepForwardBodyStates = [BodystatesAntoc.StepForward];
+        [0, 1].forEach((playerIndex) => {
+            // get frame and qualify
+            const frame = frames[playerIndex];
+            if (frame.body_state.counter != 0) return;
+            if (!stepForwardBodyStates.includes(frame.body_state.state)) return;
+
+            // configure sprite
+            const x =
+                frame.body_state.dir == RIGHT
+                    ? frame.physics_state.pos.x
+                    : frame.physics_state.pos.x +
+                      frame.hitboxes.body.dimension.x;
+            const y = -1 * frame.physics_state.pos.y - 15;
+
+            // play animation
+            this.stepForwardSmokeSprites[playerIndex]
+                .setPosition(x, y)
+                .setVisible(true)
+                .play('dashSmokeAnim')
+                .setFlipX(
+                    frame.body_state.dir ==
+                        (frame.body_state.state ==
+                            BodystatesJessica.DashForward ||
+                        frame.body_state.state == BodystatesAntoc.DashForward
+                            ? RIGHT
+                            : LEFT)
+                );
+        });
+
+        //
+        // jump smoke, both take-off & landing
+        //
+        const possibleLandingStates = [
+            BodystatesAntoc.Jump,
+            BodystatesAntoc.DropSlash,
+            BodystatesAntoc.Launched,
+            BodystatesJessica.Jump,
+            BodystatesJessica.BirdSwing,
+            BodystatesJessica.Launched,
+            BodystatesJessica.JumpMoveForward,
+            BodystatesJessica.JumpMoveBackward,
+        ];
         [0, 1].forEach((playerIndex) => {
             const frame = frames[playerIndex];
+            const prevFrame = prevFrames[playerIndex];
+            // console.log(playerIndex, 'stimulus', frame.stimulus);
+
+            const stimulusType = Math.floor(frame.stimulus / STIMULUS_ENCODING);
+            const prevStimulusType = Math.floor(
+                prevFrame.stimulus / STIMULUS_ENCODING
+            );
+
             if (
                 (frame.body_state.state == BodystatesAntoc.Jump ||
                     frame.body_state.state == BodystatesJessica.Jump) &&
@@ -978,12 +1071,26 @@ export default class Simulator extends Phaser.Scene {
                 const x =
                     frame.physics_state.pos.x +
                     frame.hitboxes.body.dimension.x / 2;
-                const y = -1 * frame.physics_state.pos.y - 10;
+                const y = -1 * frame.physics_state.pos.y - 40;
 
-                this.jumpSmokeSprites[playerIndex]
+                this.jumpTakeoffSmokeSprites[playerIndex]
                     .setPosition(x, y)
                     .setVisible(true)
-                    .play('jumpSmokeAnim');
+                    .play('jumpTakeoffSmokeAnim');
+            } else if (
+                stimulusType == StimulusType.GROUND &&
+                prevStimulusType != StimulusType.GROUND &&
+                possibleLandingStates.includes(frame.body_state.state)
+            ) {
+                const x =
+                    frame.physics_state.pos.x +
+                    frame.hitboxes.body.dimension.x / 2;
+                const y = -1 * frame.physics_state.pos.y - 10;
+
+                this.jumpLandingSmokeSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('smokeAnim');
             }
         });
     }
@@ -999,32 +1106,51 @@ export default class Simulator extends Phaser.Scene {
         showDebug: boolean = false,
         isLast: boolean = false
     ) {
+        //
+        // Draw characters
+        //
         this.setPlayerOneCharacter(characterType0);
         this.setPlayerTwoCharacter(characterType1);
         this.setPlayerOneFrame(agentFrame0);
         this.setPlayerTwoFrame(agentFrame1);
+
+        //
+        // Draw vfx
+        //
         this.updateEffects(
             [agentPrevFrame0, agentPrevFrame1],
             [agentFrame0, agentFrame1]
         );
 
+        //
+        // Draw stats
+        //
+        eventsCenter.emit('update-stats', [
+            {
+                hp: agentFrame0.body_state.integrity,
+                stamina: agentFrame0.body_state.stamina,
+            } as statsInfo,
+            {
+                hp: agentFrame1.body_state.integrity,
+                stamina: agentFrame1.body_state.stamina,
+            } as statsInfo,
+        ]);
+
+        //
+        // Draw end game messages
+        //
         if (isLast) {
             const integrity_P1 = agentFrame0.body_state.integrity;
             const integrity_P2 = agentFrame1.body_state.integrity;
             if (integrity_P1 < integrity_P2) {
-                this.endTextP2Won = this.createCenteredText('Player 2 won!');
-                this.endTextP2Won.setVisible(true);
+                eventsCenter.emit('end-text-show', 'Player 2 won!');
             } else if (integrity_P1 > integrity_P2) {
-                this.endTextP1Won = this.createCenteredText('Player 1 won!');
-                this.endTextP1Won.setVisible(true);
+                eventsCenter.emit('end-text-show', 'Player 1 won!');
             } else {
-                this.endTextDraw = this.createCenteredText('Draw!');
-                this.endTextDraw.setVisible(true);
+                eventsCenter.emit('end-text-show', 'Draw!');
             }
         } else {
-            this.endTextDraw.setVisible(false);
-            this.endTextP1Won.setVisible(false);
-            this.endTextP2Won.setVisible(false);
+            eventsCenter.emit('end-text-hide');
 
             if (isBeginning) {
                 this.initializeCameraSettings();
@@ -1036,6 +1162,9 @@ export default class Simulator extends Phaser.Scene {
             }
         }
 
+        //
+        // Handle frame data display
+        //
         if (showDebug) {
             this.showDebug();
             this.setPlayerOneBodyHitbox(agentFrame0);

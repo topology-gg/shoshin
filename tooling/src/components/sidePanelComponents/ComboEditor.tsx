@@ -88,7 +88,6 @@ const ComboEditor = ({
                 flexDirection: 'column',
                 justifyContent: 'left',
                 alignItems: 'left',
-                mt: '2rem',
             }}
         >
             <Typography variant="body1" color="textSecondary" sx={{ mb: 1 }}>
@@ -100,13 +99,13 @@ const ComboEditor = ({
                         display: 'flex',
                         flexDirection: 'row',
                         margin: '0rem 0 2rem 0',
-                        justifyContent: 'center',
+                        justifyContent: 'space-evenly',
                     }}
                 >
                     {actions.map((action, index) => {
                         const frameString =
                             action.frames.duration == 1 ? 'frame' : 'frames';
-                        const actionDuration = action.frames.duration;
+
                         let actionActiveFramesString = action.frames?.active
                             ?.length
                             ? action.frames?.active[0].toString()
@@ -129,7 +128,7 @@ const ComboEditor = ({
                                         </Typography>
                                         <p>
                                             <em>{'Duration : '}</em>{' '}
-                                            <b>{actionDuration}</b>{' '}
+                                            <b>{action.frames.duration}</b>{' '}
                                             {`${frameString}`}.{' '}
                                         </p>
                                         <p>{actionActiveFramesString}</p>
