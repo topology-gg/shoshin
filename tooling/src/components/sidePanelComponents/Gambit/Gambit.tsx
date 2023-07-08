@@ -633,11 +633,15 @@ const Gambit = ({
     const handleChooseCondition = (condition, conditionIndex) => {
         let updatedLayers = [...layers];
 
+        const conditionDeepCopy = JSON.parse(JSON.stringify(condition));
+
         if (conditionIndex == -1) {
-            updatedLayers[currentConditionMenu].conditions.push(condition);
+            updatedLayers[currentConditionMenu].conditions.push(
+                conditionDeepCopy
+            );
         } else {
             updatedLayers[currentConditionMenu].conditions[conditionIndex] =
-                condition;
+                conditionDeepCopy;
         }
         setLayers(updatedLayers);
     };
@@ -668,6 +672,7 @@ const Gambit = ({
                 !updatedLayers[layerIndex].conditions[conditionIndex]
                     .isInverted;
         }
+        console.log('updated layers', updatedLayers);
         setLayers(updatedLayers);
     };
 
