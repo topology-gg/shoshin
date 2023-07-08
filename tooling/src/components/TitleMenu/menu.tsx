@@ -1,6 +1,8 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import styles from './menu.module.css';
+import LogoBig from '../layout/LogoBig';
+import FullArtBackground from '../layout/FullArtBackground';
 
 type TitleMenuProps = {
     transitionMainMenu: () => void;
@@ -9,21 +11,25 @@ type TitleMenuProps = {
 const TitleMenu = React.forwardRef<unknown, TitleMenuProps>(
     ({ transitionMainMenu }, ref) => {
         return (
-            <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                height="100vh"
-                onClick={() => transitionMainMenu()}
-                ref={ref}
-            >
-                <Typography variant="h4" component="h1" gutterBottom>
-                    Shoshin
-                </Typography>
-                <Typography component="h1" gutterBottom color="textSecondary">
-                    Click to continue
-                </Typography>
+            <FullArtBackground ref={ref} onClick={() => transitionMainMenu()}>
+                <Box
+                    sx={{
+                        zIndex: '2',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    <LogoBig />
+                    <Typography
+                        component="h1"
+                        gutterBottom
+                        color="text.secondary"
+                    >
+                        Click to continue
+                    </Typography>
+                </Box>
                 <video
                     className={styles.backgroundVideo}
                     autoPlay
@@ -31,8 +37,7 @@ const TitleMenu = React.forwardRef<unknown, TitleMenuProps>(
                     muted
                     src="media/fight-intro.mp4"
                 ></video>
-            </Box>
-            /*  */
+            </FullArtBackground>
         );
     }
 );
