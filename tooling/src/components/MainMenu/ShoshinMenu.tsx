@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
-import s from './MainMenu.module.css';
+import LogoBig from '../layout/LogoBig';
 
 export interface ShoshinMenuItem {
     title: string;
@@ -35,11 +35,7 @@ const ShoshinMenu = ({ menuTitle, menuItems }: ShoshinMenuProps) => {
             height="30%"
             width="25%"
         >
-            <img
-                src="/images/logo/shoshin-logo-big.png"
-                alt="Shoshin by Topology"
-                className={s.logoImageBig}
-            />
+            <LogoBig />
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {buttons}
             </Box>

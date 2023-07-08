@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { Box } from '@mui/material';
 import { GameModes } from '../../types/Simulator';
 import ShoshinMenu, { ShoshinMenuItem } from './ShoshinMenu';
+import FullArtBackground from '../layout/FullArtBackground';
 
 const MainMenu = React.forwardRef<
     unknown,
@@ -30,22 +30,9 @@ const MainMenu = React.forwardRef<
 
     const title = 'Shoshin';
     return (
-        <Box
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            height="100vh"
-            sx={{
-                backgroundColor: 'background.default',
-                backgroundImage: 'url(/images/bg/shoshin-menu-bg.jpg)',
-                backgroundSize: 'cover',
-                backgroundPosition: '50% 50%',
-            }}
-            ref={ref}
-        >
+        <FullArtBackground ref={ref}>
             <ShoshinMenu menuTitle={title} menuItems={items} />
-        </Box>
+        </FullArtBackground>
     );
 });
 

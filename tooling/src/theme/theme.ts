@@ -40,6 +40,9 @@ const theme = createTheme({
             default: '#FC5954',
             paper: '#fff',
         },
+        text: {
+            secondary: '#fff',
+        },
     },
     components: {
         MuiButton: {
