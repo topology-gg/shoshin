@@ -50,8 +50,8 @@ namespace ns_integrity {
 }
 
 namespace ns_scene {
-    const X_MAX = 400;
-    const X_MIN = -400;
+    const X_MAX = 300;
+    const X_MIN = -300;
     const BIGNUM = 2000;
 }
 
