@@ -110,7 +110,6 @@ const SimulationScene = React.forwardRef(
 
         useEffect(() => {
             let builtAgent = handleBuildAgent();
-            console.log('built agent', builtAgent);
             setPlayerAgent({
                 layers,
                 combos,
@@ -270,7 +269,6 @@ const SimulationScene = React.forwardRef(
         }, [beatAgent, animationFrame]);
 
         useEffect(() => {
-            console.log('anim', animationFrame, N_FRAMES, beatAgent);
             if (beatAgent && N_FRAMES - 1 === animationFrame) {
                 changeShowVictory(true);
                 changePlayedWinningReplay(true);
