@@ -434,7 +434,8 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.DASH_FORWARD) {
 
-        if(enough_stamina == TRUE) {
+        // can cancel dash into grounded attacks / JUMP while grounded
+        if(enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND) {
             // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
                 // go straight to SLASH's active frame
@@ -455,9 +456,21 @@ func _body_jessica {range_check_ptr}(
             }
         }
 
+        // can cancel dash into BIRDSWING's counter==2 while not grounded
+        if(enough_stamina == TRUE and stimulus_type != ns_stimulus.GROUND) {
+            if (intent == ns_jessica_action.SIDECUT) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, 2, integrity, stamina, dir, FALSE) );
+            }
+        }
 
-        // continue the dashing if not interrupted by an attack
+        // last frame reached
         if (counter == ns_jessica_body_state_duration.DASH_FORWARD - 1) {
+            // if not grounded => return to JUMP's counter==4
+            if (stimulus_type != ns_stimulus.GROUND) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 4, integrity, updated_stamina, dir, FALSE) );
+            }
+
+            // continue the dashing if not interrupted by an attack
             if(enough_stamina == TRUE and intent == ns_jessica_body_state_duration.DASH_FORWARD){
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
@@ -473,7 +486,8 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.DASH_BACKWARD) {
 
-        if(enough_stamina == TRUE){
+        // can cancel dash into grounded attacks / JUMP while grounded
+        if(enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND){
             // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
                 // go straight to SLASH's active frame
@@ -494,8 +508,21 @@ func _body_jessica {range_check_ptr}(
             }
         }
 
-        // continue the dashing if not interrupted by an attack
+        // can cancel dash into BIRDSWING's counter==2 while not grounded
+        if(enough_stamina == TRUE and stimulus_type != ns_stimulus.GROUND) {
+            if (intent == ns_jessica_action.SIDECUT) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, 2, integrity, stamina, dir, FALSE) );
+            }
+        }
+
+        // last frame reached
         if (counter == ns_jessica_body_state_duration.DASH_BACKWARD - 1) {
+            // if not grounded => return to JUMP's counter==4
+            if (stimulus_type != ns_stimulus.GROUND) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 4, integrity, updated_stamina, dir, FALSE) );
+            }
+
+            // continue the dashing if not interrupted by an attack
             if(enough_stamina == TRUE and intent == ns_jessica_body_state_duration.DASH_BACKWARD) {
                 // reset counter
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
@@ -507,10 +534,10 @@ func _body_jessica {range_check_ptr}(
     }
 
     //
-    // Jump
+    // Jump / Jump Move Foward / Jump Move Backward
     // note: is interruptible
     //
-    if (state == ns_jessica_body_state.JUMP) {
+    if ((state-ns_jessica_body_state.JUMP)*(state-ns_jessica_body_state.JUMP_MOVE_FORWARD)*(state-ns_jessica_body_state.JUMP_MOVE_BACKWARD) == 0) {
 
         // can be knocked
         if (stimulus_type == ns_stimulus.KNOCKED) {
@@ -520,10 +547,20 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
-        // sidecut during counter==1/2/3 becomes birdswing's counter==0
-        if (intent == ns_jessica_action.SIDECUT and (counter-1)*(counter-2)*(counter-3) == 0) {
-            // go straight to BIRDSWING's counter==1
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, 1, integrity, updated_stamina, dir, FALSE) );
+        // SIDECUT during counter!=0 becomes birdswing's counter==0
+        if (intent == ns_jessica_action.SIDECUT and counter != 0) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, 0, integrity, updated_stamina, dir, FALSE) );
+        }
+
+        // DASH FORWARD/BACKWARD during counter!=0/4/5 (ie counter==1/2/3) becomes dash forward/backward's counter==0
+        // note: this is to prevent multiple air dashes during the same jump
+        if ((counter-1) * (counter-2) * (counter-3) == 0) {
+            if (intent == ns_jessica_action.DASH_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // if counter is full => return to IDLE
@@ -531,13 +568,23 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
         }
 
-        // if reach counter==4 and still in air => remain in counter==4
+        // if reach counter==4 and still in air => remain in the same state with counter==4
         if (counter == 4 and stimulus_type != ns_stimulus.GROUND) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, counter, integrity, stamina, dir, FALSE) );
+            return ( body_state_nxt = BodyState(state, counter, integrity, stamina, dir, FALSE) );
         }
 
-        // else stay in JUMP and increment counter
-        return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, counter + 1, integrity, stamina, dir, FALSE) );
+        // MOVE FORWARD/BACKWARD during counter!=0/5 (counter == 1/2/3/4) becomes JUMP_MOVE_FORWARD/BACKWARD's counter+1
+        if ((counter-1)*(counter-2)*(counter-3)*(counter-4) == 0) {
+            if (intent == ns_jessica_action.MOVE_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP_MOVE_FORWARD, counter+1, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.MOVE_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP_MOVE_BACKWARD, counter+1, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
+
+        // else stay in the same state and increment counter
+        return ( body_state_nxt = BodyState(state, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     //
@@ -626,14 +673,15 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
-        // if counter is full => return to IDLE
+        // if counter is full =>
+        //   not grounded => go to JUMP's counter==4
+        //   otherwise return to IDLE
         if (counter == ns_jessica_body_state_duration.BIRDSWING - 1) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
-        }
-
-        // if reach counter==5 and still in air => remain in counter==5
-        if (counter == 5 and stimulus_type != ns_stimulus.GROUND) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, counter, integrity, stamina, dir, FALSE) );
+            if (stimulus_type != ns_stimulus.GROUND) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 4, integrity, stamina, dir, FALSE) );
+            } else {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+            }
         }
 
         // else stay in BIRDSWING and increment counter

@@ -16,27 +16,32 @@ namespace ns_dynamics {
     const SCALE_FP_SQRT = 10 ** 2;
     const DT_FP = 10 ** 3;  // 0.1
 
-    const GRAVITY_ACC_FP = -2000 * ns_dynamics.SCALE_FP;
-    const FRICTION_ACC_FP = -10000 * ns_dynamics.SCALE_FP;
+    const GRAVITY_ACC_FP = -2500 * ns_dynamics.SCALE_FP;
+    const FRICTION_ACC_FP = 500 * ns_dynamics.SCALE_FP;
+
+    const BACKOFF_VEL_X_FP = 200 * ns_dynamics.SCALE_FP;
+    const BLOCK_BACKOFF_VEL_X_FP = 75 * ns_dynamics.SCALE_FP;
+
+    const IN_AIR_VEL_X_FP = 150 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_stamina {
     // full 1000
     const INIT_STAMINA = 100;
-    const MAX_STAMINA = 1000;
+    const MAX_STAMINA  = 1000;
 }
 
 namespace ns_common_stamina_effect {
     // These values are applied every frame in the body state
-    const NULL = 50; // replenish stamina
-    const MOVE_FORWARD = 25; // replenish stamina
-    const MOVE_BACKWARD = 25; // replenish stamina
-    const BLOCK = -5; // consumes stamina
-    const JUMP = -25; // consumes stamina
+    const NULL = 0;
+    const MOVE_FORWARD = 2;
+    const MOVE_BACKWARD = 0;
+    const BLOCK = -1;
+    const JUMP = 0;
 
     // These values are applied in the first frame of body state
-    const DASH_FORWARD = -100; // consumes stamina
-    const DASH_BACKWARD = -100; // consumes stamina
+    const DASH_FORWARD = 20;
+    const DASH_BACKWARD = 0;
 }
 
 namespace ns_integrity {
@@ -61,6 +66,7 @@ namespace ns_stimulus {
     const CLASH = 3;
     const GROUND = 4;
     const LAUNCHED = 5;
+    const GOOD_BLOCK = 6;
 
     const ENCODING = 10000;
 
