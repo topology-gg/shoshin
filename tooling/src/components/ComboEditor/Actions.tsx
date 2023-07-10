@@ -7,7 +7,7 @@ import {
     OnDragEndResponder,
 } from 'react-beautiful-dnd';
 import SingleAction from '../sidePanelComponents/SingleAction';
-import { Action, actionDurationInCombo } from '../../types/Action';
+import { Action, actionIntentsInCombo } from '../../types/Action';
 
 interface Actions {
     isReadOnly: boolean;
@@ -45,7 +45,11 @@ const Actions = ({
         (provided, _snapshot, rubric) => {
             const action = combo[rubric.source.index];
             const index = rubric.source.index;
-            let actionDuration = actionDurationInCombo(action, index, combo);
+            let actionDuration = actionIntentsInCombo(
+                action,
+                index,
+                combo
+            ).length;
             return (
                 <div
                     ref={provided.innerRef}
