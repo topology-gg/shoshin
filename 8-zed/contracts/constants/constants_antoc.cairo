@@ -27,7 +27,7 @@ namespace ns_antoc_dynamics {
 
     const STEP_FORWARD_VEL_X_FP = 400 * ns_dynamics.SCALE_FP;
 
-    const JUMP_VEL_Y_FP = 400 * ns_dynamics.SCALE_FP;
+    const JUMP_VEL_Y_FP = 600 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_antoc_character_dimension {
@@ -99,10 +99,12 @@ namespace ns_antoc_action {
 }
 
 namespace ns_antoc_stamina_effect {
-    const HORI = -75;
-    const VERT = -100;
-    const STEP_FORWARD = -75;
-    const LOW_KICK = -75;
+
+    // whiff gives rage gain too
+    const HORI = 5;
+    const VERT = 5;
+    const LOW_KICK = 5;
+    const STEP_FORWARD = 10;
 }
 
 namespace ns_antoc_stimulus {
@@ -119,7 +121,7 @@ namespace ns_antoc_body_state_duration {
     const HORI = 7;
     const VERT = 10;
     const BLOCK = 6; // active for counter == 1,2,3,4
-    const HURT = 2;
+    const HURT = 4;
     const KNOCKED = 11;
     const MOVE_FORWARD = 7;
     const MOVE_BACKWARD = 6;
@@ -138,7 +140,7 @@ namespace ns_antoc_body_state {
     const HORI = 1010;     // 7 frames
     const VERT = 1020;  // 10 frames
     const BLOCK = 1040;    // 6 frames
-    const HURT = 1050;     // 3 frames
+    const HURT = 1050;     // 4 frames
     const KNOCKED = 1060;  // 11 frames
     const MOVE_FORWARD = 1090;  // 7 frames
     const MOVE_BACKWARD = 1100;  // 6 frames
@@ -150,6 +152,8 @@ namespace ns_antoc_body_state {
     const LOW_KICK = 1160; // 6 frames
     const LAUNCHED = 1170; // 11 frames
     const DROP_SLASH = 1190; // 6 frames
+    const JUMP_MOVE_FORWARD = 1200;
+    const JUMP_MOVE_BACKWARD = 1210;
 }
 
 namespace ns_antoc_body_state_qualifiers {

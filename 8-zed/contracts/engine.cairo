@@ -199,7 +199,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1, 0),
             physics_state = physics_state_0,
             action        = 0,
-            stimulus      = ns_stimulus.NULL,
+            stimulus      = ns_stimulus.GROUND * ns_stimulus.ENCODING,
             hitboxes      = Hitboxes(
                 action = null_rect,
                 body   = agent_0_body
@@ -214,7 +214,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0, 0),
             physics_state = physics_state_1,
             action        = 0,
-            stimulus      = ns_stimulus.NULL,
+            stimulus      = ns_stimulus.GROUND * ns_stimulus.ENCODING,
             hitboxes      = Hitboxes(
                 action = null_rect,
                 body   = agent_1_body
@@ -466,6 +466,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         hitboxes_1: Hitboxes,
         new_dir_0: felt,
         new_dir_1: felt,
+        new_rage_0: felt,
+        new_rage_1: felt,
     ) = _physicality(
         character_type_0     = character_type_0,
         character_type_1     = character_type_1,
@@ -473,6 +475,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         last_physics_state_1 = last_frame.agent_1.physics_state,
         curr_body_state_0    = body_state_0,
         curr_body_state_1    = body_state_1,
+        curr_stimulus_0      = last_frame.agent_0.stimulus,
+        curr_stimulus_1      = last_frame.agent_1.stimulus,
     );
 
     //
@@ -485,7 +489,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 state = body_state_0.state,
                 counter = body_state_0.counter,
                 integrity = body_state_0.integrity,
-                stamina = body_state_0.stamina,
+                stamina = new_rage_0,
                 dir = new_dir_0,
                 fatigued = body_state_0.fatigued,
             ),
@@ -504,7 +508,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 state = body_state_1.state,
                 counter = body_state_1.counter,
                 integrity = body_state_1.integrity,
-                stamina = body_state_1.stamina,
+                stamina = new_rage_1,
                 dir = new_dir_1,
                 fatigued = body_state_1.fatigued,
             ),
@@ -756,6 +760,8 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         hitboxes_1: Hitboxes,
         new_dir_0: felt,
         new_dir_1: felt,
+        new_rage_0: felt,
+        new_rage_1: felt,
     ) = _physicality(
         character_type_0     = agent_0_character_type,
         character_type_1     = agent_1_character_type,
@@ -763,6 +769,8 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         last_physics_state_1 = agent_1_physics_state,
         curr_body_state_0    = body_state_0,
         curr_body_state_1    = body_state_1,
+        curr_stimulus_0      = agent_0_stimulus,
+        curr_stimulus_1      = agent_1_stimulus,
     );
 
 
@@ -781,7 +789,7 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
                 state = body_state_0.state,
                 counter = body_state_0.counter,
                 integrity = body_state_0.integrity,
-                stamina = body_state_0.stamina,
+                stamina = new_rage_0,
                 dir = new_dir_0,
                 fatigued = body_state_0.fatigued,
             ),
@@ -794,7 +802,7 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
                 state = body_state_1.state,
                 counter = body_state_1.counter,
                 integrity = body_state_1.integrity,
-                stamina = body_state_1.stamina,
+                stamina = new_rage_1,
                 dir = new_dir_1,
                 fatigued = body_state_1.fatigued,
             ),
