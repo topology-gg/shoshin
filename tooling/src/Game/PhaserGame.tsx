@@ -50,42 +50,42 @@ const Game = ({
     //   }
     // })
 
-    const preload = React.useCallback(() => {
-        const g = game.current;
-        //@ts-ignore
-        const _this = g.scene.keys.default;
-        console.log('preload ->  preloading assets...', _this);
-        //_this.load.setBaseURL('http://labs.phaser.io');
-        _this.load.image('sky', 'images/bg/shoshin-bg-large-transparent.png');
-    }, []);
+    // const preload = React.useCallback(() => {
+    //     const g = game.current;
+    //     //@ts-ignore
+    //     const _this = g.scene.keys.default;
+    //     console.log('preload ->  preloading assets...', _this);
+    //     //_this.load.setBaseURL('http://labs.phaser.io');
+    //     _this.load.image('sky', 'images/bg/shoshin-bg-large-transparent.png');
+    // }, []);
 
-    const create = React.useCallback((e) => {
-        const g = game.current;
-        //@ts-ignore
-        const _this = g.scene.keys.default;
+    // const create = React.useCallback((e) => {
+    //     const g = game.current;
+    //     //@ts-ignore
+    //     const _this = g.scene.keys.default;
 
-        console.log('create -> creating elements...', _this);
-        _this.add.image(400, 300, 'sky');
+    //     console.log('create -> creating elements...', _this);
+    //     _this.add.image(400, 300, 'sky');
 
-        var particles = _this.add.particles('red');
+    //     var particles = _this.add.particles('red');
 
-        var emitter = particles.createEmitter({
-            speed: 100,
-            scale: { start: 1, end: 0 },
-            blendMode: 'ADD',
-        });
+    //     var emitter = particles.createEmitter({
+    //         speed: 100,
+    //         scale: { start: 1, end: 0 },
+    //         blendMode: 'ADD',
+    //     });
 
-        var logo = _this.physics.add.image(400, 100, 'logo');
+    //     var logo = _this.physics.add.image(400, 100, 'logo');
 
-        logo.setVelocity(100, 200);
-        logo.setBounce(1, 1);
-        logo.setCollideWorldBounds(true);
+    //     logo.setVelocity(100, 200);
+    //     logo.setBounce(1, 1);
+    //     logo.setCollideWorldBounds(true);
 
-        emitter.startFollow(logo);
-    }, []);
+    //     emitter.startFollow(logo);
+    // }, []);
 
     useLayoutEffect(() => {
-        let g;
+        // let g;
         if (Phaser && parent.current && canvas.current) {
             const config = {
                 type: Phaser.CANVAS,
@@ -111,21 +111,27 @@ const Game = ({
                 },
                 scene: {},
             };
-            g = game.current = new Phaser.Game(config);
+            game.current = new Phaser.Game(config);
 
-            g.scene.add('realtime', RealTime);
-            g.scene.add('simulator', Simulator);
-            g.scene.add('ui', UI);
+            // Add the scenes
+            (game.current as Phaser.Game).scene.add('realtime', RealTime);
+            (game.current as Phaser.Game).scene.add('simulator', Simulator);
+            (game.current as Phaser.Game).scene.add('ui', UI);
 
-            g.scene.start('ui');
+            // Start the scenes
             if (isRealTime) {
-                g.scene.start('realtime');
+                console.log("running g.scene.start('realtime');");
+                (game.current as Phaser.Game).scene.start('realtime');
             } else {
-                g.scene.start('simulator');
+                console.log("running g.scene.start('simulator');");
+                (game.current as Phaser.Game).scene.start('simulator');
             }
+            console.log("running g.scene.start('ui');");
+            (game.current as Phaser.Game).scene.start('ui');
         }
-        return () => g.destroy();
-    }, [Phaser, create, preload, parent, canvas]);
+        // return () => g.destroy();
+    }, [Phaser, parent, canvas]);
+    // }, [Phaser, create, preload, parent, canvas]);
 
     const attemptToSetWasmContext = () => {
         let attemptWasmID = setInterval(() => {
@@ -182,6 +188,9 @@ const Game = ({
             eventsCenter.emit('reset-stats');
             eventsCenter.emit('end-text-hide');
         } else {
+            console.log(
+                'eventsCenter emission for !isRealTime in PhaserGame.tsx'
+            );
             eventsCenter.emit('timer-hide');
             eventsCenter.emit('reset-stats');
             eventsCenter.emit('end-text-hide');
