@@ -486,7 +486,7 @@ export default class Simulator extends Phaser.Scene {
         });
     }
 
-    intitialize() {
+    initialize() {
         this.initializeEffects();
 
         const yDisplacementFromCenterToGround = -150;
@@ -554,7 +554,7 @@ export default class Simulator extends Phaser.Scene {
         this.initializeCameraSettings();
     }
     create() {
-        this.intitialize();
+        this.initialize();
     }
 
     addRectangleHelper(

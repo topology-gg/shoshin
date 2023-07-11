@@ -27,7 +27,7 @@ export interface statsInfo {
     stamina: number;
 }
 
-export default class Simulator extends Phaser.Scene {
+export default class UI extends Phaser.Scene {
     stats_bars;
 
     timerText: Phaser.GameObjects.Text;
@@ -43,6 +43,7 @@ export default class Simulator extends Phaser.Scene {
     endTextFootnote: Phaser.GameObjects.Text;
 
     initialize() {
+        console.log('UI scene initialize()');
         //
         // Create hp and stamina bar
         //
@@ -254,6 +255,10 @@ export default class Simulator extends Phaser.Scene {
         //   .on('keydown-Q', this.quitPlay, this)
         //   .on('keydown-Z', this.toggleZoom, this);
     }
+    create() {
+        this.initialize();
+    }
+
     //
     // Timer countdown handlers
     //
@@ -279,6 +284,7 @@ export default class Simulator extends Phaser.Scene {
     //
     onStatsUpdate(stats: statsInfo[]) {
         try {
+            console.log('onStatsUpdate!');
             // render P1 stats
             this.stats_bars[0]['hp_bg'].setVisible(true);
             this.stats_bars[0]['stamina_bg'].setVisible(true);
@@ -445,41 +451,4 @@ export default class Simulator extends Phaser.Scene {
         this.endText.setText('');
         this.endTextBg.setVisible(false);
     }
-
-    //
-    // keyboard event handlers
-    //
-    // quitPlay: function () {
-    //   this.scene
-    //     .stop('play')
-    //     .run('menu');
-
-    //   // Don't sleep a scene that hasn't started!
-    //   if (this.scene.isActive('end')) {
-    //     this.scene.sleep('end');
-    //   }
-    // },
-
-    // restartPlay: function () {
-    //   this.scene.launch('play');
-
-    //   // Don't sleep a scene that hasn't started!
-    //   if (this.scene.isActive('end')) {
-    //     this.scene.sleep('end');
-    //   }
-    // },
-
-    // togglePause: function () {
-    //   if (this.scene.isActive('play')) {
-    //     this.scene.pause('play');
-    //   } else if (this.scene.isPaused('play')) {
-    //     this.scene.resume('play');
-    //   }
-    // },
-
-    // toggleZoom: function () {
-    //   const camera = this.scene.get('play').cameras.main;
-
-    //   camera.setZoom(camera.zoom === 2 ? 1 : 2);
-    // }
 }
