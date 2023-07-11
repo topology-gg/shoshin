@@ -130,8 +130,8 @@ export const layersToAgentComponents = (
         ? unflattenedConditions.flat()
         : [];
 
-    const rootConditions = layersInverted.map((layer) => {
-        return appendConditions(layer.conditions);
+    const rootConditions = layersInverted.map((layer, index) => {
+        return appendConditions(layer.conditions, index);
     });
 
     //@ts-ignore
@@ -217,7 +217,6 @@ const getNode = (
 };
 
 const getAppendedElements = (conditions: Condition[]): any[] => {
-    console.log('input conditions', conditions);
     let res = conditions
         .map((condition) => condition.elements)
         .reduce((acc, elements, i) => {
@@ -233,11 +232,10 @@ const getAppendedElements = (conditions: Condition[]): any[] => {
             return [...acc, ...elements];
         }, []);
 
-    console.log('appended elements', res);
     return res;
 };
 
-const appendConditions = (conditions: Condition[]) => {
+const appendConditions = (conditions: Condition[], index) => {
     const elementsAppended = getAppendedElements(conditions);
     return {
         elements: [
@@ -252,7 +250,7 @@ const appendConditions = (conditions: Condition[]) => {
             },
         ],
         displayName: 'actionCondition',
-        key: `${conditions[0].key}`,
+        key: `${conditions[0].key}${index}`,
     };
 };
 

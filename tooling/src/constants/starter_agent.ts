@@ -1412,11 +1412,11 @@ let preset_conditions = [
     },
 ];
 
-preset_conditions.forEach(function (condition, condition_i, theArray) {
-    theArray[condition_i]['key'] = simpleHash(
-        theArray[condition_i].displayName
-    );
-});
+preset_conditions = preset_conditions.map((condition, i) => ({
+    ...condition,
+    key: simpleHash(condition.displayName + i),
+}));
+
 const conditions: Condition[] = [alwaysTrueCondition as Condition].concat(
     preset_conditions as Condition[]
 );

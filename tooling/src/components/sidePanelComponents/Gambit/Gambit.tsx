@@ -706,7 +706,6 @@ const Gambit = ({
         setCombos(prev_copy);
     }
 
-    console.log('combos', combos);
     return (
         <Box
             sx={{
