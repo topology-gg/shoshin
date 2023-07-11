@@ -15,12 +15,12 @@ import { runRealTimeFromContext } from '../hooks/useRunRealtime';
 import Agent from '../types/Agent';
 import { RealTimeFrameScene } from '../types/Frame';
 import { GameModes } from '../types/Simulator';
-import Platformer from './Simulator';
+import Simulator from './Simulator';
 import eventsCenter from '../Game/EventsCenter';
 
 import * as wasm from '../../wasm/shoshin/pkg/shoshin';
 
-export default class RealTime extends Platformer {
+export default class RealTime extends Simulator {
     prevState: RealTimeFrameScene = InitialRealTimeFrameScene;
     state: RealTimeFrameScene = InitialRealTimeFrameScene;
 
@@ -144,7 +144,7 @@ export default class RealTime extends Platformer {
         );
     }
     create() {
-        this.intitialize();
+        this.initialize();
         this.createMenu();
 
         this.isGameRunning = false;
