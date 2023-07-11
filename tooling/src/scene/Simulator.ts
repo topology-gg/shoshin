@@ -94,11 +94,17 @@ export default class Simulator extends Phaser.Scene {
     readonly STROKE_STYLE_BODY_HITBOX = 0x7cfc00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
 
+    // VFX
     sparkSprites: Phaser.GameObjects.Sprite[];
     dashSmokeSprites: Phaser.GameObjects.Sprite[];
     stepForwardSmokeSprites: Phaser.GameObjects.Sprite[];
     jumpTakeoffSmokeSprites: Phaser.GameObjects.Sprite[];
     jumpLandingSmokeSprites: Phaser.GameObjects.Sprite[];
+
+    // SFX
+    dashForwardSounds: Phaser.Sound.BaseSound[];
+    dashBackwardSounds: Phaser.Sound.BaseSound[];
+    swingSounds: Phaser.Sound.BaseSound[];
 
     player_one_action_confirm = false;
     player_two_action_confirm = false;
@@ -305,7 +311,7 @@ export default class Simulator extends Phaser.Scene {
             'images/bg/shoshin-bg-large-transparent.png'
         );
 
-        // effects
+        // VFX
         this.load.spritesheet('spark', 'images/effects/spark/spritesheet.png', {
             frameWidth: 730,
             frameHeight: 731,
@@ -330,6 +336,11 @@ export default class Simulator extends Phaser.Scene {
                 frameHeight: 201,
             }
         );
+
+        // SFX
+        this.load.audio('dash-forward-sound', 'sounds/dash/forward.mp3');
+        this.load.audio('dash-backward-sound', 'sounds/dash/backward.mp3');
+        this.load.audio('swing-sound', 'sounds/weapon/katana.mp3');
     }
 
     scaledZoom: number = DEFAULT_ZOOM;
@@ -383,7 +394,7 @@ export default class Simulator extends Phaser.Scene {
         return centeredText;
     }
 
-    initializeEffects() {
+    initializeVFX() {
         this.anims.create({
             key: 'sparkAnim',
             frameRate: 30,
@@ -486,8 +497,20 @@ export default class Simulator extends Phaser.Scene {
         });
     }
 
+    initializeSFX() {
+        this.dashForwardSounds = [];
+        this.dashBackwardSounds = [];
+        this.swingSounds = [];
+        [0, 1].forEach((_) => {
+            this.dashForwardSounds.push(this.sound.add('dash-forward-sound'));
+            this.dashBackwardSounds.push(this.sound.add('dash-backward-sound'));
+            this.swingSounds.push(this.sound.add('swing-sound'));
+        });
+    }
+
     intitialize() {
-        this.initializeEffects();
+        this.initializeVFX();
+        this.initializeSFX();
 
         const yDisplacementFromCenterToGround = -150;
         let bg = this.add.image(0, 20, 'arena_bg');
@@ -962,12 +985,17 @@ export default class Simulator extends Phaser.Scene {
         //
         // dash-smoke
         //
-        const dashBodyStates = [
+        const dashForwardBodyStates = [
             BodystatesJessica.DashForward,
-            BodystatesJessica.DashBackward,
             BodystatesAntoc.DashForward,
+        ];
+        const dashBackwardBodyStates = [
+            BodystatesJessica.DashBackward,
             BodystatesAntoc.DashBackward,
         ];
+        const dashBodyStates = dashForwardBodyStates.concat(
+            dashBackwardBodyStates
+        );
         [0, 1].forEach((playerIndex) => {
             // get frame and qualify
             const frame = frames[playerIndex];
@@ -1005,6 +1033,14 @@ export default class Simulator extends Phaser.Scene {
                             ? RIGHT
                             : LEFT)
                 );
+
+            // sfx
+            if (dashForwardBodyStates.includes(frame.body_state.state)) {
+                this.dashForwardSounds[playerIndex].play();
+            }
+            if (dashBackwardBodyStates.includes(frame.body_state.state)) {
+                this.dashBackwardSounds[playerIndex].play();
+            }
         });
 
         //
