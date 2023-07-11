@@ -41,7 +41,7 @@ const RestId = 0;
 const Rest: Action = {
     id: RestId,
     display: { name: 'Rest', unicode: '\u{1F9D8}' },
-    frames: { duration: 1 },
+    frames: { duration: 1, intents: [RestId] },
     key: '-',
 };
 
@@ -85,7 +85,7 @@ export const Block: Action = {
     frames: {
         duration: 2,
         active: [2],
-        intents: [BlockId],
+        intents: [BlockId, RestId],
         interrupts: [
             {
                 left: [BlockId],
@@ -97,11 +97,11 @@ export const Block: Action = {
             {
                 right: [BlockId],
                 duration: 2,
-                intents: [BlockId, BlockId],
+                intents: [BlockId],
             },
             {
                 left: [BlockId],
-                duration: 2,
+                duration: 1,
                 intents: [BlockId, RestId],
             },
         ],
@@ -225,7 +225,7 @@ const JessicaActions = [
 const AntocRest: Action = {
     id: RestId,
     display: { name: 'Rest', unicode: '\u{1F9D8}' },
-    frames: { duration: 1 },
+    frames: { duration: 1, intents: [RestId] },
     key: '-',
 };
 
