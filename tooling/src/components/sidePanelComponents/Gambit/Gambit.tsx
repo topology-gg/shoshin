@@ -501,8 +501,6 @@ const Gambit = ({
     setCombos,
 }: GambitProps) => {
     const handleCreateLayer = () => {
-        console.log('default layer is ', defaultLayer);
-
         // We need to make a deep copy otherwise this exported object is reassigned
         const deepCopy = JSON.parse(JSON.stringify(defaultLayer));
         // insert layer at lowest priority
@@ -576,9 +574,16 @@ const Gambit = ({
 
         let updatedLayers: Layer[] = JSON.parse(JSON.stringify(layers));
 
+        //If the current layers going from a combo to an action then remove the combo from combos, decrement ids of other combos
         if (layer.action.isCombo == true) {
+            const actionId = layer.action.id;
+            combos.splice(layerIndex, 1);
             updatedLayers = updatedLayers.map((layer, index) => {
-                if (index < layerIndex && layer.action.isCombo == true) {
+                const currentActionId = layer.action.id;
+                if (
+                    actionId < currentActionId &&
+                    layer.action.isCombo == true
+                ) {
                     return {
                         ...layer,
                         action: {
@@ -587,6 +592,7 @@ const Gambit = ({
                         },
                     };
                 }
+                return layer;
             });
         }
 
@@ -601,7 +607,6 @@ const Gambit = ({
             },
         };
 
-        combos.splice(layerIndex, 1);
         setCombos(combos);
         setLayers(updatedLayers);
     };
@@ -624,8 +629,8 @@ const Gambit = ({
                 }
                 return layer;
             });
-            setLayers(updatedLayers);
             setCombos([...combos, []]);
+            setLayers(updatedLayers);
             changeSelectedCombo(combos.length);
         }
     };
@@ -672,7 +677,6 @@ const Gambit = ({
                 !updatedLayers[layerIndex].conditions[conditionIndex]
                     .isInverted;
         }
-        console.log('updated layers', updatedLayers);
         setLayers(updatedLayers);
     };
 
@@ -803,12 +807,13 @@ const Gambit = ({
                     >
                         <Typography
                             sx={{ fontSize: '17px' }}
-                            variant="overline"
+                            variant="h1"
+                            marginTop={'8px'}
                         >
                             <span style={{ marginRight: '8px' }}>
                                 &#128165;
                             </span>
-                            Editing Combo
+                            {`Editing Combo ${selectedCombo}`}
                         </Typography>
                         <IconButton
                             sx={{ color: '#999999' }}
@@ -818,9 +823,6 @@ const Gambit = ({
                             <CloseIcon />
                         </IconButton>
                     </Box>
-                    <Typography>
-                        Used by layers : {usedLayersByCombo}
-                    </Typography>
                     <ComboEditor
                         editingCombo={combos[selectedCombo]}
                         isReadOnly={false}
