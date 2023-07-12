@@ -105,6 +105,7 @@ export default class Simulator extends Phaser.Scene {
     dashForwardSounds: Phaser.Sound.BaseSound[];
     dashBackwardSounds: Phaser.Sound.BaseSound[];
     swingSounds: Phaser.Sound.BaseSound[];
+    clashSounds: Phaser.Sound.BaseSound[];
 
     player_one_action_confirm = false;
     player_two_action_confirm = false;
@@ -340,7 +341,8 @@ export default class Simulator extends Phaser.Scene {
         // SFX
         this.load.audio('dash-forward-sound', 'sounds/dash/forward.mp3');
         this.load.audio('dash-backward-sound', 'sounds/dash/backward.mp3');
-        this.load.audio('swing-sound', 'sounds/weapon/katana.mp3');
+        this.load.audio('swing-sound', 'sounds/weapon/katana.wav');
+        this.load.audio('clash-sound', 'sounds/weapon/clash.wav');
     }
 
     scaledZoom: number = DEFAULT_ZOOM;
@@ -501,10 +503,12 @@ export default class Simulator extends Phaser.Scene {
         this.dashForwardSounds = [];
         this.dashBackwardSounds = [];
         this.swingSounds = [];
+        this.clashSounds = [];
         [0, 1].forEach((_) => {
             this.dashForwardSounds.push(this.sound.add('dash-forward-sound'));
             this.dashBackwardSounds.push(this.sound.add('dash-backward-sound'));
             this.swingSounds.push(this.sound.add('swing-sound'));
+            this.clashSounds.push(this.sound.add('clash-sound'));
         });
     }
 
@@ -928,8 +932,44 @@ export default class Simulator extends Phaser.Scene {
 
     updateEffects(prevFrames, frames: FrameLike[]) {
         //
-        // spark
+        // swing
         //
+        const swingBodyStateCounterPairs = [
+            { state: BodystatesAntoc.HorizontalSwing, counter: 1 },
+            { state: BodystatesAntoc.VerticalSwing, counter: 3 },
+            { state: BodystatesAntoc.DropSlash, counter: 3 },
+            { state: BodystatesJessica.Slash, counter: 2 },
+            { state: BodystatesJessica.Upswing, counter: 2 },
+            { state: BodystatesJessica.Sidecut, counter: 2 },
+            { state: BodystatesJessica.BirdSwing, counter: 3 },
+            { state: BodystatesJessica.Gatotsu, counter: 3 },
+        ];
+        [0, 1].forEach((playerIndex) => {
+            swingBodyStateCounterPairs.forEach((pair) => {
+                if (
+                    frames[playerIndex].body_state.state == pair.state &&
+                    frames[playerIndex].body_state.counter == pair.counter
+                ) {
+                    this.swingSounds[playerIndex].play();
+                }
+            });
+        });
+
+        //
+        // spark & clash
+        //
+        const clashBodyStates = [
+            BodystatesAntoc.Clash,
+            BodystatesJessica.Clash,
+        ];
+        const sparkBodyStates = [
+            BodystatesAntoc.Hurt,
+            BodystatesJessica.Hurt,
+            BodystatesAntoc.Knocked,
+            BodystatesJessica.Knocked,
+            BodystatesAntoc.Launched,
+            BodystatesJessica.Launched,
+        ].concat(clashBodyStates);
         [
             [0, 1],
             [1, 0],
@@ -941,17 +981,6 @@ export default class Simulator extends Phaser.Scene {
 
             const subjectFrame: FrameLike = frames[subjectIndex];
             const objectFrame: FrameLike = frames[objectIndex];
-
-            const sparkBodyStates = [
-                BodystatesAntoc.Hurt,
-                BodystatesJessica.Hurt,
-                BodystatesAntoc.Knocked,
-                BodystatesJessica.Knocked,
-                BodystatesAntoc.Clash,
-                BodystatesJessica.Clash,
-                BodystatesAntoc.Launched,
-                BodystatesJessica.Launched,
-            ];
 
             // if subject body state matches one of sparkBodyStates, and subject body counter==0 (first frame)
             if (
@@ -979,6 +1008,10 @@ export default class Simulator extends Phaser.Scene {
                     .setPosition(x, y)
                     .setVisible(true)
                     .play('sparkAnim');
+
+                if (clashBodyStates.includes(subjectFrame.body_state.state)) {
+                    this.clashSounds[subjectIndex].play();
+                }
             }
         });
 
