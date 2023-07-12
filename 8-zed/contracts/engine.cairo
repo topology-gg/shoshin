@@ -174,8 +174,8 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     //
     let (arr_frames: FrameScene*) = alloc();
     let null_rect = Rectangle(Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM), Vec2(0, 0));
-    let agent_0_origin = Vec2(-100, 0);
-    let agent_1_origin = Vec2(100, 0);
+    let agent_0_origin = Vec2(ns_scene.P1_X_INIT, 0);
+    let agent_1_origin = Vec2(ns_scene.P2_X_INIT, 0);
     let agent_0_body = Rectangle(
         agent_0_origin,
         Vec2(ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H),
