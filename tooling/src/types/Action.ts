@@ -192,7 +192,7 @@ const DashBackward: Action = {
 };
 
 const Jump: Action = {
-    id: 9,
+    id: JumpId,
     display: { name: 'Jump', unicode: '\u{1F998}' },
     frames: {
         duration: 6,
@@ -222,7 +222,7 @@ const Gatotsu: Action = {
 };
 
 const JessicaLowKick: Action = {
-    id: 11,
+    id: JessicaLowKickId,
     display: { name: 'LowKick', unicode: '\u{1F9B6}' },
     frames: {
         duration: 6,
