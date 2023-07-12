@@ -269,15 +269,21 @@ export const Hori: Action = {
     key: 'J',
 };
 
+const AntocStepForwardId = 8;
 const Vert: Action = {
     id: 2,
     display: { name: 'Vert', unicode: '\u{1F5E1}' },
     frames: {
         duration: 10,
         active: [4, 5],
-        // TODO: can be interrupted by
-        //  (1) left1 is dash and left2 is jump => duration:8
-        //  (2) left1 is step forward => duration:7
+        interrupts: [
+            {
+                left: [AntocStepForwardId],
+                duration: 7,
+            },
+        ],
+        // TODO express:
+        //   left1 is dash, left2 is jump => Vert's duration becomes 8
     },
     key: 'K',
 };
@@ -343,7 +349,7 @@ const AntocDashBackward: Action = {
 };
 
 const StepForward: Action = {
-    id: 8,
+    id: AntocStepForwardId,
     display: { name: 'StepForward', unicode: '\u{1F43E}' },
     frames: {
         duration: 3,
