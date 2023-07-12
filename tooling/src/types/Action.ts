@@ -56,10 +56,20 @@ const Slash: Action = {
     },
 };
 
+const JessicaLowKickId = 11;
 const Upswing: Action = {
     id: 2,
     display: { name: 'Upswing', unicode: '\u{1F5E1}' },
-    frames: { duration: 5, active: [3] },
+    frames: {
+        duration: 5,
+        active: [3],
+        interrupts: [
+            {
+                left: [JessicaLowKickId],
+                duration: 4,
+            },
+        ],
+    },
     key: 'K',
     tutorial: {
         video: './media/tutorial/upswing.mp4',
@@ -125,20 +135,7 @@ const MoveBackward: Action = {
     key: 'A',
 };
 
-const Jump: Action = {
-    id: 9,
-    display: { name: 'Jump', unicode: '\u{1F998}' },
-    frames: {
-        duration: 6,
-        interrupts: [
-            {
-                right: [Sidecut.id],
-                duration: 3,
-            },
-        ],
-    },
-    key: 'W',
-};
+const JumpId = 9;
 
 const DashForward: Action = {
     id: 7,
@@ -159,7 +156,7 @@ const DashForward: Action = {
                 duration: 2,
             },
             {
-                right: [Jump.id],
+                right: [JumpId],
                 duration: 2,
             },
         ],
@@ -186,12 +183,35 @@ const DashBackward: Action = {
                 duration: 2,
             },
             {
-                right: [Jump.id],
+                right: [JumpId],
                 duration: 2,
             },
         ],
     },
     key: 'Q',
+};
+
+const Jump: Action = {
+    id: 9,
+    display: { name: 'Jump', unicode: '\u{1F998}' },
+    frames: {
+        duration: 6,
+        interrupts: [
+            {
+                right: [Sidecut.id],
+                duration: 3,
+            },
+            {
+                right: [DashForward.id],
+                duration: 3,
+            },
+            {
+                right: [DashBackward.id],
+                duration: 3,
+            },
+        ],
+    },
+    key: 'W',
 };
 
 const Gatotsu: Action = {
@@ -200,10 +220,23 @@ const Gatotsu: Action = {
     frames: { duration: 7 },
     key: 'N',
 };
+
 const JessicaLowKick: Action = {
     id: 11,
     display: { name: 'LowKick', unicode: '\u{1F9B6}' },
-    frames: { duration: 6 },
+    frames: {
+        duration: 6,
+        interrupts: [
+            {
+                right: [Upswing.id],
+                duration: 4,
+            },
+            {
+                right: [DashBackward.id],
+                duration: 4,
+            },
+        ],
+    },
     key: 'U',
 };
 
@@ -239,7 +272,13 @@ export const Hori: Action = {
 const Vert: Action = {
     id: 2,
     display: { name: 'Vert', unicode: '\u{1F5E1}' },
-    frames: { duration: 10, active: [4, 5] },
+    frames: {
+        duration: 10,
+        active: [4, 5],
+        // TODO: can be interrupted by
+        //  (1) left1 is dash and left2 is jump => duration:8
+        //  (2) left1 is step forward => duration:7
+    },
     key: 'K',
 };
 
