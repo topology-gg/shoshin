@@ -1136,20 +1136,25 @@ export default function Home() {
                     stamina_0={playerStatuses.stamina_0}
                     stamina_1={playerStatuses.stamina_1}
                 /> */}
-
-                <Game
-                    testJson={testJson}
-                    animationFrame={animationFrame}
-                    animationState={animationState}
-                    showDebug={checkedShowDebugInfo}
-                    gameMode={gameMode}
-                    realTimeOptions={{
-                        playerCharacter: realTimeCharacter,
-                        agentOpponent: p2,
-                        setPlayerStatuses,
+                <div
+                    style={{
+                        width: '800px',
                     }}
-                    isInView={swipeableViewIndex == 0}
-                />
+                >
+                    <Game
+                        testJson={testJson}
+                        animationFrame={animationFrame}
+                        animationState={animationState}
+                        showDebug={checkedShowDebugInfo}
+                        gameMode={gameMode}
+                        realTimeOptions={{
+                            playerCharacter: realTimeCharacter,
+                            agentOpponent: p2,
+                            setPlayerStatuses,
+                        }}
+                        isInView={swipeableViewIndex == 0}
+                    />
+                </div>
                 {gameMode == GameModes.simulation ? (
                     <MidScreenControl
                         runnable={

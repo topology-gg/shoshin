@@ -512,7 +512,7 @@ export default class Simulator extends Phaser.Scene {
         });
     }
 
-    intitialize() {
+    initialize() {
         this.initializeVFX();
         this.initializeSFX();
 
@@ -581,7 +581,7 @@ export default class Simulator extends Phaser.Scene {
         this.initializeCameraSettings();
     }
     create() {
-        this.intitialize();
+        this.initialize();
     }
 
     addRectangleHelper(
