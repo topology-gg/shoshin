@@ -81,6 +81,7 @@ interface EditorViewProps {
     setLayers: (layers: Layer[]) => void;
     selectedCombo: number;
     handleChangeSelectedCombo: (comboIndex: number) => void;
+    setCombos: (combos: Action[][]) => void;
 }
 
 const EditorView = ({
@@ -130,6 +131,7 @@ const EditorView = ({
     setLayers,
     selectedCombo,
     handleChangeSelectedCombo,
+    setCombos,
 }: EditorViewProps) => {
     const isReadOnly = editorMode == EditorMode.ReadOnly;
     const [openContractInformation, setOpenContractInformation] =
@@ -158,7 +160,7 @@ const EditorView = ({
                         character={character}
                         conditions={conditions}
                         combos={combos}
-                        setCombos={() => {}}
+                        setCombos={setCombos}
                     />
                 );
             }
