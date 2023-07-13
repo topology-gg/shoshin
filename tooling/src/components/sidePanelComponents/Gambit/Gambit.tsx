@@ -118,6 +118,7 @@ interface GambitProps {
     conditions: Condition[];
     combos: Action[][];
     setCombos: (combo: Action[][]) => void;
+    activeMs: number;
 }
 
 interface LayerProps {
@@ -136,6 +137,7 @@ interface LayerProps {
     handleInvertCondition: (layerIndex: number, conditionIndex: number) => void;
     //Layer either can make combo or edit the combo
     handleChooseCombo: (layerIndex: number) => void;
+    isActive: boolean;
 }
 
 //Select +Combo,
@@ -154,6 +156,7 @@ const DraggableLayer = ({
     handleRemoveLayer,
     handleInvertCondition,
     handleChooseCombo,
+    isActive,
 }: LayerProps) => {
     return (
         <Draggable draggableId={index.toString()} index={index}>
@@ -180,6 +183,7 @@ const DraggableLayer = ({
                         handleRemoveCondition={handleRemoveCondition}
                         handleInvertCondition={handleInvertCondition}
                         handleChooseCombo={handleChooseCombo}
+                        isActive={isActive}
                     />
                 </div>
             )}
@@ -257,6 +261,7 @@ const Layer = ({
     handleRemoveLayer,
     handleInvertCondition,
     handleChooseCombo,
+    isActive,
 }: LayerProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -349,7 +354,13 @@ const Layer = ({
         >
             <Grid container alignItems={'center'}>
                 <Grid item xs={gridOrderPortion}>
-                    <div style={{ textAlign: 'center', fontSize: '13px' }}>
+                    <div
+                        style={{
+                            textAlign: 'center',
+                            fontSize: '13px',
+                            color: isActive ? '#000' : '#000',
+                        }}
+                    >
                         {i + 1}
                     </div>
                 </Grid>
@@ -499,6 +510,7 @@ const Gambit = ({
     conditions,
     combos,
     setCombos,
+    activeMs,
 }: GambitProps) => {
     const handleCreateLayer = () => {
         // We need to make a deep copy otherwise this exported object is reassigned
@@ -680,7 +692,7 @@ const Gambit = ({
         setLayers(updatedLayers);
     };
 
-    const LayerList = React.memo(function LayerList({ layers }: any) {
+    const LayerList = React.memo(function LayerList({ layers, activeMs }: any) {
         return layers.map((layer: Layer, index: number) => (
             <DraggableLayer
                 layer={layer}
@@ -696,6 +708,7 @@ const Gambit = ({
                 handleInvertCondition={handleInvertCondition}
                 combos={combos}
                 handleChooseCombo={handleSelectCombo}
+                isActive={activeMs == index + 1}
             />
         ));
     });
@@ -784,7 +797,10 @@ const Gambit = ({
                                         </Box>
                                     </Grid>
 
-                                    <LayerList layers={layers} />
+                                    <LayerList
+                                        layers={layers}
+                                        activeMs={activeMs}
+                                    />
                                     {provided.placeholder}
                                 </div>
                             )}
