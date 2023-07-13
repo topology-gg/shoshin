@@ -270,8 +270,12 @@ export const Hori: Action = {
 };
 
 const AntocStepForwardId = 8;
+const AntocJumpId = 9;
+const AntocDashForwardId = 6;
+const AntocDashBackwardId = 7;
+const VertId = 2;
 const Vert: Action = {
-    id: 2,
+    id: VertId,
     display: { name: 'Vert', unicode: '\u{1F5E1}' },
     frames: {
         duration: 10,
@@ -279,6 +283,14 @@ const Vert: Action = {
         interrupts: [
             {
                 left: [AntocStepForwardId],
+                duration: 7,
+            },
+            {
+                left: [AntocJumpId, AntocDashForwardId],
+                duration: 7,
+            },
+            {
+                left: [AntocJumpId, AntocDashBackwardId],
                 duration: 7,
             },
         ],
@@ -335,16 +347,34 @@ export const AntocMoveBackward: Action = {
 };
 
 const AntocDashForward: Action = {
-    id: 6,
+    id: AntocDashForwardId,
     display: { name: 'DashForward', unicode: '\u{1F406}' },
-    frames: { duration: 4 },
+    frames: {
+        duration: 4,
+        interrupts: [
+            {
+                left: [JumpId],
+                right: [VertId],
+                duration: 2,
+            },
+        ],
+    },
     key: 'E',
 };
 
 const AntocDashBackward: Action = {
-    id: 7,
+    id: AntocDashBackwardId,
     display: { name: 'DashBackward', unicode: '\u{1F406}' },
-    frames: { duration: 4 },
+    frames: {
+        duration: 4,
+        interrupts: [
+            {
+                left: [JumpId],
+                right: [VertId],
+                duration: 2,
+            },
+        ],
+    },
     key: 'Q',
 };
 
@@ -364,22 +394,22 @@ const StepForward: Action = {
 };
 
 const AntocJump: Action = {
-    id: 9,
+    id: AntocJumpId,
     display: { name: 'Jump', unicode: '\u{1F998}' },
     frames: {
         duration: 7,
         interrupts: [
             {
                 right: [Vert.id],
-                duration: 4,
+                duration: 3,
             },
             {
                 right: [AntocDashForward.id],
-                duration: 4,
+                duration: 2,
             },
             {
                 right: [AntocDashBackward.id],
-                duration: 4,
+                duration: 2,
             },
         ],
     },
