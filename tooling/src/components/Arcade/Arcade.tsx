@@ -32,18 +32,18 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
 
         const [openPauseMenu, changePauseMenu] = useState<boolean>(false);
 
-        const handleKeyPress = (ev: KeyboardEvent) => {
-            const key = ev.key.toUpperCase();
-
-            if (key.includes('ESCAPE')) {
-                changePauseMenu(!openPauseMenu);
-            }
-        };
         useEffect(() => {
-            document.addEventListener('keydown', handleKeyPress);
+            const handleKeyPress = (ev: KeyboardEvent) => {
+                const key = ev.key.toUpperCase();
+
+                if (key.includes('ESCAPE')) {
+                    changePauseMenu(!openPauseMenu);
+                }
+            };
+            document.addEventListener('keyup', handleKeyPress);
 
             return () => {
-                document.removeEventListener('keydown', handleKeyPress);
+                document.removeEventListener('keyup', handleKeyPress);
             };
         }, [openPauseMenu]);
 
