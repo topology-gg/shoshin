@@ -36,6 +36,7 @@ export default class RealTime extends Simulator {
 
     private isGameRunning: boolean;
     private isGamePaused: boolean;
+    private inPauseMenu: boolean = false;
 
     private gameTimer: Phaser.Time.TimerEvent;
     private hitstopTimer: Phaser.Time.TimerEvent;
@@ -231,45 +232,56 @@ export default class RealTime extends Simulator {
         }
     }
 
+    pauseGame() {
+        eventsCenter.emit('end-text-show', 'Paused', '');
+
+        // pause the game by saving the remaining time and destroy the timer
+        this.repeatCountLeft = this.gameTimer.repeatCount;
+        console.log('repeatCountLeft', this.repeatCountLeft);
+        this.gameTimer.destroy();
+        this.isGamePaused = true;
+        console.log('game paused');
+    }
+
+    resumeGame() {
+        // resume the game by creating the timer with `repeatCountLeft`
+        this.gameTimer = this.time.addEvent({
+            delay: this.tickLatencyInSecond * 1000, // ms
+            callback: () => this.run(),
+            repeat: this.repeatCountLeft,
+        });
+        this.isGamePaused = false;
+        console.log('game resumed');
+        eventsCenter.emit('end-text-hide');
+    }
     update(t, ds) {
         const spaceIsDown = this.keyboard.space.isDown;
         const escIsDown = this.keyboard.esc.isDown;
-        if (spaceIsDown || escIsDown) {
-            if (!this.isGameRunning) {
-                this.startMatch();
 
-                // debounce lock
-                this.spaceLocked = true;
+        if (escIsDown && !this.spaceLocked) {
+            if (this.isGameRunning) {
+                this.pauseGame();
+            }
+            this.inPauseMenu = !this.inPauseMenu;
+            this.spaceLocked = true;
+        }
+
+        if (spaceIsDown && !this.inPauseMenu && !this.spaceLocked) {
+            if (!this.isGameRunning && spaceIsDown && !this.inPauseMenu) {
+                this.startMatch();
             } else {
                 if (!this.spaceLocked) {
                     if (this.isGamePaused) {
-                        eventsCenter.emit('end-text-hide');
-
-                        // resume the game by creating the timer with `repeatCountLeft`
-                        this.gameTimer = this.time.addEvent({
-                            delay: this.tickLatencyInSecond * 1000, // ms
-                            callback: () => this.run(),
-                            repeat: this.repeatCountLeft,
-                        });
-                        this.isGamePaused = false;
-                        console.log('game resumed');
+                        this.resumeGame();
                     } else {
-                        eventsCenter.emit('end-text-show', 'Paused', '');
-
-                        // pause the game by saving the remaining time and destroy the timer
-                        this.repeatCountLeft = this.gameTimer.repeatCount;
-                        console.log('repeatCountLeft', this.repeatCountLeft);
-                        this.gameTimer.destroy();
-                        this.isGamePaused = true;
-                        console.log('game paused');
+                        this.pauseGame();
                     }
-
-                    // debounce lock
-                    this.spaceLocked = true;
                 }
             }
+            // debounce lock
+            this.spaceLocked = true;
         }
-        if (this.keyboard.space.isUp) {
+        if (this.keyboard.space.isUp && this.keyboard.esc.isUp) {
             // debounce release
             this.spaceLocked = false;
         }
@@ -374,6 +386,7 @@ export default class RealTime extends Simulator {
         }
     }
 
+    timestamp = new Date();
     run() {
         console.log('this wasm context', this.wasmContext);
         let [out, err] = runRealTimeFromContext(
