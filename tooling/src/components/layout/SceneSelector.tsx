@@ -259,7 +259,12 @@ const SceneSelector = () => {
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ARCADE}>
-                <Arcade playerCharacter={characterIndex} opponent={opponent} />
+                <Arcade
+                    playerCharacter={characterIndex}
+                    opponent={opponent}
+                    onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
+                    onQuit={() => onTransition(Scenes.MAIN_MENU)}
+                />
             </SceneSingle>
             {/* {scene === Scenes.ARCADE ? (
                 <Arcade playerCharacter={characterIndex} opponent={opponent} />
