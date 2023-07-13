@@ -81,7 +81,6 @@ export default class RealTime extends Simulator {
         this.opponent = agent;
         this.setPlayerTwoCharacter(agent.character);
 
-        console.log('opponent', this.opponent);
         if (!this.isGameRunning) {
             this.setMenuText();
             this.resetGameState();
@@ -168,6 +167,7 @@ export default class RealTime extends Simulator {
             n: Phaser.Input.Keyboard.KeyCodes.N,
             z: Phaser.Input.Keyboard.KeyCodes.Z,
             u: Phaser.Input.Keyboard.KeyCodes.U,
+            esc: Phaser.Input.Keyboard.KeyCodes.ESC,
         });
         this.set_player_character(this.character_type_0);
         this.scene.scene.events.on('pause', () => {
@@ -232,7 +232,9 @@ export default class RealTime extends Simulator {
     }
 
     update(t, ds) {
-        if (this.keyboard.space.isDown) {
+        const spaceIsDown = this.keyboard.space.isDown;
+        const escIsDown = this.keyboard.esc.isDown;
+        if (spaceIsDown || escIsDown) {
             if (!this.isGameRunning) {
                 this.startMatch();
 
