@@ -9,7 +9,7 @@ import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
 import { actionIntentsInCombo } from './Action';
 //Layer conditions have extra metadate while they are being edited
-interface LayerCondition extends Condition {
+export interface LayerCondition extends Condition {
     isInverted: boolean;
 }
 export interface Layer {
