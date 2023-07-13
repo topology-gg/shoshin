@@ -17,6 +17,7 @@ namespace ns_dynamics {
     const DT_FP = 10 ** 3;  // 0.1
 
     const GRAVITY_ACC_FP = -2500 * ns_dynamics.SCALE_FP;
+    const LOW_GRAVITY_ACC_FP = -2000 * ns_dynamics.SCALE_FP;
     const FRICTION_ACC_FP = 500 * ns_dynamics.SCALE_FP;
 
     const BACKOFF_VEL_X_FP = 200 * ns_dynamics.SCALE_FP;
