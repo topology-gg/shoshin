@@ -29,5 +29,5 @@ export const opponent0Antoc = {
     conditionNames: [],
     conditions: [],
     actions: [0],
-    character: 0,
+    character: 1,
 };
