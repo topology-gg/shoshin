@@ -258,7 +258,7 @@ const SceneSelector = () => {
             updatedState = state;
         }
         let updatedOpponents = [];
-        if (updatedState.opponents[character.toLocaleLowerCase()]) {
+        if (updatedState.opponents[character.toLocaleLowerCase()].length > 0) {
             updatedOpponents =
                 updatedState.opponents[character.toLocaleLowerCase()];
         } else {
