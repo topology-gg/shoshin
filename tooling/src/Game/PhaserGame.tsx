@@ -129,6 +129,10 @@ const Game = ({
             console.log("running g.scene.start('ui');");
             (game.current as Phaser.Game).scene.start('ui');
         }
+
+        return () => {
+            (game.current as Phaser.Game).destroy(true, false);
+        };
         // return () => g.destroy();
     }, [Phaser, parent, canvas]);
     // }, [Phaser, create, preload, parent, canvas]);
