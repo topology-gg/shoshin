@@ -236,10 +236,31 @@ export const Hori: Action = {
     key: 'J',
 };
 
+const VertId = 2;
+const StepForwardId = 8;
+
 const Vert: Action = {
-    id: 2,
+    id: VertId,
     display: { name: 'Vert', unicode: '\u{1F5E1}' },
-    frames: { duration: 10, active: [4, 5] },
+    frames: {
+        duration: 10,
+        active: [4, 5],
+        interrupts: [
+            {
+                left: [StepForwardId],
+                duration: 7,
+                intents: [
+                    VertId,
+                    RestId,
+                    RestId,
+                    RestId,
+                    RestId,
+                    RestId,
+                    RestId,
+                ],
+            },
+        ],
+    },
     key: 'K',
 };
 
@@ -304,14 +325,15 @@ const AntocDashBackward: Action = {
 };
 
 const StepForward: Action = {
-    id: 8,
+    id: StepForwardId,
     display: { name: 'StepForward', unicode: '\u{1F43E}' },
     frames: {
         duration: 3,
         interrupts: [
             {
                 right: [Vert.id],
-                duration: 2,
+                duration: 1,
+                intents: [StepForwardId],
             },
         ],
     },
@@ -341,10 +363,20 @@ const AntocJump: Action = {
     key: 'W',
 };
 
+const AntocLowKickId = 11;
 const AntocLowKick: Action = {
-    id: 11,
+    id: AntocLowKickId,
     display: { name: 'LowKick', unicode: '\u{1F9B6}' },
-    frames: { duration: 6 },
+    frames: {
+        duration: 6,
+        interrupts: [
+            {
+                left: [StepForwardId],
+                duration: 3,
+                intents: [AntocLowKickId, RestId, RestId, RestId],
+            },
+        ],
+    },
     key: 'U',
 };
 

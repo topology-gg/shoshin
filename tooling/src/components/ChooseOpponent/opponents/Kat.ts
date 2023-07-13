@@ -1,6 +1,6 @@
 import { buildAgentFromLayers } from './util';
 
-const { layers, char, combos, _id, agent_name, difficulty } = {
+const json = {
     _id: {
         $oid: '64af0a1d1424de43e12e1543',
     },
@@ -2229,4 +2229,6 @@ const { layers, char, combos, _id, agent_name, difficulty } = {
         },
     ],
 };
+
+const { layers, char, combos } = json;
 export const Kat = buildAgentFromLayers(layers, char, combos);

@@ -1,6 +1,6 @@
 import { buildAgentFromLayers } from './util';
 
-const { layers, char, combos, _id, agent_name } = {
+const json = {
     _id: {
         $oid: '64add9ce1ccd8d8c1ca33c78',
     },
@@ -2042,5 +2042,5 @@ const { layers, char, combos, _id, agent_name } = {
         },
     ],
 };
-
+const { layers, char, combos } = json;
 export const Eve = buildAgentFromLayers(layers, char, combos);
