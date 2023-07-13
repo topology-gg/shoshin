@@ -9,7 +9,7 @@ import Tile, { TileContent } from '../ui/Tile';
 
 interface ChooseOpponentProps {
     opponents: Opponent[];
-    transitionMainScene: (opp: Agent) => void;
+    transitionMainScene: (opp: number) => void;
     playerCharacter: Character;
 }
 const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
@@ -18,7 +18,7 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
 
         characterBoxes = opponents.map(({ agent, medal }, index) => {
             const handleClick = () => {
-                transitionMainScene(agent);
+                transitionMainScene(index);
             };
 
             const imageUrl =
@@ -48,7 +48,7 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
         );
 
         const [selectedOpponent, selectOpponent] = useState<number>(
-            initialSelectedOpponent
+            initialSelectedOpponent !== -1 ? initialSelectedOpponent : 0
         );
 
         // Effect to make sure that selectedOpponent is initialized correctly when opponent data loads
@@ -59,8 +59,15 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
         }, [initialSelectedOpponent, selectedOpponent]);
 
         const handleFightClick = () => {
-            transitionMainScene(opponents[selectedOpponent].agent);
+            transitionMainScene(selectedOpponent);
         };
+
+        const characterName =
+            playerCharacter == Character.Jessica ? 'Jessica' : 'Antoc';
+        const characterImageUrl =
+            playerCharacter == Character.Jessica
+                ? 'images/jessica/idle/right/frame_0.png'
+                : 'images/antoc/idle/right/frame_0.png';
         return (
             <div ref={ref}>
                 <Box
@@ -88,20 +95,18 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                         <Tile sx={{ width: 400 }} active>
                             <TileContent>
                                 <Typography variant="h4">
-                                    Jessica{' '}
+                                    {characterName}{' '}
                                     <Chip
                                         color="primary"
                                         label="Your character"
                                     />
                                 </Typography>
                                 <img
-                                    src="images/jessica/idle/right/frame_0.png"
+                                    src={characterImageUrl}
                                     alt="Image 1"
                                     height="200px"
                                 />
-                                <Typography variant="h6">
-                                    Progress 0%
-                                </Typography>
+                                <Typography variant="h6">Text</Typography>
                                 <Typography variant="body2">
                                     Additional descriptive text
                                 </Typography>

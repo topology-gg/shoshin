@@ -37,7 +37,7 @@ const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
 interface SimulationProps {
     player: PlayerAgent;
     setPlayerAgent: (playerAgent: PlayerAgent) => void;
-    opponent: Agent;
+    opponent: Opponent;
     submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
     onContinue: () => void;
     onQuit: () => void;
@@ -61,7 +61,7 @@ const SimulationScene = React.forwardRef(
         const [output, setOuput] = useState<FrameScene>();
         const [simulationError, setSimulationError] = useState();
         const [p1, setP1] = useState<Agent>();
-        const p2: Agent = opponent;
+        const p2: Agent = opponent.agent;
 
         const [loop, setLoop] = useState<NodeJS.Timer>();
         const [animationFrame, setAnimationFrame] = useState<number>(0);
@@ -89,7 +89,7 @@ const SimulationScene = React.forwardRef(
         const [layers, setLayers] = useState<Layer[]>(player.layers);
 
         const opponentName =
-            opponent.character == 0 ? Character.Jessica : Character.Antoc;
+            opponent.agent.character == 0 ? Character.Jessica : Character.Antoc;
 
         const [openPauseMenu, changePauseMenu] = useState<boolean>(false);
 
@@ -264,9 +264,9 @@ const SimulationScene = React.forwardRef(
         const [showVictory, changeShowVictory] = useState<boolean>(false);
         useEffect(() => {
             if (beatAgent) {
-                submitWin(player, { agent: opponent, medal: performance });
+                submitWin(player, { ...opponent, medal: performance });
             }
-        }, [beatAgent, animationFrame]);
+        }, [beatAgent]);
 
         useEffect(() => {
             if (beatAgent && N_FRAMES - 1 === animationFrame) {
@@ -294,7 +294,7 @@ const SimulationScene = React.forwardRef(
         const overlayClassName = playOnly ? mainSceneStyles.overlay : '';
 
         const p1Name = player.character;
-        const p2Name = numberToCharacter(opponent.character);
+        const p2Name = numberToCharacter(opponent.agent.character);
         return (
             <div id={'mother'} className={styles.container} ref={ref}>
                 {' '}
