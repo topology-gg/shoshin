@@ -94,11 +94,36 @@ export default class Simulator extends Phaser.Scene {
     readonly STROKE_STYLE_BODY_HITBOX = 0x7cfc00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
 
+    // VFX
     sparkSprites: Phaser.GameObjects.Sprite[];
     dashSmokeSprites: Phaser.GameObjects.Sprite[];
     stepForwardSmokeSprites: Phaser.GameObjects.Sprite[];
     jumpTakeoffSmokeSprites: Phaser.GameObjects.Sprite[];
     jumpLandingSmokeSprites: Phaser.GameObjects.Sprite[];
+
+    // SFX
+    dashForwardSounds: Phaser.Sound.BaseSound[];
+    dashBackwardSounds: Phaser.Sound.BaseSound[];
+    slashSounds: Phaser.Sound.BaseSound[];
+    upswingSounds: Phaser.Sound.BaseSound[];
+    sidecutSounds: Phaser.Sound.BaseSound[];
+    gatotsuSounds: Phaser.Sound.BaseSound[];
+    horiSounds: Phaser.Sound.BaseSound[];
+    vertSounds: Phaser.Sound.BaseSound[];
+    clashSounds: Phaser.Sound.BaseSound[];
+    antocHurtSounds: Phaser.Sound.BaseSound[];
+    antocKnockedSounds: Phaser.Sound.BaseSound[];
+    antocLaunchedSounds: Phaser.Sound.BaseSound[];
+    antocJumpSounds: Phaser.Sound.BaseSound[];
+    jessicaHurtSounds: Phaser.Sound.BaseSound[];
+    jessicaKnockedSounds: Phaser.Sound.BaseSound[];
+    jessicaJumpSounds: Phaser.Sound.BaseSound[];
+    jessicaLaunchedSounds: Phaser.Sound.BaseSound[];
+    lowKickHitSounds: Phaser.Sound.BaseSound[];
+    landingSounds: Phaser.Sound.BaseSound[];
+    landingFromKnockedSounds: Phaser.Sound.BaseSound[];
+    katanaHitSounds: Phaser.Sound.BaseSound[];
+    greatSwordHitSounds: Phaser.Sound.BaseSound[];
 
     player_one_action_confirm = false;
     player_two_action_confirm = false;
@@ -305,7 +330,7 @@ export default class Simulator extends Phaser.Scene {
             'images/bg/shoshin-bg-large-transparent.png'
         );
 
-        // effects
+        // VFX
         this.load.spritesheet('spark', 'images/effects/spark/spritesheet.png', {
             frameWidth: 730,
             frameHeight: 731,
@@ -330,6 +355,54 @@ export default class Simulator extends Phaser.Scene {
                 frameHeight: 201,
             }
         );
+
+        // SFX
+        this.load.audio('dash-forward-sound', 'sounds/dash/forward.mp3');
+        this.load.audio('dash-backward-sound', 'sounds/dash/backward.mp3');
+        this.load.audio('katana-sound-1', 'sounds/weapon/katana-1.mp3');
+        this.load.audio('katana-sound-2', 'sounds/weapon/katana-2.mp3');
+        this.load.audio('katana-sound-3', 'sounds/weapon/katana-3.mp3');
+        this.load.audio(
+            'great-sword-sound-1',
+            'sounds/weapon/great-sword-1.mp3'
+        );
+        this.load.audio(
+            'great-sword-sound-2',
+            'sounds/weapon/great-sword-2.mp3'
+        );
+        this.load.audio(
+            'great-sword-sound-3',
+            'sounds/weapon/great-sword-3.mp3'
+        );
+        this.load.audio('gatotsu-sound', 'sounds/weapon/gatotsu-sound.mp3');
+        this.load.audio('clash-sound', 'sounds/weapon/clash.wav');
+        this.load.audio('antoc-hurt-sound', 'sounds/hurt/antoc-hurt.mp3');
+        this.load.audio('jessica-hurt-sound', 'sounds/hurt/jessica-hurt.wav');
+        this.load.audio(
+            'antoc-knocked-sound',
+            'sounds/knocked/antoc-knocked.mp3'
+        );
+        this.load.audio(
+            'jessica-knocked-sound',
+            'sounds/hurt/jessica-hurt.wav'
+        );
+        this.load.audio(
+            'antoc-launched-sound',
+            'sounds/launched/antoc-launched.wav'
+        );
+        this.load.audio(
+            'jessica-launched-sound',
+            'sounds/hurt/jessica-hurt.wav'
+        );
+        this.load.audio('antoc-jump-sound', 'sounds/jump/antoc-jump.wav');
+        this.load.audio('jessica-jump-sound', 'sounds/jump/jessica-jump.wav');
+        this.load.audio('low-kick-hit-sound', 'sounds/weapon/kick.ogg');
+        this.load.audio('landing-from-jump-sound', 'sounds/jump/landing.wav');
+        this.load.audio(
+            'landing-from-knocked-sound',
+            'sounds/hurt/landing-from-knocked.m4a'
+        );
+        this.load.audio('katana-cut-sound', 'sounds/weapon/katana-cut.wav');
     }
 
     scaledZoom: number = DEFAULT_ZOOM;
@@ -383,7 +456,7 @@ export default class Simulator extends Phaser.Scene {
         return centeredText;
     }
 
-    initializeEffects() {
+    initializeVFX() {
         this.anims.create({
             key: 'sparkAnim',
             frameRate: 30,
@@ -486,8 +559,70 @@ export default class Simulator extends Phaser.Scene {
         });
     }
 
+    initializeSFX() {
+        this.dashForwardSounds = [];
+        this.dashBackwardSounds = [];
+        this.slashSounds = [];
+        this.upswingSounds = [];
+        this.sidecutSounds = [];
+        this.horiSounds = [];
+        this.vertSounds = [];
+        this.clashSounds = [];
+        this.gatotsuSounds = [];
+        this.antocJumpSounds = [];
+        this.jessicaJumpSounds = [];
+        this.antocHurtSounds = [];
+        this.jessicaHurtSounds = [];
+        this.antocKnockedSounds = [];
+        this.jessicaKnockedSounds = [];
+        this.antocLaunchedSounds = [];
+        this.jessicaLaunchedSounds = [];
+        this.lowKickHitSounds = [];
+        this.landingSounds = [];
+        this.landingFromKnockedSounds = [];
+        this.katanaHitSounds = [];
+        this.greatSwordHitSounds = [];
+        [0, 1].forEach((_) => {
+            this.dashForwardSounds.push(this.sound.add('dash-forward-sound'));
+            this.dashBackwardSounds.push(this.sound.add('dash-backward-sound'));
+
+            this.slashSounds.push(this.sound.add('katana-sound-1'));
+            this.upswingSounds.push(this.sound.add('katana-sound-2'));
+            this.sidecutSounds.push(this.sound.add('katana-sound-3'));
+            this.horiSounds.push(this.sound.add('great-sword-sound-1'));
+            this.vertSounds.push(this.sound.add('great-sword-sound-2'));
+            this.gatotsuSounds.push(this.sound.add('gatotsu-sound'));
+
+            this.clashSounds.push(this.sound.add('clash-sound'));
+
+            this.antocJumpSounds.push(this.sound.add('antoc-jump-sound'));
+            this.jessicaJumpSounds.push(this.sound.add('jessica-jump-sound'));
+
+            this.antocHurtSounds.push(this.sound.add('antoc-hurt-sound'));
+            this.jessicaHurtSounds.push(this.sound.add('jessica-hurt-sound'));
+            this.antocKnockedSounds.push(this.sound.add('antoc-knocked-sound'));
+            this.jessicaKnockedSounds.push(
+                this.sound.add('jessica-knocked-sound')
+            );
+            this.antocLaunchedSounds.push(
+                this.sound.add('antoc-launched-sound')
+            );
+            this.jessicaLaunchedSounds.push(
+                this.sound.add('jessica-launched-sound')
+            );
+            this.lowKickHitSounds.push(this.sound.add('low-kick-hit-sound'));
+            this.landingSounds.push(this.sound.add('landing-from-jump-sound'));
+            this.landingFromKnockedSounds.push(
+                this.sound.add('landing-from-knocked-sound')
+            );
+            this.katanaHitSounds.push(this.sound.add('katana-cut-sound'));
+            this.greatSwordHitSounds.push(this.sound.add('katana-cut-sound'));
+        });
+    }
+
     initialize() {
-        this.initializeEffects();
+        this.initializeVFX();
+        this.initializeSFX();
 
         const yDisplacementFromCenterToGround = -150;
         let bg = this.add.image(0, 20, 'arena_bg');
@@ -905,8 +1040,70 @@ export default class Simulator extends Phaser.Scene {
 
     updateEffects(prevFrames, frames: FrameLike[]) {
         //
-        // spark
+        // attack sounds
         //
+        const attackBodyStateCounterPairs = [
+            { state: BodystatesAntoc.HorizontalSwing, counter: 1 },
+            { state: BodystatesAntoc.VerticalSwing, counter: 3 },
+            { state: BodystatesAntoc.DropSlash, counter: 3 },
+            { state: BodystatesJessica.Slash, counter: 2 },
+            { state: BodystatesJessica.Upswing, counter: 2 },
+            { state: BodystatesJessica.Sidecut, counter: 2 },
+            { state: BodystatesJessica.BirdSwing, counter: 3 },
+            { state: BodystatesJessica.Gatotsu, counter: 3 },
+            { state: BodystatesJessica.LowKick, counter: 3 },
+            { state: BodystatesAntoc.LowKick, counter: 3 },
+        ];
+        [0, 1].forEach((playerIndex) => {
+            attackBodyStateCounterPairs.forEach((pair) => {
+                if (
+                    frames[playerIndex].body_state.state == pair.state &&
+                    frames[playerIndex].body_state.counter == pair.counter
+                ) {
+                    if (pair.state == BodystatesAntoc.HorizontalSwing)
+                        this.horiSounds[playerIndex].play();
+                    else if (pair.state == BodystatesAntoc.VerticalSwing)
+                        this.vertSounds[playerIndex].play();
+                    else if (pair.state == BodystatesAntoc.DropSlash)
+                        this.vertSounds[playerIndex].play();
+                    else if (pair.state == BodystatesJessica.Slash)
+                        this.slashSounds[playerIndex].play();
+                    else if (pair.state == BodystatesJessica.Upswing)
+                        this.upswingSounds[playerIndex].play();
+                    else if (pair.state == BodystatesJessica.Sidecut)
+                        this.sidecutSounds[playerIndex].play();
+                    else if (pair.state == BodystatesJessica.BirdSwing)
+                        this.sidecutSounds[playerIndex].play();
+                    else if (pair.state == BodystatesJessica.Gatotsu)
+                        this.gatotsuSounds[playerIndex].play();
+                    else if (pair.state == BodystatesJessica.LowKick)
+                        this.dashBackwardSounds[playerIndex].play();
+                    else if (pair.state == BodystatesAntoc.LowKick)
+                        this.dashBackwardSounds[playerIndex].play();
+                }
+            });
+        });
+
+        //
+        // spark & clash
+        //
+        const clashBodyStates: number[] = [
+            BodystatesAntoc.Clash,
+            BodystatesJessica.Clash,
+        ];
+        const jessicaHitBodyStates: number[] = [
+            BodystatesJessica.Hurt,
+            BodystatesJessica.Knocked,
+            BodystatesJessica.Launched,
+        ];
+        const antocHitBodyStates: number[] = [
+            BodystatesAntoc.Hurt,
+            BodystatesAntoc.Knocked,
+            BodystatesAntoc.Launched,
+        ];
+        const hitBodyStates = jessicaHitBodyStates.concat(antocHitBodyStates);
+        const sparkBodyStates = hitBodyStates.concat(clashBodyStates);
+
         [
             [0, 1],
             [1, 0],
@@ -918,17 +1115,6 @@ export default class Simulator extends Phaser.Scene {
 
             const subjectFrame: FrameLike = frames[subjectIndex];
             const objectFrame: FrameLike = frames[objectIndex];
-
-            const sparkBodyStates = [
-                BodystatesAntoc.Hurt,
-                BodystatesJessica.Hurt,
-                BodystatesAntoc.Knocked,
-                BodystatesJessica.Knocked,
-                BodystatesAntoc.Clash,
-                BodystatesJessica.Clash,
-                BodystatesAntoc.Launched,
-                BodystatesJessica.Launched,
-            ];
 
             // if subject body state matches one of sparkBodyStates, and subject body counter==0 (first frame)
             if (
@@ -956,18 +1142,69 @@ export default class Simulator extends Phaser.Scene {
                     .setPosition(x, y)
                     .setVisible(true)
                     .play('sparkAnim');
+
+                if (clashBodyStates.includes(subjectFrame.body_state.state)) {
+                    this.clashSounds[subjectIndex].play();
+                }
+
+                if (subjectFrame.body_state.state == BodystatesAntoc.Hurt)
+                    this.antocHurtSounds[subjectIndex].play();
+                else if (
+                    subjectFrame.body_state.state == BodystatesAntoc.Knocked
+                )
+                    this.antocKnockedSounds[subjectIndex].play();
+                else if (
+                    subjectFrame.body_state.state == BodystatesAntoc.Launched
+                )
+                    this.antocLaunchedSounds[subjectIndex].play();
+                else if (
+                    subjectFrame.body_state.state == BodystatesJessica.Hurt
+                )
+                    this.jessicaHurtSounds[subjectIndex].play();
+                else if (
+                    subjectFrame.body_state.state == BodystatesJessica.Knocked
+                )
+                    this.jessicaKnockedSounds[subjectIndex].play();
+                else if (
+                    subjectFrame.body_state.state == BodystatesJessica.Launched
+                )
+                    this.jessicaLaunchedSounds[subjectIndex].play();
+
+                if (hitBodyStates.includes(subjectFrame.body_state.state)) {
+                    if (
+                        [
+                            BodystatesAntoc.LowKick,
+                            BodystatesJessica.LowKick,
+                        ].includes(objectPrevFrame.body_state.state)
+                    ) {
+                        this.lowKickHitSounds[subjectIndex].play();
+                    } else if (
+                        antocHitBodyStates.includes(
+                            objectPrevFrame.body_state.state
+                        )
+                    ) {
+                        this.greatSwordHitSounds[objectIndex].play();
+                    } else {
+                        this.katanaHitSounds[objectIndex].play();
+                    }
+                }
             }
         });
 
         //
         // dash-smoke
         //
-        const dashBodyStates = [
+        const dashForwardBodyStates = [
             BodystatesJessica.DashForward,
-            BodystatesJessica.DashBackward,
             BodystatesAntoc.DashForward,
+        ];
+        const dashBackwardBodyStates = [
+            BodystatesJessica.DashBackward,
             BodystatesAntoc.DashBackward,
         ];
+        const dashBodyStates = dashForwardBodyStates.concat(
+            dashBackwardBodyStates
+        );
         [0, 1].forEach((playerIndex) => {
             // get frame and qualify
             const frame = frames[playerIndex];
@@ -1005,6 +1242,14 @@ export default class Simulator extends Phaser.Scene {
                             ? RIGHT
                             : LEFT)
                 );
+
+            // sfx
+            if (dashForwardBodyStates.includes(frame.body_state.state)) {
+                this.dashForwardSounds[playerIndex].play();
+            }
+            if (dashBackwardBodyStates.includes(frame.body_state.state)) {
+                this.dashBackwardSounds[playerIndex].play();
+            }
         });
 
         //
@@ -1038,6 +1283,8 @@ export default class Simulator extends Phaser.Scene {
                             ? RIGHT
                             : LEFT)
                 );
+
+            this.dashForwardSounds[playerIndex].play();
         });
 
         //
@@ -1077,6 +1324,11 @@ export default class Simulator extends Phaser.Scene {
                     .setPosition(x, y)
                     .setVisible(true)
                     .play('jumpTakeoffSmokeAnim');
+
+                if (frame.body_state.state == BodystatesAntoc.Jump)
+                    this.antocJumpSounds[playerIndex].play();
+                else if (frame.body_state.state == BodystatesJessica.Jump)
+                    this.jessicaJumpSounds[playerIndex].play();
             } else if (
                 stimulusType == StimulusType.GROUND &&
                 prevStimulusType != StimulusType.GROUND &&
@@ -1091,6 +1343,21 @@ export default class Simulator extends Phaser.Scene {
                     .setPosition(x, y)
                     .setVisible(true)
                     .play('smokeAnim');
+
+                if (
+                    [
+                        BodystatesAntoc.Jump,
+                        BodystatesJessica.Jump,
+                        BodystatesAntoc.DropSlash,
+                        BodystatesJessica.BirdSwing,
+                    ].includes(frame.body_state.state)
+                ) {
+                    // voluntary landing
+                    this.landingSounds[playerIndex].play();
+                } else {
+                    // involuntary landing
+                    this.landingFromKnockedSounds[playerIndex].play();
+                }
             }
         });
     }
