@@ -17,9 +17,11 @@ const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
 interface ArcadeProps {
     playerCharacter: number;
     opponent: Agent;
+    onQuit: () => void;
+    onContinue: () => void;
 }
 const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
-    ({ playerCharacter, opponent }, ref) => {
+    ({ playerCharacter, opponent, onQuit, onContinue }, ref) => {
         const [playerStatuses, setPlayerStatuses] =
             useState<StatusBarPanelProps>({
                 integrity_0: 1000,
@@ -30,18 +32,18 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
 
         const [openPauseMenu, changePauseMenu] = useState<boolean>(false);
 
-        const handleKeyPress = (ev: KeyboardEvent) => {
-            const key = ev.key.toUpperCase();
-
-            if (key.includes('ESCAPE')) {
-                changePauseMenu(!openPauseMenu);
-            }
-        };
         useEffect(() => {
-            document.addEventListener('keydown', handleKeyPress);
+            const handleKeyPress = (ev: KeyboardEvent) => {
+                const key = ev.key.toUpperCase();
+
+                if (key.includes('ESCAPE')) {
+                    changePauseMenu(!openPauseMenu);
+                }
+            };
+            document.addEventListener('keyup', handleKeyPress);
 
             return () => {
-                document.removeEventListener('keydown', handleKeyPress);
+                document.removeEventListener('keyup', handleKeyPress);
             };
         }, [openPauseMenu]);
 
@@ -60,8 +62,8 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                 >
                     {openPauseMenu ? (
                         <PauseMenu
-                            onQuit={() => {}}
-                            onChooseCharacter={() => {}}
+                            onQuit={onQuit}
+                            onChooseCharacter={onContinue}
                         />
                     ) : null}
 

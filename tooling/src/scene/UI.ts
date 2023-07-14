@@ -243,6 +243,28 @@ export default class UI extends Phaser.Scene {
             .on('update-stats', this.onStatsUpdate, this)
             .on('reset-stats', this.onStatsReset, this);
 
+        this.events.on('destroy', () => {
+            eventsCenter
+                .removeListener('timer-change', this.onTimerChange, this)
+                .removeListener('timer-reset', this.onTimerReset, this)
+                .removeListener('timer-hide', this.onTimerHide, this)
+                .removeListener(
+                    'player-event-create',
+                    this.onPlayerEventCreate,
+                    this
+                )
+                .removeListener(
+                    'player-event-remove',
+                    this.onPlayerEventRemove,
+                    this
+                )
+                .removeListener('frame-data-show', this.onFrameDataShow, this)
+                .removeListener('frame-data-hide', this.onFrameDataHide, this)
+                .removeListener('end-text-show', this.onEndTextShow, this)
+                .removeListener('end-text-hide', this.onEndTextHide, this)
+                .removeListener('update-stats', this.onStatsUpdate, this)
+                .removeListener('reset-stats', this.onStatsReset, this);
+        });
         // this.scene.get('play').events
         // eventsCenter
         //     .on('pause', this.showPauseText, this)
