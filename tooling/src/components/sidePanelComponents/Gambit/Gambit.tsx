@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-    Box,
-    Button,
-    Chip,
-    Divider,
-    Grid,
-    MenuItem,
-    Select,
-    Typography,
-} from '@mui/material';
+import { Box, Button, Grid, MenuItem, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -25,6 +16,7 @@ import ComboEditor from '../ComboEditor';
 import CloseIcon from '@mui/icons-material/Close';
 import { VerticalAlignCenter } from '@mui/icons-material';
 import Actions from '../../ComboEditor/Actions';
+import SingleCondition, { ConditionLabel } from './Condition';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 // I think we can just parse this index from id={....}
@@ -35,58 +27,6 @@ let gridOrderPortion = 1;
 let gridConditionPortion = 5;
 let gridActionPortion = 5;
 let gridRemovePortion = 1;
-
-export const conditionElement = (
-    conditionName: string,
-    conditionType: string,
-    isInverted: boolean = false
-) => {
-    return (
-        <Box>
-            {!isInverted
-                ? conditionEmojiElement(conditionType)
-                : invertedConditionEmojiElement()}
-            <div style={{ marginLeft: '25px' }}>{conditionName}</div>
-        </Box>
-    );
-};
-export const conditionEmojiElement = (conditionType: string) => {
-    const filePath = conditionTypeToEmojiFile(conditionType);
-    // doing the following to make sure image is vertically centered; sometimes css feels like dark magic
-    // solution from: https://stackoverflow.com/a/11716065
-    return (
-        <img
-            src={filePath}
-            height="15px"
-            style={{
-                position: 'absolute',
-                marginTop: 'auto',
-                marginBottom: 'auto',
-                top: '0',
-                bottom: '0',
-            }}
-        />
-    );
-};
-
-const invertedConditionEmojiElement = () => {
-    const filePath = '/images/emojis/stop_sign.png';
-    // doing the following to make sure image is vertically centered; sometimes css feels like dark magic
-    // solution from: https://stackoverflow.com/a/11716065
-    return (
-        <img
-            src={filePath}
-            height="15px"
-            style={{
-                position: 'absolute',
-                marginTop: 'auto',
-                marginBottom: 'auto',
-                top: '0',
-                bottom: '0',
-            }}
-        />
-    );
-};
 
 const actionIndexToAction = (
     action: number,
@@ -120,7 +60,7 @@ interface GambitProps {
     setCombos: (combo: Action[][]) => void;
 }
 
-interface LayerProps {
+export interface LayerProps {
     layer: Layer;
     index: number;
     isReadOnly: boolean;
@@ -184,63 +124,6 @@ const DraggableLayer = ({
                 </div>
             )}
         </Draggable>
-    );
-};
-
-//override right click for conditions
-const ConditionContextMenu = ({
-    children,
-    handleInvertCondition,
-    layerIndex,
-    conditionIndex,
-}) => {
-    const [contextMenu, setContextMenu] = React.useState<{
-        mouseX: number;
-        mouseY: number;
-    } | null>(null);
-
-    const handleContextMenu = (event: React.MouseEvent) => {
-        event.preventDefault();
-        setContextMenu(
-            contextMenu === null
-                ? {
-                      mouseX: event.clientX + 2,
-                      mouseY: event.clientY - 6,
-                  }
-                : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
-                  // Other native context menus might behave different.
-                  // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
-                  null
-        );
-    };
-
-    const handleClose = () => {
-        setContextMenu(null);
-    };
-
-    const handleInvertClick = (event) => {
-        handleInvertCondition(layerIndex, conditionIndex);
-        setContextMenu(null);
-    };
-
-    return (
-        <div onContextMenu={handleContextMenu} style={{ width: 'fit-content' }}>
-            {children}
-            <Menu
-                open={contextMenu !== null}
-                onClose={handleClose}
-                anchorReference="anchorPosition"
-                anchorPosition={
-                    contextMenu !== null
-                        ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-                        : undefined
-                }
-            >
-                <MenuItem onClick={handleInvertClick}>
-                    Invert Condition
-                </MenuItem>
-            </Menu>
-        </div>
     );
 };
 
@@ -316,17 +199,6 @@ const Layer = ({
         setConditionAnchorEl(event.currentTarget);
     };
 
-    const handleRemoveConditionClick = (
-        event: React.MouseEvent<HTMLDivElement | HTMLButtonElement>
-    ) => {
-        const targetId = event.currentTarget.parentElement.id;
-        let id = targetId.split('-');
-
-        let layerIndex = parseInt(id[id.length - 2]);
-        let conditionIndex = parseInt(id[id.length - 1]);
-        handleRemoveCondition(layerIndex, conditionIndex);
-    };
-
     const handleCloseActionDropdown = () => {
         setAnchorEl(null);
     };
@@ -361,38 +233,18 @@ const Layer = ({
                         flexWrap={'wrap'}
                     >
                         {layer.conditions.map((condition, index) => (
-                            <ConditionContextMenu
-                                handleInvertCondition={handleInvertCondition}
-                                layerIndex={i}
+                            <SingleCondition
+                                key={`${i}-${index}`}
+                                condition={condition}
                                 conditionIndex={index}
-                            >
-                                <Chip
-                                    label={conditionElement(
-                                        condition.displayName,
-                                        condition.type,
-                                        condition.isInverted
-                                    )}
-                                    className={
-                                        !condition.isInverted
-                                            ? `${styles.gambitButton} ${styles.conditionButton}`
-                                            : `${styles.gambitButton} ${styles.invertedConditionButton}`
-                                    }
-                                    key={`${i}`}
-                                    id={`condition-btn-${i}-${index}`}
-                                    onClick={handleConditionClick}
-                                    onDelete={
-                                        layer.conditions.length > 1
-                                            ? handleRemoveConditionClick
-                                            : undefined
-                                    }
-                                    style={{
-                                        fontFamily: 'Raleway',
-                                        fontSize: '14px',
-                                        verticalAlign: 'middle',
-                                        padding: '0',
-                                    }}
-                                />
-                            </ConditionContextMenu>
+                                layerIndex={i}
+                                onClick={handleConditionClick}
+                                onRemove={
+                                    layer.conditions.length > 1 &&
+                                    handleRemoveCondition
+                                }
+                                onInvertCondition={handleInvertCondition}
+                            />
                         ))}
 
                         {layer.conditions.length >= 1 &&
@@ -428,10 +280,10 @@ const Layer = ({
                                         onConditionSelect(condition);
                                     }}
                                 >
-                                    {conditionElement(
-                                        condition.displayName,
-                                        condition.type
-                                    )}
+                                    <ConditionLabel
+                                        name={condition.displayName}
+                                        type={condition.type}
+                                    />
                                 </BlurrableListItemText>
                             </MenuItem>
                         );
@@ -651,7 +503,10 @@ const Gambit = ({
         setLayers(updatedLayers);
     };
 
-    const handleRemoveCondition = (layerIndex, conditionIndex) => {
+    const handleRemoveCondition = (
+        layerIndex: number,
+        conditionIndex: number
+    ) => {
         let updatedLayers = layers.map((layer, index) => {
             if (index == layerIndex) {
                 let updatedConditions = [...layer.conditions];

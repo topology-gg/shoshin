@@ -1045,6 +1045,7 @@ export default function Home() {
                     setLayers={setLayers}
                     selectedCombo={selectedCombo}
                     handleChangeSelectedCombo={changeSelectedCombo}
+                    setCombos={setCombos}
                 />
             </CharacterContext.Provider>
         </LayerContext.Provider>
