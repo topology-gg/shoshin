@@ -347,7 +347,7 @@ const Layer = ({
             key={`button-wrapper-${i}`}
             sx={{
                 width: '100%',
-                border: '1px solid #ddd',
+                border: `1px solid ${isActive ? '#787878' : '#ddd'}`,
                 marginBottom: '4px',
                 borderRadius: '20px',
             }}
@@ -358,7 +358,6 @@ const Layer = ({
                         style={{
                             textAlign: 'center',
                             fontSize: '13px',
-                            color: isActive ? '#000' : '#000',
                         }}
                     >
                         {i + 1}
@@ -534,13 +533,12 @@ const Gambit = ({
         .join(', ');
     let componentAddLayer = (
         <>
-            <Grid
-                xs={1}
-                item
+            <Box
                 sx={{
                     display: 'flex',
                     alignItems: 'flex-end',
-                    justifyContent: 'flex-start',
+                    justifyContent: 'space-between',
+                    width: '100%',
                 }}
             >
                 <Button
@@ -552,7 +550,18 @@ const Gambit = ({
                     <AddIcon sx={{ mr: '3px' }} />
                     {'Layer'}
                 </Button>
-            </Grid>
+
+                <Box
+                    sx={{
+                        border: '1px solid',
+                        borderColor: 'currentColor',
+                        opacity: activeMs == 0 ? 1 : 0.5,
+                    }}
+                >
+                    {' '}
+                    EVAL
+                </Box>
+            </Box>
         </>
     );
 
