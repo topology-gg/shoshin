@@ -559,7 +559,7 @@ const Gambit = ({
                     }}
                 >
                     {' '}
-                    EVAL
+                    SHOSHIN
                 </Box>
             </Box>
         </>
