@@ -7,12 +7,14 @@
 }
 
 .characterBox {
-    width: 400px;
+    width: 250px;
+    height: 500px;
     flex-shrink: 0;
     margin-right: 16px;
     cursor: pointer;
-    border: 1px solid lightgray;
+    border: 1px solid black;
     padding: 16px;
+    background-color: white;
 }
 
 .characterBox:hover {
