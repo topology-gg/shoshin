@@ -1,7 +1,26 @@
-import { opponent0 } from './opponent-0';
-import { opponent1 } from './opponent-1';
-import { opponent2 } from './opponent-2';
-import { opponent3 } from './opponent-3';
+import { Adam } from './Adam';
+import { AntocAttack } from './Antoc-Attack';
+import { Eve } from './Eve';
+import { JessicaAttack } from './Jessica-Attack';
+import { Kat } from './Kat';
+import { SimpleJoe } from './SimpleJoe';
+import { opponent0Antoc, opponent0Jessica } from './opponent-0';
 
-export const JessicaOpponents = [opponent0, opponent1, opponent2, opponent3];
-export const AntocOpponents = [opponent0, opponent1, opponent2, opponent3];
+export const JessicaOpponents = [
+    opponent0Antoc,
+    AntocAttack,
+    JessicaAttack,
+    SimpleJoe,
+    Kat,
+    Adam,
+    Eve,
+];
+export const AntocOpponents = [
+    opponent0Jessica,
+    JessicaAttack,
+    AntocAttack,
+    Kat,
+    SimpleJoe,
+    Eve,
+    Adam,
+];

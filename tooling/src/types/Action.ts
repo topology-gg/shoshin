@@ -386,7 +386,8 @@ const StepForward: Action = {
         interrupts: [
             {
                 right: [Vert.id],
-                duration: 2,
+                duration: 1,
+                intents: [AntocStepForwardId],
             },
         ],
     },
@@ -416,10 +417,20 @@ const AntocJump: Action = {
     key: 'W',
 };
 
+const AntocLowKickId = 11;
 const AntocLowKick: Action = {
-    id: 11,
+    id: AntocLowKickId,
     display: { name: 'LowKick', unicode: '\u{1F9B6}' },
-    frames: { duration: 6 },
+    frames: {
+        duration: 6,
+        interrupts: [
+            {
+                left: [AntocStepForwardId],
+                duration: 3,
+                intents: [AntocLowKickId, RestId, RestId, RestId],
+            },
+        ],
+    },
     key: 'U',
 };
 
