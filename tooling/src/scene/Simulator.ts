@@ -122,6 +122,8 @@ export default class Simulator extends Phaser.Scene {
     lowKickHitSounds: Phaser.Sound.BaseSound[];
     landingSounds: Phaser.Sound.BaseSound[];
     landingFromKnockedSounds: Phaser.Sound.BaseSound[];
+    katanaHitSounds: Phaser.Sound.BaseSound[];
+    greatSwordHitSounds: Phaser.Sound.BaseSound[];
 
     player_one_action_confirm = false;
     player_two_action_confirm = false;
@@ -400,6 +402,7 @@ export default class Simulator extends Phaser.Scene {
             'landing-from-knocked-sound',
             'sounds/hurt/landing-from-knocked.m4a'
         );
+        this.load.audio('katana-cut-sound', 'sounds/weapon/katana-cut.wav');
     }
 
     scaledZoom: number = DEFAULT_ZOOM;
@@ -577,6 +580,8 @@ export default class Simulator extends Phaser.Scene {
         this.lowKickHitSounds = [];
         this.landingSounds = [];
         this.landingFromKnockedSounds = [];
+        this.katanaHitSounds = [];
+        this.greatSwordHitSounds = [];
         [0, 1].forEach((_) => {
             this.dashForwardSounds.push(this.sound.add('dash-forward-sound'));
             this.dashBackwardSounds.push(this.sound.add('dash-backward-sound'));
@@ -610,6 +615,8 @@ export default class Simulator extends Phaser.Scene {
             this.landingFromKnockedSounds.push(
                 this.sound.add('landing-from-knocked-sound')
             );
+            this.katanaHitSounds.push(this.sound.add('katana-cut-sound'));
+            this.greatSwordHitSounds.push(this.sound.add('katana-cut-sound'));
         });
     }
 
@@ -1080,18 +1087,23 @@ export default class Simulator extends Phaser.Scene {
         //
         // spark & clash
         //
-        const clashBodyStates = [
+        const clashBodyStates: number[] = [
             BodystatesAntoc.Clash,
             BodystatesJessica.Clash,
         ];
-        const sparkBodyStates = [
-            BodystatesAntoc.Hurt,
+        const jessicaHitBodyStates: number[] = [
             BodystatesJessica.Hurt,
-            BodystatesAntoc.Knocked,
             BodystatesJessica.Knocked,
-            BodystatesAntoc.Launched,
             BodystatesJessica.Launched,
-        ].concat(clashBodyStates);
+        ];
+        const antocHitBodyStates: number[] = [
+            BodystatesAntoc.Hurt,
+            BodystatesAntoc.Knocked,
+            BodystatesAntoc.Launched,
+        ];
+        const hitBodyStates = jessicaHitBodyStates.concat(antocHitBodyStates);
+        const sparkBodyStates = hitBodyStates.concat(clashBodyStates);
+
         [
             [0, 1],
             [1, 0],
@@ -1158,13 +1170,23 @@ export default class Simulator extends Phaser.Scene {
                 )
                     this.jessicaLaunchedSounds[subjectIndex].play();
 
-                if (
-                    [
-                        BodystatesAntoc.LowKick,
-                        BodystatesJessica.LowKick,
-                    ].includes(objectPrevFrame.body_state.state)
-                ) {
-                    this.lowKickHitSounds[subjectIndex].play();
+                if (hitBodyStates.includes(subjectFrame.body_state.state)) {
+                    if (
+                        [
+                            BodystatesAntoc.LowKick,
+                            BodystatesJessica.LowKick,
+                        ].includes(objectPrevFrame.body_state.state)
+                    ) {
+                        this.lowKickHitSounds[subjectIndex].play();
+                    } else if (
+                        antocHitBodyStates.includes(
+                            objectPrevFrame.body_state.state
+                        )
+                    ) {
+                        this.greatSwordHitSounds[objectIndex].play();
+                    } else {
+                        this.katanaHitSounds[objectIndex].play();
+                    }
                 }
             }
         });
