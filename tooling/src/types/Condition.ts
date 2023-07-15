@@ -16,7 +16,7 @@ export const conditionTypeToEmojiFile = (conditionType: string) => {
         return '/images/emojis/woman_lotus.png';
     else if (conditionType.includes('health'))
         return '/images/emojis/red_heart.png';
-    else if (conditionType.includes('stamina'))
+    else if (conditionType.includes('rage'))
         return '/images/emojis/battery.png';
     else return '/images/emojis/light_bulb.png';
 };
