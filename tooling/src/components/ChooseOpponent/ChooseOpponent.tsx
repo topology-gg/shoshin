@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Button, Chip, Grid } from '@mui/material';
+import { Typography, Box, Grid } from '@mui/material';
 import styles from './ChooseOpponent.module.css';
-import Agent from '../../types/Agent';
 import { Medal, Opponent } from '../layout/SceneSelector';
 import { Character } from '../../constants/constants';
-import OpponentCarousel from './OpponentCarousel';
-import Tile, { TileContent } from '../ui/Tile';
 import CardCarousel3D from '../CardCarousel/CardCarousel3D';
 import FullArtBackground from '../layout/FullArtBackground';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
@@ -54,10 +51,14 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                         backgroundImage: `url(${cardUrl})`,
                         backgroundSize: 'cover',
                         //DO OTHER CSS IN CSS MODULE
-                        filter: true ? 'brightness(100%)' : 'brightness(50%)',
+                        //filter: true ? 'brightness(100%)' : 'brightness(50%)',
                     }}
                 >
-                    <img src={imageUrl} alt="Image 1" height="200px" />
+                    <img
+                        src={imageUrl}
+                        alt="Image 1"
+                        className={styles.characterModel}
+                    />
                 </Box>
             );
         });
@@ -128,7 +129,7 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                             >
                                 <CardCarousel3D
                                     offset={2}
-                                    showArrows={false}
+                                    showArrows={true}
                                     cards={characterBoxes}
                                     currentIndex={selectedOpponent}
                                     selectIndex={selectOpponent}
