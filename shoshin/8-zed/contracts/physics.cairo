@@ -506,6 +506,9 @@ func produce_stimulus_given_conditions {range_check_ptr} (
             if (self_body_state == ns_jessica_body_state.GATOTSU) {
                 return (ns_stimulus.NULL, 0);
             }
+            if (self_body_state == ns_jessica_body_state.LOW_KICK) {
+                return (ns_stimulus.NULL, 0);
+            }
             return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
         }
 
@@ -513,6 +516,9 @@ func produce_stimulus_given_conditions {range_check_ptr} (
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             // character special is unblockable
             if (self_body_state == ns_jessica_body_state.GATOTSU) {
+                return (ns_stimulus.NULL, 0);
+            }
+            if (self_body_state == ns_jessica_body_state.LOW_KICK) {
                 return (ns_stimulus.NULL, 0);
             }
             return (ns_stimulus.KNOCKED, ns_antoc_stimulus.BLOCK_KNOCK_DAMAGE);
@@ -524,6 +530,9 @@ func produce_stimulus_given_conditions {range_check_ptr} (
             if (self_body_state == ns_antoc_body_state.CYCLONE) {
                 return (ns_stimulus.NULL, 0);
             }
+            if (self_body_state == ns_antoc_body_state.LOW_KICK) {
+                return (ns_stimulus.NULL, 0);
+            }
             return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
         }
 
@@ -531,6 +540,9 @@ func produce_stimulus_given_conditions {range_check_ptr} (
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.ANTOC) {
             // character special is unblockable
             if (self_body_state == ns_antoc_body_state.CYCLONE) {
+                return (ns_stimulus.NULL, 0);
+            }
+            if (self_body_state == ns_antoc_body_state.LOW_KICK) {
                 return (ns_stimulus.NULL, 0);
             }
             return (ns_stimulus.KNOCKED, ns_antoc_stimulus.BLOCK_KNOCK_DAMAGE);
@@ -581,6 +593,12 @@ func produce_stimulus_given_conditions {range_check_ptr} (
         if (self_character_type == opp_character_type) {
             // special clashes with special, otherwise special user receives NULL
             // if no special on either side, clash
+
+            if ( (self_body_state - ns_jessica_body_state.LOW_KICK) * (self_body_state - ns_antoc_body_state.LOW_KICK) == 0 ) {
+                if ( (opp_body_state - ns_jessica_body_state.LOW_KICK) * (opp_body_state - ns_antoc_body_state.LOW_KICK) == 0 ) {
+                    return (ns_stimulus.GOOD_BLOCK, 0);
+                }
+            }
 
             if ( (self_body_state - ns_jessica_body_state.GATOTSU) * (self_body_state - ns_antoc_body_state.CYCLONE) == 0 ) {
                 if ( (opp_body_state - ns_jessica_body_state.GATOTSU) * (opp_body_state - ns_antoc_body_state.CYCLONE) == 0 ) {

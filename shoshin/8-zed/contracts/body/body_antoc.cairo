@@ -727,9 +727,13 @@ func _body_antoc {range_check_ptr}(
 
     //
     // CYCLONE
-    // note: uninterruptible
+    // note: interruptible by clash
     //
     if (state == ns_antoc_body_state.CYCLONE) {
+
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
+        }
 
         // if counter is full => return to IDLE
         if (counter == ns_antoc_body_state_duration.CYCLONE - 1) {
