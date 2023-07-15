@@ -73,9 +73,9 @@ namespace ns_antoc_character_dimension {
     const DROP_SLASH_HITBOX_H = BODY_HITBOX_H;
     const DROP_SLASH_HITBOX_Y = 40;
 
-    const CYCLONE_HITBOX_W = 45;
-    const CYCLONE_HITBOX_H = 60;
-    const CYCLONE_HITBOX_Y = BODY_HITBOX_H / 2;
+    const CYCLONE_HITBOX_W = 95;
+    const CYCLONE_HITBOX_H = 30;
+    const CYCLONE_HITBOX_Y = 23;
 
     const BLOCK_HITBOX_W = 30;
     const BLOCK_HITBOX_H = 85;
@@ -117,15 +117,18 @@ namespace ns_antoc_stamina_effect {
 }
 
 namespace ns_antoc_stimulus {
+    // note: 1/2 of damage inflicted becomes rage gain;
+    // damage value needs to be even number for modulo division to work
+
     const BLOCK_KNOCK_DAMAGE = 50;
-    const CLASH_KNOCK_DAMAGE = 75;
+    const CLASH_KNOCK_DAMAGE = 80;
     const HORI_DAMAGE = 100;
     const VERT_DAMAGE = 150;
     const LOW_KICK_DAMAGE = 50;
     const DROP_SLASH_DAMAGE = 100;
 
     // character special
-    const CYCLONE_DAMAGE = 200;
+    const CYCLONE_DAMAGE = 170;
 }
 
 namespace ns_antoc_body_state_duration {
@@ -145,7 +148,7 @@ namespace ns_antoc_body_state_duration {
     const LOW_KICK = 6;
     const LAUNCHED = 11;
     const DROP_SLASH = 6;
-    const CYCLONE = 14; // active for counter == 5,8
+    const CYCLONE = 18; // active for counter == 5,10
 }
 
 namespace ns_antoc_body_state {
@@ -167,7 +170,7 @@ namespace ns_antoc_body_state {
     const DROP_SLASH = 1190; // 6 frames
     const JUMP_MOVE_FORWARD = 1200;
     const JUMP_MOVE_BACKWARD = 1210;
-    const CYCLONE = 1220; // 14 frames
+    const CYCLONE = 1220; // 18 frames
 }
 
 namespace ns_antoc_body_state_qualifiers {
@@ -201,7 +204,7 @@ namespace ns_antoc_body_state_qualifiers {
     }
 
     func is_in_cyclone_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state == ns_antoc_body_state.CYCLONE and (counter-5) * (counter-8) == 0) {
+        if (state == ns_antoc_body_state.CYCLONE and (counter-5) * (counter-10) == 0) {
             return 1;
         }
         return 0;
