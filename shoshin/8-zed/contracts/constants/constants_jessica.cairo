@@ -118,7 +118,7 @@ namespace ns_jessica_stimulus {
     const BIRDSWING_DAMAGE = 75;
 
     // character special
-    const GATOTSU_DAMAGE = 250;
+    const GATOTSU_DAMAGE = 300;
 }
 
 namespace ns_jessica_body_state_duration {
