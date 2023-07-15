@@ -37,14 +37,14 @@ const PLAYER_POINTER_DIM = 20;
 
 // Effects
 const SPARK_SCALE = 0.3;
-const DASH_SMOKE_SCALE = 0.1;
-const STEP_FORWARD_SMOKE_SCALE = 0.07;
-const JUMP_TAKEOFF_SMOKE_SCALE_X = 0.7;
-const JUMP_TAKEOFF_SMOKE_SCALE_Y = 0.7;
-const JUMP_SMOKE_SCALE_X = 0.1;
-const JUMP_SMOKE_SCALE_Y = 0.09;
-const AIR_DASH_SCALE_X = 0.05;
-const AIR_DASH_SCALE_Y = 0.05;
+const DASH_SMOKE_SCALE = 0.18;
+const STEP_FORWARD_SMOKE_SCALE = 0.2;
+const JUMP_TAKEOFF_SMOKE_SCALE_X = 0.15;
+const JUMP_TAKEOFF_SMOKE_SCALE_Y = 0.15;
+const JUMP_SMOKE_SCALE_X = 0.15;
+const JUMP_SMOKE_SCALE_Y = 0.15;
+const AIR_DASH_SCALE_X = 0.04;
+const AIR_DASH_SCALE_Y = 0.04;
 const GOOD_BLOCK_SCALE_X = 0.05;
 const GOOD_BLOCK_SCALE_Y = 0.05;
 const YELLOW_SPARK_SCALE = 0.1;
@@ -350,8 +350,16 @@ export default class Simulator extends Phaser.Scene {
             'dash-smoke',
             'images/effects/dash-smoke/spritesheet.png',
             {
-                frameWidth: 1251,
-                frameHeight: 1251,
+                frameWidth: 810,
+                frameHeight: 552,
+            }
+        );
+        this.load.spritesheet(
+            'step-forward-smoke',
+            'images/effects/step-forward-smoke/spritesheet.png',
+            {
+                frameWidth: 764,
+                frameHeight: 259,
             }
         );
         this.load.spritesheet('smoke', 'images/effects/smoke/spritesheet.png', {
@@ -362,8 +370,16 @@ export default class Simulator extends Phaser.Scene {
             'jump-takeoff-smoke',
             'images/effects/jump-takeoff-smoke/spritesheet.png',
             {
-                frameWidth: 201,
-                frameHeight: 201,
+                frameWidth: 596,
+                frameHeight: 868,
+            }
+        );
+        this.load.spritesheet(
+            'jump-landing-smoke',
+            'images/effects/jump-landing-smoke/spritesheet.png',
+            {
+                frameWidth: 807,
+                frameHeight: 404,
             }
         );
         this.load.spritesheet(
@@ -531,11 +547,22 @@ export default class Simulator extends Phaser.Scene {
         });
 
         this.anims.create({
-            key: 'smokeAnim',
+            key: 'stepForwardSmokeAnim',
             frameRate: 20,
-            frames: this.anims.generateFrameNumbers('smoke', {
+            frames: this.anims.generateFrameNumbers('step-forward-smoke', {
                 start: 0,
-                end: 8,
+                end: 5,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
+        this.anims.create({
+            key: 'landingSmokeAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('jump-landing-smoke', {
+                start: 0,
+                end: 5,
             }),
             repeat: 0,
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
@@ -546,7 +573,7 @@ export default class Simulator extends Phaser.Scene {
             frameRate: 20,
             frames: this.anims.generateFrameNumbers('jump-takeoff-smoke', {
                 start: 0,
-                end: 7,
+                end: 5,
             }),
             repeat: 0,
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
@@ -610,13 +637,13 @@ export default class Simulator extends Phaser.Scene {
                     .setScale(DASH_SMOKE_SCALE)
                     .setVisible(false)
                     .setAlpha(1.0)
-                    .setDepth(100)
                     .setFlipX(true)
+                    .setDepth(100)
             );
 
             this.stepForwardSmokeSprites.push(
                 this.add
-                    .sprite(0, 0, 'dash-smoke')
+                    .sprite(0, 0, 'step-forward-smoke')
                     .setScale(STEP_FORWARD_SMOKE_SCALE)
                     .setVisible(false)
                     .setTint(0xff0000)
@@ -1389,7 +1416,7 @@ export default class Simulator extends Phaser.Scene {
                           frame.body_state.state == BodystatesAntoc.DashForward
                               ? -25
                               : -35);
-                const y = -1 * frame.physics_state.pos.y - 25;
+                const y = -1 * frame.physics_state.pos.y - 40;
 
                 // play animation
                 this.dashSmokeSprites[playerIndex]
@@ -1397,7 +1424,7 @@ export default class Simulator extends Phaser.Scene {
                     .setVisible(true)
                     .play('dashSmokeAnim')
                     .setFlipX(
-                        frame.body_state.dir ==
+                        frame.body_state.dir !=
                             (frame.body_state.state ==
                                 BodystatesJessica.DashForward ||
                             frame.body_state.state ==
@@ -1438,9 +1465,9 @@ export default class Simulator extends Phaser.Scene {
             this.stepForwardSmokeSprites[playerIndex]
                 .setPosition(x, y)
                 .setVisible(true)
-                .play('dashSmokeAnim')
+                .play('stepForwardSmokeAnim')
                 .setFlipX(
-                    frame.body_state.dir ==
+                    frame.body_state.dir !=
                         (frame.body_state.state ==
                             BodystatesJessica.DashForward ||
                         frame.body_state.state == BodystatesAntoc.DashForward
@@ -1482,7 +1509,7 @@ export default class Simulator extends Phaser.Scene {
                 const x =
                     frame.physics_state.pos.x +
                     frame.hitboxes.body.dimension.x / 2;
-                const y = -1 * frame.physics_state.pos.y - 40;
+                const y = -1 * frame.physics_state.pos.y - 60;
 
                 this.jumpTakeoffSmokeSprites[playerIndex]
                     .setPosition(x, y)
@@ -1506,12 +1533,16 @@ export default class Simulator extends Phaser.Scene {
                 this.jumpLandingSmokeSprites[playerIndex]
                     .setPosition(x, y)
                     .setVisible(true)
-                    .play('smokeAnim');
+                    .play('landingSmokeAnim');
 
                 if (
                     [
                         BodystatesAntoc.Jump,
+                        BodystatesAntoc.JumpMoveForward,
+                        BodystatesAntoc.JumpMoveBackward,
                         BodystatesJessica.Jump,
+                        BodystatesJessica.JumpMoveForward,
+                        BodystatesJessica.JumpMoveBackward,
                         BodystatesAntoc.DropSlash,
                         BodystatesJessica.BirdSwing,
                     ].includes(frame.body_state.state)

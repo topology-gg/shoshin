@@ -121,6 +121,8 @@ export enum BodystatesAntoc {
     LowKick = 1160,
     Launched = 1170,
     DropSlash = 1190,
+    JumpMoveForward = 1200,
+    JumpMoveBackward = 1210,
 }
 
 export enum Perceptible {
