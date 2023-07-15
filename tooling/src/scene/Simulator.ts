@@ -44,6 +44,8 @@ const JUMP_SMOKE_SCALE_X = 0.1;
 const JUMP_SMOKE_SCALE_Y = 0.09;
 const AIR_DASH_SCALE_X = 0.05;
 const AIR_DASH_SCALE_Y = 0.05;
+const GOOD_BLOCK_SCALE_X = 0.05;
+const GOOD_BLOCK_SCALE_Y = 0.05;
 
 enum CombatEvent {
     Block = 'Block',
@@ -559,6 +561,17 @@ export default class Simulator extends Phaser.Scene {
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
         });
 
+        this.anims.create({
+            key: 'goodBlockAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('good-block', {
+                start: 0,
+                end: 7,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
         this.sparkSprites = [];
         this.dashSmokeSprites = [];
         this.stepForwardSmokeSprites = [];
@@ -626,6 +639,15 @@ export default class Simulator extends Phaser.Scene {
                     .setScale(AIR_DASH_SCALE_X, AIR_DASH_SCALE_Y)
                     .setVisible(false)
                     .setAlpha(0.9)
+                    .setDepth(100)
+            );
+
+            this.goodBlockSprites.push(
+                this.add
+                    .sprite(0, 0, 'good-block')
+                    .setScale(GOOD_BLOCK_SCALE_X, GOOD_BLOCK_SCALE_Y)
+                    .setVisible(false)
+                    .setAlpha(0.8)
                     .setDepth(100)
             );
         });
@@ -1475,6 +1497,37 @@ export default class Simulator extends Phaser.Scene {
                     this.landingFromKnockedSounds[playerIndex].play();
                 }
             }
+        });
+
+        // good block
+        [
+            [0, 1],
+            [1, 0],
+        ].forEach((pair) => {
+            const subjectIndex = pair[0];
+            const objectIndex = pair[1];
+            const subjectFrame = frames[subjectIndex];
+            const objectFrame: FrameLike = frames[objectIndex];
+            const subjectStimulusType = Math.floor(
+                subjectFrame.stimulus / STIMULUS_ENCODING
+            );
+
+            if (subjectStimulusType != StimulusType.GOOD_BLOCK) return;
+
+            const x =
+                subjectFrame.body_state.dir == RIGHT
+                    ? subjectFrame.physics_state.pos.x +
+                      0.8 * subjectFrame.hitboxes.body.dimension.x
+                    : subjectFrame.physics_state.pos.x +
+                      0.2 * subjectFrame.hitboxes.body.dimension.x;
+
+            const y = -1 * objectFrame.hitboxes.action.origin.y;
+
+            // console.log('>>> Good block animation at', x, y)
+            this.goodBlockSprites[subjectIndex]
+                .setPosition(x, y)
+                .setVisible(true)
+                .play('goodBlockAnim');
         });
     }
 
