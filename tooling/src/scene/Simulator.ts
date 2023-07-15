@@ -36,6 +36,7 @@ const HITBOX_STROKE_WIDTH = 1.5;
 const PLAYER_POINTER_DIM = 20;
 
 // Effects
+const SPARK_SCALE = 0.3;
 const DASH_SMOKE_SCALE = 0.1;
 const STEP_FORWARD_SMOKE_SCALE = 0.07;
 const JUMP_TAKEOFF_SMOKE_SCALE_X = 0.7;
@@ -46,6 +47,7 @@ const AIR_DASH_SCALE_X = 0.05;
 const AIR_DASH_SCALE_Y = 0.05;
 const GOOD_BLOCK_SCALE_X = 0.05;
 const GOOD_BLOCK_SCALE_Y = 0.05;
+const YELLOW_SPARK_SCALE = 0.1;
 
 enum CombatEvent {
     Block = 'Block',
@@ -572,6 +574,17 @@ export default class Simulator extends Phaser.Scene {
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
         });
 
+        this.anims.create({
+            key: 'yellowSparkAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('yellow-spark', {
+                start: 0,
+                end: 4,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
         this.sparkSprites = [];
         this.dashSmokeSprites = [];
         this.stepForwardSmokeSprites = [];
@@ -586,7 +599,7 @@ export default class Simulator extends Phaser.Scene {
             this.sparkSprites.push(
                 this.add
                     .sprite(0, 0, 'spark')
-                    .setScale(0.2)
+                    .setScale(SPARK_SCALE)
                     .setVisible(false)
                     .setAlpha(0.9)
                     .setDepth(100)
@@ -648,6 +661,14 @@ export default class Simulator extends Phaser.Scene {
                     .setScale(GOOD_BLOCK_SCALE_X, GOOD_BLOCK_SCALE_Y)
                     .setVisible(false)
                     .setAlpha(0.8)
+                    .setDepth(100)
+            );
+            this.yellowSparkSprites.push(
+                this.add
+                    .sprite(0, 0, 'yellow-spark')
+                    .setScale(YELLOW_SPARK_SCALE)
+                    .setVisible(false)
+                    .setAlpha(0.9)
                     .setDepth(100)
             );
         });
@@ -1231,14 +1252,19 @@ export default class Simulator extends Phaser.Scene {
                     subjectFrame.hitboxes.body.dimension.y;
                 const y = -1 * Math.min(yAttackAction, yAttackedHead);
 
-                // console.log('Play spark at', x, y);
-                this.sparkSprites[subjectIndex]
-                    .setPosition(x, y)
-                    .setVisible(true)
-                    .play('sparkAnim');
-
                 if (clashBodyStates.includes(subjectFrame.body_state.state)) {
+                    this.yellowSparkSprites[subjectIndex]
+                        .setPosition(x, y)
+                        .setVisible(true)
+                        .setFlipX(subjectFrame.body_state.dir == RIGHT)
+                        .play('yellowSparkAnim');
+
                     this.clashSounds[subjectIndex].play();
+                } else {
+                    this.sparkSprites[subjectIndex]
+                        .setPosition(x, y)
+                        .setVisible(true)
+                        .play('sparkAnim');
                 }
 
                 if (subjectFrame.body_state.state == BodystatesAntoc.Hurt)
