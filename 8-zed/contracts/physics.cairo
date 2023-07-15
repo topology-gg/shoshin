@@ -404,9 +404,9 @@ func _physicality{range_check_ptr}(
     let curr_stimulus_0 = curr_stimulus_type_0 * ns_stimulus.ENCODING + damage_received_0;
     let curr_stimulus_1 = curr_stimulus_type_1 * ns_stimulus.ENCODING + damage_received_1;
 
-    // damage inflicted on the opponent becomes rage gain to the attacker, with 1:1 ratio
-    let (new_rage_0, _) = _settle_stamina_change(curr_body_state_0.stamina, damage_received_1, ns_stamina.MAX_STAMINA);
-    let (new_rage_1, _) = _settle_stamina_change(curr_body_state_1.stamina, damage_received_0, ns_stamina.MAX_STAMINA);
+    // 1/2 of the damage inflicted on the opponent becomes rage gain to the attacker
+    let (new_rage_0, _) = _settle_stamina_change(curr_body_state_0.stamina, damage_received_1 / 2, ns_stamina.MAX_STAMINA);
+    let (new_rage_1, _) = _settle_stamina_change(curr_body_state_1.stamina, damage_received_0 / 2, ns_stamina.MAX_STAMINA);
 
     return (
         curr_physics_state_0,
@@ -579,13 +579,27 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     // self attacks into opp's attack
     if (bool_self_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == opp_character_type) {
-            if (self_body_state == ns_jessica_body_state.GATOTSU) {
-                return (ns_stimulus.NULL, 0);
+            // special clashes with special, otherwise special user receives NULL
+            // if no special on either side, clash
+
+            if ( (self_body_state - ns_jessica_body_state.GATOTSU) * (self_body_state - ns_antoc_body_state.CYCLONE) == 0 ) {
+                if ( (opp_body_state - ns_jessica_body_state.GATOTSU) * (opp_body_state - ns_antoc_body_state.CYCLONE) == 0 ) {
+                    return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
+                } else {
+                    return (ns_stimulus.NULL, 0);
+                }
+            } else {
+                if (opp_body_state == ns_jessica_body_state.GATOTSU) {
+                    return (ns_stimulus.KNOCKED, ns_jessica_stimulus.GATOTSU_DAMAGE);
+                } else {
+                    if (opp_body_state == ns_antoc_body_state.CYCLONE) {
+                        return (ns_stimulus.KNOCKED, ns_antoc_stimulus.CYCLONE_DAMAGE);
+                    } else {
+                        return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
+                    }
+                }
             }
-            if (self_body_state == ns_antoc_body_state.CYCLONE) {
-                return (ns_stimulus.NULL, 0);
-            }
-            return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
+
         }
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             if (self_body_state == ns_jessica_body_state.GATOTSU) {
