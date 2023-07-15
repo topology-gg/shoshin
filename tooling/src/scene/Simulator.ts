@@ -241,6 +241,11 @@ export default class Simulator extends Phaser.Scene {
             'images/antoc/drop_slash/spritesheet.png',
             'images/antoc/drop_slash/spritesheet.json'
         );
+        this.load.atlas(
+            `antoc-cyclone`,
+            'images/antoc/cyclone/spritesheet.png',
+            'images/antoc/cyclone/spritesheet.json'
+        );
 
         //
         // Jessica

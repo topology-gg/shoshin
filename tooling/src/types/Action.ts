@@ -434,6 +434,17 @@ const AntocLowKick: Action = {
     key: 'U',
 };
 
+const AntocCycloneId = 12;
+const AntocCyclone: Action = {
+    id: AntocCycloneId,
+    display: { name: 'Cyclone', unicode: '\u{1F32A}' },
+    frames: {
+        duration: 14,
+        interrupts: [],
+    },
+    key: 'N',
+};
+
 const AntocActions = [
     AntocRest,
     Hori,
@@ -446,6 +457,7 @@ const AntocActions = [
     StepForward,
     AntocJump,
     AntocLowKick,
+    AntocCyclone,
 ];
 
 export const CHARACTERS_ACTIONS = [JessicaActions, AntocActions];
