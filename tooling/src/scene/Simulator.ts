@@ -42,6 +42,8 @@ const JUMP_TAKEOFF_SMOKE_SCALE_X = 0.7;
 const JUMP_TAKEOFF_SMOKE_SCALE_Y = 0.7;
 const JUMP_SMOKE_SCALE_X = 0.1;
 const JUMP_SMOKE_SCALE_Y = 0.09;
+const AIR_DASH_SCALE_X = 0.05;
+const AIR_DASH_SCALE_Y = 0.05;
 
 enum CombatEvent {
     Block = 'Block',
@@ -100,6 +102,11 @@ export default class Simulator extends Phaser.Scene {
     stepForwardSmokeSprites: Phaser.GameObjects.Sprite[];
     jumpTakeoffSmokeSprites: Phaser.GameObjects.Sprite[];
     jumpLandingSmokeSprites: Phaser.GameObjects.Sprite[];
+    airDashSmokeSprites: Phaser.GameObjects.Sprite[];
+    goodBlockSprites: Phaser.GameObjects.Sprite[];
+    yellowSparkSprites: Phaser.GameObjects.Sprite[];
+    rippleSprites: Phaser.GameObjects.Sprite[];
+    bluePuffSprites: Phaser.GameObjects.Sprite[];
 
     // SFX
     dashForwardSounds: Phaser.Sound.BaseSound[];
@@ -355,6 +362,46 @@ export default class Simulator extends Phaser.Scene {
                 frameHeight: 201,
             }
         );
+        this.load.spritesheet(
+            'air-dash',
+            'images/effects/air-dash/spritesheet.png',
+            {
+                frameWidth: 3869,
+                frameHeight: 3502,
+            }
+        );
+        this.load.spritesheet(
+            'good-block',
+            'images/effects/good-block/spritesheet.png',
+            {
+                frameWidth: 2996,
+                frameHeight: 2997,
+            }
+        );
+        this.load.spritesheet(
+            'yellow-spark',
+            'images/effects/yellow-spark/spritesheet.png',
+            {
+                frameWidth: 2251,
+                frameHeight: 2251,
+            }
+        );
+        this.load.spritesheet(
+            'ripple',
+            'images/effects/ripple/spritesheet.png',
+            {
+                frameWidth: 1963,
+                frameHeight: 1949,
+            }
+        );
+        this.load.spritesheet(
+            'blue-puff',
+            'images/effects/blue-puff/spritesheet.png',
+            {
+                frameWidth: 3355,
+                frameHeight: 3355,
+            }
+        );
 
         // SFX
         this.load.audio('dash-forward-sound', 'sounds/dash/forward.mp3');
@@ -501,11 +548,27 @@ export default class Simulator extends Phaser.Scene {
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
         });
 
+        this.anims.create({
+            key: 'airDashSmokeAnim',
+            frameRate: 15,
+            frames: this.anims.generateFrameNumbers('air-dash', {
+                start: 0,
+                end: 4,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
         this.sparkSprites = [];
         this.dashSmokeSprites = [];
         this.stepForwardSmokeSprites = [];
         this.jumpTakeoffSmokeSprites = [];
         this.jumpLandingSmokeSprites = [];
+        this.airDashSmokeSprites = [];
+        this.goodBlockSprites = [];
+        this.yellowSparkSprites = [];
+        this.rippleSprites = [];
+        this.bluePuffSprites = [];
         [0, 1].forEach((_) => {
             this.sparkSprites.push(
                 this.add
@@ -552,6 +615,15 @@ export default class Simulator extends Phaser.Scene {
                 this.add
                     .sprite(0, 0, 'smoke')
                     .setScale(JUMP_SMOKE_SCALE_X, JUMP_SMOKE_SCALE_Y)
+                    .setVisible(false)
+                    .setAlpha(0.9)
+                    .setDepth(100)
+            );
+
+            this.airDashSmokeSprites.push(
+                this.add
+                    .sprite(0, 0, 'air-dash')
+                    .setScale(AIR_DASH_SCALE_X, AIR_DASH_SCALE_Y)
                     .setVisible(false)
                     .setAlpha(0.9)
                     .setDepth(100)
@@ -1211,37 +1283,81 @@ export default class Simulator extends Phaser.Scene {
             if (frame.body_state.counter != 0) return;
             if (!dashBodyStates.includes(frame.body_state.state)) return;
 
-            // configure sprite
-            const x =
-                frame.body_state.dir == RIGHT
-                    ? frame.physics_state.pos.x +
-                      (frame.body_state.state ==
-                          BodystatesJessica.DashForward ||
-                      frame.body_state.state == BodystatesAntoc.DashForward
-                          ? 25
-                          : 35)
-                    : frame.physics_state.pos.x +
-                      frame.hitboxes.body.dimension.x +
-                      (frame.body_state.state ==
-                          BodystatesJessica.DashForward ||
-                      frame.body_state.state == BodystatesAntoc.DashForward
-                          ? -25
-                          : -35);
-            const y = -1 * frame.physics_state.pos.y - 25;
+            if (frame.physics_state.pos.y != 0) {
+                //
+                // air dash
+                //
 
-            // play animation
-            this.dashSmokeSprites[playerIndex]
-                .setPosition(x, y)
-                .setVisible(true)
-                .play('dashSmokeAnim')
-                .setFlipX(
-                    frame.body_state.dir ==
-                        (frame.body_state.state ==
-                            BodystatesJessica.DashForward ||
-                        frame.body_state.state == BodystatesAntoc.DashForward
-                            ? RIGHT
-                            : LEFT)
-                );
+                // configure sprite
+                const x =
+                    frame.body_state.dir == RIGHT
+                        ? frame.physics_state.pos.x +
+                          (frame.body_state.state ==
+                              BodystatesJessica.DashForward ||
+                          frame.body_state.state == BodystatesAntoc.DashForward
+                              ? -20
+                              : 60)
+                        : frame.physics_state.pos.x +
+                          frame.hitboxes.body.dimension.x +
+                          (frame.body_state.state ==
+                              BodystatesJessica.DashForward ||
+                          frame.body_state.state == BodystatesAntoc.DashForward
+                              ? 20
+                              : -60);
+                const y = -1 * frame.physics_state.pos.y - 25;
+
+                // play animation
+                this.airDashSmokeSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('airDashSmokeAnim')
+                    .setFlipX(
+                        frame.body_state.dir ==
+                            (frame.body_state.state ==
+                                BodystatesJessica.DashForward ||
+                            frame.body_state.state ==
+                                BodystatesAntoc.DashForward
+                                ? RIGHT
+                                : LEFT)
+                    );
+            } else {
+                //
+                // grounded dash
+                //
+
+                // configure sprite
+                const x =
+                    frame.body_state.dir == RIGHT
+                        ? frame.physics_state.pos.x +
+                          (frame.body_state.state ==
+                              BodystatesJessica.DashForward ||
+                          frame.body_state.state == BodystatesAntoc.DashForward
+                              ? 25
+                              : 35)
+                        : frame.physics_state.pos.x +
+                          frame.hitboxes.body.dimension.x +
+                          (frame.body_state.state ==
+                              BodystatesJessica.DashForward ||
+                          frame.body_state.state == BodystatesAntoc.DashForward
+                              ? -25
+                              : -35);
+                const y = -1 * frame.physics_state.pos.y - 25;
+
+                // play animation
+                this.dashSmokeSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('dashSmokeAnim')
+                    .setFlipX(
+                        frame.body_state.dir ==
+                            (frame.body_state.state ==
+                                BodystatesJessica.DashForward ||
+                            frame.body_state.state ==
+                                BodystatesAntoc.DashForward
+                                ? RIGHT
+                                : LEFT)
+                    );
+            }
 
             // sfx
             if (dashForwardBodyStates.includes(frame.body_state.state)) {
