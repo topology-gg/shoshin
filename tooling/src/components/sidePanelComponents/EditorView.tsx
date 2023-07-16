@@ -82,6 +82,7 @@ interface EditorViewProps {
     selectedCombo: number;
     handleChangeSelectedCombo: (comboIndex: number) => void;
     setCombos: (combos: Action[][]) => void;
+    activeMs: number;
 }
 
 const EditorView = ({
@@ -132,6 +133,7 @@ const EditorView = ({
     selectedCombo,
     handleChangeSelectedCombo,
     setCombos,
+    activeMs,
 }: EditorViewProps) => {
     const isReadOnly = editorMode == EditorMode.ReadOnly;
     const [openContractInformation, setOpenContractInformation] =
@@ -161,6 +163,7 @@ const EditorView = ({
                         conditions={conditions}
                         combos={combos}
                         setCombos={setCombos}
+                        activeMs={activeMs}
                     />
                 );
             }

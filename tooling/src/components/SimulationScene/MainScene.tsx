@@ -295,6 +295,11 @@ const SimulationScene = React.forwardRef(
 
         const p1Name = player.character;
         const p2Name = numberToCharacter(opponent.agent.character);
+
+        const activeMs =
+            N_FRAMES > 0
+                ? testJson.agent_0.frames[animationFrame].mental_state
+                : 0;
         return (
             <div id={'mother'} className={styles.container} ref={ref}>
                 {' '}
@@ -469,6 +474,7 @@ const SimulationScene = React.forwardRef(
                                     conditions={conditions}
                                     combos={combos}
                                     setCombos={setCombos}
+                                    activeMs={activeMs}
                                 />
                             </Box>
                         </Grid>
