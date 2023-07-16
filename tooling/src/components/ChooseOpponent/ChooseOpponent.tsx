@@ -48,7 +48,7 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                     key={index}
                     className={styles.characterBox}
                     sx={{
-                        backgroundImage: `url(${cardUrl})`,
+                        backgroundImage: `linear-gradient(to bottom, rgba(30, 75, 115, 0) 30%, rgba(255, 255, 255, 1)), url(${cardUrl})`,
                         backgroundSize: 'cover',
                         //DO OTHER CSS IN CSS MODULE
                         //filter: true ? 'brightness(100%)' : 'brightness(50%)',
@@ -155,6 +155,7 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                                             Back
                                         </ShoshinMenuButton>
                                         <ShoshinMenuButton
+                                            isAlt
                                             sx={{ width: 175 }}
                                             onClick={handleFightClick}
                                         >
