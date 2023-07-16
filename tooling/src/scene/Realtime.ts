@@ -9,6 +9,8 @@ import {
     RIGHT,
     bodyStateNumberToName,
     characterTypeToString,
+    ANTOC,
+    JESSICA,
 } from '../constants/constants';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
 import { runRealTimeFromContext } from '../hooks/useRunRealtime';
@@ -359,10 +361,18 @@ export default class RealTime extends Simulator {
                 // antoc's step forward
                 this.player_action =
                     characterActionToNumber['antoc']['StepForward'];
-            } else if (this.keyboard.n.isDown && this.character_type_0 == 0) {
-                // jessica's gatotsu
-                this.player_action =
-                    characterActionToNumber['jessica']['Gatotsu'];
+            } else if (this.keyboard.n.isDown) {
+                if (this.character_type_0 == JESSICA) {
+                    this.player_action =
+                        characterActionToNumber['jessica']['Gatotsu'];
+                } else {
+                    this.player_action =
+                        characterActionToNumber['antoc']['Cyclone'];
+                    console.log(
+                        'cyclone -- this.player_action',
+                        this.player_action
+                    );
+                }
             } else if (this.keyboard.u.isDown) {
                 // low_kick
                 this.player_action =

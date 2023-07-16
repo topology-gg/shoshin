@@ -51,6 +51,7 @@ export enum StimulusType {
     CLASH = 3,
     GROUND = 4,
     LAUNCHED = 5,
+    GOOD_BLOCK = 6,
 }
 
 export interface RealTimeAgent {
