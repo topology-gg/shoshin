@@ -370,6 +370,12 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
                 hitboxOffset: { left: [63, -83], right: [87, -100] },
             },
         ],
+        cyclone: [
+            {
+                size: [323, 217],
+                hitboxOffset: { left: [50, -81], right: [50, -81] },
+            },
+        ],
     },
     jessica: {
         block: [

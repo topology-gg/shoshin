@@ -101,6 +101,7 @@ export const bodyStateNumberToName = {
         1190: 'drop_slash',
         1200: 'jump_move_forward',
         1210: 'jump_move_backward',
+        1220: 'cyclone',
     },
 };
 
@@ -297,6 +298,7 @@ export const characterActionToNumber = {
         StepForward: 8,
         Jump: 9,
         LowKick: 11,
+        Cyclone: 12,
     },
 };
 export function getIntentNameByCharacterTypeAndNumber(

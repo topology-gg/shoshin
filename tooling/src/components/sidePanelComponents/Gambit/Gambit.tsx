@@ -58,6 +58,7 @@ interface GambitProps {
     conditions: Condition[];
     combos: Action[][];
     setCombos: (combo: Action[][]) => void;
+    activeMs: number;
 }
 
 export interface LayerProps {
@@ -76,6 +77,7 @@ export interface LayerProps {
     handleInvertCondition: (layerIndex: number, conditionIndex: number) => void;
     //Layer either can make combo or edit the combo
     handleChooseCombo: (layerIndex: number) => void;
+    isActive: boolean;
 }
 
 //Select +Combo,
@@ -94,6 +96,7 @@ const DraggableLayer = ({
     handleRemoveLayer,
     handleInvertCondition,
     handleChooseCombo,
+    isActive,
 }: LayerProps) => {
     return (
         <Draggable draggableId={index.toString()} index={index}>
@@ -120,6 +123,7 @@ const DraggableLayer = ({
                         handleRemoveCondition={handleRemoveCondition}
                         handleInvertCondition={handleInvertCondition}
                         handleChooseCombo={handleChooseCombo}
+                        isActive={isActive}
                     />
                 </div>
             )}
@@ -140,6 +144,7 @@ const Layer = ({
     handleRemoveLayer,
     handleInvertCondition,
     handleChooseCombo,
+    isActive,
 }: LayerProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -214,14 +219,19 @@ const Layer = ({
             key={`button-wrapper-${i}`}
             sx={{
                 width: '100%',
-                border: '1px solid #ddd',
+                border: `1px solid ${isActive ? '#787878' : '#ddd'}`,
                 marginBottom: '4px',
                 borderRadius: '20px',
             }}
         >
             <Grid container alignItems={'center'}>
                 <Grid item xs={gridOrderPortion}>
-                    <div style={{ textAlign: 'center', fontSize: '13px' }}>
+                    <div
+                        style={{
+                            textAlign: 'center',
+                            fontSize: '13px',
+                        }}
+                    >
                         {i + 1}
                     </div>
                 </Grid>
@@ -351,6 +361,7 @@ const Gambit = ({
     conditions,
     combos,
     setCombos,
+    activeMs,
 }: GambitProps) => {
     const handleCreateLayer = () => {
         // We need to make a deep copy otherwise this exported object is reassigned
@@ -374,13 +385,12 @@ const Gambit = ({
         .join(', ');
     let componentAddLayer = (
         <>
-            <Grid
-                xs={1}
-                item
+            <Box
                 sx={{
                     display: 'flex',
                     alignItems: 'flex-end',
-                    justifyContent: 'flex-start',
+                    justifyContent: 'space-between',
+                    width: '100%',
                 }}
             >
                 <Button
@@ -392,7 +402,18 @@ const Gambit = ({
                     <AddIcon sx={{ mr: '3px' }} />
                     {'Layer'}
                 </Button>
-            </Grid>
+
+                <Box
+                    sx={{
+                        border: '1px solid',
+                        borderColor: 'currentColor',
+                        opacity: activeMs == 0 ? 1 : 0.5,
+                    }}
+                >
+                    {' '}
+                    SHOSHIN
+                </Box>
+            </Box>
         </>
     );
 
@@ -535,7 +556,7 @@ const Gambit = ({
         setLayers(updatedLayers);
     };
 
-    const LayerList = React.memo(function LayerList({ layers }: any) {
+    const LayerList = React.memo(function LayerList({ layers, activeMs }: any) {
         return layers.map((layer: Layer, index: number) => (
             <DraggableLayer
                 layer={layer}
@@ -551,6 +572,7 @@ const Gambit = ({
                 handleInvertCondition={handleInvertCondition}
                 combos={combos}
                 handleChooseCombo={handleSelectCombo}
+                isActive={activeMs == index + 1}
             />
         ));
     });
@@ -639,7 +661,10 @@ const Gambit = ({
                                         </Box>
                                     </Grid>
 
-                                    <LayerList layers={layers} />
+                                    <LayerList
+                                        layers={layers}
+                                        activeMs={activeMs}
+                                    />
                                     {provided.placeholder}
                                 </div>
                             )}

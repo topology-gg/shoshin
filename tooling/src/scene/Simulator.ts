@@ -36,12 +36,18 @@ const HITBOX_STROKE_WIDTH = 1.5;
 const PLAYER_POINTER_DIM = 20;
 
 // Effects
-const DASH_SMOKE_SCALE = 0.1;
-const STEP_FORWARD_SMOKE_SCALE = 0.07;
-const JUMP_TAKEOFF_SMOKE_SCALE_X = 0.7;
-const JUMP_TAKEOFF_SMOKE_SCALE_Y = 0.7;
-const JUMP_SMOKE_SCALE_X = 0.1;
-const JUMP_SMOKE_SCALE_Y = 0.09;
+const SPARK_SCALE = 0.3;
+const DASH_SMOKE_SCALE = 0.18;
+const STEP_FORWARD_SMOKE_SCALE = 0.2;
+const JUMP_TAKEOFF_SMOKE_SCALE_X = 0.15;
+const JUMP_TAKEOFF_SMOKE_SCALE_Y = 0.15;
+const JUMP_SMOKE_SCALE_X = 0.15;
+const JUMP_SMOKE_SCALE_Y = 0.15;
+const AIR_DASH_SCALE_X = 0.04;
+const AIR_DASH_SCALE_Y = 0.04;
+const GOOD_BLOCK_SCALE_X = 0.05;
+const GOOD_BLOCK_SCALE_Y = 0.05;
+const YELLOW_SPARK_SCALE = 0.1;
 
 enum CombatEvent {
     Block = 'Block',
@@ -100,6 +106,11 @@ export default class Simulator extends Phaser.Scene {
     stepForwardSmokeSprites: Phaser.GameObjects.Sprite[];
     jumpTakeoffSmokeSprites: Phaser.GameObjects.Sprite[];
     jumpLandingSmokeSprites: Phaser.GameObjects.Sprite[];
+    airDashSmokeSprites: Phaser.GameObjects.Sprite[];
+    goodBlockSprites: Phaser.GameObjects.Sprite[];
+    yellowSparkSprites: Phaser.GameObjects.Sprite[];
+    rippleSprites: Phaser.GameObjects.Sprite[];
+    bluePuffSprites: Phaser.GameObjects.Sprite[];
 
     // SFX
     dashForwardSounds: Phaser.Sound.BaseSound[];
@@ -230,6 +241,11 @@ export default class Simulator extends Phaser.Scene {
             'images/antoc/drop_slash/spritesheet.png',
             'images/antoc/drop_slash/spritesheet.json'
         );
+        this.load.atlas(
+            `antoc-cyclone`,
+            'images/antoc/cyclone/spritesheet.png',
+            'images/antoc/cyclone/spritesheet.json'
+        );
 
         //
         // Jessica
@@ -339,8 +355,16 @@ export default class Simulator extends Phaser.Scene {
             'dash-smoke',
             'images/effects/dash-smoke/spritesheet.png',
             {
-                frameWidth: 1251,
-                frameHeight: 1251,
+                frameWidth: 810,
+                frameHeight: 552,
+            }
+        );
+        this.load.spritesheet(
+            'step-forward-smoke',
+            'images/effects/step-forward-smoke/spritesheet.png',
+            {
+                frameWidth: 764,
+                frameHeight: 259,
             }
         );
         this.load.spritesheet('smoke', 'images/effects/smoke/spritesheet.png', {
@@ -351,8 +375,56 @@ export default class Simulator extends Phaser.Scene {
             'jump-takeoff-smoke',
             'images/effects/jump-takeoff-smoke/spritesheet.png',
             {
-                frameWidth: 201,
-                frameHeight: 201,
+                frameWidth: 596,
+                frameHeight: 868,
+            }
+        );
+        this.load.spritesheet(
+            'jump-landing-smoke',
+            'images/effects/jump-landing-smoke/spritesheet.png',
+            {
+                frameWidth: 807,
+                frameHeight: 404,
+            }
+        );
+        this.load.spritesheet(
+            'air-dash',
+            'images/effects/air-dash/spritesheet.png',
+            {
+                frameWidth: 3869,
+                frameHeight: 3502,
+            }
+        );
+        this.load.spritesheet(
+            'good-block',
+            'images/effects/good-block/spritesheet.png',
+            {
+                frameWidth: 2996,
+                frameHeight: 2997,
+            }
+        );
+        this.load.spritesheet(
+            'yellow-spark',
+            'images/effects/yellow-spark/spritesheet.png',
+            {
+                frameWidth: 2251,
+                frameHeight: 2251,
+            }
+        );
+        this.load.spritesheet(
+            'ripple',
+            'images/effects/ripple/spritesheet.png',
+            {
+                frameWidth: 1963,
+                frameHeight: 1949,
+            }
+        );
+        this.load.spritesheet(
+            'blue-puff',
+            'images/effects/blue-puff/spritesheet.png',
+            {
+                frameWidth: 3355,
+                frameHeight: 3355,
             }
         );
 
@@ -480,11 +552,22 @@ export default class Simulator extends Phaser.Scene {
         });
 
         this.anims.create({
-            key: 'smokeAnim',
+            key: 'stepForwardSmokeAnim',
             frameRate: 20,
-            frames: this.anims.generateFrameNumbers('smoke', {
+            frames: this.anims.generateFrameNumbers('step-forward-smoke', {
                 start: 0,
-                end: 8,
+                end: 5,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
+        this.anims.create({
+            key: 'landingSmokeAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('jump-landing-smoke', {
+                start: 0,
+                end: 5,
             }),
             repeat: 0,
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
@@ -495,7 +578,40 @@ export default class Simulator extends Phaser.Scene {
             frameRate: 20,
             frames: this.anims.generateFrameNumbers('jump-takeoff-smoke', {
                 start: 0,
+                end: 5,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
+        this.anims.create({
+            key: 'airDashSmokeAnim',
+            frameRate: 15,
+            frames: this.anims.generateFrameNumbers('air-dash', {
+                start: 0,
+                end: 4,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
+        this.anims.create({
+            key: 'goodBlockAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('good-block', {
+                start: 0,
                 end: 7,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
+        this.anims.create({
+            key: 'yellowSparkAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('yellow-spark', {
+                start: 0,
+                end: 4,
             }),
             repeat: 0,
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
@@ -506,11 +622,16 @@ export default class Simulator extends Phaser.Scene {
         this.stepForwardSmokeSprites = [];
         this.jumpTakeoffSmokeSprites = [];
         this.jumpLandingSmokeSprites = [];
+        this.airDashSmokeSprites = [];
+        this.goodBlockSprites = [];
+        this.yellowSparkSprites = [];
+        this.rippleSprites = [];
+        this.bluePuffSprites = [];
         [0, 1].forEach((_) => {
             this.sparkSprites.push(
                 this.add
                     .sprite(0, 0, 'spark')
-                    .setScale(0.2)
+                    .setScale(SPARK_SCALE)
                     .setVisible(false)
                     .setAlpha(0.9)
                     .setDepth(100)
@@ -521,13 +642,13 @@ export default class Simulator extends Phaser.Scene {
                     .setScale(DASH_SMOKE_SCALE)
                     .setVisible(false)
                     .setAlpha(1.0)
-                    .setDepth(100)
                     .setFlipX(true)
+                    .setDepth(100)
             );
 
             this.stepForwardSmokeSprites.push(
                 this.add
-                    .sprite(0, 0, 'dash-smoke')
+                    .sprite(0, 0, 'step-forward-smoke')
                     .setScale(STEP_FORWARD_SMOKE_SCALE)
                     .setVisible(false)
                     .setTint(0xff0000)
@@ -552,6 +673,32 @@ export default class Simulator extends Phaser.Scene {
                 this.add
                     .sprite(0, 0, 'smoke')
                     .setScale(JUMP_SMOKE_SCALE_X, JUMP_SMOKE_SCALE_Y)
+                    .setVisible(false)
+                    .setAlpha(0.9)
+                    .setDepth(100)
+            );
+
+            this.airDashSmokeSprites.push(
+                this.add
+                    .sprite(0, 0, 'air-dash')
+                    .setScale(AIR_DASH_SCALE_X, AIR_DASH_SCALE_Y)
+                    .setVisible(false)
+                    .setAlpha(0.9)
+                    .setDepth(100)
+            );
+
+            this.goodBlockSprites.push(
+                this.add
+                    .sprite(0, 0, 'good-block')
+                    .setScale(GOOD_BLOCK_SCALE_X, GOOD_BLOCK_SCALE_Y)
+                    .setVisible(false)
+                    .setAlpha(0.8)
+                    .setDepth(100)
+            );
+            this.yellowSparkSprites.push(
+                this.add
+                    .sprite(0, 0, 'yellow-spark')
+                    .setScale(YELLOW_SPARK_SCALE)
                     .setVisible(false)
                     .setAlpha(0.9)
                     .setDepth(100)
@@ -1137,14 +1284,19 @@ export default class Simulator extends Phaser.Scene {
                     subjectFrame.hitboxes.body.dimension.y;
                 const y = -1 * Math.min(yAttackAction, yAttackedHead);
 
-                // console.log('Play spark at', x, y);
-                this.sparkSprites[subjectIndex]
-                    .setPosition(x, y)
-                    .setVisible(true)
-                    .play('sparkAnim');
-
                 if (clashBodyStates.includes(subjectFrame.body_state.state)) {
+                    this.yellowSparkSprites[subjectIndex]
+                        .setPosition(x, y)
+                        .setVisible(true)
+                        .setFlipX(subjectFrame.body_state.dir == RIGHT)
+                        .play('yellowSparkAnim');
+
                     this.clashSounds[subjectIndex].play();
+                } else {
+                    this.sparkSprites[subjectIndex]
+                        .setPosition(x, y)
+                        .setVisible(true)
+                        .play('sparkAnim');
                 }
 
                 if (subjectFrame.body_state.state == BodystatesAntoc.Hurt)
@@ -1211,37 +1363,81 @@ export default class Simulator extends Phaser.Scene {
             if (frame.body_state.counter != 0) return;
             if (!dashBodyStates.includes(frame.body_state.state)) return;
 
-            // configure sprite
-            const x =
-                frame.body_state.dir == RIGHT
-                    ? frame.physics_state.pos.x +
-                      (frame.body_state.state ==
-                          BodystatesJessica.DashForward ||
-                      frame.body_state.state == BodystatesAntoc.DashForward
-                          ? 25
-                          : 35)
-                    : frame.physics_state.pos.x +
-                      frame.hitboxes.body.dimension.x +
-                      (frame.body_state.state ==
-                          BodystatesJessica.DashForward ||
-                      frame.body_state.state == BodystatesAntoc.DashForward
-                          ? -25
-                          : -35);
-            const y = -1 * frame.physics_state.pos.y - 25;
+            if (frame.physics_state.pos.y != 0) {
+                //
+                // air dash
+                //
 
-            // play animation
-            this.dashSmokeSprites[playerIndex]
-                .setPosition(x, y)
-                .setVisible(true)
-                .play('dashSmokeAnim')
-                .setFlipX(
-                    frame.body_state.dir ==
-                        (frame.body_state.state ==
-                            BodystatesJessica.DashForward ||
-                        frame.body_state.state == BodystatesAntoc.DashForward
-                            ? RIGHT
-                            : LEFT)
-                );
+                // configure sprite
+                const x =
+                    frame.body_state.dir == RIGHT
+                        ? frame.physics_state.pos.x +
+                          (frame.body_state.state ==
+                              BodystatesJessica.DashForward ||
+                          frame.body_state.state == BodystatesAntoc.DashForward
+                              ? -20
+                              : 60)
+                        : frame.physics_state.pos.x +
+                          frame.hitboxes.body.dimension.x +
+                          (frame.body_state.state ==
+                              BodystatesJessica.DashForward ||
+                          frame.body_state.state == BodystatesAntoc.DashForward
+                              ? 20
+                              : -60);
+                const y = -1 * frame.physics_state.pos.y - 25;
+
+                // play animation
+                this.airDashSmokeSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('airDashSmokeAnim')
+                    .setFlipX(
+                        frame.body_state.dir ==
+                            (frame.body_state.state ==
+                                BodystatesJessica.DashForward ||
+                            frame.body_state.state ==
+                                BodystatesAntoc.DashForward
+                                ? RIGHT
+                                : LEFT)
+                    );
+            } else {
+                //
+                // grounded dash
+                //
+
+                // configure sprite
+                const x =
+                    frame.body_state.dir == RIGHT
+                        ? frame.physics_state.pos.x +
+                          (frame.body_state.state ==
+                              BodystatesJessica.DashForward ||
+                          frame.body_state.state == BodystatesAntoc.DashForward
+                              ? 25
+                              : 35)
+                        : frame.physics_state.pos.x +
+                          frame.hitboxes.body.dimension.x +
+                          (frame.body_state.state ==
+                              BodystatesJessica.DashForward ||
+                          frame.body_state.state == BodystatesAntoc.DashForward
+                              ? -25
+                              : -35);
+                const y = -1 * frame.physics_state.pos.y - 40;
+
+                // play animation
+                this.dashSmokeSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('dashSmokeAnim')
+                    .setFlipX(
+                        frame.body_state.dir !=
+                            (frame.body_state.state ==
+                                BodystatesJessica.DashForward ||
+                            frame.body_state.state ==
+                                BodystatesAntoc.DashForward
+                                ? RIGHT
+                                : LEFT)
+                    );
+            }
 
             // sfx
             if (dashForwardBodyStates.includes(frame.body_state.state)) {
@@ -1274,9 +1470,9 @@ export default class Simulator extends Phaser.Scene {
             this.stepForwardSmokeSprites[playerIndex]
                 .setPosition(x, y)
                 .setVisible(true)
-                .play('dashSmokeAnim')
+                .play('stepForwardSmokeAnim')
                 .setFlipX(
-                    frame.body_state.dir ==
+                    frame.body_state.dir !=
                         (frame.body_state.state ==
                             BodystatesJessica.DashForward ||
                         frame.body_state.state == BodystatesAntoc.DashForward
@@ -1318,7 +1514,7 @@ export default class Simulator extends Phaser.Scene {
                 const x =
                     frame.physics_state.pos.x +
                     frame.hitboxes.body.dimension.x / 2;
-                const y = -1 * frame.physics_state.pos.y - 40;
+                const y = -1 * frame.physics_state.pos.y - 60;
 
                 this.jumpTakeoffSmokeSprites[playerIndex]
                     .setPosition(x, y)
@@ -1342,12 +1538,16 @@ export default class Simulator extends Phaser.Scene {
                 this.jumpLandingSmokeSprites[playerIndex]
                     .setPosition(x, y)
                     .setVisible(true)
-                    .play('smokeAnim');
+                    .play('landingSmokeAnim');
 
                 if (
                     [
                         BodystatesAntoc.Jump,
+                        BodystatesAntoc.JumpMoveForward,
+                        BodystatesAntoc.JumpMoveBackward,
                         BodystatesJessica.Jump,
+                        BodystatesJessica.JumpMoveForward,
+                        BodystatesJessica.JumpMoveBackward,
                         BodystatesAntoc.DropSlash,
                         BodystatesJessica.BirdSwing,
                     ].includes(frame.body_state.state)
@@ -1359,6 +1559,37 @@ export default class Simulator extends Phaser.Scene {
                     this.landingFromKnockedSounds[playerIndex].play();
                 }
             }
+        });
+
+        // good block
+        [
+            [0, 1],
+            [1, 0],
+        ].forEach((pair) => {
+            const subjectIndex = pair[0];
+            const objectIndex = pair[1];
+            const subjectFrame = frames[subjectIndex];
+            const objectFrame: FrameLike = frames[objectIndex];
+            const subjectStimulusType = Math.floor(
+                subjectFrame.stimulus / STIMULUS_ENCODING
+            );
+
+            if (subjectStimulusType != StimulusType.GOOD_BLOCK) return;
+
+            const x =
+                subjectFrame.body_state.dir == RIGHT
+                    ? subjectFrame.physics_state.pos.x +
+                      0.8 * subjectFrame.hitboxes.body.dimension.x
+                    : subjectFrame.physics_state.pos.x +
+                      0.2 * subjectFrame.hitboxes.body.dimension.x;
+
+            const y = -1 * objectFrame.hitboxes.action.origin.y;
+
+            // console.log('>>> Good block animation at', x, y)
+            this.goodBlockSprites[subjectIndex]
+                .setPosition(x, y)
+                .setVisible(true)
+                .play('goodBlockAnim');
         });
     }
 

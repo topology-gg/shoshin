@@ -472,6 +472,8 @@ export default function Home() {
     }
     const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length;
 
+    const activeMs =
+        N_FRAMES > 0 ? testJson.agent_0.frames[animationFrame].mental_state : 0;
     function handleMidScreenControlClick(operation: string) {
         if (operation == 'NextFrame' && animationState != 'Run') {
             animationStepForward(N_FRAMES);
@@ -1046,6 +1048,7 @@ export default function Home() {
                     selectedCombo={selectedCombo}
                     handleChangeSelectedCombo={changeSelectedCombo}
                     setCombos={setCombos}
+                    activeMs={activeMs}
                 />
             </CharacterContext.Provider>
         </LayerContext.Provider>
