@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic';
 import { ShoshinWASMContext } from '../../context/wasm-shoshin';
 import React from 'react';
 import PauseMenu from '../SimulationScene/PauseMenu';
+import MidScreenKeybinding from '../MidScreenKeybinding';
 
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
@@ -32,18 +33,41 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
 
         const [openPauseMenu, changePauseMenu] = useState<boolean>(false);
 
+        const [keyDownState, setKeyDownState] = useState<{
+            [keyName: string]: boolean;
+        }>({});
+
         useEffect(() => {
+            // keyup
             const handleKeyPress = (ev: KeyboardEvent) => {
+                setKeyDownState((prev) => {
+                    let prev_copy = JSON.parse(JSON.stringify(prev));
+                    prev_copy[ev.key] = false;
+                    return prev_copy;
+                });
+
                 const key = ev.key.toUpperCase();
 
                 if (key.includes('ESCAPE')) {
                     changePauseMenu(!openPauseMenu);
                 }
             };
+
+            // keydown
+            const handleKeyDown = (ev: KeyboardEvent) => {
+                setKeyDownState((prev) => {
+                    let prev_copy = JSON.parse(JSON.stringify(prev));
+                    prev_copy[ev.key] = true;
+                    return prev_copy;
+                });
+            };
+
             document.addEventListener('keyup', handleKeyPress);
+            document.addEventListener('keydown', handleKeyDown);
 
             return () => {
                 document.removeEventListener('keyup', handleKeyPress);
+                document.removeEventListener('keydown', handleKeyPress);
             };
         }, [openPauseMenu]);
 
@@ -85,6 +109,11 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                             setPlayerStatuses,
                         }}
                         isInView={true}
+                    />
+
+                    <MidScreenKeybinding
+                        realTimeCharacter={playerCharacter}
+                        keyDownState={keyDownState}
                     />
                 </div>
             </div>

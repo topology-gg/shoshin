@@ -273,6 +273,11 @@ const SimulationScene = React.forwardRef(
                 changeShowVictory(true);
                 changePlayedWinningReplay(true);
             }
+
+            if (animationFrame == N_FRAMES - 1) {
+                clearInterval(loop); // kill the timer
+                setAnimationState('Pause');
+            }
         }, [animationFrame]);
 
         const [playedWinningReplay, changePlayedWinningReplay] =

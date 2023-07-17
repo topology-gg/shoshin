@@ -54,7 +54,7 @@ const Slash: Action = {
     frames: { duration: 5, active: [3] },
     key: 'J',
     tutorial: {
-        video: './media/fight-intro.mp4',
+        video: './media/tutorial/slash.mp4',
         description: 'A medium range attack that covers a large area',
     },
     bodyState: 10,
@@ -65,7 +65,7 @@ const Upswing: Action = {
     id: 2,
     display: { name: 'Upswing', unicode: '\u{1F5E1}' },
     frames: {
-        duration: 5,
+        duration: 8,
         active: [3],
         interrupts: [
             {
@@ -77,7 +77,8 @@ const Upswing: Action = {
     key: 'K',
     tutorial: {
         video: './media/tutorial/upswing.mp4',
-        description: 'Loren ipsum and whatnot',
+        description:
+            'An attack that launches the opponent into the air, giving Jessica frame advantage',
     },
     bodyState: 20,
 };
@@ -89,7 +90,7 @@ const Sidecut: Action = {
     key: 'L',
     tutorial: {
         video: './media/tutorial/sidecut.mp4',
-        description: 'A different lore ipsum',
+        description: 'An short range attack that is quick and versatile',
     },
     bodyState: 30,
 };
@@ -232,6 +233,11 @@ const Gatotsu: Action = {
     frames: { duration: 7 },
     key: 'N',
     bodyState: 140,
+    tutorial: {
+        video: './media/tutorial/gatotsu.mp4',
+        description:
+            "Jessica's special attack, costing 500 (50%) rage to perform",
+    },
 };
 
 const JessicaLowKick: Action = {
@@ -252,6 +258,11 @@ const JessicaLowKick: Action = {
     },
     key: 'U',
     bodyState: 150,
+    tutorial: {
+        video: './media/tutorial/jessica-lowkick.mp4',
+        description:
+            "Kicking the opponent from a low position, which breaks opponent's blocking stance",
+    },
 };
 
 const JessicaActions = [
@@ -283,12 +294,17 @@ export const Hori: Action = {
     frames: { duration: 7, active: [2, 3] },
     key: 'J',
     bodyState: 1010,
+    tutorial: {
+        video: './media/tutorial/hori.mp4',
+        description: 'A short-range quick attack',
+    },
 };
 
 const AntocStepForwardId = 8;
 const AntocJumpId = 9;
 const AntocDashForwardId = 6;
 const AntocDashBackwardId = 7;
+
 const VertId = 2;
 const Vert: Action = {
     id: VertId,
@@ -299,22 +315,25 @@ const Vert: Action = {
         interrupts: [
             {
                 left: [AntocStepForwardId],
-                duration: 7,
+                duration: 8,
             },
             {
                 left: [AntocJumpId, AntocDashForwardId],
-                duration: 7,
+                duration: 8,
             },
             {
                 left: [AntocJumpId, AntocDashBackwardId],
-                duration: 7,
+                duration: 8,
             },
         ],
-        // TODO express:
-        //   left1 is dash, left2 is jump => Vert's duration becomes 8
     },
     key: 'K',
     bodyState: 1020,
+    tutorial: {
+        video: './media/tutorial/vert.mp4',
+        description:
+            'An attack that launches the opponent into the air, giving Antoc frame advantage',
+    },
 };
 
 const AntocBlockId = 3;
@@ -408,13 +427,18 @@ const StepForward: Action = {
         interrupts: [
             {
                 right: [Vert.id],
-                duration: 1,
-                intents: [AntocStepForwardId],
+                duration: 2,
+                intents: [AntocStepForwardId, RestId],
             },
         ],
     },
     key: 'F',
     bodyState: 1090,
+    tutorial: {
+        video: './media/tutorial/antoc-stepforward.mp4',
+        description:
+            'Taking a quick step forward; can transition into Vert or dash-backward swiftly',
+    },
 };
 
 const AntocJump: Action = {
@@ -457,6 +481,11 @@ const AntocLowKick: Action = {
     },
     key: 'U',
     bodyState: 1160,
+    tutorial: {
+        video: './media/tutorial/antoc-lowkick.mp4',
+        description:
+            "Kicking the opponent from a low position, which breaks opponent's blocking stance",
+    },
 };
 
 const AntocCycloneId = 12;
@@ -468,6 +497,11 @@ const AntocCyclone: Action = {
         interrupts: [],
     },
     key: 'N',
+    tutorial: {
+        video: './media/tutorial/antoc-cyclone.mp4',
+        description:
+            "Antoc's special attack, costing 500 (50%) rage to perform",
+    },
 };
 
 const AntocActions = [

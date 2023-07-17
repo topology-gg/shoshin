@@ -34,7 +34,7 @@ export const PHASER_CANVAS_W = 1000;
 export const PHASER_CANVAS_H = Math.round((PHASER_CANVAS_W / 16) * 9);
 
 // Simulation related constants
-export const TICK_IN_SECONDS = 0.07;
+export const TICK_IN_SECONDS = 0.07; // ~14 FPS
 export const SIMULATION_TIME_IN_SECONDS = 30;
 export const FRAME_COUNT = Math.round(
     SIMULATION_TIME_IN_SECONDS / TICK_IN_SECONDS
