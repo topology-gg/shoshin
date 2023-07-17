@@ -502,6 +502,7 @@ const AntocCyclone: Action = {
         description:
             "Antoc's special attack, costing 500 (50%) rage to perform",
     },
+    bodyState: 1220,
 };
 
 const AntocActions = [
