@@ -6,6 +6,7 @@ import { Character } from '../../constants/constants';
 import CardCarousel3D from '../CardCarousel/CardCarousel3D';
 import FullArtBackground from '../layout/FullArtBackground';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
+import CharacterTile from '../ChooseCharacter/CharacterTile';
 
 interface ChooseOpponentProps {
     opponents: Opponent[];
@@ -33,33 +34,26 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                 transitionMainScene(index);
             };
 
-            const cardUrl =
-                'images/ui/' +
-                (agent.character == 0 ? 'jessica' : 'antoc') +
-                '-portrait.jpeg';
+            const character: Character =
+                agent.character == 0 ? Character.Jessica : Character.Antoc;
 
             const imageUrl =
-                'images/' +
-                (agent.character == 0 ? 'jessica' : 'antoc') +
-                '/idle/right/frame_0.png';
-            const characterName = agent.character == 0 ? 'Jessica' : 'Antoc';
+                'images/' + character.toLowerCase() + '/idle/right/frame_0.png';
+
             return (
-                <Box
+                <CharacterTile
+                    character={character}
                     key={index}
-                    className={styles.characterBox}
-                    sx={{
-                        backgroundImage: `linear-gradient(to bottom, rgba(30, 75, 115, 0) 30%, rgba(255, 255, 255, 1)), url(${cardUrl})`,
-                        backgroundSize: 'cover',
-                        //DO OTHER CSS IN CSS MODULE
-                        //filter: true ? 'brightness(100%)' : 'brightness(50%)',
-                    }}
-                >
-                    <img
-                        src={imageUrl}
-                        alt="Image 1"
-                        className={styles.characterModel}
-                    />
-                </Box>
+                    mediaCover={
+                        <div className={styles.characterFooter}>
+                            <img
+                                src={imageUrl}
+                                alt="Image 1"
+                                className={styles.characterModel}
+                            />
+                        </div>
+                    }
+                ></CharacterTile>
             );
         });
 
@@ -73,13 +67,6 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
         const handleFightClick = () => {
             transitionMainScene(selectedOpponent);
         };
-
-        const characterName =
-            playerCharacter == Character.Jessica ? 'Jessica' : 'Antoc';
-        const characterImageUrl =
-            playerCharacter == Character.Jessica
-                ? 'images/jessica/idle/right/frame_0.png'
-                : 'images/antoc/idle/right/frame_0.png';
 
         const selectedOpponentName =
             opponents[selectedOpponent].agent.character == 0

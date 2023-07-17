@@ -2,8 +2,6 @@ import React from 'react';
 import {
     Box,
     Button,
-    Grid,
-    IconButton,
     Step,
     StepLabel,
     Stepper,
@@ -13,19 +11,19 @@ import { Character } from '../../constants/constants';
 import { CHARACTERS_ACTIONS } from '../../types/Action';
 import { useState } from 'react';
 import RightChevronIcon from '@mui/icons-material/ChevronRight';
+import FullArtBackground from '../layout/FullArtBackground';
+import Tile, { TileContent } from '../ui/Tile';
+import ShoshinMenuButton from '../ui/ShoshinMenuButton';
+import CharacterTile from '../ChooseCharacter/CharacterTile';
 
 interface MoveTutorialProps {
     character: Character;
     firstVisit: boolean;
     onContinue: () => void;
 }
+
 const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
     ({ character, firstVisit, onContinue }, ref) => {
-        const imageUrl =
-            'images/' +
-            character.toLocaleLowerCase() +
-            '/idle/right/frame_0.png';
-
         const moves = CHARACTERS_ACTIONS[
             character == Character.Jessica ? 0 : 1
         ].filter((action) => action.tutorial !== undefined);
@@ -33,13 +31,13 @@ const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
         const tutorials = moves.map((action) => {
             return (
                 <Box
-                    position={'relative'}
-                    height={'500px'}
-                    width={'100%'}
-                    display={'flex'}
-                    flexDirection={'column'}
-                    alignItems={'center'}
-                    justifyContent={'center'}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 2,
+                    }}
                     ref={ref}
                 >
                     <video
@@ -68,69 +66,64 @@ const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
 
         const canContinue = !firstVisit || selectedMove === moves.length - 1;
         return (
-            <Grid
-                container
-                spacing={2}
-                justifyContent="center"
-                height={'100vh'}
-            >
-                {/* Div with width 4 */}
-                <Grid item xs={5}>
-                    <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        height={'100vh'}
-                    >
-                        <img src={imageUrl} alt="Image 1" height="400px" />
-                    </Box>
-                </Grid>
+            <FullArtBackground useAlt gap={2}>
+                <Typography variant="poster" color="text.primary" gutterBottom>
+                    Study your moves
+                </Typography>
+                <Box
+                    gap={2}
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'stretch',
+                    }}
+                >
+                    <CharacterTile character={character} />
 
-                {/* Other grid items */}
-                <Grid item xs={5}>
-                    <Box
-                        display="flex"
-                        flexDirection={'column'}
-                        justifyContent="center"
-                        alignItems="center"
-                        height={'100vh'}
+                    <Tile
+                        sx={{
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: 450,
+                        }}
                     >
-                        {tutorials[selectedMove]}
+                        <TileContent sx={{ justifyContent: 'center', gap: 2 }}>
+                            {tutorials[selectedMove]}
 
-                        <Stepper activeStep={selectedMove} alternativeLabel>
-                            {moves.map((move, index) => (
-                                <Step key={move.display.name}>
-                                    <Button
-                                        color="inherit"
-                                        onClick={() => {
-                                            changeSelectedMove(index);
-                                        }}
-                                    >
-                                        <StepLabel>
-                                            {move.display.unicode}
-                                        </StepLabel>
-                                    </Button>
-                                </Step>
-                            ))}
-                        </Stepper>
-                        <Box
-                            display="flex"
-                            flexDirection={'row'}
-                            justifyContent={'flex-end'}
-                            width={'100%'}
-                        >
-                            <IconButton
-                                aria-label="Arrow Right"
-                                size="large"
-                                onClick={onContinue}
-                                disabled={!canContinue}
-                            >
-                                Continue <RightChevronIcon />
-                            </IconButton>
-                        </Box>
-                    </Box>
-                </Grid>
-            </Grid>
+                            <Stepper activeStep={selectedMove} alternativeLabel>
+                                {moves.map((move, index) => (
+                                    <Step key={move.display.name}>
+                                        <Button
+                                            color="inherit"
+                                            onClick={() => {
+                                                changeSelectedMove(index);
+                                            }}
+                                        >
+                                            <StepLabel>
+                                                {move.display.unicode}
+                                            </StepLabel>
+                                        </Button>
+                                    </Step>
+                                ))}
+                            </Stepper>
+                            <Box
+                                display="flex"
+                                flexDirection={'row'}
+                                justifyContent={'flex-end'}
+                            ></Box>
+                        </TileContent>
+                    </Tile>
+                </Box>
+                <ShoshinMenuButton
+                    size="large"
+                    onClick={onContinue}
+                    disabled={!canContinue}
+                >
+                    Continue <RightChevronIcon />
+                </ShoshinMenuButton>
+            </FullArtBackground>
         );
     }
 );

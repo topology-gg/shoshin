@@ -301,6 +301,7 @@ const SceneSelector = () => {
             <SceneSingle active={scene === Scenes.CHOOSE_CHARACTER}>
                 <ChooseCharacter
                     transitionChooseOpponent={onChooseCharacter}
+                    transitionBack={transitionMainMenu}
                     jessicaProgress={jessicaProgress}
                     antocProgress={antocProgress}
                     antocGoldCount={antocGoldCount}
