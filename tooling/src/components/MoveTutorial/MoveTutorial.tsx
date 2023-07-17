@@ -53,6 +53,7 @@ const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
                     ></video>
                     <Typography variant="h4">
                         {action.display.unicode}
+                        {'  '}
                         {action.display.name}
                     </Typography>
                     <Typography>{action.tutorial.description}</Typography>

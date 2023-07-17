@@ -51,7 +51,7 @@ const Slash: Action = {
     frames: { duration: 5, active: [3] },
     key: 'J',
     tutorial: {
-        video: './media/fight-intro.mp4',
+        video: './media/tutorial/slash.mp4',
         description: 'A medium range attack that covers a large area',
     },
 };
@@ -73,7 +73,8 @@ const Upswing: Action = {
     key: 'K',
     tutorial: {
         video: './media/tutorial/upswing.mp4',
-        description: 'Loren ipsum and whatnot',
+        description:
+            'An attack that launches the opponent into the air, giving Jessica frame advantage',
     },
 };
 
@@ -84,7 +85,7 @@ const Sidecut: Action = {
     key: 'L',
     tutorial: {
         video: './media/tutorial/sidecut.mp4',
-        description: 'A different lore ipsum',
+        description: 'An short range attack that is quick and versatile',
     },
 };
 
@@ -219,6 +220,11 @@ const Gatotsu: Action = {
     display: { name: 'Gatotsu', unicode: '\u{1F985}' },
     frames: { duration: 7 },
     key: 'N',
+    tutorial: {
+        video: './media/tutorial/gatotsu.mp4',
+        description:
+            "Jessica's special attack, costing 500 (50%) rage to perform",
+    },
 };
 
 const JessicaLowKick: Action = {
@@ -238,6 +244,11 @@ const JessicaLowKick: Action = {
         ],
     },
     key: 'U',
+    tutorial: {
+        video: './media/tutorial/jessica-lowkick.mp4',
+        description:
+            "Kicking the opponent from a low position, which breaks opponent's blocking stance",
+    },
 };
 
 const JessicaActions = [
@@ -267,6 +278,10 @@ export const Hori: Action = {
     display: { name: 'Hori', unicode: '\u{1F5E1}' },
     frames: { duration: 7, active: [2, 3] },
     key: 'J',
+    tutorial: {
+        video: './media/tutorial/hori.mp4',
+        description: 'A short-range quick attack',
+    },
 };
 
 const AntocStepForwardId = 8;
@@ -297,6 +312,11 @@ const Vert: Action = {
         ],
     },
     key: 'K',
+    tutorial: {
+        video: './media/tutorial/vert.mp4',
+        description:
+            'An attack that launches the opponent into the air, giving Antoc frame advantage',
+    },
 };
 
 const AntocBlockId = 3;
@@ -391,6 +411,11 @@ const StepForward: Action = {
         ],
     },
     key: 'F',
+    tutorial: {
+        video: './media/tutorial/antoc-stepforward.mp4',
+        description:
+            'Taking a quick step forward; can transition into Vert or dash-backward swiftly',
+    },
 };
 
 const AntocJump: Action = {
@@ -431,6 +456,11 @@ const AntocLowKick: Action = {
         ],
     },
     key: 'U',
+    tutorial: {
+        video: './media/tutorial/antoc-lowkick.mp4',
+        description:
+            "Kicking the opponent from a low position, which breaks opponent's blocking stance",
+    },
 };
 
 const AntocCycloneId = 12;
@@ -442,6 +472,11 @@ const AntocCyclone: Action = {
         interrupts: [],
     },
     key: 'N',
+    tutorial: {
+        video: './media/tutorial/antoc-cyclone.mp4',
+        description:
+            "Antoc's special attack, costing 500 (50%) rage to perform",
+    },
 };
 
 const AntocActions = [
