@@ -46,6 +46,7 @@ const actionIndexToAction = (
                 duration: 1,
             },
             key: '-',
+            bodyState: 0,
         };
     }
 };

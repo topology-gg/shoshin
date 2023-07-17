@@ -172,9 +172,18 @@ const SceneSelector = () => {
         }
     }, [character]);
 
-    const [opponentChoices, setOpponentChoices] = useState<Opponent[]>([
-        defaultOpponent,
-    ]);
+    const defaultOpponents = (
+        character == Character.Jessica ? JessicaOpponents : AntocOpponents
+    ).map((agent, id) => {
+        return {
+            agent: agent,
+            medal: Medal.NONE,
+            id,
+            name: id.toString(),
+        };
+    });
+    const [opponentChoices, setOpponentChoices] =
+        useState<Opponent[]>(defaultOpponents);
 
     const [selectedOpponent, setSelectedOpponent] = useState<number>(0);
 
@@ -304,6 +313,7 @@ const SceneSelector = () => {
                     transitionMainScene={transitionMainScene}
                     opponents={opponentChoices}
                     playerCharacter={character}
+                    transitionBack={() => transitionChooseCharacter(gameMode)}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.MOVE_TUTORIAL}>

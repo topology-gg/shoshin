@@ -1,5 +1,5 @@
 import Agent, { buildAgent } from '../types/Agent';
-import { Condition } from '../types/Condition';
+import { Condition, Perceptible } from '../types/Condition';
 import { alwaysTrueCondition } from '../types/Layer';
 import { Direction, Tree } from '../types/Tree';
 
@@ -19,135 +19,6 @@ function simpleHash(str: string) {
 }
 
 let preset_conditions = [
-    // {
-    //     elements: [
-    //         {
-    //             value: '(',
-    //             type: 'Operator',
-    //         },
-    //         {
-    //             value: 1,
-    //             type: 'Perceptible',
-    //         },
-    //         {
-    //             value: '==',
-    //             type: 'Operator',
-    //         },
-    //         {
-    //             value: 1,
-    //             type: 'Perceptible',
-    //         },
-    //         {
-    //             value: ')',
-    //             type: 'Operator',
-    //         },
-    //     ],
-    //     displayName: 'Always true',
-    // },
-    {
-        elements: [
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 'Abs(',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 1,
-                type: 'Perceptible',
-            },
-            {
-                value: '-',
-                type: 'Operator',
-            },
-            {
-                value: 101,
-                type: 'Perceptible',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: '|',
-                type: 'Operator',
-            },
-            {
-                value: '<=',
-                type: 'Operator',
-            },
-            {
-                value: 80,
-                type: 'Constant',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-        ],
-        displayName: 'Close',
-        type: 'spacing',
-    },
-    {
-        elements: [
-            {
-                value: '!',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 'Abs(',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 1,
-                type: 'Perceptible',
-            },
-            {
-                value: '-',
-                type: 'Operator',
-            },
-            {
-                value: 101,
-                type: 'Perceptible',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: '|',
-                type: 'Operator',
-            },
-            {
-                value: '<=',
-                type: 'Operator',
-            },
-            {
-                value: 300,
-                type: 'Constant',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-        ],
-        displayName: 'Far',
-        type: 'spacing',
-    },
     {
         elements: [
             {
@@ -631,30 +502,6 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 160, // jessica bird swing
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
                 value: 1160, // antoc low kick
                 type: 'BodyState',
             },
@@ -679,7 +526,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 1190, // antoc drop slash
+                value: 160, // Birdswing
                 type: 'BodyState',
             },
             {
@@ -703,7 +550,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 1220, // antoc cyclone
+                value: 1190, // Drop Slash
                 type: 'BodyState',
             },
             {
@@ -779,7 +626,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 130, // jessica jump
+                value: 130,
                 type: 'BodyState',
             },
             {
@@ -803,103 +650,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 180, // jessica jump move forward
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: 190, // jessica jump move backward
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: 1150, // antoc jump
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: 1200, // antoc jump move forward
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: 1210, // antoc jump move backward
+                value: 1150,
                 type: 'BodyState',
             },
             {
@@ -1075,6 +826,106 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
+                value: 110,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 110,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: 1110,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Opponent Dash Forward',
+        type: 'opponent state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 110,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: 120,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 110,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: 1120,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Opponent Dash Backward',
+        type: 'opponent state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 110,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
                 value: 70,
                 type: 'BodyState',
             },
@@ -1125,56 +976,6 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 170, // jessica launched
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: 1170, // antoc launched
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-        ],
-        displayName: 'Opponent launched',
-        type: 'opponent state',
-    },
-    {
-        elements: [
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
                 value: 1140,
                 type: 'BodyState',
             },
@@ -1183,7 +984,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent stepping forward (Antoc)',
+        displayName: 'Opponent steping forward (Antoc)',
         type: 'opponent state',
     },
     {
@@ -1209,37 +1010,15 @@ let preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent in Gatotsu (Jessica)',
+        displayName: 'Opponent in gatotsu (Jessica)',
         type: 'opponent state',
     },
     {
         elements: [
             {
-                value: '(',
+                value: '!',
                 type: 'Operator',
             },
-            {
-                value: 110,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: 1220,
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-        ],
-        displayName: 'Opponent in Cyclone (Antoc)',
-        type: 'opponent state',
-    },
-    {
-        elements: [
             {
                 value: '(',
                 type: 'Operator',
@@ -1261,11 +1040,15 @@ let preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My rage < 500',
+        displayName: 'My rage > 500',
         type: 'my rage',
     },
     {
         elements: [
+            {
+                value: '!',
+                type: 'Operator',
+            },
             {
                 value: '(',
                 type: 'Operator',
@@ -1287,7 +1070,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My rage is full (1000)',
+        displayName: 'My rage = 1000',
         type: 'my rage',
     },
     {
@@ -1331,32 +1114,6 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 300,
-                type: 'Constant',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-        ],
-        displayName: 'My health < 300',
-        type: 'my health',
-    },
-    {
-        elements: [
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 8,
-                type: 'Perceptible',
-            },
-            {
-                value: '<=',
-                type: 'Operator',
-            },
-            {
                 value: 400,
                 type: 'Constant',
             },
@@ -1383,7 +1140,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 500,
+                value: 600,
                 type: 'Constant',
             },
             {
@@ -1391,7 +1148,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My health < 500',
+        displayName: 'My health < 600',
         type: 'my health',
     },
     {
@@ -1401,7 +1158,37 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 109,
+                value: 8,
+                type: 'Perceptible',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 800,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'My health < 800',
+        type: 'my health',
+    },
+    {
+        elements: [
+            {
+                value: '!',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.OpponentSta,
                 type: 'Perceptible',
             },
             {
@@ -1417,17 +1204,21 @@ let preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent rage < 500',
-        type: 'opponent rage',
+        displayName: 'Opponent rage > 500',
+        type: 'my rage',
     },
     {
         elements: [
+            {
+                value: '!',
+                type: 'Operator',
+            },
             {
                 value: '(',
                 type: 'Operator',
             },
             {
-                value: 109,
+                value: Perceptible.OpponentSta,
                 type: 'Perceptible',
             },
             {
@@ -1443,8 +1234,34 @@ let preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent rage is full (1000)',
-        type: 'opponent rage',
+        displayName: 'Opponent rage = 1000',
+        type: 'my rage',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 108,
+                type: 'Perceptible',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 100,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Opponent health < 100',
+        type: 'opponent health',
     },
     {
         elements: [
@@ -1548,6 +1365,84 @@ let preset_conditions = [
             },
         ],
         displayName: 'Opponent health < 500',
+        type: 'opponent health',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 108,
+                type: 'Perceptible',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 500,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Opponent health < 600',
+        type: 'opponent health',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 108,
+                type: 'Perceptible',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 500,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Opponent health < 700',
+        type: 'opponent health',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: 108,
+                type: 'Perceptible',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 500,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Opponent health < 800',
         type: 'opponent health',
     },
 ];

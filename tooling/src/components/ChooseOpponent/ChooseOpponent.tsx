@@ -1,25 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Button, Chip } from '@mui/material';
+import { Typography, Box, Grid, Button, IconButton } from '@mui/material';
 import styles from './ChooseOpponent.module.css';
-import Agent from '../../types/Agent';
 import { Medal, Opponent } from '../layout/SceneSelector';
 import { Character } from '../../constants/constants';
-import OpponentCarousel from './OpponentCarousel';
-import Tile, { TileContent } from '../ui/Tile';
+import CardCarousel3D from '../CardCarousel/CardCarousel3D';
+import FullArtBackground from '../layout/FullArtBackground';
+import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 
 interface ChooseOpponentProps {
     opponents: Opponent[];
     transitionMainScene: (opp: number) => void;
+    transitionBack: () => void;
     playerCharacter: Character;
 }
 const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
-    ({ playerCharacter, transitionMainScene, opponents }, ref) => {
+    (
+        { playerCharacter, transitionMainScene, opponents, transitionBack },
+        ref
+    ) => {
         let characterBoxes = [];
+
+        const initialSelectedOpponent = opponents.findIndex(
+            (opp) => opp.medal === Medal.NONE
+        );
+
+        const [selectedOpponent, selectOpponent] = useState<number>(
+            initialSelectedOpponent !== -1 ? initialSelectedOpponent : 0
+        );
 
         characterBoxes = opponents.map(({ agent, medal }, index) => {
             const handleClick = () => {
                 transitionMainScene(index);
             };
+
+            const cardUrl =
+                'images/ui/' +
+                (agent.character == 0 ? 'jessica' : 'antoc') +
+                '-portrait.jpeg';
 
             const imageUrl =
                 'images/' +
@@ -30,26 +47,21 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                 <Box
                     key={index}
                     className={styles.characterBox}
-                    onClick={handleClick}
+                    sx={{
+                        backgroundImage: `linear-gradient(to bottom, rgba(30, 75, 115, 0) 30%, rgba(255, 255, 255, 1)), url(${cardUrl})`,
+                        backgroundSize: 'cover',
+                        //DO OTHER CSS IN CSS MODULE
+                        //filter: true ? 'brightness(100%)' : 'brightness(50%)',
+                    }}
                 >
-                    <Typography variant="h4">{characterName}</Typography>
-                    <img src={imageUrl} alt="Image 1" height="200px" />
-                    <Typography variant="body2">
-                        Additional descriptive text
-                    </Typography>
-
-                    <Typography variant="body2">Grade: {medal}</Typography>
+                    <img
+                        src={imageUrl}
+                        alt="Image 1"
+                        className={styles.characterModel}
+                    />
                 </Box>
             );
         });
-
-        const initialSelectedOpponent = opponents.findIndex(
-            (opp) => opp.medal === Medal.NONE
-        );
-
-        const [selectedOpponent, selectOpponent] = useState<number>(
-            initialSelectedOpponent !== -1 ? initialSelectedOpponent : 0
-        );
 
         // Effect to make sure that selectedOpponent is initialized correctly when opponent data loads
         useEffect(() => {
@@ -68,64 +80,125 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
             playerCharacter == Character.Jessica
                 ? 'images/jessica/idle/right/frame_0.png'
                 : 'images/antoc/idle/right/frame_0.png';
+
+        const selectedOpponentName =
+            opponents[selectedOpponent].agent.character == 0
+                ? 'Jessica'
+                : 'Antoc';
+        const selectedOpponentGrade = opponents[selectedOpponent].medal;
+
+        const decrementSelectedOpponent = () => {
+            const newIndex =
+                selectedOpponent - 1 < 0
+                    ? opponents.length - 1
+                    : selectedOpponent - 1;
+            selectOpponent(newIndex);
+        };
+
+        const incrementSelectedOpponent = () => {
+            const newIndex = (selectedOpponent + 1) % opponents.length;
+            selectOpponent(newIndex);
+        };
+
         return (
             <div ref={ref}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '100%',
-                        height: '100vh',
-                    }}
-                >
-                    <Typography variant="h5" gutterBottom>
-                        Choose your opponent
-                    </Typography>
-
+                <FullArtBackground useAlt={true}>
                     <Box
                         sx={{
                             display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
                             justifyContent: 'center',
-                            alignItems: 'flex-start',
-                            gap: 2,
+                            width: '100%',
+                            height: '100vh',
                         }}
                     >
-                        <Tile sx={{ width: 400 }} active>
-                            <TileContent>
-                                <Typography variant="h4">
-                                    {characterName}{' '}
-                                    <Chip
-                                        color="primary"
-                                        label="Your character"
+                        <Typography variant="h3" gutterBottom>
+                            Choose your opponent
+                        </Typography>
+                        <ShoshinMenuButton
+                            variant="text"
+                            size="large"
+                            sx={{ width: 200 }}
+                        >
+                            {selectedOpponentName}
+                        </ShoshinMenuButton>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '100%',
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    width: '50%',
+                                    minWidth: '600px',
+                                    minHeight: '600px',
+                                    height: '50vh',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <IconButton
+                                    onClick={() => decrementSelectedOpponent()}
+                                >
+                                    <img
+                                        src="./images/ui/next-opponent-left.png"
+                                        alt="Button Icon"
                                     />
-                                </Typography>
-                                <img
-                                    src={characterImageUrl}
-                                    alt="Image 1"
-                                    height="200px"
+                                </IconButton>
+                                <CardCarousel3D
+                                    offset={2}
+                                    showArrows={false}
+                                    cards={characterBoxes}
+                                    currentIndex={selectedOpponent}
+                                    selectIndex={selectOpponent}
                                 />
-                                <Typography variant="h6">Text</Typography>
-                                <Typography variant="body2">
-                                    Additional descriptive text
-                                </Typography>
-                            </TileContent>
-                        </Tile>
-                        <OpponentCarousel
-                            opponents={opponents}
-                            onOpponentChange={selectOpponent}
-                            selectedOpponent={selectedOpponent}
-                        />
+                                <IconButton
+                                    onClick={() => incrementSelectedOpponent()}
+                                >
+                                    <img
+                                        src="./images/ui/next-opponent-right.png"
+                                        alt="Button Icon"
+                                    />
+                                </IconButton>
+                            </Box>
+                            <Grid container>
+                                <Grid item xs={5}></Grid>
+                                <Grid item xs={2} sx={{ textAlign: 'center' }}>
+                                    <Typography variant="h5" fontWeight="bold">
+                                        Grade: {selectedOpponentGrade}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        Strategy : Offense
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={2}></Grid>
+                                <Grid item xs={2}>
+                                    <Box display={'flex'}>
+                                        <ShoshinMenuButton
+                                            sx={{ width: 150 }}
+                                            onClick={transitionBack}
+                                        >
+                                            Back
+                                        </ShoshinMenuButton>
+                                        <ShoshinMenuButton
+                                            isAlt
+                                            sx={{ width: 175 }}
+                                            onClick={handleFightClick}
+                                        >
+                                            Fight
+                                        </ShoshinMenuButton>
+                                    </Box>
+                                </Grid>
+                            </Grid>
+                        </Box>
                     </Box>
-                    <Button
-                        variant="contained"
-                        sx={{ marginTop: '30px' }}
-                        onClick={handleFightClick}
-                    >
-                        Fight
-                    </Button>
-                </Box>
+                </FullArtBackground>
             </div>
         );
     }
