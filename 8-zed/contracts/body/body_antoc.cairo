@@ -585,7 +585,7 @@ func _body_antoc {range_check_ptr}(
     }
 
     //
-    // STEP_FORWARD
+    // Step forward
     // note: is cancel-able into fast VERT
     // note: is interruptible by being hit
     //
@@ -602,13 +602,13 @@ func _body_antoc {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
-        // if having enough stamina => fast cancel into VERT's active frame (counter==3) or LOW_KICK's active frame (counter==3)
+        // if having enough stamina => fast cancel into VERT's active frame -1 (counter==2) or LOW_KICK's active frame -1 (counter==2)
         if (enough_stamina == TRUE) {
             if (intent == ns_antoc_action.VERT) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 3, integrity, updated_stamina, dir, FALSE) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 2, integrity, updated_stamina, dir, FALSE) );
             }
             if (intent == ns_antoc_action.LOW_KICK) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 3, integrity, updated_stamina, dir, FALSE) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 2, integrity, updated_stamina, dir, FALSE) );
             }
         }
 
