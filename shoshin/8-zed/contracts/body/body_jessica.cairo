@@ -438,16 +438,16 @@ func _body_jessica {range_check_ptr}(
         if(enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND) {
             // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
-                // go straight to SLASH's active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 2, integrity, stamina, dir, FALSE) );
+                // go straight to SLASH's active frame - 1
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 1, integrity, stamina, dir, FALSE) );
             }
             if (intent == ns_jessica_action.UPSWING) {
-                // go straight to UPSWING's active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 2, integrity, updated_stamina, dir, FALSE) );
+                // go straight to UPSWING's active frame - 1
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 1, integrity, updated_stamina, dir, FALSE) );
             }
             if (intent == ns_jessica_action.SIDECUT) {
-                // go straight to SIDECUT's active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 2, integrity, updated_stamina, dir, FALSE) );
+                // go straight to SIDECUT's active frame - 1
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 1, integrity, updated_stamina, dir, FALSE) );
             }
 
             // interruptible by jump
@@ -490,16 +490,16 @@ func _body_jessica {range_check_ptr}(
         if(enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND){
             // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
-                // go straight to SLASH's active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 2, integrity, updated_stamina, dir, FALSE) );
+                // go straight to SLASH's active frame - 1
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 1, integrity, updated_stamina, dir, FALSE) );
             }
             if (intent == ns_jessica_action.UPSWING) {
                 // go straight to UPSWING's active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 2, integrity, updated_stamina, dir, FALSE) );
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 1, integrity, updated_stamina, dir, FALSE) );
             }
             if (intent == ns_jessica_action.SIDECUT) {
                 // go straight to SIDECUT's active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 2, integrity, updated_stamina, dir, FALSE) );
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 1, integrity, updated_stamina, dir, FALSE) );
             }
 
             // interruptible by jump
