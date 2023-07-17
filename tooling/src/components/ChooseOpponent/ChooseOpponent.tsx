@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Grid } from '@mui/material';
+import { Typography, Box, Grid, Button, IconButton } from '@mui/material';
 import styles from './ChooseOpponent.module.css';
 import { Medal, Opponent } from '../layout/SceneSelector';
 import { Character } from '../../constants/constants';
@@ -87,6 +87,19 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                 : 'Antoc';
         const selectedOpponentGrade = opponents[selectedOpponent].medal;
 
+        const decrementSelectedOpponent = () => {
+            const newIndex =
+                selectedOpponent - 1 < 0
+                    ? opponents.length - 1
+                    : selectedOpponent - 1;
+            selectOpponent(newIndex);
+        };
+
+        const incrementSelectedOpponent = () => {
+            const newIndex = (selectedOpponent + 1) % opponents.length;
+            selectOpponent(newIndex);
+        };
+
         return (
             <div ref={ref}>
                 <FullArtBackground useAlt={true}>
@@ -125,15 +138,34 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                                     minWidth: '600px',
                                     minHeight: '600px',
                                     height: '50vh',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
                                 }}
                             >
+                                <IconButton
+                                    onClick={() => decrementSelectedOpponent()}
+                                >
+                                    <img
+                                        src="./images/ui/next-opponent-left.png"
+                                        alt="Button Icon"
+                                    />
+                                </IconButton>
                                 <CardCarousel3D
                                     offset={2}
-                                    showArrows={true}
+                                    showArrows={false}
                                     cards={characterBoxes}
                                     currentIndex={selectedOpponent}
                                     selectIndex={selectOpponent}
                                 />
+                                <IconButton
+                                    onClick={() => incrementSelectedOpponent()}
+                                >
+                                    <img
+                                        src="./images/ui/next-opponent-right.png"
+                                        alt="Button Icon"
+                                    />
+                                </IconButton>
                             </Box>
                             <Grid container>
                                 <Grid item xs={5}></Grid>
