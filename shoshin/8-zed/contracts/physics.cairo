@@ -404,9 +404,9 @@ func _physicality{range_check_ptr}(
     let curr_stimulus_0 = curr_stimulus_type_0 * ns_stimulus.ENCODING + damage_received_0;
     let curr_stimulus_1 = curr_stimulus_type_1 * ns_stimulus.ENCODING + damage_received_1;
 
-    // damage inflicted on the opponent becomes rage gain to the attacker, with 1:1 ratio
-    let (new_rage_0, _) = _settle_stamina_change(curr_body_state_0.stamina, damage_received_1, ns_stamina.MAX_STAMINA);
-    let (new_rage_1, _) = _settle_stamina_change(curr_body_state_1.stamina, damage_received_0, ns_stamina.MAX_STAMINA);
+    // 1/2 of the damage inflicted on the opponent becomes rage gain to the attacker
+    let (new_rage_0, _) = _settle_stamina_change(curr_body_state_0.stamina, damage_received_1 / 2, ns_stamina.MAX_STAMINA);
+    let (new_rage_1, _) = _settle_stamina_change(curr_body_state_1.stamina, damage_received_0 / 2, ns_stamina.MAX_STAMINA);
 
     return (
         curr_physics_state_0,
@@ -425,7 +425,7 @@ func _physicality{range_check_ptr}(
 func is_opp_body_state_launching {range_check_ptr} (
     opp_body_state: felt
 ) -> felt {
-    if ( (opp_body_state - ns_jessica_body_state.UPSWING) * (opp_body_state - ns_antoc_body_state.VERT) == 0 ) {
+    if ( (opp_body_state - ns_jessica_body_state.UPSWING) * (opp_body_state - ns_antoc_body_state.VERT) * (opp_body_state - ns_antoc_body_state.CYCLONE) == 0 ) {
         return 1;
     }
     return 0;
@@ -445,6 +445,9 @@ func produce_damage_given_opp_body_state {range_check_ptr} (
     }
     if (opp_body_state == ns_antoc_body_state.DROP_SLASH) {
         return ns_antoc_stimulus.DROP_SLASH_DAMAGE;
+    }
+    if (opp_body_state == ns_antoc_body_state.CYCLONE) {
+        return ns_antoc_stimulus.CYCLONE_DAMAGE;
     }
     if (opp_body_state == ns_jessica_body_state.SLASH) {
         return ns_jessica_stimulus.SLASH_DAMAGE;
@@ -499,7 +502,11 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     if (bool_self_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {
         // self is jessica & opp is jessica
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.JESSICA) {
+            // character special is unblockable
             if (self_body_state == ns_jessica_body_state.GATOTSU) {
+                return (ns_stimulus.NULL, 0);
+            }
+            if (self_body_state == ns_jessica_body_state.LOW_KICK) {
                 return (ns_stimulus.NULL, 0);
             }
             return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
@@ -507,19 +514,37 @@ func produce_stimulus_given_conditions {range_check_ptr} (
 
         // self is jessica & opp is antoc
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
+            // character special is unblockable
             if (self_body_state == ns_jessica_body_state.GATOTSU) {
-                return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
+                return (ns_stimulus.NULL, 0);
+            }
+            if (self_body_state == ns_jessica_body_state.LOW_KICK) {
+                return (ns_stimulus.NULL, 0);
             }
             return (ns_stimulus.KNOCKED, ns_antoc_stimulus.BLOCK_KNOCK_DAMAGE);
         }
 
         // self is antoc & opp is jessica
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
+            // character special is unblockable
+            if (self_body_state == ns_antoc_body_state.CYCLONE) {
+                return (ns_stimulus.NULL, 0);
+            }
+            if (self_body_state == ns_antoc_body_state.LOW_KICK) {
+                return (ns_stimulus.NULL, 0);
+            }
             return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
         }
 
         // self is antoc & opp is antoc
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.ANTOC) {
+            // character special is unblockable
+            if (self_body_state == ns_antoc_body_state.CYCLONE) {
+                return (ns_stimulus.NULL, 0);
+            }
+            if (self_body_state == ns_antoc_body_state.LOW_KICK) {
+                return (ns_stimulus.NULL, 0);
+            }
             return (ns_stimulus.KNOCKED, ns_antoc_stimulus.BLOCK_KNOCK_DAMAGE);
         }
     }
@@ -537,7 +562,10 @@ func produce_stimulus_given_conditions {range_check_ptr} (
 
         // self is jessica & opp is antoc
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
-            // return ns_stimulus.CLASH * ns_stimulus.ENCODING + ns_stimulus.CLASH_DAMAGE;
+            // CYCLONE is not blockable; get launched
+            if (opp_body_state == ns_antoc_body_state.CYCLONE) {
+                return (ns_stimulus.LAUNCHED, ns_antoc_stimulus.CYCLONE_DAMAGE);
+            }
             return (ns_stimulus.GOOD_BLOCK, 0);
         }
 
@@ -545,13 +573,17 @@ func produce_stimulus_given_conditions {range_check_ptr} (
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
             // jessica's gatotsu breaks antoc's block
             if (opp_body_state == ns_jessica_body_state.GATOTSU) {
-                return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
+                return (ns_stimulus.KNOCKED, ns_jessica_stimulus.GATOTSU_DAMAGE);
             }
             return (ns_stimulus.GOOD_BLOCK, 0);
         }
 
         // self is antoc & opp is antoc
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.ANTOC) {
+            // CYCLONE is not blockable; get launched
+            if (opp_body_state == ns_antoc_body_state.CYCLONE) {
+                return (ns_stimulus.LAUNCHED, ns_antoc_stimulus.CYCLONE_DAMAGE);
+            }
             return (ns_stimulus.GOOD_BLOCK, 0);
         }
     }
@@ -559,17 +591,49 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     // self attacks into opp's attack
     if (bool_self_atk_active == 1 and bool_opp_atk_active == 1 and bool_action_overlap == 1) {
         if (self_character_type == opp_character_type) {
-            return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
+            // special clashes with special, otherwise special user receives NULL
+            // if no special on either side, clash
+
+            if ( (self_body_state - ns_jessica_body_state.LOW_KICK) * (self_body_state - ns_antoc_body_state.LOW_KICK) == 0 ) {
+                if ( (opp_body_state - ns_jessica_body_state.LOW_KICK) * (opp_body_state - ns_antoc_body_state.LOW_KICK) == 0 ) {
+                    return (ns_stimulus.GOOD_BLOCK, 0);
+                }
+            }
+
+            if ( (self_body_state - ns_jessica_body_state.GATOTSU) * (self_body_state - ns_antoc_body_state.CYCLONE) == 0 ) {
+                if ( (opp_body_state - ns_jessica_body_state.GATOTSU) * (opp_body_state - ns_antoc_body_state.CYCLONE) == 0 ) {
+                    return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
+                } else {
+                    return (ns_stimulus.NULL, 0);
+                }
+            } else {
+                if (opp_body_state == ns_jessica_body_state.GATOTSU) {
+                    return (ns_stimulus.KNOCKED, ns_jessica_stimulus.GATOTSU_DAMAGE);
+                } else {
+                    if (opp_body_state == ns_antoc_body_state.CYCLONE) {
+                        return (ns_stimulus.KNOCKED, ns_antoc_stimulus.CYCLONE_DAMAGE);
+                    } else {
+                        return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
+                    }
+                }
+            }
+
         }
         if (self_character_type == ns_character_type.JESSICA and opp_character_type == ns_character_type.ANTOC) {
             if (self_body_state == ns_jessica_body_state.GATOTSU) {
                 return (ns_stimulus.NULL, 0);
             }
-            return (ns_stimulus.KNOCKED, ns_antoc_stimulus.CLASH_KNOCK_DAMAGE);
+            if (opp_body_state == ns_antoc_body_state.CYCLONE) {
+                return (ns_stimulus.LAUNCHED, ns_antoc_stimulus.CYCLONE_DAMAGE);
+            }
+            return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
         }
         if (self_character_type == ns_character_type.ANTOC and opp_character_type == ns_character_type.JESSICA) {
             if (opp_body_state == ns_jessica_body_state.GATOTSU) {
                 return (ns_stimulus.KNOCKED, ns_jessica_stimulus.GATOTSU_DAMAGE);
+            }
+            if (self_body_state == ns_antoc_body_state.CYCLONE) {
+                return (ns_stimulus.NULL, 0);
             }
             return (ns_stimulus.CLASH, ns_stimulus.CLASH_DAMAGE);
         }
