@@ -107,7 +107,8 @@ export default class Simulator extends Phaser.Scene {
     jumpTakeoffSmokeSprites: Phaser.GameObjects.Sprite[];
     jumpLandingSmokeSprites: Phaser.GameObjects.Sprite[];
     airDashSmokeSprites: Phaser.GameObjects.Sprite[];
-    goodBlockSprites: Phaser.GameObjects.Sprite[];
+    goodBlockPinkSprites: Phaser.GameObjects.Sprite[];
+    goodBlockGraySprites: Phaser.GameObjects.Sprite[];
     yellowSparkSprites: Phaser.GameObjects.Sprite[];
     rippleSprites: Phaser.GameObjects.Sprite[];
     bluePuffSprites: Phaser.GameObjects.Sprite[];
@@ -396,11 +397,19 @@ export default class Simulator extends Phaser.Scene {
             }
         );
         this.load.spritesheet(
-            'good-block',
-            'images/effects/good-block/spritesheet.png',
+            'good-block-pink',
+            'images/effects/good-block-pink/spritesheet.png',
             {
                 frameWidth: 2996,
-                frameHeight: 2997,
+                frameHeight: 2996,
+            }
+        );
+        this.load.spritesheet(
+            'good-block-gray',
+            'images/effects/good-block-gray/spritesheet.png',
+            {
+                frameWidth: 2996,
+                frameHeight: 2996,
             }
         );
         this.load.spritesheet(
@@ -596,9 +605,20 @@ export default class Simulator extends Phaser.Scene {
         });
 
         this.anims.create({
-            key: 'goodBlockAnim',
+            key: 'goodBlockPinkAnim',
             frameRate: 20,
-            frames: this.anims.generateFrameNumbers('good-block', {
+            frames: this.anims.generateFrameNumbers('good-block-pink', {
+                start: 0,
+                end: 7,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
+        this.anims.create({
+            key: 'goodBlockGrayAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('good-block-gray', {
                 start: 0,
                 end: 7,
             }),
@@ -623,7 +643,8 @@ export default class Simulator extends Phaser.Scene {
         this.jumpTakeoffSmokeSprites = [];
         this.jumpLandingSmokeSprites = [];
         this.airDashSmokeSprites = [];
-        this.goodBlockSprites = [];
+        this.goodBlockPinkSprites = [];
+        this.goodBlockGraySprites = [];
         this.yellowSparkSprites = [];
         this.rippleSprites = [];
         this.bluePuffSprites = [];
@@ -687,14 +708,23 @@ export default class Simulator extends Phaser.Scene {
                     .setDepth(100)
             );
 
-            this.goodBlockSprites.push(
+            this.goodBlockPinkSprites.push(
                 this.add
-                    .sprite(0, 0, 'good-block')
+                    .sprite(0, 0, 'good-block-pink')
                     .setScale(GOOD_BLOCK_SCALE_X, GOOD_BLOCK_SCALE_Y)
                     .setVisible(false)
                     .setAlpha(0.8)
                     .setDepth(100)
             );
+            this.goodBlockGraySprites.push(
+                this.add
+                    .sprite(0, 0, 'good-block-gray')
+                    .setScale(GOOD_BLOCK_SCALE_X, GOOD_BLOCK_SCALE_Y)
+                    .setVisible(false)
+                    .setAlpha(0.8)
+                    .setDepth(100)
+            );
+
             this.yellowSparkSprites.push(
                 this.add
                     .sprite(0, 0, 'yellow-spark')
@@ -1585,11 +1615,17 @@ export default class Simulator extends Phaser.Scene {
 
             const y = -1 * objectFrame.hitboxes.action.origin.y;
 
-            // console.log('>>> Good block animation at', x, y)
-            this.goodBlockSprites[subjectIndex]
-                .setPosition(x, y)
-                .setVisible(true)
-                .play('goodBlockAnim');
+            if (subjectFrame.body_state.state == BodystatesAntoc.Block) {
+                this.goodBlockGraySprites[subjectIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('goodBlockGrayAnim');
+            } else {
+                this.goodBlockPinkSprites[subjectIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('goodBlockPinkAnim');
+            }
         });
     }
 

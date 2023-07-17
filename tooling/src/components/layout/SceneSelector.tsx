@@ -114,7 +114,7 @@ const SceneSelector = () => {
     };
 
     const onChooseCharacter = (character: Character) => {
-        setCharacter(character);
+        setCharacter((_) => character);
         setScene(Scenes.MOVE_TUTORIAL);
 
         const state = getLocalState();
