@@ -18,8 +18,8 @@ const CharacterTile = ({
     onClick?: React.MouseEventHandler<HTMLDivElement>;
     progressText?: React.ReactNode;
 }) => {
-    const idleImage = `images/ui/${character.toLowerCase()}-sketch-inverted.png`;
-    const activeImage = `images/ui/${character.toLowerCase()}-portrait.jpeg`;
+    const idleImage = `/images/ui/${character.toLowerCase()}-sketch-inverted.png`;
+    const activeImage = `/images/ui/${character.toLowerCase()}-portrait.jpeg`;
 
     const [hovering, setHovering] = useState(false);
 
