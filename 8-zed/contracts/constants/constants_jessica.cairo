@@ -127,7 +127,7 @@ namespace ns_jessica_stimulus {
 namespace ns_jessica_body_state_duration {
     const IDLE = 5;
     const SLASH = 5;
-    const UPSWING = 5;
+    const UPSWING = 8;
     const SIDECUT = 5;
     const BLOCK = 3;
     const CLASH = 4;
@@ -147,7 +147,7 @@ namespace ns_jessica_body_state_duration {
 namespace ns_jessica_body_state {
     const IDLE = 0; // 5 frames
     const SLASH = 10; // 5 frames
-    const UPSWING = 20;  // 5 frames
+    const UPSWING = 20;  // 8 frames
     const SIDECUT = 30;  // 5 frames
     const BLOCK = 40; // 3 frames
     const CLASH = 50; // 4 frames;

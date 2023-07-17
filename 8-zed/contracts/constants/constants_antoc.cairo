@@ -146,7 +146,7 @@ namespace ns_antoc_body_state_duration {
     const STEP_FORWARD = 3;
     const JUMP = 7;
     const LOW_KICK = 6;
-    const LAUNCHED = 11;
+    const LAUNCHED = 9;
     const DROP_SLASH = 6;
     const CYCLONE = 18; // active for counter == 5,10
 }
