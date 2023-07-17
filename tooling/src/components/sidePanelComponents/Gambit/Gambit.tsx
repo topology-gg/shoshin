@@ -50,15 +50,20 @@ const actionIndexToAction = (
     }
 };
 
+export interface GambitFeatures {
+    layerAddAndDelete: boolean;
+    conditionAnd: boolean;
+    combos: boolean;
+}
 interface GambitProps {
     layers: Layer[];
-    isReadOnly: boolean;
     setLayers: (layers: Layer[]) => void;
     character: Character;
     conditions: Condition[];
     combos: Action[][];
     setCombos: (combo: Action[][]) => void;
     activeMs: number;
+    features: GambitFeatures;
 }
 
 export interface LayerProps {
@@ -78,6 +83,7 @@ export interface LayerProps {
     //Layer either can make combo or edit the combo
     handleChooseCombo: (layerIndex: number) => void;
     isActive: boolean;
+    features: GambitFeatures;
 }
 
 //Select +Combo,
@@ -97,6 +103,7 @@ const DraggableLayer = ({
     handleInvertCondition,
     handleChooseCombo,
     isActive,
+    features,
 }: LayerProps) => {
     return (
         <Draggable draggableId={index.toString()} index={index}>
@@ -124,6 +131,7 @@ const DraggableLayer = ({
                         handleInvertCondition={handleInvertCondition}
                         handleChooseCombo={handleChooseCombo}
                         isActive={isActive}
+                        features={features}
                     />
                 </div>
             )}
@@ -145,6 +153,7 @@ const Layer = ({
     handleInvertCondition,
     handleChooseCombo,
     isActive,
+    features,
 }: LayerProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -160,7 +169,10 @@ const Layer = ({
     const conditionsOpen = Boolean(conditionAnchorEl);
 
     let actions = CHARACTERS_ACTIONS[characterIndex].map((a) => a.display.name);
-    actions.push(`Combo`);
+
+    if (features.combos) {
+        actions.push(`Combo`);
+    }
 
     const onActionSelect = (action: string) => {
         if (!action.includes('Combo')) {
@@ -257,7 +269,8 @@ const Layer = ({
                             />
                         ))}
 
-                        {layer.conditions.length >= 1 &&
+                        {features.conditionAnd &&
+                        layer.conditions.length >= 1 &&
                         !(
                             JSON.stringify(layer.conditions[0]) ===
                             JSON.stringify(alwaysTrueCondition)
@@ -340,13 +353,17 @@ const Layer = ({
                     })}
                 </Menu>
                 <Grid item xs={gridRemovePortion}>
-                    <IconButton
-                        onClick={(_) => handleRemoveLayer(i)}
-                        disabled={isReadOnly}
-                        style={{ marginLeft: 'auto' }}
-                    >
-                        <DeleteIcon sx={{ fontSize: '16px', color: '#888' }} />
-                    </IconButton>
+                    {features.layerAddAndDelete ? (
+                        <IconButton
+                            onClick={(_) => handleRemoveLayer(i)}
+                            disabled={isReadOnly}
+                            style={{ marginLeft: 'auto' }}
+                        >
+                            <DeleteIcon
+                                sx={{ fontSize: '16px', color: '#888' }}
+                            />
+                        </IconButton>
+                    ) : null}
                 </Grid>
             </Grid>
         </Box>
@@ -354,7 +371,6 @@ const Layer = ({
 };
 
 const Gambit = ({
-    isReadOnly,
     layers,
     setLayers,
     character,
@@ -362,6 +378,7 @@ const Gambit = ({
     combos,
     setCombos,
     activeMs,
+    features,
 }: GambitProps) => {
     const handleCreateLayer = () => {
         // We need to make a deep copy otherwise this exported object is reassigned
@@ -393,15 +410,18 @@ const Gambit = ({
                     width: '100%',
                 }}
             >
-                <Button
-                    onClick={(_) => {
-                        handleCreateLayer();
-                    }}
-                    disabled={isReadOnly}
-                >
-                    <AddIcon sx={{ mr: '3px' }} />
-                    {'Layer'}
-                </Button>
+                {features.layerAddAndDelete ? (
+                    <Button
+                        onClick={(_) => {
+                            handleCreateLayer();
+                        }}
+                    >
+                        <AddIcon sx={{ mr: '3px' }} />
+                        {'Layer'}
+                    </Button>
+                ) : (
+                    <div />
+                )}
 
                 <Box
                     sx={{
@@ -556,7 +576,11 @@ const Gambit = ({
         setLayers(updatedLayers);
     };
 
-    const LayerList = React.memo(function LayerList({ layers, activeMs }: any) {
+    const LayerList = React.memo(function LayerList({
+        layers,
+        activeMs,
+        features,
+    }: any) {
         return layers.map((layer: Layer, index: number) => (
             <DraggableLayer
                 layer={layer}
@@ -573,6 +597,7 @@ const Gambit = ({
                 combos={combos}
                 handleChooseCombo={handleSelectCombo}
                 isActive={activeMs == index + 1}
+                features={features}
             />
         ));
     });
@@ -592,7 +617,7 @@ const Gambit = ({
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                height: '100vh',
+                height: '100%',
                 justifyContent: 'space-between',
             }}
         >
@@ -607,7 +632,7 @@ const Gambit = ({
                         marginBottom: '4px',
                     }}
                 >
-                    {isReadOnly ? <></> : componentAddLayer}
+                    {componentAddLayer}
                 </div>
 
                 <Grid container>
@@ -664,6 +689,7 @@ const Gambit = ({
                                     <LayerList
                                         layers={layers}
                                         activeMs={activeMs}
+                                        features={features}
                                     />
                                     {provided.placeholder}
                                 </div>

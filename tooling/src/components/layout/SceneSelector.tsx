@@ -20,6 +20,7 @@ import {
     JessicaOpponents,
 } from '../ChooseOpponent/opponents/opponents';
 import MoveTutorial from '../MoveTutorial/MoveTutorial';
+import MechanicsTutorialScene from '../GamePlayTutorial/GameplayTutorial';
 
 const Scenes = {
     LOGO: 'logo',
@@ -30,6 +31,7 @@ const Scenes = {
     MAIN_SCENE: 'main_scene',
     ARCADE: 'arcade',
     MOVE_TUTORIAL: 'move_tutorial',
+    GAMEPLAY_TUTORIAL: 'gameplay_tutorial',
 } as const;
 
 type Scene = (typeof Scenes)[keyof typeof Scenes];
@@ -78,7 +80,7 @@ const defaultOpponent: Opponent = {
 };
 const StorageKey = 'PersistedGameState';
 const SceneSelector = () => {
-    const [scene, setScene] = useState<Scene>(Scenes.WALLET_CONNECT);
+    const [scene, setScene] = useState<Scene>(Scenes.GAMEPLAY_TUTORIAL);
 
     const ctx = React.useContext(ShoshinWASMContext);
 
@@ -331,9 +333,12 @@ const SceneSelector = () => {
                     opponent={opponent.agent}
                 />
             </SceneSingle>
-            {/* {scene === Scenes.ARCADE ? (
-                <Arcade playerCharacter={characterIndex} opponent={opponent} />
-            ) : null} */}
+            <SceneSingle active={scene === Scenes.GAMEPLAY_TUTORIAL}>
+                <MechanicsTutorialScene
+                    onContinue={() => onTransition(Scenes.MAIN_MENU)}
+                    onQuit={() => onTransition(Scenes.MAIN_MENU)}
+                />
+            </SceneSingle>
         </Box>
     );
 };
