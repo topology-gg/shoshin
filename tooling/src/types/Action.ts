@@ -61,7 +61,7 @@ const Upswing: Action = {
     id: 2,
     display: { name: 'Upswing', unicode: '\u{1F5E1}' },
     frames: {
-        duration: 5,
+        duration: 8,
         active: [3],
         interrupts: [
             {
@@ -273,6 +273,7 @@ const AntocStepForwardId = 8;
 const AntocJumpId = 9;
 const AntocDashForwardId = 6;
 const AntocDashBackwardId = 7;
+
 const VertId = 2;
 const Vert: Action = {
     id: VertId,
@@ -283,19 +284,17 @@ const Vert: Action = {
         interrupts: [
             {
                 left: [AntocStepForwardId],
-                duration: 7,
+                duration: 8,
             },
             {
                 left: [AntocJumpId, AntocDashForwardId],
-                duration: 7,
+                duration: 8,
             },
             {
                 left: [AntocJumpId, AntocDashBackwardId],
-                duration: 7,
+                duration: 8,
             },
         ],
-        // TODO express:
-        //   left1 is dash, left2 is jump => Vert's duration becomes 8
     },
     key: 'K',
 };
@@ -386,8 +385,8 @@ const StepForward: Action = {
         interrupts: [
             {
                 right: [Vert.id],
-                duration: 1,
-                intents: [AntocStepForwardId],
+                duration: 2,
+                intents: [AntocStepForwardId, RestId],
             },
         ],
     },
