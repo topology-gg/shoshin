@@ -122,7 +122,7 @@ const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
                                 aria-label="Arrow Right"
                                 size="large"
                                 onClick={onContinue}
-                                disabled={canContinue}
+                                disabled={!canContinue}
                             >
                                 Continue <RightChevronIcon />
                             </IconButton>
