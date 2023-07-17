@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@mui/material';
+import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 interface ShoshinMenuButtonProps {
@@ -24,6 +24,7 @@ const ShoshinMenuButton = styled(Button)<ShoshinMenuButtonProps>(
         borderImageRepeat: 'repeat',
         color: 'white',
         padding: '16px',
+        fontFamily: 'Dela Gothic One',
         '&.Mui-disabled': {
             color: theme.palette.grey[500],
         },

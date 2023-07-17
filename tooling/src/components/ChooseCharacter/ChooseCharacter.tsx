@@ -1,13 +1,16 @@
 import React from 'react';
 
-import { Box, Button, CardActionArea, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { Character } from '../../constants/constants';
-import Tile, { TileContent } from '../ui/Tile';
+import FullArtBackground from '../layout/FullArtBackground';
+import CharacterTile from './CharacterTile';
+import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 
 const ChooseCharacter = React.forwardRef<
     HTMLDivElement,
     {
         transitionChooseOpponent: (character: Character) => void;
+        transitionBack: () => void;
         jessicaProgress: number;
         antocProgress: number;
         antocGoldCount: number;
@@ -18,6 +21,7 @@ const ChooseCharacter = React.forwardRef<
     (
         {
             transitionChooseOpponent,
+            transitionBack,
             jessicaProgress,
             antocProgress,
             jessicaGoldCount,
@@ -26,39 +30,24 @@ const ChooseCharacter = React.forwardRef<
         },
         ref
     ) => {
-        const jessicaProgressStyle =
-            jessicaProgress < 100 ? (
-                <Typography variant="h6">
-                    Progress {jessicaProgress}%
-                </Typography>
-            ) : (
-                <Typography variant="h6">
-                    Gold Medals {jessicaGoldCount}/{opponentCount}
-                </Typography>
-            );
+        const jessicaProgressText =
+            jessicaProgress < 100
+                ? `Progress ${jessicaProgress}%`
+                : `Gold Medals ${jessicaGoldCount}/${opponentCount}`;
 
-        const antocProgressStyle =
-            antocProgress < 100 ? (
-                <Typography variant="h6">Progress {antocProgress}%</Typography>
-            ) : (
-                <Typography variant="h6">
-                    Gold Medals {antocGoldCount}/{opponentCount}
-                </Typography>
-            );
+        const antocProgressText =
+            antocProgress < 100
+                ? `Progress ${antocProgress}%`
+                : `Gold Medals ${antocGoldCount}/${opponentCount}`;
 
         return (
             <div ref={ref}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '100%',
-                        height: '100vh',
-                    }}
-                >
-                    <Typography variant="h5" gutterBottom>
+                <FullArtBackground useAlt gap={2}>
+                    <Typography
+                        variant="poster"
+                        color="text.primary"
+                        gutterBottom
+                    >
                         Choose your character
                     </Typography>
 
@@ -66,61 +55,33 @@ const ChooseCharacter = React.forwardRef<
                         display="flex"
                         justifyContent="center"
                         alignItems="center"
-                        gap={2}
+                        gap={5}
                     >
-                        <Tile sx={{ width: 400 }}>
-                            <CardActionArea
-                                onClick={() =>
-                                    transitionChooseOpponent(Character.Jessica)
-                                }
-                            >
-                                <TileContent>
-                                    <Typography variant="h4">
-                                        Jessica
-                                    </Typography>
-                                    <img
-                                        src="images/jessica/idle/right/frame_0.png"
-                                        alt="Image 1"
-                                        height="200px"
-                                    />
-                                    {jessicaProgressStyle}
-                                    <Typography variant="body2">
-                                        Additional descriptive text
-                                    </Typography>
-                                </TileContent>
-                            </CardActionArea>
-                        </Tile>
+                        <CharacterTile
+                            character={Character.Jessica}
+                            descriptionVisible
+                            onClick={() =>
+                                transitionChooseOpponent(Character.Jessica)
+                            }
+                            progressText={jessicaProgressText}
+                        />
 
-                        <Tile sx={{ width: 400 }}>
-                            <CardActionArea
-                                onClick={() =>
-                                    transitionChooseOpponent(Character.Antoc)
-                                }
-                            >
-                                <TileContent>
-                                    <Typography variant="h4">Antoc</Typography>
-                                    <img
-                                        src="images/antoc/idle/left/frame_0.png"
-                                        alt="Image 2"
-                                        height="220px"
-                                        style={{
-                                            objectFit: 'cover',
-                                            marginTop: '-10px',
-                                            marginBottom: '-10px',
-                                        }}
-                                    />
-                                    {antocProgressStyle}
-                                    <Typography variant="body2">
-                                        Additional descriptive text
-                                    </Typography>
-                                </TileContent>
-                            </CardActionArea>
-                        </Tile>
+                        <CharacterTile
+                            character={Character.Antoc}
+                            descriptionVisible
+                            onClick={() =>
+                                transitionChooseOpponent(Character.Antoc)
+                            }
+                            progressText={antocProgressText}
+                        />
                     </Box>
-                    <Button variant="contained" sx={{ marginTop: '30px' }}>
+                    <ShoshinMenuButton
+                        sx={{ width: 150 }}
+                        onClick={transitionBack}
+                    >
                         Back
-                    </Button>
-                </Box>
+                    </ShoshinMenuButton>
+                </FullArtBackground>
             </div>
         );
     }

@@ -8,6 +8,14 @@ declare module '@mui/material/styles' {
     interface PaletteOptions {
         accent?: { main: string };
     }
+
+    interface TypographyVariants {
+        poster: React.CSSProperties;
+    }
+
+    interface TypographyVariantsOptions {
+        poster?: React.CSSProperties;
+    }
 }
 
 declare module '@mui/material/Slider' {
@@ -17,11 +25,28 @@ declare module '@mui/material/Slider' {
     }
 }
 
+declare module '@mui/material/Typography' {
+    interface TypographyPropsVariantOverrides {
+        poster: true;
+    }
+}
+
 const theme = createTheme({
     typography: {
         fontFamily:
             'Raleway, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;',
         fontSize: 12,
+        poster: {
+            fontFamily: 'Dela Gothic One',
+            fontSize: '2.5rem',
+            fontWeight: '900',
+            letterSpacing: '0.15em',
+        },
+        h3: {
+            fontFamily: 'Dela Gothic One',
+            fontSize: '1.8rem',
+            letterSpacing: '0.15em',
+        },
     },
     palette: {
         primary: {
