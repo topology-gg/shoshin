@@ -20,6 +20,8 @@ import {
     JessicaOpponents,
 } from '../ChooseOpponent/opponents/opponents';
 import MoveTutorial from '../MoveTutorial/MoveTutorial';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import MobileView from '../MobileView';
 
 const Scenes = {
     LOGO: 'logo',
@@ -289,6 +291,15 @@ const SceneSelector = () => {
     const onTransition = (scene: Scene) => {
         setScene(scene);
     };
+
+    const isMobileDisplay = useMediaQuery('(max-width:800px)');
+    if (isMobileDisplay) {
+        return (
+            <div>
+                <MobileView />
+            </div>
+        );
+    }
 
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
