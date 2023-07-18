@@ -355,3 +355,7 @@ td {
 .comboActionDiv:hover {
     background-color: #f8f8f8;
 }
+
+.hoverable:hover {
+    cursor: pointer;
+}
