@@ -22,7 +22,7 @@ import {
 import MoveTutorial from '../MoveTutorial/MoveTutorial';
 import MechanicsTutorialScene from '../GamePlayTutorial/GameplayTutorial';
 
-const Scenes = {
+export const Scenes = {
     LOGO: 'logo',
     WALLET_CONNECT: 'wallet_connect',
     MAIN_MENU: 'main_menu',
@@ -34,7 +34,7 @@ const Scenes = {
     GAMEPLAY_TUTORIAL: 'gameplay_tutorial',
 } as const;
 
-type Scene = (typeof Scenes)[keyof typeof Scenes];
+export type Scene = (typeof Scenes)[keyof typeof Scenes];
 
 export interface Opponent {
     agent: Agent;
@@ -80,7 +80,7 @@ const defaultOpponent: Opponent = {
 };
 const StorageKey = 'PersistedGameState';
 const SceneSelector = () => {
-    const [scene, setScene] = useState<Scene>(Scenes.GAMEPLAY_TUTORIAL);
+    const [scene, setScene] = useState<Scene>(Scenes.WALLET_CONNECT);
 
     const ctx = React.useContext(ShoshinWASMContext);
 
@@ -283,13 +283,20 @@ const SceneSelector = () => {
         setScene(scene);
     };
 
+    const transitionFromMainMenu = (scene: Scene, gameMode: GameModes) => {
+        if (scene == Scenes.ARCADE || scene == Scenes.MAIN_SCENE) {
+            transitionChooseCharacter(gameMode);
+        } else {
+            setScene(scene);
+        }
+    };
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
             <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
                 <TitleMenu transitionMainMenu={transitionMainMenu} />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.MAIN_MENU}>
-                <MainMenu transition={transitionChooseCharacter} />
+                <MainMenu transition={transitionFromMainMenu} />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.CHOOSE_CHARACTER}>
                 <ChooseCharacter

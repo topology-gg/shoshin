@@ -3,22 +3,25 @@ import React from 'react';
 import { GameModes } from '../../types/Simulator';
 import ShoshinMenu, { ShoshinMenuItem } from './ShoshinMenu';
 import FullArtBackground from '../layout/FullArtBackground';
+import { Scene, Scenes } from '../layout/SceneSelector';
 
 const MainMenu = React.forwardRef<
     unknown,
-    { transition: (gameMode: GameModes) => void }
+    { transition: (scene: Scene, gameMode: GameModes) => void }
 >(({ transition }, ref) => {
     const items: ShoshinMenuItem[] = [
         {
             title: 'Play',
-            onClick: () => transition(GameModes.simulation),
+            onClick: () => transition(Scenes.MAIN_SCENE, GameModes.simulation),
         },
         {
             title: 'Arcade Mode',
-            onClick: () => transition(GameModes.realtime),
+            onClick: () => transition(Scenes.ARCADE, GameModes.realtime),
         },
         {
-            title: 'About Shoshin',
+            title: 'Tutorial',
+            onClick: () =>
+                transition(Scenes.GAMEPLAY_TUTORIAL, GameModes.simulation),
         },
         {
             title: 'Profile',

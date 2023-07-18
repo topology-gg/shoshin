@@ -55,11 +55,17 @@ export interface GambitFeatures {
     conditionAnd: boolean;
     combos: boolean;
 }
+export const FullGambitFeatures: GambitFeatures = {
+    layerAddAndDelete: true,
+    conditionAnd: true,
+    combos: true,
+};
 interface GambitProps {
     layers: Layer[];
     setLayers: (layers: Layer[]) => void;
     character: Character;
     conditions: Condition[];
+    actions: Action[];
     combos: Action[][];
     setCombos: (combo: Action[][]) => void;
     activeMs: number;
@@ -72,6 +78,7 @@ export interface LayerProps {
     isReadOnly: boolean;
     character: Character;
     conditions: Condition[];
+    actions: Action[];
     combos: Action[][];
     handleRemoveLayer: (index: number) => void;
     //Check if previously combo and close
@@ -104,6 +111,7 @@ const DraggableLayer = ({
     handleChooseCombo,
     isActive,
     features,
+    actions,
 }: LayerProps) => {
     return (
         <Draggable draggableId={index.toString()} index={index}>
@@ -132,6 +140,7 @@ const DraggableLayer = ({
                         handleChooseCombo={handleChooseCombo}
                         isActive={isActive}
                         features={features}
+                        actions={actions}
                     />
                 </div>
             )}
@@ -154,6 +163,7 @@ const Layer = ({
     handleChooseCombo,
     isActive,
     features,
+    actions,
 }: LayerProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -168,10 +178,10 @@ const Layer = ({
 
     const conditionsOpen = Boolean(conditionAnchorEl);
 
-    let actions = CHARACTERS_ACTIONS[characterIndex].map((a) => a.display.name);
+    let actionsDisplayNames = actions.map((a) => a.display.name);
 
     if (features.combos) {
-        actions.push(`Combo`);
+        actionsDisplayNames.push(`Combo`);
     }
 
     const onActionSelect = (action: string) => {
@@ -337,7 +347,7 @@ const Layer = ({
                     open={open}
                     onClose={handleCloseActionDropdown}
                 >
-                    {actions.map((action) => {
+                    {actionsDisplayNames.map((action) => {
                         return (
                             <MenuItem>
                                 <BlurrableListItemText
@@ -379,6 +389,7 @@ const Gambit = ({
     setCombos,
     activeMs,
     features,
+    actions,
 }: GambitProps) => {
     const handleCreateLayer = () => {
         // We need to make a deep copy otherwise this exported object is reassigned
@@ -580,6 +591,7 @@ const Gambit = ({
         layers,
         activeMs,
         features,
+        actions,
     }: any) {
         return layers.map((layer: Layer, index: number) => (
             <DraggableLayer
@@ -598,6 +610,7 @@ const Gambit = ({
                 handleChooseCombo={handleSelectCombo}
                 isActive={activeMs == index + 1}
                 features={features}
+                actions={actions}
             />
         ));
     });
@@ -690,6 +703,7 @@ const Gambit = ({
                                         layers={layers}
                                         activeMs={activeMs}
                                         features={features}
+                                        actions={actions}
                                     />
                                     {provided.placeholder}
                                 </div>

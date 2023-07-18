@@ -355,3 +355,21 @@ td {
 .comboActionDiv:hover {
     background-color: #f8f8f8;
 }
+
+.overlay-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+.elevated {
+    z-index: 3;
+    position: relative;
+}

@@ -1,5 +1,7 @@
 import { GambitFeatures } from '../components/sidePanelComponents/Gambit/Gambit';
+import { Action } from './Action';
 import Agent, { PlayerAgent } from './Agent';
+import { TestJson } from './Frame';
 
 export enum HighlightZone {
     SIMULATOR = 'simulator',
@@ -11,17 +13,20 @@ export enum HighlightZone {
     NONE = 'none',
 }
 
+export interface LessonObjective {
+    description: string;
+    evaluate: (
+        animationFrame: number,
+        testJson: TestJson,
+        playerAgent: PlayerAgent
+    ) => boolean;
+}
 export interface LessonSlide {
     content: string;
     highlightZone: HighlightZone;
     highlightLayer: number;
     continueText: string;
-}
-
-enum Features {
-    LayerAddAndDelete = 'LayerAddAndDelete',
-    ConditionAnd = 'ConditionAnd',
-    Combos = 'Combos',
+    lessonObjectives?: LessonObjective[];
 }
 
 //disables, debug, add layer, append conditions, delete condition
@@ -33,4 +38,5 @@ export interface Lesson {
     player: PlayerAgent;
     opponent: Agent;
     features: GambitFeatures;
+    actions: Action[];
 }

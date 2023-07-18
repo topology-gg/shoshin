@@ -1,20 +1,12 @@
 import React, { ForwardedRef, useEffect, useState } from 'react';
-import {
-    Typography,
-    Box,
-    AccordionDetails,
-    Accordion,
-    AccordionSummary,
-    Grid,
-    Button,
-} from '@mui/material';
+import { Typography, Box, Grid, Button } from '@mui/material';
 import styles from '../../../styles/Home.module.css';
 import { FrameScene, TestJson } from '../../types/Frame';
 import Agent, { PlayerAgent, buildAgent } from '../../types/Agent';
 import StatusBarPanel, {
     StatusBarPanelProps as PlayerStatuses,
 } from '../StatusBar';
-import { Action } from '../../types/Action';
+import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 import { Character, numberToCharacter } from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
 import useRunCairoSimulation from '../../hooks/useRunCairoSimulation';
@@ -27,8 +19,8 @@ import SquareOverlayMenu from '../SimulationScene/SuccessMenu';
 import { Medal, Opponent } from '../layout/SceneSelector';
 import mainSceneStyles from '../SimulationScene/MainScene.module.css';
 import PauseMenu from '../SimulationScene/PauseMenu';
-import tutorial from './Tutorials/Tutorial';
-import { Lesson } from '../../types/Tutorial';
+import tutorial from './Lessons/Tutorial';
+import { HighlightZone, Lesson } from '../../types/Tutorial';
 //@ts-ignore
 const Game = dynamic(() => import('../../Game/PhaserGame'), {
     ssr: false,
@@ -40,19 +32,47 @@ interface MoveTutorialProps {
 }
 
 //We need Players agent and opponent
-const MechanicsTutorialScene = React.forwardRef(
+const GameplayTutorialScene = React.forwardRef(
     (props: MoveTutorialProps, ref: ForwardedRef<HTMLDivElement>) => {
         const { onQuit, onContinue } = props;
         // Constants
         const LATENCY = 70;
         const runnable = true;
 
-        const [lesson, changeLesson] = useState<Lesson>(tutorial[0]);
+        const [lessonIndex, changeLesson] = useState<number>(1);
+        const lesson = tutorial[lessonIndex];
         const [slideIndex, changeSlide] = useState<number>(0);
 
         const currentSlide = lesson.slides[slideIndex];
 
+        const initialObjectiveProgess = currentSlide.lessonObjectives?.length
+            ? currentSlide.lessonObjectives.map((objective) => {
+                  return objective.evaluate(animationFrame, testJson, {
+                      layers,
+                      character,
+                      combos,
+                      conditions,
+                  });
+              })
+            : [];
+
+        const [objectiveProgress, setObjectiveProgress] = useState<boolean[]>(
+            initialObjectiveProgess
+        );
+
+        const canGoToNextSlide = objectiveProgress.every(
+            (progress) => progress
+        );
+
+        const highlightSimulator =
+            currentSlide.highlightZone == HighlightZone.SIMULATOR;
+        const highlightMind = currentSlide.highlightZone == HighlightZone.MIND;
+
         const { title } = lesson;
+
+        const hasHighLights =
+            currentSlide.highlightZone != HighlightZone.NONE ||
+            currentSlide.highlightLayer != -1;
 
         // React states for simulation / animation control
         const [output, setOuput] = useState<FrameScene>();
@@ -109,9 +129,24 @@ const MechanicsTutorialScene = React.forwardRef(
             };
         }, [openPauseMenu]);
 
+        useEffect(() => {
+            const { combos, conditions, layers, character } =
+                tutorial[lessonIndex].player;
+            setLayers(layers);
+            setCombos(combos);
+            setConditions(conditions);
+            setCharacter(character);
+        }, [lessonIndex]);
+
+        useEffect(() => {
+            let builtAgent = handleBuildAgent();
+            setP1(builtAgent);
+        }, [character, combos, conditions, layers]);
+
         function handleBuildAgent() {
             let char = Object.keys(Character).indexOf(character);
 
+            console.log('layers', layers);
             //given layers
             const {
                 mentalStates: generatedMs,
@@ -163,6 +198,29 @@ const MechanicsTutorialScene = React.forwardRef(
                 stamina_1,
             });
         }, [testJson, animationFrame]);
+
+        useEffect(() => {
+            const updatedObjectiveProgress = currentSlide.lessonObjectives
+                ?.length
+                ? currentSlide.lessonObjectives.map((objective) => {
+                      return objective.evaluate(animationFrame, testJson, {
+                          layers,
+                          character,
+                          combos,
+                          conditions,
+                      });
+                  })
+                : [];
+            setObjectiveProgress(updatedObjectiveProgress);
+        }, [
+            currentSlide,
+            animationFrame,
+            testJson,
+            layers,
+            character,
+            combos,
+            conditions,
+        ]);
 
         const { runCairoSimulation } = useRunCairoSimulation(p1, p2);
 
@@ -255,8 +313,8 @@ const MechanicsTutorialScene = React.forwardRef(
 
         useEffect(() => {
             if (beatAgent && N_FRAMES - 1 === animationFrame) {
-                changeShowVictory(true);
-                changePlayedWinningReplay(true);
+                //changeShowVictory(true);
+                //changePlayedWinningReplay(true);
             }
 
             if (animationFrame == N_FRAMES - 1) {
@@ -274,14 +332,31 @@ const MechanicsTutorialScene = React.forwardRef(
             onContinue();
         };
 
-        const playOnly = !playedWinningReplay && beatAgent;
+        const handleSlideContinue = () => {
+            if (slideIndex + 1 < lesson.slides.length) {
+                changeSlide((slideIndex + 1) % lesson.slides.length);
+            } else {
+                if (lessonIndex + 1 < tutorial.length) {
+                    changeLesson(lessonIndex + 1);
+                    changeSlide(0);
+                    clearInterval(loop); // kill the timer
+                    setAnimationState('Stop');
+                    setAnimationFrame((_) => 0);
+                } else {
+                    onContinue();
+                }
+            }
+        };
+        const playOnly = false && !playedWinningReplay && beatAgent;
 
         const overlayContainerClassName = playOnly
             ? mainSceneStyles.overlayContainer
             : '';
 
         //Having this class be conditional on playOnly may not be needed
-        const overlayClassName = playOnly ? mainSceneStyles.overlay : '';
+        const overlayClassName = playOnly
+            ? mainSceneStyles.overlay
+            : mainSceneStyles.simulatorContainer;
 
         const p1Name = lesson.player.character;
         const p2Name = numberToCharacter(lesson.opponent.character);
@@ -290,11 +365,28 @@ const MechanicsTutorialScene = React.forwardRef(
             N_FRAMES > 0
                 ? testJson.agent_0.frames[animationFrame].mental_state
                 : 0;
+
+        const objectives = currentSlide.lessonObjectives?.map(
+            (objective, index) => {
+                return (
+                    <div>
+                        <Typography>
+                            {objectiveProgress[index] ? 'Complete' : null}
+                        </Typography>
+                        <Typography>{objective.description}</Typography>
+                    </div>
+                );
+            }
+        );
+
         return (
             <div id={'mother'} className={styles.container} ref={ref}>
                 {' '}
                 <div className={mainSceneStyles.overlayMenu}></div>
                 <div className={styles.main}>
+                    {hasHighLights ? (
+                        <div className={'overlay-menu'}> </div>
+                    ) : null}
                     {showVictory ? (
                         <SquareOverlayMenu
                             opponentName={opponentName}
@@ -317,6 +409,8 @@ const MechanicsTutorialScene = React.forwardRef(
                                 alignItems="center"
                                 width="100%"
                                 border="1px solid #999999"
+                                className={hasHighLights ? 'elevated' : ''}
+                                sx={{ backgroundColor: 'white' }}
                             >
                                 <Typography variant="h6" align="center">
                                     {title}
@@ -324,6 +418,7 @@ const MechanicsTutorialScene = React.forwardRef(
                                 <Typography variant="body1" align="center">
                                     {currentSlide.content}
                                 </Typography>
+                                {objectives}
                                 <Typography
                                     variant="body1"
                                     align="center"
@@ -337,8 +432,13 @@ const MechanicsTutorialScene = React.forwardRef(
                                     width="100%"
                                     mt={2}
                                 >
-                                    <Button variant="contained" color="primary">
-                                        Continue
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={!canGoToNextSlide}
+                                        onClick={() => handleSlideContinue()}
+                                    >
+                                        {currentSlide.continueText}
                                     </Button>
                                 </Box>
                             </Box>
@@ -352,6 +452,7 @@ const MechanicsTutorialScene = React.forwardRef(
                                     flexDirection: 'column',
                                     width: '100%',
                                 }}
+                                className={highlightSimulator ? 'elevated' : ''}
                             >
                                 <div className={overlayContainerClassName}>
                                     <div className={overlayClassName}>
@@ -421,7 +522,9 @@ const MechanicsTutorialScene = React.forwardRef(
                                     border: '1px solid #999999',
                                     width: '100%',
                                     height: '100%',
+                                    backgroundColor: 'white',
                                 }}
+                                className={highlightMind ? 'elevated' : ''}
                             >
                                 <Gambit
                                     layers={layers}
@@ -432,6 +535,7 @@ const MechanicsTutorialScene = React.forwardRef(
                                     combos={combos}
                                     setCombos={setCombos}
                                     activeMs={activeMs}
+                                    actions={lesson.actions}
                                 />
                             </Box>
                         </Grid>
@@ -442,4 +546,4 @@ const MechanicsTutorialScene = React.forwardRef(
     }
 );
 
-export default MechanicsTutorialScene;
+export default GameplayTutorialScene;

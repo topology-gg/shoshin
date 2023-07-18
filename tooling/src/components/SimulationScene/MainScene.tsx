@@ -13,7 +13,7 @@ import Agent, { PlayerAgent, buildAgent } from '../../types/Agent';
 import StatusBarPanel, {
     StatusBarPanelProps as PlayerStatuses,
 } from '../../../src/components/StatusBar';
-import { Action } from '../../types/Action';
+import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 import { Character, numberToCharacter } from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
 import useRunCairoSimulation from '../../hooks/useRunCairoSimulation';
@@ -23,7 +23,9 @@ import MidScreenControl from '../MidScreenControl';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FrameInspector from '../FrameInspector';
 import FrameDecisionPathViewer from '../FrameDecisionPathViewer';
-import Gambit from '../sidePanelComponents/Gambit/Gambit';
+import Gambit, {
+    FullGambitFeatures,
+} from '../sidePanelComponents/Gambit/Gambit';
 import { Condition } from '../../types/Condition';
 import SquareOverlayMenu from './SuccessMenu';
 import { Medal, Opponent } from '../layout/SceneSelector';
@@ -87,6 +89,9 @@ const SimulationScene = React.forwardRef(
         const [character, setCharacter] = useState<Character>(player.character);
 
         const [layers, setLayers] = useState<Layer[]>(player.layers);
+
+        const actions =
+            CHARACTERS_ACTIONS[character == Character.Jessica ? 0 : 1];
 
         const opponentName =
             opponent.agent.character == 0 ? Character.Jessica : Character.Antoc;
@@ -474,12 +479,13 @@ const SimulationScene = React.forwardRef(
                                 <Gambit
                                     layers={layers}
                                     setLayers={setLayers}
-                                    isReadOnly={false}
+                                    features={FullGambitFeatures}
                                     character={character}
                                     conditions={conditions}
                                     combos={combos}
                                     setCombos={setCombos}
                                     activeMs={activeMs}
+                                    actions={actions}
                                 />
                             </Box>
                         </Grid>
