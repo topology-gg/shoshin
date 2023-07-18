@@ -39,7 +39,7 @@ const GameplayTutorialScene = React.forwardRef(
         const LATENCY = 70;
         const runnable = true;
 
-        const [lessonIndex, changeLesson] = useState<number>(1);
+        const [lessonIndex, changeLesson] = useState<number>(0);
         const lesson = tutorial[lessonIndex];
         const [slideIndex, changeSlide] = useState<number>(0);
 
@@ -248,7 +248,7 @@ const GameplayTutorialScene = React.forwardRef(
                 animationStepBackward();
             } else if (operation == 'ToggleRun') {
                 // If in Run => go to Pause
-                if (animationState == 'Run' && !beatAgent) {
+                if (animationState == 'Run') {
                     clearInterval(loop); // kill the timer
                     setAnimationState('Pause');
                 }
@@ -342,6 +342,7 @@ const GameplayTutorialScene = React.forwardRef(
                     clearInterval(loop); // kill the timer
                     setAnimationState('Stop');
                     setAnimationFrame((_) => 0);
+                    setTestJson(null);
                 } else {
                     onContinue();
                 }
