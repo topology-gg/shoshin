@@ -1,5 +1,12 @@
 import React, { ForwardedRef, useEffect, useState } from 'react';
-import { Typography, Box, Grid, Button } from '@mui/material';
+import {
+    Typography,
+    Box,
+    Grid,
+    Button,
+    Checkbox,
+    FormControlLabel,
+} from '@mui/material';
 import styles from '../../../styles/Home.module.css';
 import { FrameScene, TestJson } from '../../types/Frame';
 import Agent, { PlayerAgent, buildAgent } from '../../types/Agent';
@@ -45,25 +52,6 @@ const GameplayTutorialScene = React.forwardRef(
 
         const currentSlide = lesson.slides[slideIndex];
 
-        const initialObjectiveProgess = currentSlide.lessonObjectives?.length
-            ? currentSlide.lessonObjectives.map((objective) => {
-                  return objective.evaluate(animationFrame, testJson, {
-                      layers,
-                      character,
-                      combos,
-                      conditions,
-                  });
-              })
-            : [];
-
-        const [objectiveProgress, setObjectiveProgress] = useState<boolean[]>(
-            initialObjectiveProgess
-        );
-
-        const canGoToNextSlide = objectiveProgress.every(
-            (progress) => progress
-        );
-
         const highlightSimulator =
             currentSlide.highlightZone == HighlightZone.SIMULATOR;
         const highlightMind = currentSlide.highlightZone == HighlightZone.MIND;
@@ -106,6 +94,24 @@ const GameplayTutorialScene = React.forwardRef(
         );
 
         const [layers, setLayers] = useState<Layer[]>(lesson.player.layers);
+
+        const initialObjectiveProgess = currentSlide.lessonObjectives?.length
+            ? currentSlide.lessonObjectives.map((objective) => {
+                  return objective.evaluate(animationFrame, testJson, {
+                      layers,
+                      character,
+                      combos,
+                      conditions,
+                  });
+              })
+            : [];
+
+        const [objectiveProgress, setObjectiveProgress] = useState<boolean[]>(
+            initialObjectiveProgess
+        );
+        const canGoToNextSlide = objectiveProgress.every(
+            (progress) => progress
+        );
 
         const opponentName =
             lesson.opponent.character == 0
@@ -370,12 +376,30 @@ const GameplayTutorialScene = React.forwardRef(
         const objectives = currentSlide.lessonObjectives?.map(
             (objective, index) => {
                 return (
-                    <div>
-                        <Typography>
-                            {objectiveProgress[index] ? 'Complete' : null}
-                        </Typography>
-                        <Typography>{objective.description}</Typography>
-                    </div>
+                    <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                    >
+                        <FormControlLabel
+                            sx={{ pointerEvents: 'none' }}
+                            key={index}
+                            control={
+                                <Checkbox
+                                    checked={objectiveProgress[index]}
+                                    sx={{
+                                        color: '#FC5853',
+                                        '&.Mui-checked': {
+                                            color: '#FC5853',
+                                        },
+                                    }}
+                                    //https://stackoverflow.com/a/63126124
+                                    key={Math.random()}
+                                />
+                            }
+                            label={objective.description}
+                        />
+                    </Box>
                 );
             }
         );
