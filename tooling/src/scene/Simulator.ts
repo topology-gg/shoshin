@@ -45,8 +45,8 @@ const JUMP_SMOKE_SCALE_X = 0.15;
 const JUMP_SMOKE_SCALE_Y = 0.15;
 const AIR_DASH_SCALE_X = 0.04;
 const AIR_DASH_SCALE_Y = 0.04;
-const GOOD_BLOCK_SCALE_X = 0.05;
-const GOOD_BLOCK_SCALE_Y = 0.05;
+const GOOD_BLOCK_PINK_SCALE = 0.05;
+const GOOD_BLOCK_TURQUOISE_SCALE = 0.3;
 const YELLOW_SPARK_SCALE = 0.1;
 const LIGHTNING_SCALE = 0.3;
 
@@ -109,7 +109,7 @@ export default class Simulator extends Phaser.Scene {
     jumpLandingSmokeSprites: Phaser.GameObjects.Sprite[];
     airDashSmokeSprites: Phaser.GameObjects.Sprite[];
     goodBlockPinkSprites: Phaser.GameObjects.Sprite[];
-    goodBlockGraySprites: Phaser.GameObjects.Sprite[];
+    goodBlockTurquoiseSprites: Phaser.GameObjects.Sprite[];
     yellowSparkSprites: Phaser.GameObjects.Sprite[];
     rippleSprites: Phaser.GameObjects.Sprite[];
     bluePuffSprites: Phaser.GameObjects.Sprite[];
@@ -408,11 +408,11 @@ export default class Simulator extends Phaser.Scene {
             }
         );
         this.load.spritesheet(
-            'good-block-gray',
-            'images/effects/good-block-gray/spritesheet.png',
+            'good-block-turquoise',
+            'images/effects/good-block-turquoise/spritesheet.png',
             {
-                frameWidth: 2996,
-                frameHeight: 2996,
+                frameWidth: 500,
+                frameHeight: 500,
             }
         );
         this.load.spritesheet(
@@ -635,9 +635,9 @@ export default class Simulator extends Phaser.Scene {
         });
 
         this.anims.create({
-            key: 'goodBlockGrayAnim',
+            key: 'goodBlockTurquoiseAnim',
             frameRate: 20,
-            frames: this.anims.generateFrameNumbers('good-block-gray', {
+            frames: this.anims.generateFrameNumbers('good-block-turquoise', {
                 start: 0,
                 end: 7,
             }),
@@ -684,7 +684,7 @@ export default class Simulator extends Phaser.Scene {
         this.jumpLandingSmokeSprites = [];
         this.airDashSmokeSprites = [];
         this.goodBlockPinkSprites = [];
-        this.goodBlockGraySprites = [];
+        this.goodBlockTurquoiseSprites = [];
         this.yellowSparkSprites = [];
         this.rippleSprites = [];
         this.bluePuffSprites = [];
@@ -753,15 +753,15 @@ export default class Simulator extends Phaser.Scene {
             this.goodBlockPinkSprites.push(
                 this.add
                     .sprite(0, 0, 'good-block-pink')
-                    .setScale(GOOD_BLOCK_SCALE_X, GOOD_BLOCK_SCALE_Y)
+                    .setScale(GOOD_BLOCK_PINK_SCALE)
                     .setVisible(false)
                     .setAlpha(0.8)
                     .setDepth(100)
             );
-            this.goodBlockGraySprites.push(
+            this.goodBlockTurquoiseSprites.push(
                 this.add
-                    .sprite(0, 0, 'good-block-gray')
-                    .setScale(GOOD_BLOCK_SCALE_X, GOOD_BLOCK_SCALE_Y)
+                    .sprite(0, 0, 'good-block-turquoise')
+                    .setScale(GOOD_BLOCK_TURQUOISE_SCALE)
                     .setVisible(false)
                     .setAlpha(0.8)
                     .setDepth(100)
@@ -1675,10 +1675,10 @@ export default class Simulator extends Phaser.Scene {
             const y = -1 * objectFrame.hitboxes.action.origin.y;
 
             if (subjectFrame.body_state.state == BodystatesAntoc.Block) {
-                this.goodBlockGraySprites[subjectIndex]
+                this.goodBlockTurquoiseSprites[subjectIndex]
                     .setPosition(x, y)
                     .setVisible(true)
-                    .play('goodBlockGrayAnim');
+                    .play('goodBlockTurquoiseAnim');
             } else {
                 this.goodBlockPinkSprites[subjectIndex]
                     .setPosition(x, y)
