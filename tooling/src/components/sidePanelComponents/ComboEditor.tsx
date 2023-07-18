@@ -81,6 +81,12 @@ const ComboEditor = ({
         handleValidateCombo(prev_copy, selectedIndex);
     };
 
+    const handleClearEditingCombo = () => {
+        const newEditingCombo = [];
+        setEditingCombo?.(newEditingCombo);
+        handleValidateCombo(newEditingCombo, selectedIndex);
+    };
+
     return (
         <Box
             sx={{
@@ -98,7 +104,7 @@ const ComboEditor = ({
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        margin: '0rem 0 2rem 0',
+                        margin: '0rem 0 0rem 0',
                         justifyContent: 'space-evenly',
                     }}
                 >
@@ -163,6 +169,36 @@ const ComboEditor = ({
                         );
                     })}
                 </Box>
+
+                <Box
+                    sx={{
+                        textAlign: 'right',
+                        pr: 1.5,
+                        mt: 1,
+                        mb: 2,
+                        fontSize: '12px',
+                    }}
+                >
+                    <Tooltip
+                        key={`combo-clearing-span-tooltip`}
+                        title={
+                            <React.Fragment>
+                                <Typography color="inherit">
+                                    Clear this combo
+                                </Typography>
+                            </React.Fragment>
+                        }
+                        placement="left"
+                    >
+                        <u
+                            onClick={handleClearEditingCombo}
+                            className={'hoverable'}
+                        >
+                            Clear
+                        </u>
+                    </Tooltip>
+                </Box>
+
                 <div
                     style={{
                         height: '25px',

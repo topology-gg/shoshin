@@ -21,6 +21,8 @@ import {
 } from '../ChooseOpponent/opponents/opponents';
 import MoveTutorial from '../MoveTutorial/MoveTutorial';
 import MechanicsTutorialScene from '../GamePlayTutorial/GameplayTutorial';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import MobileView from '../MobileView';
 
 export const Scenes = {
     LOGO: 'logo',
@@ -174,9 +176,18 @@ const SceneSelector = () => {
         }
     }, [character]);
 
-    const [opponentChoices, setOpponentChoices] = useState<Opponent[]>([
-        defaultOpponent,
-    ]);
+    const defaultOpponents = (
+        character == Character.Jessica ? JessicaOpponents : AntocOpponents
+    ).map((agent, id) => {
+        return {
+            agent: agent,
+            medal: Medal.NONE,
+            id,
+            name: id.toString(),
+        };
+    });
+    const [opponentChoices, setOpponentChoices] =
+        useState<Opponent[]>(defaultOpponents);
 
     const [selectedOpponent, setSelectedOpponent] = useState<number>(0);
 
@@ -290,6 +301,15 @@ const SceneSelector = () => {
             setScene(scene);
         }
     };
+    const isMobileDisplay = useMediaQuery('(max-width:800px)');
+    if (isMobileDisplay) {
+        return (
+            <div>
+                <MobileView />
+            </div>
+        );
+    }
+
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
             <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
@@ -301,6 +321,7 @@ const SceneSelector = () => {
             <SceneSingle active={scene === Scenes.CHOOSE_CHARACTER}>
                 <ChooseCharacter
                     transitionChooseOpponent={onChooseCharacter}
+                    transitionBack={transitionMainMenu}
                     jessicaProgress={jessicaProgress}
                     antocProgress={antocProgress}
                     antocGoldCount={antocGoldCount}
@@ -313,6 +334,7 @@ const SceneSelector = () => {
                     transitionMainScene={transitionMainScene}
                     opponents={opponentChoices}
                     playerCharacter={character}
+                    transitionBack={() => transitionChooseCharacter(gameMode)}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.MOVE_TUTORIAL}>

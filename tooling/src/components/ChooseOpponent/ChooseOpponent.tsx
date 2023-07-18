@@ -1,47 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Button, Chip } from '@mui/material';
+import { Typography, Box, Grid, Button, IconButton } from '@mui/material';
 import styles from './ChooseOpponent.module.css';
-import Agent from '../../types/Agent';
 import { Medal, Opponent } from '../layout/SceneSelector';
 import { Character } from '../../constants/constants';
-import OpponentCarousel from './OpponentCarousel';
-import Tile, { TileContent } from '../ui/Tile';
+import CardCarousel3D from '../CardCarousel/CardCarousel3D';
+import FullArtBackground from '../layout/FullArtBackground';
+import ShoshinMenuButton from '../ui/ShoshinMenuButton';
+import CharacterTile from '../ChooseCharacter/CharacterTile';
 
 interface ChooseOpponentProps {
     opponents: Opponent[];
     transitionMainScene: (opp: number) => void;
+    transitionBack: () => void;
     playerCharacter: Character;
 }
 const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
-    ({ playerCharacter, transitionMainScene, opponents }, ref) => {
+    (
+        { playerCharacter, transitionMainScene, opponents, transitionBack },
+        ref
+    ) => {
         let characterBoxes = [];
-
-        characterBoxes = opponents.map(({ agent, medal }, index) => {
-            const handleClick = () => {
-                transitionMainScene(index);
-            };
-
-            const imageUrl =
-                'images/' +
-                (agent.character == 0 ? 'jessica' : 'antoc') +
-                '/idle/right/frame_0.png';
-            const characterName = agent.character == 0 ? 'Jessica' : 'Antoc';
-            return (
-                <Box
-                    key={index}
-                    className={styles.characterBox}
-                    onClick={handleClick}
-                >
-                    <Typography variant="h4">{characterName}</Typography>
-                    <img src={imageUrl} alt="Image 1" height="200px" />
-                    <Typography variant="body2">
-                        Additional descriptive text
-                    </Typography>
-
-                    <Typography variant="body2">Grade: {medal}</Typography>
-                </Box>
-            );
-        });
 
         const initialSelectedOpponent = opponents.findIndex(
             (opp) => opp.medal === Medal.NONE
@@ -50,6 +28,34 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
         const [selectedOpponent, selectOpponent] = useState<number>(
             initialSelectedOpponent !== -1 ? initialSelectedOpponent : 0
         );
+
+        characterBoxes = opponents.map(({ agent, medal }, index) => {
+            const handleClick = () => {
+                transitionMainScene(index);
+            };
+
+            const character: Character =
+                agent.character == 0 ? Character.Jessica : Character.Antoc;
+
+            const imageUrl =
+                'images/' + character.toLowerCase() + '/idle/right/frame_0.png';
+
+            return (
+                <CharacterTile
+                    character={character}
+                    key={index}
+                    mediaCover={
+                        <div className={styles.characterFooter}>
+                            <img
+                                src={imageUrl}
+                                alt="Image 1"
+                                className={styles.characterModel}
+                            />
+                        </div>
+                    }
+                ></CharacterTile>
+            );
+        });
 
         // Effect to make sure that selectedOpponent is initialized correctly when opponent data loads
         useEffect(() => {
@@ -62,70 +68,124 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
             transitionMainScene(selectedOpponent);
         };
 
-        const characterName =
-            playerCharacter == Character.Jessica ? 'Jessica' : 'Antoc';
-        const characterImageUrl =
-            playerCharacter == Character.Jessica
-                ? 'images/jessica/idle/right/frame_0.png'
-                : 'images/antoc/idle/right/frame_0.png';
+        const selectedOpponentName =
+            opponents[selectedOpponent].agent.character == 0
+                ? 'Jessica'
+                : 'Antoc';
+        const selectedOpponentGrade = opponents[selectedOpponent].medal;
+
+        const decrementSelectedOpponent = () => {
+            const newIndex =
+                selectedOpponent - 1 < 0
+                    ? opponents.length - 1
+                    : selectedOpponent - 1;
+            selectOpponent(newIndex);
+        };
+
+        const incrementSelectedOpponent = () => {
+            const newIndex = (selectedOpponent + 1) % opponents.length;
+            selectOpponent(newIndex);
+        };
+
         return (
             <div ref={ref}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '100%',
-                        height: '100vh',
-                    }}
-                >
-                    <Typography variant="h5" gutterBottom>
-                        Choose your opponent
-                    </Typography>
-
+                <FullArtBackground useAlt={true}>
                     <Box
                         sx={{
                             display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
                             justifyContent: 'center',
-                            alignItems: 'flex-start',
-                            gap: 2,
+                            width: '100%',
+                            height: '100vh',
                         }}
                     >
-                        <Tile sx={{ width: 400 }} active>
-                            <TileContent>
-                                <Typography variant="h4">
-                                    {characterName}{' '}
-                                    <Chip
-                                        color="primary"
-                                        label="Your character"
+                        <Typography variant="h3" gutterBottom>
+                            Choose your opponent
+                        </Typography>
+                        <ShoshinMenuButton
+                            variant="text"
+                            size="large"
+                            sx={{ width: 200 }}
+                        >
+                            {selectedOpponentName}
+                        </ShoshinMenuButton>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '100%',
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    width: '50%',
+                                    minWidth: '600px',
+                                    minHeight: '600px',
+                                    height: '50vh',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <IconButton
+                                    onClick={() => decrementSelectedOpponent()}
+                                >
+                                    <img
+                                        src="./images/ui/next-opponent-left.png"
+                                        alt="Button Icon"
                                     />
-                                </Typography>
-                                <img
-                                    src={characterImageUrl}
-                                    alt="Image 1"
-                                    height="200px"
+                                </IconButton>
+                                <CardCarousel3D
+                                    offset={2}
+                                    showArrows={false}
+                                    cards={characterBoxes}
+                                    currentIndex={selectedOpponent}
+                                    selectIndex={selectOpponent}
                                 />
-                                <Typography variant="h6">Text</Typography>
-                                <Typography variant="body2">
-                                    Additional descriptive text
-                                </Typography>
-                            </TileContent>
-                        </Tile>
-                        <OpponentCarousel
-                            opponents={opponents}
-                            onOpponentChange={selectOpponent}
-                            selectedOpponent={selectedOpponent}
-                        />
+                                <IconButton
+                                    onClick={() => incrementSelectedOpponent()}
+                                >
+                                    <img
+                                        src="./images/ui/next-opponent-right.png"
+                                        alt="Button Icon"
+                                    />
+                                </IconButton>
+                            </Box>
+                            <Grid container>
+                                <Grid item xs={5}></Grid>
+                                <Grid item xs={2} sx={{ textAlign: 'center' }}>
+                                    <Typography variant="h5" fontWeight="bold">
+                                        Grade: {selectedOpponentGrade}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        Strategy : Offense
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={2}></Grid>
+                                <Grid item xs={2}>
+                                    <Box display={'flex'}>
+                                        <ShoshinMenuButton
+                                            sx={{ width: 150 }}
+                                            onClick={transitionBack}
+                                        >
+                                            Back
+                                        </ShoshinMenuButton>
+                                        <ShoshinMenuButton
+                                            isAlt
+                                            sx={{ width: 175 }}
+                                            onClick={handleFightClick}
+                                        >
+                                            Fight
+                                        </ShoshinMenuButton>
+                                    </Box>
+                                </Grid>
+                            </Grid>
+                        </Box>
                     </Box>
-                    <Button
-                        variant="contained"
-                        sx={{ marginTop: '30px' }}
-                        onClick={handleFightClick}
-                    >
-                        Fight
-                    </Button>
-                </Box>
+                </FullArtBackground>
             </div>
         );
     }

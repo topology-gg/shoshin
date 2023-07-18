@@ -1,7 +1,15 @@
 import { Box, BoxProps } from '@mui/material';
 import React from 'react';
 
-const FullArtBackground = (props: BoxProps) => {
+interface FullArtBackgroundProps extends BoxProps {
+    useAlt?: boolean;
+}
+const FullArtBackground = (props: FullArtBackgroundProps) => {
+    const mainBgUrl = `url(/images/bg/shoshin-menu-bg.jpg)`;
+    const altBgUrl = `url(/images/bg/shoshin-menu-bg-alt.png)`;
+    const image = props.useAlt ? altBgUrl : mainBgUrl;
+
+    const backgroundColor = props.useAlt ? '#e8d4d6' : 'background.default';
     return (
         <Box
             sx={{
@@ -10,8 +18,8 @@ const FullArtBackground = (props: BoxProps) => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100vh',
-                backgroundColor: 'background.default',
-                backgroundImage: 'url(/images/bg/shoshin-menu-bg.jpg)',
+                backgroundColor: backgroundColor,
+                backgroundImage: image,
                 backgroundSize: 'cover',
                 backgroundPosition: '50% 50%',
             }}

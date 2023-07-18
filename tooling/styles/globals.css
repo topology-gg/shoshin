@@ -373,3 +373,6 @@ td {
     z-index: 3;
     position: relative;
 }
+.hoverable:hover {
+    cursor: pointer;
+}

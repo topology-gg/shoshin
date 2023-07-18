@@ -23,6 +23,7 @@ export interface Action {
             intents?: number[];
         }[];
     };
+    bodyState: number;
     key: string;
     tutorial?: {
         video: string;
@@ -35,6 +36,7 @@ export const defaultAction: Action = {
     display: { name: 'Rest', unicode: '\u{1F9D8}' },
     frames: { duration: 1 },
     key: '-',
+    bodyState: 0,
 };
 
 const RestId = 0;
@@ -43,6 +45,7 @@ const Rest: Action = {
     display: { name: 'Rest', unicode: '\u{1F9D8}' },
     frames: { duration: 1, intents: [RestId] },
     key: '-',
+    bodyState: 0,
 };
 
 export const Slash: Action = {
@@ -54,6 +57,7 @@ export const Slash: Action = {
         video: './media/tutorial/slash.mp4',
         description: 'A medium range attack that covers a large area',
     },
+    bodyState: 10,
 };
 
 const JessicaLowKickId = 11;
@@ -76,6 +80,7 @@ export const Upswing: Action = {
         description:
             'An attack that launches the opponent into the air, giving Jessica frame advantage',
     },
+    bodyState: 20,
 };
 
 export const Sidecut: Action = {
@@ -87,6 +92,7 @@ export const Sidecut: Action = {
         video: './media/tutorial/sidecut.mp4',
         description: 'An short range attack that is quick and versatile',
     },
+    bodyState: 30,
 };
 
 const BlockId = 4;
@@ -118,6 +124,7 @@ export const Block: Action = {
         ],
     },
     key: 'S',
+    bodyState: 40,
 };
 
 const JessicaMoveForwardId = 5;
@@ -126,6 +133,7 @@ const MoveForward: Action = {
     display: { name: 'MoveForward', unicode: '\u{1F6B6}' },
     frames: { duration: 1, intents: [JessicaMoveForwardId] },
     key: 'D',
+    bodyState: 90,
 };
 
 const JessicaMoveBackwardId = 6;
@@ -134,6 +142,7 @@ const MoveBackward: Action = {
     display: { name: 'MoveBackward', unicode: '\u{1F6B6}' },
     frames: { duration: 1, intents: [JessicaMoveBackwardId] },
     key: 'A',
+    bodyState: 100,
 };
 
 const JumpId = 9;
@@ -163,6 +172,7 @@ const DashForward: Action = {
         ],
     },
     key: 'E',
+    bodyState: 110,
 };
 
 const DashBackward: Action = {
@@ -190,6 +200,7 @@ const DashBackward: Action = {
         ],
     },
     key: 'Q',
+    bodyState: 120,
 };
 
 const Jump: Action = {
@@ -213,6 +224,7 @@ const Jump: Action = {
         ],
     },
     key: 'W',
+    bodyState: 130,
 };
 
 export const Gatotsu: Action = {
@@ -220,6 +232,7 @@ export const Gatotsu: Action = {
     display: { name: 'Gatotsu', unicode: '\u{1F985}' },
     frames: { duration: 7 },
     key: 'N',
+    bodyState: 140,
     tutorial: {
         video: './media/tutorial/gatotsu.mp4',
         description:
@@ -244,6 +257,7 @@ export const JessicaLowKick: Action = {
         ],
     },
     key: 'U',
+    bodyState: 150,
     tutorial: {
         video: './media/tutorial/jessica-lowkick.mp4',
         description:
@@ -271,6 +285,7 @@ const AntocRest: Action = {
     display: { name: 'Rest', unicode: '\u{1F9D8}' },
     frames: { duration: 1, intents: [RestId] },
     key: '-',
+    bodyState: 0,
 };
 
 export const Hori: Action = {
@@ -278,6 +293,7 @@ export const Hori: Action = {
     display: { name: 'Hori', unicode: '\u{1F5E1}' },
     frames: { duration: 7, active: [2, 3] },
     key: 'J',
+    bodyState: 1010,
     tutorial: {
         video: './media/tutorial/hori.mp4',
         description: 'A short-range quick attack',
@@ -312,6 +328,7 @@ const Vert: Action = {
         ],
     },
     key: 'K',
+    bodyState: 1020,
     tutorial: {
         video: './media/tutorial/vert.mp4',
         description:
@@ -347,6 +364,7 @@ export const AntocBlock: Action = {
         ],
     },
     key: 'S',
+    bodyState: 1040,
 };
 
 const AntocMoveForwardId = 4;
@@ -355,6 +373,7 @@ const AntocMoveForward: Action = {
     display: { name: 'MoveForward', unicode: '\u{1F6B6}' },
     frames: { duration: 1, intents: [AntocMoveForwardId] },
     key: 'D',
+    bodyState: 1110,
 };
 
 const AntocMoveBackwardId = 4;
@@ -363,6 +382,7 @@ export const AntocMoveBackward: Action = {
     display: { name: 'MoveBackward', unicode: '\u{1F6B6}' },
     frames: { duration: 1, intents: [AntocMoveBackwardId] },
     key: 'A',
+    bodyState: 1120,
 };
 
 const AntocDashForward: Action = {
@@ -379,6 +399,7 @@ const AntocDashForward: Action = {
         ],
     },
     key: 'E',
+    bodyState: 1100,
 };
 
 const AntocDashBackward: Action = {
@@ -395,6 +416,7 @@ const AntocDashBackward: Action = {
         ],
     },
     key: 'Q',
+    bodyState: 1120,
 };
 
 const StepForward: Action = {
@@ -411,6 +433,7 @@ const StepForward: Action = {
         ],
     },
     key: 'F',
+    bodyState: 1090,
     tutorial: {
         video: './media/tutorial/antoc-stepforward.mp4',
         description:
@@ -439,6 +462,7 @@ const AntocJump: Action = {
         ],
     },
     key: 'W',
+    bodyState: 1150,
 };
 
 const AntocLowKickId = 11;
@@ -456,6 +480,7 @@ const AntocLowKick: Action = {
         ],
     },
     key: 'U',
+    bodyState: 1160,
     tutorial: {
         video: './media/tutorial/antoc-lowkick.mp4',
         description:
@@ -477,6 +502,7 @@ const AntocCyclone: Action = {
         description:
             "Antoc's special attack, costing 500 (50%) rage to perform",
     },
+    bodyState: 1220,
 };
 
 const AntocActions = [
