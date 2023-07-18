@@ -20,7 +20,7 @@ const SquareOverlayMenu = ({
     };
 
     return (
-        <div className={styles.overlayMenu} onClick={toggleMenu}>
+        <div className={'overlay-menu'} onClick={toggleMenu}>
             <div className={styles.menuContent}>
                 <Box
                     display="flex"

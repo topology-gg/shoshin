@@ -20,10 +20,11 @@ import {
     JessicaOpponents,
 } from '../ChooseOpponent/opponents/opponents';
 import MoveTutorial from '../MoveTutorial/MoveTutorial';
+import MechanicsTutorialScene from '../GamePlayTutorial/GameplayTutorial';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from '../MobileView';
 
-const Scenes = {
+export const Scenes = {
     LOGO: 'logo',
     WALLET_CONNECT: 'wallet_connect',
     MAIN_MENU: 'main_menu',
@@ -32,9 +33,10 @@ const Scenes = {
     MAIN_SCENE: 'main_scene',
     ARCADE: 'arcade',
     MOVE_TUTORIAL: 'move_tutorial',
+    GAMEPLAY_TUTORIAL: 'gameplay_tutorial',
 } as const;
 
-type Scene = (typeof Scenes)[keyof typeof Scenes];
+export type Scene = (typeof Scenes)[keyof typeof Scenes];
 
 export interface Opponent {
     agent: Agent;
@@ -292,6 +294,13 @@ const SceneSelector = () => {
         setScene(scene);
     };
 
+    const transitionFromMainMenu = (scene: Scene, gameMode: GameModes) => {
+        if (scene == Scenes.ARCADE || scene == Scenes.MAIN_SCENE) {
+            transitionChooseCharacter(gameMode);
+        } else {
+            setScene(scene);
+        }
+    };
     const isMobileDisplay = useMediaQuery('(max-width:800px)');
     if (isMobileDisplay) {
         return (
@@ -307,7 +316,7 @@ const SceneSelector = () => {
                 <TitleMenu transitionMainMenu={transitionMainMenu} />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.MAIN_MENU}>
-                <MainMenu transition={transitionChooseCharacter} />
+                <MainMenu transition={transitionFromMainMenu} />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.CHOOSE_CHARACTER}>
                 <ChooseCharacter
@@ -353,9 +362,12 @@ const SceneSelector = () => {
                     opponent={opponent.agent}
                 />
             </SceneSingle>
-            {/* {scene === Scenes.ARCADE ? (
-                <Arcade playerCharacter={characterIndex} opponent={opponent} />
-            ) : null} */}
+            <SceneSingle active={scene === Scenes.GAMEPLAY_TUTORIAL}>
+                <MechanicsTutorialScene
+                    onContinue={() => onTransition(Scenes.MAIN_MENU)}
+                    onQuit={() => onTransition(Scenes.MAIN_MENU)}
+                />
+            </SceneSingle>
         </Box>
     );
 };

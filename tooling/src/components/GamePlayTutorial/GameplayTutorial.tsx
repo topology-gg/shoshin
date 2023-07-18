@@ -2,17 +2,17 @@ import React, { ForwardedRef, useEffect, useState } from 'react';
 import {
     Typography,
     Box,
-    AccordionDetails,
-    Accordion,
-    AccordionSummary,
     Grid,
+    Button,
+    Checkbox,
+    FormControlLabel,
 } from '@mui/material';
 import styles from '../../../styles/Home.module.css';
 import { FrameScene, TestJson } from '../../types/Frame';
 import Agent, { PlayerAgent, buildAgent } from '../../types/Agent';
 import StatusBarPanel, {
     StatusBarPanelProps as PlayerStatuses,
-} from '../../../src/components/StatusBar';
+} from '../StatusBar';
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 import { Character, numberToCharacter } from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
@@ -20,50 +20,53 @@ import useRunCairoSimulation from '../../hooks/useRunCairoSimulation';
 import dynamic from 'next/dynamic';
 import { GameModes } from '../../types/Simulator';
 import MidScreenControl from '../MidScreenControl';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import FrameInspector from '../FrameInspector';
-import FrameDecisionPathViewer from '../FrameDecisionPathViewer';
-import Gambit, {
-    FullGambitFeatures,
-} from '../sidePanelComponents/Gambit/Gambit';
+import Gambit from '../sidePanelComponents/Gambit/Gambit';
 import { Condition } from '../../types/Condition';
-import SquareOverlayMenu from './SuccessMenu';
+import SquareOverlayMenu from '../SimulationScene/SuccessMenu';
 import { Medal, Opponent } from '../layout/SceneSelector';
-import mainSceneStyles from './MainScene.module.css';
-import PauseMenu from './PauseMenu';
+import mainSceneStyles from '../SimulationScene/MainScene.module.css';
+import PauseMenu from '../SimulationScene/PauseMenu';
+import tutorial from './Lessons/Tutorial';
+import { HighlightZone, Lesson } from '../../types/Tutorial';
 //@ts-ignore
-const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
+const Game = dynamic(() => import('../../Game/PhaserGame'), {
     ssr: false,
 });
 
-interface SimulationProps {
-    player: PlayerAgent;
-    setPlayerAgent: (playerAgent: PlayerAgent) => void;
-    opponent: Opponent;
-    submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
+interface MoveTutorialProps {
     onContinue: () => void;
     onQuit: () => void;
 }
+
 //We need Players agent and opponent
-const SimulationScene = React.forwardRef(
-    (props: SimulationProps, ref: ForwardedRef<HTMLDivElement>) => {
-        const {
-            player,
-            setPlayerAgent,
-            opponent,
-            submitWin,
-            onQuit,
-            onContinue,
-        } = props;
+const GameplayTutorialScene = React.forwardRef(
+    (props: MoveTutorialProps, ref: ForwardedRef<HTMLDivElement>) => {
+        const { onQuit, onContinue } = props;
         // Constants
         const LATENCY = 70;
         const runnable = true;
+
+        const [lessonIndex, changeLesson] = useState<number>(0);
+        const lesson = tutorial[lessonIndex];
+        const [slideIndex, changeSlide] = useState<number>(0);
+
+        const currentSlide = lesson.slides[slideIndex];
+
+        const highlightSimulator =
+            currentSlide.highlightZone == HighlightZone.SIMULATOR;
+        const highlightMind = currentSlide.highlightZone == HighlightZone.MIND;
+
+        const { title } = lesson;
+
+        const hasHighLights =
+            currentSlide.highlightZone != HighlightZone.NONE ||
+            currentSlide.highlightLayer != -1;
 
         // React states for simulation / animation control
         const [output, setOuput] = useState<FrameScene>();
         const [simulationError, setSimulationError] = useState();
         const [p1, setP1] = useState<Agent>();
-        const p2: Agent = opponent.agent;
+        const p2: Agent = lesson.opponent;
 
         const [loop, setLoop] = useState<NodeJS.Timer>();
         const [animationFrame, setAnimationFrame] = useState<number>(0);
@@ -80,21 +83,40 @@ const SimulationScene = React.forwardRef(
         });
 
         // React states for tracking the New Agent being edited in the right panel
-        const [combos, setCombos] = useState<Action[][]>(player.combos);
+        const [combos, setCombos] = useState<Action[][]>(lesson.player.combos);
 
         const [conditions, setConditions] =
             //@ts-ignore
-            useState<Condition[]>(player.conditions);
+            useState<Condition[]>(lesson.player.conditions);
 
-        const [character, setCharacter] = useState<Character>(player.character);
+        const [character, setCharacter] = useState<Character>(
+            lesson.player.character
+        );
 
-        const [layers, setLayers] = useState<Layer[]>(player.layers);
+        const [layers, setLayers] = useState<Layer[]>(lesson.player.layers);
 
-        const actions =
-            CHARACTERS_ACTIONS[character == Character.Jessica ? 0 : 1];
+        const initialObjectiveProgess = currentSlide.lessonObjectives?.length
+            ? currentSlide.lessonObjectives.map((objective) => {
+                  return objective.evaluate(animationFrame, testJson, {
+                      layers,
+                      character,
+                      combos,
+                      conditions,
+                  });
+              })
+            : [];
+
+        const [objectiveProgress, setObjectiveProgress] = useState<boolean[]>(
+            initialObjectiveProgess
+        );
+        const canGoToNextSlide = objectiveProgress.every(
+            (progress) => progress
+        );
 
         const opponentName =
-            opponent.agent.character == 0 ? Character.Jessica : Character.Antoc;
+            lesson.opponent.character == 0
+                ? Character.Jessica
+                : Character.Antoc;
 
         const [openPauseMenu, changePauseMenu] = useState<boolean>(false);
 
@@ -114,19 +136,23 @@ const SimulationScene = React.forwardRef(
         }, [openPauseMenu]);
 
         useEffect(() => {
+            const { combos, conditions, layers, character } =
+                tutorial[lessonIndex].player;
+            setLayers(layers);
+            setCombos(combos);
+            setConditions(conditions);
+            setCharacter(character);
+        }, [lessonIndex]);
+
+        useEffect(() => {
             let builtAgent = handleBuildAgent();
-            setPlayerAgent({
-                layers,
-                combos,
-                conditions,
-                character,
-            });
             setP1(builtAgent);
         }, [character, combos, conditions, layers]);
 
         function handleBuildAgent() {
             let char = Object.keys(Character).indexOf(character);
 
+            console.log('layers', layers);
             //given layers
             const {
                 mentalStates: generatedMs,
@@ -179,6 +205,29 @@ const SimulationScene = React.forwardRef(
             });
         }, [testJson, animationFrame]);
 
+        useEffect(() => {
+            const updatedObjectiveProgress = currentSlide.lessonObjectives
+                ?.length
+                ? currentSlide.lessonObjectives.map((objective) => {
+                      return objective.evaluate(animationFrame, testJson, {
+                          layers,
+                          character,
+                          combos,
+                          conditions,
+                      });
+                  })
+                : [];
+            setObjectiveProgress(updatedObjectiveProgress);
+        }, [
+            currentSlide,
+            animationFrame,
+            testJson,
+            layers,
+            character,
+            combos,
+            conditions,
+        ]);
+
         const { runCairoSimulation } = useRunCairoSimulation(p1, p2);
 
         useEffect(() => {
@@ -205,7 +254,7 @@ const SimulationScene = React.forwardRef(
                 animationStepBackward();
             } else if (operation == 'ToggleRun') {
                 // If in Run => go to Pause
-                if (animationState == 'Run' && !beatAgent) {
+                if (animationState == 'Run') {
                     clearInterval(loop); // kill the timer
                     setAnimationState('Pause');
                 }
@@ -267,16 +316,11 @@ const SimulationScene = React.forwardRef(
         }
 
         const [showVictory, changeShowVictory] = useState<boolean>(false);
-        useEffect(() => {
-            if (beatAgent) {
-                submitWin(player, { ...opponent, medal: performance });
-            }
-        }, [beatAgent]);
 
         useEffect(() => {
             if (beatAgent && N_FRAMES - 1 === animationFrame) {
-                changeShowVictory(true);
-                changePlayedWinningReplay(true);
+                //changeShowVictory(true);
+                //changePlayedWinningReplay(true);
             }
 
             if (animationFrame == N_FRAMES - 1) {
@@ -294,27 +338,80 @@ const SimulationScene = React.forwardRef(
             onContinue();
         };
 
-        const playOnly = !playedWinningReplay && beatAgent;
+        const handleSlideContinue = () => {
+            if (slideIndex + 1 < lesson.slides.length) {
+                changeSlide((slideIndex + 1) % lesson.slides.length);
+            } else {
+                if (lessonIndex + 1 < tutorial.length) {
+                    changeLesson(lessonIndex + 1);
+                    changeSlide(0);
+                    clearInterval(loop); // kill the timer
+                    setAnimationState('Stop');
+                    setAnimationFrame((_) => 0);
+                    setTestJson(null);
+                } else {
+                    onContinue();
+                }
+            }
+        };
+        const playOnly = false && !playedWinningReplay && beatAgent;
 
         const overlayContainerClassName = playOnly
             ? mainSceneStyles.overlayContainer
             : '';
 
         //Having this class be conditional on playOnly may not be needed
-        const overlayClassName = playOnly ? mainSceneStyles.overlay : '';
+        const overlayClassName = playOnly
+            ? mainSceneStyles.overlay
+            : mainSceneStyles.simulatorContainer;
 
-        const p1Name = player.character;
-        const p2Name = numberToCharacter(opponent.agent.character);
+        const p1Name = lesson.player.character;
+        const p2Name = numberToCharacter(lesson.opponent.character);
 
         const activeMs =
             N_FRAMES > 0
                 ? testJson.agent_0.frames[animationFrame].mental_state
                 : 0;
+
+        const objectives = currentSlide.lessonObjectives?.map(
+            (objective, index) => {
+                return (
+                    <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                    >
+                        <FormControlLabel
+                            sx={{ pointerEvents: 'none' }}
+                            key={index}
+                            control={
+                                <Checkbox
+                                    checked={objectiveProgress[index]}
+                                    sx={{
+                                        color: '#FC5853',
+                                        '&.Mui-checked': {
+                                            color: '#FC5853',
+                                        },
+                                    }}
+                                    //https://stackoverflow.com/a/63126124
+                                    key={Math.random()}
+                                />
+                            }
+                            label={objective.description}
+                        />
+                    </Box>
+                );
+            }
+        );
+
         return (
             <div id={'mother'} className={styles.container} ref={ref}>
                 {' '}
                 <div className={mainSceneStyles.overlayMenu}></div>
                 <div className={styles.main}>
+                    {hasHighLights ? (
+                        <div className={'overlay-menu'}> </div>
+                    ) : null}
                     {showVictory ? (
                         <SquareOverlayMenu
                             opponentName={opponentName}
@@ -329,6 +426,49 @@ const SimulationScene = React.forwardRef(
                         />
                     ) : null}
                     <Grid container spacing={{ md: 0, lg: 2 }}>
+                        <Grid item lg={1} />
+                        <Grid item xs={12} lg={10}>
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                alignItems="center"
+                                width="100%"
+                                border="1px solid #999999"
+                                className={hasHighLights ? 'elevated' : ''}
+                                sx={{ backgroundColor: 'white' }}
+                            >
+                                <Typography variant="h6" align="center">
+                                    {title}
+                                </Typography>
+                                <Typography variant="body1" align="center">
+                                    {currentSlide.content}
+                                </Typography>
+                                {objectives}
+                                <Typography
+                                    variant="body1"
+                                    align="center"
+                                    style={{ opacity: 0.5 }}
+                                >
+                                    {slideIndex + 1} / {lesson.slides.length}
+                                </Typography>
+                                <Box
+                                    display="flex"
+                                    justifyContent="flex-end"
+                                    width="100%"
+                                    mt={2}
+                                >
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={!canGoToNextSlide}
+                                        onClick={() => handleSlideContinue()}
+                                    >
+                                        {currentSlide.continueText}
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </Grid>
+                        <Grid item lg={0} xl={1} />
                         <Grid item lg={0} xl={1} />
                         <Grid item md={6} lg={6}>
                             <div
@@ -337,6 +477,7 @@ const SimulationScene = React.forwardRef(
                                     flexDirection: 'column',
                                     width: '100%',
                                 }}
+                                className={highlightSimulator ? 'elevated' : ''}
                             >
                                 <div className={overlayContainerClassName}>
                                     <div className={overlayClassName}>
@@ -393,74 +534,6 @@ const SimulationScene = React.forwardRef(
                                         )
                                     }
                                 />
-                                <div
-                                    style={{
-                                        padding: '10px',
-                                        paddingBottom: '13px',
-                                        marginBottom: '16px',
-                                        border: '1px solid #777',
-                                        borderRadius: '20px',
-                                    }}
-                                >
-                                    <Accordion
-                                        key="accordion-frame-data"
-                                        style={{
-                                            boxShadow: 'none',
-                                            backgroundColor: '#ffffff00',
-                                        }}
-                                    >
-                                        <AccordionSummary
-                                            expandIcon={<ExpandMoreIcon />}
-                                            aria-controls="panel1a-content"
-                                            id="panel1a-header"
-                                            sx={{ fontSize: '14px' }}
-                                        >
-                                            Frame Data
-                                        </AccordionSummary>
-                                        <AccordionDetails>
-                                            <FrameInspector
-                                                p1={p1}
-                                                p2={p2}
-                                                testJson={testJson}
-                                                animationFrame={animationFrame}
-                                            />
-                                        </AccordionDetails>
-                                    </Accordion>
-                                </div>
-                                <div
-                                    style={{
-                                        padding: '10px',
-                                        paddingBottom: '13px',
-                                        marginBottom: '16px',
-                                        border: '1px solid #777',
-                                        borderRadius: '20px',
-                                    }}
-                                >
-                                    <Accordion
-                                        key="accordion-agent-decision-logic"
-                                        style={{
-                                            boxShadow: 'none',
-                                            backgroundColor: '#ffffff00',
-                                        }}
-                                    >
-                                        <AccordionSummary
-                                            expandIcon={<ExpandMoreIcon />}
-                                            aria-controls="panel1a-content"
-                                            id="panel1a-header"
-                                            sx={{ fontSize: '14px' }}
-                                        >
-                                            Agent Decision Logic
-                                        </AccordionSummary>
-                                        <AccordionDetails>
-                                            <FrameDecisionPathViewer
-                                                p1={p1}
-                                                p2={p2}
-                                                testJson={testJson}
-                                                animationFrame={animationFrame}
-                                            />
-                                        </AccordionDetails>
-                                    </Accordion>
-                                </div>
                             </div>
                         </Grid>
                         <Grid item md={6} lg={5} xl={4}>
@@ -473,19 +546,21 @@ const SimulationScene = React.forwardRef(
                                     borderRadius: '0 0 0 0',
                                     border: '1px solid #999999',
                                     width: '100%',
-                                    height: '95vh',
+                                    height: '100%',
+                                    backgroundColor: 'white',
                                 }}
+                                className={highlightMind ? 'elevated' : ''}
                             >
                                 <Gambit
                                     layers={layers}
                                     setLayers={setLayers}
-                                    features={FullGambitFeatures}
+                                    features={lesson.features}
                                     character={character}
                                     conditions={conditions}
                                     combos={combos}
                                     setCombos={setCombos}
                                     activeMs={activeMs}
-                                    actions={actions}
+                                    actions={lesson.actions}
                                 />
                             </Box>
                         </Grid>
@@ -496,4 +571,4 @@ const SimulationScene = React.forwardRef(
     }
 );
 
-export default SimulationScene;
+export default GameplayTutorialScene;

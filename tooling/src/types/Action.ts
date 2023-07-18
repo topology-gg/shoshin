@@ -48,7 +48,7 @@ const Rest: Action = {
     bodyState: 0,
 };
 
-const Slash: Action = {
+export const Slash: Action = {
     id: 1,
     display: { name: 'Slash', unicode: '\u{1F5E1}' },
     frames: { duration: 5, active: [3] },
@@ -61,7 +61,7 @@ const Slash: Action = {
 };
 
 const JessicaLowKickId = 11;
-const Upswing: Action = {
+export const Upswing: Action = {
     id: 2,
     display: { name: 'Upswing', unicode: '\u{1F5E1}' },
     frames: {
@@ -83,7 +83,7 @@ const Upswing: Action = {
     bodyState: 20,
 };
 
-const Sidecut: Action = {
+export const Sidecut: Action = {
     id: 3,
     display: { name: 'Sidecut', unicode: '\u{1F5E1}' },
     frames: { duration: 5, active: [3] },
@@ -227,7 +227,7 @@ const Jump: Action = {
     bodyState: 130,
 };
 
-const Gatotsu: Action = {
+export const Gatotsu: Action = {
     id: 10,
     display: { name: 'Gatotsu', unicode: '\u{1F985}' },
     frames: { duration: 7 },
@@ -240,7 +240,7 @@ const Gatotsu: Action = {
     },
 };
 
-const JessicaLowKick: Action = {
+export const JessicaLowKick: Action = {
     id: JessicaLowKickId,
     display: { name: 'LowKick', unicode: '\u{1F9B6}' },
     frames: {
