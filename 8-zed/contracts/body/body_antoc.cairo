@@ -86,6 +86,9 @@ func _body_antoc {range_check_ptr}(
             if (intent == ns_antoc_action.STEP_FORWARD) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.STEP_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
             }
+            if (intent == ns_antoc_action.CYCLONE) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.CYCLONE, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // otherwise stay in IDLE but increment counter modulo duration
@@ -332,6 +335,9 @@ func _body_antoc {range_check_ptr}(
             if (intent == ns_antoc_action.STEP_FORWARD) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.STEP_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
             }
+            if (intent == ns_antoc_action.CYCLONE) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.CYCLONE, 0, integrity, updated_stamina, dir, FALSE) );
+            }
         }
 
         // continue moving forward
@@ -394,6 +400,9 @@ func _body_antoc {range_check_ptr}(
             }
             if (intent == ns_antoc_action.STEP_FORWARD) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.STEP_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.CYCLONE) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.CYCLONE, 0, integrity, updated_stamina, dir, FALSE) );
             }
         }
 
@@ -576,7 +585,7 @@ func _body_antoc {range_check_ptr}(
     }
 
     //
-    // STEP_FORWARD
+    // Step forward
     // note: is cancel-able into fast VERT
     // note: is interruptible by being hit
     //
@@ -593,13 +602,13 @@ func _body_antoc {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
-        // if having enough stamina => fast cancel into VERT's active frame (counter==3) or LOW_KICK's active frame (counter==3)
+        // if having enough stamina => fast cancel into VERT's active frame -1 (counter==2) or LOW_KICK's active frame -1 (counter==2)
         if (enough_stamina == TRUE) {
             if (intent == ns_antoc_action.VERT) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 3, integrity, updated_stamina, dir, FALSE) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 2, integrity, updated_stamina, dir, FALSE) );
             }
             if (intent == ns_antoc_action.LOW_KICK) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 3, integrity, updated_stamina, dir, FALSE) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 2, integrity, updated_stamina, dir, FALSE) );
             }
         }
 
@@ -714,6 +723,25 @@ func _body_antoc {range_check_ptr}(
 
         // else stay in DROP_SLASH and increment counter
         return ( body_state_nxt = BodyState(ns_antoc_body_state.DROP_SLASH, counter + 1, integrity, stamina, dir, FALSE) );
+    }
+
+    //
+    // CYCLONE
+    // note: interruptible by clash
+    //
+    if (state == ns_antoc_body_state.CYCLONE) {
+
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+
+        // if counter is full => return to IDLE
+        if (counter == ns_antoc_body_state_duration.CYCLONE - 1) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        }
+
+        // else stay in CYCLONE and increment counter
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.CYCLONE, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     // handle exception

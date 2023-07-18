@@ -111,20 +111,23 @@ namespace ns_jessica_stamina_effect {
 }
 
 namespace ns_jessica_stimulus {
-    const SLASH_DAMAGE = 75;
-    const UPSWING_DAMAGE = 75;
-    const SIDECUT_DAMAGE = 75;
+    // note: 1/2 of damage inflicted becomes rage gain;
+    // damage value needs to be even number for modulo division to work
+
+    const SLASH_DAMAGE = 80;
+    const UPSWING_DAMAGE = 80;
+    const SIDECUT_DAMAGE = 80;
     const LOW_KICK_DAMAGE = 50;
-    const BIRDSWING_DAMAGE = 75;
+    const BIRDSWING_DAMAGE = 80;
 
     // character special
-    const GATOTSU_DAMAGE = 250;
+    const GATOTSU_DAMAGE = 300;
 }
 
 namespace ns_jessica_body_state_duration {
     const IDLE = 5;
     const SLASH = 5;
-    const UPSWING = 5;
+    const UPSWING = 8;
     const SIDECUT = 5;
     const BLOCK = 3;
     const CLASH = 4;
@@ -144,7 +147,7 @@ namespace ns_jessica_body_state_duration {
 namespace ns_jessica_body_state {
     const IDLE = 0; // 5 frames
     const SLASH = 10; // 5 frames
-    const UPSWING = 20;  // 5 frames
+    const UPSWING = 20;  // 8 frames
     const SIDECUT = 30;  // 5 frames
     const BLOCK = 40; // 3 frames
     const CLASH = 50; // 4 frames;
