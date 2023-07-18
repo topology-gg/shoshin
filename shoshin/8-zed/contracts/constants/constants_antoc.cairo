@@ -73,6 +73,10 @@ namespace ns_antoc_character_dimension {
     const DROP_SLASH_HITBOX_H = BODY_HITBOX_H;
     const DROP_SLASH_HITBOX_Y = 40;
 
+    const CYCLONE_HITBOX_W = 95;
+    const CYCLONE_HITBOX_H = 30;
+    const CYCLONE_HITBOX_Y = 23;
+
     const BLOCK_HITBOX_W = 30;
     const BLOCK_HITBOX_H = 85;
     const BLOCK_HITBOX_Y = BODY_HITBOX_H / 2;
@@ -96,6 +100,8 @@ namespace ns_antoc_action {
     const JUMP = 9;
 
     const LOW_KICK = 11;
+
+    const CYCLONE = 12;
 }
 
 namespace ns_antoc_stamina_effect {
@@ -105,15 +111,24 @@ namespace ns_antoc_stamina_effect {
     const VERT = 5;
     const LOW_KICK = 5;
     const STEP_FORWARD = 10;
+
+    // character special consumes rage, whether hit or whiff
+    const CYCLONE = -500;
 }
 
 namespace ns_antoc_stimulus {
+    // note: 1/2 of damage inflicted becomes rage gain;
+    // damage value needs to be even number for modulo division to work
+
     const BLOCK_KNOCK_DAMAGE = 50;
-    const CLASH_KNOCK_DAMAGE = 75;
+    const CLASH_KNOCK_DAMAGE = 80;
     const HORI_DAMAGE = 100;
     const VERT_DAMAGE = 150;
     const LOW_KICK_DAMAGE = 50;
     const DROP_SLASH_DAMAGE = 100;
+
+    // character special
+    const CYCLONE_DAMAGE = 170;
 }
 
 namespace ns_antoc_body_state_duration {
@@ -131,8 +146,9 @@ namespace ns_antoc_body_state_duration {
     const STEP_FORWARD = 3;
     const JUMP = 7;
     const LOW_KICK = 6;
-    const LAUNCHED = 11;
+    const LAUNCHED = 9;
     const DROP_SLASH = 6;
+    const CYCLONE = 18; // active for counter == 5,10
 }
 
 namespace ns_antoc_body_state {
@@ -154,6 +170,7 @@ namespace ns_antoc_body_state {
     const DROP_SLASH = 1190; // 6 frames
     const JUMP_MOVE_FORWARD = 1200;
     const JUMP_MOVE_BACKWARD = 1210;
+    const CYCLONE = 1220; // 18 frames
 }
 
 namespace ns_antoc_body_state_qualifiers {
@@ -181,6 +198,13 @@ namespace ns_antoc_body_state_qualifiers {
 
     func is_in_drop_slash_active {range_check_ptr}(state: felt, counter: felt) -> felt {
         if (state == ns_antoc_body_state.DROP_SLASH and counter == 3) {
+            return 1;
+        }
+        return 0;
+    }
+
+    func is_in_cyclone_active {range_check_ptr}(state: felt, counter: felt) -> felt {
+        if (state == ns_antoc_body_state.CYCLONE and (counter-5) * (counter-10) == 0) {
             return 1;
         }
         return 0;
@@ -226,11 +250,12 @@ namespace ns_antoc_body_state_qualifiers {
     ) {
         alloc_locals;
 
-        let bool_body_in_hori_active   = is_in_hori_active (state, counter);
-        let bool_body_in_vert_active   = is_in_vert_active (state, counter);
-        let bool_body_in_low_kick      = is_in_low_kick_active (state, counter);
-        let bool_body_in_drop_slash    = is_in_drop_slash_active (state, counter);
-        let bool_body_in_atk_active    = bool_body_in_hori_active + bool_body_in_vert_active + bool_body_in_low_kick + bool_body_in_drop_slash;
+        let bool_body_in_hori_active          = is_in_hori_active (state, counter);
+        let bool_body_in_vert_active          = is_in_vert_active (state, counter);
+        let bool_body_in_low_kick_active      = is_in_low_kick_active (state, counter);
+        let bool_body_in_drop_slash_active    = is_in_drop_slash_active (state, counter);
+        let bool_body_in_cyclone_active       = is_in_cyclone_active (state, counter);
+        let bool_body_in_atk_active           = bool_body_in_hori_active + bool_body_in_vert_active + bool_body_in_low_kick_active + bool_body_in_drop_slash_active + bool_body_in_cyclone_active;
 
         let bool_body_knocked          = is_in_knocked (state);
         let bool_body_launched         = is_in_launched(state);
@@ -342,9 +367,16 @@ namespace ns_antoc_hitbox {
                             assert ATTACK_HITBOX_W = ns_antoc_character_dimension.LOW_KICK_HITBOX_W;
                             assert ATTACK_HITBOX_H = ns_antoc_character_dimension.LOW_KICK_HITBOX_H;
                         } else {
-                            assert ATTACK_HITBOX_Y = ns_antoc_character_dimension.DROP_SLASH_HITBOX_Y;
-                            assert ATTACK_HITBOX_W = ns_antoc_character_dimension.DROP_SLASH_HITBOX_W;
-                            assert ATTACK_HITBOX_H = ns_antoc_character_dimension.DROP_SLASH_HITBOX_H;
+                            if (body_state == ns_antoc_body_state.DROP_SLASH) {
+                                assert ATTACK_HITBOX_Y = ns_antoc_character_dimension.DROP_SLASH_HITBOX_Y;
+                                assert ATTACK_HITBOX_W = ns_antoc_character_dimension.DROP_SLASH_HITBOX_W;
+                                assert ATTACK_HITBOX_H = ns_antoc_character_dimension.DROP_SLASH_HITBOX_H;
+                            } else {
+                                // CYCLONE
+                                assert ATTACK_HITBOX_Y = ns_antoc_character_dimension.CYCLONE_HITBOX_Y;
+                                assert ATTACK_HITBOX_W = ns_antoc_character_dimension.CYCLONE_HITBOX_W;
+                                assert ATTACK_HITBOX_H = ns_antoc_character_dimension.CYCLONE_HITBOX_H;
+                            }
                         }
 
                     }

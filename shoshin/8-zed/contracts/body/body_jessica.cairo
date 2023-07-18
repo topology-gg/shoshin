@@ -438,16 +438,16 @@ func _body_jessica {range_check_ptr}(
         if(enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND) {
             // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
-                // go straight to SLASH's active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 2, integrity, stamina, dir, FALSE) );
+                // go straight to SLASH's active frame - 1
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 1, integrity, stamina, dir, FALSE) );
             }
             if (intent == ns_jessica_action.UPSWING) {
-                // go straight to UPSWING's active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 2, integrity, updated_stamina, dir, FALSE) );
+                // go straight to UPSWING's active frame - 1
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 1, integrity, updated_stamina, dir, FALSE) );
             }
             if (intent == ns_jessica_action.SIDECUT) {
-                // go straight to SIDECUT's active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 2, integrity, updated_stamina, dir, FALSE) );
+                // go straight to SIDECUT's active frame - 1
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 1, integrity, updated_stamina, dir, FALSE) );
             }
 
             // interruptible by jump
@@ -490,16 +490,16 @@ func _body_jessica {range_check_ptr}(
         if(enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND){
             // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
-                // go straight to SLASH's active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 2, integrity, updated_stamina, dir, FALSE) );
+                // go straight to SLASH's active frame - 1
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 1, integrity, updated_stamina, dir, FALSE) );
             }
             if (intent == ns_jessica_action.UPSWING) {
                 // go straight to UPSWING's active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 2, integrity, updated_stamina, dir, FALSE) );
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 1, integrity, updated_stamina, dir, FALSE) );
             }
             if (intent == ns_jessica_action.SIDECUT) {
                 // go straight to SIDECUT's active frame
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 2, integrity, updated_stamina, dir, FALSE) );
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 1, integrity, updated_stamina, dir, FALSE) );
             }
 
             // interruptible by jump
@@ -589,22 +589,12 @@ func _body_jessica {range_check_ptr}(
 
     //
     // Gatotsu
+    // note: interruptible by clash
     //
     if (state == ns_jessica_body_state.GATOTSU) {
 
-        // hurtible if counter is 0,1,2,5,6
-        let is_counter_le_2 = is_le (counter, 2);
-        let is_counter_5_or_6 = is_nn_le (counter-5, 1);
-        if (is_counter_le_2 == 1 and is_counter_5_or_6 == 1) {
-            if (stimulus_type == ns_stimulus.HURT) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
-            }
-            if (stimulus_type == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
-            }
-            if (stimulus_type == ns_stimulus.LAUNCHED) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
-        }
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
         // if counter is full => return to IDLE

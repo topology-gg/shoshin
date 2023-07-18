@@ -37,7 +37,7 @@ namespace ns_common_stamina_effect {
     const NULL = 0;
     const MOVE_FORWARD = 2;
     const MOVE_BACKWARD = 0;
-    const BLOCK = -1;
+    const BLOCK = 0;
     const JUMP = 0;
 
     // These values are applied in the first frame of body state
