@@ -3,10 +3,7 @@ import { PlayerAgent } from '../../../types/Agent';
 import { TestJson } from '../../../types/Frame';
 import { HighlightZone, Lesson, LessonSlide } from '../../../types/Tutorial';
 import { opponent0Jessica } from '../../ChooseOpponent/opponents/opponent-0';
-import {
-    DefeatOpponentObjective,
-    defeatOpponentObjective,
-} from './CommonObjectives';
+import { defeatOpponentObjective } from './CommonObjectives';
 
 const slide0: LessonSlide = {
     content: 'Layers are evaluated from top to bottom',
