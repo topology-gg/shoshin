@@ -8,7 +8,6 @@ const ActionToken = ({ children, disabled, selected, onClick, width }) => {
                 border: '1px!important solid #ffffff00',
                 width: `${width}rem`,
                 height: `2.1rem`,
-                mr: '2px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
