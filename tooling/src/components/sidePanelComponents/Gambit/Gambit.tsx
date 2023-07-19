@@ -696,6 +696,7 @@ const Gambit = ({
                             sx={{ fontSize: '17px' }}
                             variant="h1"
                             marginTop={'8px'}
+                            color={'white'}
                         >
                             <span style={{ marginRight: '8px' }}>
                                 &#128165;

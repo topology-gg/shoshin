@@ -99,7 +99,6 @@ export const darkTheme = createTheme({
             'Dela Gothic One, Raleway, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;',
         fontSize: 12,
 
-        letterSpacing: '1.6px',
         poster: {
             fontFamily: 'Dela Gothic One',
             fontSize: '2.5rem',
@@ -113,9 +112,11 @@ export const darkTheme = createTheme({
         },
         body1: {
             color: '#fff',
+            letterSpacing: '1.6px',
         },
         body2: {
             color: '#fff',
+            letterSpacing: '1.6px',
         },
     },
 

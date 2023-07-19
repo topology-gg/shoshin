@@ -11,7 +11,7 @@ const GameCard = ({
     ...props
 }: Omit<BoxProps, 'className'> & {
     image: string;
-    bgOpacity: number;
+    bgOpacity?: number;
     mediaCover?: React.ReactNode;
 }) => {
     return (
