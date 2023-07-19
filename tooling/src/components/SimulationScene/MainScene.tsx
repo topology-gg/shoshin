@@ -362,6 +362,7 @@ const SimulationScene = React.forwardRef(
                                                 setPlayerStatuses,
                                             }}
                                             isInView={true}
+                                            backgroundId={0}
                                         />
                                     </div>
                                 </div>
