@@ -7,9 +7,11 @@ const GameCard = ({
     children,
     mediaCover,
     image,
+    bgOpacity = 1,
     ...props
 }: Omit<BoxProps, 'className'> & {
     image: string;
+    bgOpacity: number;
     mediaCover?: React.ReactNode;
 }) => {
     return (
@@ -19,7 +21,12 @@ const GameCard = ({
         >
             <div
                 className={s.media}
-                style={{ '--bg-image': `url(${image})` } as React.CSSProperties}
+                style={
+                    {
+                        '--bg-image': `url(${image})`,
+                        opacity: bgOpacity,
+                    } as React.CSSProperties
+                }
             >
                 {mediaCover}
             </div>
