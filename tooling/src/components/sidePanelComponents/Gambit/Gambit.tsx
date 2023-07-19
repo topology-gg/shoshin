@@ -23,7 +23,7 @@ import SingleCondition, { ConditionLabel } from './Condition';
 let currentMenu = 0;
 let currentConditionMenu = 0;
 
-let gridOrderPortion = 1;
+let gridOrderPortion = 2;
 let gridConditionPortion = 5;
 let gridActionPortion = 5;
 let gridRemovePortion = 1;
@@ -220,12 +220,12 @@ const Layer = ({
             key={`button-wrapper-${i}`}
             sx={{
                 width: '100%',
-                border: `1px solid ${isActive ? '#FFF' : '#ddd'}`,
+                border: `1px solid ${isActive ? '#fff' : '#ccc'}`,
                 marginBottom: '4px',
                 borderRadius: '20px',
             }}
         >
-            <Grid container alignItems={'center'}>
+            <Grid container alignItems={'center'} spacing={1}>
                 <Grid item xs={gridOrderPortion}>
                     <div
                         style={{
@@ -233,7 +233,11 @@ const Layer = ({
                             fontSize: '13px',
                         }}
                     >
-                        {i + 1}
+                        <Typography
+                            sx={{ color: `${isActive ? '#fff' : '#ccc'}` }}
+                        >
+                            {i + 1}
+                        </Typography>
                     </div>
                 </Grid>
                 <Grid item md={6} xl={4}>
@@ -280,6 +284,7 @@ const Layer = ({
                     PaperProps={{
                         style: {
                             maxHeight: 220,
+                            backgroundColor: '#000',
                         },
                     }}
                 >
@@ -300,7 +305,7 @@ const Layer = ({
                         );
                     })}
                 </Menu>
-                <Grid item md={4} xl={6}>
+                <Grid item md={4} xl={4}>
                     <BlurrableButton
                         className={`${styles.gambitButton} ${styles.actionButton}`}
                         key={`${i}`}
@@ -407,11 +412,13 @@ const Gambit = ({
                 <Box
                     sx={{
                         border: '1px solid',
-                        borderColor: 'currentColor',
+                        borderColor: `${activeMs == 0 ? '#fff' : '#ccc'}`,
                         opacity: activeMs == 0 ? 1 : 0.5,
                     }}
                 >
-                    <Typography>SHOSHIN</Typography>
+                    <Typography paddingLeft={'8px'} paddingRight={'8px'}>
+                        SHOSHIN
+                    </Typography>
                 </Box>
             </Box>
         </>
@@ -597,7 +604,7 @@ const Gambit = ({
             }}
         >
             <Box sx={{ padding: '0.5rem 0.5rem 2rem 0.5rem' }}>
-                <Typography sx={{ fontSize: '17px' }} variant="overline">
+                <Typography sx={{ fontSize: '17px' }}>
                     <span style={{ marginRight: '8px' }}>&#129504;</span>Mind
                 </Typography>
                 <div
@@ -631,32 +638,32 @@ const Gambit = ({
                                                 fontSize: '13px',
                                             }}
                                         >
-                                            <Grid item xs={1}>
-                                                <div
-                                                    style={{
+                                            <Grid item xs={2}>
+                                                <Typography
+                                                    sx={{
                                                         textAlign: 'center',
                                                     }}
                                                 >
                                                     Order
-                                                </div>
+                                                </Typography>
                                             </Grid>
                                             <Grid item md={6} xl={4}>
-                                                <div
-                                                    style={{
+                                                <Typography
+                                                    sx={{
                                                         paddingLeft: '8px',
                                                     }}
                                                 >
                                                     Condition
-                                                </div>
+                                                </Typography>
                                             </Grid>
-                                            <Grid item md={4} xl={6}>
-                                                <div
-                                                    style={{
+                                            <Grid item md={4} xl={4}>
+                                                <Typography
+                                                    sx={{
                                                         paddingLeft: '8px',
                                                     }}
                                                 >
                                                     Action
-                                                </div>
+                                                </Typography>
                                             </Grid>
                                         </Box>
                                     </Grid>
