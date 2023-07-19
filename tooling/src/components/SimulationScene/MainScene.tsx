@@ -43,6 +43,7 @@ interface SimulationProps {
     submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
     onContinue: () => void;
     onQuit: () => void;
+    transitionToActionReference: () => void;
 }
 //We need Players agent and opponent
 const SimulationScene = React.forwardRef(
@@ -54,6 +55,7 @@ const SimulationScene = React.forwardRef(
             submitWin,
             onQuit,
             onContinue,
+            transitionToActionReference,
         } = props;
         // Constants
         const LATENCY = 70;
@@ -326,6 +328,9 @@ const SimulationScene = React.forwardRef(
                         <PauseMenu
                             onQuit={onQuit}
                             onChooseCharacter={onContinue}
+                            transitionToActionReference={
+                                transitionToActionReference
+                            }
                         />
                     ) : null}
                     <Grid container spacing={{ md: 0, lg: 2 }}>

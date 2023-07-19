@@ -147,7 +147,7 @@ const MoveBackward: Action = {
 
 const JumpId = 9;
 
-const DashForward: Action = {
+export const DashForward: Action = {
     id: 7,
     display: { name: 'DashForward', unicode: '\u{1F406}' },
     frames: {
@@ -175,7 +175,7 @@ const DashForward: Action = {
     bodyState: 110,
 };
 
-const DashBackward: Action = {
+export const DashBackward: Action = {
     id: 8,
     display: { name: 'DashBackward', unicode: '\u{1F406}' },
     frames: {

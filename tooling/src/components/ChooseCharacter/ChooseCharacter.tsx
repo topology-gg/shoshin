@@ -16,6 +16,7 @@ const ChooseCharacter = React.forwardRef<
         antocGoldCount: number;
         jessicaGoldCount: number;
         opponentCount: number;
+        transitionToActionReference: () => void;
     }
 >(
     (
@@ -27,6 +28,7 @@ const ChooseCharacter = React.forwardRef<
             jessicaGoldCount,
             antocGoldCount,
             opponentCount,
+            transitionToActionReference,
         },
         ref
     ) => {

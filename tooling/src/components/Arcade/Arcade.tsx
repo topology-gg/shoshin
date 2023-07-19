@@ -20,9 +20,19 @@ interface ArcadeProps {
     opponent: Agent;
     onQuit: () => void;
     onContinue: () => void;
+    transitionToActionReference: () => void;
 }
 const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
-    ({ playerCharacter, opponent, onQuit, onContinue }, ref) => {
+    (
+        {
+            playerCharacter,
+            opponent,
+            onQuit,
+            onContinue,
+            transitionToActionReference,
+        },
+        ref
+    ) => {
         const [playerStatuses, setPlayerStatuses] =
             useState<StatusBarPanelProps>({
                 integrity_0: 1000,
@@ -88,6 +98,9 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                         <PauseMenu
                             onQuit={onQuit}
                             onChooseCharacter={onContinue}
+                            transitionToActionReference={
+                                transitionToActionReference
+                            }
                         />
                     ) : null}
 

@@ -1,7 +1,11 @@
 import styles from './PauseMenu.module.css';
 import ShoshinMenu, { ShoshinMenuItem } from '../MainMenu/ShoshinMenu';
 
-const PauseMenu = ({ onQuit, onChooseCharacter }) => {
+const PauseMenu = ({
+    onQuit,
+    onChooseCharacter,
+    transitionToActionReference,
+}) => {
     const items: ShoshinMenuItem[] = [
         {
             title: 'Change Opponent',
@@ -12,7 +16,8 @@ const PauseMenu = ({ onQuit, onChooseCharacter }) => {
             onClick: () => onQuit(),
         },
         {
-            title: 'Settings',
+            title: 'Action Reference',
+            onClick: () => transitionToActionReference(),
         },
     ];
 

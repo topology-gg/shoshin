@@ -23,6 +23,7 @@ import MoveTutorial from '../MoveTutorial/MoveTutorial';
 import MechanicsTutorialScene from '../GamePlayTutorial/GameplayTutorial';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from '../MobileView';
+import ActionReference from '../ActionReference/ActionReference';
 
 export const Scenes = {
     LOGO: 'logo',
@@ -34,6 +35,7 @@ export const Scenes = {
     ARCADE: 'arcade',
     MOVE_TUTORIAL: 'move_tutorial',
     GAMEPLAY_TUTORIAL: 'gameplay_tutorial',
+    ACTION_REFERENCE: 'action_reference',
 } as const;
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
@@ -82,7 +84,9 @@ const defaultOpponent: Opponent = {
 };
 const StorageKey = 'PersistedGameState';
 const SceneSelector = () => {
-    const [scene, setScene] = useState<Scene>(Scenes.WALLET_CONNECT);
+    const [scene, setScene] = useState<Scene>(Scenes.CHOOSE_CHARACTER);
+
+    const [lastScene, setLastScene] = useState<Scene>(Scenes.MAIN_MENU);
 
     const ctx = React.useContext(ShoshinWASMContext);
 
@@ -153,6 +157,11 @@ const SceneSelector = () => {
         useState<Condition[]>(INITIAL_AGENT_COMPONENTS.conditions);
     const [combos, setCombos] = useState<Action[][]>(
         INITIAL_AGENT_COMPONENTS.combos
+    );
+
+    //Prop for action reference when coming from choose opponent, character might not be chosen
+    const [referenceCharacter, setReferenceCharacter] = useState<Character>(
+        Character.Jessica
     );
 
     useEffect(() => {
@@ -310,6 +319,15 @@ const SceneSelector = () => {
         );
     }
 
+    const transitionToActionReference = (character?: Character) => {
+        setLastScene(scene);
+        setScene(Scenes.ACTION_REFERENCE);
+        setReferenceCharacter(character);
+    };
+
+    const transtionFromActionReference = () => {
+        setScene(lastScene);
+    };
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
             <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
@@ -322,6 +340,7 @@ const SceneSelector = () => {
                 <ChooseCharacter
                     transitionChooseOpponent={onChooseCharacter}
                     transitionBack={transitionMainMenu}
+                    transitionToActionReference={transitionToActionReference}
                     jessicaProgress={jessicaProgress}
                     antocProgress={antocProgress}
                     antocGoldCount={antocGoldCount}
@@ -352,6 +371,7 @@ const SceneSelector = () => {
                     submitWin={handleWin}
                     onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
+                    transitionToActionReference={transitionToActionReference}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ARCADE}>
@@ -360,12 +380,21 @@ const SceneSelector = () => {
                     onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
                     opponent={opponent.agent}
+                    transitionToActionReference={transitionToActionReference}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.GAMEPLAY_TUTORIAL}>
                 <MechanicsTutorialScene
                     onContinue={() => onTransition(Scenes.MAIN_MENU)}
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
+                />
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.ACTION_REFERENCE}>
+                <ActionReference
+                    character={
+                        referenceCharacter ? referenceCharacter : character
+                    }
+                    onContinue={() => transtionFromActionReference()}
                 />
             </SceneSingle>
         </Box>
