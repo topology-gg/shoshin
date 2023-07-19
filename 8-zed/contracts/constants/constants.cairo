@@ -17,6 +17,7 @@ namespace ns_dynamics {
     const DT_FP = 10 ** 3;  // 0.1
 
     const GRAVITY_ACC_FP = -2500 * ns_dynamics.SCALE_FP;
+    const LOW_GRAVITY_ACC_FP = -2000 * ns_dynamics.SCALE_FP;
     const FRICTION_ACC_FP = 500 * ns_dynamics.SCALE_FP;
 
     const BACKOFF_VEL_X_FP = 200 * ns_dynamics.SCALE_FP;
@@ -50,8 +51,12 @@ namespace ns_integrity {
 }
 
 namespace ns_scene {
-    const X_MAX = 400;
-    const X_MIN = -400;
+    const X_MIN = -200;
+    const X_MAX = 200;
+    const P1_X_INIT = -125;
+    const P2_X_INIT = 125;
+    // const P1_X_INIT = X_MIN;
+    // const P2_X_INIT = X_MAX;
     const BIGNUM = 2000;
 }
 

@@ -399,8 +399,8 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     }
 
     if (state == AIR_ATTACK) {
-        // for y-axis, apply gravity
-        assert acc_fp_y = ns_dynamics.GRAVITY_ACC_FP;
+        // for y-axis, apply "lower" gravity
+        assert acc_fp_y = ns_dynamics.LOW_GRAVITY_ACC_FP;
         assert acc_fp_x = 0;
         assert vel_fp_y = physics_state.vel_fp.y;
 
