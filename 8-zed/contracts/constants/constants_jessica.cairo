@@ -95,6 +95,7 @@ namespace ns_jessica_action {
     const JUMP = 9;
     const GATOTSU = 10;
     const LOW_KICK = 11;
+    const TAUNT = 12;
 }
 
 namespace ns_jessica_stamina_effect {
@@ -142,6 +143,7 @@ namespace ns_jessica_body_state_duration {
     const LOW_KICK = 6;
     const BIRDSWING = 6;
     const LAUNCHED = 11;
+    const TAUNT_PARIS23 = 33;
 }
 
 namespace ns_jessica_body_state {
@@ -164,6 +166,7 @@ namespace ns_jessica_body_state {
     const LAUNCHED = 170; // 11 frames
     const JUMP_MOVE_FORWARD = 180;
     const JUMP_MOVE_BACKWARD = 190;
+    const TAUNT_PARIS23 = 200; // 33 frames
 }
 
 namespace ns_jessica_body_state_qualifiers {
