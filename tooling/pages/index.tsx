@@ -1160,6 +1160,7 @@ export default function Home() {
                             setPlayerStatuses,
                         }}
                         isInView={swipeableViewIndex == 0}
+                        backgroundId={0}
                     />
                 </div>
                 {gameMode == GameModes.simulation ? (

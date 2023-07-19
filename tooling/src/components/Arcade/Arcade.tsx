@@ -109,6 +109,7 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                             setPlayerStatuses,
                         }}
                         isInView={true}
+                        backgroundId={0}
                     />
 
                     <MidScreenKeybinding

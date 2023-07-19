@@ -10,6 +10,7 @@ export interface PhaserGameProps {
     gameMode: GameModes;
     realTimeOptions: RealTimeOptions;
     isInView: boolean;
+    backgroundId: number;
 }
 export interface SimulatorProps {
     testJson: TestJson;
