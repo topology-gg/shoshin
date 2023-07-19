@@ -1,10 +1,11 @@
 import React from 'react';
 import ConditionContextMenu from './ConditionContextMenu';
-import { Box, Chip } from '@mui/material';
+import { Box, Chip, Typography } from '@mui/material';
 import { LayerCondition } from '../../../types/Layer';
 import { LayerProps } from './Gambit';
 import { conditionTypeToEmojiFile } from '../../../types/Condition';
 import styles from './Gambit.module.css';
+import { SpaRounded } from '@mui/icons-material';
 
 type ConditionProps = {
     condition: LayerCondition;
@@ -21,16 +22,25 @@ export const ConditionLabel = ({
     name,
     type,
     isInverted = false,
+    // hasLayer is used for styling from white to black color
+    hasLayer = false,
 }: {
     name: string;
     type: string;
     isInverted?: boolean;
+    hasLayer?: boolean;
 }) => {
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box
+            sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+            }}
+        >
             {isInverted && <Chip size="small" color="error" label="NOT" />}
             <ConditionEmojiElement type={type} />
-            <span>{name}</span>
+            <span style={{ color: hasLayer ? 'black' : 'white' }}>{name}</span>
         </Box>
     );
 };
@@ -62,6 +72,7 @@ const Condition = ({
                             name={condition.displayName}
                             type={condition.type}
                             isInverted={condition.isInverted}
+                            hasLayer={true}
                         />
                     </>
                 }

@@ -135,10 +135,6 @@ export const darkTheme = createTheme({
         accent: {
             main: '#52af77',
         },
-        background: {
-            default: '#000',
-            paper: '#fff',
-        },
         text: {
             primary: '#fff',
             secondary: '#fff',
