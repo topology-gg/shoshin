@@ -55,7 +55,10 @@ func _body_jessica {range_check_ptr}(
             return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
         }
 
-        // body responds to intent; locomotive action has lowest priority
+        // body responds to intent
+        if (intent == ns_jessica_action.TAUNT) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.TAUNT_PARIS23, 0, integrity, updated_stamina, dir, FALSE) );
+        }
         if (intent == ns_jessica_action.MOVE_FORWARD) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.MOVE_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
         }
@@ -329,6 +332,9 @@ func _body_jessica {range_check_ptr}(
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
+        if (intent == ns_jessica_action.TAUNT) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.TAUNT_PARIS23, 0, integrity, updated_stamina, dir, FALSE) );
+        }
         if(enough_stamina == TRUE){
             if (intent == ns_jessica_action.BLOCK) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir, FALSE) );
@@ -386,6 +392,9 @@ func _body_jessica {range_check_ptr}(
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
+        if (intent == ns_jessica_action.TAUNT) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.TAUNT_PARIS23, 0, integrity, updated_stamina, dir, FALSE) );
+        }
         if(enough_stamina == TRUE){
             if (intent == ns_jessica_action.BLOCK) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir, FALSE) );
@@ -705,6 +714,68 @@ func _body_jessica {range_check_ptr}(
 
         // else stay in LAUNCHED and increment counter
         return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, counter + 1, integrity, stamina, dir, FALSE) );
+    }
+
+    //
+    // Taunt
+    //
+    if (state == ns_jessica_body_state.TAUNT_PARIS23) {
+
+        // body responds to stimulus first
+        if (stimulus_type == ns_stimulus.HURT) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+
+        // body responds to intent; locomotive action has lowest priority
+        if (intent == ns_jessica_action.MOVE_FORWARD) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.MOVE_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+        }
+        if (intent == ns_jessica_action.MOVE_BACKWARD) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.MOVE_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
+        }
+        if(enough_stamina == TRUE){
+            if (intent == ns_jessica_action.BLOCK) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BLOCK, 0, integrity, stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.SLASH) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SLASH, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.UPSWING) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.UPSWING, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.SIDECUT) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.SIDECUT, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.DASH_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.JUMP) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_jessica_action.GATOTSU) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.GATOTSU, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
+
+        // if counter is full => return to IDLE
+        if (counter == ns_jessica_body_state_duration.TAUNT_PARIS23 - 1) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        }
+
+        // else stay and increment counter
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.TAUNT_PARIS23, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     with_attr error_message("Input body state is not recognized.") {
