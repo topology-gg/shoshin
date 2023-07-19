@@ -43,6 +43,7 @@ export interface Opponent {
     medal: Medal;
     id: number;
     name: string;
+    backgroundId: number;
 }
 
 export enum Medal {
@@ -79,6 +80,7 @@ const defaultOpponent: Opponent = {
     medal: Medal.NONE,
     id: 0,
     name: '0',
+    backgroundId: 0,
 };
 const StorageKey = 'PersistedGameState';
 const SceneSelector = () => {
@@ -161,7 +163,13 @@ const SceneSelector = () => {
         const defaultOpponents = (
             character == Character.Jessica ? JessicaOpponents : AntocOpponents
         ).map((agent, id) => {
-            return { agent: agent, medal: Medal.NONE, id, name: id.toString() };
+            return {
+                agent: agent,
+                medal: Medal.NONE,
+                id,
+                name: id.toString(),
+                backgroundId: 0,
+            } as Opponent;
         });
         if (!state) {
             setOpponentChoices(defaultOpponents);
@@ -184,7 +192,8 @@ const SceneSelector = () => {
             medal: Medal.NONE,
             id,
             name: id.toString(),
-        };
+            backgroundId: 0,
+        } as Opponent;
     });
     const [opponentChoices, setOpponentChoices] =
         useState<Opponent[]>(defaultOpponents);
