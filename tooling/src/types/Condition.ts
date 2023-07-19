@@ -123,6 +123,7 @@ export enum BodystatesAntoc {
     DropSlash = 1190,
     JumpMoveForward = 1200,
     JumpMoveBackward = 1210,
+    Cyclone = 1220,
 }
 
 export enum Perceptible {

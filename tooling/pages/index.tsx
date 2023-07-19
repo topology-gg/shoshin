@@ -166,6 +166,8 @@ export default function Home() {
 
     const [layers, setLayers] = useState<Layer[]>([]);
 
+    const actions = CHARACTERS_ACTIONS[character == Character.Jessica ? 0 : 1];
+
     // React states for warnings
     const [isConditionWarningTextOn, setConditionWarningTextOn] =
         useState<boolean>(false);
@@ -834,7 +836,6 @@ export default function Home() {
     function handleBuildAgent() {
         let char = Object.keys(Character).indexOf(character);
 
-        console.log(layers);
         //given layers
         const {
             mentalStates: generatedMs,
@@ -842,6 +843,7 @@ export default function Home() {
             trees: generatedTrees,
         } = layersToAgentComponents(layers, char, combos);
 
+        console.log('agent ', { layers, conditions, combos, char });
         //todo remove trees
         return buildAgent(
             generatedMs,
@@ -1049,6 +1051,7 @@ export default function Home() {
                     handleChangeSelectedCombo={changeSelectedCombo}
                     setCombos={setCombos}
                     activeMs={activeMs}
+                    actions={actions}
                 />
             </CharacterContext.Provider>
         </LayerContext.Provider>
