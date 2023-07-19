@@ -19,7 +19,7 @@ const PauseMenu = ({ onQuit, onChooseCharacter }) => {
     const title = 'Pause';
     return (
         <div className={styles.overlayContainer}>
-            <ShoshinMenu menuTitle={title} menuItems={items} />
+            <ShoshinMenu menuItems={items} displayLogo={true} />
         </div>
     );
 };

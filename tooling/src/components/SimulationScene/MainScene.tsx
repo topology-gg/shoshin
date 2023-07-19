@@ -418,6 +418,7 @@ const SimulationScene = React.forwardRef(
                                                         setPlayerStatuses,
                                                     }}
                                                     isInView={true}
+                                                    backgroundId={0}
                                                 />
                                             </div>
                                         </div>
@@ -457,8 +458,6 @@ const SimulationScene = React.forwardRef(
                                                     (_) => !checkedShowDebugInfo
                                                 )
                                             }
-                                            isInView={true}
-                                            backgroundId={0}
                                         />
                                         <Box
                                             sx={{
@@ -565,12 +564,13 @@ const SimulationScene = React.forwardRef(
                                             <Gambit
                                                 layers={layers}
                                                 setLayers={setLayers}
-                                                isReadOnly={false}
+                                                features={FullGambitFeatures}
                                                 character={character}
                                                 conditions={conditions}
                                                 combos={combos}
                                                 setCombos={setCombos}
                                                 activeMs={activeMs}
+                                                actions={actions}
                                             />
                                         </Box>
                                     </GameCard>
