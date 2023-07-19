@@ -170,6 +170,7 @@ export default class RealTime extends Simulator {
             n: Phaser.Input.Keyboard.KeyCodes.N,
             z: Phaser.Input.Keyboard.KeyCodes.Z,
             u: Phaser.Input.Keyboard.KeyCodes.U,
+            o: Phaser.Input.Keyboard.KeyCodes.O,
             esc: Phaser.Input.Keyboard.KeyCodes.ESC,
         });
         this.set_player_character(this.character_type_0);
@@ -379,6 +380,10 @@ export default class RealTime extends Simulator {
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ]['LowKick'];
+            } else if (this.keyboard.o.isDown) {
+                // taunt
+                this.player_action =
+                    characterActionToNumber['jessica']['Taunt'];
             }
         }
 

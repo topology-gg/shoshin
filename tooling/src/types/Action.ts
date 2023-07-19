@@ -265,6 +265,19 @@ export const JessicaLowKick: Action = {
     },
 };
 
+export const JessicaTaunt: Action = {
+    id: 12,
+    display: { name: 'Taunt', unicode: '\u{1F956}' },
+    frames: { duration: 33 },
+    key: 'O',
+    bodyState: 200,
+    tutorial: {
+        video: './media/tutorial/gatotsu.mp4',
+        description:
+            "Jessica's special attack, costing 500 (50%) rage to perform",
+    },
+};
+
 const JessicaActions = [
     Rest,
     Slash,
@@ -278,6 +291,7 @@ const JessicaActions = [
     Jump,
     Gatotsu,
     JessicaLowKick,
+    JessicaTaunt,
 ];
 
 const AntocRest: Action = {

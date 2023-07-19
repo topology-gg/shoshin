@@ -13,7 +13,7 @@ import {
 } from '@mui/icons-material';
 
 const JESSICA_KEYS = [
-    ['q', 'w', 'e', '', '', 'u', '', ''],
+    ['q', 'w', 'e', '', '', 'u', '', 'o'],
     ['a', 's', 'd', '', '', 'j', 'k', 'l'],
     ['', '', '', '', '', 'n', '', '.'],
 ];
