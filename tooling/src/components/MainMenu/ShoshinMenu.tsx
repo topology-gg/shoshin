@@ -1,6 +1,5 @@
 import { Box } from '@mui/material';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
-import LogoBig from '../layout/LogoBig';
 
 export interface ShoshinMenuItem {
     title: string;
@@ -34,8 +33,8 @@ const ShoshinMenu = ({ menuTitle, menuItems }: ShoshinMenuProps) => {
             alignItems="center"
             height="30%"
             width="25%"
+            mt={40}
         >
-            <LogoBig />
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {buttons}
             </Box>

@@ -87,7 +87,12 @@ const Actions = ({
             >
                 {(provided) => (
                     <div
-                        style={{ width: '100%', display: 'flex' }}
+                        style={{
+                            width: '100%',
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '2px',
+                        }}
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                     >

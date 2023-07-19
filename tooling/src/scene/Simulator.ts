@@ -45,9 +45,10 @@ const JUMP_SMOKE_SCALE_X = 0.15;
 const JUMP_SMOKE_SCALE_Y = 0.15;
 const AIR_DASH_SCALE_X = 0.04;
 const AIR_DASH_SCALE_Y = 0.04;
-const GOOD_BLOCK_SCALE_X = 0.05;
-const GOOD_BLOCK_SCALE_Y = 0.05;
+const GOOD_BLOCK_PINK_SCALE = 0.05;
+const GOOD_BLOCK_TURQUOISE_SCALE = 0.3;
 const YELLOW_SPARK_SCALE = 0.1;
+const LIGHTNING_SCALE = 0.3;
 
 enum CombatEvent {
     Block = 'Block',
@@ -108,10 +109,12 @@ export default class Simulator extends Phaser.Scene {
     jumpLandingSmokeSprites: Phaser.GameObjects.Sprite[];
     airDashSmokeSprites: Phaser.GameObjects.Sprite[];
     goodBlockPinkSprites: Phaser.GameObjects.Sprite[];
-    goodBlockGraySprites: Phaser.GameObjects.Sprite[];
+    goodBlockTurquoiseSprites: Phaser.GameObjects.Sprite[];
     yellowSparkSprites: Phaser.GameObjects.Sprite[];
     rippleSprites: Phaser.GameObjects.Sprite[];
     bluePuffSprites: Phaser.GameObjects.Sprite[];
+    blueLightningSprites: Phaser.GameObjects.Sprite[];
+    pinkLightningSprites: Phaser.GameObjects.Sprite[];
 
     // SFX
     dashForwardSounds: Phaser.Sound.BaseSound[];
@@ -405,11 +408,11 @@ export default class Simulator extends Phaser.Scene {
             }
         );
         this.load.spritesheet(
-            'good-block-gray',
-            'images/effects/good-block-gray/spritesheet.png',
+            'good-block-turquoise',
+            'images/effects/good-block-turquoise/spritesheet.png',
             {
-                frameWidth: 2996,
-                frameHeight: 2996,
+                frameWidth: 500,
+                frameHeight: 500,
             }
         );
         this.load.spritesheet(
@@ -434,6 +437,22 @@ export default class Simulator extends Phaser.Scene {
             {
                 frameWidth: 3355,
                 frameHeight: 3355,
+            }
+        );
+        this.load.spritesheet(
+            'blue-lightning',
+            'images/effects/blue-lightning/spritesheet.png',
+            {
+                frameWidth: 834,
+                frameHeight: 834,
+            }
+        );
+        this.load.spritesheet(
+            'pink-lightning',
+            'images/effects/pink-lightning/spritesheet.png',
+            {
+                frameWidth: 834,
+                frameHeight: 834,
             }
         );
 
@@ -616,9 +635,9 @@ export default class Simulator extends Phaser.Scene {
         });
 
         this.anims.create({
-            key: 'goodBlockGrayAnim',
+            key: 'goodBlockTurquoiseAnim',
             frameRate: 20,
-            frames: this.anims.generateFrameNumbers('good-block-gray', {
+            frames: this.anims.generateFrameNumbers('good-block-turquoise', {
                 start: 0,
                 end: 7,
             }),
@@ -637,6 +656,27 @@ export default class Simulator extends Phaser.Scene {
             hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
         });
 
+        this.anims.create({
+            key: 'blueLightningAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('blue-lightning', {
+                start: 0,
+                end: 7,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+        this.anims.create({
+            key: 'pinkLightningAnim',
+            frameRate: 20,
+            frames: this.anims.generateFrameNumbers('pink-lightning', {
+                start: 0,
+                end: 7,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
         this.sparkSprites = [];
         this.dashSmokeSprites = [];
         this.stepForwardSmokeSprites = [];
@@ -644,10 +684,12 @@ export default class Simulator extends Phaser.Scene {
         this.jumpLandingSmokeSprites = [];
         this.airDashSmokeSprites = [];
         this.goodBlockPinkSprites = [];
-        this.goodBlockGraySprites = [];
+        this.goodBlockTurquoiseSprites = [];
         this.yellowSparkSprites = [];
         this.rippleSprites = [];
         this.bluePuffSprites = [];
+        this.blueLightningSprites = [];
+        this.pinkLightningSprites = [];
         [0, 1].forEach((_) => {
             this.sparkSprites.push(
                 this.add
@@ -711,15 +753,15 @@ export default class Simulator extends Phaser.Scene {
             this.goodBlockPinkSprites.push(
                 this.add
                     .sprite(0, 0, 'good-block-pink')
-                    .setScale(GOOD_BLOCK_SCALE_X, GOOD_BLOCK_SCALE_Y)
+                    .setScale(GOOD_BLOCK_PINK_SCALE)
                     .setVisible(false)
                     .setAlpha(0.8)
                     .setDepth(100)
             );
-            this.goodBlockGraySprites.push(
+            this.goodBlockTurquoiseSprites.push(
                 this.add
-                    .sprite(0, 0, 'good-block-gray')
-                    .setScale(GOOD_BLOCK_SCALE_X, GOOD_BLOCK_SCALE_Y)
+                    .sprite(0, 0, 'good-block-turquoise')
+                    .setScale(GOOD_BLOCK_TURQUOISE_SCALE)
                     .setVisible(false)
                     .setAlpha(0.8)
                     .setDepth(100)
@@ -731,6 +773,23 @@ export default class Simulator extends Phaser.Scene {
                     .setScale(YELLOW_SPARK_SCALE)
                     .setVisible(false)
                     .setAlpha(0.9)
+                    .setDepth(100)
+            );
+
+            this.blueLightningSprites.push(
+                this.add
+                    .sprite(0, 0, 'blue-lightning')
+                    .setScale(LIGHTNING_SCALE)
+                    .setVisible(false)
+                    .setAlpha(0.75)
+                    .setDepth(100)
+            );
+            this.pinkLightningSprites.push(
+                this.add
+                    .sprite(0, 0, 'pink-lightning')
+                    .setScale(LIGHTNING_SCALE)
+                    .setVisible(false)
+                    .setAlpha(0.75)
                     .setDepth(100)
             );
         });
@@ -1616,15 +1675,48 @@ export default class Simulator extends Phaser.Scene {
             const y = -1 * objectFrame.hitboxes.action.origin.y;
 
             if (subjectFrame.body_state.state == BodystatesAntoc.Block) {
-                this.goodBlockGraySprites[subjectIndex]
+                this.goodBlockTurquoiseSprites[subjectIndex]
                     .setPosition(x, y)
                     .setVisible(true)
-                    .play('goodBlockGrayAnim');
+                    .play('goodBlockTurquoiseAnim');
             } else {
                 this.goodBlockPinkSprites[subjectIndex]
                     .setPosition(x, y)
                     .setVisible(true)
                     .play('goodBlockPinkAnim');
+            }
+        });
+
+        //
+        // Character special
+        //
+        const specialStates = [
+            BodystatesAntoc.Cyclone,
+            BodystatesJessica.Gatotsu,
+        ];
+        [0, 1].forEach((playerIndex) => {
+            const frame = frames[playerIndex];
+            if (frame.body_state.counter != 0) return;
+            if (!specialStates.includes(frame.body_state.state)) return;
+
+            const x =
+                frame.physics_state.pos.x +
+                0.5 * frame.hitboxes.body.dimension.x;
+            const y =
+                -1 *
+                (frame.hitboxes.body.origin.y +
+                    0.5 * frame.hitboxes.body.dimension.y);
+
+            if (frame.body_state.state == BodystatesAntoc.Cyclone) {
+                this.blueLightningSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('blueLightningAnim');
+            } else if (frame.body_state.state == BodystatesJessica.Gatotsu) {
+                this.pinkLightningSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('pinkLightningAnim');
             }
         });
     }
