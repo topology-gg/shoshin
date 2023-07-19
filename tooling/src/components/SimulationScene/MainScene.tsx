@@ -457,6 +457,8 @@ const SimulationScene = React.forwardRef(
                                                     (_) => !checkedShowDebugInfo
                                                 )
                                             }
+                                            isInView={true}
+                                            backgroundId={0}
                                         />
                                         <Box
                                             sx={{
