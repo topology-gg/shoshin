@@ -111,17 +111,23 @@ export const darkTheme = createTheme({
             fontSize: '1.8rem',
             letterSpacing: '0.15em',
         },
-        p: {
+        body1: {
+            color: '#fff',
+        },
+        body2: {
             color: '#fff',
         },
     },
 
     palette: {
+        mode: 'dark',
         primary: {
             main: '#fff',
+            dark: '#fff',
         },
         secondary: {
             main: '#FC5954',
+            dark: '#fff',
         },
         info: {
             main: '#848f98',

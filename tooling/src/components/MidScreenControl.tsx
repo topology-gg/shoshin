@@ -1,5 +1,12 @@
 import React, { useMemo } from 'react';
-import { Box, Button, Chip, FormControlLabel, Switch } from '@mui/material';
+import {
+    Box,
+    Button,
+    Chip,
+    FormControlLabel,
+    Switch,
+    Typography,
+} from '@mui/material';
 import {
     FastForward,
     FastRewind,
@@ -227,7 +234,7 @@ const MidScreenControl = ({
                             fontSize={'0.75rem'}
                             sx={{ ml: 0.5 }}
                         >
-                            Debug
+                            <Typography>Debug</Typography>
                         </Box>
                     }
                     sx={{ ml: 1 }}
