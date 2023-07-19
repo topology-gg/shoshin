@@ -1,12 +1,12 @@
 import SceneSelector from '../../src/components/layout/SceneSelector';
 import { StyledEngineProvider, ThemeProvider } from '@mui/material';
-import theme from '../../src/theme/theme';
+import theme, { darkTheme } from '../../src/theme/theme';
 import Head from 'next/head';
 
 export default function Home() {
     return (
         <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider theme={darkTheme}>
                 <Head>
                     <link
                         rel="preload"

@@ -152,12 +152,12 @@ input {
 }
 
 html {
-    color-scheme: light;
+    color-scheme: normal;
 }
-body {
+/* body {
     color: black;
     background: white;
-}
+} */
 
 li {
     font-size: 0.75rem;

@@ -61,7 +61,7 @@ const MidScreenControl = ({
     checkedShowDebugInfo,
     handleChangeDebugInfo,
 }) => {
-    const BLANK_COLOR = '#EFEFEF';
+    const BLANK_COLOR = 'rgba(0, 0, 0, 0.8)';
 
     const agent_0_frames = testJson?.agent_0.frames;
     const agent_1_frames = testJson?.agent_1.frames;

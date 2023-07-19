@@ -220,7 +220,7 @@ const Layer = ({
             key={`button-wrapper-${i}`}
             sx={{
                 width: '100%',
-                border: `1px solid ${isActive ? '#787878' : '#ddd'}`,
+                border: `1px solid ${isActive ? '#FFF' : '#ddd'}`,
                 marginBottom: '4px',
                 borderRadius: '20px',
             }}
@@ -411,8 +411,7 @@ const Gambit = ({
                         opacity: activeMs == 0 ? 1 : 0.5,
                     }}
                 >
-                    {' '}
-                    SHOSHIN
+                    <Typography>SHOSHIN</Typography>
                 </Box>
             </Box>
         </>

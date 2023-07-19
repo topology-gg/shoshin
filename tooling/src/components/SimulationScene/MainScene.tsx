@@ -30,6 +30,7 @@ import { Medal, Opponent } from '../layout/SceneSelector';
 import mainSceneStyles from './MainScene.module.css';
 import PauseMenu from './PauseMenu';
 import FullArtBackground from '../layout/FullArtBackground';
+import GameCard from '../ui/GameCard';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -349,12 +350,48 @@ const SimulationScene = React.forwardRef(
                                                             'space-between',
                                                     }}
                                                 >
-                                                    <Typography>
-                                                        {p1Name}
-                                                    </Typography>
-                                                    <Typography>
-                                                        {p2Name}
-                                                    </Typography>
+                                                    <Box
+                                                        display={'flex'}
+                                                        flexDirection={'row'}
+                                                        sx={{
+                                                            backgroundColor:
+                                                                '#000',
+                                                            opacity: '0.8',
+                                                            paddingLeft: '5px',
+                                                            paddingRight: '5px',
+                                                        }}
+                                                    >
+                                                        <Typography
+                                                            color={'#ee4942'}
+                                                            marginRight={'5px'}
+                                                        >
+                                                            P1
+                                                        </Typography>
+                                                        <Typography>
+                                                            {p1Name}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box
+                                                        display={'flex'}
+                                                        flexDirection={'row'}
+                                                        sx={{
+                                                            backgroundColor:
+                                                                '#000',
+                                                            opacity: '0.8',
+                                                            paddingLeft: '5px',
+                                                            paddingRight: '5px',
+                                                        }}
+                                                    >
+                                                        <Typography
+                                                            color={'#438bee'}
+                                                            marginRight={'5px'}
+                                                        >
+                                                            P2
+                                                        </Typography>
+                                                        <Typography>
+                                                            {p2Name}
+                                                        </Typography>
+                                                    </Box>
                                                 </Box>
                                                 <Game
                                                     testJson={testJson}
@@ -416,13 +453,16 @@ const SimulationScene = React.forwardRef(
                                                 )
                                             }
                                         />
-                                        <div
-                                            style={{
+                                        <Box
+                                            sx={{
                                                 padding: '10px',
                                                 paddingBottom: '13px',
                                                 marginBottom: '16px',
                                                 border: '1px solid #777',
                                                 borderRadius: '20px',
+                                                backgroundColor:
+                                                    'background.default',
+                                                opacity: '0.8',
                                             }}
                                         >
                                             <Accordion
@@ -454,14 +494,17 @@ const SimulationScene = React.forwardRef(
                                                     />
                                                 </AccordionDetails>
                                             </Accordion>
-                                        </div>
-                                        <div
-                                            style={{
+                                        </Box>
+                                        <Box
+                                            sx={{
                                                 padding: '10px',
                                                 paddingBottom: '13px',
                                                 marginBottom: '16px',
                                                 border: '1px solid #777',
                                                 borderRadius: '20px',
+                                                backgroundColor:
+                                                    'background.default',
+                                                opacity: '0.8',
                                             }}
                                         >
                                             <Accordion
@@ -493,33 +536,39 @@ const SimulationScene = React.forwardRef(
                                                     />
                                                 </AccordionDetails>
                                             </Accordion>
-                                        </div>
+                                        </Box>
                                     </div>
                                 </Grid>
                                 <Grid item md={6} lg={5} xl={4}>
-                                    <Box
+                                    <GameCard
                                         sx={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            justifyContent: 'top',
-                                            alignItems: 'left',
-                                            borderRadius: '0 0 0 0',
-                                            border: '1px solid #999999',
-                                            width: '100%',
-                                            height: '95vh',
+                                            backgroundColor:
+                                                'rgba(0, 0, 0, 0.5)',
                                         }}
                                     >
-                                        <Gambit
-                                            layers={layers}
-                                            setLayers={setLayers}
-                                            isReadOnly={false}
-                                            character={character}
-                                            conditions={conditions}
-                                            combos={combos}
-                                            setCombos={setCombos}
-                                            activeMs={activeMs}
-                                        />
-                                    </Box>
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                justifyContent: 'top',
+                                                alignItems: 'left',
+                                                borderRadius: '0 0 0 0',
+                                                width: '100%',
+                                                height: '95vh',
+                                            }}
+                                        >
+                                            <Gambit
+                                                layers={layers}
+                                                setLayers={setLayers}
+                                                isReadOnly={false}
+                                                character={character}
+                                                conditions={conditions}
+                                                combos={combos}
+                                                setCombos={setCombos}
+                                                activeMs={activeMs}
+                                            />
+                                        </Box>
+                                    </GameCard>
                                 </Grid>
                             </Grid>
                         </div>
