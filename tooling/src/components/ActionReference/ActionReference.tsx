@@ -18,7 +18,11 @@ import { useState } from 'react';
 import FullArtBackground from '../layout/FullArtBackground';
 import Tile, { TileContent } from '../ui/Tile';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
-import { comboInfosJessica, ComboInfo } from '../../types/ComboInfo';
+import {
+    comboInfosJessica,
+    ComboInfo,
+    comboInfosAntoc,
+} from '../../types/ComboInfo';
 import Actions from '../ComboEditor/Actions';
 import { ChevronLeft } from '@mui/icons-material';
 
@@ -92,7 +96,9 @@ const ActionReference = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
         ].filter((action) => action.tutorial !== undefined);
 
         const comboInfos =
-            character == Character.Jessica ? comboInfosJessica : [];
+            character == Character.Jessica
+                ? comboInfosJessica
+                : comboInfosAntoc;
 
         const [selectedMove, changeSelectedMove] = useState<number>(0);
 

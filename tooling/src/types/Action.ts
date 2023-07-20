@@ -203,7 +203,7 @@ export const DashBackward: Action = {
     bodyState: 120,
 };
 
-const Jump: Action = {
+export const Jump: Action = {
     id: JumpId,
     display: { name: 'Jump', unicode: '\u{1F998}' },
     frames: {
@@ -306,7 +306,7 @@ const AntocDashForwardId = 6;
 const AntocDashBackwardId = 7;
 
 const VertId = 2;
-const Vert: Action = {
+export const Vert: Action = {
     id: VertId,
     display: { name: 'Vert', unicode: '\u{1F5E1}' },
     frames: {
@@ -385,7 +385,7 @@ export const AntocMoveBackward: Action = {
     bodyState: 1120,
 };
 
-const AntocDashForward: Action = {
+export const AntocDashForward: Action = {
     id: AntocDashForwardId,
     display: { name: 'DashForward', unicode: '\u{1F406}' },
     frames: {
@@ -402,7 +402,7 @@ const AntocDashForward: Action = {
     bodyState: 1100,
 };
 
-const AntocDashBackward: Action = {
+export const AntocDashBackward: Action = {
     id: AntocDashBackwardId,
     display: { name: 'DashBackward', unicode: '\u{1F406}' },
     frames: {
@@ -419,7 +419,7 @@ const AntocDashBackward: Action = {
     bodyState: 1120,
 };
 
-const StepForward: Action = {
+export const StepForward: Action = {
     id: AntocStepForwardId,
     display: { name: 'StepForward', unicode: '\u{1F43E}' },
     frames: {
@@ -441,7 +441,7 @@ const StepForward: Action = {
     },
 };
 
-const AntocJump: Action = {
+export const AntocJump: Action = {
     id: AntocJumpId,
     display: { name: 'Jump', unicode: '\u{1F998}' },
     frames: {
@@ -466,7 +466,7 @@ const AntocJump: Action = {
 };
 
 const AntocLowKickId = 11;
-const AntocLowKick: Action = {
+export const AntocLowKick: Action = {
     id: AntocLowKickId,
     display: { name: 'LowKick', unicode: '\u{1F9B6}' },
     frames: {
