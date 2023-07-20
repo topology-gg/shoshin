@@ -23,10 +23,11 @@ import SingleCondition, { ConditionLabel } from './Condition';
 let currentMenu = 0;
 let currentConditionMenu = 0;
 
-let gridOrderPortion = 2;
-let gridConditionPortion = 5;
+let gridOrderPortion = 1.2;
+let gridConditionPortionXl = 5;
+let gridConditionPortionMd = 5;
 let gridActionPortion = 5;
-let gridRemovePortion = 1;
+let gridRemovePortion = 0.8;
 
 const actionIndexToAction = (
     action: number,
@@ -262,7 +263,7 @@ const Layer = ({
                         </Typography>
                     </div>
                 </Grid>
-                <Grid item md={6} xl={4}>
+                <Grid item md={6} xl={6}>
                     <Box
                         display="flex"
                         flexDirection="row"
@@ -664,46 +665,38 @@ const Gambit = ({
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
                                 >
-                                    <Grid container sx={{ mb: 1 }}>
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                // ml: '2rem',
-                                                // pl: '0.5rem',
-                                                width: '100%',
-                                                color: '#999',
-                                                fontSize: '13px',
-                                            }}
+                                    <Grid container sx={{ mb: 1 }} spacing={2}>
+                                        <Grid item xs={gridOrderPortion}>
+                                            <Typography
+                                                sx={{
+                                                    fontSize: '13px',
+                                                }}
+                                            >
+                                                Order
+                                            </Typography>
+                                        </Grid>
+                                        <Grid
+                                            item
+                                            md={gridConditionPortionMd}
+                                            xl={gridConditionPortionXl}
                                         >
-                                            <Grid item xs={2}>
-                                                <Typography
-                                                    sx={{
-                                                        textAlign: 'center',
-                                                    }}
-                                                >
-                                                    Order
-                                                </Typography>
-                                            </Grid>
-                                            <Grid item md={6} xl={4}>
-                                                <Typography
-                                                    sx={{
-                                                        paddingLeft: '8px',
-                                                    }}
-                                                >
-                                                    Condition
-                                                </Typography>
-                                            </Grid>
-                                            <Grid item md={4} xl={4}>
-                                                <Typography
-                                                    sx={{
-                                                        paddingLeft: '8px',
-                                                    }}
-                                                >
-                                                    Action
-                                                </Typography>
-                                            </Grid>
-                                        </Box>
+                                            <Typography
+                                                sx={{
+                                                    fontSize: '13px',
+                                                }}
+                                            >
+                                                Condition
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item md={5} xl={4}>
+                                            <Typography
+                                                sx={{
+                                                    fontSize: '13px',
+                                                }}
+                                            >
+                                                Action
+                                            </Typography>
+                                        </Grid>
                                     </Grid>
 
                                     <LayerList

@@ -118,6 +118,9 @@ export const darkTheme = createTheme({
             color: '#fff',
             letterSpacing: '1.6px',
         },
+        h6: {
+            color: 'white',
+        },
     },
 
     palette: {

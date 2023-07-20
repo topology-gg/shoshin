@@ -331,9 +331,8 @@ const SimulationScene = React.forwardRef(
                                     onChooseCharacter={onContinue}
                                 />
                             ) : null}
-                            <Grid container spacing={{ md: 0, lg: 2 }}>
-                                <Grid item lg={0} xl={1} />
-                                <Grid item md={6} lg={6}>
+                            <Grid container spacing={{ md: 2 }}>
+                                <Grid item md={6} lg={7} xl={7}>
                                     <div
                                         style={{
                                             display: 'flex',
@@ -545,7 +544,7 @@ const SimulationScene = React.forwardRef(
                                         </Box>
                                     </div>
                                 </Grid>
-                                <Grid item md={6} lg={5} xl={4}>
+                                <Grid item md={6} lg={5} xl={5}>
                                     <GameCard
                                         image={'./images/bg/black.jpeg'}
                                         bgOpacity={0.7}
@@ -558,7 +557,7 @@ const SimulationScene = React.forwardRef(
                                                 alignItems: 'left',
                                                 borderRadius: '0 0 0 0',
                                                 width: '100%',
-                                                height: '95vh',
+                                                height: '82vh',
                                             }}
                                         >
                                             <Gambit
