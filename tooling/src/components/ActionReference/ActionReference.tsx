@@ -13,7 +13,7 @@ import {
     Typography,
 } from '@mui/material';
 import { Character } from '../../constants/constants';
-import { CHARACTERS_ACTIONS } from '../../types/Action';
+import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 import { useState } from 'react';
 import FullArtBackground from '../layout/FullArtBackground';
 import Tile, { TileContent } from '../ui/Tile';
@@ -27,30 +27,38 @@ interface MoveTutorialProps {
     onContinue: () => void;
 }
 
-const ComboTutorial = (combo: ComboInfo, ref) => {
+const VideoBox = ({ src }: { src: string }) => (
+    <Box
+        sx={{
+            position: 'relative',
+            paddingBottom: '56.25%',
+            height: 0,
+            width: '100%',
+        }}
+    >
+        <video
+            src={src}
+            autoPlay
+            loop
+            muted
+            style={{
+                top: 0,
+                left: 0,
+                position: 'absolute',
+                maxWidth: '100%',
+                height: 'auto',
+            }}
+        ></video>
+    </Box>
+);
+
+const ComboTutorial = ({ combo }: { combo: ComboInfo }) => {
     const inputs = combo.actions
         .map((action) => action.display.name)
         .join(' - ');
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 2,
-            }}
-            ref={ref}
-        >
-            <video
-                src={combo.video}
-                autoPlay
-                loop
-                muted
-                style={{
-                    width: '100%',
-                }}
-            ></video>
+        <>
+            <VideoBox src={combo.video} />
             <Typography variant="h4">{combo.displayName}</Typography>
             <Typography>{combo.description}</Typography>
             Actions : {inputs}
@@ -60,10 +68,24 @@ const ComboTutorial = (combo: ComboInfo, ref) => {
                 onChange={() => {}}
                 handleActionDoubleClick={() => {}}
             />
-        </Box>
+        </>
     );
 };
-const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
+
+const MoveTutorial = ({ action }: { action: Action }) => (
+    <>
+        <VideoBox src={action.tutorial.video} />
+        <Typography variant="h4">
+            {action.display.unicode}
+            {'  '}
+            {action.display.name}
+        </Typography>
+        <Typography>{action.tutorial.description}</Typography>
+        <Typography>Attack Duration : {action.frames.duration}</Typography>
+    </>
+);
+
+const ActionReference = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
     ({ character, onContinue }, ref) => {
         const moves = CHARACTERS_ACTIONS[
             character == Character.Jessica ? 0 : 1
@@ -71,40 +93,6 @@ const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
 
         const comboInfos =
             character == Character.Jessica ? comboInfosJessica : [];
-        let comboTutorials = comboInfos.map((info) => ComboTutorial(info, ref));
-        const moveTutorials = moves.map((action) => {
-            return (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 2,
-                    }}
-                    ref={ref}
-                >
-                    <video
-                        src={action.tutorial.video}
-                        autoPlay
-                        loop
-                        muted
-                        style={{
-                            width: '100%',
-                        }}
-                    ></video>
-                    <Typography variant="h4">
-                        {action.display.unicode}
-                        {'  '}
-                        {action.display.name}
-                    </Typography>
-                    <Typography>{action.tutorial.description}</Typography>
-                    <Typography>
-                        Attack Duration : {action.frames.duration}
-                    </Typography>
-                </Box>
-            );
-        });
 
         const [selectedMove, changeSelectedMove] = useState<number>(0);
 
@@ -114,8 +102,12 @@ const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
             changeSelectedMove(0);
             changeSelectedTab(newValue);
         };
+
+        const selectedMoveAction = moves[selectedMove];
+        const selectedCombo = comboInfos[selectedMove];
+
         return (
-            <FullArtBackground useAlt gap={2}>
+            <FullArtBackground useAlt gap={2} ref={ref}>
                 <Box
                     sx={{
                         display: 'flex',
@@ -206,9 +198,22 @@ const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
                         }}
                     >
                         <TileContent sx={{ justifyContent: 'center', gap: 2 }}>
-                            {selectedTab == 0
-                                ? moveTutorials[selectedMove]
-                                : comboTutorials[selectedMove]}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 2,
+                                    height: 360,
+                                }}
+                            >
+                                {selectedTab == 0 ? (
+                                    <MoveTutorial action={selectedMoveAction} />
+                                ) : (
+                                    <ComboTutorial combo={selectedCombo} />
+                                )}
+                            </Box>
                             <Box
                                 display="flex"
                                 flexDirection={'row'}
@@ -225,4 +230,4 @@ const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
     }
 );
 
-export default MoveTutorial;
+export default ActionReference;
