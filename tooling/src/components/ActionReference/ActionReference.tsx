@@ -198,12 +198,20 @@ const ActionReference = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
                             flex: 1,
                             display: 'flex',
                             flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
+                            justifyContent: 'flex-start',
+                            alignItems: 'stretch',
                             width: 450,
+                            height: '60vh',
+                            overflowY: 'auto',
                         }}
                     >
-                        <TileContent sx={{ justifyContent: 'center', gap: 2 }}>
+                        <TileContent
+                            sx={{
+                                justifyContent: 'center',
+                                alignItems: 'stretch',
+                                gap: 2,
+                            }}
+                        >
                             <Box
                                 sx={{
                                     display: 'flex',
@@ -211,7 +219,6 @@ const ActionReference = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: 2,
-                                    height: 360,
                                 }}
                             >
                                 {selectedTab == 0 ? (
