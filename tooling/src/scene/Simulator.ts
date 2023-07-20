@@ -358,6 +358,11 @@ export default class Simulator extends Phaser.Scene {
             'images/jessica/birdswing/spritesheet.png',
             'images/jessica/birdswing/spritesheet.json'
         );
+        this.load.atlas(
+            `jessica-taunt`,
+            'images/jessica/beret/spritesheet.png',
+            'images/jessica/beret/spritesheet.json'
+        );
 
         // Background
         this.load.image(
