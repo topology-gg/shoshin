@@ -7,6 +7,7 @@ const CharacterTile = ({
     character,
     children,
     descriptionVisible,
+    footer,
     mediaCover,
     onClick,
     progressText,
@@ -14,6 +15,7 @@ const CharacterTile = ({
     character: Character;
     children?: React.ReactNode;
     descriptionVisible?: boolean;
+    footer?: React.ReactNode;
     mediaCover?: React.ReactNode;
     onClick?: React.MouseEventHandler<HTMLDivElement>;
     progressText?: React.ReactNode;
@@ -36,6 +38,7 @@ const CharacterTile = ({
                 color: textColor,
                 position: 'relative',
             }}
+            footer={footer}
             mediaCover={mediaCover}
             onClick={onClick}
             onMouseOver={() => setHovering(true)}

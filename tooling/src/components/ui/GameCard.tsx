@@ -5,10 +5,12 @@ import s from './GameCard.module.css';
 
 const GameCard = ({
     children,
+    footer,
     mediaCover,
     image,
     ...props
 }: Omit<BoxProps, 'className'> & {
+    footer?: React.ReactNode;
     image: string;
     mediaCover?: React.ReactNode;
 }) => {
@@ -24,6 +26,7 @@ const GameCard = ({
                 {mediaCover}
             </div>
             <div className={s.content}>{children}</div>
+            <div className={s.footer}>{footer}</div>
         </Box>
     );
 };
