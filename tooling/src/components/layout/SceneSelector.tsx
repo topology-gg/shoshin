@@ -84,7 +84,7 @@ const defaultOpponent: Opponent = {
 };
 const StorageKey = 'PersistedGameState';
 const SceneSelector = () => {
-    const [scene, setScene] = useState<Scene>(Scenes.MAIN_SCENE);
+    const [scene, setScene] = useState<Scene>(Scenes.MAIN_MENU);
 
     const ctx = React.useContext(ShoshinWASMContext);
 

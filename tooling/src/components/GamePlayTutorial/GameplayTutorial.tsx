@@ -595,6 +595,9 @@ const GameplayTutorialScene = React.forwardRef(
                                             setCombos={setCombos}
                                             activeMs={activeMs}
                                             actions={lesson.actions}
+                                            initialSelectedCombo={
+                                                lesson.initialSelectedCombo
+                                            }
                                         />
                                     </Box>
                                 </GameCard>
