@@ -21,7 +21,7 @@ const Timeline = styled(Slider)(({ theme, color }) => ({
         borderRadius: 100,
         transition: theme.transitions.create('box-shadow', { duration: 150 }),
         '&:hover': {
-            boxShadow: '0px 0px 0px 4px rgba(0, 0, 0, 0.16)',
+            boxShadow: '0px 0px 0px 4px rgba(255,255,255, 0.16)',
         },
     },
 }));

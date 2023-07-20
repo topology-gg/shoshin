@@ -1,5 +1,12 @@
 import React, { useMemo } from 'react';
-import { Box, Button, Chip, FormControlLabel, Switch } from '@mui/material';
+import {
+    Box,
+    Button,
+    Chip,
+    FormControlLabel,
+    Switch,
+    Typography,
+} from '@mui/material';
 import {
     FastForward,
     FastRewind,
@@ -61,7 +68,7 @@ const MidScreenControl = ({
     checkedShowDebugInfo,
     handleChangeDebugInfo,
 }) => {
-    const BLANK_COLOR = '#EFEFEF';
+    const BLANK_COLOR = 'rgba(242, 242, 242, 0.8)';
 
     const agent_0_frames = testJson?.agent_0.frames;
     const agent_1_frames = testJson?.agent_1.frames;
@@ -188,7 +195,7 @@ const MidScreenControl = ({
                                         transform: 'translateX(16px)',
                                         color: '#fff',
                                         '& + .MuiSwitch-track': {
-                                            backgroundColor: '#52af77',
+                                            backgroundColor: '#41ff9f',
                                             opacity: 1,
                                             border: 0,
                                         },
@@ -227,7 +234,9 @@ const MidScreenControl = ({
                             fontSize={'0.75rem'}
                             sx={{ ml: 0.5 }}
                         >
-                            Debug
+                            <Typography sx={{ fontFamily: 'Eurostile' }}>
+                                Debug
+                            </Typography>
                         </Box>
                     }
                     sx={{ ml: 1 }}
@@ -245,18 +254,19 @@ const MidScreenControl = ({
                     getAriaValueText={(value) => `${value}`}
                     valueLabelDisplay="on"
                     sx={{
-                        color: '#52af77',
+                        color: '#41ff9f',
 
                         '& .MuiSlider-thumb': {
                             width: '24px',
                             height: '24px',
-                            borderRadius: '6px',
+                            borderRadius: '12px',
                         },
 
                         '& .MuiSlider-valueLabel': {
-                            fontSize: 11,
+                            fontSize: 12,
+                            fontFamily: 'Eurostile',
                             fontWeight: 'normal',
-                            top: 24,
+                            top: 4,
                             backgroundColor: 'unset',
                             color: '#eee',
                             '&:before': {
@@ -290,7 +300,15 @@ const MidScreenControl = ({
                         label="Player 1"
                         color="info"
                         size="small"
-                        sx={{ position: 'absolute', top: 0, left: -50 }}
+                        sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: -80,
+                            fontFamily: 'Eurostile',
+                            fontSize: '14px',
+                            paddingLeft: '5px',
+                            paddingRight: '5px',
+                        }}
                     />
                     <Timeline
                         color="info"
@@ -306,7 +324,15 @@ const MidScreenControl = ({
                         label="Player 2"
                         color="info"
                         size="small"
-                        sx={{ position: 'absolute', top: 0, left: -50 }}
+                        sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: -80,
+                            fontFamily: 'Eurostile',
+                            fontSize: '14px',
+                            paddingLeft: '5px',
+                            paddingRight: '5px',
+                        }}
                     />
                     <Timeline
                         color="info"

@@ -1,12 +1,8 @@
-import styles from './PauseMenu.module.css';
+import styles from '../SimulationScene/PauseMenu.module.css';
 import ShoshinMenu, { ShoshinMenuItem } from '../MainMenu/ShoshinMenu';
 
-const PauseMenu = ({ onQuit, onChooseCharacter }) => {
+const GameplayTutorialMenu = ({ onQuit }) => {
     const items: ShoshinMenuItem[] = [
-        {
-            title: 'Change Opponent',
-            onClick: () => onChooseCharacter(),
-        },
         {
             title: 'Exit to Main Menu',
             onClick: () => onQuit(),
@@ -24,4 +20,4 @@ const PauseMenu = ({ onQuit, onChooseCharacter }) => {
     );
 };
 
-export default PauseMenu;
+export default GameplayTutorialMenu;

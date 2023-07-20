@@ -30,11 +30,16 @@
     src: url('./fonts/HVD_Poster_PC/HVD_Poster.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: 'Eurostile';
+    src: url('./fonts/Eurostile/Eurostile.ttf') format('truetype');
+}
+
 html,
 body {
     padding: 0;
     margin: 0;
-    font-family: Raleway, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    font-family: Eurostile, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
         Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
         sans-serif;
 }
@@ -154,10 +159,10 @@ input {
 html {
     color-scheme: light;
 }
-body {
+/* body {
     color: black;
     background: white;
-}
+} */
 
 li {
     font-size: 0.75rem;
