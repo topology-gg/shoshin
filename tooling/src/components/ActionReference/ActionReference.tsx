@@ -15,13 +15,12 @@ import {
 import { Character } from '../../constants/constants';
 import { CHARACTERS_ACTIONS } from '../../types/Action';
 import { useState } from 'react';
-import RightChevronIcon from '@mui/icons-material/ChevronRight';
 import FullArtBackground from '../layout/FullArtBackground';
 import Tile, { TileContent } from '../ui/Tile';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
-import CharacterTile from '../ChooseCharacter/CharacterTile';
 import { comboInfosJessica, ComboInfo } from '../../types/ComboInfo';
 import Actions from '../ComboEditor/Actions';
+import { ChevronLeft } from '@mui/icons-material';
 
 interface MoveTutorialProps {
     character: Character;
@@ -219,7 +218,7 @@ const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
                     </Tile>
                 </Box>
                 <ShoshinMenuButton size="large" onClick={onContinue}>
-                    Back <RightChevronIcon />
+                    <ChevronLeft /> Back
                 </ShoshinMenuButton>
             </FullArtBackground>
         );

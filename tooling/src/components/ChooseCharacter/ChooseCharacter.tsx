@@ -6,6 +6,23 @@ import FullArtBackground from '../layout/FullArtBackground';
 import CharacterTile from './CharacterTile';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 
+const ActionReferenceButton = ({
+    transitionToActionReference,
+    character,
+}: {
+    transitionToActionReference: (character: Character) => void;
+    character: Character;
+}) => (
+    <ShoshinMenuButton
+        onClick={(e) => {
+            transitionToActionReference(character);
+            e.stopPropagation();
+        }}
+    >
+        Action Reference
+    </ShoshinMenuButton>
+);
+
 const ChooseCharacter = React.forwardRef<
     HTMLDivElement,
     {
@@ -16,7 +33,7 @@ const ChooseCharacter = React.forwardRef<
         antocGoldCount: number;
         jessicaGoldCount: number;
         opponentCount: number;
-        transitionToActionReference: () => void;
+        transitionToActionReference: (character: Character) => void;
     }
 >(
     (
@@ -66,6 +83,14 @@ const ChooseCharacter = React.forwardRef<
                                 transitionChooseOpponent(Character.Jessica)
                             }
                             progressText={jessicaProgressText}
+                            footer={
+                                <ActionReferenceButton
+                                    character={Character.Jessica}
+                                    transitionToActionReference={
+                                        transitionToActionReference
+                                    }
+                                />
+                            }
                         />
 
                         <CharacterTile
@@ -75,6 +100,14 @@ const ChooseCharacter = React.forwardRef<
                                 transitionChooseOpponent(Character.Antoc)
                             }
                             progressText={antocProgressText}
+                            footer={
+                                <ActionReferenceButton
+                                    character={Character.Antoc}
+                                    transitionToActionReference={
+                                        transitionToActionReference
+                                    }
+                                />
+                            }
                         />
                     </Box>
                     <ShoshinMenuButton
