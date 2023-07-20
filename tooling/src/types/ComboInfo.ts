@@ -172,7 +172,7 @@ const AntocDashBackwardJump: ComboInfo = {
 const AntocJumpDashForward: ComboInfo = {
     actions: [AntocJump, AntocDashForward],
     character: ANTOC,
-    displayName: 'Jump, DashForward',
+    displayName: 'Jump - DashForward',
     video: './media/tutorial/vert.mp4',
 };
 
