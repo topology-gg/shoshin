@@ -556,6 +556,7 @@ const SimulationScene = React.forwardRef(
                                                 borderRadius: '0 0 0 0',
                                                 width: '100%',
                                                 height: '82vh',
+                                                overflowY: 'auto',
                                             }}
                                         >
                                             <Gambit
