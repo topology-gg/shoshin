@@ -40,7 +40,14 @@ export const ConditionLabel = ({
         >
             {isInverted && <Chip size="small" color="error" label="NOT" />}
             <ConditionEmojiElement type={type} />
-            <span style={{ color: hasLayer ? 'black' : 'white' }}>{name}</span>
+            <span
+                style={{
+                    color: hasLayer ? 'black' : 'white',
+                    fontFamily: 'Eurostile',
+                }}
+            >
+                {name}
+            </span>
         </Box>
     );
 };

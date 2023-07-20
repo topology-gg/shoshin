@@ -358,9 +358,9 @@ const SimulationScene = React.forwardRef(
                                                         display={'flex'}
                                                         flexDirection={'row'}
                                                         sx={{
-                                                            backgroundColor:
-                                                                '#000',
-                                                            opacity: '0.8',
+                                                            // backgroundColor:
+                                                            //     '#000',
+                                                            // opacity: '0.8',
                                                             paddingLeft: '5px',
                                                             paddingRight: '5px',
                                                         }}
@@ -379,9 +379,9 @@ const SimulationScene = React.forwardRef(
                                                         display={'flex'}
                                                         flexDirection={'row'}
                                                         sx={{
-                                                            backgroundColor:
-                                                                '#000',
-                                                            opacity: '0.8',
+                                                            // backgroundColor:
+                                                            //     '#000',
+                                                            // opacity: '0.8',
                                                             paddingLeft: '5px',
                                                             paddingRight: '5px',
                                                         }}
@@ -465,8 +465,7 @@ const SimulationScene = React.forwardRef(
                                                 marginBottom: '16px',
                                                 border: '1px solid #777',
                                                 borderRadius: '20px',
-                                                backgroundColor:
-                                                    'background.default',
+                                                backgroundColor: '#f2f2f2',
                                                 opacity: '0.8',
                                             }}
                                         >
@@ -507,8 +506,7 @@ const SimulationScene = React.forwardRef(
                                                 marginBottom: '16px',
                                                 border: '1px solid #777',
                                                 borderRadius: '20px',
-                                                backgroundColor:
-                                                    'background.default',
+                                                backgroundColor: '#f2f2f2',
                                                 opacity: '0.8',
                                             }}
                                         >
@@ -546,8 +544,8 @@ const SimulationScene = React.forwardRef(
                                 </Grid>
                                 <Grid item md={6} lg={5} xl={5}>
                                     <GameCard
-                                        image={'./images/bg/black.jpeg'}
-                                        bgOpacity={0.7}
+                                        image={'./images/bg/f2f2f2.jpeg'}
+                                        // bgOpacity={0}
                                     >
                                         <Box
                                             sx={{

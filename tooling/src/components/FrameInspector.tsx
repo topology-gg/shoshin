@@ -61,11 +61,19 @@ const FrameInspector = ({
                     <Table size="small">
                         <TableHead>
                             <TableRow>
-                                <TableCell colSpan={1}>
+                                <TableCell
+                                    colSpan={1}
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
                                     <b>{characterNames[player_index]}</b>
                                 </TableCell>
                                 <TableCell align="right" colSpan={2}>
-                                    <Box sx={{ whiteSpace: 'nowrap' }}>
+                                    <Box
+                                        sx={{
+                                            whiteSpace: 'nowrap',
+                                            fontFamily: 'Eurostile',
+                                        }}
+                                    >
                                         {frame === frameRight ? (
                                             <>
                                                 P2
@@ -93,7 +101,10 @@ const FrameInspector = ({
                         </TableHead>
                         <TableBody>
                             <TableRow>
-                                <TableCell colSpan={2}>
+                                <TableCell
+                                    colSpan={2}
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
                                     <span
                                         style={{
                                             fontSize: '20px',
@@ -116,7 +127,10 @@ const FrameInspector = ({
                             </TableRow>
 
                             <TableRow>
-                                <TableCell colSpan={2}>
+                                <TableCell
+                                    colSpan={2}
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
                                     <span
                                         style={{
                                             fontSize: '20px',
@@ -128,7 +142,10 @@ const FrameInspector = ({
                                     </span>
                                     Combo
                                 </TableCell>
-                                <TableCell align="right">
+                                <TableCell
+                                    align="right"
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
                                     {frame.combo.combo_index == 0 ? (
                                         'n/a'
                                     ) : (
@@ -215,7 +232,10 @@ const FrameInspector = ({
                             </TableRow>
 
                             <TableRow>
-                                <TableCell colSpan={2}>
+                                <TableCell
+                                    colSpan={2}
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
                                     <span
                                         style={{
                                             fontSize: '20px',
@@ -226,7 +246,10 @@ const FrameInspector = ({
                                     </span>
                                     Intent
                                 </TableCell>
-                                <TableCell align="right">
+                                <TableCell
+                                    align="right"
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
                                     {getIntentNameByCharacterTypeAndNumber(
                                         characterNames[player_index],
                                         frame.action
@@ -235,7 +258,10 @@ const FrameInspector = ({
                             </TableRow>
 
                             <TableRow>
-                                <TableCell colSpan={2}>
+                                <TableCell
+                                    colSpan={2}
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
                                     <span style={{ fontSize: '20px' }}>
                                         &#129336;
                                     </span>{' '}
@@ -253,29 +279,58 @@ const FrameInspector = ({
                             </TableRow>
 
                             <TableRow>
-                                <TableCell colSpan={2}>Body Counter</TableCell>
-                                <TableCell align="right">
+                                <TableCell
+                                    colSpan={2}
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
+                                    Body Counter
+                                </TableCell>
+                                <TableCell
+                                    align="right"
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
                                     {/* showing counter + 1 so that the body counter starts from 1 corresponding to 1st frame of the body state */}
                                     {frame.body_state.counter + 1}
                                 </TableCell>
                             </TableRow>
 
                             <TableRow>
-                                <TableCell colSpan={2}>Stamina</TableCell>
-                                <TableCell align="right">
-                                    {frame.body_state.stamina}
+                                <TableCell
+                                    colSpan={2}
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
+                                    Health
                                 </TableCell>
-                            </TableRow>
-
-                            <TableRow>
-                                <TableCell colSpan={2}>HP</TableCell>
-                                <TableCell align="right">
+                                <TableCell
+                                    align="right"
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
                                     {frame.body_state.integrity}
                                 </TableCell>
                             </TableRow>
 
                             <TableRow>
-                                <TableCell colSpan={2}>Direction</TableCell>
+                                <TableCell
+                                    colSpan={2}
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
+                                    Rage
+                                </TableCell>
+                                <TableCell
+                                    align="right"
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
+                                    {frame.body_state.stamina}
+                                </TableCell>
+                            </TableRow>
+
+                            <TableRow>
+                                <TableCell
+                                    colSpan={2}
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
+                                    Direction
+                                </TableCell>
                                 <TableCell align="right">
                                     {frame.body_state.dir == 1 ? (
                                         <EastIcon />
@@ -304,8 +359,16 @@ const FrameInspector = ({
                             </TableRow> */}
 
                             <TableRow>
-                                <TableCell colSpan={2}>X position</TableCell>
-                                <TableCell align="right">
+                                <TableCell
+                                    colSpan={2}
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
+                                    X position
+                                </TableCell>
+                                <TableCell
+                                    align="right"
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
                                     {/* ({frame.hitboxes.body.origin.x},{" "}
                                     {frame.hitboxes.body.origin.y}) */}
                                     {frame.hitboxes.body.origin.x}
@@ -313,8 +376,16 @@ const FrameInspector = ({
                             </TableRow>
 
                             <TableRow>
-                                <TableCell colSpan={2}>Δ(X position)</TableCell>
-                                <TableCell align="right">
+                                <TableCell
+                                    colSpan={2}
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
+                                    Δ(X position)
+                                </TableCell>
+                                <TableCell
+                                    align="right"
+                                    style={{ fontFamily: 'Eurostile' }}
+                                >
                                     {/* ({frame.physics_state.vel_fp.x / SCALE_FP * (DT_FP / SCALE_FP)},{" "}
                                     {frame.physics_state.vel_fp.y / SCALE_FP * (DT_FP / SCALE_FP)})*/}
                                     {(frame.physics_state.vel_fp.x / SCALE_FP) *

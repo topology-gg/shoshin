@@ -243,7 +243,7 @@ const Layer = ({
             key={`button-wrapper-${i}`}
             sx={{
                 width: '100%',
-                border: `1px solid ${isActive ? '#fff' : '#ccc'}`,
+                border: `1px solid ${isActive ? '#000' : '#ccc'}`,
                 marginBottom: '4px',
                 borderRadius: '20px',
             }}
@@ -257,7 +257,10 @@ const Layer = ({
                         }}
                     >
                         <Typography
-                            sx={{ color: `${isActive ? '#fff' : '#ccc'}` }}
+                            sx={{
+                                color: `${isActive ? '#000' : '#000'}`,
+                                fontFamily: 'Eurostile',
+                            }}
                         >
                             {i + 1}
                         </Typography>
@@ -294,6 +297,7 @@ const Layer = ({
                             <IconButton
                                 onClick={handleConditionClick}
                                 id={`condition-btn-${i}-new`}
+                                style={{ color: '#000' }}
                             >
                                 <AddIcon />
                             </IconButton>
@@ -336,8 +340,8 @@ const Layer = ({
                         id={`condition-btn-${i}`}
                         onClick={handleClick}
                         style={{
-                            fontFamily: 'Raleway',
-                            fontSize: '14px',
+                            fontFamily: 'Eurostile',
+                            fontSize: '15px',
                             padding: '8px 14px',
                             lineHeight: '9px',
                         }}
@@ -433,9 +437,10 @@ const Gambit = ({
                         onClick={(_) => {
                             handleCreateLayer();
                         }}
+                        style={{ fontFamily: 'Eurostile', color: '#000' }}
                     >
                         <AddIcon sx={{ mr: '3px' }} />
-                        {'Layer'}
+                        {'LAYER'}
                     </Button>
                 ) : (
                     <div />
@@ -444,11 +449,18 @@ const Gambit = ({
                 <Box
                     sx={{
                         border: '1px solid',
-                        borderColor: `${activeMs == 0 ? '#fff' : '#ccc'}`,
+                        borderColor: `${activeMs == 0 ? '#000' : '#ccc'}`,
                         opacity: activeMs == 0 ? 1 : 0.5,
                     }}
                 >
-                    <Typography paddingLeft={'8px'} paddingRight={'8px'}>
+                    <Typography
+                        paddingLeft={'8px'}
+                        paddingRight={'8px'}
+                        sx={{
+                            fontFamily: 'Eurostile',
+                            color: activeMs == 0 ? '#000' : '#ccc',
+                        }}
+                    >
                         SHOSHIN
                     </Typography>
                 </Box>
@@ -643,8 +655,8 @@ const Gambit = ({
             }}
         >
             <Box sx={{ padding: '0.5rem 0.5rem 2rem 0.5rem' }}>
-                <Typography sx={{ fontSize: '17px' }}>
-                    <span style={{ marginRight: '8px' }}>&#129504;</span>Mind
+                <Typography sx={{ fontSize: '17px', color: '#000000' }}>
+                    Mind
                 </Typography>
                 <div
                     style={{
@@ -670,6 +682,8 @@ const Gambit = ({
                                             <Typography
                                                 sx={{
                                                     fontSize: '13px',
+                                                    fontFamily: 'Eurostile',
+                                                    color: '#000000',
                                                 }}
                                             >
                                                 Order
@@ -683,6 +697,8 @@ const Gambit = ({
                                             <Typography
                                                 sx={{
                                                     fontSize: '13px',
+                                                    fontFamily: 'Eurostile',
+                                                    color: '#000000',
                                                 }}
                                             >
                                                 Condition
@@ -692,6 +708,8 @@ const Gambit = ({
                                             <Typography
                                                 sx={{
                                                     fontSize: '13px',
+                                                    fontFamily: 'Eurostile',
+                                                    color: '#000000',
                                                 }}
                                             >
                                                 Action
@@ -729,7 +747,6 @@ const Gambit = ({
                             sx={{ fontSize: '17px' }}
                             variant="h1"
                             marginTop={'8px'}
-                            color={'white'}
                         >
                             <span style={{ marginRight: '8px' }}>
                                 &#128165;
