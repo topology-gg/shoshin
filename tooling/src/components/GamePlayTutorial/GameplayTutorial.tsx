@@ -28,6 +28,7 @@ import mainSceneStyles from '../SimulationScene/MainScene.module.css';
 import PauseMenu from '../SimulationScene/PauseMenu';
 import tutorial from './Lessons/Tutorial';
 import { HighlightZone, Lesson } from '../../types/Tutorial';
+import GameplayTutorialPauseMenu from './GameplayTutorialPauseMenu';
 //@ts-ignore
 const Game = dynamic(() => import('../../Game/PhaserGame'), {
     ssr: false,
@@ -420,10 +421,7 @@ const GameplayTutorialScene = React.forwardRef(
                         />
                     ) : null}
                     {openPauseMenu ? (
-                        <PauseMenu
-                            onQuit={onQuit}
-                            onChooseCharacter={onContinue}
-                        />
+                        <GameplayTutorialPauseMenu onQuit={onQuit} />
                     ) : null}
                     <Grid container spacing={{ md: 0, lg: 2 }}>
                         <Grid item lg={1} />
