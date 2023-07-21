@@ -55,6 +55,24 @@ function findFrameNumbersAtKnocked(frames: Frame[]) {
     return frameNumbers;
 }
 
+function findFrameNumbersAtLaunched(frames: Frame[]) {
+    if (!frames) return;
+    // find the frame number at which the agent is at the first frame (counter == 0) for hurt state (currently need to iterate over all character types)
+    // and record that frame number minus one, which is the frame number where the agent is knocked by opponent
+    let frameNumbers = [];
+    console.log('frames', frames);
+    frames.forEach((frame, frame_i) => {
+        if (
+            (frame.body_state.state == BodystatesAntoc.Launched ||
+                frame.body_state.state == BodystatesJessica.Launched) &&
+            frame.body_state.counter == 0
+        ) {
+            frameNumbers.push(frame_i);
+        }
+    });
+    return frameNumbers;
+}
+
 const MidScreenControl = ({
     runnable,
     playOnly,
@@ -87,6 +105,15 @@ const MidScreenControl = ({
                 ),
                 value: f,
             })) || []),
+            ...(findFrameNumbersAtLaunched(agent_0_frames)?.map((f) => ({
+                label: (
+                    <EventSymbol
+                        type="launched"
+                        active={animationFrame === f}
+                    />
+                ),
+                value: f,
+            })) || []),
         ],
         [agent_0_frames, animationFrame]
     );
@@ -101,6 +128,15 @@ const MidScreenControl = ({
             ...(findFrameNumbersAtKnocked(agent_1_frames)?.map((f) => ({
                 label: (
                     <EventSymbol type="knocked" active={animationFrame === f} />
+                ),
+                value: f,
+            })) || []),
+            ...(findFrameNumbersAtLaunched(agent_1_frames)?.map((f) => ({
+                label: (
+                    <EventSymbol
+                        type="launched"
+                        active={animationFrame === f}
+                    />
                 ),
                 value: f,
             })) || []),
