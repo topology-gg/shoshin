@@ -159,7 +159,7 @@ const DashForward: Action = {
             },
             {
                 right: [Upswing.id],
-                duration: 2,
+                duration: 3,
             },
             {
                 right: [Sidecut.id],
