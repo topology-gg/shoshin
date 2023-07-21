@@ -438,7 +438,7 @@ const GameplayTutorialScene = React.forwardRef(
                                 lg={10}
                                 className={hasHighLights ? 'elevated' : ''}
                             >
-                                <GameCard image={'./images/bg/f2f2f2.jpeg'}>
+                                <GameCard image={'/images/bg/f2f2f2.jpeg'}>
                                     <Box
                                         display="flex"
                                         flexDirection="column"
