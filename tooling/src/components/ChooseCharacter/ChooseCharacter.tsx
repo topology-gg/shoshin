@@ -59,7 +59,6 @@ const ChooseCharacter = React.forwardRef<
                     >
                         <CharacterTile
                             character={Character.Jessica}
-                            descriptionVisible
                             onClick={() =>
                                 transitionChooseOpponent(Character.Jessica)
                             }
@@ -68,7 +67,6 @@ const ChooseCharacter = React.forwardRef<
 
                         <CharacterTile
                             character={Character.Antoc}
-                            descriptionVisible
                             onClick={() =>
                                 transitionChooseOpponent(Character.Antoc)
                             }
