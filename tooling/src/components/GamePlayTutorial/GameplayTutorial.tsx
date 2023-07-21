@@ -39,12 +39,14 @@ const Game = dynamic(() => import('../../Game/PhaserGame'), {
 interface MoveTutorialProps {
     onContinue: () => void;
     onQuit: () => void;
+    volume: number;
+    setVolume: (volume: number) => void;
 }
 
 //We need Players agent and opponent
 const GameplayTutorialScene = React.forwardRef(
     (props: MoveTutorialProps, ref: ForwardedRef<HTMLDivElement>) => {
-        const { onQuit, onContinue } = props;
+        const { onQuit, onContinue, volume, setVolume } = props;
         // Constants
         const LATENCY = 70;
         const runnable = true;
@@ -424,7 +426,11 @@ const GameplayTutorialScene = React.forwardRef(
                             />
                         ) : null}
                         {openPauseMenu ? (
-                            <GameplayTutorialMenu onQuit={onQuit} />
+                            <GameplayTutorialMenu
+                                onQuit={onQuit}
+                                volume={volume}
+                                setVolume={setVolume}
+                            />
                         ) : null}
                         <Grid
                             container
@@ -525,6 +531,7 @@ const GameplayTutorialScene = React.forwardRef(
                                                 }}
                                                 isInView={true}
                                                 backgroundId={0}
+                                                volume={volume}
                                             />
                                         </div>
                                     </div>

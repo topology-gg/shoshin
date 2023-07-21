@@ -45,6 +45,8 @@ interface SimulationProps {
     submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
     onContinue: () => void;
     onQuit: () => void;
+    volume: number;
+    setVolume: (volume: number) => void;
 }
 //We need Players agent and opponent
 const SimulationScene = React.forwardRef(
@@ -56,6 +58,8 @@ const SimulationScene = React.forwardRef(
             submitWin,
             onQuit,
             onContinue,
+            volume,
+            setVolume,
         } = props;
         // Constants
         const LATENCY = 70;
@@ -329,6 +333,8 @@ const SimulationScene = React.forwardRef(
                                 <PauseMenu
                                     onQuit={onQuit}
                                     onChooseCharacter={onContinue}
+                                    volume={volume}
+                                    setVolume={setVolume}
                                 />
                             ) : null}
                             <Grid container spacing={{ md: 2 }}>
@@ -418,6 +424,7 @@ const SimulationScene = React.forwardRef(
                                                     }}
                                                     isInView={true}
                                                     backgroundId={0}
+                                                    volume={volume}
                                                 />
                                             </div>
                                         </div>

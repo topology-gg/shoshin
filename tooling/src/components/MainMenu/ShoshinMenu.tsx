@@ -1,6 +1,7 @@
-import { Box } from '@mui/material';
+import { Box, Slider, Stack, Typography } from '@mui/material';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import LogoBig from '../layout/LogoBig';
+import { VolumeDown, VolumeUp } from '@mui/icons-material';
 
 export interface ShoshinMenuItem {
     title: string;
@@ -10,8 +11,15 @@ export interface ShoshinMenuItem {
 interface ShoshinMenuProps {
     displayLogo: boolean;
     menuItems: ShoshinMenuItem[];
+    volume?: number;
+    setVolume?: (volume: number) => void;
 }
-const ShoshinMenu = ({ displayLogo, menuItems }: ShoshinMenuProps) => {
+const ShoshinMenu = ({
+    displayLogo,
+    menuItems,
+    volume,
+    setVolume,
+}: ShoshinMenuProps) => {
     const buttons = menuItems.map((item) => {
         return (
             <ShoshinMenuButton
@@ -26,6 +34,10 @@ const ShoshinMenu = ({ displayLogo, menuItems }: ShoshinMenuProps) => {
             </ShoshinMenuButton>
         );
     });
+
+    const handleVolumeChange = (event, newVolume) => {
+        setVolume(newVolume);
+    };
     return (
         <Box
             display="flex"
@@ -38,6 +50,34 @@ const ShoshinMenu = ({ displayLogo, menuItems }: ShoshinMenuProps) => {
         >
             {displayLogo && <LogoBig />}
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                {volume !== undefined && setVolume !== undefined && (
+                    <Box
+                        sx={{
+                            border: '1px solid black', // Change the border style as needed
+                            background: 'rgb(105, 104, 104, .8)', // Use your preferred grey color here
+                            padding: '16px', // Adjust padding as needed
+                            borderRadius: '10px', // Adjust border radius as needed
+                            marginBottom: '10px', // Adjust margin as needed
+                        }}
+                    >
+                        <Typography color={'white'}>Volume</Typography>
+                        <Stack
+                            spacing={2}
+                            direction="row"
+                            sx={{ mb: 1 }}
+                            alignItems="center"
+                            color="white"
+                        >
+                            <VolumeDown />
+                            <Slider
+                                aria-label="Volume"
+                                value={volume}
+                                onChange={handleVolumeChange}
+                            />
+                            <VolumeUp />
+                        </Stack>
+                    </Box>
+                )}
                 {buttons}
             </Box>
         </Box>
