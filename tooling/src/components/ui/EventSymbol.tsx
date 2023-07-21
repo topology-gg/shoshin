@@ -12,11 +12,11 @@ const EventSymbol = ({
 }) => {
     const color =
         type === 'hurt'
-            ? 'warning.light'
+            ? '#FEBA4F'
             : type === 'knocked'
-            ? 'error.main'
+            ? '#ED2939'
             : type == 'launched'
-            ? 'background.default'
+            ? '#FD673A'
             : null;
 
     return (
