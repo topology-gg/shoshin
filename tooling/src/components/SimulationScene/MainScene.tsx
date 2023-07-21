@@ -544,7 +544,7 @@ const SimulationScene = React.forwardRef(
                                 </Grid>
                                 <Grid item md={6} lg={5} xl={5}>
                                     <GameCard
-                                        image={'./images/bg/f2f2f2.png'}
+                                        image={'/images/bg/f2f2f2.png'}
                                         // bgOpacity={0}
                                     >
                                         <Box

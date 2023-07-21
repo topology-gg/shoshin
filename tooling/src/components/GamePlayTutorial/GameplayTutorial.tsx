@@ -573,7 +573,7 @@ const GameplayTutorialScene = React.forwardRef(
                                 className={highlightMind ? 'elevated' : ''}
                             >
                                 <GameCard
-                                    image={'./images/bg/f2f2f2.png'}
+                                    image={'/images/bg/f2f2f2.png'}
                                     height={'95%'}
                                 >
                                     <Box
