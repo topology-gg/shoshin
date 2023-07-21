@@ -81,6 +81,7 @@ export const bodyStateNumberToName = {
         170: 'launched',
         180: 'jump_move_forward',
         190: 'jump_move_backward',
+        200: 'taunt',
     },
     antoc: {
         0: 'idle',
@@ -285,6 +286,7 @@ export const characterActionToNumber = {
         Jump: 9,
         Gatotsu: 10,
         LowKick: 11,
+        Taunt: 12,
     },
     antoc: {
         Rest: 0,

@@ -21,11 +21,21 @@ import eventsCenter from '../Game/EventsCenter';
 import { Body } from 'matter';
 import { statsInfo } from './UI';
 
-const ARENA_WIDTH = 1600;
+// Background
+const DEFAULT_BACKGROUND_ID = 0;
+const BG_SCALE = 0.75;
+const PRACTICE_BG_SCALE = 0.15;
+const BG_X_OFFSET = 37;
+const BG_Y_OFFSET = -90;
+const CAMERA_ZOOM_MULTIPLIER = -0.8;
+const CAMERA_PAN_Y_MULTIPLIER = 0;
+const CHAR_DISTANCE_CUTOFF = 250;
+
+const ARENA_WIDTH = 500;
 const DEFAULT_ZOOM = 2.4;
 
 const DEFAULT_CAMERA_HEIGHT = 400;
-const DEFAULT_CAMERA_CENTER_X = 25;
+const DEFAULT_CAMERA_CENTER_X = 100;
 const DEFAULT_CAMERA_CENTER_Y = -100;
 const DEFAULT_CAMERA_LEFT = -ARENA_WIDTH / 2;
 const DEFAULT_CAMERA_TOP = DEFAULT_CAMERA_CENTER_Y - DEFAULT_CAMERA_HEIGHT / 2;
@@ -100,6 +110,10 @@ export default class Simulator extends Phaser.Scene {
 
     readonly STROKE_STYLE_BODY_HITBOX = 0x7cfc00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
+
+    // Background
+    backgroundSets: { [key: number]: Phaser.GameObjects.Image };
+    backgroundId: number;
 
     // VFX
     sparkSprites: Phaser.GameObjects.Sprite[];
@@ -344,11 +358,19 @@ export default class Simulator extends Phaser.Scene {
             'images/jessica/birdswing/spritesheet.png',
             'images/jessica/birdswing/spritesheet.json'
         );
+        this.load.atlas(
+            `jessica-taunt`,
+            'images/jessica/beret/spritesheet.png',
+            'images/jessica/beret/spritesheet.json'
+        );
 
+        // Background
         this.load.image(
             'arena_bg',
             'images/bg/shoshin-bg-large-transparent.png'
         );
+        this.load.image('level-1-bg', 'images/bg/level-1/full.png');
+        this.load.image('level-4-bg', 'images/bg/level-4/full.png');
 
         // VFX
         this.load.spritesheet('spark', 'images/effects/spark/spritesheet.png', {
@@ -860,14 +882,31 @@ export default class Simulator extends Phaser.Scene {
         this.initializeVFX();
         this.initializeSFX();
 
-        const yDisplacementFromCenterToGround = -150;
-        let bg = this.add.image(0, 20, 'arena_bg');
-        bg.setScale(0.3, 0.2).setPosition(
-            0,
-            bg.y + yDisplacementFromCenterToGround
-        );
-        // console.log('bg x, ', bg.x);
-        // console.log('bg y ', bg.y);
+        this.backgroundSets = {};
+        [0, 1, 4].forEach((level: number) => {
+            let bg;
+            if (level == 0) {
+                // show practice background
+                bg = this.add.image(0, 0, 'arena_bg').setVisible(false);
+                bg.setScale(PRACTICE_BG_SCALE).setPosition(
+                    BG_X_OFFSET,
+                    bg.y + BG_Y_OFFSET
+                );
+            } else {
+                // show proper level background
+                bg = this.add
+                    .image(0, 0, `level-${level}-bg`)
+                    .setVisible(false);
+                bg.setScale(BG_SCALE).setPosition(
+                    BG_X_OFFSET,
+                    bg.y + BG_Y_OFFSET
+                );
+            }
+            this.backgroundSets[level] = bg;
+        });
+        this.backgroundSets[
+            this.backgroundId ?? DEFAULT_BACKGROUND_ID
+        ].setVisible(true);
 
         const outOfBoundX = 2000;
         this.player_one = this.add.sprite(-outOfBoundX, 0, `antoc-idle`, 0);
@@ -920,11 +959,12 @@ export default class Simulator extends Phaser.Scene {
         this.player_one_action_hitbox_text = this.addTextHelper('0xfff');
         this.player_two_action_hitbox_text = this.addTextHelper('0xfff');
 
-        this.cameras.main.centerOn(0, yDisplacementFromCenterToGround);
+        this.cameras.main.centerOn(0, BG_Y_OFFSET);
         this.cameras.main.setBackgroundColor('#FFFFFF');
         this.initializeCameraSettings();
     }
     create() {
+        console.log('>>>>>> create()');
         this.initialize();
     }
 
@@ -1195,17 +1235,30 @@ export default class Simulator extends Phaser.Scene {
 
         // At the closest distance zoom is default, at further distances we zoom out till .9
         const calculatedZoom =
-            charDistance < 400
+            charDistance < CHAR_DISTANCE_CUTOFF
                 ? this.scaledZoom
-                : this.scaledZoom - 0.3 * (charDistance / 800);
+                : this.scaledZoom +
+                  CAMERA_ZOOM_MULTIPLIER *
+                      ((charDistance - CHAR_DISTANCE_CUTOFF) / ARENA_WIDTH);
         camera.zoomTo(calculatedZoom, CAMERA_REACTION_TIME);
 
         // pan to midpoint between characters
+        const calculatedPanY =
+            charDistance < CHAR_DISTANCE_CUTOFF
+                ? DEFAULT_CAMERA_CENTER_Y
+                : DEFAULT_CAMERA_CENTER_Y +
+                  CAMERA_PAN_Y_MULTIPLIER *
+                      ((charDistance - CHAR_DISTANCE_CUTOFF) / ARENA_WIDTH);
         camera.pan(
             leftCharX + charDistance / 2 + DEFAULT_CAMERA_CENTER_X,
-            DEFAULT_CAMERA_CENTER_Y,
+            calculatedPanY,
             CAMERA_REACTION_TIME
         );
+    }
+
+    init(data) {
+        console.log('>>>>>> init()');
+        this.backgroundId = data.backgroundId;
     }
 
     updateSceneFromFrame({

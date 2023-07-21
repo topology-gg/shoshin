@@ -28,7 +28,9 @@ import mainSceneStyles from '../SimulationScene/MainScene.module.css';
 import PauseMenu from '../SimulationScene/PauseMenu';
 import tutorial from './Lessons/Tutorial';
 import { HighlightZone, Lesson } from '../../types/Tutorial';
-import GameplayTutorialPauseMenu from './GameplayTutorialPauseMenu';
+import GameCard from '../ui/GameCard';
+import FullArtBackground from '../layout/FullArtBackground';
+import GameplayTutorialMenu from './GameplayTutorialMenu';
 //@ts-ignore
 const Game = dynamic(() => import('../../Game/PhaserGame'), {
     ssr: false,
@@ -406,165 +408,201 @@ const GameplayTutorialScene = React.forwardRef(
         );
 
         return (
-            <div id={'mother'} className={styles.container} ref={ref}>
-                {' '}
-                <div className={mainSceneStyles.overlayMenu}></div>
-                <div className={styles.main}>
-                    {hasHighLights ? (
-                        <div className={'overlay-menu'}> </div>
-                    ) : null}
-                    {showVictory ? (
-                        <SquareOverlayMenu
-                            opponentName={opponentName}
-                            performance={performance}
-                            handleContinueClick={handleContinueClick}
-                        />
-                    ) : null}
-                    {openPauseMenu ? (
-                        <GameplayTutorialPauseMenu onQuit={onQuit} />
-                    ) : null}
-                    <Grid container spacing={{ md: 0, lg: 2 }}>
-                        <Grid item lg={1} />
-                        <Grid item xs={12} lg={10}>
-                            <Box
-                                display="flex"
-                                flexDirection="column"
-                                alignItems="center"
-                                width="100%"
-                                border="1px solid #999999"
+            <FullArtBackground useAlt={true}>
+                <div id={'mother'} className={styles.container} ref={ref}>
+                    {' '}
+                    <div className={mainSceneStyles.overlayMenu}></div>
+                    <div className={styles.main}>
+                        {hasHighLights ? (
+                            <div className={'overlay-menu'}> </div>
+                        ) : null}
+                        {showVictory ? (
+                            <SquareOverlayMenu
+                                opponentName={opponentName}
+                                performance={performance}
+                                handleContinueClick={handleContinueClick}
+                            />
+                        ) : null}
+                        {openPauseMenu ? (
+                            <GameplayTutorialMenu onQuit={onQuit} />
+                        ) : null}
+                        <Grid
+                            container
+                            spacing={{ xs: 1 }}
+                            sx={{ width: '100%' }}
+                        >
+                            <Grid item lg={1} />
+                            <Grid
+                                item
+                                xs={12}
+                                lg={10}
                                 className={hasHighLights ? 'elevated' : ''}
-                                sx={{ backgroundColor: 'white' }}
                             >
-                                <Typography variant="h6" align="center">
-                                    {title}
-                                </Typography>
-                                <Typography variant="body1" align="center">
-                                    {currentSlide.content}
-                                </Typography>
-                                {objectives}
-                                <Typography
-                                    variant="body1"
-                                    align="center"
-                                    style={{ opacity: 0.5 }}
-                                >
-                                    {slideIndex + 1} / {lesson.slides.length}
-                                </Typography>
-                                <Box
-                                    display="flex"
-                                    justifyContent="flex-end"
-                                    width="100%"
-                                    mt={2}
-                                >
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        disabled={!canGoToNextSlide}
-                                        onClick={() => handleSlideContinue()}
+                                <GameCard image={'./images/bg/f2f2f2.jpeg'}>
+                                    <Box
+                                        display="flex"
+                                        flexDirection="column"
+                                        alignItems="center"
+                                        width="100%"
                                     >
-                                        {currentSlide.continueText}
-                                    </Button>
-                                </Box>
-                            </Box>
-                        </Grid>
-                        <Grid item lg={0} xl={1} />
-                        <Grid item lg={0} xl={1} />
-                        <Grid item md={6} lg={6}>
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    width: '100%',
-                                }}
-                                className={highlightSimulator ? 'elevated' : ''}
-                            >
-                                <div className={overlayContainerClassName}>
-                                    <div className={overlayClassName}>
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                flexDirection: 'row',
-                                                justifyContent: 'space-between',
-                                            }}
+                                        <Typography variant="h6" align="center">
+                                            {title}
+                                        </Typography>
+                                        <Typography
+                                            variant="body1"
+                                            align="center"
                                         >
-                                            <Typography>{p1Name}</Typography>
-                                            <Typography>{p2Name}</Typography>
+                                            {currentSlide.content}
+                                        </Typography>
+                                        {objectives}
+                                        <Typography
+                                            variant="body1"
+                                            align="center"
+                                            style={{ opacity: 0.5 }}
+                                        >
+                                            {slideIndex + 1} /{' '}
+                                            {lesson.slides.length}
+                                        </Typography>
+                                        <Box
+                                            display="flex"
+                                            justifyContent="flex-end"
+                                            width="100%"
+                                            mt={2}
+                                        >
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                disabled={!canGoToNextSlide}
+                                                onClick={() =>
+                                                    handleSlideContinue()
+                                                }
+                                            >
+                                                {currentSlide.continueText}
+                                            </Button>
                                         </Box>
-                                        <Game
-                                            testJson={testJson}
-                                            animationFrame={animationFrame}
-                                            animationState={animationState}
-                                            showDebug={checkedShowDebugInfo}
-                                            gameMode={GameModes.simulation}
-                                            realTimeOptions={{
-                                                playerCharacter: 0,
-                                                agentOpponent: p2,
-                                                setPlayerStatuses,
-                                            }}
-                                            isInView={true}
-                                        />
-                                    </div>
-                                </div>
-                                {playOnly ? (
-                                    <div style={{ height: '400px' }}></div>
-                                ) : null}
-                                <MidScreenControl
-                                    runnable={
-                                        !(p1 == null || p2 == null) && !playOnly
-                                    }
-                                    playOnly={playOnly}
-                                    testJsonAvailable={testJson ? true : false}
-                                    testJson={testJson}
-                                    animationFrame={animationFrame}
-                                    n_cycles={N_FRAMES}
-                                    animationState={animationState}
-                                    handleClick={handleMidScreenControlClick}
-                                    handleSlideChange={(evt) => {
-                                        if (animationState == 'Run') return;
-                                        const slide_val: number = parseInt(
-                                            evt.target.value
-                                        );
-                                        setAnimationFrame(slide_val);
+                                    </Box>
+                                </GameCard>
+                            </Grid>
+
+                            <Grid item xs={12} md={12} lg={6}>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        width: '100%',
                                     }}
-                                    checkedShowDebugInfo={checkedShowDebugInfo}
-                                    handleChangeDebugInfo={() =>
-                                        setCheckedShowDebugInfo(
-                                            (_) => !checkedShowDebugInfo
-                                        )
+                                    className={
+                                        highlightSimulator ? 'elevated' : ''
                                     }
-                                />
-                            </div>
-                        </Grid>
-                        <Grid item md={6} lg={5} xl={4}>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    justifyContent: 'top',
-                                    alignItems: 'left',
-                                    borderRadius: '0 0 0 0',
-                                    border: '1px solid #999999',
-                                    width: '100%',
-                                    height: '100%',
-                                    backgroundColor: 'white',
-                                }}
+                                >
+                                    <div className={overlayContainerClassName}>
+                                        <div className={overlayClassName}>
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    justifyContent:
+                                                        'space-between',
+                                                }}
+                                            >
+                                                <Typography>
+                                                    {p1Name}
+                                                </Typography>
+                                                <Typography>
+                                                    {p2Name}
+                                                </Typography>
+                                            </Box>
+                                            <Game
+                                                testJson={testJson}
+                                                animationFrame={animationFrame}
+                                                animationState={animationState}
+                                                showDebug={checkedShowDebugInfo}
+                                                gameMode={GameModes.simulation}
+                                                realTimeOptions={{
+                                                    playerCharacter: 0,
+                                                    agentOpponent: p2,
+                                                    setPlayerStatuses,
+                                                }}
+                                                isInView={true}
+                                                backgroundId={0}
+                                            />
+                                        </div>
+                                    </div>
+                                    {playOnly ? (
+                                        <div style={{ height: '400px' }}></div>
+                                    ) : null}
+                                    <MidScreenControl
+                                        runnable={
+                                            !(p1 == null || p2 == null) &&
+                                            !playOnly
+                                        }
+                                        playOnly={playOnly}
+                                        testJsonAvailable={
+                                            testJson ? true : false
+                                        }
+                                        testJson={testJson}
+                                        animationFrame={animationFrame}
+                                        n_cycles={N_FRAMES}
+                                        animationState={animationState}
+                                        handleClick={
+                                            handleMidScreenControlClick
+                                        }
+                                        handleSlideChange={(evt) => {
+                                            if (animationState == 'Run') return;
+                                            const slide_val: number = parseInt(
+                                                evt.target.value
+                                            );
+                                            setAnimationFrame(slide_val);
+                                        }}
+                                        checkedShowDebugInfo={
+                                            checkedShowDebugInfo
+                                        }
+                                        handleChangeDebugInfo={() =>
+                                            setCheckedShowDebugInfo(
+                                                (_) => !checkedShowDebugInfo
+                                            )
+                                        }
+                                    />
+                                </div>
+                            </Grid>
+                            <Grid
+                                item
+                                xs={12}
+                                md={12}
+                                lg={6}
                                 className={highlightMind ? 'elevated' : ''}
                             >
-                                <Gambit
-                                    layers={layers}
-                                    setLayers={setLayers}
-                                    features={lesson.features}
-                                    character={character}
-                                    conditions={conditions}
-                                    combos={combos}
-                                    setCombos={setCombos}
-                                    activeMs={activeMs}
-                                    actions={lesson.actions}
-                                />
-                            </Box>
+                                <GameCard
+                                    image={'./images/bg/f2f2f2.jpeg'}
+                                    height={'95%'}
+                                >
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'top',
+                                            alignItems: 'left',
+                                            borderRadius: '0 0 0 0',
+                                        }}
+                                    >
+                                        <Gambit
+                                            layers={layers}
+                                            setLayers={setLayers}
+                                            features={lesson.features}
+                                            character={character}
+                                            conditions={conditions}
+                                            combos={combos}
+                                            setCombos={setCombos}
+                                            activeMs={activeMs}
+                                            actions={lesson.actions}
+                                        />
+                                    </Box>
+                                </GameCard>
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    </div>
                 </div>
-            </div>
+            </FullArtBackground>
         );
     }
 );

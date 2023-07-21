@@ -34,7 +34,7 @@ const MainMenu = React.forwardRef<
     const title = 'Shoshin';
     return (
         <FullArtBackground ref={ref}>
-            <ShoshinMenu menuTitle={title} menuItems={items} />
+            <ShoshinMenu displayLogo={false} menuItems={items} />
         </FullArtBackground>
     );
 });
