@@ -196,6 +196,7 @@ const Game = ({
             isRealTime ? GameModes.simulation : GameModes.realtime
         );
         if (scene !== null && scene !== undefined) {
+            //setPlayerStatuses currently is not called in the phaser scene
             scene.changeScene(gameMode, ctx, realTimeOptions.setPlayerStatuses);
         }
 
