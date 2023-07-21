@@ -1,13 +1,10 @@
 import React from 'react';
 import {
     Box,
-    Button,
     List,
     ListItem,
+    ListItemButton,
     ListItemText,
-    Step,
-    StepLabel,
-    Stepper,
     Tab,
     Tabs,
     Typography,
@@ -146,53 +143,60 @@ const ActionReference = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
                         display: 'flex',
                         alignItems: 'stretch',
                         width: '50%',
+                        height: '60vh',
                     }}
                 >
-                    <Box sx={{ width: '30%', height: '100%' }}>
-                        <Tile sx={{ width: '100%', height: '100%' }}>
-                            <Tabs
-                                value={selectedTab}
-                                onChange={handleChangeTab}
-                                centered
-                            >
-                                <Tab label="Normal" />
-                                <Tab label="Combo" />
-                            </Tabs>
+                    <Tile
+                        sx={{
+                            width: '30%',
+                            overflowY: 'auto',
+                        }}
+                    >
+                        <Tabs
+                            value={selectedTab}
+                            onChange={handleChangeTab}
+                            centered
+                        >
+                            <Tab label="Normal" />
+                            <Tab label="Combo" />
+                        </Tabs>
 
-                            <List component="nav" hidden={selectedTab != 0}>
-                                {moves.map((move, index) => (
-                                    <ListItem
-                                        key={index}
-                                        button
+                        <List component="nav" hidden={selectedTab != 0}>
+                            {moves.map((move, index) => (
+                                <ListItem
+                                    disablePadding
+                                    key={index}
+                                    onClick={() => changeSelectedMove(index)}
+                                >
+                                    <ListItemButton
                                         selected={selectedMove === index}
-                                        onClick={() =>
-                                            changeSelectedMove(index)
-                                        }
                                     >
                                         <ListItemText
                                             primary={`${move.display.unicode} ${move.display.name}`}
                                         />
-                                    </ListItem>
-                                ))}
-                            </List>
-                            <List component="nav" hidden={selectedTab != 1}>
-                                {comboInfos.map((combo, index) => (
-                                    <ListItem
-                                        key={index}
-                                        button
+                                    </ListItemButton>
+                                </ListItem>
+                            ))}
+                        </List>
+                        <List component="nav" hidden={selectedTab != 1}>
+                            {comboInfos.map((combo, index) => (
+                                <ListItem
+                                    disablePadding
+                                    key={index}
+                                    onClick={() => changeSelectedMove(index)}
+                                >
+                                    <ListItemButton
                                         selected={selectedMove === index}
-                                        onClick={() =>
-                                            changeSelectedMove(index)
-                                        }
                                     >
                                         <ListItemText
                                             primary={` ${combo.displayName}`}
                                         />
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </Tile>
-                    </Box>
+                                    </ListItemButton>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </Tile>
+
                     <Tile
                         sx={{
                             flex: 1,
@@ -201,7 +205,6 @@ const ActionReference = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
                             justifyContent: 'flex-start',
                             alignItems: 'stretch',
                             width: 450,
-                            height: '60vh',
                             overflowY: 'auto',
                         }}
                     >
