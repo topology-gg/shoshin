@@ -16,7 +16,7 @@ const slide0: LessonSlide = {
 const slide1: LessonSlide = {
     content:
         'Some actions synergize with each other when sequenced together in a combo',
-    continueText: 'Next',
+    continueText: 'Finish Tutorial',
     highlightLayer: -1,
     highlightZone: HighlightZone.Combos,
 };
