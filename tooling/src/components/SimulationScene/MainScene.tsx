@@ -251,8 +251,9 @@ const SimulationScene = React.forwardRef(
 
         const beatAgent =
             output !== undefined
-                ? output.agent_1[output.agent_1.length - 1].body_state
-                      .integrity == 0
+                ? output.agent_0[output.agent_1.length - 1].body_state
+                      .integrity >
+                  output.agent_1[output.agent_1.length - 1].body_state.integrity
                 : false;
 
         let performance = Medal.NONE;
@@ -260,7 +261,12 @@ const SimulationScene = React.forwardRef(
             output !== undefined
                 ? output.agent_0[output.agent_0.length - 1].body_state.integrity
                 : 0;
-        if (hpRemaining === 1000) {
+
+        const opponentHpRemaining =
+            output !== undefined
+                ? output.agent_1[output.agent_1.length - 1].body_state.integrity
+                : 1000;
+        if (hpRemaining === 1000 && opponentHpRemaining === 0) {
             performance = Medal.GOLD;
         } else if (hpRemaining >= 500) {
             performance = Medal.SILVER;
