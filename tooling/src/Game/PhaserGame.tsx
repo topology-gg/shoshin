@@ -24,6 +24,7 @@ const Game = ({
     realTimeOptions,
     isInView,
     backgroundId,
+    onPhaserLoad,
 }: PhaserGameProps) => {
     const tagName = 'div';
     const className = 'relative top-0 left-0 w-full h-full my-12';
@@ -139,6 +140,10 @@ const Game = ({
             }
             console.log("running g.scene.start('ui');");
             (game.current as Phaser.Game).scene.start('ui');
+
+            (game.current as Phaser.Game).events.on('ready', () =>
+                onPhaserLoad?.()
+            );
         }
 
         return () => {

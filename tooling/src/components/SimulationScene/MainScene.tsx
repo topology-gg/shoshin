@@ -6,6 +6,7 @@ import {
     Accordion,
     AccordionSummary,
     Grid,
+    Fade,
 } from '@mui/material';
 import styles from '../../../styles/Home.module.css';
 import { FrameScene, TestJson } from '../../types/Frame';
@@ -33,6 +34,7 @@ import mainSceneStyles from './MainScene.module.css';
 import PauseMenu from './PauseMenu';
 import FullArtBackground from '../layout/FullArtBackground';
 import GameCard from '../ui/GameCard';
+import LoadingFull from '../layout/LoadingFull';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -99,6 +101,8 @@ const SimulationScene = React.forwardRef(
             opponent.agent.character == 0 ? Character.Jessica : Character.Antoc;
 
         const [openPauseMenu, changePauseMenu] = useState<boolean>(false);
+
+        const [phaserLoaded, setPhaserLoaded] = useState<boolean>(false);
 
         const handleKeyPress = (ev: KeyboardEvent) => {
             const key = ev.key.toUpperCase();
@@ -314,6 +318,9 @@ const SimulationScene = React.forwardRef(
                 : 0;
         return (
             <div id={'mother'} ref={ref}>
+                <Fade in={!phaserLoaded}>
+                    <LoadingFull />
+                </Fade>
                 <FullArtBackground useAlt={true}>
                     <div className={styles.container}>
                         <div className={mainSceneStyles.overlayMenu}></div>
@@ -398,6 +405,9 @@ const SimulationScene = React.forwardRef(
                                                     </Box>
                                                 </Box>
                                                 <Game
+                                                    onPhaserLoad={() =>
+                                                        setPhaserLoaded(true)
+                                                    }
                                                     testJson={testJson}
                                                     animationFrame={
                                                         animationFrame

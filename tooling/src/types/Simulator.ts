@@ -11,6 +11,7 @@ export interface PhaserGameProps {
     realTimeOptions: RealTimeOptions;
     isInView: boolean;
     backgroundId: number;
+    onPhaserLoad?: () => void;
 }
 export interface SimulatorProps {
     testJson: TestJson;
