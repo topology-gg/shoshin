@@ -6,14 +6,12 @@ import GameCard from '../ui/GameCard';
 const CharacterTile = ({
     character,
     children,
-    descriptionVisible,
     mediaCover,
     onClick,
     progressText,
 }: {
     character: Character;
     children?: React.ReactNode;
-    descriptionVisible?: boolean;
     mediaCover?: React.ReactNode;
     onClick?: React.MouseEventHandler<HTMLDivElement>;
     progressText?: React.ReactNode;
@@ -25,7 +23,7 @@ const CharacterTile = ({
 
     const image = onClick ? (hovering ? activeImage : idleImage) : activeImage;
     // const textColor = image === idleImage ? 'text.primary' : 'text.secondary';
-    const textColor = 'text.secondary';
+    const textColor = 'white';
 
     return (
         <GameCard
@@ -43,11 +41,8 @@ const CharacterTile = ({
         >
             <Typography variant="h3">{character}</Typography>
             {progressText && (
-                <Typography variant="h6">{progressText}</Typography>
-            )}
-            {descriptionVisible && (
-                <Typography variant="body2">
-                    Additional descriptive text
+                <Typography variant="h6" color={textColor}>
+                    {progressText}
                 </Typography>
             )}
             {children}
