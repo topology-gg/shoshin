@@ -39,4 +39,5 @@ export interface Lesson {
     opponent: Agent;
     features: GambitFeatures;
     actions: Action[];
+    initialSelectedCombo?: number;
 }

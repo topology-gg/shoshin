@@ -128,7 +128,7 @@ export const Block: Action = {
 };
 
 const JessicaMoveForwardId = 5;
-const MoveForward: Action = {
+export const MoveForward: Action = {
     id: JessicaMoveForwardId,
     display: { name: 'MoveForward', unicode: '\u{1F6B6}' },
     frames: { duration: 1, intents: [JessicaMoveForwardId] },
@@ -147,7 +147,7 @@ const MoveBackward: Action = {
 
 const JumpId = 9;
 
-const DashForward: Action = {
+export const DashForward: Action = {
     id: 7,
     display: { name: 'DashForward', unicode: '\u{1F406}' },
     frames: {

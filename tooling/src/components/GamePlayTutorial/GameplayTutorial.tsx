@@ -364,6 +364,12 @@ const GameplayTutorialScene = React.forwardRef(
                 }
             }
         };
+
+        const handleSlideBack = () => {
+            if (slideIndex > 0) {
+                changeSlide(slideIndex - 1);
+            }
+        };
         const playOnly = false && !playedWinningReplay && beatAgent;
 
         const overlayContainerClassName = playOnly
@@ -462,6 +468,7 @@ const GameplayTutorialScene = React.forwardRef(
                                         <Typography
                                             variant="body1"
                                             align="center"
+                                            style={{ whiteSpace: 'pre-line' }}
                                         >
                                             {currentSlide.content}
                                         </Typography>
@@ -480,6 +487,17 @@ const GameplayTutorialScene = React.forwardRef(
                                             width="100%"
                                             mt={2}
                                         >
+                                            <Button
+                                                variant="text"
+                                                color="primary"
+                                                disabled={slideIndex == 0}
+                                                onClick={() =>
+                                                    handleSlideBack()
+                                                }
+                                                sx={{ marginRight: '6px' }}
+                                            >
+                                                {'Back'}
+                                            </Button>
                                             <Button
                                                 variant="contained"
                                                 color="primary"
@@ -607,6 +625,9 @@ const GameplayTutorialScene = React.forwardRef(
                                             setCombos={setCombos}
                                             activeMs={activeMs}
                                             actions={lesson.actions}
+                                            initialSelectedCombo={
+                                                lesson.initialSelectedCombo
+                                            }
                                         />
                                     </Box>
                                 </GameCard>
