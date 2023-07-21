@@ -13,14 +13,14 @@ import { defeatOpponentObjective } from './CommonObjectives';
 
 const slide0: LessonSlide = {
     content:
-        "Conditions can be inverted to match the opposite of it's criteria \nTo invert a condition right click on a condition and select 'Invert Condition'",
+        "Conditions can be inverted to match the opposite of it's criteria. \nTo invert a condition right click on a condition and select 'Invert Condition.'",
     continueText: 'Next',
     highlightLayer: -1,
     highlightZone: HighlightZone.DIALOGUE,
 };
 
 const invertLayerWithMoveForward = {
-    description: 'Invert the condition that has the move forward action',
+    description: 'Invert the condition that has the MoveForward action.',
     evaluate: (
         animationFrame: number,
         testJson: TestJson,
@@ -30,12 +30,17 @@ const invertLayerWithMoveForward = {
             const hasInvertedCondtion = layer.conditions.findIndex(
                 (condition) => condition.isInverted
             );
-            if (layer.action.id == MoveForward.id && hasInvertedCondtion) {
+            console.log('playerAgent.layers', playerAgent.layers);
+            if (
+                layer.action.id == MoveForward.id &&
+                hasInvertedCondtion !== -1
+            ) {
                 return true;
             }
             return false;
         });
 
+        console.log('match', match);
         return match !== -1;
     },
 };
@@ -44,7 +49,7 @@ const slide1: LessonSlide = {
     content: "Beat the opponent by using the 'Invert Condition' feature",
     continueText: 'Next',
     highlightLayer: -1,
-    highlightZone: HighlightZone.MIND,
+    highlightZone: HighlightZone.NONE,
     lessonObjectives: [invertLayerWithMoveForward, defeatOpponentObjective],
 };
 const layers = [
@@ -100,6 +105,7 @@ const layers = [
                 displayName: 'Within 100',
                 type: 'spacing',
                 key: -1638791590,
+                isInverted: false,
             },
         ],
         action: {

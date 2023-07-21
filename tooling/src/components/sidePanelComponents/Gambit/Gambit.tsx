@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, Grid, MenuItem, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
@@ -416,6 +416,10 @@ const Gambit = ({
     const [selectedCombo, changeSelectedCombo] = useState<number>(
         initialSelectedCombo >= 0 ? initialSelectedCombo : -1
     );
+
+    useEffect(() => {
+        changeSelectedCombo(initialSelectedCombo);
+    }, [initialSelectedCombo]);
 
     const usedLayersByCombo = layers
         .reduce((acc: number[], layer, index) => {
