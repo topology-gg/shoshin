@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 import eventsCenter from '../Game/EventsCenter';
 import {
     PHASER_CANVAS_W,
@@ -26,12 +27,23 @@ export interface statsInfo {
     stamina: number;
 }
 
-export default {
-    key: 'ui',
+export default class UI extends Phaser.Scene {
+    stats_bars;
 
-    plugins: ['InputPlugin'],
+    timerText: Phaser.GameObjects.Text;
+    timerFractionalText: Phaser.GameObjects.Text;
 
-    create: function () {
+    PlayerOneEvent: Phaser.GameObjects.Text;
+    PlayerTwoEvent: Phaser.GameObjects.Text;
+
+    debug_info_objects;
+
+    endTextBg: Phaser.GameObjects.Rectangle;
+    endText: Phaser.GameObjects.Text;
+    endTextFootnote: Phaser.GameObjects.Text;
+
+    initialize() {
+        console.log('UI scene initialize()');
         //
         // Create hp and stamina bar
         //
@@ -80,10 +92,9 @@ export default {
         //
         this.timerText = this.add
             .text(PHASER_CANVAS_W / 2, 50, '', {
-                fontSize: 62,
                 fontFamily: 'Oswald',
-                // fill: '#FF7E00',
-                fill: '#FEEEAA',
+                color: '#FEEEAA',
+                fontSize: '62px',
                 stroke: '#111111',
                 strokeThickness: 5,
             })
@@ -91,10 +102,9 @@ export default {
             .setVisible(false);
         this.timerFractionalText = this.add
             .text(PHASER_CANVAS_W / 2 + 36, 60, '', {
-                fontSize: 24,
                 fontFamily: 'Oswald',
-                // fill: '#FF7E00',
-                fill: '#FEEEAA',
+                color: '#FEEEAA',
+                fontSize: '24px',
                 stroke: '#000000',
                 strokeThickness: 4,
             })
@@ -112,14 +122,6 @@ export default {
                 fontStyle: 'italic',
                 stroke: '#000000',
                 strokeThickness: 4,
-                // shadow: {
-                //     stroke: false,
-                //     offsetX: 10,
-                //     color: '#000000bb',
-                //     fill: true,
-                //     offsetY: 7,
-                //     blur: 6,
-                // },
                 padding: { left: null, right: 30 },
             })
             .setAlpha(0.8);
@@ -135,14 +137,6 @@ export default {
                 fontStyle: 'italic',
                 stroke: '#000000',
                 strokeThickness: 4,
-                // shadow: {
-                //     stroke: false,
-                //     offsetX: 10,
-                //     color: '#00000022',
-                //     fill: true,
-                //     offsetY: 7,
-                //     blur: 6,
-                // },
                 padding: { left: null, right: 30 },
             })
             .setAlpha(0.8);
@@ -222,13 +216,13 @@ export default {
             .setVisible(false);
         this.endText = this.add
             .text(PHASER_CANVAS_W / 2, PHASER_CANVAS_H / 2 - 20, '', {
-                fontSize: 30,
+                fontSize: '30px',
                 color: '#fff',
             })
             .setOrigin(0.5);
         this.endTextFootnote = this.add
             .text(PHASER_CANVAS_W / 2, PHASER_CANVAS_H / 2 + 20, '', {
-                fontSize: 18,
+                fontSize: '18px',
                 color: '#fff',
             })
             .setOrigin(0.5);
@@ -249,6 +243,28 @@ export default {
             .on('update-stats', this.onStatsUpdate, this)
             .on('reset-stats', this.onStatsReset, this);
 
+        this.events.on('destroy', () => {
+            eventsCenter
+                .removeListener('timer-change', this.onTimerChange, this)
+                .removeListener('timer-reset', this.onTimerReset, this)
+                .removeListener('timer-hide', this.onTimerHide, this)
+                .removeListener(
+                    'player-event-create',
+                    this.onPlayerEventCreate,
+                    this
+                )
+                .removeListener(
+                    'player-event-remove',
+                    this.onPlayerEventRemove,
+                    this
+                )
+                .removeListener('frame-data-show', this.onFrameDataShow, this)
+                .removeListener('frame-data-hide', this.onFrameDataHide, this)
+                .removeListener('end-text-show', this.onEndTextShow, this)
+                .removeListener('end-text-hide', this.onEndTextHide, this)
+                .removeListener('update-stats', this.onStatsUpdate, this)
+                .removeListener('reset-stats', this.onStatsReset, this);
+        });
         // this.scene.get('play').events
         // eventsCenter
         //     .on('pause', this.showPauseText, this)
@@ -260,31 +276,37 @@ export default {
         //   .on('keydown-R', this.restartPlay, this)
         //   .on('keydown-Q', this.quitPlay, this)
         //   .on('keydown-Z', this.toggleZoom, this);
-    },
+    }
+    create() {
+        this.initialize();
+    }
 
-    extend: {
-        //
-        // Timer countdown handlers
-        //
-        onTimerChange: function (whole, fractional) {
-            this.timerText.setText(`${whole}`);
-            this.timerFractionalText.setText(`.${fractional}`);
-        },
-        onTimerReset: function () {
-            this.timerText.setVisible(true);
-            this.timerText.setText('');
-            this.timerFractionalText.setVisible(true);
-            this.timerFractionalText.setText('');
-        },
-        onTimerHide: function () {
-            this.timerText.setVisible(false);
-            this.timerFractionalText.setVisible(false);
-        },
+    //
+    // Timer countdown handlers
+    //
+    onTimerChange(whole, fractional) {
+        this.timerText.setText(`${whole}`);
+        this.timerFractionalText.setText(`.${fractional}`);
+    }
 
-        //
-        // Stats handlers
-        //
-        onStatsUpdate: function (stats: statsInfo[]) {
+    onTimerReset() {
+        this.timerText.setVisible(true);
+        this.timerText.setText('');
+        this.timerFractionalText.setVisible(true);
+        this.timerFractionalText.setText('');
+    }
+
+    onTimerHide() {
+        this.timerText.setVisible(false);
+        this.timerFractionalText.setVisible(false);
+    }
+
+    //
+    // Stats handlers
+    //
+    onStatsUpdate(stats: statsInfo[]) {
+        try {
+            console.log('onStatsUpdate!');
             // render P1 stats
             this.stats_bars[0]['hp_bg'].setVisible(true);
             this.stats_bars[0]['stamina_bg'].setVisible(true);
@@ -320,182 +342,135 @@ export default {
                     STATS_BAR_H
                 )
                 .setVisible(true);
-        },
+        } catch (e) {
+            console.log('onStatsUpdate', e);
+        }
+    }
 
-        onStatsReset: function () {
-            this.onStatsUpdate([
-                { hp: 1000, stamina: 1000 },
-                { hp: 1000, stamina: 1000 },
-            ]);
-        },
+    onStatsReset() {
+        this.onStatsUpdate([
+            { hp: 1000, stamina: 1000 },
+            { hp: 1000, stamina: 1000 },
+        ]);
+    }
 
-        //
-        // Event alert handlers
-        // Note: Next JS Hot/Fast reloading nullifies these text boxes, we should create new one rather than edit existing
-        //
-        onPlayerEventCreate: function (
-            playerIndex: number,
-            eventText: string,
-            eventCount: number
-        ) {
-            if (playerIndex == 1) {
-                this.PlayerOneEvent?.setText(
-                    eventCount > 0
-                        ? `${eventText} x${eventCount + 1}`
-                        : eventText
-                );
-            } else {
-                this.PlayerTwoEvent?.setText(
-                    eventCount > 0
-                        ? `${eventText} x${eventCount + 1}`
-                        : eventText
-                );
-            }
-        },
-        onPlayerEventRemove: function (playerIndex: number) {
-            console.log('remove event ', playerIndex);
+    //
+    // Event alert handlers
+    // Note: Next JS Hot/Fast reloading nullifies these text boxes, we should create new one rather than edit existing
+    //
+    onPlayerEventCreate(
+        playerIndex: number,
+        eventText: string,
+        eventCount: number
+    ) {
+        if (playerIndex == 1) {
+            this.PlayerOneEvent?.setText(
+                eventCount > 0 ? `${eventText} x${eventCount + 1}` : eventText
+            );
+        } else {
+            this.PlayerTwoEvent?.setText(
+                eventCount > 0 ? `${eventText} x${eventCount + 1}` : eventText
+            );
+        }
+    }
 
-            if (playerIndex == 1) {
-                this.PlayerOneEvent?.setText(``);
-            } else {
-                this.PlayerTwoEvent?.setText(``);
-            }
-        },
+    onPlayerEventRemove(playerIndex: number) {
+        console.log('remove event ', playerIndex);
 
-        //
-        // Frame data handlers
-        //
-        onFrameDataShow: function (frames: FrameLike[]) {
-            [0, 1].forEach((index) => {
-                this.debug_info_objects[index]['border'].setVisible(true);
+        if (playerIndex == 1) {
+            this.PlayerOneEvent?.setText(``);
+        } else {
+            this.PlayerTwoEvent?.setText(``);
+        }
+    }
 
-                // body state
-                const state = frames[index].body_state.state;
-                const isAntoc = state > 1000;
-                const stateName =
-                    bodyStateNumberToName[isAntoc ? 'antoc' : 'jessica'][state];
-                this.debug_info_objects[index]['body_state']['data'].setText(
-                    stateName
-                );
-                this.debug_info_objects[index]['body_state']['desc'].setText(
-                    'Body State'
-                );
-                this.debug_info_objects[index]['body_state']['bg'].setVisible(
-                    true
-                );
+    //
+    // Frame data handlers
+    //
+    onFrameDataShow(frames: FrameLike[]) {
+        [0, 1].forEach((index) => {
+            this.debug_info_objects[index]['border'].setVisible(true);
 
-                // body counter (display value+1 to start from 1)
-                this.debug_info_objects[index]['body_counter']['data'].setText(
-                    `${frames[index].body_state.counter + 1}`
-                );
-                this.debug_info_objects[index]['body_counter']['desc'].setText(
-                    'Body Frame'
-                );
-                this.debug_info_objects[index]['body_counter']['bg'].setVisible(
-                    true
-                );
+            // body state
+            const state = frames[index].body_state.state;
+            const isAntoc = state > 1000;
+            const stateName =
+                bodyStateNumberToName[isAntoc ? 'antoc' : 'jessica'][state];
+            this.debug_info_objects[index]['body_state']['data'].setText(
+                stateName
+            );
+            this.debug_info_objects[index]['body_state']['desc'].setText(
+                'Body State'
+            );
+            this.debug_info_objects[index]['body_state']['bg'].setVisible(true);
 
-                // action
-                console.log('frame', frames[index]);
-                const action = (frames[index] as Frame).action;
-                const characterActions = CHARACTERS_ACTIONS[isAntoc ? 1 : 0];
-                const actionMatched: Action = characterActions.find(
-                    (value) => value.id == action
-                );
-                const actionName = actionMatched
-                    ? actionMatched.display.name
-                    : '-';
-                this.debug_info_objects[index]['action']['data'].setText(
-                    actionName
-                );
-                this.debug_info_objects[index]['action']['desc'].setText(
-                    'Action'
-                );
-                this.debug_info_objects[index]['action']['bg'].setVisible(true);
+            // body counter (display value+1 to start from 1)
+            this.debug_info_objects[index]['body_counter']['data'].setText(
+                `${frames[index].body_state.counter + 1}`
+            );
+            this.debug_info_objects[index]['body_counter']['desc'].setText(
+                'Body Frame'
+            );
+            this.debug_info_objects[index]['body_counter']['bg'].setVisible(
+                true
+            );
 
-                // position
-                this.debug_info_objects[index]['position']['data'].setText(
-                    `(${frames[index].physics_state.pos.x},${frames[index].physics_state.pos.y})`
-                );
-                this.debug_info_objects[index]['position']['desc'].setText(
-                    'Position'
-                );
-                this.debug_info_objects[index]['position']['bg'].setVisible(
-                    true
-                );
-            });
-        },
+            // action
+            console.log('frame', frames[index]);
+            const action = (frames[index] as Frame).action;
+            const characterActions = CHARACTERS_ACTIONS[isAntoc ? 1 : 0];
+            const actionMatched: Action = characterActions.find(
+                (value) => value.id == action
+            );
+            const actionName = actionMatched ? actionMatched.display.name : '-';
+            this.debug_info_objects[index]['action']['data'].setText(
+                actionName
+            );
+            this.debug_info_objects[index]['action']['desc'].setText('Action');
+            this.debug_info_objects[index]['action']['bg'].setVisible(true);
 
-        onFrameDataHide: function () {
-            [0, 1].forEach((index) => {
-                this.debug_info_objects[index]['border'].setVisible(false);
+            // position
+            this.debug_info_objects[index]['position']['data'].setText(
+                `(${frames[index].physics_state.pos.x},${frames[index].physics_state.pos.y})`
+            );
+            this.debug_info_objects[index]['position']['desc'].setText(
+                'Position'
+            );
+            this.debug_info_objects[index]['position']['bg'].setVisible(true);
+        });
+    }
 
-                ['body_state', 'body_counter', 'action', 'position'].forEach(
-                    (stats) => {
-                        this.debug_info_objects[index][stats]['bg'].setVisible(
-                            false
-                        );
-                        ['data', 'desc'].forEach((item) => {
-                            this.debug_info_objects[index][stats][item].setText(
-                                ''
-                            );
-                        });
-                    }
-                );
-            });
-        },
+    onFrameDataHide() {
+        [0, 1].forEach((index) => {
+            this.debug_info_objects[index]['border'].setVisible(false);
 
-        //
-        // End game message handlers
-        //
-        onEndTextShow: function (text: string, footnote?: string) {
-            if (footnote) {
-                this.endTextFootnote.setText(footnote);
-            }
-            this.endText.setText(text);
-            this.endTextBg.setVisible(true);
-        },
-        onEndTextHide: function () {
-            this.endTextFootnote.setText('');
-            this.endText.setText('');
-            this.endTextBg.setVisible(false);
-        },
+            ['body_state', 'body_counter', 'action', 'position'].forEach(
+                (stats) => {
+                    this.debug_info_objects[index][stats]['bg'].setVisible(
+                        false
+                    );
+                    ['data', 'desc'].forEach((item) => {
+                        this.debug_info_objects[index][stats][item].setText('');
+                    });
+                }
+            );
+        });
+    }
 
-        //
-        // keyboard event handlers
-        //
-        // quitPlay: function () {
-        //   this.scene
-        //     .stop('play')
-        //     .run('menu');
+    //
+    // End game message handlers
+    //
+    onEndTextShow(text: string, footnote?: string) {
+        if (footnote) {
+            this.endTextFootnote.setText(footnote);
+        }
+        this.endText.setText(text);
+        this.endTextBg.setVisible(true);
+    }
 
-        //   // Don't sleep a scene that hasn't started!
-        //   if (this.scene.isActive('end')) {
-        //     this.scene.sleep('end');
-        //   }
-        // },
-
-        // restartPlay: function () {
-        //   this.scene.launch('play');
-
-        //   // Don't sleep a scene that hasn't started!
-        //   if (this.scene.isActive('end')) {
-        //     this.scene.sleep('end');
-        //   }
-        // },
-
-        // togglePause: function () {
-        //   if (this.scene.isActive('play')) {
-        //     this.scene.pause('play');
-        //   } else if (this.scene.isPaused('play')) {
-        //     this.scene.resume('play');
-        //   }
-        // },
-
-        // toggleZoom: function () {
-        //   const camera = this.scene.get('play').cameras.main;
-
-        //   camera.setZoom(camera.zoom === 2 ? 1 : 2);
-        // }
-    },
-};
+    onEndTextHide() {
+        this.endTextFootnote.setText('');
+        this.endText.setText('');
+        this.endTextBg.setVisible(false);
+    }
+}

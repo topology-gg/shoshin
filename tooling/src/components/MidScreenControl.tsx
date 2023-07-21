@@ -1,5 +1,12 @@
 import React, { useMemo } from 'react';
-import { Box, Button, Chip, FormControlLabel, Switch } from '@mui/material';
+import {
+    Box,
+    Button,
+    Chip,
+    FormControlLabel,
+    Switch,
+    Typography,
+} from '@mui/material';
 import {
     FastForward,
     FastRewind,
@@ -48,8 +55,27 @@ function findFrameNumbersAtKnocked(frames: Frame[]) {
     return frameNumbers;
 }
 
+function findFrameNumbersAtLaunched(frames: Frame[]) {
+    if (!frames) return;
+    // find the frame number at which the agent is at the first frame (counter == 0) for hurt state (currently need to iterate over all character types)
+    // and record that frame number minus one, which is the frame number where the agent is knocked by opponent
+    let frameNumbers = [];
+    console.log('frames', frames);
+    frames.forEach((frame, frame_i) => {
+        if (
+            (frame.body_state.state == BodystatesAntoc.Launched ||
+                frame.body_state.state == BodystatesJessica.Launched) &&
+            frame.body_state.counter == 0
+        ) {
+            frameNumbers.push(frame_i);
+        }
+    });
+    return frameNumbers;
+}
+
 const MidScreenControl = ({
     runnable,
+    playOnly,
     testJsonAvailable,
     testJson,
     animationFrame,
@@ -60,7 +86,7 @@ const MidScreenControl = ({
     checkedShowDebugInfo,
     handleChangeDebugInfo,
 }) => {
-    const BLANK_COLOR = '#EFEFEF';
+    const BLANK_COLOR = 'rgba(242, 242, 242, 0.8)';
 
     const agent_0_frames = testJson?.agent_0.frames;
     const agent_1_frames = testJson?.agent_1.frames;
@@ -79,6 +105,15 @@ const MidScreenControl = ({
                 ),
                 value: f,
             })) || []),
+            ...(findFrameNumbersAtLaunched(agent_0_frames)?.map((f) => ({
+                label: (
+                    <EventSymbol
+                        type="launched"
+                        active={animationFrame === f}
+                    />
+                ),
+                value: f,
+            })) || []),
         ],
         [agent_0_frames, animationFrame]
     );
@@ -93,6 +128,15 @@ const MidScreenControl = ({
             ...(findFrameNumbersAtKnocked(agent_1_frames)?.map((f) => ({
                 label: (
                     <EventSymbol type="knocked" active={animationFrame === f} />
+                ),
+                value: f,
+            })) || []),
+            ...(findFrameNumbersAtLaunched(agent_1_frames)?.map((f) => ({
+                label: (
+                    <EventSymbol
+                        type="launched"
+                        active={animationFrame === f}
+                    />
                 ),
                 value: f,
             })) || []),
@@ -114,7 +158,7 @@ const MidScreenControl = ({
                 borderRadius: 4,
                 boxShadow: 3,
                 maxWidth: 800,
-                width: 800,
+                minWidth: 400,
             }}
         >
             <Box
@@ -131,9 +175,13 @@ const MidScreenControl = ({
                     size="small"
                     variant="outlined"
                     onClick={() => handleClick('ToggleRun')}
-                    disabled={!runnable}
+                    disabled={!runnable && !playOnly}
                 >
-                    {animationState != 'Run' ? <PlayArrow /> : <Pause />}
+                    {animationState != 'Run' || playOnly ? (
+                        <PlayArrow />
+                    ) : (
+                        <Pause />
+                    )}
                 </Button>
 
                 <Button
@@ -183,7 +231,7 @@ const MidScreenControl = ({
                                         transform: 'translateX(16px)',
                                         color: '#fff',
                                         '& + .MuiSwitch-track': {
-                                            backgroundColor: '#52af77',
+                                            backgroundColor: '#41ff9f',
                                             opacity: 1,
                                             border: 0,
                                         },
@@ -222,14 +270,16 @@ const MidScreenControl = ({
                             fontSize={'0.75rem'}
                             sx={{ ml: 0.5 }}
                         >
-                            Debug
+                            <Typography sx={{ fontFamily: 'Eurostile' }}>
+                                Debug
+                            </Typography>
                         </Box>
                     }
                     sx={{ ml: 1 }}
                 />
             </Box>
 
-            <Box sx={{ width: 600, mt: 3 }}>
+            <Box sx={{ minWidth: 400, mt: 3 }}>
                 <Slider
                     aria-label="Always visible"
                     value={animationFrame}
@@ -240,18 +290,19 @@ const MidScreenControl = ({
                     getAriaValueText={(value) => `${value}`}
                     valueLabelDisplay="on"
                     sx={{
-                        color: '#52af77',
+                        color: '#41ff9f',
 
                         '& .MuiSlider-thumb': {
                             width: '24px',
                             height: '24px',
-                            borderRadius: '6px',
+                            borderRadius: '12px',
                         },
 
                         '& .MuiSlider-valueLabel': {
-                            fontSize: 11,
+                            fontSize: 12,
+                            fontFamily: 'Eurostile',
                             fontWeight: 'normal',
-                            top: 24,
+                            top: 4,
                             backgroundColor: 'unset',
                             color: '#eee',
                             '&:before': {
@@ -285,7 +336,15 @@ const MidScreenControl = ({
                         label="Player 1"
                         color="info"
                         size="small"
-                        sx={{ position: 'absolute', top: 0, left: -50 }}
+                        sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: -80,
+                            fontFamily: 'Eurostile',
+                            fontSize: '14px',
+                            paddingLeft: '5px',
+                            paddingRight: '5px',
+                        }}
                     />
                     <Timeline
                         color="info"
@@ -301,7 +360,15 @@ const MidScreenControl = ({
                         label="Player 2"
                         color="info"
                         size="small"
-                        sx={{ position: 'absolute', top: 0, left: -50 }}
+                        sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: -80,
+                            fontFamily: 'Eurostile',
+                            fontSize: '14px',
+                            paddingLeft: '5px',
+                            paddingRight: '5px',
+                        }}
                     />
                     <Timeline
                         color="info"

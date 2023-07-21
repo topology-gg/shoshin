@@ -1,0 +1,45 @@
+.card {
+    position: relative;
+
+    border-image-source: url('/images/ui/card-border.png');
+    border-image-slice: 45 281 77 209;
+    border-image-width: 22.5px 140.5px 38.5px 104.5px;
+    border-image-outset: 6px 6px 6px 6px;
+    border-image-repeat: repeat repeat;
+
+    filter: drop-shadow(0 8px 4px #8f5e5e);
+
+    &.cardClickable {
+        cursor: pointer;
+    }
+}
+
+.media {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background-image: var(--bg-image);
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: background-image 0.2s ease-in-out;
+
+    /* Clip path traces the border-image */
+    clip-path: polygon(
+        /* TOP */ 0 0,
+        81px 0%,
+        94px 13px,
+        100% 13px,
+        /* BOTTOM */ 100% 100%,
+        calc(100% - 118px) 100%,
+        calc(100% - 133px) calc(100% - 15px),
+        14px calc(100% - 15px),
+        0 calc(100% - 29px)
+    );
+}
+
+.content {
+    padding: 20px 10px;
+}

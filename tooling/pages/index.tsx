@@ -166,6 +166,8 @@ export default function Home() {
 
     const [layers, setLayers] = useState<Layer[]>([]);
 
+    const actions = CHARACTERS_ACTIONS[character == Character.Jessica ? 0 : 1];
+
     // React states for warnings
     const [isConditionWarningTextOn, setConditionWarningTextOn] =
         useState<boolean>(false);
@@ -472,6 +474,8 @@ export default function Home() {
     }
     const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length;
 
+    const activeMs =
+        N_FRAMES > 0 ? testJson.agent_0.frames[animationFrame].mental_state : 0;
     function handleMidScreenControlClick(operation: string) {
         if (operation == 'NextFrame' && animationState != 'Run') {
             animationStepForward(N_FRAMES);
@@ -832,7 +836,6 @@ export default function Home() {
     function handleBuildAgent() {
         let char = Object.keys(Character).indexOf(character);
 
-        console.log(layers);
         //given layers
         const {
             mentalStates: generatedMs,
@@ -840,6 +843,7 @@ export default function Home() {
             trees: generatedTrees,
         } = layersToAgentComponents(layers, char, combos);
 
+        console.log('agent ', { layers, conditions, combos, char });
         //todo remove trees
         return buildAgent(
             generatedMs,
@@ -1045,6 +1049,9 @@ export default function Home() {
                     setLayers={setLayers}
                     selectedCombo={selectedCombo}
                     handleChangeSelectedCombo={changeSelectedCombo}
+                    setCombos={setCombos}
+                    activeMs={activeMs}
+                    actions={actions}
                 />
             </CharacterContext.Provider>
         </LayerContext.Provider>
@@ -1136,26 +1143,34 @@ export default function Home() {
                     stamina_0={playerStatuses.stamina_0}
                     stamina_1={playerStatuses.stamina_1}
                 /> */}
-
-                <Game
-                    testJson={testJson}
-                    animationFrame={animationFrame}
-                    animationState={animationState}
-                    showDebug={checkedShowDebugInfo}
-                    gameMode={gameMode}
-                    realTimeOptions={{
-                        playerCharacter: realTimeCharacter,
-                        agentOpponent: p2,
-                        setPlayerStatuses,
+                <div
+                    style={{
+                        width: '800px',
                     }}
-                    isInView={swipeableViewIndex == 0}
-                />
+                >
+                    <Game
+                        testJson={testJson}
+                        animationFrame={animationFrame}
+                        animationState={animationState}
+                        showDebug={checkedShowDebugInfo}
+                        gameMode={gameMode}
+                        realTimeOptions={{
+                            playerCharacter: realTimeCharacter,
+                            agentOpponent: p2,
+                            setPlayerStatuses,
+                        }}
+                        isInView={swipeableViewIndex == 0}
+                        backgroundId={0}
+                        volume={1}
+                    />
+                </div>
                 {gameMode == GameModes.simulation ? (
                     <MidScreenControl
                         runnable={
                             !(p1 == null || p2 == null) &&
                             gameMode == GameModes.simulation
                         }
+                        playOnly={false}
                         testJsonAvailable={testJson ? true : false}
                         testJson={testJson}
                         animationFrame={animationFrame}

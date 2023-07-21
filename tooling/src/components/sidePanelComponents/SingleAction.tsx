@@ -1,9 +1,10 @@
 import React from 'react';
 import ActionToken from './ActionToken';
-import { Action } from '../../types/Action';
 
 interface SingleAction {
     disabled: boolean;
+    actionIndex: number;
+    onDoubleClick: (index: number) => void;
     unicode: string;
     duration: number;
     //Todo : add the rest types

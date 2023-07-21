@@ -4,15 +4,16 @@ import {
     Draggable,
     DraggableChildrenFn,
     Droppable,
+    OnDragEndResponder,
 } from 'react-beautiful-dnd';
 import SingleAction from '../sidePanelComponents/SingleAction';
-import { Action, actionDurationInCombo } from '../../types/Action';
+import { Action, actionIntentsInCombo } from '../../types/Action';
 
 interface Actions {
     isReadOnly: boolean;
     combo: Action[];
-    //Todo : add the rest types
-    [key: string]: any;
+    onChange: (actions: Action[]) => void;
+    handleActionDoubleClick: (index: number) => void;
 }
 
 const Actions = ({
@@ -22,8 +23,8 @@ const Actions = ({
     onChange,
 }: Actions) => {
     //Reorder combos in an action
-    function onDragEnd(result) {
-        const { draggableId, source, destination } = result;
+    const onDragEnd: OnDragEndResponder = (result) => {
+        const { source, destination } = result;
 
         if (!destination) {
             return;
@@ -38,13 +39,17 @@ const Actions = ({
         prev_copy.splice(destination.index, 0, removedItem);
 
         onChange(prev_copy);
-    }
+    };
 
     const renderAction = useCallback<DraggableChildrenFn>(
         (provided, _snapshot, rubric) => {
             const action = combo[rubric.source.index];
             const index = rubric.source.index;
-            let actionDuration = actionDurationInCombo(action, index, combo);
+            let actionDuration = actionIntentsInCombo(
+                action,
+                index,
+                combo
+            ).length;
             return (
                 <div
                     ref={provided.innerRef}
@@ -82,7 +87,12 @@ const Actions = ({
             >
                 {(provided) => (
                     <div
-                        style={{ width: '100%', display: 'flex' }}
+                        style={{
+                            width: '100%',
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '2px',
+                        }}
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                     >

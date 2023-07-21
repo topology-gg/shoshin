@@ -9,23 +9,27 @@ import {
     RIGHT,
     bodyStateNumberToName,
     characterTypeToString,
+    ANTOC,
+    JESSICA,
 } from '../constants/constants';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
 import { runRealTimeFromContext } from '../hooks/useRunRealtime';
 import Agent from '../types/Agent';
 import { RealTimeFrameScene } from '../types/Frame';
 import { GameModes } from '../types/Simulator';
-import Platformer from './Simulator';
+import Simulator from './Simulator';
 import eventsCenter from '../Game/EventsCenter';
 
-export default class RealTime extends Platformer {
+import * as wasm from '../../wasm/shoshin/pkg/shoshin';
+
+export default class RealTime extends Simulator {
     prevState: RealTimeFrameScene = InitialRealTimeFrameScene;
     state: RealTimeFrameScene = InitialRealTimeFrameScene;
 
     private player_action: number = 5;
     private character_type_0: number = 0;
 
-    private wasmContext?: IShoshinWASMContext;
+    private wasmContext?: IShoshinWASMContext = { wasm };
 
     startText: Phaser.GameObjects.Text;
     endTextP1Won: Phaser.GameObjects.Text;
@@ -34,6 +38,7 @@ export default class RealTime extends Platformer {
 
     private isGameRunning: boolean;
     private isGamePaused: boolean;
+    private inPauseMenu: boolean = false;
 
     private gameTimer: Phaser.Time.TimerEvent;
     private hitstopTimer: Phaser.Time.TimerEvent;
@@ -79,7 +84,6 @@ export default class RealTime extends Platformer {
         this.opponent = agent;
         this.setPlayerTwoCharacter(agent.character);
 
-        console.log('opponent', this.opponent);
         if (!this.isGameRunning) {
             this.setMenuText();
             this.resetGameState();
@@ -142,7 +146,7 @@ export default class RealTime extends Platformer {
         );
     }
     create() {
-        this.intitialize();
+        this.initialize();
         this.createMenu();
 
         this.isGameRunning = false;
@@ -166,6 +170,8 @@ export default class RealTime extends Platformer {
             n: Phaser.Input.Keyboard.KeyCodes.N,
             z: Phaser.Input.Keyboard.KeyCodes.Z,
             u: Phaser.Input.Keyboard.KeyCodes.U,
+            o: Phaser.Input.Keyboard.KeyCodes.O,
+            esc: Phaser.Input.Keyboard.KeyCodes.ESC,
         });
         this.set_player_character(this.character_type_0);
         this.scene.scene.events.on('pause', () => {
@@ -176,6 +182,10 @@ export default class RealTime extends Platformer {
     }
 
     startMatch() {
+        if (!this.wasmContext || this.is_wasm_undefined()) {
+            console.log('no wasm context');
+            return;
+        }
         this.set_player_character(this.character_type_0);
         this.resetGameState();
 
@@ -225,43 +235,56 @@ export default class RealTime extends Platformer {
         }
     }
 
-    update(t, ds) {
-        if (this.keyboard.space.isDown) {
-            if (!this.isGameRunning) {
-                this.startMatch();
+    pauseGame() {
+        eventsCenter.emit('end-text-show', 'Paused', '');
 
-                // debounce lock
-                this.spaceLocked = true;
+        // pause the game by saving the remaining time and destroy the timer
+        this.repeatCountLeft = this.gameTimer.repeatCount;
+        console.log('repeatCountLeft', this.repeatCountLeft);
+        this.gameTimer.destroy();
+        this.isGamePaused = true;
+        console.log('game paused');
+    }
+
+    resumeGame() {
+        // resume the game by creating the timer with `repeatCountLeft`
+        this.gameTimer = this.time.addEvent({
+            delay: this.tickLatencyInSecond * 1000, // ms
+            callback: () => this.run(),
+            repeat: this.repeatCountLeft,
+        });
+        this.isGamePaused = false;
+        console.log('game resumed');
+        eventsCenter.emit('end-text-hide');
+    }
+    update(t, ds) {
+        const spaceIsDown = this.keyboard.space.isDown;
+        const escIsDown = this.keyboard.esc.isDown;
+
+        if (escIsDown && !this.spaceLocked) {
+            if (this.isGameRunning) {
+                this.pauseGame();
+            }
+            this.inPauseMenu = !this.inPauseMenu;
+            this.spaceLocked = true;
+        }
+
+        if (spaceIsDown && !this.inPauseMenu && !this.spaceLocked) {
+            if (!this.isGameRunning && spaceIsDown && !this.inPauseMenu) {
+                this.startMatch();
             } else {
                 if (!this.spaceLocked) {
                     if (this.isGamePaused) {
-                        eventsCenter.emit('end-text-hide');
-
-                        // resume the game by creating the timer with `repeatCountLeft`
-                        this.gameTimer = this.time.addEvent({
-                            delay: this.tickLatencyInSecond * 1000, // ms
-                            callback: () => this.run(),
-                            repeat: this.repeatCountLeft,
-                        });
-                        this.isGamePaused = false;
-                        console.log('game resumed');
+                        this.resumeGame();
                     } else {
-                        eventsCenter.emit('end-text-show', 'Paused', '');
-
-                        // pause the game by saving the remaining time and destroy the timer
-                        this.repeatCountLeft = this.gameTimer.repeatCount;
-                        console.log('repeatCountLeft', this.repeatCountLeft);
-                        this.gameTimer.destroy();
-                        this.isGamePaused = true;
-                        console.log('game paused');
+                        this.pauseGame();
                     }
-
-                    // debounce lock
-                    this.spaceLocked = true;
                 }
             }
+            // debounce lock
+            this.spaceLocked = true;
         }
-        if (this.keyboard.space.isUp) {
+        if (this.keyboard.space.isUp && this.keyboard.esc.isUp) {
             // debounce release
             this.spaceLocked = false;
         }
@@ -339,16 +362,28 @@ export default class RealTime extends Platformer {
                 // antoc's step forward
                 this.player_action =
                     characterActionToNumber['antoc']['StepForward'];
-            } else if (this.keyboard.n.isDown && this.character_type_0 == 0) {
-                // jessica's gatotsu
-                this.player_action =
-                    characterActionToNumber['jessica']['Gatotsu'];
+            } else if (this.keyboard.n.isDown) {
+                if (this.character_type_0 == JESSICA) {
+                    this.player_action =
+                        characterActionToNumber['jessica']['Gatotsu'];
+                } else {
+                    this.player_action =
+                        characterActionToNumber['antoc']['Cyclone'];
+                    console.log(
+                        'cyclone -- this.player_action',
+                        this.player_action
+                    );
+                }
             } else if (this.keyboard.u.isDown) {
                 // low_kick
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ]['LowKick'];
+            } else if (this.keyboard.o.isDown) {
+                // taunt
+                this.player_action =
+                    characterActionToNumber['jessica']['Taunt'];
             }
         }
 
@@ -366,12 +401,9 @@ export default class RealTime extends Platformer {
         }
     }
 
+    timestamp = new Date();
     run() {
-        if (!this.wasmContext) {
-            console.log('no wasm context');
-            return;
-        }
-
+        console.log('this wasm context', this.wasmContext);
         let [out, err] = runRealTimeFromContext(
             this.wasmContext,
             this.state,

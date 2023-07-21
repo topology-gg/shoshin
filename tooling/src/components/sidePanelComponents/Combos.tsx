@@ -11,6 +11,7 @@ const Combos = ({
     handleValidateCombo,
     selectedCombo: selectedIndex,
     handleChangeSelectedCombo,
+    actions,
 }) => {
     const [editingCombo, setEditingCombo] = useState<Action[]>(
         combos.length ? combos[selectedIndex] : []
@@ -64,7 +65,7 @@ const Combos = ({
                         </IconButton>
                     </div> */}
             </Box>
-            <Box mt={'2em'}>
+            <Box width={'100%'}>
                 <ComboEditor
                     isReadOnly={isReadOnly}
                     editingCombo={editingCombo}
@@ -72,7 +73,7 @@ const Combos = ({
                     characterIndex={characterIndex}
                     selectedIndex={selectedIndex}
                     handleValidateCombo={handleValidateCombo}
-                    displayButton={true}
+                    actions={actions}
                 ></ComboEditor>
             </Box>
         </Box>

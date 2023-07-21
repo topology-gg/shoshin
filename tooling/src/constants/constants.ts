@@ -34,7 +34,7 @@ export const PHASER_CANVAS_W = 1000;
 export const PHASER_CANVAS_H = Math.round((PHASER_CANVAS_W / 16) * 9);
 
 // Simulation related constants
-export const TICK_IN_SECONDS = 0.07;
+export const TICK_IN_SECONDS = 0.07; // ~14 FPS
 export const SIMULATION_TIME_IN_SECONDS = 30;
 export const FRAME_COUNT = Math.round(
     SIMULATION_TIME_IN_SECONDS / TICK_IN_SECONDS
@@ -81,6 +81,7 @@ export const bodyStateNumberToName = {
         170: 'launched',
         180: 'jump_move_forward',
         190: 'jump_move_backward',
+        200: 'taunt',
     },
     antoc: {
         0: 'idle',
@@ -101,6 +102,7 @@ export const bodyStateNumberToName = {
         1190: 'drop_slash',
         1200: 'jump_move_forward',
         1210: 'jump_move_backward',
+        1220: 'cyclone',
     },
 };
 
@@ -191,6 +193,13 @@ export enum Character {
     Antoc = 'Antoc',
 }
 
+export const numberToCharacter = (char: number) => {
+    if (char == 0) {
+        return Character.Jessica;
+    }
+    return Character.Antoc;
+};
+
 export enum KeysToActionsJessica {
     '-' = 'Rest',
     'J' = 'Slash',
@@ -277,6 +286,7 @@ export const characterActionToNumber = {
         Jump: 9,
         Gatotsu: 10,
         LowKick: 11,
+        Taunt: 12,
     },
     antoc: {
         Rest: 0,
@@ -290,6 +300,7 @@ export const characterActionToNumber = {
         StepForward: 8,
         Jump: 9,
         LowKick: 11,
+        Cyclone: 12,
     },
 };
 export function getIntentNameByCharacterTypeAndNumber(

@@ -1,5 +1,4 @@
 import { Action, CHARACTERS_ACTIONS } from './Action';
-import { customDurations } from './Combos';
 import {
     Condition,
     ConditionElement,
@@ -8,9 +7,9 @@ import {
 } from './Condition';
 import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
-import { actionDurationInCombo } from './Action';
+import { actionIntentsInCombo } from './Action';
 //Layer conditions have extra metadate while they are being edited
-interface LayerCondition extends Condition {
+export interface LayerCondition extends Condition {
     isInverted: boolean;
 }
 export interface Layer {
@@ -95,12 +94,11 @@ export const layersToAgentComponents = (
 
             const comboDuration = combos[layer.action.id - 101].reduce(
                 (acc, a, index, combo) =>
-                    acc +
-                    (customDurations[character][a.id] == undefined
-                        ? actionDurationInCombo(a, index, combo) + 1
-                        : a.frames.duration),
+                    acc + actionIntentsInCombo(a, index, combo).length,
                 0
             );
+
+            console.log('combo duration', comboDuration);
 
             terminatingCondition = getIsComboFinishedCondition(
                 comboDuration,
@@ -130,8 +128,8 @@ export const layersToAgentComponents = (
         ? unflattenedConditions.flat()
         : [];
 
-    const rootConditions = layersInverted.map((layer) => {
-        return appendConditions(layer.conditions);
+    const rootConditions = layersInverted.map((layer, index) => {
+        return appendConditions(layer.conditions, index);
     });
 
     //@ts-ignore
@@ -217,7 +215,6 @@ const getNode = (
 };
 
 const getAppendedElements = (conditions: Condition[]): any[] => {
-    console.log('input conditions', conditions);
     let res = conditions
         .map((condition) => condition.elements)
         .reduce((acc, elements, i) => {
@@ -233,11 +230,10 @@ const getAppendedElements = (conditions: Condition[]): any[] => {
             return [...acc, ...elements];
         }, []);
 
-    console.log('appended elements', res);
     return res;
 };
 
-const appendConditions = (conditions: Condition[]) => {
+const appendConditions = (conditions: Condition[], index) => {
     const elementsAppended = getAppendedElements(conditions);
     return {
         elements: [
@@ -252,7 +248,7 @@ const appendConditions = (conditions: Condition[]) => {
             },
         ],
         displayName: 'actionCondition',
-        key: `${conditions[0].key}`,
+        key: `${conditions[0].key}${index}`,
     };
 };
 
