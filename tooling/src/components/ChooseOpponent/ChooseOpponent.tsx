@@ -157,6 +157,10 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                             <Grid container>
                                 <Grid item xs={5}></Grid>
                                 <Grid item xs={2} sx={{ textAlign: 'center' }}>
+                                    <Typography variant="h6">
+                                        {selectedOpponent + 1} /{' '}
+                                        {opponents.length}
+                                    </Typography>
                                     <Typography variant="h5" fontWeight="bold">
                                         Grade: {selectedOpponentGrade}
                                     </Typography>
