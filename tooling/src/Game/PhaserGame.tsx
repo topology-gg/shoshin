@@ -24,6 +24,7 @@ const Game = ({
     realTimeOptions,
     isInView,
     backgroundId,
+    volume,
 }: PhaserGameProps) => {
     const tagName = 'div';
     const className = 'relative top-0 left-0 w-full h-full my-12';
@@ -238,6 +239,14 @@ const Game = ({
         //render stuff
     }, [testJson, animationFrame, animationState, showDebug, ctx.wasm]);
 
+    React.useEffect(() => {
+        if (isGameSceneDefined(gameMode)) {
+            // @ts-ignore
+            let scene = game.current?.scene.getScene('simulator') as Simulator;
+            scene.setVolume(volume);
+        }
+        //render stuff
+    }, [volume]);
     return (
         <div
             style={{

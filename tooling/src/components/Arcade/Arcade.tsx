@@ -20,9 +20,14 @@ interface ArcadeProps {
     opponent: Agent;
     onQuit: () => void;
     onContinue: () => void;
+    volume: number;
+    setVolume: (volume: number) => void;
 }
 const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
-    ({ playerCharacter, opponent, onQuit, onContinue }, ref) => {
+    (
+        { playerCharacter, opponent, onQuit, onContinue, volume, setVolume },
+        ref
+    ) => {
         const [playerStatuses, setPlayerStatuses] =
             useState<StatusBarPanelProps>({
                 integrity_0: 1000,
@@ -88,6 +93,8 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                         <PauseMenu
                             onQuit={onQuit}
                             onChooseCharacter={onContinue}
+                            volume={volume}
+                            setVolume={setVolume}
                         />
                     ) : null}
 
@@ -110,6 +117,7 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                         }}
                         isInView={true}
                         backgroundId={0}
+                        volume={volume}
                     />
 
                     <MidScreenKeybinding
