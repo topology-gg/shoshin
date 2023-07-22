@@ -93,14 +93,27 @@ const SceneSelector = () => {
 
     const ctx = React.useContext(ShoshinWASMContext);
 
+    var music = new Audio('./music/shoshintitle-audio.wav');
+    // music.pause();
+    // music.currentTime = 0;
+
     useEffect(() => {
         setTimeout(() => {
             setScene(Scenes.WALLET_CONNECT);
+            music.play();
         }, 500);
     }, []);
 
+    const pauseMusic = () => {
+        music.pause();
+        music.currentTime = 0;
+    };
+
     const transitionMainMenu = () => {
         setScene(Scenes.MAIN_MENU);
+
+        pauseMusic();
+        music.play();
     };
 
     const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation);
@@ -108,7 +121,9 @@ const SceneSelector = () => {
     const transitionChooseCharacter = (gameMode: GameModes) => {
         setGameMode(gameMode);
         setScene(Scenes.CHOOSE_CHARACTER);
+        pauseMusic();
     };
+    3;
 
     const getLocalState = (): ShoshinPersistedState | null => {
         const storedState = localStorage.getItem(StorageKey);
@@ -141,6 +156,7 @@ const SceneSelector = () => {
     };
     const transitionChooseOpponent = () => {
         setScene(Scenes.CHOOSE_OPPONENT);
+        pauseMusic();
     };
 
     const transitionMainScene = (opponentIndex: number) => {
@@ -150,6 +166,7 @@ const SceneSelector = () => {
             setScene(Scenes.ARCADE);
         }
         setSelectedOpponent(opponentIndex);
+        pauseMusic();
     };
 
     //Play state
