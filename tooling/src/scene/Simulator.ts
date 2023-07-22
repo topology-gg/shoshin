@@ -839,10 +839,11 @@ export default class Simulator extends Phaser.Scene {
     }
 
     initialize() {
+        console.log('initialize()');
         this.initializeVFX();
 
         this.backgroundSets = {};
-        [0, 1, 4].forEach((level: number) => {
+        [0, 1, 2, 3, 4, 5].forEach((level: number) => {
             let bg;
             if (level == 0) {
                 // show practice background
@@ -1216,7 +1217,7 @@ export default class Simulator extends Phaser.Scene {
     }
 
     init(data) {
-        console.log('>>>>>> init()');
+        console.log('>>>>>> init(); data.backgroundId', data.backgroundId);
         this.backgroundId = data.backgroundId;
     }
 

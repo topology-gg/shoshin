@@ -98,8 +98,11 @@ export default class RealTime extends Simulator {
         }
     }
 
-    init(data: any) {
+    init(data) {
         if (data !== undefined) {
+            console.log('>>>>>> init(); data.backgroundId', data.backgroundId);
+            this.backgroundId = data.backgroundId;
+
             //this.wasmContext = data.context;
             //this.setPlayerStatuses = data.setPlayerStatuses;
         }
