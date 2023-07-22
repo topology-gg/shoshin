@@ -236,18 +236,11 @@ const Game = ({
                 animationState,
                 showDebug,
             });
-        }
-        //render stuff
-    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm]);
-
-    React.useEffect(() => {
-        if (isGameSceneDefined(gameMode)) {
-            // @ts-ignore
-            let scene = game.current?.scene.getScene('simulator') as Simulator;
             scene.setVolume(volume);
         }
         //render stuff
-    }, [volume]);
+    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm, volume]);
+
     return (
         <div
             style={{

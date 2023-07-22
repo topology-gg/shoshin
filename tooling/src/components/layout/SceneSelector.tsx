@@ -241,7 +241,7 @@ const SceneSelector = () => {
     const [jessicaGoldCount, setJessicaGoldCount] = useState<number>(0);
     const [antocGoldCount, setAntocGoldCount] = useState<number>(0);
 
-    const [volume, setVolume] = useState<number>(100);
+    const [volume, setVolume] = useState<number>(50);
 
     const getProgressForCharacter = (character: Character) => {
         let updatedState = deafaultState;
