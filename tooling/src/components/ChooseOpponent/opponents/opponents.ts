@@ -7,20 +7,20 @@ import { SimpleJoe } from './SimpleJoe';
 import { opponent0Antoc, opponent0Jessica } from './opponent-0';
 
 export const JessicaOpponents = [
-    opponent0Antoc,
-    AntocAttack,
-    JessicaAttack,
-    SimpleJoe,
-    Kat,
-    Adam,
-    Eve,
+    { agent: opponent0Antoc, mindName: 'Idle' },
+    { agent: AntocAttack, mindName: 'Antoc Attack!' },
+    { agent: JessicaAttack, mindName: 'Jessica Attack!' },
+    { agent: SimpleJoe, mindName: 'Simple Joe' },
+    { agent: Kat, mindName: 'Kat' },
+    { agent: Adam, mindName: 'Adam' },
+    { agent: Eve, mindName: 'Eve' },
 ];
 export const AntocOpponents = [
-    opponent0Jessica,
-    JessicaAttack,
-    AntocAttack,
-    Kat,
-    SimpleJoe,
-    Eve,
-    Adam,
+    { agent: opponent0Jessica, mindName: 'Idle' },
+    { agent: JessicaAttack, mindName: 'Jessica Attack!' },
+    { agent: AntocAttack, mindName: 'Antoc Attack!' },
+    { agent: Kat, mindName: 'Kat' },
+    { agent: SimpleJoe, mindName: 'Simple Joe' },
+    { agent: Eve, mindName: 'Eve' },
+    { agent: Adam, mindName: 'Adam' },
 ];
