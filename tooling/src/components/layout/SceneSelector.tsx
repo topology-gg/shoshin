@@ -96,11 +96,11 @@ const SceneSelector = () => {
 
     useEffect(() => {
         musicRef.current = new Audio('/music/shoshintitle-audio.wav');
-        musicRef.current.onended = function() {
-            if (scene == Scenes.MAIN_MENU){
+        musicRef.current.onended = function () {
+            if (scene == Scenes.MAIN_MENU) {
                 musicRef.current.play();
             }
-        }
+        };
         setTimeout(() => {
             setScene(Scenes.WALLET_CONNECT);
         }, 500);
