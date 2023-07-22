@@ -1,5 +1,8 @@
 .card {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
     border-image-source: url('/images/ui/card-border.png');
     border-image-slice: 45 281 77 209;
@@ -42,4 +45,8 @@
 
 .content {
     padding: 20px 10px;
+}
+
+.footer {
+    margin-bottom: 20px;
 }

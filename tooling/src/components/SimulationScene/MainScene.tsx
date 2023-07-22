@@ -45,6 +45,7 @@ interface SimulationProps {
     submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
     onContinue: () => void;
     onQuit: () => void;
+    transitionToActionReference: () => void;
     volume: number;
     setVolume: (volume: number) => void;
 }
@@ -58,6 +59,7 @@ const SimulationScene = React.forwardRef(
             submitWin,
             onQuit,
             onContinue,
+            transitionToActionReference,
             volume,
             setVolume,
         } = props;
@@ -339,6 +341,9 @@ const SimulationScene = React.forwardRef(
                                 <PauseMenu
                                     onQuit={onQuit}
                                     onChooseCharacter={onContinue}
+                                    transitionToActionReference={
+                                        transitionToActionReference
+                                    }
                                     volume={volume}
                                     setVolume={setVolume}
                                 />
