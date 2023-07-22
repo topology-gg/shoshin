@@ -36,9 +36,9 @@ const TitleMenu = React.forwardRef<unknown, TitleMenuProps>(
                         }}
                         onClick={() => setClicked(true)}
                     >
-                        <Typography variant="h3" color="white">
+                        <span style={{ color: '#ffffff', fontSize: '36px' }}>
                             Click to continue
-                        </Typography>
+                        </span>
                     </Box>
                 </Fade>
             </FullArtBackground>
