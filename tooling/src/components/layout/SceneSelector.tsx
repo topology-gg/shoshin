@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 //SceneSingle was throwing an error when I started to put scene components as children
 import SceneSingle from './SceneSingle';
 import { Box } from '@mui/material';
@@ -90,30 +90,27 @@ const SceneSelector = () => {
     const [scene, setScene] = useState<Scene>();
 
     const [lastScene, setLastScene] = useState<Scene>(Scenes.MAIN_MENU);
+    const musicRef = useRef<HTMLAudioElement>();
 
     const ctx = React.useContext(ShoshinWASMContext);
 
-    var music = new Audio('./music/shoshintitle-audio.wav');
-    // music.pause();
-    // music.currentTime = 0;
-
     useEffect(() => {
+        musicRef.current = new Audio('/music/shoshintitle-audio.wav');
         setTimeout(() => {
             setScene(Scenes.WALLET_CONNECT);
-            music.play();
         }, 500);
     }, []);
 
     const pauseMusic = () => {
-        music.pause();
-        music.currentTime = 0;
+        musicRef.current.pause();
+        musicRef.current.currentTime = 0;
     };
 
     const transitionMainMenu = () => {
         setScene(Scenes.MAIN_MENU);
 
         pauseMusic();
-        music.play();
+        musicRef.current.play();
     };
 
     const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation);
@@ -358,10 +355,19 @@ const SceneSelector = () => {
     const transtionFromActionReference = () => {
         setScene(lastScene);
     };
+
+    const handleTitleVideoPlay = () => {
+        // We can only play audio when the user has interacted with the dom
+        musicRef.current.play();
+    };
+
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
             <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
-                <TitleMenu transitionMainMenu={transitionMainMenu} />
+                <TitleMenu
+                    transitionMainMenu={transitionMainMenu}
+                    onPlayVideo={handleTitleVideoPlay}
+                />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.MAIN_MENU}>
                 <MainMenu transition={transitionFromMainMenu} />
