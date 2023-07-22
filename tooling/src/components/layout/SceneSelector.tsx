@@ -172,14 +172,14 @@ const SceneSelector = () => {
 
         const defaultOpponents = (
             character == Character.Jessica ? JessicaOpponents : AntocOpponents
-        ).map(({ agent, mindName }, id) => {
+        ).map(({ agent, mindName, backgroundId }, id) => {
             return {
                 agent,
                 mindName,
                 medal: Medal.NONE,
                 id,
                 name: id.toString(),
-                backgroundId: 0,
+                backgroundId: backgroundId,
             } as Opponent;
         });
         if (!state) {
@@ -398,6 +398,7 @@ const SceneSelector = () => {
                     transitionToActionReference={transitionToActionReference}
                     volume={volume}
                     setVolume={setVolume}
+                    backgroundId={opponent.backgroundId}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.GAMEPLAY_TUTORIAL}>

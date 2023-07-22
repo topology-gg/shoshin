@@ -7,6 +7,7 @@ import CardCarousel3D from '../CardCarousel/CardCarousel3D';
 import FullArtBackground from '../layout/FullArtBackground';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import CharacterTile from '../ChooseCharacter/CharacterTile';
+import OpponentTile from '../ChooseCharacter/OpponentTile';
 
 interface ChooseOpponentProps {
     opponents: Opponent[];
@@ -29,33 +30,41 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
         //Setting default as 0 each time for now
         const [selectedOpponent, selectOpponent] = useState<number>(0);
 
-        characterBoxes = opponents.map(({ agent, medal }, index) => {
-            const handleClick = () => {
-                transitionMainScene(index);
-            };
+        characterBoxes = opponents.map(
+            ({ agent, medal, mindName, backgroundId }, index) => {
+                const handleClick = () => {
+                    transitionMainScene(index);
+                };
 
-            const character: Character =
-                agent.character == 0 ? Character.Jessica : Character.Antoc;
+                const character: Character =
+                    agent.character == 0 ? Character.Jessica : Character.Antoc;
 
-            const imageUrl =
-                'images/' + character.toLowerCase() + '/idle/right/frame_0.png';
+                const imageUrl =
+                    'images/' +
+                    character.toLowerCase() +
+                    '/idle/right/frame_0.png';
 
-            return (
-                <CharacterTile
-                    character={character}
-                    key={index}
-                    mediaCover={
-                        <div className={styles.characterFooter}>
-                            <img
-                                src={imageUrl}
-                                alt="Image 1"
-                                className={styles.characterModel}
-                            />
-                        </div>
-                    }
-                ></CharacterTile>
-            );
-        });
+                console.log('mindName:', mindName, 'index:', index);
+
+                return (
+                    <OpponentTile
+                        character={character}
+                        key={index}
+                        mediaCover={
+                            <div className={styles.characterFooter}>
+                                <img
+                                    src={imageUrl}
+                                    alt="Image 1"
+                                    className={styles.characterModel}
+                                />
+                            </div>
+                        }
+                        mindName={mindName}
+                        backgroundId={backgroundId}
+                    ></OpponentTile>
+                );
+            }
+        );
 
         // Effect to make sure that selectedOpponent is initialized correctly when opponent data loads
         useEffect(() => {

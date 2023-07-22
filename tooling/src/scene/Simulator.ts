@@ -116,6 +116,9 @@ export default class Simulator extends Phaser.Scene {
     player_one_character: string;
     player_two_character: string;
 
+    player_one_shadow: Phaser.GameObjects.Image;
+    player_two_shadow: Phaser.GameObjects.Image;
+
     player_one_body_hitbox: Phaser.GameObjects.Rectangle;
     player_two_body_hitbox: Phaser.GameObjects.Rectangle;
 
@@ -273,6 +276,7 @@ export default class Simulator extends Phaser.Scene {
             'images/antoc/cyclone/spritesheet.png',
             'images/antoc/cyclone/spritesheet.json'
         );
+        this.load.image('antoc-shadow', 'images/antoc/shadow/shadow.png');
 
         //
         // Jessica
@@ -372,14 +376,18 @@ export default class Simulator extends Phaser.Scene {
             'images/jessica/beret/spritesheet.png',
             'images/jessica/beret/spritesheet.json'
         );
+        this.load.image('jessica-shadow', 'images/jessica/shadow/shadow.png');
 
         // Background
         this.load.image(
             'arena_bg',
             'images/bg/shoshin-bg-large-transparent.png'
         );
-        this.load.image('level-1-bg', 'images/bg/level-1/full.png');
-        this.load.image('level-4-bg', 'images/bg/level-4/full.png');
+        this.load.image('level-1-bg', 'images/bg/shoshin-bg-forest.png');
+        this.load.image('level-2-bg', 'images/bg/shoshin-bg-stone.png');
+        this.load.image('level-3-bg', 'images/bg/shoshin-bg-desert.png');
+        this.load.image('level-4-bg', 'images/bg/shoshin-bg-cave.png');
+        this.load.image('level-5-bg', 'images/bg/shoshin-bg-volcano.png');
 
         // VFX
         this.load.spritesheet('spark', 'images/effects/spark/spritesheet.png', {
@@ -836,10 +844,11 @@ export default class Simulator extends Phaser.Scene {
     }
 
     initialize() {
+        console.log('initialize()');
         this.initializeVFX();
 
         this.backgroundSets = {};
-        [0, 1, 4].forEach((level: number) => {
+        [0, 1, 2, 3, 4, 5].forEach((level: number) => {
             let bg;
             if (level == 0) {
                 // show practice background
@@ -865,6 +874,18 @@ export default class Simulator extends Phaser.Scene {
         ].setVisible(true);
 
         const outOfBoundX = 2000;
+        this.player_one_shadow = this.add.sprite(
+            -outOfBoundX,
+            0,
+            `antoc-shadow`,
+            0
+        );
+        this.player_two_shadow = this.add.sprite(
+            -outOfBoundX,
+            0,
+            `antoc-shadow`,
+            0
+        );
         this.player_one = this.add.sprite(-outOfBoundX, 0, `antoc-idle`, 0);
         this.player_two = this.add.sprite(outOfBoundX, 0, `antoc-idle`, 0);
         this.player_two.setFlipX(true);
@@ -980,6 +1001,7 @@ export default class Simulator extends Phaser.Scene {
         this.setPlayerFrameHelper(
             frame,
             this.player_one,
+            this.player_one_shadow,
             this.player_one_character
         );
     }
@@ -988,6 +1010,7 @@ export default class Simulator extends Phaser.Scene {
         this.setPlayerFrameHelper(
             frame,
             this.player_two,
+            this.player_two_shadow,
             this.player_two_character
         );
     }
@@ -995,6 +1018,7 @@ export default class Simulator extends Phaser.Scene {
     private setPlayerFrameHelper(
         frame: FrameLike,
         player: Phaser.GameObjects.Image,
+        shadow: Phaser.GameObjects.Image,
         characterName: string
     ) {
         // Extract from frame
@@ -1030,20 +1054,38 @@ export default class Simulator extends Phaser.Scene {
         const spriteTopAdjustment =
             spriteAdjustment?.hitboxOffset[direction][1] || 0;
 
-        player.setX(pos.x + spriteLeftAdjustment - hitboxW / 2);
-        player.setY(-pos.y + spriteTopAdjustment);
+        const playerX = pos.x + spriteLeftAdjustment - hitboxW / 2;
+        const playerY = -pos.y + spriteTopAdjustment;
+        player.setX(playerX);
+        player.setY(playerY);
 
         player.setTexture(
             `${characterName}-${bodyStateName}`,
             `frame_${bodyStateCounter}.png`
         );
 
-        // TODO: handle direction switching
+        //
+        // Handle direction switching
+        //
         if (direction == 'right') {
             player.setFlipX(false);
         } else {
             player.setFlipX(true);
         }
+
+        //
+        // Draw character shadow
+        //
+        shadow.setTexture(`${characterName}-shadow`);
+        const playerShadowX =
+            characterName == 'jessica'
+                ? pos.x + hitboxW / 2
+                : direction == 'right'
+                ? pos.x
+                : pos.x + hitboxW;
+        const playerShadowY = -5;
+        shadow.setX(playerShadowX);
+        shadow.setY(playerShadowY);
     }
 
     private setPlayerOnePointer(frame: FrameLike) {
@@ -1213,7 +1255,7 @@ export default class Simulator extends Phaser.Scene {
     }
 
     init(data) {
-        console.log('>>>>>> init()');
+        console.log('>>>>>> init(); data.backgroundId', data.backgroundId);
         this.backgroundId = data.backgroundId;
     }
 

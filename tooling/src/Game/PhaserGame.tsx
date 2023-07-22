@@ -127,10 +127,14 @@ const Game = ({
             const uiScene = (game.current as Phaser.Game).scene.add('ui', UI);
 
             // Start the scenes
+            console.log(
+                'PhaserGame starting scene with backgroundId',
+                backgroundId
+            );
             if (isRealTime) {
                 console.log("running g.scene.start('realtime');");
                 (game.current as Phaser.Game).scene.start('realtime', {
-                    backgroundId: 1,
+                    backgroundId: backgroundId,
                 });
             } else {
                 console.log("running g.scene.start('simulator');");

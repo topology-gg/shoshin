@@ -434,7 +434,9 @@ const SimulationScene = React.forwardRef(
                                                         setPlayerStatuses,
                                                     }}
                                                     isInView={true}
-                                                    backgroundId={0}
+                                                    backgroundId={
+                                                        opponent.backgroundId
+                                                    }
                                                     volume={volume}
                                                 />
                                             </div>

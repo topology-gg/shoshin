@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import { Character } from '../../constants/constants';
 import GameCard from '../ui/GameCard';
 
-const CharacterTile = ({
+const OpponentTile = ({
     character,
     children,
     descriptionVisible,
@@ -11,6 +11,7 @@ const CharacterTile = ({
     mediaCover,
     onClick,
     progressText,
+    backgroundId,
     mindName,
 }: {
     character: Character;
@@ -20,10 +21,23 @@ const CharacterTile = ({
     mediaCover?: React.ReactNode;
     onClick?: React.MouseEventHandler<HTMLDivElement>;
     progressText?: React.ReactNode;
+    backgroundId?: number;
     mindName?: string;
 }) => {
-    const idleImage = `/images/ui/${character.toLowerCase()}-sketch-inverted.png`;
-    const activeImage = `/images/ui/${character.toLowerCase()}-portrait.jpeg`;
+    const idleImage = !backgroundId
+        ? '/images/bg/shoshin-bg-gray-long.png'
+        : backgroundId == 1
+        ? '/images/bg/shoshin-bg-forest.png'
+        : backgroundId == 2
+        ? '/images/bg/shoshin-bg-stone.png'
+        : backgroundId == 3
+        ? '/images/bg/shoshin-bg-desert.png'
+        : backgroundId == 4
+        ? '/images/bg/shoshin-bg-cave.png'
+        : backgroundId == 5
+        ? '/images/bg/shoshin-bg-volcano.png'
+        : '/images/bg/shoshin-bg-gray-long.png';
+    const activeImage = idleImage;
 
     const [hovering, setHovering] = useState(false);
 
@@ -46,7 +60,7 @@ const CharacterTile = ({
             onMouseOver={() => setHovering(true)}
             onMouseOut={() => setHovering(false)}
         >
-            <Typography variant="h3">{character}</Typography>
+            <Typography variant="h3">{mindName}</Typography>
             {progressText && (
                 <Typography variant="h6" color={textColor}>
                     {progressText}
@@ -57,4 +71,4 @@ const CharacterTile = ({
     );
 };
 
-export default CharacterTile;
+export default OpponentTile;

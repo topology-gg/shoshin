@@ -23,6 +23,7 @@ interface ArcadeProps {
     transitionToActionReference: () => void;
     volume: number;
     setVolume: (volume: number) => void;
+    backgroundId?: number;
 }
 
 const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
@@ -35,6 +36,7 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
             transitionToActionReference,
             volume,
             setVolume,
+            backgroundId,
         },
         ref
     ) => {
@@ -129,7 +131,7 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                             setPlayerStatuses,
                         }}
                         isInView={true}
-                        backgroundId={0}
+                        backgroundId={backgroundId ?? 0}
                         volume={volume}
                     />
 
