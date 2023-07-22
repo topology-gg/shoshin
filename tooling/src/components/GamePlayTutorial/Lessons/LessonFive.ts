@@ -34,14 +34,20 @@ const performGatotsuEvaluation = (
 
     return gatotsuIndex > -1;
 };
+
 export const performGatotsuObjective = {
     description: 'Perform Gatotsu',
     evaluate: performGatotsuEvaluation,
 };
 
+export const placeGatotsuAtTopOfLayersObjective = {
+    description: 'Reorder Layers so Gatotsu is at the top',
+    evaluate: performGatotsuEvaluation,
+};
+
 const slide2: LessonSlide = {
     content:
-        'Attack your opponent to build rage and then spend it on a special attack',
+        'Attack your opponent to build rage and then spend it on a special attack. \n Hint : Make sure the Gatotsu layer is above other layers that may block it',
     continueText: 'Next',
     highlightLayer: -1,
     highlightZone: HighlightZone.NONE,

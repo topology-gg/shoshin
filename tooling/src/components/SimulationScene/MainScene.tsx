@@ -46,6 +46,8 @@ interface SimulationProps {
     onContinue: () => void;
     onQuit: () => void;
     transitionToActionReference: () => void;
+    volume: number;
+    setVolume: (volume: number) => void;
 }
 //We need Players agent and opponent
 const SimulationScene = React.forwardRef(
@@ -58,6 +60,8 @@ const SimulationScene = React.forwardRef(
             onQuit,
             onContinue,
             transitionToActionReference,
+            volume,
+            setVolume,
         } = props;
         // Constants
         const LATENCY = 70;
@@ -253,8 +257,9 @@ const SimulationScene = React.forwardRef(
 
         const beatAgent =
             output !== undefined
-                ? output.agent_1[output.agent_1.length - 1].body_state
-                      .integrity == 0
+                ? output.agent_0[output.agent_1.length - 1].body_state
+                      .integrity >
+                  output.agent_1[output.agent_1.length - 1].body_state.integrity
                 : false;
 
         let performance = Medal.NONE;
@@ -262,7 +267,12 @@ const SimulationScene = React.forwardRef(
             output !== undefined
                 ? output.agent_0[output.agent_0.length - 1].body_state.integrity
                 : 0;
-        if (hpRemaining === 1000) {
+
+        const opponentHpRemaining =
+            output !== undefined
+                ? output.agent_1[output.agent_1.length - 1].body_state.integrity
+                : 1000;
+        if (hpRemaining === 1000 && opponentHpRemaining === 0) {
             performance = Medal.GOLD;
         } else if (hpRemaining >= 500) {
             performance = Medal.SILVER;
@@ -334,6 +344,8 @@ const SimulationScene = React.forwardRef(
                                     transitionToActionReference={
                                         transitionToActionReference
                                     }
+                                    volume={volume}
+                                    setVolume={setVolume}
                                 />
                             ) : null}
                             <Grid container spacing={{ md: 2 }}>
@@ -423,6 +435,7 @@ const SimulationScene = React.forwardRef(
                                                     }}
                                                     isInView={true}
                                                     backgroundId={0}
+                                                    volume={volume}
                                                 />
                                             </div>
                                         </div>
@@ -549,7 +562,7 @@ const SimulationScene = React.forwardRef(
                                 </Grid>
                                 <Grid item md={6} lg={5} xl={5}>
                                     <GameCard
-                                        image={'./images/bg/f2f2f2.jpeg'}
+                                        image={'/images/bg/f2f2f2.png'}
                                         // bgOpacity={0}
                                     >
                                         <Box

@@ -1,56 +1,57 @@
 import { Character } from '../../../constants/constants';
+import { MoveForward } from '../../../types/Action';
 import { PlayerAgent } from '../../../types/Agent';
 import { TestJson } from '../../../types/Frame';
-import { HighlightZone, Lesson, LessonSlide } from '../../../types/Tutorial';
+import {
+    HighlightZone,
+    Lesson,
+    LessonObjective,
+    LessonSlide,
+} from '../../../types/Tutorial';
 import { opponent0Jessica } from '../../ChooseOpponent/opponents/opponent-0';
 import { defeatOpponentObjective } from './CommonObjectives';
 
 const slide0: LessonSlide = {
-    content: 'Layers are evaluated from top to bottom',
-    continueText: 'Next',
-    highlightLayer: -1,
-    highlightZone: HighlightZone.DIALOGUE,
-};
-
-const slide1: LessonSlide = {
     content:
-        'The first layer that evaluates to true is always executed even if layers further down on the list are also true. \n This makes ordering layers very important.',
+        "Conditions can be inverted to match the opposite of it's criteria. \nTo invert a condition right click on a condition and select 'Invert Condition.'",
     continueText: 'Next',
     highlightLayer: -1,
     highlightZone: HighlightZone.DIALOGUE,
 };
 
-const slide2: LessonSlide = {
-    content: 'Layers can be reordered by dragging one above the other.',
-    continueText: 'Next',
-    highlightLayer: -1,
-    highlightZone: HighlightZone.MIND,
-};
-
-const reorderLayers = {
-    description: 'Reordered the layers',
+const invertLayerWithMoveForward = {
+    description: 'Invert the condition that has the MoveForward action.',
     evaluate: (
         animationFrame: number,
         testJson: TestJson,
         playerAgent: PlayerAgent
     ) => {
-        console.log(playerAgent.layers);
-        if (playerAgent.layers && playerAgent.layers[0].action.id == 0) {
+        const match = playerAgent.layers.findIndex((layer) => {
+            const hasInvertedCondtion = layer.conditions.findIndex(
+                (condition) => condition.isInverted
+            );
+            console.log('playerAgent.layers', playerAgent.layers);
+            if (
+                layer.action.id == MoveForward.id &&
+                hasInvertedCondtion !== -1
+            ) {
+                return true;
+            }
             return false;
-        }
-        return true;
+        });
+
+        console.log('match', match);
+        return match !== -1;
     },
 };
 
-const slide3: LessonSlide = {
-    content:
-        'Layer #1 is blocking the execution of layer #2 \n Reorder the layers to beat the opponent',
+const slide1: LessonSlide = {
+    content: "Beat the opponent by using the 'Invert Condition' feature",
     continueText: 'Next',
     highlightLayer: -1,
     highlightZone: HighlightZone.NONE,
-    lessonObjectives: [reorderLayers, defeatOpponentObjective],
+    lessonObjectives: [invertLayerWithMoveForward, defeatOpponentObjective],
 };
-
 const layers = [
     {
         conditions: [
@@ -104,65 +105,7 @@ const layers = [
                 displayName: 'Within 100',
                 type: 'spacing',
                 key: -1638791590,
-            },
-        ],
-        action: {
-            id: 0,
-            isCombo: false,
-        },
-    },
-    {
-        conditions: [
-            {
-                elements: [
-                    {
-                        value: '(',
-                        type: 'Operator',
-                    },
-                    {
-                        value: 'Abs(',
-                        type: 'Operator',
-                    },
-                    {
-                        value: '(',
-                        type: 'Operator',
-                    },
-                    {
-                        value: 1,
-                        type: 'Perceptible',
-                    },
-                    {
-                        value: '-',
-                        type: 'Operator',
-                    },
-                    {
-                        value: 101,
-                        type: 'Perceptible',
-                    },
-                    {
-                        value: ')',
-                        type: 'Operator',
-                    },
-                    {
-                        value: '|',
-                        type: 'Operator',
-                    },
-                    {
-                        value: '<=',
-                        type: 'Operator',
-                    },
-                    {
-                        value: 100,
-                        type: 'Constant',
-                    },
-                    {
-                        value: ')',
-                        type: 'Operator',
-                    },
-                ],
-                displayName: 'Within 100',
-                type: 'spacing',
-                key: -1638791590,
+                isInverted: false,
             },
         ],
         action: {
@@ -222,7 +165,7 @@ const layers = [
                 displayName: 'Within 100',
                 type: 'spacing',
                 key: -1638791590,
-                isInverted: true,
+                isInverted: false,
             },
         ],
         action: {
@@ -232,10 +175,10 @@ const layers = [
     },
 ];
 
-const LessonTwo: Lesson = {
-    title: 'Layers',
+const LessonSix: Lesson = {
+    title: 'Inverting Conditions',
     opponent: opponent0Jessica,
-    slides: [slide0, slide1, slide2, slide3],
+    slides: [slide0, slide1],
     features: {
         layerAddAndDelete: false,
         conditionAnd: false,
@@ -251,4 +194,4 @@ const LessonTwo: Lesson = {
     actions: [],
 };
 
-export default LessonTwo;
+export default LessonSix;

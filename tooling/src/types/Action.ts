@@ -77,8 +77,7 @@ export const Upswing: Action = {
     key: 'K',
     tutorial: {
         video: './media/tutorial/upswing.mp4',
-        description:
-            'An attack that launches the opponent into the air, giving Jessica frame advantage',
+        description: 'An attack that launches the opponent into the air',
     },
     bodyState: 20,
 };
@@ -128,7 +127,7 @@ export const Block: Action = {
 };
 
 const JessicaMoveForwardId = 5;
-const MoveForward: Action = {
+export const MoveForward: Action = {
     id: JessicaMoveForwardId,
     display: { name: 'MoveForward', unicode: '\u{1F6B6}' },
     frames: { duration: 1, intents: [JessicaMoveForwardId] },
@@ -159,7 +158,7 @@ export const DashForward: Action = {
             },
             {
                 right: [Upswing.id],
-                duration: 2,
+                duration: 3,
             },
             {
                 right: [Sidecut.id],
@@ -260,8 +259,7 @@ export const JessicaLowKick: Action = {
     bodyState: 150,
     tutorial: {
         video: './media/tutorial/jessica-lowkick.mp4',
-        description:
-            "Kicking the opponent from a low position, which breaks opponent's blocking stance",
+        description: 'A low attack that counters block',
     },
 };
 
@@ -340,8 +338,7 @@ export const Vert: Action = {
     bodyState: 1020,
     tutorial: {
         video: './media/tutorial/vert.mp4',
-        description:
-            'An attack that launches the opponent into the air, giving Antoc frame advantage',
+        description: 'An attack that launches the opponent into the air',
     },
 };
 

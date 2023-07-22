@@ -5,6 +5,8 @@ const PauseMenu = ({
     onQuit,
     onChooseCharacter,
     transitionToActionReference,
+    volume,
+    setVolume,
 }) => {
     const items: ShoshinMenuItem[] = [
         {
@@ -15,16 +17,17 @@ const PauseMenu = ({
             title: 'Exit to Main Menu',
             onClick: () => onQuit(),
         },
-        {
-            title: 'Action Reference',
-            onClick: () => transitionToActionReference(),
-        },
     ];
 
     const title = 'Pause';
     return (
         <div className={styles.overlayContainer}>
-            <ShoshinMenu menuItems={items} displayLogo={true} />
+            <ShoshinMenu
+                menuItems={items}
+                displayLogo={true}
+                volume={volume}
+                setVolume={setVolume}
+            />
         </div>
     );
 };

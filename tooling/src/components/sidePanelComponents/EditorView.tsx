@@ -201,6 +201,7 @@ const EditorView = ({
                         handleValidateCombo={handleValidateCombo}
                         selectedCombo={selectedCombo}
                         handleChangeSelectedCombo={handleChangeSelectedCombo}
+                        actions={actions}
                     ></Combos>
                 );
             }

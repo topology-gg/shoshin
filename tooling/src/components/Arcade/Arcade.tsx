@@ -21,7 +21,10 @@ interface ArcadeProps {
     onQuit: () => void;
     onContinue: () => void;
     transitionToActionReference: () => void;
+    volume: number;
+    setVolume: (volume: number) => void;
 }
+
 const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
     (
         {
@@ -30,6 +33,8 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
             onQuit,
             onContinue,
             transitionToActionReference,
+            volume,
+            setVolume,
         },
         ref
     ) => {
@@ -101,6 +106,8 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                             transitionToActionReference={
                                 transitionToActionReference
                             }
+                            volume={volume}
+                            setVolume={setVolume}
                         />
                     ) : null}
 
@@ -123,6 +130,7 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                         }}
                         isInView={true}
                         backgroundId={0}
+                        volume={volume}
                     />
 
                     <MidScreenKeybinding

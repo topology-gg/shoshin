@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, Grid, MenuItem, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
@@ -72,6 +72,7 @@ interface GambitProps {
     setCombos: (combo: Action[][]) => void;
     activeMs: number;
     features: GambitFeatures;
+    initialSelectedCombo?: number;
 }
 
 export interface LayerProps {
@@ -401,6 +402,7 @@ const Gambit = ({
     activeMs,
     features,
     actions,
+    initialSelectedCombo,
 }: GambitProps) => {
     const handleCreateLayer = () => {
         // We need to make a deep copy otherwise this exported object is reassigned
@@ -411,7 +413,13 @@ const Gambit = ({
 
     let characterIndex = Object.keys(Character).indexOf(character);
 
-    const [selectedCombo, changeSelectedCombo] = useState<number>(-1);
+    const [selectedCombo, changeSelectedCombo] = useState<number>(
+        initialSelectedCombo >= 0 ? initialSelectedCombo : -1
+    );
+
+    useEffect(() => {
+        changeSelectedCombo(initialSelectedCombo);
+    }, [initialSelectedCombo]);
 
     const usedLayersByCombo = layers
         .reduce((acc: number[], layer, index) => {
@@ -645,6 +653,7 @@ const Gambit = ({
         setCombos(prev_copy);
     }
 
+    console.log('selected combo', selectedCombo, 'combos', combos);
     return (
         <Box
             sx={{
@@ -767,6 +776,7 @@ const Gambit = ({
                         characterIndex={characterIndex}
                         selectedIndex={selectedCombo}
                         handleValidateCombo={handleValidateCombo}
+                        actions={actions}
                     />
                 </Box>
             ) : null}

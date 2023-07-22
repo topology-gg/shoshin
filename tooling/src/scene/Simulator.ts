@@ -66,6 +66,31 @@ enum CombatEvent {
     Combo = 'Combo',
 }
 
+enum GameSound {
+    dashForward = 'dash-forward-sound',
+    dashBackward = 'dash-backward-sound',
+    katana1 = 'katana-sound-1',
+    katana2 = 'katana-sound-2',
+    katana3 = 'katana-sound-3',
+    greatSword1 = 'great-sword-sound-1',
+    greatSword2 = 'great-sword-sound-2',
+    greatSword3 = 'great-sword-sound-3',
+    gatotsu = 'gatotsu-sound',
+    clash = 'clash-sound',
+    antocHurt = 'antoc-hurt-sound',
+    jessicaHurt = 'jessica-hurt-sound',
+    antocKnocked = 'antoc-knocked-sound',
+    jessicaKnocked = 'jessica-knocked-sound',
+    antocLaunched = 'antoc-launched-sound',
+    jessicaLaunched = 'jessica-launched-sound',
+    antocJump = 'antoc-jump-sound',
+    jessicaJump = 'jessica-jump-sound',
+    lowKickHit = 'low-kick-hit-sound',
+    landingFromJump = 'landing-from-jump-sound',
+    landingFromKnocked = 'landing-from-knocked-sound',
+    katanaCut = 'katana-cut-sound',
+}
+
 interface BattleEvent {
     frameIndex: number;
     event: CombatEvent;
@@ -130,34 +155,18 @@ export default class Simulator extends Phaser.Scene {
     blueLightningSprites: Phaser.GameObjects.Sprite[];
     pinkLightningSprites: Phaser.GameObjects.Sprite[];
 
-    // SFX
-    dashForwardSounds: Phaser.Sound.BaseSound[];
-    dashBackwardSounds: Phaser.Sound.BaseSound[];
-    slashSounds: Phaser.Sound.BaseSound[];
-    upswingSounds: Phaser.Sound.BaseSound[];
-    sidecutSounds: Phaser.Sound.BaseSound[];
-    gatotsuSounds: Phaser.Sound.BaseSound[];
-    horiSounds: Phaser.Sound.BaseSound[];
-    vertSounds: Phaser.Sound.BaseSound[];
-    clashSounds: Phaser.Sound.BaseSound[];
-    antocHurtSounds: Phaser.Sound.BaseSound[];
-    antocKnockedSounds: Phaser.Sound.BaseSound[];
-    antocLaunchedSounds: Phaser.Sound.BaseSound[];
-    antocJumpSounds: Phaser.Sound.BaseSound[];
-    jessicaHurtSounds: Phaser.Sound.BaseSound[];
-    jessicaKnockedSounds: Phaser.Sound.BaseSound[];
-    jessicaJumpSounds: Phaser.Sound.BaseSound[];
-    jessicaLaunchedSounds: Phaser.Sound.BaseSound[];
-    lowKickHitSounds: Phaser.Sound.BaseSound[];
-    landingSounds: Phaser.Sound.BaseSound[];
-    landingFromKnockedSounds: Phaser.Sound.BaseSound[];
-    katanaHitSounds: Phaser.Sound.BaseSound[];
-    greatSwordHitSounds: Phaser.Sound.BaseSound[];
-
     player_one_action_confirm = false;
     player_two_action_confirm = false;
 
     last_accessed_frame = 0;
+
+    //Sound effects
+    volume = 1;
+
+    setVolume(volume: number) {
+        //volume comes at 0 to 100, we need it from 0 to 1
+        this.volume = volume / 100;
+    }
 
     //context only relevent for realtime atm, but I strongly think simulator will have wasm calls soon
     changeScene(
@@ -817,70 +826,17 @@ export default class Simulator extends Phaser.Scene {
         });
     }
 
-    initializeSFX() {
-        this.dashForwardSounds = [];
-        this.dashBackwardSounds = [];
-        this.slashSounds = [];
-        this.upswingSounds = [];
-        this.sidecutSounds = [];
-        this.horiSounds = [];
-        this.vertSounds = [];
-        this.clashSounds = [];
-        this.gatotsuSounds = [];
-        this.antocJumpSounds = [];
-        this.jessicaJumpSounds = [];
-        this.antocHurtSounds = [];
-        this.jessicaHurtSounds = [];
-        this.antocKnockedSounds = [];
-        this.jessicaKnockedSounds = [];
-        this.antocLaunchedSounds = [];
-        this.jessicaLaunchedSounds = [];
-        this.lowKickHitSounds = [];
-        this.landingSounds = [];
-        this.landingFromKnockedSounds = [];
-        this.katanaHitSounds = [];
-        this.greatSwordHitSounds = [];
-        [0, 1].forEach((_) => {
-            this.dashForwardSounds.push(this.sound.add('dash-forward-sound'));
-            this.dashBackwardSounds.push(this.sound.add('dash-backward-sound'));
+    playSound(key) {
+        if (this.volume == 0) {
+            return;
+        }
 
-            this.slashSounds.push(this.sound.add('katana-sound-1'));
-            this.upswingSounds.push(this.sound.add('katana-sound-2'));
-            this.sidecutSounds.push(this.sound.add('katana-sound-3'));
-            this.horiSounds.push(this.sound.add('great-sword-sound-1'));
-            this.vertSounds.push(this.sound.add('great-sword-sound-2'));
-            this.gatotsuSounds.push(this.sound.add('gatotsu-sound'));
-
-            this.clashSounds.push(this.sound.add('clash-sound'));
-
-            this.antocJumpSounds.push(this.sound.add('antoc-jump-sound'));
-            this.jessicaJumpSounds.push(this.sound.add('jessica-jump-sound'));
-
-            this.antocHurtSounds.push(this.sound.add('antoc-hurt-sound'));
-            this.jessicaHurtSounds.push(this.sound.add('jessica-hurt-sound'));
-            this.antocKnockedSounds.push(this.sound.add('antoc-knocked-sound'));
-            this.jessicaKnockedSounds.push(
-                this.sound.add('jessica-knocked-sound')
-            );
-            this.antocLaunchedSounds.push(
-                this.sound.add('antoc-launched-sound')
-            );
-            this.jessicaLaunchedSounds.push(
-                this.sound.add('jessica-launched-sound')
-            );
-            this.lowKickHitSounds.push(this.sound.add('low-kick-hit-sound'));
-            this.landingSounds.push(this.sound.add('landing-from-jump-sound'));
-            this.landingFromKnockedSounds.push(
-                this.sound.add('landing-from-knocked-sound')
-            );
-            this.katanaHitSounds.push(this.sound.add('katana-cut-sound'));
-            this.greatSwordHitSounds.push(this.sound.add('katana-cut-sound'));
-        });
+        let sound = this.sound.add(key, { volume: this.volume });
+        sound.play();
     }
 
     initialize() {
         this.initializeVFX();
-        this.initializeSFX();
 
         this.backgroundSets = {};
         [0, 1, 4].forEach((level: number) => {
@@ -1350,25 +1306,25 @@ export default class Simulator extends Phaser.Scene {
                     frames[playerIndex].body_state.counter == pair.counter
                 ) {
                     if (pair.state == BodystatesAntoc.HorizontalSwing)
-                        this.horiSounds[playerIndex].play();
+                        this.playSound(GameSound.greatSword1);
                     else if (pair.state == BodystatesAntoc.VerticalSwing)
-                        this.vertSounds[playerIndex].play();
+                        this.playSound(GameSound.greatSword2);
                     else if (pair.state == BodystatesAntoc.DropSlash)
-                        this.vertSounds[playerIndex].play();
+                        this.playSound(GameSound.greatSword2);
                     else if (pair.state == BodystatesJessica.Slash)
-                        this.slashSounds[playerIndex].play();
+                        this.playSound(GameSound.katana1);
                     else if (pair.state == BodystatesJessica.Upswing)
-                        this.upswingSounds[playerIndex].play();
+                        this.playSound(GameSound.katana2);
                     else if (pair.state == BodystatesJessica.Sidecut)
-                        this.sidecutSounds[playerIndex].play();
+                        this.playSound(GameSound.katana3);
                     else if (pair.state == BodystatesJessica.BirdSwing)
-                        this.sidecutSounds[playerIndex].play();
+                        this.playSound(GameSound.katana2);
                     else if (pair.state == BodystatesJessica.Gatotsu)
-                        this.gatotsuSounds[playerIndex].play();
+                        this.playSound(GameSound.gatotsu);
                     else if (pair.state == BodystatesJessica.LowKick)
-                        this.dashBackwardSounds[playerIndex].play();
+                        this.playSound(GameSound.dashBackward);
                     else if (pair.state == BodystatesAntoc.LowKick)
-                        this.dashBackwardSounds[playerIndex].play();
+                        this.playSound(GameSound.dashBackward);
                 }
             });
         });
@@ -1433,7 +1389,7 @@ export default class Simulator extends Phaser.Scene {
                         .setFlipX(subjectFrame.body_state.dir == RIGHT)
                         .play('yellowSparkAnim');
 
-                    this.clashSounds[subjectIndex].play();
+                    this.playSound(GameSound.clash);
                 } else {
                     this.sparkSprites[subjectIndex]
                         .setPosition(x, y)
@@ -1442,27 +1398,27 @@ export default class Simulator extends Phaser.Scene {
                 }
 
                 if (subjectFrame.body_state.state == BodystatesAntoc.Hurt)
-                    this.antocHurtSounds[subjectIndex].play();
+                    this.playSound(GameSound.antocHurt);
                 else if (
                     subjectFrame.body_state.state == BodystatesAntoc.Knocked
                 )
-                    this.antocKnockedSounds[subjectIndex].play();
+                    this.playSound(GameSound.antocKnocked);
                 else if (
                     subjectFrame.body_state.state == BodystatesAntoc.Launched
                 )
-                    this.antocLaunchedSounds[subjectIndex].play();
+                    this.playSound(GameSound.antocLaunched);
                 else if (
                     subjectFrame.body_state.state == BodystatesJessica.Hurt
                 )
-                    this.jessicaHurtSounds[subjectIndex].play();
+                    this.playSound(GameSound.jessicaHurt);
                 else if (
                     subjectFrame.body_state.state == BodystatesJessica.Knocked
                 )
-                    this.jessicaKnockedSounds[subjectIndex].play();
+                    this.playSound(GameSound.jessicaKnocked);
                 else if (
                     subjectFrame.body_state.state == BodystatesJessica.Launched
                 )
-                    this.jessicaLaunchedSounds[subjectIndex].play();
+                    this.playSound(GameSound.jessicaLaunched);
 
                 if (hitBodyStates.includes(subjectFrame.body_state.state)) {
                     if (
@@ -1471,15 +1427,15 @@ export default class Simulator extends Phaser.Scene {
                             BodystatesJessica.LowKick,
                         ].includes(objectPrevFrame.body_state.state)
                     ) {
-                        this.lowKickHitSounds[subjectIndex].play();
+                        this.playSound(GameSound.lowKickHit);
                     } else if (
                         antocHitBodyStates.includes(
                             objectPrevFrame.body_state.state
                         )
                     ) {
-                        this.greatSwordHitSounds[objectIndex].play();
+                        this.playSound(GameSound.katanaCut);
                     } else {
-                        this.katanaHitSounds[objectIndex].play();
+                        this.playSound(GameSound.katanaCut);
                     }
                 }
             }
@@ -1583,10 +1539,10 @@ export default class Simulator extends Phaser.Scene {
 
             // sfx
             if (dashForwardBodyStates.includes(frame.body_state.state)) {
-                this.dashForwardSounds[playerIndex].play();
+                this.playSound(GameSound.dashForward);
             }
             if (dashBackwardBodyStates.includes(frame.body_state.state)) {
-                this.dashBackwardSounds[playerIndex].play();
+                this.playSound(GameSound.dashBackward);
             }
         });
 
@@ -1622,7 +1578,7 @@ export default class Simulator extends Phaser.Scene {
                             : LEFT)
                 );
 
-            this.dashForwardSounds[playerIndex].play();
+            this.playSound(GameSound.dashForward);
         });
 
         //
@@ -1664,9 +1620,9 @@ export default class Simulator extends Phaser.Scene {
                     .play('jumpTakeoffSmokeAnim');
 
                 if (frame.body_state.state == BodystatesAntoc.Jump)
-                    this.antocJumpSounds[playerIndex].play();
+                    this.playSound(GameSound.antocJump);
                 else if (frame.body_state.state == BodystatesJessica.Jump)
-                    this.jessicaJumpSounds[playerIndex].play();
+                    this.playSound(GameSound.jessicaJump);
             } else if (
                 stimulusType == StimulusType.GROUND &&
                 prevStimulusType != StimulusType.GROUND &&
@@ -1695,10 +1651,10 @@ export default class Simulator extends Phaser.Scene {
                     ].includes(frame.body_state.state)
                 ) {
                     // voluntary landing
-                    this.landingSounds[playerIndex].play();
+                    this.playSound(GameSound.landingFromJump);
                 } else {
                     // involuntary landing
-                    this.landingFromKnockedSounds[playerIndex].play();
+                    this.playSound(GameSound.landingFromKnocked);
                 }
             }
         });

@@ -241,6 +241,8 @@ const SceneSelector = () => {
     const [jessicaGoldCount, setJessicaGoldCount] = useState<number>(0);
     const [antocGoldCount, setAntocGoldCount] = useState<number>(0);
 
+    const [volume, setVolume] = useState<number>(100);
+
     const getProgressForCharacter = (character: Character) => {
         let updatedState = deafaultState;
         const state = getLocalState();
@@ -381,6 +383,8 @@ const SceneSelector = () => {
                     onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
                     transitionToActionReference={transitionToActionReference}
+                    volume={volume}
+                    setVolume={setVolume}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ARCADE}>
@@ -390,12 +394,16 @@ const SceneSelector = () => {
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
                     opponent={opponent.agent}
                     transitionToActionReference={transitionToActionReference}
+                    volume={volume}
+                    setVolume={setVolume}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.GAMEPLAY_TUTORIAL}>
                 <MechanicsTutorialScene
                     onContinue={() => onTransition(Scenes.MAIN_MENU)}
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
+                    volume={volume}
+                    setVolume={setVolume}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ACTION_REFERENCE}>
