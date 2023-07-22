@@ -5,6 +5,7 @@ import { Character } from '../../constants/constants';
 import FullArtBackground from '../layout/FullArtBackground';
 import CharacterTile from './CharacterTile';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
+import ShoshinMenuButtonInverse from '../ui/ShoshinMenuButtonInverse';
 
 const ActionReferenceButton = ({
     transitionToActionReference,
@@ -13,14 +14,14 @@ const ActionReferenceButton = ({
     transitionToActionReference: (character: Character) => void;
     character: Character;
 }) => (
-    <ShoshinMenuButton
+    <ShoshinMenuButtonInverse
         onClick={(e) => {
             transitionToActionReference(character);
             e.stopPropagation();
         }}
     >
         Action Reference
-    </ShoshinMenuButton>
+    </ShoshinMenuButtonInverse>
 );
 
 const ChooseCharacter = React.forwardRef<

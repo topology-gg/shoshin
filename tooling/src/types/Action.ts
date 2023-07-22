@@ -508,7 +508,11 @@ export const AntocDashBackward: Action = {
 
 export const StepForward: Action = {
     id: AntocStepForwardId,
-    display: { name: 'StepForward', unicode: '\u{1F43E}' },
+    display: {
+        name: 'StepForward',
+        unicode: '\u{1F43E}',
+        icon: './images/actions/step-forward.png',
+    },
     frames: {
         duration: 3,
         interrupts: [
