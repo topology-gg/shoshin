@@ -1002,7 +1002,7 @@ export default class Simulator extends Phaser.Scene {
             frame,
             this.player_one,
             this.player_one_shadow,
-            this.player_one_character,
+            this.player_one_character
         );
     }
 
@@ -1011,7 +1011,7 @@ export default class Simulator extends Phaser.Scene {
             frame,
             this.player_two,
             this.player_two_shadow,
-            this.player_two_character,
+            this.player_two_character
         );
     }
 
@@ -1078,8 +1078,11 @@ export default class Simulator extends Phaser.Scene {
         //
         shadow.setTexture(`${characterName}-shadow`);
         const playerShadowX =
-            characterName == 'jessica' ? pos.x + hitboxW / 2 :
-            direction == 'right' ? pos.x : pos.x + hitboxW;
+            characterName == 'jessica'
+                ? pos.x + hitboxW / 2
+                : direction == 'right'
+                ? pos.x
+                : pos.x + hitboxW;
         const playerShadowY = -5;
         shadow.setX(playerShadowX);
         shadow.setY(playerShadowY);
