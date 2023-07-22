@@ -378,8 +378,11 @@ export default class Simulator extends Phaser.Scene {
             'arena_bg',
             'images/bg/shoshin-bg-large-transparent.png'
         );
-        this.load.image('level-1-bg', 'images/bg/level-1/full.png');
-        this.load.image('level-4-bg', 'images/bg/level-4/full.png');
+        this.load.image('level-1-bg', 'images/bg/forest/full.png');
+        this.load.image('level-2-bg', 'images/bg/stone/full.jpeg');
+        this.load.image('level-3-bg', 'images/bg/desert/full.jpeg');
+        this.load.image('level-4-bg', 'images/bg/cave/full.png');
+        this.load.image('level-5-bg', 'images/bg/volcano/full.jpeg');
 
         // VFX
         this.load.spritesheet('spark', 'images/effects/spark/spritesheet.png', {
