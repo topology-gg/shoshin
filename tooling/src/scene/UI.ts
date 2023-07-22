@@ -8,8 +8,9 @@ import {
 import { Action, CHARACTERS_ACTIONS } from '../types/Action';
 import { Frame, FrameLike } from '../types/Frame';
 
-const HP_BAR_COLOR = 0xf7a08c;
-const STAMINA_BAR_COLOR = 0xa06ccb; //0xadd8e6;
+const HP_BAR_COLOR = 0xff355e; //0xf7a08c;
+const STAMINA_BAR_COLOR = 0x00ff7f; //0xa06ccb; //0xadd8e6;
+const TIMER_FONT_COLOR = '#FEEEAA'; //'#FFFD01'; //'#FFFFFF';
 const STATS_BAR_W = 410;
 const STATS_BAR_H = 26;
 const STATS_BAR_X_OFFSET = 30;
@@ -93,7 +94,7 @@ export default class UI extends Phaser.Scene {
         this.timerText = this.add
             .text(PHASER_CANVAS_W / 2, 50, '', {
                 fontFamily: 'Oswald',
-                color: '#FEEEAA',
+                color: TIMER_FONT_COLOR,
                 fontSize: '62px',
                 stroke: '#111111',
                 strokeThickness: 6,
@@ -103,7 +104,7 @@ export default class UI extends Phaser.Scene {
         this.timerFractionalText = this.add
             .text(PHASER_CANVAS_W / 2 + 36, 60, '', {
                 fontFamily: 'Oswald',
-                color: '#FEEEAA',
+                color: TIMER_FONT_COLOR,
                 fontSize: '24px',
                 stroke: '#000000',
                 strokeThickness: 4.5,
