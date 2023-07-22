@@ -14,11 +14,11 @@ export const JessicaOpponents = [
     { agent: AntocAttack, mindName: 'Antoc Attack!' },
     { agent: JessicaAttack, mindName: 'Jessica Attack!' },
     { agent: SimpleJoe, mindName: 'Simple Joe' },
+    { agent: Shinigami, mindName: 'Shinigami' },
     { agent: Kat, mindName: 'Kat' },
     { agent: Adam, mindName: 'Adam' },
     { agent: Eve, mindName: 'Eve' },
     { agent: HealthyDose, mindName: 'Healthy Dose' },
-    { agent: Shinigami, mindName: 'Shinigami' },
     { agent: Tempete, mindName: 'Tempete' },
 ];
 export const AntocOpponents = [
@@ -27,9 +27,9 @@ export const AntocOpponents = [
     { agent: AntocAttack, mindName: 'Antoc Attack!' },
     { agent: Kat, mindName: 'Kat' },
     { agent: SimpleJoe, mindName: 'Simple Joe' },
+    { agent: Shinigami, mindName: 'Shinigami' },
     { agent: Eve, mindName: 'Eve' },
     { agent: Adam, mindName: 'Adam' },
     { agent: HealthyDose, mindName: 'Healthy Dose' },
-    { agent: Shinigami, mindName: 'Shinigami' },
     { agent: Tempete, mindName: 'Tempete' },
 ];
