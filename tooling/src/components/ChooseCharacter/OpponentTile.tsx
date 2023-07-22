@@ -27,15 +27,15 @@ const OpponentTile = ({
     const idleImage = !backgroundId
         ? '/images/bg/shoshin-bg-gray-long.png'
         : backgroundId == 1
-        ? '/images/bg/forest/full.png'
+        ? '/images/bg/shoshin-bg-forest.png'
         : backgroundId == 2
-        ? '/images/bg/stone/full.jpeg'
+        ? '/images/bg/shoshin-bg-stone.png'
         : backgroundId == 3
-        ? '/images/bg/desert/full.jpeg'
+        ? '/images/bg/shoshin-bg-desert.png'
         : backgroundId == 4
-        ? '/images/bg/cave/full.png'
+        ? '/images/bg/shoshin-bg-cave.png'
         : backgroundId == 5
-        ? '/images/bg/volcano/full.jpeg'
+        ? '/images/bg/shoshin-bg-volcano.png'
         : '/images/bg/shoshin-bg-gray-long.png';
     const activeImage = idleImage;
 
