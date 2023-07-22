@@ -6,6 +6,7 @@ interface SingleAction {
     actionIndex: number;
     onDoubleClick: (index: number) => void;
     unicode: string;
+    icon?: string;
     duration: number;
     //Todo : add the rest types
     [key: string]: any;
@@ -14,6 +15,7 @@ interface SingleAction {
 const SingleAction = ({
     disabled,
     unicode,
+    icon,
     duration,
     onDoubleClick,
     actionIndex,
@@ -23,7 +25,7 @@ const SingleAction = ({
         console.log('double click');
         onDoubleClick(actionIndex);
     };
-    const width = duration * 1.1;
+    const width = duration * 1.3;
     return (
         <div onDoubleClick={handleDoubleClick}>
             <ActionToken
@@ -32,7 +34,14 @@ const SingleAction = ({
                 selected={false}
                 width={width}
             >
-                <span style={{}}>{unicode}</span>
+                <img
+                    src={icon}
+                    width="20px"
+                    style={{ margin: '0 auto' }}
+                    unselectable="on"
+                />
+
+                {/* <span style={{}}>{unicode}</span> */}
                 {/* <p
                     style={{
                         marginTop: '0.1rem',

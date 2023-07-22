@@ -49,11 +49,30 @@ const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
                             width: '100%',
                         }}
                     ></video>
-                    <Typography variant="h4">
-                        {action.display.unicode}
-                        {'  '}
-                        {action.display.name}
-                    </Typography>
+
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            verticalAlign: 'middle',
+                        }}
+                    >
+                        <img
+                            src={action.display.icon}
+                            width="36px"
+                            style={{ margin: 'auto 0 auto 0' }}
+                        />
+                        <span
+                            style={{
+                                marginLeft: '12px',
+                                fontSize: '28px',
+                                margin: 'auto 0 auto 6px',
+                            }}
+                        >
+                            {action.display.name}
+                        </span>
+                    </div>
+
                     <Typography>{action.tutorial.description}</Typography>
                     <Typography>
                         Attack Duration : {action.frames.duration}
@@ -64,7 +83,7 @@ const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
 
         const [selectedMove, changeSelectedMove] = useState<number>(0);
 
-        const canContinue = !firstVisit || selectedMove === moves.length - 1;
+        const canContinue = true; //!firstVisit || selectedMove === moves.length - 1;
         return (
             <FullArtBackground useAlt gap={2}>
                 <Typography variant="poster" color="text.primary" gutterBottom>
@@ -102,7 +121,13 @@ const MoveTutorial = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
                                             }}
                                         >
                                             <StepLabel>
-                                                {move.display.unicode}
+                                                {/* {move.display.unicode} */}
+                                                <img
+                                                    src={move.display.icon}
+                                                    width="20px"
+                                                    style={{ margin: '0 auto' }}
+                                                    unselectable="on"
+                                                />
                                             </StepLabel>
                                         </Button>
                                     </Step>

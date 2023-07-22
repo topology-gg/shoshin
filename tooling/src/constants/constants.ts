@@ -213,6 +213,7 @@ export enum KeysToActionsJessica {
     'W' = 'Jump',
     'N' = 'Gatotsu',
     'U' = 'LowKick',
+    'O' = 'Taunt',
 }
 
 export enum KeysToActionsAntoc {
@@ -227,6 +228,7 @@ export enum KeysToActionsAntoc {
     'F' = 'StepForward',
     'W' = 'Jump',
     'U' = 'LowKick',
+    'N' = 'Cyclone',
 }
 
 // Mapping such that { 'Rest' : '-' }

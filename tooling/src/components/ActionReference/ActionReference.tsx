@@ -76,12 +76,32 @@ const ComboTutorial = ({ combo }: { combo: ComboInfo }) => {
 const MoveTutorial = ({ action }: { action: Action }) => (
     <>
         <VideoBox src={action.tutorial.video} />
-        <Typography variant="h4">
-            {action.display.unicode}
-            {'  '}
-            {action.display.name}
-        </Typography>
+
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                verticalAlign: 'middle',
+            }}
+        >
+            <img
+                src={action.display.icon}
+                width="36px"
+                style={{ margin: 'auto 0 auto 0' }}
+            />
+            <span
+                style={{
+                    marginLeft: '12px',
+                    fontSize: '28px',
+                    margin: 'auto 0 auto 6px',
+                }}
+            >
+                {action.display.name}
+            </span>
+        </div>
+
         <Typography>{action.tutorial.description}</Typography>
+
         <Typography>Attack Duration : {action.frames.duration}</Typography>
     </>
 );
@@ -172,7 +192,32 @@ const ActionReference = React.forwardRef<HTMLDivElement, MoveTutorialProps>(
                                         selected={selectedMove === index}
                                     >
                                         <ListItemText
-                                            primary={`${move.display.unicode} ${move.display.name}`}
+                                            // primary={`${move.display.unicode} ${move.display.name}`}
+                                            primary={
+                                                <div
+                                                    style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'row',
+                                                        verticalAlign: 'middle',
+                                                    }}
+                                                >
+                                                    <img
+                                                        src={move.display.icon}
+                                                        width="24px"
+                                                        style={{
+                                                            margin: 'auto 0 auto 0',
+                                                        }}
+                                                    />
+                                                    <div
+                                                        style={{
+                                                            marginLeft: '8px',
+                                                            fontSize: '15px',
+                                                        }}
+                                                    >
+                                                        {move.display.name}
+                                                    </div>
+                                                </div>
+                                            }
                                         />
                                     </ListItemButton>
                                 </ListItem>

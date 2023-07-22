@@ -5,6 +5,7 @@ export interface Action {
     display: {
         name: string;
         unicode: string;
+        icon?: string;
     };
     // How long the action takes
     frames: {
@@ -40,9 +41,13 @@ export const defaultAction: Action = {
 };
 
 const RestId = 0;
-const Rest: Action = {
+export const Rest: Action = {
     id: RestId,
-    display: { name: 'Rest', unicode: '\u{1F9D8}' },
+    display: {
+        name: 'Rest',
+        unicode: '\u{1F9D8}',
+        icon: './images/actions/rest.png',
+    },
     frames: { duration: 1, intents: [RestId] },
     key: '-',
     bodyState: 0,
@@ -50,7 +55,11 @@ const Rest: Action = {
 
 export const Slash: Action = {
     id: 1,
-    display: { name: 'Slash', unicode: '\u{1F5E1}' },
+    display: {
+        name: 'Slash',
+        unicode: '\u{1F5E1}',
+        icon: './images/actions/slash.png',
+    },
     frames: { duration: 5, active: [3] },
     key: 'J',
     tutorial: {
@@ -63,7 +72,11 @@ export const Slash: Action = {
 const JessicaLowKickId = 11;
 export const Upswing: Action = {
     id: 2,
-    display: { name: 'Upswing', unicode: '\u{1F5E1}' },
+    display: {
+        name: 'Upswing',
+        unicode: '\u{1F5E1}',
+        icon: './images/actions/upswing.png',
+    },
     frames: {
         duration: 8,
         active: [3],
@@ -84,7 +97,11 @@ export const Upswing: Action = {
 
 export const Sidecut: Action = {
     id: 3,
-    display: { name: 'Sidecut', unicode: '\u{1F5E1}' },
+    display: {
+        name: 'Sidecut',
+        unicode: '\u{1F5E1}',
+        icon: './images/actions/sidecut.png',
+    },
     frames: { duration: 5, active: [3] },
     key: 'L',
     tutorial: {
@@ -97,7 +114,11 @@ export const Sidecut: Action = {
 const BlockId = 4;
 export const Block: Action = {
     id: BlockId,
-    display: { name: 'Block', unicode: '\u{1F6E1}' },
+    display: {
+        name: 'Block',
+        unicode: '\u{1F6E1}',
+        icon: './images/actions/block.png',
+    },
     frames: {
         duration: 2,
         active: [2],
@@ -129,7 +150,11 @@ export const Block: Action = {
 const JessicaMoveForwardId = 5;
 export const MoveForward: Action = {
     id: JessicaMoveForwardId,
-    display: { name: 'MoveForward', unicode: '\u{1F6B6}' },
+    display: {
+        name: 'MoveForward',
+        unicode: '\u{1F6B6}',
+        icon: './images/actions/move-forward.png',
+    },
     frames: { duration: 1, intents: [JessicaMoveForwardId] },
     key: 'D',
     bodyState: 90,
@@ -138,7 +163,11 @@ export const MoveForward: Action = {
 const JessicaMoveBackwardId = 6;
 const MoveBackward: Action = {
     id: JessicaMoveBackwardId,
-    display: { name: 'MoveBackward', unicode: '\u{1F6B6}' },
+    display: {
+        name: 'MoveBackward',
+        unicode: '\u{1F6B6}',
+        icon: './images/actions/move-backward.png',
+    },
     frames: { duration: 1, intents: [JessicaMoveBackwardId] },
     key: 'A',
     bodyState: 100,
@@ -148,7 +177,11 @@ const JumpId = 9;
 
 export const DashForward: Action = {
     id: 7,
-    display: { name: 'DashForward', unicode: '\u{1F406}' },
+    display: {
+        name: 'DashForward',
+        unicode: '\u{1F406}',
+        icon: './images/actions/dash-forward.png',
+    },
     frames: {
         duration: 4,
         interrupts: [
@@ -176,7 +209,11 @@ export const DashForward: Action = {
 
 export const DashBackward: Action = {
     id: 8,
-    display: { name: 'DashBackward', unicode: '\u{1F406}' },
+    display: {
+        name: 'DashBackward',
+        unicode: '\u{1F406}',
+        icon: './images/actions/dash-backward.png',
+    },
     frames: {
         duration: 4,
         interrupts: [
@@ -204,7 +241,11 @@ export const DashBackward: Action = {
 
 export const Jump: Action = {
     id: JumpId,
-    display: { name: 'Jump', unicode: '\u{1F998}' },
+    display: {
+        name: 'Jump',
+        unicode: '\u{1F998}',
+        icon: './images/actions/jump.png',
+    },
     frames: {
         duration: 6,
         interrupts: [
@@ -228,7 +269,11 @@ export const Jump: Action = {
 
 export const Gatotsu: Action = {
     id: 10,
-    display: { name: 'Gatotsu', unicode: '\u{1F985}' },
+    display: {
+        name: 'Gatotsu',
+        unicode: '\u{1F985}',
+        icon: './images/actions/gatotsu.png',
+    },
     frames: { duration: 7 },
     key: 'N',
     bodyState: 140,
@@ -241,7 +286,11 @@ export const Gatotsu: Action = {
 
 export const JessicaLowKick: Action = {
     id: JessicaLowKickId,
-    display: { name: 'LowKick', unicode: '\u{1F9B6}' },
+    display: {
+        name: 'LowKick',
+        unicode: '\u{1F9B6}',
+        icon: './images/actions/lowkick.png',
+    },
     frames: {
         duration: 6,
         interrupts: [
@@ -265,13 +314,17 @@ export const JessicaLowKick: Action = {
 
 export const JessicaTaunt: Action = {
     id: 12,
-    display: { name: 'Taunt', unicode: '\u{1F956}' },
+    display: {
+        name: 'Taunt',
+        unicode: '\u{1F956}',
+        icon: './images/actions/baguette.png',
+    },
     frames: { duration: 33 },
     key: 'O',
     bodyState: 200,
 };
 
-const JessicaActions = [
+export const JessicaActions = [
     Rest,
     Slash,
     Upswing,
@@ -289,7 +342,11 @@ const JessicaActions = [
 
 const AntocRest: Action = {
     id: RestId,
-    display: { name: 'Rest', unicode: '\u{1F9D8}' },
+    display: {
+        name: 'Rest',
+        unicode: '\u{1F9D8}',
+        icon: './images/actions/rest.png',
+    },
     frames: { duration: 1, intents: [RestId] },
     key: '-',
     bodyState: 0,
@@ -297,7 +354,11 @@ const AntocRest: Action = {
 
 export const Hori: Action = {
     id: 1,
-    display: { name: 'Hori', unicode: '\u{1F5E1}' },
+    display: {
+        name: 'Hori',
+        unicode: '\u{1F5E1}',
+        icon: './images/actions/hori.png',
+    },
     frames: { duration: 7, active: [2, 3] },
     key: 'J',
     bodyState: 1010,
@@ -315,7 +376,11 @@ const AntocDashBackwardId = 7;
 const VertId = 2;
 export const Vert: Action = {
     id: VertId,
-    display: { name: 'Vert', unicode: '\u{1F5E1}' },
+    display: {
+        name: 'Vert',
+        unicode: '\u{1F5E1}',
+        icon: './images/actions/vert.png',
+    },
     frames: {
         duration: 10,
         active: [4, 5],
@@ -345,7 +410,11 @@ export const Vert: Action = {
 const AntocBlockId = 3;
 export const AntocBlock: Action = {
     id: AntocBlockId,
-    display: { name: 'Block', unicode: '\u{1F6E1}' },
+    display: {
+        name: 'Block',
+        unicode: '\u{1F6E1}',
+        icon: './images/actions/block.png',
+    },
     frames: {
         duration: 2,
         active: [2],
@@ -376,7 +445,11 @@ export const AntocBlock: Action = {
 const AntocMoveForwardId = 4;
 const AntocMoveForward: Action = {
     id: AntocMoveForwardId,
-    display: { name: 'MoveForward', unicode: '\u{1F6B6}' },
+    display: {
+        name: 'MoveForward',
+        unicode: '\u{1F6B6}',
+        icon: './images/actions/move-forward.png',
+    },
     frames: { duration: 1, intents: [AntocMoveForwardId] },
     key: 'D',
     bodyState: 1110,
@@ -385,7 +458,11 @@ const AntocMoveForward: Action = {
 const AntocMoveBackwardId = 4;
 export const AntocMoveBackward: Action = {
     id: AntocMoveBackwardId,
-    display: { name: 'MoveBackward', unicode: '\u{1F6B6}' },
+    display: {
+        name: 'MoveBackward',
+        unicode: '\u{1F6B6}',
+        icon: './images/actions/move-backward.png',
+    },
     frames: { duration: 1, intents: [AntocMoveBackwardId] },
     key: 'A',
     bodyState: 1120,
@@ -393,7 +470,11 @@ export const AntocMoveBackward: Action = {
 
 export const AntocDashForward: Action = {
     id: AntocDashForwardId,
-    display: { name: 'DashForward', unicode: '\u{1F406}' },
+    display: {
+        name: 'DashForward',
+        unicode: '\u{1F406}',
+        icon: './images/actions/dash-forward.png',
+    },
     frames: {
         duration: 4,
         interrupts: [
@@ -410,7 +491,11 @@ export const AntocDashForward: Action = {
 
 export const AntocDashBackward: Action = {
     id: AntocDashBackwardId,
-    display: { name: 'DashBackward', unicode: '\u{1F406}' },
+    display: {
+        name: 'DashBackward',
+        unicode: '\u{1F406}',
+        icon: './images/actions/dash-backward.png',
+    },
     frames: {
         duration: 4,
         interrupts: [
@@ -427,7 +512,11 @@ export const AntocDashBackward: Action = {
 
 export const StepForward: Action = {
     id: AntocStepForwardId,
-    display: { name: 'StepForward', unicode: '\u{1F43E}' },
+    display: {
+        name: 'StepForward',
+        unicode: '\u{1F43E}',
+        icon: './images/actions/step-forward.png',
+    },
     frames: {
         duration: 3,
         interrupts: [
@@ -449,7 +538,11 @@ export const StepForward: Action = {
 
 export const AntocJump: Action = {
     id: AntocJumpId,
-    display: { name: 'Jump', unicode: '\u{1F998}' },
+    display: {
+        name: 'Jump',
+        unicode: '\u{1F998}',
+        icon: './images/actions/jump.png',
+    },
     frames: {
         duration: 7,
         interrupts: [
@@ -474,7 +567,11 @@ export const AntocJump: Action = {
 const AntocLowKickId = 11;
 export const AntocLowKick: Action = {
     id: AntocLowKickId,
-    display: { name: 'LowKick', unicode: '\u{1F9B6}' },
+    display: {
+        name: 'LowKick',
+        unicode: '\u{1F9B6}',
+        icon: './images/actions/lowkick.png',
+    },
     frames: {
         duration: 6,
         interrupts: [
@@ -497,7 +594,11 @@ export const AntocLowKick: Action = {
 const AntocCycloneId = 12;
 const AntocCyclone: Action = {
     id: AntocCycloneId,
-    display: { name: 'Cyclone', unicode: '\u{1F32A}' },
+    display: {
+        name: 'Cyclone',
+        unicode: '\u{1F32A}',
+        icon: './images/actions/cyclone.png',
+    },
     frames: {
         duration: 14,
         interrupts: [],
@@ -511,7 +612,7 @@ const AntocCyclone: Action = {
     bodyState: 1220,
 };
 
-const AntocActions = [
+export const AntocActions = [
     AntocRest,
     Hori,
     Vert,

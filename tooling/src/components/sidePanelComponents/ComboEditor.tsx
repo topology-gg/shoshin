@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import { ACTIONS_TO_KEYS } from '../../constants/constants';
 import Actions from '../ComboEditor/Actions';
-import { Action } from '../../types/Action';
+import { Action, Rest } from '../../types/Action';
 
 interface ComboEditor {
     isReadOnly: boolean;
@@ -146,9 +146,15 @@ const ComboEditor = ({
                                     className={'comboActionDiv'}
                                     onClick={handleActionAddClick}
                                 >
-                                    <span style={{}}>
+                                    {/* <span style={{}}>
                                         {action.display.unicode}
-                                    </span>
+                                    </span> */}
+
+                                    <img
+                                        src={action.display.icon}
+                                        width="24px"
+                                        style={{ margin: '0 auto' }}
+                                    />
 
                                     <p
                                         style={{
