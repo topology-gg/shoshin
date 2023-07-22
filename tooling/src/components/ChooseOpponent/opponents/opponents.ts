@@ -1,9 +1,12 @@
 import { Adam } from './Adam';
 import { AntocAttack } from './Antoc-Attack';
 import { Eve } from './Eve';
+import { HealthyDose } from './HealthyDose';
 import { JessicaAttack } from './Jessica-Attack';
 import { Kat } from './Kat';
+import { Shinigami } from './Shinigami';
 import { SimpleJoe } from './SimpleJoe';
+import { Tempete } from './Tempete';
 import { opponent0Antoc, opponent0Jessica } from './opponent-0';
 
 export const JessicaOpponents = [
@@ -14,6 +17,9 @@ export const JessicaOpponents = [
     { agent: Kat, mindName: 'Kat' },
     { agent: Adam, mindName: 'Adam' },
     { agent: Eve, mindName: 'Eve' },
+    { agent: HealthyDose, mindName: 'Healthy Dose' },
+    { agent: Shinigami, mindName: 'Shinigami' },
+    { agent: Tempete, mindName: 'Tempete' },
 ];
 export const AntocOpponents = [
     { agent: opponent0Jessica, mindName: 'Idle' },
@@ -23,4 +29,7 @@ export const AntocOpponents = [
     { agent: SimpleJoe, mindName: 'Simple Joe' },
     { agent: Eve, mindName: 'Eve' },
     { agent: Adam, mindName: 'Adam' },
+    { agent: HealthyDose, mindName: 'Healthy Dose' },
+    { agent: Shinigami, mindName: 'Shinigami' },
+    { agent: Tempete, mindName: 'Tempete' },
 ];
