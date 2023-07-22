@@ -87,7 +87,7 @@ const defaultOpponent: Opponent = {
 };
 const StorageKey = 'PersistedGameState';
 const SceneSelector = () => {
-    const [scene, setScene] = useState<Scene>(Scenes.WALLET_CONNECT);
+    const [scene, setScene] = useState<Scene>();
 
     const [lastScene, setLastScene] = useState<Scene>(Scenes.MAIN_MENU);
 
@@ -95,8 +95,8 @@ const SceneSelector = () => {
 
     useEffect(() => {
         setTimeout(() => {
-            //setScene('wallet_connect');
-        }, 2000);
+            setScene(Scenes.WALLET_CONNECT);
+        }, 500);
     }, []);
 
     const transitionMainMenu = () => {
