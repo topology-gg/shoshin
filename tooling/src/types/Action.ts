@@ -314,13 +314,17 @@ export const JessicaLowKick: Action = {
 
 export const JessicaTaunt: Action = {
     id: 12,
-    display: { name: 'Taunt', unicode: '\u{1F956}' },
+    display: {
+        name: 'Taunt',
+        unicode: '\u{1F956}',
+        icon: './images/actions/baguette.png',
+    },
     frames: { duration: 33 },
     key: 'O',
     bodyState: 200,
 };
 
-const JessicaActions = [
+export const JessicaActions = [
     Rest,
     Slash,
     Upswing,
@@ -608,7 +612,7 @@ const AntocCyclone: Action = {
     bodyState: 1220,
 };
 
-const AntocActions = [
+export const AntocActions = [
     AntocRest,
     Hori,
     Vert,

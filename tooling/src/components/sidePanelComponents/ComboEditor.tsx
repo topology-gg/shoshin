@@ -152,7 +152,7 @@ const ComboEditor = ({
 
                                     <img
                                         src={action.display.icon}
-                                        width="30px"
+                                        width="24px"
                                         style={{ margin: '0 auto' }}
                                     />
 
