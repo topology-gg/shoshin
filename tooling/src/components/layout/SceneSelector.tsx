@@ -46,6 +46,7 @@ export interface Opponent {
     id: number;
     name: string;
     backgroundId: number;
+    mindName?: string;
 }
 
 export enum Medal {
@@ -171,9 +172,10 @@ const SceneSelector = () => {
 
         const defaultOpponents = (
             character == Character.Jessica ? JessicaOpponents : AntocOpponents
-        ).map((agent, id) => {
+        ).map(({ agent, mindName }, id) => {
             return {
-                agent: agent,
+                agent,
+                mindName,
                 medal: Medal.NONE,
                 id,
                 name: id.toString(),
