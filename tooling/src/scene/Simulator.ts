@@ -161,7 +161,7 @@ export default class Simulator extends Phaser.Scene {
     last_accessed_frame = 0;
 
     //Sound effects
-    volume = 1;
+    volume = 0.5;
 
     setVolume(volume: number) {
         //volume comes at 0 to 100, we need it from 0 to 1
