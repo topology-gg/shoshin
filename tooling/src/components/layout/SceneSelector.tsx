@@ -96,6 +96,11 @@ const SceneSelector = () => {
 
     useEffect(() => {
         musicRef.current = new Audio('/music/shoshintitle-audio.wav');
+        musicRef.current.onended = function() {
+            if (scene == Scenes.MAIN_MENU){
+                musicRef.current.play();
+            }
+        }
         setTimeout(() => {
             setScene(Scenes.WALLET_CONNECT);
         }, 500);
@@ -109,8 +114,9 @@ const SceneSelector = () => {
     const transitionMainMenu = () => {
         setScene(Scenes.MAIN_MENU);
 
-        pauseMusic();
-        musicRef.current.play();
+        if (musicRef.current.pause) {
+            musicRef.current.play();
+        }
     };
 
     const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation);
@@ -328,6 +334,9 @@ const SceneSelector = () => {
 
     const onTransition = (scene: Scene) => {
         setScene(scene);
+        if (scene == Scenes.MAIN_MENU) {
+            musicRef.current.play();
+        }
     };
 
     const transitionFromMainMenu = (scene: Scene, gameMode: GameModes) => {
