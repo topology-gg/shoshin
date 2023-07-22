@@ -7,7 +7,7 @@ import { defeatOpponentObjective } from './CommonObjectives';
 
 const slide0: LessonSlide = {
     content:
-        'In the previous tutorial our character performed a low kick \n normal attacks are countered by block \n blocks are countered by low kick \n can you guess what counters low attacks?',
+        'In the previous tutorial your character performed a low attack. Low attacks counter block. Block counters high attacks. \n Can you guess what counters low attacks?',
     continueText: 'Next',
     highlightLayer: -1,
     highlightZone: HighlightZone.DIALOGUE,

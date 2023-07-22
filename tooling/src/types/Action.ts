@@ -77,8 +77,7 @@ export const Upswing: Action = {
     key: 'K',
     tutorial: {
         video: './media/tutorial/upswing.mp4',
-        description:
-            'An attack that launches the opponent into the air, giving Jessica frame advantage',
+        description: 'An attack that launches the opponent into the air',
     },
     bodyState: 20,
 };
@@ -128,7 +127,7 @@ export const Block: Action = {
 };
 
 const JessicaMoveForwardId = 5;
-const MoveForward: Action = {
+export const MoveForward: Action = {
     id: JessicaMoveForwardId,
     display: { name: 'MoveForward', unicode: '\u{1F6B6}' },
     frames: { duration: 1, intents: [JessicaMoveForwardId] },
@@ -147,7 +146,7 @@ const MoveBackward: Action = {
 
 const JumpId = 9;
 
-const DashForward: Action = {
+export const DashForward: Action = {
     id: 7,
     display: { name: 'DashForward', unicode: '\u{1F406}' },
     frames: {
@@ -159,7 +158,7 @@ const DashForward: Action = {
             },
             {
                 right: [Upswing.id],
-                duration: 2,
+                duration: 3,
             },
             {
                 right: [Sidecut.id],
@@ -175,7 +174,7 @@ const DashForward: Action = {
     bodyState: 110,
 };
 
-const DashBackward: Action = {
+export const DashBackward: Action = {
     id: 8,
     display: { name: 'DashBackward', unicode: '\u{1F406}' },
     frames: {
@@ -203,7 +202,7 @@ const DashBackward: Action = {
     bodyState: 120,
 };
 
-const Jump: Action = {
+export const Jump: Action = {
     id: JumpId,
     display: { name: 'Jump', unicode: '\u{1F998}' },
     frames: {
@@ -260,8 +259,7 @@ export const JessicaLowKick: Action = {
     bodyState: 150,
     tutorial: {
         video: './media/tutorial/jessica-lowkick.mp4',
-        description:
-            "Kicking the opponent from a low position, which breaks opponent's blocking stance",
+        description: 'A low attack that counters block',
     },
 };
 
@@ -315,7 +313,7 @@ const AntocDashForwardId = 6;
 const AntocDashBackwardId = 7;
 
 const VertId = 2;
-const Vert: Action = {
+export const Vert: Action = {
     id: VertId,
     display: { name: 'Vert', unicode: '\u{1F5E1}' },
     frames: {
@@ -340,8 +338,7 @@ const Vert: Action = {
     bodyState: 1020,
     tutorial: {
         video: './media/tutorial/vert.mp4',
-        description:
-            'An attack that launches the opponent into the air, giving Antoc frame advantage',
+        description: 'An attack that launches the opponent into the air',
     },
 };
 
@@ -394,7 +391,7 @@ export const AntocMoveBackward: Action = {
     bodyState: 1120,
 };
 
-const AntocDashForward: Action = {
+export const AntocDashForward: Action = {
     id: AntocDashForwardId,
     display: { name: 'DashForward', unicode: '\u{1F406}' },
     frames: {
@@ -411,7 +408,7 @@ const AntocDashForward: Action = {
     bodyState: 1100,
 };
 
-const AntocDashBackward: Action = {
+export const AntocDashBackward: Action = {
     id: AntocDashBackwardId,
     display: { name: 'DashBackward', unicode: '\u{1F406}' },
     frames: {
@@ -428,7 +425,7 @@ const AntocDashBackward: Action = {
     bodyState: 1120,
 };
 
-const StepForward: Action = {
+export const StepForward: Action = {
     id: AntocStepForwardId,
     display: { name: 'StepForward', unicode: '\u{1F43E}' },
     frames: {
@@ -450,7 +447,7 @@ const StepForward: Action = {
     },
 };
 
-const AntocJump: Action = {
+export const AntocJump: Action = {
     id: AntocJumpId,
     display: { name: 'Jump', unicode: '\u{1F998}' },
     frames: {
@@ -475,7 +472,7 @@ const AntocJump: Action = {
 };
 
 const AntocLowKickId = 11;
-const AntocLowKick: Action = {
+export const AntocLowKick: Action = {
     id: AntocLowKickId,
     display: { name: 'LowKick', unicode: '\u{1F9B6}' },
     frames: {

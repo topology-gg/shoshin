@@ -6,6 +6,23 @@ import FullArtBackground from '../layout/FullArtBackground';
 import CharacterTile from './CharacterTile';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 
+const ActionReferenceButton = ({
+    transitionToActionReference,
+    character,
+}: {
+    transitionToActionReference: (character: Character) => void;
+    character: Character;
+}) => (
+    <ShoshinMenuButton
+        onClick={(e) => {
+            transitionToActionReference(character);
+            e.stopPropagation();
+        }}
+    >
+        Action Reference
+    </ShoshinMenuButton>
+);
+
 const ChooseCharacter = React.forwardRef<
     HTMLDivElement,
     {
@@ -16,6 +33,7 @@ const ChooseCharacter = React.forwardRef<
         antocGoldCount: number;
         jessicaGoldCount: number;
         opponentCount: number;
+        transitionToActionReference: (character: Character) => void;
     }
 >(
     (
@@ -27,6 +45,7 @@ const ChooseCharacter = React.forwardRef<
             jessicaGoldCount,
             antocGoldCount,
             opponentCount,
+            transitionToActionReference,
         },
         ref
     ) => {
@@ -59,20 +78,34 @@ const ChooseCharacter = React.forwardRef<
                     >
                         <CharacterTile
                             character={Character.Jessica}
-                            descriptionVisible
                             onClick={() =>
                                 transitionChooseOpponent(Character.Jessica)
                             }
                             progressText={jessicaProgressText}
+                            footer={
+                                <ActionReferenceButton
+                                    character={Character.Jessica}
+                                    transitionToActionReference={
+                                        transitionToActionReference
+                                    }
+                                />
+                            }
                         />
 
                         <CharacterTile
                             character={Character.Antoc}
-                            descriptionVisible
                             onClick={() =>
                                 transitionChooseOpponent(Character.Antoc)
                             }
                             progressText={antocProgressText}
+                            footer={
+                                <ActionReferenceButton
+                                    character={Character.Antoc}
+                                    transitionToActionReference={
+                                        transitionToActionReference
+                                    }
+                                />
+                            }
                         />
                     </Box>
                     <ShoshinMenuButton

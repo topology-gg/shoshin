@@ -25,9 +25,9 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
             (opp) => opp.medal === Medal.NONE
         );
 
-        const [selectedOpponent, selectOpponent] = useState<number>(
-            initialSelectedOpponent !== -1 ? initialSelectedOpponent : 0
-        );
+        // 3d carousel is having issues initializing at the correct index
+        //Setting default as 0 each time for now
+        const [selectedOpponent, selectOpponent] = useState<number>(0);
 
         characterBoxes = opponents.map(({ agent, medal }, index) => {
             const handleClick = () => {
@@ -60,7 +60,7 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
         // Effect to make sure that selectedOpponent is initialized correctly when opponent data loads
         useEffect(() => {
             if (selectedOpponent === -1 && initialSelectedOpponent !== -1) {
-                selectOpponent(initialSelectedOpponent);
+                //selectOpponent(initialSelectedOpponent);
             }
         }, [initialSelectedOpponent, selectedOpponent]);
 
@@ -86,6 +86,8 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
             const newIndex = (selectedOpponent + 1) % opponents.length;
             selectOpponent(newIndex);
         };
+
+        const mindName = opponents[selectedOpponent]?.mindName;
 
         return (
             <div ref={ref}>
@@ -157,12 +159,18 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                             <Grid container>
                                 <Grid item xs={5}></Grid>
                                 <Grid item xs={2} sx={{ textAlign: 'center' }}>
+                                    <Typography variant="h6">
+                                        {selectedOpponent + 1} /{' '}
+                                        {opponents.length}
+                                    </Typography>
                                     <Typography variant="h5" fontWeight="bold">
                                         Grade: {selectedOpponentGrade}
                                     </Typography>
-                                    <Typography variant="body2">
-                                        Strategy : Offense
-                                    </Typography>
+                                    {mindName !== undefined && (
+                                        <Typography variant="body2">
+                                            Level Name : {mindName}
+                                        </Typography>
+                                    )}
                                 </Grid>
                                 <Grid item xs={2}></Grid>
                                 <Grid item xs={2}>
