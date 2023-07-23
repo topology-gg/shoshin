@@ -8,8 +8,9 @@ import {
 import { Action, CHARACTERS_ACTIONS } from '../types/Action';
 import { Frame, FrameLike } from '../types/Frame';
 
-const HP_BAR_COLOR = 0xf7a08c;
-const STAMINA_BAR_COLOR = 0xadd8e6;
+const HP_BAR_COLOR = 0xff355e; //0xf7a08c;
+const STAMINA_BAR_COLOR = 0x00ff7f; //0xa06ccb; //0xadd8e6;
+const TIMER_FONT_COLOR = '#FEEEAA'; //'#FFFD01'; //'#FFFFFF';
 const STATS_BAR_W = 410;
 const STATS_BAR_H = 26;
 const STATS_BAR_X_OFFSET = 30;
@@ -20,7 +21,7 @@ const STATS_BAR_P2_LEFT_BOUND =
     PHASER_CANVAS_W - STATS_BAR_X_OFFSET - STATS_BAR_W / 2;
 const STATS_BAR_HP_Y = STATS_BAR_Y_OFFSET;
 const STATS_BAR_STAMINA_Y = STATS_BAR_HP_Y + STATS_BAR_H + STATA_BAR_Y_SPACING;
-const STATS_BAR_BG_BORDER_STROKEWIDTH = 1;
+const STATS_BAR_BG_BORDER_STROKEWIDTH = 1.5;
 
 export interface statsInfo {
     hp: number;
@@ -93,20 +94,20 @@ export default class UI extends Phaser.Scene {
         this.timerText = this.add
             .text(PHASER_CANVAS_W / 2, 50, '', {
                 fontFamily: 'Oswald',
-                color: '#FEEEAA',
+                color: TIMER_FONT_COLOR,
                 fontSize: '62px',
                 stroke: '#111111',
-                strokeThickness: 5,
+                strokeThickness: 6,
             })
             .setOrigin(0.5, 0.5)
             .setVisible(false);
         this.timerFractionalText = this.add
             .text(PHASER_CANVAS_W / 2 + 36, 60, '', {
                 fontFamily: 'Oswald',
-                color: '#FEEEAA',
+                color: TIMER_FONT_COLOR,
                 fontSize: '24px',
                 stroke: '#000000',
-                strokeThickness: 4,
+                strokeThickness: 4.5,
             })
             .setOrigin(0.5, 0.5)
             .setVisible(false);
@@ -148,16 +149,22 @@ export default class UI extends Phaser.Scene {
         const borderWidth = 250;
         const borderHeight = 86.5;
         const borderStrokeWidth = 4;
-        const topMargin = 10;
+        const topMargin = 102;
         const topPadding = 5;
-        const leftMargin = 5;
+        const leftMargin = 35;
         [0, 1].forEach((index) => {
-            const x = index == 0 ? 10 : PHASER_CANVAS_W - borderWidth - 5;
+            const x =
+                index == 0
+                    ? leftMargin
+                    : PHASER_CANVAS_W -
+                      borderWidth -
+                      leftMargin +
+                      borderStrokeWidth * 2;
             this.debug_info_objects[index] = {};
 
             this.debug_info_objects[index]['border'] = this.add
                 .rectangle(
-                    x + borderWidth / 2 - leftMargin,
+                    x + borderWidth / 2 - borderStrokeWidth - 1,
                     borderHeight / 2 + topMargin,
                     borderWidth,
                     borderHeight

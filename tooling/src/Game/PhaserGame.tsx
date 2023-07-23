@@ -25,6 +25,7 @@ const Game = ({
     isInView,
     backgroundId,
     onPhaserLoad,
+    volume,
 }: PhaserGameProps) => {
     const tagName = 'div';
     const className = 'relative top-0 left-0 w-full h-full my-12';
@@ -127,10 +128,14 @@ const Game = ({
             const uiScene = (game.current as Phaser.Game).scene.add('ui', UI);
 
             // Start the scenes
+            console.log(
+                'PhaserGame starting scene with backgroundId',
+                backgroundId
+            );
             if (isRealTime) {
                 console.log("running g.scene.start('realtime');");
                 (game.current as Phaser.Game).scene.start('realtime', {
-                    backgroundId: 1,
+                    backgroundId: backgroundId,
                 });
             } else {
                 console.log("running g.scene.start('simulator');");
@@ -200,6 +205,7 @@ const Game = ({
             isRealTime ? GameModes.simulation : GameModes.realtime
         );
         if (scene !== null && scene !== undefined) {
+            //setPlayerStatuses currently is not called in the phaser scene
             scene.changeScene(gameMode, ctx, realTimeOptions.setPlayerStatuses);
         }
 
@@ -239,9 +245,10 @@ const Game = ({
                 animationState,
                 showDebug,
             });
+            scene.setVolume(volume);
         }
         //render stuff
-    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm]);
+    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm, volume]);
 
     return (
         <div

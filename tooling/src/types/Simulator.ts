@@ -12,6 +12,7 @@ export interface PhaserGameProps {
     isInView: boolean;
     backgroundId: number;
     onPhaserLoad?: () => void;
+    volume: number;
 }
 export interface SimulatorProps {
     testJson: TestJson;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 //SceneSingle was throwing an error when I started to put scene components as children
 import SceneSingle from './SceneSingle';
 import { Box } from '@mui/material';
@@ -23,6 +23,7 @@ import MoveTutorial from '../MoveTutorial/MoveTutorial';
 import MechanicsTutorialScene from '../GamePlayTutorial/GameplayTutorial';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from '../MobileView';
+import ActionReference from '../ActionReference/ActionReference';
 
 export const Scenes = {
     LOGO: 'logo',
@@ -34,6 +35,7 @@ export const Scenes = {
     ARCADE: 'arcade',
     MOVE_TUTORIAL: 'move_tutorial',
     GAMEPLAY_TUTORIAL: 'gameplay_tutorial',
+    ACTION_REFERENCE: 'action_reference',
 } as const;
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
@@ -44,6 +46,7 @@ export interface Opponent {
     id: number;
     name: string;
     backgroundId: number;
+    mindName?: string;
 }
 
 export enum Medal {
@@ -84,18 +87,36 @@ const defaultOpponent: Opponent = {
 };
 const StorageKey = 'PersistedGameState';
 const SceneSelector = () => {
-    const [scene, setScene] = useState<Scene>(Scenes.MAIN_SCENE);
+    const [scene, setScene] = useState<Scene>();
+
+    const [lastScene, setLastScene] = useState<Scene>(Scenes.MAIN_MENU);
+    const musicRef = useRef<HTMLAudioElement>();
 
     const ctx = React.useContext(ShoshinWASMContext);
 
     useEffect(() => {
+        musicRef.current = new Audio('/music/shoshintitle-audio.wav');
+        musicRef.current.onended = function () {
+            if (scene == Scenes.MAIN_MENU) {
+                musicRef.current.play();
+            }
+        };
         setTimeout(() => {
-            //setScene('wallet_connect');
-        }, 2000);
+            setScene(Scenes.WALLET_CONNECT);
+        }, 500);
     }, []);
+
+    const pauseMusic = () => {
+        musicRef.current.pause();
+        musicRef.current.currentTime = 0;
+    };
 
     const transitionMainMenu = () => {
         setScene(Scenes.MAIN_MENU);
+
+        if (musicRef.current.pause) {
+            musicRef.current.play();
+        }
     };
 
     const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation);
@@ -103,7 +124,9 @@ const SceneSelector = () => {
     const transitionChooseCharacter = (gameMode: GameModes) => {
         setGameMode(gameMode);
         setScene(Scenes.CHOOSE_CHARACTER);
+        pauseMusic();
     };
+    3;
 
     const getLocalState = (): ShoshinPersistedState | null => {
         const storedState = localStorage.getItem(StorageKey);
@@ -136,6 +159,7 @@ const SceneSelector = () => {
     };
     const transitionChooseOpponent = () => {
         setScene(Scenes.CHOOSE_OPPONENT);
+        pauseMusic();
     };
 
     const transitionMainScene = (opponentIndex: number) => {
@@ -145,6 +169,7 @@ const SceneSelector = () => {
             setScene(Scenes.ARCADE);
         }
         setSelectedOpponent(opponentIndex);
+        pauseMusic();
     };
 
     //Play state
@@ -157,18 +182,24 @@ const SceneSelector = () => {
         INITIAL_AGENT_COMPONENTS.combos
     );
 
+    //Prop for action reference when coming from choose opponent, character might not be chosen
+    const [referenceCharacter, setReferenceCharacter] = useState<Character>(
+        Character.Jessica
+    );
+
     useEffect(() => {
         const state = getLocalState();
 
         const defaultOpponents = (
             character == Character.Jessica ? JessicaOpponents : AntocOpponents
-        ).map((agent, id) => {
+        ).map(({ agent, mindName, backgroundId }, id) => {
             return {
-                agent: agent,
+                agent,
+                mindName,
                 medal: Medal.NONE,
                 id,
                 name: id.toString(),
-                backgroundId: 0,
+                backgroundId: backgroundId,
             } as Opponent;
         });
         if (!state) {
@@ -231,6 +262,8 @@ const SceneSelector = () => {
     const [antocProgress, setAntocProgress] = useState<number>(0);
     const [jessicaGoldCount, setJessicaGoldCount] = useState<number>(0);
     const [antocGoldCount, setAntocGoldCount] = useState<number>(0);
+
+    const [volume, setVolume] = useState<number>(50);
 
     const getProgressForCharacter = (character: Character) => {
         let updatedState = deafaultState;
@@ -301,6 +334,9 @@ const SceneSelector = () => {
 
     const onTransition = (scene: Scene) => {
         setScene(scene);
+        if (scene == Scenes.MAIN_MENU) {
+            musicRef.current.play();
+        }
     };
 
     const transitionFromMainMenu = (scene: Scene, gameMode: GameModes) => {
@@ -319,10 +355,28 @@ const SceneSelector = () => {
         );
     }
 
+    const transitionToActionReference = (character?: Character) => {
+        setLastScene(scene);
+        setScene(Scenes.ACTION_REFERENCE);
+        setReferenceCharacter(character);
+    };
+
+    const transtionFromActionReference = () => {
+        setScene(lastScene);
+    };
+
+    const handleTitleVideoPlay = () => {
+        // We can only play audio when the user has interacted with the dom
+        musicRef.current.play();
+    };
+
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
             <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
-                <TitleMenu transitionMainMenu={transitionMainMenu} />
+                <TitleMenu
+                    transitionMainMenu={transitionMainMenu}
+                    onPlayVideo={handleTitleVideoPlay}
+                />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.MAIN_MENU}>
                 <MainMenu transition={transitionFromMainMenu} />
@@ -331,6 +385,7 @@ const SceneSelector = () => {
                 <ChooseCharacter
                     transitionChooseOpponent={onChooseCharacter}
                     transitionBack={transitionMainMenu}
+                    transitionToActionReference={transitionToActionReference}
                     jessicaProgress={jessicaProgress}
                     antocProgress={antocProgress}
                     antocGoldCount={antocGoldCount}
@@ -361,6 +416,9 @@ const SceneSelector = () => {
                     submitWin={handleWin}
                     onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
+                    transitionToActionReference={transitionToActionReference}
+                    volume={volume}
+                    setVolume={setVolume}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ARCADE}>
@@ -369,12 +427,26 @@ const SceneSelector = () => {
                     onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
                     opponent={opponent.agent}
+                    transitionToActionReference={transitionToActionReference}
+                    volume={volume}
+                    setVolume={setVolume}
+                    backgroundId={opponent.backgroundId}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.GAMEPLAY_TUTORIAL}>
                 <MechanicsTutorialScene
                     onContinue={() => onTransition(Scenes.MAIN_MENU)}
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
+                    volume={volume}
+                    setVolume={setVolume}
+                />
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.ACTION_REFERENCE}>
+                <ActionReference
+                    character={
+                        referenceCharacter ? referenceCharacter : character
+                    }
+                    onContinue={() => transtionFromActionReference()}
                 />
             </SceneSingle>
         </Box>

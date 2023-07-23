@@ -39,12 +39,14 @@ const Game = dynamic(() => import('../../Game/PhaserGame'), {
 interface MoveTutorialProps {
     onContinue: () => void;
     onQuit: () => void;
+    volume: number;
+    setVolume: (volume: number) => void;
 }
 
 //We need Players agent and opponent
 const GameplayTutorialScene = React.forwardRef(
     (props: MoveTutorialProps, ref: ForwardedRef<HTMLDivElement>) => {
-        const { onQuit, onContinue } = props;
+        const { onQuit, onContinue, volume, setVolume } = props;
         // Constants
         const LATENCY = 70;
         const runnable = true;
@@ -301,8 +303,9 @@ const GameplayTutorialScene = React.forwardRef(
 
         const beatAgent =
             output !== undefined
-                ? output.agent_1[output.agent_1.length - 1].body_state
-                      .integrity == 0
+                ? output.agent_0[output.agent_0.length - 1].body_state
+                      .integrity >
+                  output.agent_1[output.agent_1.length - 1].body_state.integrity
                 : false;
 
         let performance = Medal.NONE;
@@ -310,7 +313,11 @@ const GameplayTutorialScene = React.forwardRef(
             output !== undefined
                 ? output.agent_0[output.agent_0.length - 1].body_state.integrity
                 : 0;
-        if (hpRemaining === 1000) {
+        const opponentHpRemaining =
+            output !== undefined
+                ? output.agent_1[output.agent_1.length - 1].body_state.integrity
+                : 1000;
+        if (hpRemaining === 1000 && opponentHpRemaining === 0) {
             performance = Medal.GOLD;
         } else if (hpRemaining >= 500) {
             performance = Medal.SILVER;
@@ -355,6 +362,12 @@ const GameplayTutorialScene = React.forwardRef(
                 } else {
                     onContinue();
                 }
+            }
+        };
+
+        const handleSlideBack = () => {
+            if (slideIndex > 0) {
+                changeSlide(slideIndex - 1);
             }
         };
         const playOnly = false && !playedWinningReplay && beatAgent;
@@ -424,7 +437,11 @@ const GameplayTutorialScene = React.forwardRef(
                             />
                         ) : null}
                         {openPauseMenu ? (
-                            <GameplayTutorialMenu onQuit={onQuit} />
+                            <GameplayTutorialMenu
+                                onQuit={onQuit}
+                                volume={volume}
+                                setVolume={setVolume}
+                            />
                         ) : null}
                         <Grid
                             container
@@ -438,7 +455,7 @@ const GameplayTutorialScene = React.forwardRef(
                                 lg={10}
                                 className={hasHighLights ? 'elevated' : ''}
                             >
-                                <GameCard image={'./images/bg/f2f2f2.jpeg'}>
+                                <GameCard image={'/images/bg/f2f2f2.png'}>
                                     <Box
                                         display="flex"
                                         flexDirection="column"
@@ -451,6 +468,7 @@ const GameplayTutorialScene = React.forwardRef(
                                         <Typography
                                             variant="body1"
                                             align="center"
+                                            style={{ whiteSpace: 'pre-line' }}
                                         >
                                             {currentSlide.content}
                                         </Typography>
@@ -469,6 +487,17 @@ const GameplayTutorialScene = React.forwardRef(
                                             width="100%"
                                             mt={2}
                                         >
+                                            <Button
+                                                variant="text"
+                                                color="primary"
+                                                disabled={slideIndex == 0}
+                                                onClick={() =>
+                                                    handleSlideBack()
+                                                }
+                                                sx={{ marginRight: '6px' }}
+                                            >
+                                                {'Back'}
+                                            </Button>
                                             <Button
                                                 variant="contained"
                                                 color="primary"
@@ -525,6 +554,7 @@ const GameplayTutorialScene = React.forwardRef(
                                                 }}
                                                 isInView={true}
                                                 backgroundId={0}
+                                                volume={volume}
                                             />
                                         </div>
                                     </div>
@@ -573,7 +603,7 @@ const GameplayTutorialScene = React.forwardRef(
                                 className={highlightMind ? 'elevated' : ''}
                             >
                                 <GameCard
-                                    image={'./images/bg/f2f2f2.jpeg'}
+                                    image={'/images/bg/f2f2f2.png'}
                                     height={'95%'}
                                 >
                                     <Box
@@ -595,6 +625,9 @@ const GameplayTutorialScene = React.forwardRef(
                                             setCombos={setCombos}
                                             activeMs={activeMs}
                                             actions={lesson.actions}
+                                            initialSelectedCombo={
+                                                lesson.initialSelectedCombo
+                                            }
                                         />
                                     </Box>
                                 </GameCard>

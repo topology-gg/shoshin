@@ -7,16 +7,20 @@ const CharacterTile = ({
     character,
     children,
     descriptionVisible,
+    footer,
     mediaCover,
     onClick,
     progressText,
+    mindName,
 }: {
     character: Character;
     children?: React.ReactNode;
     descriptionVisible?: boolean;
+    footer?: React.ReactNode;
     mediaCover?: React.ReactNode;
     onClick?: React.MouseEventHandler<HTMLDivElement>;
     progressText?: React.ReactNode;
+    mindName?: string;
 }) => {
     const idleImage = `/images/ui/${character.toLowerCase()}-sketch-inverted.png`;
     const activeImage = `/images/ui/${character.toLowerCase()}-portrait.jpeg`;
@@ -25,7 +29,7 @@ const CharacterTile = ({
 
     const image = onClick ? (hovering ? activeImage : idleImage) : activeImage;
     // const textColor = image === idleImage ? 'text.primary' : 'text.secondary';
-    const textColor = 'text.secondary';
+    const textColor = 'white';
 
     return (
         <GameCard
@@ -36,6 +40,7 @@ const CharacterTile = ({
                 color: textColor,
                 position: 'relative',
             }}
+            footer={footer}
             mediaCover={mediaCover}
             onClick={onClick}
             onMouseOver={() => setHovering(true)}
@@ -43,11 +48,8 @@ const CharacterTile = ({
         >
             <Typography variant="h3">{character}</Typography>
             {progressText && (
-                <Typography variant="h6">{progressText}</Typography>
-            )}
-            {descriptionVisible && (
-                <Typography variant="body2">
-                    Additional descriptive text
+                <Typography variant="h6" color={textColor}>
+                    {progressText}
                 </Typography>
             )}
             {children}

@@ -20,9 +20,26 @@ interface ArcadeProps {
     opponent: Agent;
     onQuit: () => void;
     onContinue: () => void;
+    transitionToActionReference: () => void;
+    volume: number;
+    setVolume: (volume: number) => void;
+    backgroundId?: number;
 }
+
 const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
-    ({ playerCharacter, opponent, onQuit, onContinue }, ref) => {
+    (
+        {
+            playerCharacter,
+            opponent,
+            onQuit,
+            onContinue,
+            transitionToActionReference,
+            volume,
+            setVolume,
+            backgroundId,
+        },
+        ref
+    ) => {
         const [playerStatuses, setPlayerStatuses] =
             useState<StatusBarPanelProps>({
                 integrity_0: 1000,
@@ -88,6 +105,11 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                         <PauseMenu
                             onQuit={onQuit}
                             onChooseCharacter={onContinue}
+                            transitionToActionReference={
+                                transitionToActionReference
+                            }
+                            volume={volume}
+                            setVolume={setVolume}
                         />
                     ) : null}
 
@@ -109,7 +131,8 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                             setPlayerStatuses,
                         }}
                         isInView={true}
-                        backgroundId={0}
+                        backgroundId={backgroundId ?? 0}
+                        volume={volume}
                     />
 
                     <MidScreenKeybinding

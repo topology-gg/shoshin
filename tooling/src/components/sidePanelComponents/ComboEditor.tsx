@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import { ACTIONS_TO_KEYS } from '../../constants/constants';
 import Actions from '../ComboEditor/Actions';
-import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
+import { Action, Rest } from '../../types/Action';
 
 interface ComboEditor {
     isReadOnly: boolean;
@@ -12,6 +12,7 @@ interface ComboEditor {
     selectedIndex: number;
     handleValidateCombo: (combo: Action[], index: number) => void;
     setEditingCombo?: (combo: Action[]) => void;
+    actions: Action[];
 }
 
 const ComboEditor = ({
@@ -21,10 +22,9 @@ const ComboEditor = ({
     characterIndex,
     selectedIndex,
     handleValidateCombo,
+    actions,
 }: ComboEditor) => {
     const [selectedNewAction, setSelectedNewAction] = useState<boolean>(false);
-
-    let actions = CHARACTERS_ACTIONS[characterIndex];
 
     const handleKeyPress = (ev: KeyboardEvent) => {
         const key = ev.key.toUpperCase();
@@ -37,9 +37,7 @@ const ComboEditor = ({
             handleValidateCombo(prev_copy, selectedIndex);
             return;
         }
-        const action = CHARACTERS_ACTIONS[characterIndex].find(
-            (action) => action.key == key
-        );
+        const action = actions.find((action) => action.key == key);
 
         if (action !== undefined) {
             let prev_copy: Action[] = JSON.parse(JSON.stringify(editingCombo));
@@ -74,7 +72,7 @@ const ComboEditor = ({
 
         let prev_copy: Action[] = JSON.parse(JSON.stringify(editingCombo));
         if (!isNaN(action_int)) {
-            let action = CHARACTERS_ACTIONS[characterIndex][action_int];
+            let action = actions[action_int];
             prev_copy.push(action);
         }
         setEditingCombo?.(prev_copy);
@@ -148,9 +146,15 @@ const ComboEditor = ({
                                     className={'comboActionDiv'}
                                     onClick={handleActionAddClick}
                                 >
-                                    <span style={{}}>
+                                    {/* <span style={{}}>
                                         {action.display.unicode}
-                                    </span>
+                                    </span> */}
+
+                                    <img
+                                        src={action.display.icon}
+                                        width="24px"
+                                        style={{ margin: '0 auto' }}
+                                    />
 
                                     <p
                                         style={{

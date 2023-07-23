@@ -13,7 +13,15 @@ const slide0: LessonSlide = {
 };
 
 const slide1: LessonSlide = {
-    content: 'Layers can be reordered by dragging one above the other',
+    content:
+        'The first layer that evaluates to true is always executed even if layers further down on the list are also true. \n This makes ordering layers very important.',
+    continueText: 'Next',
+    highlightLayer: -1,
+    highlightZone: HighlightZone.DIALOGUE,
+};
+
+const slide2: LessonSlide = {
+    content: 'Layers can be reordered by dragging one above the other.',
     continueText: 'Next',
     highlightLayer: -1,
     highlightZone: HighlightZone.MIND,
@@ -34,8 +42,9 @@ const reorderLayers = {
     },
 };
 
-const slide2: LessonSlide = {
-    content: 'Reoreder the layers to beat the opponent',
+const slide3: LessonSlide = {
+    content:
+        'Layer #1 is blocking the execution of layer #2 \n Reorder the layers to beat the opponent',
     continueText: 'Next',
     highlightLayer: -1,
     highlightZone: HighlightZone.NONE,
@@ -226,7 +235,7 @@ const layers = [
 const LessonTwo: Lesson = {
     title: 'Layers',
     opponent: opponent0Jessica,
-    slides: [slide0, slide1, slide2],
+    slides: [slide0, slide1, slide2, slide3],
     features: {
         layerAddAndDelete: false,
         conditionAnd: false,

@@ -1161,6 +1161,7 @@ export default function Home() {
                         }}
                         isInView={swipeableViewIndex == 0}
                         backgroundId={0}
+                        volume={1}
                     />
                 </div>
                 {gameMode == GameModes.simulation ? (
