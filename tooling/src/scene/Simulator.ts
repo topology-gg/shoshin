@@ -276,6 +276,11 @@ export default class Simulator extends Phaser.Scene {
             'images/antoc/cyclone/spritesheet.png',
             'images/antoc/cyclone/spritesheet.json'
         );
+        this.load.atlas(
+            `antoc-taunt`,
+            'images/antoc/croissant/spritesheet.png',
+            'images/antoc/croissant/spritesheet.json'
+        );
         this.load.image('antoc-shadow', 'images/antoc/shadow/shadow.png');
 
         //

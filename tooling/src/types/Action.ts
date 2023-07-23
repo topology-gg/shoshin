@@ -612,6 +612,18 @@ const AntocCyclone: Action = {
     bodyState: 1220,
 };
 
+export const AntocTaunt: Action = {
+    id: 13,
+    display: {
+        name: 'Taunt',
+        unicode: '\u{1F956}',
+        icon: './images/actions/baguette.png',
+    },
+    frames: { duration: 59 },
+    key: 'O',
+    bodyState: 1250,
+};
+
 export const AntocActions = [
     AntocRest,
     Hori,
@@ -625,6 +637,7 @@ export const AntocActions = [
     AntocJump,
     AntocLowKick,
     AntocCyclone,
+    AntocTaunt,
 ];
 
 export const CHARACTERS_ACTIONS = [JessicaActions, AntocActions];
