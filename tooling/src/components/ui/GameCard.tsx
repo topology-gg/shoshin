@@ -20,6 +20,7 @@ const GameCard = ({
         <Box
             {...props}
             className={`${s.card} ${props.onClick && s.cardClickable}`}
+            data-translucent={bgOpacity < 1}
         >
             <div
                 className={s.media}
