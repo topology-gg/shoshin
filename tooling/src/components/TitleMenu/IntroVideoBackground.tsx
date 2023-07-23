@@ -9,10 +9,12 @@ import s from './IntroVideoBackground.module.css';
 const IntroVideoBackground = ({
     onClick,
     onEnded,
+    onLoad,
     playing,
 }: {
     onClick?: MouseEventHandler<HTMLVideoElement>;
     onEnded?: ReactEventHandler<HTMLVideoElement>;
+    onLoad?: ReactEventHandler<HTMLVideoElement>;
     playing?: boolean;
 }) => {
     const videoRef = useRef<HTMLVideoElement>();
@@ -30,6 +32,8 @@ const IntroVideoBackground = ({
             onEnded={onEnded}
             ref={videoRef}
             onClick={onClick}
+            onLoadedData={onLoad}
+            preload="auto"
         >
             <source src="/media/logo-animation.mp4" type="video/mp4"></source>
         </video>
