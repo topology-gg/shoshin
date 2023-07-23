@@ -6,6 +6,7 @@ import {
     Accordion,
     AccordionSummary,
     Grid,
+    Fade,
 } from '@mui/material';
 import styles from '../../../styles/Home.module.css';
 import { FrameScene, TestJson } from '../../types/Frame';
@@ -33,6 +34,7 @@ import mainSceneStyles from './MainScene.module.css';
 import PauseMenu from './PauseMenu';
 import FullArtBackground from '../layout/FullArtBackground';
 import GameCard from '../ui/GameCard';
+import LoadingFull from '../layout/LoadingFull';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -45,6 +47,7 @@ interface SimulationProps {
     submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
     onContinue: () => void;
     onQuit: () => void;
+    transitionToActionReference: () => void;
     volume: number;
     setVolume: (volume: number) => void;
 }
@@ -58,6 +61,7 @@ const SimulationScene = React.forwardRef(
             submitWin,
             onQuit,
             onContinue,
+            transitionToActionReference,
             volume,
             setVolume,
         } = props;
@@ -103,6 +107,8 @@ const SimulationScene = React.forwardRef(
             opponent.agent.character == 0 ? Character.Jessica : Character.Antoc;
 
         const [openPauseMenu, changePauseMenu] = useState<boolean>(false);
+
+        const [phaserLoaded, setPhaserLoaded] = useState<boolean>(false);
 
         const handleKeyPress = (ev: KeyboardEvent) => {
             const key = ev.key.toUpperCase();
@@ -324,6 +330,9 @@ const SimulationScene = React.forwardRef(
                 : 0;
         return (
             <div id={'mother'} ref={ref}>
+                <Fade in={!phaserLoaded} timeout={1000}>
+                    <LoadingFull />
+                </Fade>
                 <FullArtBackground useAlt={true}>
                     <div className={styles.container}>
                         <div className={mainSceneStyles.overlayMenu}></div>
@@ -339,6 +348,9 @@ const SimulationScene = React.forwardRef(
                                 <PauseMenu
                                     onQuit={onQuit}
                                     onChooseCharacter={onContinue}
+                                    transitionToActionReference={
+                                        transitionToActionReference
+                                    }
                                     volume={volume}
                                     setVolume={setVolume}
                                 />
@@ -410,6 +422,9 @@ const SimulationScene = React.forwardRef(
                                                     </Box>
                                                 </Box>
                                                 <Game
+                                                    onPhaserLoad={() =>
+                                                        setPhaserLoaded(true)
+                                                    }
                                                     testJson={testJson}
                                                     animationFrame={
                                                         animationFrame
@@ -429,7 +444,9 @@ const SimulationScene = React.forwardRef(
                                                         setPlayerStatuses,
                                                     }}
                                                     isInView={true}
-                                                    backgroundId={0}
+                                                    backgroundId={
+                                                        opponent.backgroundId
+                                                    }
                                                     volume={volume}
                                                 />
                                             </div>
@@ -558,7 +575,7 @@ const SimulationScene = React.forwardRef(
                                 <Grid item md={6} lg={5} xl={5}>
                                     <GameCard
                                         image={'/images/bg/f2f2f2.png'}
-                                        // bgOpacity={0}
+                                        bgOpacity={0.8}
                                     >
                                         <Box
                                             sx={{

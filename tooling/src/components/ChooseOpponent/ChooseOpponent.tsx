@@ -7,6 +7,7 @@ import CardCarousel3D from '../CardCarousel/CardCarousel3D';
 import FullArtBackground from '../layout/FullArtBackground';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import CharacterTile from '../ChooseCharacter/CharacterTile';
+import OpponentTile from '../ChooseCharacter/OpponentTile';
 
 interface ChooseOpponentProps {
     opponents: Opponent[];
@@ -25,42 +26,50 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
             (opp) => opp.medal === Medal.NONE
         );
 
-        const [selectedOpponent, selectOpponent] = useState<number>(
-            initialSelectedOpponent !== -1 ? initialSelectedOpponent : 0
+        // 3d carousel is having issues initializing at the correct index
+        //Setting default as 0 each time for now
+        const [selectedOpponent, selectOpponent] = useState<number>(0);
+
+        characterBoxes = opponents.map(
+            ({ agent, medal, mindName, backgroundId }, index) => {
+                const handleClick = () => {
+                    transitionMainScene(index);
+                };
+
+                const character: Character =
+                    agent.character == 0 ? Character.Jessica : Character.Antoc;
+
+                const imageUrl =
+                    'images/' +
+                    character.toLowerCase() +
+                    '/idle/right/frame_0.png';
+
+                console.log('mindName:', mindName, 'index:', index);
+
+                return (
+                    <OpponentTile
+                        character={character}
+                        key={index}
+                        mediaCover={
+                            <div className={styles.characterFooter}>
+                                <img
+                                    src={imageUrl}
+                                    alt="Image 1"
+                                    className={styles.characterModel}
+                                />
+                            </div>
+                        }
+                        mindName={mindName}
+                        backgroundId={backgroundId}
+                    ></OpponentTile>
+                );
+            }
         );
-
-        characterBoxes = opponents.map(({ agent, medal }, index) => {
-            const handleClick = () => {
-                transitionMainScene(index);
-            };
-
-            const character: Character =
-                agent.character == 0 ? Character.Jessica : Character.Antoc;
-
-            const imageUrl =
-                'images/' + character.toLowerCase() + '/idle/right/frame_0.png';
-
-            return (
-                <CharacterTile
-                    character={character}
-                    key={index}
-                    mediaCover={
-                        <div className={styles.characterFooter}>
-                            <img
-                                src={imageUrl}
-                                alt="Image 1"
-                                className={styles.characterModel}
-                            />
-                        </div>
-                    }
-                ></CharacterTile>
-            );
-        });
 
         // Effect to make sure that selectedOpponent is initialized correctly when opponent data loads
         useEffect(() => {
             if (selectedOpponent === -1 && initialSelectedOpponent !== -1) {
-                selectOpponent(initialSelectedOpponent);
+                //selectOpponent(initialSelectedOpponent);
             }
         }, [initialSelectedOpponent, selectedOpponent]);
 
@@ -86,6 +95,8 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
             const newIndex = (selectedOpponent + 1) % opponents.length;
             selectOpponent(newIndex);
         };
+
+        const mindName = opponents[selectedOpponent]?.mindName;
 
         return (
             <div ref={ref}>
@@ -157,12 +168,18 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                             <Grid container>
                                 <Grid item xs={5}></Grid>
                                 <Grid item xs={2} sx={{ textAlign: 'center' }}>
+                                    <Typography variant="h6">
+                                        {selectedOpponent + 1} /{' '}
+                                        {opponents.length}
+                                    </Typography>
                                     <Typography variant="h5" fontWeight="bold">
                                         Grade: {selectedOpponentGrade}
                                     </Typography>
-                                    <Typography variant="body2">
-                                        Strategy : Offense
-                                    </Typography>
+                                    {mindName !== undefined && (
+                                        <Typography variant="body2">
+                                            Level Name : {mindName}
+                                        </Typography>
+                                    )}
                                 </Grid>
                                 <Grid item xs={2}></Grid>
                                 <Grid item xs={2}>

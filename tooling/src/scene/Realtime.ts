@@ -77,7 +77,7 @@ export default class RealTime extends Simulator {
 
     set_wasm_context(ctx: IShoshinWASMContext) {
         console.log('initialize wasm context', ctx);
-        this.wasmContext = ctx;
+        //this.wasmContext = ctx;
     }
 
     set_opponent_agent(agent: Agent) {
@@ -98,10 +98,13 @@ export default class RealTime extends Simulator {
         }
     }
 
-    init(data: any) {
+    init(data) {
         if (data !== undefined) {
-            this.wasmContext = data.context;
-            this.setPlayerStatuses = data.setPlayerStatuses;
+            console.log('>>>>>> init(); data.backgroundId', data.backgroundId);
+            this.backgroundId = data.backgroundId;
+
+            //this.wasmContext = data.context;
+            //this.setPlayerStatuses = data.setPlayerStatuses;
         }
     }
 

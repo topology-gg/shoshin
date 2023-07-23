@@ -35,6 +35,12 @@
     src: url('./fonts/Eurostile/Eurostile.ttf') format('truetype');
 }
 
+* {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 html,
 body {
     padding: 0;

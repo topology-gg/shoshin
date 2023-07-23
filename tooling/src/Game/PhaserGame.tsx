@@ -24,6 +24,7 @@ const Game = ({
     realTimeOptions,
     isInView,
     backgroundId,
+    onPhaserLoad,
     volume,
 }: PhaserGameProps) => {
     const tagName = 'div';
@@ -127,10 +128,14 @@ const Game = ({
             const uiScene = (game.current as Phaser.Game).scene.add('ui', UI);
 
             // Start the scenes
+            console.log(
+                'PhaserGame starting scene with backgroundId',
+                backgroundId
+            );
             if (isRealTime) {
                 console.log("running g.scene.start('realtime');");
                 (game.current as Phaser.Game).scene.start('realtime', {
-                    backgroundId: 1,
+                    backgroundId: backgroundId,
                 });
             } else {
                 console.log("running g.scene.start('simulator');");
@@ -140,6 +145,13 @@ const Game = ({
             }
             console.log("running g.scene.start('ui');");
             (game.current as Phaser.Game).scene.start('ui');
+
+            (game.current as Phaser.Game).events.on('ready', () => {
+                // onPhaserLoad?.()
+                let phaserLoadDelay = setTimeout(() => {
+                    onPhaserLoad?.();
+                }, 2500);
+            });
         }
 
         return () => {
@@ -196,6 +208,7 @@ const Game = ({
             isRealTime ? GameModes.simulation : GameModes.realtime
         );
         if (scene !== null && scene !== undefined) {
+            //setPlayerStatuses currently is not called in the phaser scene
             scene.changeScene(gameMode, ctx, realTimeOptions.setPlayerStatuses);
         }
 
@@ -235,18 +248,11 @@ const Game = ({
                 animationState,
                 showDebug,
             });
-        }
-        //render stuff
-    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm]);
-
-    React.useEffect(() => {
-        if (isGameSceneDefined(gameMode)) {
-            // @ts-ignore
-            let scene = game.current?.scene.getScene('simulator') as Simulator;
             scene.setVolume(volume);
         }
         //render stuff
-    }, [volume]);
+    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm, volume]);
+
     return (
         <div
             style={{

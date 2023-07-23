@@ -20,12 +20,24 @@ interface ArcadeProps {
     opponent: Agent;
     onQuit: () => void;
     onContinue: () => void;
+    transitionToActionReference: () => void;
     volume: number;
     setVolume: (volume: number) => void;
+    backgroundId?: number;
 }
+
 const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
     (
-        { playerCharacter, opponent, onQuit, onContinue, volume, setVolume },
+        {
+            playerCharacter,
+            opponent,
+            onQuit,
+            onContinue,
+            transitionToActionReference,
+            volume,
+            setVolume,
+            backgroundId,
+        },
         ref
     ) => {
         const [playerStatuses, setPlayerStatuses] =
@@ -93,6 +105,9 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                         <PauseMenu
                             onQuit={onQuit}
                             onChooseCharacter={onContinue}
+                            transitionToActionReference={
+                                transitionToActionReference
+                            }
                             volume={volume}
                             setVolume={setVolume}
                         />
@@ -116,7 +131,7 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                             setPlayerStatuses,
                         }}
                         isInView={true}
-                        backgroundId={0}
+                        backgroundId={backgroundId ?? 0}
                         volume={volume}
                     />
 
