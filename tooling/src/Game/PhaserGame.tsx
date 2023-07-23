@@ -150,7 +150,7 @@ const Game = ({
                 // onPhaserLoad?.()
                 let phaserLoadDelay = setTimeout(() => {
                     onPhaserLoad?.();
-                }, 2000);
+                }, 2500);
             });
         }
 
