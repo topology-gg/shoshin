@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Fade, Typography } from '@mui/material';
+import { Box, CircularProgress, Fade, Typography } from '@mui/material';
 import FullArtBackground from '../layout/FullArtBackground';
 import IntroVideoBackground from './IntroVideoBackground';
 
@@ -11,6 +11,7 @@ type TitleMenuProps = {
 const TitleMenu = React.forwardRef<unknown, TitleMenuProps>(
     ({ transitionMainMenu, onPlayVideo }, ref) => {
         const [clicked, setClicked] = useState(false);
+        const [videoLoaded, setVideoLoaded] = useState(false);
 
         const handleClickToContinue = () => {
             setClicked(true);
@@ -21,6 +22,7 @@ const TitleMenu = React.forwardRef<unknown, TitleMenuProps>(
             <FullArtBackground ref={ref}>
                 <IntroVideoBackground
                     onClick={() => transitionMainMenu()}
+                    onLoad={() => setVideoLoaded(true)}
                     onEnded={() => transitionMainMenu()}
                     playing={clicked}
                 />
@@ -43,7 +45,11 @@ const TitleMenu = React.forwardRef<unknown, TitleMenuProps>(
                         onClick={handleClickToContinue}
                     >
                         <span style={{ color: '#ffffff', fontSize: '36px' }}>
-                            Click to continue
+                            {videoLoaded ? (
+                                'Click to continue'
+                            ) : (
+                                <CircularProgress color="inherit" />
+                            )}
                         </span>
                     </Box>
                 </Fade>
