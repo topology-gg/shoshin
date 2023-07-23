@@ -330,7 +330,7 @@ const SimulationScene = React.forwardRef(
                 : 0;
         return (
             <div id={'mother'} ref={ref}>
-                <Fade in={!phaserLoaded}>
+                <Fade in={!phaserLoaded} timeout={1000}>
                     <LoadingFull />
                 </Fade>
                 <FullArtBackground useAlt={true}>

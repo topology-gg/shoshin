@@ -146,9 +146,12 @@ const Game = ({
             console.log("running g.scene.start('ui');");
             (game.current as Phaser.Game).scene.start('ui');
 
-            (game.current as Phaser.Game).events.on('ready', () =>
-                onPhaserLoad?.()
-            );
+            (game.current as Phaser.Game).events.on('ready', () => {
+                // onPhaserLoad?.()
+                let phaserLoadDelay = setTimeout(() => {
+                    onPhaserLoad?.();
+                }, 2000);
+            });
         }
 
         return () => {
