@@ -134,6 +134,10 @@ func calculate_stamina_change{range_check_ptr}(stamina : felt, intent : felt, ma
                 let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_antoc_stamina_effect.CYCLONE, max_stamina);
                 return (updated_stamina, enough_stamina);
             }
+            if (intent == ns_antoc_action.TAUNT){
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, 0, max_stamina);
+                return (updated_stamina, enough_stamina);
+            }
         }
 
     with_attr error_message("Intent is not recognized.") {
