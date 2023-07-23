@@ -103,6 +103,7 @@ export const bodyStateNumberToName = {
         1200: 'jump_move_forward',
         1210: 'jump_move_backward',
         1220: 'cyclone',
+        1250: 'taunt',
     },
 };
 
@@ -229,6 +230,7 @@ export enum KeysToActionsAntoc {
     'W' = 'Jump',
     'U' = 'LowKick',
     'N' = 'Cyclone',
+    'O' = 'Taunt',
 }
 
 // Mapping such that { 'Rest' : '-' }
@@ -303,6 +305,7 @@ export const characterActionToNumber = {
         Jump: 9,
         LowKick: 11,
         Cyclone: 12,
+        Taunt: 13,
     },
 };
 export function getIntentNameByCharacterTypeAndNumber(

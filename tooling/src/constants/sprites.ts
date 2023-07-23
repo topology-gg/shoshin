@@ -376,6 +376,12 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
                 hitboxOffset: { left: [50, -81], right: [50, -81] },
             },
         ],
+        taunt: [
+            {
+                size: [343, 239],
+                hitboxOffset: { left: [10, -101], right: [90, -101] },
+            },
+        ],
     },
     jessica: {
         block: [

@@ -386,7 +386,9 @@ export default class RealTime extends Simulator {
             } else if (this.keyboard.o.isDown) {
                 // taunt
                 this.player_action =
-                    characterActionToNumber['jessica']['Taunt'];
+                    characterActionToNumber[
+                        this.character_type_0 == 1 ? 'antoc' : 'jessica'
+                    ]['Taunt'];
             }
         }
 
