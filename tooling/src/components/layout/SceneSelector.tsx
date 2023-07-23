@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 //SceneSingle was throwing an error when I started to put scene components as children
 import SceneSingle from './SceneSingle';
 import { Box } from '@mui/material';
@@ -90,17 +90,33 @@ const SceneSelector = () => {
     const [scene, setScene] = useState<Scene>();
 
     const [lastScene, setLastScene] = useState<Scene>(Scenes.MAIN_MENU);
+    const musicRef = useRef<HTMLAudioElement>();
 
     const ctx = React.useContext(ShoshinWASMContext);
 
     useEffect(() => {
+        musicRef.current = new Audio('/music/shoshintitle-audio.wav');
+        musicRef.current.onended = function () {
+            if (scene == Scenes.MAIN_MENU) {
+                musicRef.current.play();
+            }
+        };
         setTimeout(() => {
             setScene(Scenes.WALLET_CONNECT);
         }, 500);
     }, []);
 
+    const pauseMusic = () => {
+        musicRef.current.pause();
+        musicRef.current.currentTime = 0;
+    };
+
     const transitionMainMenu = () => {
         setScene(Scenes.MAIN_MENU);
+
+        if (musicRef.current.pause) {
+            musicRef.current.play();
+        }
     };
 
     const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation);
@@ -108,7 +124,9 @@ const SceneSelector = () => {
     const transitionChooseCharacter = (gameMode: GameModes) => {
         setGameMode(gameMode);
         setScene(Scenes.CHOOSE_CHARACTER);
+        pauseMusic();
     };
+    3;
 
     const getLocalState = (): ShoshinPersistedState | null => {
         const storedState = localStorage.getItem(StorageKey);
@@ -141,6 +159,7 @@ const SceneSelector = () => {
     };
     const transitionChooseOpponent = () => {
         setScene(Scenes.CHOOSE_OPPONENT);
+        pauseMusic();
     };
 
     const transitionMainScene = (opponentIndex: number) => {
@@ -150,6 +169,7 @@ const SceneSelector = () => {
             setScene(Scenes.ARCADE);
         }
         setSelectedOpponent(opponentIndex);
+        pauseMusic();
     };
 
     //Play state
@@ -314,6 +334,9 @@ const SceneSelector = () => {
 
     const onTransition = (scene: Scene) => {
         setScene(scene);
+        if (scene == Scenes.MAIN_MENU) {
+            musicRef.current.play();
+        }
     };
 
     const transitionFromMainMenu = (scene: Scene, gameMode: GameModes) => {
@@ -341,10 +364,19 @@ const SceneSelector = () => {
     const transtionFromActionReference = () => {
         setScene(lastScene);
     };
+
+    const handleTitleVideoPlay = () => {
+        // We can only play audio when the user has interacted with the dom
+        musicRef.current.play();
+    };
+
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
             <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
-                <TitleMenu transitionMainMenu={transitionMainMenu} />
+                <TitleMenu
+                    transitionMainMenu={transitionMainMenu}
+                    onPlayVideo={handleTitleVideoPlay}
+                />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.MAIN_MENU}>
                 <MainMenu transition={transitionFromMainMenu} />

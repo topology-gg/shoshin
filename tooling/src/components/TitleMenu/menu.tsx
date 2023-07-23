@@ -5,11 +5,17 @@ import IntroVideoBackground from './IntroVideoBackground';
 
 type TitleMenuProps = {
     transitionMainMenu: () => void;
+    onPlayVideo: () => void;
 };
 
 const TitleMenu = React.forwardRef<unknown, TitleMenuProps>(
-    ({ transitionMainMenu }, ref) => {
+    ({ transitionMainMenu, onPlayVideo }, ref) => {
         const [clicked, setClicked] = useState(false);
+
+        const handleClickToContinue = () => {
+            setClicked(true);
+            onPlayVideo();
+        };
 
         return (
             <FullArtBackground ref={ref}>
@@ -34,7 +40,7 @@ const TitleMenu = React.forwardRef<unknown, TitleMenuProps>(
                             backgroundColor: 'black',
                             cursor: 'pointer',
                         }}
-                        onClick={() => setClicked(true)}
+                        onClick={handleClickToContinue}
                     >
                         <span style={{ color: '#ffffff', fontSize: '36px' }}>
                             Click to continue
