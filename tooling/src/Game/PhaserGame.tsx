@@ -24,6 +24,7 @@ const Game = ({
     realTimeOptions,
     isInView,
     backgroundId,
+    onPhaserLoad,
     volume,
 }: PhaserGameProps) => {
     const tagName = 'div';
@@ -144,6 +145,13 @@ const Game = ({
             }
             console.log("running g.scene.start('ui');");
             (game.current as Phaser.Game).scene.start('ui');
+
+            (game.current as Phaser.Game).events.on('ready', () => {
+                // onPhaserLoad?.()
+                let phaserLoadDelay = setTimeout(() => {
+                    onPhaserLoad?.();
+                }, 2500);
+            });
         }
 
         return () => {
