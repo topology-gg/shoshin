@@ -55,6 +55,9 @@ func _body_antoc {range_check_ptr}(
         }
 
         // body responds to intent; locomotive action has lowest priority
+        if (intent == ns_antoc_action.TAUNT) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.TAUNT_PARIS23, 0, integrity, updated_stamina, dir, FALSE) );
+        }
         if (intent == ns_antoc_action.MOVE_FORWARD) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
         }
@@ -310,8 +313,11 @@ func _body_antoc {range_check_ptr}(
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
+        if (intent == ns_antoc_action.TAUNT) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.TAUNT_PARIS23, 0, integrity, updated_stamina, dir, FALSE) );
+        }
         if (intent == ns_antoc_action.BLOCK) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, updated_stamina, dir, FALSE) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, updated_stamina, dir, FALSE) );
         }
         if(enough_stamina == TRUE){
             if (intent == ns_antoc_action.HORI) {
@@ -376,8 +382,11 @@ func _body_antoc {range_check_ptr}(
         }
 
         // interruptible by agent intent (locomotive action has lowest priority)
+        if (intent == ns_antoc_action.TAUNT) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.TAUNT_PARIS23, 0, integrity, updated_stamina, dir, FALSE) );
+        }
         if (intent == ns_antoc_action.BLOCK) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, updated_stamina, dir, FALSE) );
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, updated_stamina, dir, FALSE) );
         }
         if (enough_stamina == TRUE) {
             if (intent == ns_antoc_action.HORI) {
@@ -742,6 +751,68 @@ func _body_antoc {range_check_ptr}(
 
         // else stay in CYCLONE and increment counter
         return ( body_state_nxt = BodyState(ns_antoc_body_state.CYCLONE, counter + 1, integrity, stamina, dir, FALSE) );
+    }
+
+    //
+    // Taunt
+    //
+    if (state == ns_antoc_body_state.TAUNT_PARIS23) {
+        // body responds to stimulus first
+        if (stimulus_type == ns_stimulus.HURT) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity , stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+        if (stimulus_type == ns_stimulus.LAUNCHED) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        }
+
+        // body responds to intent; locomotive action has lowest priority
+        if (intent == ns_antoc_action.MOVE_FORWARD) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+        }
+        if (intent == ns_antoc_action.MOVE_BACKWARD) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.MOVE_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
+        }
+        if (intent == ns_antoc_action.BLOCK) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.BLOCK, 0, integrity, updated_stamina, dir, FALSE) );
+        }
+        if(enough_stamina == TRUE){
+            if (intent == ns_antoc_action.HORI) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.HORI, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.VERT) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.VERT, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.DASH_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.JUMP) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.STEP_FORWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.STEP_FORWARD, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+            if (intent == ns_antoc_action.CYCLONE) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.CYCLONE, 0, integrity, updated_stamina, dir, FALSE) );
+            }
+        }
+
+
+        // if counter is full => return to IDLE
+        if (counter == ns_antoc_body_state_duration.TAUNT_PARIS23 - 1) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE) );
+        }
+
+        // else stay and increment counter
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.TAUNT_PARIS23, counter + 1, integrity, stamina, dir, FALSE) );
     }
 
     // handle exception

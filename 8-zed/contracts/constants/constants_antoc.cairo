@@ -102,6 +102,8 @@ namespace ns_antoc_action {
     const LOW_KICK = 11;
 
     const CYCLONE = 12;
+
+    const TAUNT = 13;
 }
 
 namespace ns_antoc_stamina_effect {
@@ -149,6 +151,7 @@ namespace ns_antoc_body_state_duration {
     const LAUNCHED = 9;
     const DROP_SLASH = 6;
     const CYCLONE = 18; // active for counter == 5,10
+    const TAUNT_PARIS23 = 59;
 }
 
 namespace ns_antoc_body_state {
@@ -171,6 +174,7 @@ namespace ns_antoc_body_state {
     const JUMP_MOVE_FORWARD = 1200;
     const JUMP_MOVE_BACKWARD = 1210;
     const CYCLONE = 1220; // 18 frames
+    const TAUNT_PARIS23 = 1250; // 59 frames
 }
 
 namespace ns_antoc_body_state_qualifiers {
