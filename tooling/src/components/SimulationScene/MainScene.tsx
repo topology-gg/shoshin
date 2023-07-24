@@ -127,6 +127,7 @@ const SimulationScene = React.forwardRef(
 
         useEffect(() => {
             let builtAgent = handleBuildAgent();
+
             setPlayerAgent({
                 layers,
                 combos,
