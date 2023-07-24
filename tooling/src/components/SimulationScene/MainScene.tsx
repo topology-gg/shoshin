@@ -236,7 +236,6 @@ const SimulationScene = React.forwardRef(
 
                 // If in Stop => perform simulation then go to Run
                 else if (animationState == 'Stop' && runnable) {
-
                     const [out, err] = runCairoSimulation();
                     if (err != null) {
                         setSimulationError(err);
