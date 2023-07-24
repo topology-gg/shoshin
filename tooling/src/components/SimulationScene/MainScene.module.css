@@ -9,17 +9,17 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 1;
+    z-index: 10;
 }
 
 .overlay {
-    width: 800px;
+    width: 1000px;
     background-color: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: stretch;
-    z-index: 1;
+    z-index: 10;
 }
 
 .simulatorContainer {
