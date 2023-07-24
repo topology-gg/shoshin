@@ -145,6 +145,7 @@ const SceneSelector = () => {
     const onChooseCharacter = (character: Character) => {
         setCharacter((_) => character);
         setScene(Scenes.MOVE_TUTORIAL);
+        pauseMusic();
 
         const state = getLocalState();
         if (!state) {
@@ -336,10 +337,13 @@ const SceneSelector = () => {
         setScene(scene);
         if (scene == Scenes.MAIN_MENU) {
             musicRef.current.play();
+        } else {
+            pauseMusic();
         }
     };
 
     const transitionFromMainMenu = (scene: Scene, gameMode: GameModes) => {
+        pauseMusic();
         if (scene == Scenes.ARCADE || scene == Scenes.MAIN_SCENE) {
             transitionChooseCharacter(gameMode);
         } else {
@@ -359,10 +363,12 @@ const SceneSelector = () => {
         setLastScene(scene);
         setScene(Scenes.ACTION_REFERENCE);
         setReferenceCharacter(character);
+        pauseMusic();
     };
 
     const transtionFromActionReference = () => {
         setScene(lastScene);
+        pauseMusic();
     };
 
     const handleTitleVideoPlay = () => {
