@@ -1016,6 +1016,10 @@ let preset_conditions = [
     {
         elements: [
             {
+                value: '(',
+                type: 'Operator',
+            },
+            {
                 value: '!',
                 type: 'Operator',
             },
@@ -1024,7 +1028,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 9,
+                value: Perceptible.SelfSta,
                 type: 'Perceptible',
             },
             {
@@ -1039,6 +1043,10 @@ let preset_conditions = [
                 value: ')',
                 type: 'Operator',
             },
+            {
+                value: ')',
+                type: 'Operator',
+            },
         ],
         displayName: 'My rage > 500',
         type: 'my rage',
@@ -1046,15 +1054,11 @@ let preset_conditions = [
     {
         elements: [
             {
-                value: '!',
-                type: 'Operator',
-            },
-            {
                 value: '(',
                 type: 'Operator',
             },
             {
-                value: 9,
+                value: Perceptible.SelfSta,
                 type: 'Perceptible',
             },
             {
@@ -1080,7 +1084,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 8,
+                value: Perceptible.SelfInt,
                 type: 'Perceptible',
             },
             {
@@ -1106,7 +1110,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 8,
+                value: Perceptible.SelfInt,
                 type: 'Perceptible',
             },
             {
@@ -1132,7 +1136,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 8,
+                value: Perceptible.SelfInt,
                 type: 'Perceptible',
             },
             {
@@ -1158,7 +1162,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 8,
+                value: Perceptible.SelfInt,
                 type: 'Perceptible',
             },
             {
@@ -1179,6 +1183,10 @@ let preset_conditions = [
     },
     {
         elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
             {
                 value: '!',
                 type: 'Operator',
@@ -1203,16 +1211,16 @@ let preset_conditions = [
                 value: ')',
                 type: 'Operator',
             },
+            {
+                value: ')',
+                type: 'Operator',
+            },
         ],
         displayName: 'Opponent rage > 500',
-        type: 'my rage',
+        type: 'opponent rage',
     },
     {
         elements: [
-            {
-                value: '!',
-                type: 'Operator',
-            },
             {
                 value: '(',
                 type: 'Operator',
@@ -1235,7 +1243,7 @@ let preset_conditions = [
             },
         ],
         displayName: 'Opponent rage = 1000',
-        type: 'my rage',
+        type: 'opponent rage',
     },
     {
         elements: [
@@ -1244,7 +1252,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 108,
+                value: Perceptible.OpponentInt,
                 type: 'Perceptible',
             },
             {
@@ -1270,7 +1278,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 108,
+                value: Perceptible.OpponentInt,
                 type: 'Perceptible',
             },
             {
@@ -1296,7 +1304,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 108,
+                value: Perceptible.OpponentInt,
                 type: 'Perceptible',
             },
             {
@@ -1322,7 +1330,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 108,
+                value: Perceptible.OpponentInt,
                 type: 'Perceptible',
             },
             {
@@ -1348,7 +1356,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 108,
+                value: Perceptible.OpponentInt,
                 type: 'Perceptible',
             },
             {
@@ -1374,7 +1382,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 108,
+                value: Perceptible.OpponentInt,
                 type: 'Perceptible',
             },
             {
@@ -1382,7 +1390,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 500,
+                value: 600,
                 type: 'Constant',
             },
             {
@@ -1400,7 +1408,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 108,
+                value: Perceptible.OpponentInt,
                 type: 'Perceptible',
             },
             {
@@ -1408,7 +1416,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 500,
+                value: 700,
                 type: 'Constant',
             },
             {
@@ -1426,7 +1434,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 108,
+                value: Perceptible.OpponentInt,
                 type: 'Perceptible',
             },
             {
@@ -1434,7 +1442,7 @@ let preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 500,
+                value: 800,
                 type: 'Constant',
             },
             {
