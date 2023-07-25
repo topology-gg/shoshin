@@ -25,6 +25,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from '../MobileView';
 import ActionReference from '../ActionReference/ActionReference';
 import OnlineMenu from '../OnlineMenu/OnlineMenu';
+import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
+import { onlineOpponentAdam } from '../ChooseOpponent/opponents/Adam';
 
 export const Scenes = {
     LOGO: 'logo',
@@ -240,7 +242,7 @@ const SceneSelector = () => {
         useState<Opponent[]>(defaultOpponents);
 
     const [onlineOpponentChoice, setOnlineOpponentChoice] =
-        useState<Opponent>(defaultOpponent);
+        useState<OnlineOpponent>(onlineOpponentAdam);
 
     const [selectedOpponent, setSelectedOpponent] = useState<number>(0);
 
@@ -248,6 +250,16 @@ const SceneSelector = () => {
         lastScene == Scenes.ONLINE_MENU
             ? onlineOpponentChoice
             : opponentChoices[selectedOpponent];
+
+    let opponentAgent;
+    if ('layers' in opponent.agent) {
+        const { layers, character, combos } = opponent.agent;
+        opponentAgent = buildAgentFromLayers(layers, character, combos);
+    } else {
+        opponentAgent = opponent.agent;
+    }
+
+    const backgroundId = 'backgroundId' in opponent ? opponent.backgroundId : 0;
 
     const setPlayerAgent = (playerAgent: PlayerAgent) => {
         setLayers(playerAgent.layers);
@@ -392,7 +404,7 @@ const SceneSelector = () => {
         musicRef.current.play();
     };
 
-    const transitionFromOnlineMenu = (opponent: Opponent) => {
+    const transitionFromOnlineMenu = (opponent: OnlineOpponent) => {
         setOnlineMode(true);
         setScene(Scenes.MAIN_SCENE);
         pauseMusic();
@@ -471,11 +483,11 @@ const SceneSelector = () => {
                     playerCharacter={characterIndex}
                     onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
-                    opponent={opponent.agent}
+                    opponent={opponentAgent}
                     transitionToActionReference={transitionToActionReference}
                     volume={volume}
                     setVolume={setVolume}
-                    backgroundId={opponent.backgroundId}
+                    backgroundId={backgroundId}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.GAMEPLAY_TUTORIAL}>
