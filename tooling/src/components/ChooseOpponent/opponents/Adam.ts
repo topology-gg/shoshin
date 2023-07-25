@@ -1,3 +1,4 @@
+import { OnlineOpponent } from '../../layout/SceneSelector';
 import { buildAgentFromLayers } from './util';
 
 const json = {
@@ -1982,5 +1983,19 @@ const json = {
         },
     ],
 };
-const { layers, char, combos } = json;
+const { layers, char, combos, conditions } = json;
 export const Adam = buildAgentFromLayers(layers, char, combos);
+
+export const onlineOpponentAdam: OnlineOpponent = {
+    agent: {
+        //@ts-ignore
+        layers,
+        char,
+        //@ts-ignore
+        combos,
+        //@ts-ignore
+        conditions,
+    },
+    mindName: 'Adam',
+    playerName: 'NonCents',
+};
