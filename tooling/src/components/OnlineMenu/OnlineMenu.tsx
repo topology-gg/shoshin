@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import FullArtBackground from '../layout/FullArtBackground';
 import { Opponent, OnlineOpponent } from '../layout/SceneSelector';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Grid,
+    Typography,
+} from '@mui/material';
 import OnlineTable from './OnlineTable';
 import { JessicaOpponents } from '../ChooseOpponent/opponents/opponents';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
+import SubmitMenu from './SubmitMenu';
 
 interface OnlineMenuProps {
     transitionBack: () => void;
@@ -28,9 +36,36 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
         const handleFightClick = () => {
             transitionFromOnlineMenu(ShimmedOnlineOpponents[selectedOpponent]);
         };
+
+        const [isSubmitOpeoned, setOpenSubmit] = useState<boolean>(false);
+
+        const toggleMenu = () => {
+            setOpenSubmit(!isSubmitOpeoned);
+        };
+        const handleCardClick = (event) => {
+            // Prevent the click event from propagating to the parent elements
+            event.stopPropagation();
+        };
         return (
             <div ref={ref}>
                 <FullArtBackground useAlt={true}>
+                    {isSubmitOpeoned && (
+                        <div className={'overlay-menu'} onClick={toggleMenu}>
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                justifyContent="center"
+                                alignItems="center"
+                            >
+                                <Card onClick={handleCardClick}>
+                                    <CardContent>
+                                        <SubmitMenu closeMenu={toggleMenu} />
+                                    </CardContent>
+                                </Card>
+                            </Box>
+                        </div>
+                    )}
+
                     <Box
                         sx={{
                             display: 'flex',
@@ -51,7 +86,7 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                                 selectOpponent={selectOpponent}
                             />
                         </Box>
-                        <Button variant={'text'}>
+                        <Button variant={'text'} onClick={toggleMenu}>
                             <Typography variant={'h6'}>
                                 + Submit Mind
                             </Typography>
