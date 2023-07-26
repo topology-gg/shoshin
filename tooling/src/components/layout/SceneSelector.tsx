@@ -24,6 +24,8 @@ import MechanicsTutorialScene from '../GamePlayTutorial/GameplayTutorial';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from '../MobileView';
 import ActionReference from '../ActionReference/ActionReference';
+import PauseMenu from '../SimulationScene/PauseMenu';
+import { Medal, Opponent } from '../../types/Opponent';
 
 export const Scenes = {
     LOGO: 'logo',
@@ -39,22 +41,6 @@ export const Scenes = {
 } as const;
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
-
-export interface Opponent {
-    agent: Agent;
-    medal: Medal;
-    id: number;
-    name: string;
-    backgroundId: number;
-    mindName?: string;
-}
-
-export enum Medal {
-    NONE = 'None',
-    GOLD = 'Gold',
-    SILVER = 'Silver',
-    BRONZE = 'Bronze',
-}
 
 interface ShoshinPersistedState {
     playerAgents: {
@@ -87,11 +73,11 @@ const defaultOpponent: Opponent = {
 };
 const StorageKey = 'PersistedGameState';
 const SceneSelector = () => {
-    const [scene, setScene] = useState<Scene>();
+    const [scene, setScene] = useState<Scene>(Scenes.MAIN_SCENE);
 
-    const [lastScene, setLastScene] = useState<Scene>(Scenes.MAIN_MENU);
+    const [lastScene, setLastScene] = useState<Scene>();
     const musicRef = useRef<HTMLAudioElement>();
-
+    const isProduction = process.env.NODE_ENV === 'production';
     const ctx = React.useContext(ShoshinWASMContext);
 
     useEffect(() => {
@@ -101,6 +87,9 @@ const SceneSelector = () => {
                 musicRef.current.play();
             }
         };
+        if (!isProduction) {
+            return;
+        }
         setTimeout(() => {
             setScene(Scenes.WALLET_CONNECT);
         }, 500);
@@ -118,6 +107,21 @@ const SceneSelector = () => {
             musicRef.current.play();
         }
     };
+
+    const [showFullReplay, setShowFullReplay] = useState<boolean>(true);
+
+    useEffect(() => {
+        const newShowFullReplay = JSON.parse(
+            localStorage.getItem('showFullReplay')
+        );
+        if (newShowFullReplay && newShowFullReplay !== showFullReplay) {
+            setShowFullReplay(JSON.parse(newShowFullReplay));
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('showFullReplay', JSON.stringify(showFullReplay));
+    }, [showFullReplay]);
 
     const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation);
 
@@ -376,6 +380,17 @@ const SceneSelector = () => {
         musicRef.current.play();
     };
 
+    const pauseMenu = (
+        <PauseMenu
+            onQuit={() => onTransition(Scenes.MAIN_MENU)}
+            onChooseCharacter={() => onTransition(Scenes.CHOOSE_OPPONENT)}
+            transitionToActionReference={transitionToActionReference}
+            volume={volume}
+            setVolume={setVolume}
+            setShowFullReplay={setShowFullReplay}
+            showFullReplay={showFullReplay}
+        />
+    );
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
             <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
@@ -424,7 +439,8 @@ const SceneSelector = () => {
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
                     transitionToActionReference={transitionToActionReference}
                     volume={volume}
-                    setVolume={setVolume}
+                    pauseMenu={pauseMenu}
+                    showFullReplay={showFullReplay}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ARCADE}>

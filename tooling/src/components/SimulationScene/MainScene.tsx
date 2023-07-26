@@ -1,4 +1,4 @@
-import React, { ForwardedRef, useEffect, useState } from 'react';
+import React, { ForwardedRef, ReactNode, useEffect, useState } from 'react';
 import {
     Typography,
     Box,
@@ -7,6 +7,9 @@ import {
     AccordionSummary,
     Grid,
     Fade,
+    Snackbar,
+    Button,
+    IconButton,
 } from '@mui/material';
 import styles from '../../../styles/Home.module.css';
 import { FrameScene, TestJson } from '../../types/Frame';
@@ -29,12 +32,17 @@ import Gambit, {
 } from '../sidePanelComponents/Gambit/Gambit';
 import { Condition } from '../../types/Condition';
 import SquareOverlayMenu from './SuccessMenu';
-import { Medal, Opponent } from '../layout/SceneSelector';
 import mainSceneStyles from './MainScene.module.css';
-import PauseMenu from './PauseMenu';
 import FullArtBackground from '../layout/FullArtBackground';
 import GameCard from '../ui/GameCard';
 import LoadingFull from '../layout/LoadingFull';
+import {
+    Medal,
+    Opponent,
+    achievedBetterPerformance,
+} from '../../types/Opponent';
+import CloseIcon from '@mui/icons-material/Close';
+
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -49,7 +57,8 @@ interface SimulationProps {
     onQuit: () => void;
     transitionToActionReference: () => void;
     volume: number;
-    setVolume: (volume: number) => void;
+    pauseMenu: ReactNode;
+    showFullReplay: boolean;
 }
 //We need Players agent and opponent
 const SimulationScene = React.forwardRef(
@@ -59,11 +68,10 @@ const SimulationScene = React.forwardRef(
             setPlayerAgent,
             opponent,
             submitWin,
-            onQuit,
             onContinue,
-            transitionToActionReference,
             volume,
-            setVolume,
+            pauseMenu,
+            showFullReplay,
         } = props;
         // Constants
         const LATENCY = 70;
@@ -285,9 +293,12 @@ const SimulationScene = React.forwardRef(
             performance = Medal.BRONZE;
         }
 
-        const [showVictory, changeShowVictory] = useState<boolean>(false);
+        const [showVictory, changeShowVictory] = useState<boolean>(true);
         useEffect(() => {
-            if (beatAgent) {
+            if (
+                beatAgent &&
+                achievedBetterPerformance(performance, opponent.medal)
+            ) {
                 submitWin(player, { ...opponent, medal: performance });
             }
         }, [beatAgent]);
@@ -313,7 +324,17 @@ const SimulationScene = React.forwardRef(
             onContinue();
         };
 
-        const playOnly = !playedWinningReplay && beatAgent;
+        const [hasBeatenOpponent, changeHasBeatenOpponent] =
+            useState<boolean>(false);
+
+        useEffect(() => {
+            changeHasBeatenOpponent(opponent.medal !== Medal.NONE);
+        }, []);
+        const playOnly =
+            !hasBeatenOpponent &&
+            showFullReplay &&
+            !playedWinningReplay &&
+            beatAgent;
 
         const overlayContainerClassName = playOnly
             ? mainSceneStyles.overlayContainer
@@ -329,6 +350,41 @@ const SimulationScene = React.forwardRef(
             N_FRAMES > 0
                 ? testJson.agent_0.frames[animationFrame].mental_state
                 : 0;
+
+        const [showVictorySnackBar, setShowVictorySnackBar] = useState(false);
+
+        //Show Victory Snack Bar if it is a subsequent win, or if they beat the opponent for the first time and showFullReplay is false
+        useEffect(() => {
+            const showVictorySnackBar =
+                (!hasBeatenOpponent ||
+                    (!showFullReplay &&
+                        achievedBetterPerformance(
+                            performance,
+                            opponent.medal
+                        ))) &&
+                beatAgent;
+
+            setShowVictorySnackBar(showVictorySnackBar);
+        }, [hasBeatenOpponent, showFullReplay, performance, beatAgent]);
+        const closeSnackbar = () => {
+            setShowVictorySnackBar(false);
+        };
+
+        const snackBarAction = (
+            <React.Fragment>
+                <Button color="secondary" size="small" onClick={onContinue}>
+                    Next Opponent
+                </Button>
+                <IconButton
+                    size="small"
+                    aria-label="close"
+                    color="inherit"
+                    onClick={closeSnackbar}
+                >
+                    <CloseIcon fontSize="small" />
+                </IconButton>
+            </React.Fragment>
+        );
         return (
             <div id={'mother'} ref={ref}>
                 <Fade in={!phaserLoaded} timeout={1000}>
@@ -338,24 +394,26 @@ const SimulationScene = React.forwardRef(
                     <div className={styles.container}>
                         <div className={mainSceneStyles.overlayMenu}></div>
                         <div className={styles.main}>
+                            <Snackbar
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={showVictorySnackBar}
+                                autoHideDuration={6000}
+                                onClose={closeSnackbar}
+                                message={`Beat ${opponent.mindName} with ${performance}`}
+                                action={snackBarAction}
+                            />
                             {showVictory ? (
                                 <SquareOverlayMenu
                                     opponentName={opponentName}
                                     performance={performance}
                                     handleContinueClick={handleContinueClick}
+                                    closeMenu={() => changeShowVictory(false)}
                                 />
                             ) : null}
-                            {openPauseMenu ? (
-                                <PauseMenu
-                                    onQuit={onQuit}
-                                    onChooseCharacter={onContinue}
-                                    transitionToActionReference={
-                                        transitionToActionReference
-                                    }
-                                    volume={volume}
-                                    setVolume={setVolume}
-                                />
-                            ) : null}
+                            {openPauseMenu ? pauseMenu : null}
                             <Grid container spacing={{ md: 2 }}>
                                 <Grid item md={6} lg={7} xl={7}>
                                     <div

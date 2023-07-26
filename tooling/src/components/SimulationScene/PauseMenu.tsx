@@ -7,6 +7,8 @@ const PauseMenu = ({
     transitionToActionReference,
     volume,
     setVolume,
+    showFullReplay,
+    setShowFullReplay,
 }) => {
     const items: ShoshinMenuItem[] = [
         {
@@ -27,6 +29,8 @@ const PauseMenu = ({
                 displayLogo={true}
                 volume={volume}
                 setVolume={setVolume}
+                showFullReplay={showFullReplay}
+                setShowFullReplay={setShowFullReplay}
             />
         </div>
     );
