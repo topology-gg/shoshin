@@ -3,8 +3,26 @@
 from starkware.cairo.common.math_cmp import (is_le, is_nn)
 from starkware.cairo.common.bool import (TRUE, FALSE)
 from contracts.constants.constants import (ns_common_stamina_effect, ns_stamina, ns_character_type)
-from contracts.constants.constants_antoc import (ns_antoc_stamina_effect, ns_antoc_action)
-from contracts.constants.constants_jessica import (ns_jessica_stamina_effect, ns_jessica_action)
+from contracts.constants.constants_antoc import (ns_antoc_stamina_effect, ns_antoc_action, ns_antoc_body_state, ns_antoc_body_state_duration)
+from contracts.constants.constants_jessica import (ns_jessica_stamina_effect, ns_jessica_action, ns_jessica_body_state, ns_jessica_body_state_duration)
+
+func player_lost {range_check_ptr} (
+    character_type: felt,
+    body_state: felt,
+    body_counter: felt,
+) -> felt {
+    // Jessica
+    if (character_type == ns_character_type.JESSICA and body_state == ns_jessica_body_state.KO and body_counter == ns_jessica_body_state_duration.KO - 1) {
+        return 1;
+    }
+
+    // Antoc
+    if (character_type == ns_character_type.ANTOC and body_state == ns_antoc_body_state.KO and body_counter == ns_antoc_body_state_duration.KO - 1) {
+        return 1;
+    }
+
+    return 0;
+}
 
 func calculate_integrity_change{range_check_ptr}(integrity: felt, damage: felt) -> felt {
     let new_integrity = integrity - damage;

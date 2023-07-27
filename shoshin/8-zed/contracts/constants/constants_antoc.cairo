@@ -152,6 +152,7 @@ namespace ns_antoc_body_state_duration {
     const DROP_SLASH = 6;
     const CYCLONE = 18; // active for counter == 5,10
     const TAUNT_PARIS23 = 59;
+    const KO = 14;
 }
 
 namespace ns_antoc_body_state {
@@ -175,6 +176,7 @@ namespace ns_antoc_body_state {
     const JUMP_MOVE_BACKWARD = 1210;
     const CYCLONE = 1220; // 18 frames
     const TAUNT_PARIS23 = 1250; // 59 frames
+    const KO = 1320; // 14 frames
 }
 
 namespace ns_antoc_body_state_qualifiers {
@@ -328,6 +330,11 @@ namespace ns_antoc_hitbox {
                 return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_STEP_FORWARD_1_W, ns_antoc_character_dimension.BODY_STEP_FORWARD_1_H));
             }
             return (body_dimension = Vec2 (ns_antoc_character_dimension.BODY_STEP_FORWARD_2_W, ns_antoc_character_dimension.BODY_STEP_FORWARD_2_H));
+        }
+
+        // ko
+        if (body_state == ns_antoc_body_state.KO) {
+            return (body_dimension = Vec2 (0, 0));
         }
 
         // otherwise
