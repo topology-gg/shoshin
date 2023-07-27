@@ -144,6 +144,7 @@ namespace ns_jessica_body_state_duration {
     const BIRDSWING = 6;
     const LAUNCHED = 11;
     const TAUNT_PARIS23 = 33;
+    const KO = 14;
 }
 
 namespace ns_jessica_body_state {
@@ -167,6 +168,7 @@ namespace ns_jessica_body_state {
     const JUMP_MOVE_FORWARD = 180;
     const JUMP_MOVE_BACKWARD = 190;
     const TAUNT_PARIS23 = 200; // 33 frames
+    const KO = 240; // 14 frames
 }
 
 namespace ns_jessica_body_state_qualifiers {
@@ -325,6 +327,10 @@ namespace ns_jessica_hitbox {
         // gatotsu
         // TODO
 
+        // ko
+        if (body_state == ns_jessica_body_state.KO) {
+            return (body_dimension = Vec2 (0, 0));
+        }
 
         // otherwise
         return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H));
