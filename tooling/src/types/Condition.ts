@@ -102,6 +102,8 @@ export enum BodystatesJessica {
     Launched = 170,
     JumpMoveForward = 180,
     JumpMoveBackward = 190,
+    Taunt = 200,
+    KO = 240,
 }
 
 export enum BodystatesAntoc {
@@ -124,6 +126,8 @@ export enum BodystatesAntoc {
     JumpMoveForward = 1200,
     JumpMoveBackward = 1210,
     Cyclone = 1220,
+    Taunt = 1250,
+    KO = 1320,
 }
 
 export enum Perceptible {
