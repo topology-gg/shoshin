@@ -281,6 +281,11 @@ export default class Simulator extends Phaser.Scene {
             'images/antoc/croissant/spritesheet.png',
             'images/antoc/croissant/spritesheet.json'
         );
+        this.load.atlas(
+            `antoc-ko`,
+            'images/antoc/ko/spritesheet.png',
+            'images/antoc/ko/spritesheet.json'
+        );
         this.load.image('antoc-shadow', 'images/antoc/shadow/shadow.png');
 
         //
@@ -380,6 +385,11 @@ export default class Simulator extends Phaser.Scene {
             `jessica-taunt`,
             'images/jessica/beret/spritesheet.png',
             'images/jessica/beret/spritesheet.json'
+        );
+        this.load.atlas(
+            `jessica-ko`,
+            'images/jessica/ko/spritesheet.png',
+            'images/jessica/ko/spritesheet.json'
         );
         this.load.image('jessica-shadow', 'images/jessica/shadow/shadow.png');
 

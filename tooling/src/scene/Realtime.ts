@@ -21,6 +21,7 @@ import Simulator from './Simulator';
 import eventsCenter from '../Game/EventsCenter';
 
 import * as wasm from '../../wasm/shoshin/pkg/shoshin';
+import { BodystatesJessica } from '../types/Condition';
 
 export default class RealTime extends Simulator {
     prevState: RealTimeFrameScene = InitialRealTimeFrameScene;
@@ -518,8 +519,13 @@ export default class RealTime extends Simulator {
             }
 
             if (integrity_0 <= 0 || integrity_1 <= 0) {
+            // if (1) {
                 this.checkEndGame(integrity_0, integrity_1);
             }
         }
     }
 }
+
+// function checkKO (character_type, state, counter) {
+//     if (character_type == JESSICA && state == BodystatesJessica.)
+// }

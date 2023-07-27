@@ -82,6 +82,7 @@ export const bodyStateNumberToName = {
         180: 'jump_move_forward',
         190: 'jump_move_backward',
         200: 'taunt',
+        240: 'ko',
     },
     antoc: {
         0: 'idle',
@@ -104,6 +105,7 @@ export const bodyStateNumberToName = {
         1210: 'jump_move_backward',
         1220: 'cyclone',
         1250: 'taunt',
+        1320: 'ko',
     },
 };
 
