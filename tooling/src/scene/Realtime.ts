@@ -521,8 +521,16 @@ export default class RealTime extends Simulator {
             }
 
             if (
-                isKO(this.character_type_0, newState.agent_0.body_state.state, newState.agent_0.body_state.counter) ||
-                isKO(this.opponent.character, newState.agent_1.body_state.state, newState.agent_1.body_state.counter)
+                isKO(
+                    this.character_type_0,
+                    newState.agent_0.body_state.state,
+                    newState.agent_0.body_state.counter
+                ) ||
+                isKO(
+                    this.opponent.character,
+                    newState.agent_1.body_state.state,
+                    newState.agent_1.body_state.counter
+                )
             ) {
                 this.checkEndGame(integrity_0, integrity_1);
             }
@@ -530,11 +538,19 @@ export default class RealTime extends Simulator {
     }
 }
 
-function isKO (character_type, state, counter) {
-    if (character_type == JESSICA && state == BodystatesJessica.KO && counter == JESSICA_KO_DURATION - 1) {
+function isKO(character_type, state, counter) {
+    if (
+        character_type == JESSICA &&
+        state == BodystatesJessica.KO &&
+        counter == JESSICA_KO_DURATION - 1
+    ) {
         return true;
     }
-    if (character_type == ANTOC && state == BodystatesAntoc.KO && counter == ANTOC_KO_DURATION - 1) {
+    if (
+        character_type == ANTOC &&
+        state == BodystatesAntoc.KO &&
+        counter == ANTOC_KO_DURATION - 1
+    ) {
         return true;
     }
     return false;
