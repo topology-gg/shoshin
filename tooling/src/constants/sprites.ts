@@ -387,7 +387,7 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
                 size: [343, 239],
                 hitboxOffset: { left: [50, -70], right: [50, -70] },
             },
-        ]
+        ],
     },
     jessica: {
         block: [
@@ -577,6 +577,6 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
                 size: [261, 137],
                 hitboxOffset: { left: [23, -63], right: [72, -63] },
             },
-        ]
+        ],
     },
 };

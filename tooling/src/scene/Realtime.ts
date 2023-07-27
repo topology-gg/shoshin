@@ -519,7 +519,7 @@ export default class RealTime extends Simulator {
             }
 
             if (integrity_0 <= 0 || integrity_1 <= 0) {
-            // if (1) {
+                // if (1) {
                 this.checkEndGame(integrity_0, integrity_1);
             }
         }
