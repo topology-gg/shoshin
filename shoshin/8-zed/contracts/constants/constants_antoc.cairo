@@ -288,7 +288,7 @@ namespace ns_antoc_hitbox {
     ) {
         alloc_locals;
 
-        // knocked
+        // knocked or launched
         if ( (body_state-ns_antoc_body_state.KNOCKED) * (body_state-ns_antoc_body_state.LAUNCHED) == 0 ) {
             let is_counter_le_0 = is_le(body_counter, 0);
             if (is_counter_le_0== 1) {

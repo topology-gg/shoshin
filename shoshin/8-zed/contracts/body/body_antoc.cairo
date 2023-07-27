@@ -698,13 +698,16 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.LAUNCHED) {
 
-        // can be knocked
-        if (stimulus_type == ns_stimulus.KNOCKED) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
-        }
-        // can be juggled
-        if (stimulus_type == ns_stimulus.LAUNCHED) {
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+        // if within first 6 frames => can be interrupted
+        if ( (counter-0) * (counter-1) * (counter-2) * (counter-3) * (counter-4) * (counter-5) == 0 ) {
+            // can be knocked
+            if (stimulus_type == ns_stimulus.KNOCKED) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE) );
+            }
+            // can be re-launched ie juggled
+            if (stimulus_type == ns_stimulus.LAUNCHED) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE) );
+            }
         }
 
         // if counter is full => return to IDLE
