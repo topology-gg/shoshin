@@ -109,6 +109,9 @@ export const bodyStateNumberToName = {
     },
 };
 
+export const ANTOC_KO_DURATION = 14;
+export const JESSICA_KO_DURATION = 14;
+
 const actionsToBodyStateJessica = {
     0: 0,
     1: 10,
