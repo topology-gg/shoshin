@@ -27,6 +27,12 @@ import ActionReference from '../ActionReference/ActionReference';
 import OnlineMenu from '../OnlineMenu/OnlineMenu';
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
 import { onlineOpponentAdam } from '../ChooseOpponent/opponents/Adam';
+import { useUpdateMind } from '../../../lib/api';
+import {
+    ShoshinPersistedState,
+    getLocalState,
+    setLocalState,
+} from '../../helpers/localState';
 
 export const Scenes = {
     LOGO: 'logo',
@@ -66,17 +72,6 @@ export enum Medal {
     BRONZE = 'Bronze',
 }
 
-interface ShoshinPersistedState {
-    playerAgents: {
-        jessica?: PlayerAgent;
-        antoc?: PlayerAgent;
-    };
-    opponents: {
-        jessica: Opponent[];
-        antoc: Opponent[];
-    };
-}
-
 const deafaultState: ShoshinPersistedState = {
     playerAgents: {
         jessica: undefined,
@@ -95,7 +90,7 @@ const defaultOpponent: Opponent = {
     name: '0',
     backgroundId: 0,
 };
-const StorageKey = 'PersistedGameState';
+
 const SceneSelector = () => {
     const [scene, setScene] = useState<Scene>();
 
@@ -105,6 +100,16 @@ const SceneSelector = () => {
 
     const ctx = React.useContext(ShoshinWASMContext);
 
+    /*     const callUpdateMind = async () => {
+        console.log('updating mind');
+        const res = useUpdateMind({});
+        console.log(res);
+    };
+
+    callUpdateMind().catch((e) => {
+        console.log(e);
+    });
+ */
     useEffect(() => {
         musicRef.current = new Audio('/music/shoshintitle-audio.wav');
         musicRef.current.onended = function () {
@@ -138,20 +143,6 @@ const SceneSelector = () => {
         pauseMusic();
     };
     3;
-
-    const getLocalState = (): ShoshinPersistedState | null => {
-        const storedState = localStorage.getItem(StorageKey);
-        if (storedState !== undefined && storedState !== null) {
-            const state: ShoshinPersistedState = JSON.parse(storedState);
-            return state;
-        }
-
-        return null;
-    };
-
-    const setLocalState = (state: ShoshinPersistedState) => {
-        localStorage.setItem(StorageKey, JSON.stringify(state));
-    };
 
     const onChooseCharacter = (character: Character) => {
         setCharacter((_) => character);
@@ -247,17 +238,9 @@ const SceneSelector = () => {
     const [selectedOpponent, setSelectedOpponent] = useState<number>(0);
 
     const opponent =
-        lastScene == Scenes.ONLINE_MENU
+        onlineMode == true
             ? onlineOpponentChoice
             : opponentChoices[selectedOpponent];
-
-    let opponentAgent;
-    if ('layers' in opponent.agent) {
-        const { layers, character, combos } = opponent.agent;
-        opponentAgent = buildAgentFromLayers(layers, character, combos);
-    } else {
-        opponentAgent = opponent.agent;
-    }
 
     const backgroundId = 'backgroundId' in opponent ? opponent.backgroundId : 0;
 
@@ -483,7 +466,7 @@ const SceneSelector = () => {
                     playerCharacter={characterIndex}
                     onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
-                    opponent={opponentAgent}
+                    opponent={opponent}
                     transitionToActionReference={transitionToActionReference}
                     volume={volume}
                     setVolume={setVolume}

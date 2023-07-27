@@ -1,4 +1,5 @@
 import {
+    CircularProgress,
     Paper,
     Table,
     TableBody,
@@ -20,6 +21,10 @@ const OnlineTable = ({
     selectOpponent,
     selectedOpponent,
 }: OnlineTableProps) => {
+    if (opponents === undefined) {
+        return <CircularProgress />;
+    }
+
     const opponentRows = opponents.map((opp, index) => (
         <TableRow
             key={index}

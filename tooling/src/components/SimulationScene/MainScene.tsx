@@ -78,7 +78,8 @@ const SimulationScene = React.forwardRef(
         let p2: Agent;
         if ('layers' in opponent.agent) {
             const { layers, character, combos } = opponent.agent;
-            p2 = buildAgentFromLayers(layers, character, combos);
+            const charIndex = character == Character.Jessica ? 0 : 1;
+            p2 = buildAgentFromLayers(layers, charIndex, combos);
         } else {
             p2 = opponent.agent;
         }

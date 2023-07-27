@@ -1,7 +1,11 @@
 import { MongoClient } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
-import { Character, DB_NAME } from '../../../src/constants/constants';
+import {
+    COLLECTION_NAME_PVP,
+    Character,
+    DB_NAME,
+} from '../../../src/constants/constants';
 import { PlayerAgent } from '../../../src/types/Agent';
 
 type SubmittedMind = {
@@ -19,25 +23,28 @@ export default async function handler(
     res: NextApiResponse
 ) {
     const { data } = req.query;
+    console.log('req.body', req.body);
     if (req.method === 'PUT') {
         const client: MongoClient = await clientPromise;
         const db = client.db(DB_NAME);
-        const submittedMinds = db.collection<SubmittedMind>('shoshin-pvp');
+        const submittedMinds =
+            db.collection<SubmittedMind>(COLLECTION_NAME_PVP);
         const playerName = data[0];
         const character = data[1];
         const mindName = data[2];
+
         try {
             const updateResult = await submittedMinds.updateOne(
                 {
                     $and: [
                         { mindName: mindName },
                         { playerName: playerName },
-                        { 'mind.character': character as Character },
+                        { agent: { character: character as Character } },
                     ],
                 },
                 {
                     $set: {
-                        mind: (req.body as PutRequest).mind,
+                        agent: req.body,
                         mindName: mindName,
                         playerName: playerName,
                     },

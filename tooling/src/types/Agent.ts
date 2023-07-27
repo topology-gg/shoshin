@@ -39,7 +39,7 @@ export function buildAgent(
     conditions: Condition[],
     initialMentalState,
     character: number
-) {
+): Agent {
     //console.log('ms', mentalStates);
     //console.log('tree', trees);
     //console.log('conditions', conditions);

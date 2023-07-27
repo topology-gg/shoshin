@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FullArtBackground from '../layout/FullArtBackground';
 import { Opponent, OnlineOpponent } from '../layout/SceneSelector';
 import {
@@ -6,13 +6,20 @@ import {
     Button,
     Card,
     CardContent,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
     Grid,
+    TextField,
     Typography,
 } from '@mui/material';
 import OnlineTable from './OnlineTable';
 import { JessicaOpponents } from '../ChooseOpponent/opponents/opponents';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import SubmitMenu from './SubmitMenu';
+import { useListMinds } from '../../../lib/api';
 
 interface OnlineMenuProps {
     transitionBack: () => void;
@@ -33,8 +40,13 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
     ({ transitionBack, transitionFromOnlineMenu }, ref) => {
         const [selectedOpponent, selectOpponent] = useState<number>(-1);
 
+        const { data: data } = useListMinds();
+        const onlineOpponents = data?.onlineOpponents;
         const handleFightClick = () => {
-            transitionFromOnlineMenu(ShimmedOnlineOpponents[selectedOpponent]);
+            if (onlineOpponents === undefined) {
+                return;
+            }
+            transitionFromOnlineMenu(onlineOpponents[selectedOpponent]);
         };
 
         const [isSubmitOpeoned, setOpenSubmit] = useState<boolean>(false);
@@ -46,9 +58,62 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
             // Prevent the click event from propagating to the parent elements
             event.stopPropagation();
         };
+
+        const persistedUsername = localStorage.getItem('username');
+        const [usernameDialogueOpen, setOpen] = React.useState(
+            persistedUsername === null
+        );
+
+        const handleClickOpen = () => {
+            setOpen(true);
+        };
+
+        const handleClose = () => {
+            setOpen(false);
+        };
+
+        const handleSave = () => {
+            localStorage.setItem('username', username);
+            handleClose();
+        };
+
+        const [username, setUsername] = useState('');
+        useEffect(() => {
+            const username = localStorage.getItem('username');
+            if (username !== null) {
+                setUsername(username);
+            }
+        }, []);
+        const handleInputChange = (e) => {
+            setUsername(e.target.value);
+        };
+
         return (
             <div ref={ref}>
                 <FullArtBackground useAlt={true}>
+                    <Dialog open={usernameDialogueOpen} onClose={handleClose}>
+                        <DialogTitle>Welcome</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                To play online, please enter a username.
+                            </DialogContentText>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="name"
+                                label="Username"
+                                type="email"
+                                fullWidth
+                                variant="standard"
+                                value={username}
+                                onChange={handleInputChange}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleSave}>Submit</Button>
+                        </DialogActions>
+                    </Dialog>
+
                     {isSubmitOpeoned && (
                         <div className={'overlay-menu'} onClick={toggleMenu}>
                             <Box
@@ -59,7 +124,10 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                             >
                                 <Card onClick={handleCardClick}>
                                     <CardContent>
-                                        <SubmitMenu closeMenu={toggleMenu} />
+                                        <SubmitMenu
+                                            closeMenu={toggleMenu}
+                                            username={username}
+                                        />
                                     </CardContent>
                                 </Card>
                             </Box>
@@ -81,7 +149,7 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                         </Typography>
                         <Box maxHeight={'60vh'} width={'100%'}>
                             <OnlineTable
-                                opponents={ShimmedOnlineOpponents}
+                                opponents={onlineOpponents}
                                 selectedOpponent={selectedOpponent}
                                 selectOpponent={selectOpponent}
                             />
@@ -92,6 +160,9 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                             </Typography>
                         </Button>
                     </Box>
+                    <Button variant="text" onClick={() => handleClickOpen()}>
+                        username: {username}
+                    </Button>
                     <Grid container>
                         <Grid item xs={9} />
                         <Grid item xs={3}>
