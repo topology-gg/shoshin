@@ -30,6 +30,7 @@ from contracts.constants.constants import (
 )
 from contracts.constants.constants_jessica import ns_jessica_character_dimension
 from contracts.body.body import _body
+from contracts.body.body_utils import player_lost
 from contracts.combo import _combo
 from contracts.physics import _physicality, _test_rectangle_overlap
 from contracts.perceptibles import update_perceptibles
@@ -325,12 +326,12 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 
     //
-    /// See if a player has health <= 0
+    /// See if game should end
     //
-
-    let agent_0_lost = is_le (last_frame.agent_0.body_state.integrity, 0);
-    let agent_1_lost = is_le (last_frame.agent_1.body_state.integrity, 0);
-
+    // let agent_0_lost = is_le (last_frame.agent_0.body_state.integrity, 0);
+    // let agent_1_lost = is_le (last_frame.agent_1.body_state.integrity, 0);
+    let agent_0_lost = player_lost (character_type_0, last_frame.agent_0.body_state.state, last_frame.agent_0.body_state.counter);
+    let agent_1_lost = player_lost (character_type_1, last_frame.agent_1.body_state.state, last_frame.agent_1.body_state.counter);
     if (agent_0_lost == 1) {
         // cairo -i return(frames_len=idx, frames=arr_frames);
         // cairo -d
