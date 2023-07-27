@@ -40,6 +40,23 @@ func _body_antoc {range_check_ptr}(
     let is_fatigued = 1 - enough_stamina;
 
     //
+    // KO
+    // not interruptible; not responding to intent
+    //
+    if (updated_integrity == 0 and state != ns_antoc_body_state.KO) {
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.KO, 0, updated_integrity , stamina, dir, FALSE) );
+    }
+    if (state == ns_antoc_body_state.KO) {
+        if (counter == ns_antoc_body_state_duration.KO - 1) {
+            // stop at last frame
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KO, counter, updated_integrity, updated_stamina, dir, is_fatigued) );
+        } else {
+            // increment
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KO, counter + 1, updated_integrity, updated_stamina, dir, is_fatigued) );
+        }
+    }
+
+    //
     // Idle
     //
     if (state == ns_antoc_body_state.IDLE) {
