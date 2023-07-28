@@ -25,12 +25,13 @@ import { Condition } from '../../types/Condition';
 import SquareOverlayMenu from '../SimulationScene/SuccessMenu';
 import { Medal, Opponent } from '../layout/SceneSelector';
 import mainSceneStyles from '../SimulationScene/MainScene.module.css';
-import PauseMenu from '../SimulationScene/PauseMenu';
 import tutorial from './Lessons/Tutorial';
 import { HighlightZone, Lesson } from '../../types/Tutorial';
 import GameCard from '../ui/GameCard';
 import FullArtBackground from '../layout/FullArtBackground';
 import GameplayTutorialMenu from './GameplayTutorialMenu';
+import CardSimple from '../ui/CardSimple';
+import { FastForward, FastRewind } from '@mui/icons-material';
 //@ts-ignore
 const Game = dynamic(() => import('../../Game/PhaserGame'), {
     ssr: false,
@@ -389,6 +390,10 @@ const GameplayTutorialScene = React.forwardRef(
                 ? testJson.agent_0.frames[animationFrame].mental_state
                 : 0;
 
+        const isLastSlide =
+            slideIndex + 1 === lesson.slides.length &&
+            lessonIndex + 1 === tutorial.length;
+
         const objectives = currentSlide.lessonObjectives?.map(
             (objective, index) => {
                 return (
@@ -445,7 +450,7 @@ const GameplayTutorialScene = React.forwardRef(
                         ) : null}
                         <Grid
                             container
-                            spacing={{ xs: 1 }}
+                            spacing={{ xs: 2 }}
                             sx={{ width: '100%' }}
                         >
                             <Grid item lg={1} />
@@ -455,12 +460,31 @@ const GameplayTutorialScene = React.forwardRef(
                                 lg={10}
                                 className={hasHighLights ? 'elevated' : ''}
                             >
-                                <GameCard image={'/images/bg/f2f2f2.png'}>
+                                <CardSimple
+                                    image={'/images/bg/f2f2f2.png'}
+                                    sx={{ position: 'relative' }}
+                                    bgOpacity={0.8}
+                                >
+                                    <Box
+                                        sx={{
+                                            position: 'absolute',
+                                            bottom: '30px',
+                                            left: '50px',
+                                        }}
+                                    >
+                                        <img
+                                            style={{
+                                                height: '180px',
+                                                width: 'auto',
+                                            }}
+                                            src="/images/gm/gm.png"
+                                        />
+                                    </Box>
                                     <Box
                                         display="flex"
                                         flexDirection="column"
                                         alignItems="center"
-                                        width="100%"
+                                        ml="250px"
                                     >
                                         <Typography variant="h6" align="center">
                                             {title}
@@ -468,7 +492,9 @@ const GameplayTutorialScene = React.forwardRef(
                                         <Typography
                                             variant="body1"
                                             align="center"
-                                            style={{ whiteSpace: 'pre-line' }}
+                                            style={{
+                                                whiteSpace: 'pre-line',
+                                            }}
                                         >
                                             {currentSlide.content}
                                         </Typography>
@@ -495,22 +521,28 @@ const GameplayTutorialScene = React.forwardRef(
                                                     handleSlideBack()
                                                 }
                                                 sx={{ marginRight: '6px' }}
+                                                startIcon={<FastRewind />}
                                             >
                                                 {'Back'}
                                             </Button>
                                             <Button
-                                                variant="contained"
+                                                variant="text"
                                                 color="primary"
                                                 disabled={!canGoToNextSlide}
                                                 onClick={() =>
                                                     handleSlideContinue()
+                                                }
+                                                endIcon={
+                                                    isLastSlide ? null : (
+                                                        <FastForward />
+                                                    )
                                                 }
                                             >
                                                 {currentSlide.continueText}
                                             </Button>
                                         </Box>
                                     </Box>
-                                </GameCard>
+                                </CardSimple>
                             </Grid>
 
                             <Grid item xs={12} md={12} lg={6}>
