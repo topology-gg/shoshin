@@ -463,6 +463,7 @@ const GameplayTutorialScene = React.forwardRef(
                                 <CardSimple
                                     image={'/images/bg/f2f2f2.png'}
                                     sx={{ position: 'relative' }}
+                                    bgOpacity={0.8}
                                 >
                                     <Box
                                         sx={{
