@@ -38,6 +38,8 @@ const ShimmedOnlineOpponents: OnlineOpponent[] = JessicaOpponents.map(
 
 const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
     ({ transitionBack, transitionFromOnlineMenu }, ref) => {
+        console.log('from the top');
+
         const [selectedOpponent, selectOpponent] = useState<number>(-1);
 
         const { data: data } = useListMinds();
@@ -88,10 +90,11 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
             setUsername(e.target.value);
         };
 
+        console.log('rendering online menu');
         return (
             <div ref={ref}>
                 <FullArtBackground useAlt={true}>
-                    <Dialog open={usernameDialogueOpen} onClose={handleClose}>
+                    {/*                     <Dialog open={usernameDialogueOpen} onClose={handleClose}>
                         <DialogTitle>Welcome</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
@@ -113,7 +116,7 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                             <Button onClick={handleSave}>Submit</Button>
                         </DialogActions>
                     </Dialog>
-
+ */}
                     {isSubmitOpeoned && (
                         <div className={'overlay-menu'} onClick={toggleMenu}>
                             <Box
