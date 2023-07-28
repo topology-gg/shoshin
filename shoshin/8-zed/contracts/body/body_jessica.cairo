@@ -743,7 +743,8 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.LAUNCHED) {
 
-        if (opponent_state_index_has_progressed == 1) {
+        // if within first 6 frames => can be interrupted
+        if ((counter-0) * (counter-1) * (counter-2) * (counter-3) * (counter-4) * (counter-5) == 0 and opponent_state_index_has_progressed == 1) {
             // can be knocked
             if (stimulus_type == ns_stimulus.KNOCKED) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
