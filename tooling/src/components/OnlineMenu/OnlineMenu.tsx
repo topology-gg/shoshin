@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import FullArtBackground from '../layout/FullArtBackground';
-import { Opponent, OnlineOpponent } from '../layout/SceneSelector';
 import {
     Box,
     Button,
@@ -20,6 +19,7 @@ import { JessicaOpponents } from '../ChooseOpponent/opponents/opponents';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import SubmitMenu from './SubmitMenu';
 import { useListMinds } from '../../../lib/api';
+import { OnlineOpponent } from '../../types/Opponent';
 
 interface OnlineMenuProps {
     transitionBack: () => void;

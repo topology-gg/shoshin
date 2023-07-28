@@ -8,8 +8,7 @@ import {
     TableHead,
     TableRow,
 } from '@mui/material';
-import { OnlineOpponent, Opponent } from '../layout/SceneSelector';
-import { Character } from '../../constants/constants';
+import { OnlineOpponent } from '../../types/Opponent';
 
 interface OnlineTableProps {
     opponents: OnlineOpponent[];
