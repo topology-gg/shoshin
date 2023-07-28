@@ -290,7 +290,7 @@ namespace ns_jessica_hitbox {
     ) {
         alloc_locals;
 
-        // knocked
+        // knocked or launched
         if ( (body_state-ns_jessica_body_state.KNOCKED) * (body_state-ns_jessica_body_state.LAUNCHED) == 0 ) {
             let is_counter_le_1 = is_le(body_counter, 1);
             if (is_counter_le_1 == 1) {
