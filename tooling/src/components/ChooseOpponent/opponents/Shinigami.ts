@@ -2439,4 +2439,5 @@ const json = {
 };
 
 const { layers, char, combos } = json;
+//@ts-ignore
 export const Shinigami = buildAgentFromLayers(layers, char, combos);

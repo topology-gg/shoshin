@@ -1984,6 +1984,7 @@ const json = {
     ],
 };
 const { layers, char, combos, conditions } = json;
+//@ts-ignore
 export const Adam = buildAgentFromLayers(layers, char, combos);
 
 export const onlineOpponentAdam: OnlineOpponent = {

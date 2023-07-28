@@ -1610,4 +1610,5 @@ const json = {
 };
 
 const { layers, char, combos } = json;
+//@ts-ignore
 export const blockOnlyAntoc = buildAgentFromLayers(layers, char, combos);

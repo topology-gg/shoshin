@@ -9,6 +9,8 @@ import { ShoshinWASMContext } from '../../context/wasm-shoshin';
 import React from 'react';
 import PauseMenu from '../SimulationScene/PauseMenu';
 import MidScreenKeybinding from '../MidScreenKeybinding';
+import { OnlineOpponent, Opponent } from '../layout/SceneSelector';
+import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
 
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
@@ -17,7 +19,7 @@ const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
 
 interface ArcadeProps {
     playerCharacter: number;
-    opponent: Agent;
+    opponent: Opponent | OnlineOpponent;
     onQuit: () => void;
     onContinue: () => void;
     transitionToActionReference: () => void;
@@ -40,6 +42,14 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
         },
         ref
     ) => {
+        let p2: Agent;
+        if ('layers' in opponent.agent) {
+            const { layers, character, combos } = opponent.agent;
+            const charIndex = character == Character.Jessica ? 0 : 1;
+            p2 = buildAgentFromLayers(layers, charIndex, combos);
+        } else {
+            p2 = opponent.agent;
+        }
         const [playerStatuses, setPlayerStatuses] =
             useState<StatusBarPanelProps>({
                 integrity_0: 1000,
@@ -127,7 +137,7 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                         gameMode={GameModes.realtime}
                         realTimeOptions={{
                             playerCharacter,
-                            agentOpponent: opponent,
+                            agentOpponent: p2,
                             setPlayerStatuses,
                         }}
                         isInView={true}
