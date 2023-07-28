@@ -1,4 +1,4 @@
-import Agent from './Agent';
+import Agent, { PlayerAgent } from './Agent';
 
 export interface Opponent {
     agent: Agent;
@@ -7,6 +7,12 @@ export interface Opponent {
     name: string;
     backgroundId: number;
     mindName?: string;
+}
+
+export interface OnlineOpponent {
+    agent: PlayerAgent;
+    mindName: string;
+    playerName: string;
 }
 
 export enum Medal {
