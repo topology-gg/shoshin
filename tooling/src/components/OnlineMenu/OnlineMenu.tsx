@@ -100,16 +100,6 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                             <DialogContentText>
                                 To play online, please enter a username.
                             </DialogContentText>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                id="name"
-                                label="Username"
-                                fullWidth
-                                variant="standard"
-                                value={username}
-                                onChange={handleInputChange}
-                            />
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleSave}>Submit</Button>
