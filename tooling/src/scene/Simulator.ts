@@ -1293,6 +1293,7 @@ export default class Simulator extends Phaser.Scene {
         const agentFrame0 = testJson?.agent_0.frames[animationFrame];
         const agentFrame1 = testJson?.agent_1.frames[animationFrame];
         const fightLength = testJson?.agent_0.frames.length;
+        // console.log('animationFrame', animationFrame, 'agentFrame0.body_state', agentFrame0.body_state, 'agentFrame1.body_state', agentFrame1.body_state)
 
         this.updateScene(
             characterType0,
