@@ -100,12 +100,12 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                             <DialogContentText>
                                 To play online, please enter a username.
                             </DialogContentText>
-                            <TextField
+                            <input
                                 autoFocus
-                                margin="dense"
-                                label="Username"
-                                fullWidth
-                                variant="standard"
+                                type="text"
+                                id="name"
+                                placeholder="Username"
+                                style={{ width: '100%', marginTop: '1rem' }}
                                 value={username}
                                 onChange={handleInputChange}
                             />
