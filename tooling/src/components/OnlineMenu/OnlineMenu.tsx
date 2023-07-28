@@ -94,7 +94,7 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
         return (
             <div ref={ref}>
                 <FullArtBackground useAlt={true}>
-                    {/*                     <Dialog open={usernameDialogueOpen} onClose={handleClose}>
+                    <Dialog open={usernameDialogueOpen} onClose={handleClose}>
                         <DialogTitle>Welcome</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
@@ -105,7 +105,6 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                                 margin="dense"
                                 id="name"
                                 label="Username"
-                                type="email"
                                 fullWidth
                                 variant="standard"
                                 value={username}
@@ -116,7 +115,7 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                             <Button onClick={handleSave}>Submit</Button>
                         </DialogActions>
                     </Dialog>
- */}
+
                     {isSubmitOpeoned && (
                         <div className={'overlay-menu'} onClick={toggleMenu}>
                             <Box
