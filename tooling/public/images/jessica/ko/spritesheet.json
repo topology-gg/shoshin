@@ -1,0 +1,295 @@
+{
+	"frames": {
+		"frame_0.png": {
+			"frame": {
+				"x": 209,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_1.png": {
+			"frame": {
+				"x": 209,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_2.png": {
+			"frame": {
+				"x": 417,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_3.png": {
+			"frame": {
+				"x": 417,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_4.png": {
+			"frame": {
+				"x": 625,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_5.png": {
+			"frame": {
+				"x": 625,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_6.png": {
+			"frame": {
+				"x": 833,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_7.png": {
+			"frame": {
+				"x": 833,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_8.png": {
+			"frame": {
+				"x": 833,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_9.png": {
+			"frame": {
+				"x": 833,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_10.png": {
+			"frame": {
+				"x": 1041,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_11.png": {
+			"frame": {
+				"x": 1041,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_12.png": {
+			"frame": {
+				"x": 1041,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		},
+        "frame_13.png": {
+			"frame": {
+				"x": 1041,
+				"y": 1,
+				"w": 208,
+				"h": 156
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 208,
+				"h": 156
+			},
+			"sourceSize": {
+				"w": 208,
+				"h": 156
+			}
+		}
+	},
+	"meta": {
+		"app": "https://codeshack.io/images-sprite-sheet-generator/",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 1248,
+			"h": 156
+		},
+		"scale": "1"
+	}
+}

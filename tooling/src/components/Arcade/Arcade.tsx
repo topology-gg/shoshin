@@ -9,6 +9,8 @@ import { ShoshinWASMContext } from '../../context/wasm-shoshin';
 import React from 'react';
 import PauseMenu from '../SimulationScene/PauseMenu';
 import MidScreenKeybinding from '../MidScreenKeybinding';
+import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
+import { OnlineOpponent, Opponent } from '../../types/Opponent';
 
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
@@ -17,14 +19,13 @@ const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
 
 interface ArcadeProps {
     playerCharacter: number;
-    opponent: Agent;
+    opponent: Opponent | OnlineOpponent;
     volume: number;
-    backgroundId?: number;
     pauseMenu: ReactNode;
 }
 
 const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
-    ({ playerCharacter, opponent, volume, backgroundId, pauseMenu }, ref) => {
+    ({ playerCharacter, opponent, volume, pauseMenu }, ref) => {
         const [playerStatuses, setPlayerStatuses] =
             useState<StatusBarPanelProps>({
                 integrity_0: 1000,
@@ -39,6 +40,17 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
             [keyName: string]: boolean;
         }>({});
 
+        const backgroundId =
+            'backgroundId' in opponent ? opponent.backgroundId : 0;
+
+        let p2: Agent;
+        if ('layers' in opponent.agent) {
+            const { layers, character, combos } = opponent.agent;
+            const charIndex = character == Character.Jessica ? 0 : 1;
+            p2 = buildAgentFromLayers(layers, charIndex, combos);
+        } else {
+            p2 = opponent.agent;
+        }
         useEffect(() => {
             // keyup
             const handleKeyPress = (ev: KeyboardEvent) => {
@@ -102,7 +114,7 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                         gameMode={GameModes.realtime}
                         realTimeOptions={{
                             playerCharacter,
-                            agentOpponent: opponent,
+                            agentOpponent: p2,
                             setPlayerStatuses,
                         }}
                         isInView={true}

@@ -3048,4 +3048,5 @@ const json = {
 };
 
 const { layers, char, combos } = json;
+//@ts-ignore
 export const HealthyDose = buildAgentFromLayers(layers, char, combos);

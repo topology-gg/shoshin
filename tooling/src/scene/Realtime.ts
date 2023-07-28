@@ -11,6 +11,8 @@ import {
     characterTypeToString,
     ANTOC,
     JESSICA,
+    JESSICA_KO_DURATION,
+    ANTOC_KO_DURATION,
 } from '../constants/constants';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
 import { runRealTimeFromContext } from '../hooks/useRunRealtime';
@@ -21,6 +23,7 @@ import Simulator from './Simulator';
 import eventsCenter from '../Game/EventsCenter';
 
 import * as wasm from '../../wasm/shoshin/pkg/shoshin';
+import { BodystatesAntoc, BodystatesJessica } from '../types/Condition';
 
 export default class RealTime extends Simulator {
     prevState: RealTimeFrameScene = InitialRealTimeFrameScene;
@@ -517,9 +520,38 @@ export default class RealTime extends Simulator {
                 this.checkEndGame(integrity_0, integrity_1);
             }
 
-            if (integrity_0 <= 0 || integrity_1 <= 0) {
+            if (
+                isKO(
+                    this.character_type_0,
+                    newState.agent_0.body_state.state,
+                    newState.agent_0.body_state.counter
+                ) ||
+                isKO(
+                    this.opponent.character,
+                    newState.agent_1.body_state.state,
+                    newState.agent_1.body_state.counter
+                )
+            ) {
                 this.checkEndGame(integrity_0, integrity_1);
             }
         }
     }
+}
+
+function isKO(character_type, state, counter) {
+    if (
+        character_type == JESSICA &&
+        state == BodystatesJessica.KO &&
+        counter == JESSICA_KO_DURATION - 1
+    ) {
+        return true;
+    }
+    if (
+        character_type == ANTOC &&
+        state == BodystatesAntoc.KO &&
+        counter == ANTOC_KO_DURATION - 1
+    ) {
+        return true;
+    }
+    return false;
 }

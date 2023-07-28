@@ -38,11 +38,13 @@ import GameCard from '../ui/GameCard';
 import LoadingFull from '../layout/LoadingFull';
 import {
     Medal,
+    OnlineOpponent,
     Opponent,
     achievedBetterPerformance,
 } from '../../types/Opponent';
 import CloseIcon from '@mui/icons-material/Close';
 
+import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -51,7 +53,7 @@ const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
 interface SimulationProps {
     player: PlayerAgent;
     setPlayerAgent: (playerAgent: PlayerAgent) => void;
-    opponent: Opponent;
+    opponent: Opponent | OnlineOpponent;
     submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
     onContinue: () => void;
     onQuit: () => void;
@@ -81,7 +83,15 @@ const SimulationScene = React.forwardRef(
         const [output, setOuput] = useState<FrameScene>();
         const [simulationError, setSimulationError] = useState();
         const [p1, setP1] = useState<Agent>();
-        const p2: Agent = opponent.agent;
+
+        let p2: Agent;
+        if ('layers' in opponent.agent) {
+            const { layers, character, combos } = opponent.agent;
+            const charIndex = character == Character.Jessica ? 0 : 1;
+            p2 = buildAgentFromLayers(layers, charIndex, combos);
+        } else {
+            p2 = opponent.agent;
+        }
 
         const [loop, setLoop] = useState<NodeJS.Timer>();
         const [animationFrame, setAnimationFrame] = useState<number>(0);
@@ -297,6 +307,7 @@ const SimulationScene = React.forwardRef(
         useEffect(() => {
             if (
                 beatAgent &&
+                'medal' in opponent &&
                 achievedBetterPerformance(performance, opponent.medal)
             ) {
                 submitWin(player, { ...opponent, medal: performance });
@@ -328,6 +339,9 @@ const SimulationScene = React.forwardRef(
             useState<boolean>(false);
 
         useEffect(() => {
+            if (!('medal' in opponent)) {
+                return;
+            }
             changeHasBeatenOpponent(opponent.medal !== Medal.NONE);
         }, []);
         const playOnly =
@@ -344,7 +358,26 @@ const SimulationScene = React.forwardRef(
         const overlayClassName = playOnly ? mainSceneStyles.overlay : '';
 
         const p1Name = player.character;
-        const p2Name = numberToCharacter(opponent.agent.character);
+
+        let playerTwoStyle = null;
+
+        if ('playerName' in opponent) {
+            playerTwoStyle = (
+                <Typography>
+                    {opponent.agent.character}-{opponent.mindName}-
+                    {opponent.playerName}
+                </Typography>
+            );
+        } else {
+            playerTwoStyle = (
+                <Typography>
+                    {numberToCharacter(opponent.agent.character)}
+                </Typography>
+            );
+        }
+
+        const backgroundId =
+            'backgroundId' in opponent ? opponent.backgroundId : 0;
 
         const activeMs =
             N_FRAMES > 0
@@ -355,6 +388,9 @@ const SimulationScene = React.forwardRef(
 
         //Show Victory Snack Bar if it is a subsequent win, or if they beat the opponent for the first time and showFullReplay is false
         useEffect(() => {
+            if (!('medal' in opponent)) {
+                return;
+            }
             const showVictorySnackBar =
                 (!hasBeatenOpponent ||
                     (!showFullReplay &&
@@ -475,9 +511,7 @@ const SimulationScene = React.forwardRef(
                                                         >
                                                             P2
                                                         </Typography>
-                                                        <Typography>
-                                                            {p2Name}
-                                                        </Typography>
+                                                        {playerTwoStyle}
                                                     </Box>
                                                 </Box>
                                                 <Game
@@ -503,9 +537,7 @@ const SimulationScene = React.forwardRef(
                                                         setPlayerStatuses,
                                                     }}
                                                     isInView={true}
-                                                    backgroundId={
-                                                        opponent.backgroundId
-                                                    }
+                                                    backgroundId={backgroundId}
                                                     volume={volume}
                                                 />
                                             </div>

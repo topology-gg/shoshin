@@ -2231,4 +2231,5 @@ const json = {
 };
 
 const { layers, char, combos } = json;
+//@ts-ignore
 export const Kat = buildAgentFromLayers(layers, char, combos);

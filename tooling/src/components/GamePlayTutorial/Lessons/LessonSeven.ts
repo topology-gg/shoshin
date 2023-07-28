@@ -16,7 +16,7 @@ const slide0: LessonSlide = {
 const slide1: LessonSlide = {
     content:
         'Some actions synergize with each other when sequenced together in a combo',
-    continueText: 'Finish Tutorial',
+    continueText: 'Next',
     highlightLayer: -1,
     highlightZone: HighlightZone.Combos,
 };
@@ -43,7 +43,7 @@ const combineDashAndSlash = {
 
 const slide2: LessonSlide = {
     content: "Create a combo that does 'DashForward' and 'Slash' together",
-    continueText: 'Next',
+    continueText: 'Finish Tutorial',
     highlightLayer: -1,
     highlightZone: HighlightZone.NONE,
     lessonObjectives: [combineDashAndSlash, defeatOpponentObjective],

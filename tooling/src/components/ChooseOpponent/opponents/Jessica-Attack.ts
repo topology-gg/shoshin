@@ -2156,4 +2156,5 @@ const json = {
     ],
 };
 const { layers, char, combos } = json;
+//@ts-ignore
 export const JessicaAttack = buildAgentFromLayers(layers, char, combos);

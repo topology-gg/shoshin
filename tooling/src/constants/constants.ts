@@ -19,6 +19,7 @@ export const DB_NAME = 'shoshin_indexer_5';
 export const COLLECTION_NAME_SUBMISSION = 'shoshin-dogfooding-submission';
 export const COLLECTION_NAME_LEAGUE = 'shoshin-league';
 export const COLLECTION_NAME_WHITELIST = 'shoshin-whitelist';
+export const COLLECTION_NAME_PVP = 'shoshin-pvp';
 
 export const PRIME =
     BigInt(2 ** 251) + BigInt(17) * BigInt(2 ** 192) + BigInt(1);
@@ -82,6 +83,7 @@ export const bodyStateNumberToName = {
         180: 'jump_move_forward',
         190: 'jump_move_backward',
         200: 'taunt',
+        240: 'ko',
     },
     antoc: {
         0: 'idle',
@@ -104,8 +106,12 @@ export const bodyStateNumberToName = {
         1210: 'jump_move_backward',
         1220: 'cyclone',
         1250: 'taunt',
+        1320: 'ko',
     },
 };
+
+export const ANTOC_KO_DURATION = 14;
+export const JESSICA_KO_DURATION = 14;
 
 const actionsToBodyStateJessica = {
     0: 0,
