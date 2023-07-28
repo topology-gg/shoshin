@@ -849,6 +849,8 @@ export const InitialRealTimeFrameScene: RealTimeFrameScene = {
             stamina: INIT_STAMINA,
             state: 0,
             fatigued: 0,
+            state_index: 0,
+            opponent_state_index_last_hit: -1,
         },
         hitboxes: {
             action: {
@@ -896,6 +898,8 @@ export const InitialRealTimeFrameScene: RealTimeFrameScene = {
             stamina: INIT_STAMINA,
             state: 0,
             fatigued: 0,
+            state_index: 0,
+            opponent_state_index_last_hit: -1,
         },
         hitboxes: {
             action: {
