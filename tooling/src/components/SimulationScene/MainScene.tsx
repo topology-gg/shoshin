@@ -293,7 +293,7 @@ const SimulationScene = React.forwardRef(
             performance = Medal.BRONZE;
         }
 
-        const [showVictory, changeShowVictory] = useState<boolean>(true);
+        const [showVictory, changeShowVictory] = useState<boolean>(false);
         useEffect(() => {
             if (
                 beatAgent &&
