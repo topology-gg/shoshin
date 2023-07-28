@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Character } from '../../constants/constants';
 import Agent from '../../types/Agent';
 import { GameModes } from '../../types/Simulator';
@@ -18,28 +18,13 @@ const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
 interface ArcadeProps {
     playerCharacter: number;
     opponent: Agent;
-    onQuit: () => void;
-    onContinue: () => void;
-    transitionToActionReference: () => void;
     volume: number;
-    setVolume: (volume: number) => void;
     backgroundId?: number;
+    pauseMenu: ReactNode;
 }
 
 const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
-    (
-        {
-            playerCharacter,
-            opponent,
-            onQuit,
-            onContinue,
-            transitionToActionReference,
-            volume,
-            setVolume,
-            backgroundId,
-        },
-        ref
-    ) => {
+    ({ playerCharacter, opponent, volume, backgroundId, pauseMenu }, ref) => {
         const [playerStatuses, setPlayerStatuses] =
             useState<StatusBarPanelProps>({
                 integrity_0: 1000,
@@ -101,17 +86,7 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                         width: '800px',
                     }}
                 >
-                    {openPauseMenu ? (
-                        <PauseMenu
-                            onQuit={onQuit}
-                            onChooseCharacter={onContinue}
-                            transitionToActionReference={
-                                transitionToActionReference
-                            }
-                            volume={volume}
-                            setVolume={setVolume}
-                        />
-                    ) : null}
+                    {openPauseMenu ? pauseMenu : null}
 
                     {/* <StatusBarPanel
                         integrity_0={playerStatuses.integrity_0}

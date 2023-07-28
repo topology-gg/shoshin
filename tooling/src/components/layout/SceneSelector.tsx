@@ -446,13 +446,10 @@ const SceneSelector = () => {
             <SceneSingle active={scene === Scenes.ARCADE}>
                 <Arcade
                     playerCharacter={characterIndex}
-                    onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
-                    onQuit={() => onTransition(Scenes.MAIN_MENU)}
                     opponent={opponent.agent}
-                    transitionToActionReference={transitionToActionReference}
                     volume={volume}
-                    setVolume={setVolume}
                     backgroundId={opponent.backgroundId}
+                    pauseMenu={pauseMenu}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.GAMEPLAY_TUTORIAL}>
