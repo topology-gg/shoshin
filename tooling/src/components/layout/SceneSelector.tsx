@@ -24,6 +24,15 @@ import MechanicsTutorialScene from '../GamePlayTutorial/GameplayTutorial';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from '../MobileView';
 import ActionReference from '../ActionReference/ActionReference';
+import OnlineMenu from '../OnlineMenu/OnlineMenu';
+import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
+import { onlineOpponentAdam } from '../ChooseOpponent/opponents/Adam';
+import { useUpdateMind } from '../../../lib/api';
+import {
+    ShoshinPersistedState,
+    getLocalState,
+    setLocalState,
+} from '../../helpers/localState';
 
 export const Scenes = {
     LOGO: 'logo',
@@ -36,6 +45,7 @@ export const Scenes = {
     MOVE_TUTORIAL: 'move_tutorial',
     GAMEPLAY_TUTORIAL: 'gameplay_tutorial',
     ACTION_REFERENCE: 'action_reference',
+    ONLINE_MENU: 'online_menu',
 } as const;
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
@@ -49,22 +59,17 @@ export interface Opponent {
     mindName?: string;
 }
 
+export interface OnlineOpponent {
+    agent: PlayerAgent;
+    mindName: string;
+    playerName: string;
+}
+
 export enum Medal {
     NONE = 'None',
     GOLD = 'Gold',
     SILVER = 'Silver',
     BRONZE = 'Bronze',
-}
-
-interface ShoshinPersistedState {
-    playerAgents: {
-        jessica?: PlayerAgent;
-        antoc?: PlayerAgent;
-    };
-    opponents: {
-        jessica: Opponent[];
-        antoc: Opponent[];
-    };
 }
 
 const deafaultState: ShoshinPersistedState = {
@@ -85,15 +90,26 @@ const defaultOpponent: Opponent = {
     name: '0',
     backgroundId: 0,
 };
-const StorageKey = 'PersistedGameState';
+
 const SceneSelector = () => {
     const [scene, setScene] = useState<Scene>();
 
     const [lastScene, setLastScene] = useState<Scene>(Scenes.MAIN_MENU);
+    const [onlineMode, setOnlineMode] = useState<boolean>(false);
     const musicRef = useRef<HTMLAudioElement>();
 
     const ctx = React.useContext(ShoshinWASMContext);
 
+    /*     const callUpdateMind = async () => {
+        console.log('updating mind');
+        const res = useUpdateMind({});
+        console.log(res);
+    };
+
+    callUpdateMind().catch((e) => {
+        console.log(e);
+    });
+ */
     useEffect(() => {
         musicRef.current = new Audio('/music/shoshintitle-audio.wav');
         musicRef.current.onended = function () {
@@ -127,20 +143,6 @@ const SceneSelector = () => {
         pauseMusic();
     };
     3;
-
-    const getLocalState = (): ShoshinPersistedState | null => {
-        const storedState = localStorage.getItem(StorageKey);
-        if (storedState !== undefined && storedState !== null) {
-            const state: ShoshinPersistedState = JSON.parse(storedState);
-            return state;
-        }
-
-        return null;
-    };
-
-    const setLocalState = (state: ShoshinPersistedState) => {
-        localStorage.setItem(StorageKey, JSON.stringify(state));
-    };
 
     const onChooseCharacter = (character: Character) => {
         setCharacter((_) => character);
@@ -230,9 +232,17 @@ const SceneSelector = () => {
     const [opponentChoices, setOpponentChoices] =
         useState<Opponent[]>(defaultOpponents);
 
+    const [onlineOpponentChoice, setOnlineOpponentChoice] =
+        useState<OnlineOpponent>(onlineOpponentAdam);
+
     const [selectedOpponent, setSelectedOpponent] = useState<number>(0);
 
-    const opponent = opponentChoices[selectedOpponent];
+    const opponent =
+        onlineMode == true
+            ? onlineOpponentChoice
+            : opponentChoices[selectedOpponent];
+
+    const backgroundId = 'backgroundId' in opponent ? opponent.backgroundId : 0;
 
     const setPlayerAgent = (playerAgent: PlayerAgent) => {
         setLayers(playerAgent.layers);
@@ -344,6 +354,7 @@ const SceneSelector = () => {
 
     const transitionFromMainMenu = (scene: Scene, gameMode: GameModes) => {
         pauseMusic();
+        setOnlineMode(false);
         if (scene == Scenes.ARCADE || scene == Scenes.MAIN_SCENE) {
             transitionChooseCharacter(gameMode);
         } else {
@@ -374,6 +385,29 @@ const SceneSelector = () => {
     const handleTitleVideoPlay = () => {
         // We can only play audio when the user has interacted with the dom
         musicRef.current.play();
+    };
+
+    const transitionFromOnlineMenu = (opponent: OnlineOpponent) => {
+        setOnlineMode(true);
+        setScene(Scenes.MAIN_SCENE);
+        pauseMusic();
+        setOnlineOpponentChoice(opponent);
+    };
+
+    const handleQuit = () => {
+        if (onlineMode) {
+            setScene(Scenes.ONLINE_MENU);
+        } else {
+            setScene(Scenes.MAIN_MENU);
+        }
+    };
+
+    const handleContinue = () => {
+        if (onlineMode) {
+            setScene(Scenes.ONLINE_MENU);
+        } else {
+            setScene(Scenes.CHOOSE_OPPONENT);
+        }
     };
 
     return (
@@ -420,8 +454,8 @@ const SceneSelector = () => {
                     player={playerAgent}
                     opponent={opponent}
                     submitWin={handleWin}
-                    onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
-                    onQuit={() => onTransition(Scenes.MAIN_MENU)}
+                    onContinue={handleContinue}
+                    onQuit={handleQuit}
                     transitionToActionReference={transitionToActionReference}
                     volume={volume}
                     setVolume={setVolume}
@@ -432,11 +466,11 @@ const SceneSelector = () => {
                     playerCharacter={characterIndex}
                     onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
-                    opponent={opponent.agent}
+                    opponent={opponent}
                     transitionToActionReference={transitionToActionReference}
                     volume={volume}
                     setVolume={setVolume}
-                    backgroundId={opponent.backgroundId}
+                    backgroundId={backgroundId}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.GAMEPLAY_TUTORIAL}>
@@ -453,6 +487,12 @@ const SceneSelector = () => {
                         referenceCharacter ? referenceCharacter : character
                     }
                     onContinue={() => transtionFromActionReference()}
+                />
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.ONLINE_MENU}>
+                <OnlineMenu
+                    transitionFromOnlineMenu={transitionFromOnlineMenu}
+                    transitionBack={() => onTransition(Scenes.MAIN_MENU)}
                 />
             </SceneSingle>
         </Box>

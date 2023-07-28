@@ -15,6 +15,10 @@ const MainMenu = React.forwardRef<
             onClick: () => transition(Scenes.MAIN_SCENE, GameModes.simulation),
         },
         {
+            title: 'Online',
+            onClick: () => transition(Scenes.ONLINE_MENU, GameModes.simulation),
+        },
+        {
             title: 'Arcade Mode',
             onClick: () => transition(Scenes.ARCADE, GameModes.realtime),
         },

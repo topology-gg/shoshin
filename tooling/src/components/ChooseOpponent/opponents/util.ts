@@ -1,7 +1,12 @@
-import { buildAgent } from '../../../types/Agent';
-import { layersToAgentComponents } from '../../../types/Layer';
+import { Action } from '../../../types/Action';
+import Agent, { buildAgent } from '../../../types/Agent';
+import { Layer, layersToAgentComponents } from '../../../types/Layer';
 
-export const buildAgentFromLayers = (layers, char, combos) => {
+export const buildAgentFromLayers = (
+    layers: Layer[],
+    char: number,
+    combos: Action[][]
+): Agent => {
     const {
         mentalStates: generatedMs,
         conditions: generatedConditions,

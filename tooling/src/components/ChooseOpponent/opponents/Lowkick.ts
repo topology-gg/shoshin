@@ -1693,4 +1693,5 @@ const json = {
 };
 
 const { layers, char, combos } = json;
+//@ts-ignore
 export const AutoLowKick = buildAgentFromLayers(layers, char, combos);

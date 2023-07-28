@@ -2157,4 +2157,6 @@ const json = {
 };
 
 const { layers, char, combos } = json;
+
+//@ts-ignore
 export const AntocAttack = buildAgentFromLayers(layers, char, combos);

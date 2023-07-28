@@ -2161,4 +2161,5 @@ const json = {
 };
 
 const { layers, char, combos } = json;
+//@ts-ignore
 export const Tempete = buildAgentFromLayers(layers, char, combos);

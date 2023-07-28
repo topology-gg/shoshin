@@ -2043,4 +2043,5 @@ const json = {
     ],
 };
 const { layers, char, combos } = json;
+//@ts-ignore
 export const Eve = buildAgentFromLayers(layers, char, combos);
