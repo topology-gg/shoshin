@@ -87,6 +87,18 @@ const ShoshinMenu = ({
                             />
                             <VolumeUp />
                         </Stack>
+
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={showFullReplay}
+                                    onChange={() =>
+                                        setShowFullReplay(!showFullReplay)
+                                    }
+                                />
+                            }
+                            label="Full Screen Winning Replays"
+                        />
                     </Box>
                 )}
                 {buttons}
