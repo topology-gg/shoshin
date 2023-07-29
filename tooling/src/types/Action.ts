@@ -247,7 +247,7 @@ export const Jump: Action = {
         icon: './images/actions/jump.png',
     },
     frames: {
-        duration: 6,
+        duration: 8, // given current gravity setting, Jessica's jump is 6 (original) + 2 (air) = 8 frames long
         interrupts: [
             {
                 right: [Sidecut.id],
@@ -544,7 +544,7 @@ export const AntocJump: Action = {
         icon: './images/actions/jump.png',
     },
     frames: {
-        duration: 7,
+        duration: 9, // given current gravity setting, Antoc's jump is 7 (original) + 2 (air) = 9 frames long
         interrupts: [
             {
                 right: [Vert.id],

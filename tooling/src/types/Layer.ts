@@ -19,32 +19,36 @@ export interface Layer {
         id: number;
         isCombo: boolean;
     };
+    isSustained?: boolean;
 }
 
 const getActionCondition = (
     layer: Layer,
     layerIndex: number,
-    character: number
+    character: number,
 ) => {
     const action = CHARACTERS_ACTIONS[character].find(
         (action) => action.id == layer.action.id
     );
     const actionName = action.display.name;
     const duration = action.frames.duration - 1;
+    const isSustained = layer.isSustained ?? false;
 
-    console.log('action', action);
-    // block needs to be handled differently because its body counter saturates at 3 until intent changes
-    // when blocking, termination condition is the inverse of the condition for this layer
+    // Block needs to be handled differently because its body counter saturates at 3 until intent changes
+    // when blocking, termination condition is the inverse of the condition for this layer;
+    // The same applies to move forward/backward, taunt, and rest; all these actions are intuitively expected to sustain only while the layer's condition stays true
     if (
+        isSustained ||
         actionName.includes('MoveForward') ||
         actionName.includes('MoveBackward') ||
-        actionName.includes('Block')
+        actionName.includes('Block') ||
+        actionName.includes('Taunt') ||
+        actionName.includes('Rest')
     ) {
         const inverseCondition = getInverseCondition(
             layerIndex,
             layer.conditions
         );
-        console.log('inverse condition', inverseCondition);
         return inverseCondition;
     } else {
         return getIsFinishedCondition(duration, layerIndex);
@@ -98,12 +102,17 @@ export const layersToAgentComponents = (
                 0
             );
 
-            console.log('combo duration', comboDuration);
+            // console.log('combo duration', comboDuration);
 
-            terminatingCondition = getIsComboFinishedCondition(
+            // terminatingCondition = getIsComboFinishedCondition(
+            //     comboDuration,
+            //     layer.action.id
+            // );
+            terminatingCondition = getComboCondition(
                 comboDuration,
-                layer.action.id
-            );
+                layer,
+                i,
+            )
         } else {
             terminatingCondition = getActionCondition(layer, i, character);
         }
@@ -308,6 +317,19 @@ const getIsFinishedCondition = (duration: number, id: number) => {
         key: `${conditionKeyEncoding.finished}${id}`,
     };
 };
+
+const getComboCondition = (comboDuration: number, layer: Layer, layerIndex: number) => {
+    const isSustained = layer.isSustained ?? false;
+    if (isSustained) {
+        const inverseCondition = getInverseCondition(
+            layerIndex,
+            layer.conditions
+        );
+        return inverseCondition;
+    } else {
+        return getIsComboFinishedCondition (comboDuration, layer.action.id);
+    }
+}
 
 const getIsComboFinishedCondition = (comboDuration: number, id: number) => {
     return {
