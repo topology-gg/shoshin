@@ -72,12 +72,11 @@ const defaultOpponent: Opponent = {
 };
 
 const SceneSelector = () => {
-    const [scene, setScene] = useState<Scene>(Scenes.MAIN_MENU);
+    const [scene, setScene] = useState<Scene>();
 
     const [lastScene, setLastScene] = useState<Scene>(Scenes.MAIN_MENU);
     const [onlineMode, setOnlineMode] = useState<boolean>(false);
     const musicRef = useRef<HTMLAudioElement>();
-    const isProduction = process.env.NODE_ENV === 'production';
     const ctx = React.useContext(ShoshinWASMContext);
 
     /*     const callUpdateMind = async () => {
@@ -97,9 +96,6 @@ const SceneSelector = () => {
                 musicRef.current.play();
             }
         };
-        if (!isProduction) {
-            return;
-        }
         setTimeout(() => {
             setScene(Scenes.WALLET_CONNECT);
         }, 500);
