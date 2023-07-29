@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Grid, MenuItem, Tooltip, Typography } from '@mui/material';
+import {
+    Box,
+    Button,
+    Grid,
+    MenuItem,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -274,7 +281,11 @@ const Layer = ({
                         </Typography>
                     </div>
                 </Grid>
-                <Grid item md={gridConditionPortionMd} xl={gridConditionPortionXl}>
+                <Grid
+                    item
+                    md={gridConditionPortionMd}
+                    xl={gridConditionPortionXl}
+                >
                     <Box
                         display="flex"
                         flexDirection="row"
@@ -384,13 +395,11 @@ const Layer = ({
                 <Grid item xs={checkboxPortion}>
                     <label>
                         <input
-                        type="checkbox"
-                        checked={layer.isSustained}
-                        onChange={
-                            () => {
-                                toggleIsSustainedLayer(i)
-                            }
-                        }
+                            type="checkbox"
+                            checked={layer.isSustained}
+                            onChange={() => {
+                                toggleIsSustainedLayer(i);
+                            }}
                         />
                     </label>
                 </Grid>
@@ -637,8 +646,12 @@ const Gambit = ({
 
     const handleToggleIsSustainedLayer = (layerIndex) => {
         let updatedLayers = [...layers];
-        updatedLayers[layerIndex].isSustained = !updatedLayers[layerIndex].isSustained;
-        console.log('layers after handleToggleIsSustainedLayer():', updatedLayers);
+        updatedLayers[layerIndex].isSustained =
+            !updatedLayers[layerIndex].isSustained;
+        console.log(
+            'layers after handleToggleIsSustainedLayer():',
+            updatedLayers
+        );
         setLayers(updatedLayers);
     };
 
@@ -741,7 +754,11 @@ const Gambit = ({
                                                 Condition
                                             </Typography>
                                         </Grid>
-                                        <Grid item md={gridActionPortion-0.4} xl={gridActionPortion-0.4}>
+                                        <Grid
+                                            item
+                                            md={gridActionPortion - 0.4}
+                                            xl={gridActionPortion - 0.4}
+                                        >
                                             <Typography
                                                 sx={{
                                                     fontSize: '13px',
@@ -752,14 +769,38 @@ const Gambit = ({
                                                 Action
                                             </Typography>
                                         </Grid>
-                                        <Grid item md={checkboxPortion} xl={checkboxPortion} sx={{pl:0}}>
-                                            <Tooltip title={
+                                        <Grid
+                                            item
+                                            md={checkboxPortion}
+                                            xl={checkboxPortion}
+                                            sx={{ pl: 0 }}
+                                        >
+                                            <Tooltip
+                                                title={
                                                     <div>
-                                                        <p style={{fontSize: '16px'}}>
-                                                            Stay-Until-Invalid (SUI)
+                                                        <p
+                                                            style={{
+                                                                fontSize:
+                                                                    '16px',
+                                                            }}
+                                                        >
+                                                            Stay-Until-Invalid
+                                                            (SUI)
                                                         </p>
-                                                        <p style={{fontSize: '16px'}}>
-                                                            With SUI, the mind will stay at this layer until its condition becomes invalid, which then returns the mind back to SHOSHIN immediately.
+                                                        <p
+                                                            style={{
+                                                                fontSize:
+                                                                    '16px',
+                                                            }}
+                                                        >
+                                                            With SUI, the mind
+                                                            will stay at this
+                                                            layer until its
+                                                            condition becomes
+                                                            invalid, which then
+                                                            returns the mind
+                                                            back to SHOSHIN
+                                                            immediately.
                                                         </p>
                                                     </div>
                                                 }

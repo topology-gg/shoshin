@@ -25,7 +25,7 @@ export interface Layer {
 const getActionCondition = (
     layer: Layer,
     layerIndex: number,
-    character: number,
+    character: number
 ) => {
     const action = CHARACTERS_ACTIONS[character].find(
         (action) => action.id == layer.action.id
@@ -108,11 +108,7 @@ export const layersToAgentComponents = (
             //     comboDuration,
             //     layer.action.id
             // );
-            terminatingCondition = getComboCondition(
-                comboDuration,
-                layer,
-                i,
-            )
+            terminatingCondition = getComboCondition(comboDuration, layer, i);
         } else {
             terminatingCondition = getActionCondition(layer, i, character);
         }
@@ -318,7 +314,11 @@ const getIsFinishedCondition = (duration: number, id: number) => {
     };
 };
 
-const getComboCondition = (comboDuration: number, layer: Layer, layerIndex: number) => {
+const getComboCondition = (
+    comboDuration: number,
+    layer: Layer,
+    layerIndex: number
+) => {
     const isSustained = layer.isSustained ?? false;
     if (isSustained) {
         const inverseCondition = getInverseCondition(
@@ -327,9 +327,9 @@ const getComboCondition = (comboDuration: number, layer: Layer, layerIndex: numb
         );
         return inverseCondition;
     } else {
-        return getIsComboFinishedCondition (comboDuration, layer.action.id);
+        return getIsComboFinishedCondition(comboDuration, layer.action.id);
     }
-}
+};
 
 const getIsComboFinishedCondition = (comboDuration: number, id: number) => {
     return {
