@@ -19,7 +19,7 @@ export interface Layer {
         id: number;
         isCombo: boolean;
     };
-    isSustained?: boolean;
+    sui?: boolean;
 }
 
 const getActionCondition = (
@@ -32,13 +32,13 @@ const getActionCondition = (
     );
     const actionName = action.display.name;
     const duration = action.frames.duration - 1;
-    const isSustained = layer.isSustained ?? false;
+    const sui = layer.sui ?? false;
 
     // Block needs to be handled differently because its body counter saturates at 3 until intent changes
     // when blocking, termination condition is the inverse of the condition for this layer;
     // The same applies to move forward/backward, taunt, and rest; all these actions are intuitively expected to sustain only while the layer's condition stays true
     if (
-        isSustained ||
+        sui ||
         actionName.includes('MoveForward') ||
         actionName.includes('MoveBackward') ||
         actionName.includes('Block') ||
@@ -319,8 +319,8 @@ const getComboCondition = (
     layer: Layer,
     layerIndex: number
 ) => {
-    const isSustained = layer.isSustained ?? false;
-    if (isSustained) {
+    const sui = layer.sui ?? false;
+    if (sui) {
         const inverseCondition = getInverseCondition(
             layerIndex,
             layer.conditions

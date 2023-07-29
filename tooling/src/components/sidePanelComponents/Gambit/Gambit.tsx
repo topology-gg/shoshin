@@ -102,7 +102,7 @@ export interface LayerProps {
     handleChooseCombo: (layerIndex: number) => void;
     isActive: boolean;
     features: GambitFeatures;
-    toggleIsSustainedLayer: (layerIndex: number) => void;
+    toggleIsLayerSui: (layerIndex: number) => void;
 }
 
 //Select +Combo,
@@ -124,7 +124,7 @@ const DraggableLayer = ({
     handleChooseCombo,
     isActive,
     features,
-    toggleIsSustainedLayer,
+    toggleIsLayerSui,
 }: LayerProps) => {
     return (
         <Draggable draggableId={index.toString()} index={index}>
@@ -154,7 +154,7 @@ const DraggableLayer = ({
                         isActive={isActive}
                         features={features}
                         actions={actions}
-                        toggleIsSustainedLayer={toggleIsSustainedLayer}
+                        toggleIsLayerSui={toggleIsLayerSui}
                     />
                 </div>
             )}
@@ -178,13 +178,11 @@ const Layer = ({
     isActive,
     features,
     actions,
-    toggleIsSustainedLayer,
+    toggleIsLayerSui,
 }: LayerProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const [conditionIndex, changeConditionIndex] = useState<number>(-1);
-
-    const [isSustainedLayer, setIsSustainedLayer] = useState<boolean>(false);
 
     const [conditionAnchorEl, setConditionAnchorEl] =
         useState<null | HTMLElement>(null);
@@ -396,9 +394,9 @@ const Layer = ({
                     <label>
                         <input
                             type="checkbox"
-                            checked={layer.isSustained}
+                            checked={layer.sui}
                             onChange={() => {
-                                toggleIsSustainedLayer(i);
+                                toggleIsLayerSui(i);
                             }}
                         />
                     </label>
@@ -644,14 +642,9 @@ const Gambit = ({
         setLayers(updatedLayers);
     };
 
-    const handleToggleIsSustainedLayer = (layerIndex) => {
+    const handleToggleIsLayerSui = (layerIndex) => {
         let updatedLayers = [...layers];
-        updatedLayers[layerIndex].isSustained =
-            !updatedLayers[layerIndex].isSustained;
-        console.log(
-            'layers after handleToggleIsSustainedLayer():',
-            updatedLayers
-        );
+        updatedLayers[layerIndex].sui = !updatedLayers[layerIndex].sui;
         setLayers(updatedLayers);
     };
 
@@ -679,7 +672,7 @@ const Gambit = ({
                 isActive={activeMs == index + 1}
                 features={features}
                 actions={actions}
-                toggleIsSustainedLayer={handleToggleIsSustainedLayer}
+                toggleIsLayerSui={handleToggleIsLayerSui}
             />
         ));
     });
@@ -756,8 +749,8 @@ const Gambit = ({
                                         </Grid>
                                         <Grid
                                             item
-                                            md={gridActionPortion - 0.4}
-                                            xl={gridActionPortion - 0.4}
+                                            md={gridActionPortion - 0.2}
+                                            xl={gridActionPortion - 0.2}
                                         >
                                             <Typography
                                                 sx={{
