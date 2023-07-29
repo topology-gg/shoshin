@@ -8,9 +8,9 @@ import Button from '@mui/material/Button';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import SwipeableViews from 'react-swipeable-views';
-import { Opponent } from '../layout/SceneSelector';
 import { numberToCharacter } from '../../constants/constants';
 import Tile, { TileContent } from '../ui/Tile';
+import { Opponent } from '../../types/Opponent';
 
 const images = [
     {

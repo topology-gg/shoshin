@@ -24,6 +24,8 @@ import MechanicsTutorialScene from '../GamePlayTutorial/GameplayTutorial';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MobileView from '../MobileView';
 import ActionReference from '../ActionReference/ActionReference';
+import PauseMenu from '../SimulationScene/PauseMenu';
+import { Medal, Opponent, OnlineOpponent } from '../../types/Opponent';
 import OnlineMenu from '../OnlineMenu/OnlineMenu';
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
 import { onlineOpponentAdam } from '../ChooseOpponent/opponents/Adam';
@@ -50,28 +52,6 @@ export const Scenes = {
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
 
-export interface Opponent {
-    agent: Agent;
-    medal: Medal;
-    id: number;
-    name: string;
-    backgroundId: number;
-    mindName?: string;
-}
-
-export interface OnlineOpponent {
-    agent: PlayerAgent;
-    mindName: string;
-    playerName: string;
-}
-
-export enum Medal {
-    NONE = 'None',
-    GOLD = 'Gold',
-    SILVER = 'Silver',
-    BRONZE = 'Bronze',
-}
-
 const deafaultState: ShoshinPersistedState = {
     playerAgents: {
         jessica: undefined,
@@ -97,7 +77,6 @@ const SceneSelector = () => {
     const [lastScene, setLastScene] = useState<Scene>(Scenes.MAIN_MENU);
     const [onlineMode, setOnlineMode] = useState<boolean>(false);
     const musicRef = useRef<HTMLAudioElement>();
-
     const ctx = React.useContext(ShoshinWASMContext);
 
     /*     const callUpdateMind = async () => {
@@ -134,6 +113,21 @@ const SceneSelector = () => {
             musicRef.current.play();
         }
     };
+
+    const [showFullReplay, setShowFullReplay] = useState<boolean>(true);
+
+    useEffect(() => {
+        const newShowFullReplay = JSON.parse(
+            localStorage.getItem('showFullReplay')
+        );
+        if (newShowFullReplay && newShowFullReplay !== showFullReplay) {
+            setShowFullReplay(JSON.parse(newShowFullReplay));
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('showFullReplay', JSON.stringify(showFullReplay));
+    }, [showFullReplay]);
 
     const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation);
 
@@ -387,6 +381,17 @@ const SceneSelector = () => {
         musicRef.current.play();
     };
 
+    const pauseMenu = (
+        <PauseMenu
+            onQuit={() => onTransition(Scenes.MAIN_MENU)}
+            onChooseCharacter={() => onTransition(Scenes.CHOOSE_OPPONENT)}
+            transitionToActionReference={transitionToActionReference}
+            volume={volume}
+            setVolume={setVolume}
+            setShowFullReplay={setShowFullReplay}
+            showFullReplay={showFullReplay}
+        />
+    );
     const transitionFromOnlineMenu = (opponent: OnlineOpponent) => {
         setOnlineMode(true);
         setScene(Scenes.MAIN_SCENE);
@@ -458,19 +463,16 @@ const SceneSelector = () => {
                     onQuit={handleQuit}
                     transitionToActionReference={transitionToActionReference}
                     volume={volume}
-                    setVolume={setVolume}
+                    pauseMenu={pauseMenu}
+                    showFullReplay={showFullReplay}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ARCADE}>
                 <Arcade
                     playerCharacter={characterIndex}
-                    onContinue={() => onTransition(Scenes.CHOOSE_OPPONENT)}
-                    onQuit={() => onTransition(Scenes.MAIN_MENU)}
                     opponent={opponent}
-                    transitionToActionReference={transitionToActionReference}
                     volume={volume}
-                    setVolume={setVolume}
-                    backgroundId={backgroundId}
+                    pauseMenu={pauseMenu}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.GAMEPLAY_TUTORIAL}>

@@ -23,13 +23,13 @@ import MidScreenControl from '../MidScreenControl';
 import Gambit from '../sidePanelComponents/Gambit/Gambit';
 import { Condition } from '../../types/Condition';
 import SquareOverlayMenu from '../SimulationScene/SuccessMenu';
-import { Medal, Opponent } from '../layout/SceneSelector';
 import mainSceneStyles from '../SimulationScene/MainScene.module.css';
 import tutorial from './Lessons/Tutorial';
 import { HighlightZone, Lesson } from '../../types/Tutorial';
 import GameCard from '../ui/GameCard';
 import FullArtBackground from '../layout/FullArtBackground';
 import GameplayTutorialMenu from './GameplayTutorialMenu';
+import { Medal } from '../../types/Opponent';
 import CardSimple from '../ui/CardSimple';
 import { FastForward, FastRewind } from '@mui/icons-material';
 //@ts-ignore
@@ -439,6 +439,7 @@ const GameplayTutorialScene = React.forwardRef(
                                 opponentName={opponentName}
                                 performance={performance}
                                 handleContinueClick={handleContinueClick}
+                                closeMenu={() => changeShowVictory(false)}
                             />
                         ) : null}
                         {openPauseMenu ? (

@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Grid, Button, IconButton } from '@mui/material';
+import { Typography, Box, Grid, IconButton } from '@mui/material';
 import styles from './ChooseOpponent.module.css';
-import { Medal, Opponent } from '../layout/SceneSelector';
 import { Character } from '../../constants/constants';
 import CardCarousel3D from '../CardCarousel/CardCarousel3D';
 import FullArtBackground from '../layout/FullArtBackground';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
-import CharacterTile from '../ChooseCharacter/CharacterTile';
 import OpponentTile from '../ChooseCharacter/OpponentTile';
+import { Medal, Opponent } from '../../types/Opponent';
 
 interface ChooseOpponentProps {
     opponents: Opponent[];

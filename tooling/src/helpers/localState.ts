@@ -1,5 +1,5 @@
-import { Opponent } from '../components/layout/SceneSelector';
 import { PlayerAgent } from '../types/Agent';
+import { Opponent } from '../types/Opponent';
 
 export interface ShoshinPersistedState {
     playerAgents: {

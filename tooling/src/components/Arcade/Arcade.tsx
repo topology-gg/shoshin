@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Character } from '../../constants/constants';
 import Agent from '../../types/Agent';
 import { GameModes } from '../../types/Simulator';
@@ -9,8 +9,8 @@ import { ShoshinWASMContext } from '../../context/wasm-shoshin';
 import React from 'react';
 import PauseMenu from '../SimulationScene/PauseMenu';
 import MidScreenKeybinding from '../MidScreenKeybinding';
-import { OnlineOpponent, Opponent } from '../layout/SceneSelector';
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
+import { OnlineOpponent, Opponent } from '../../types/Opponent';
 
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
@@ -20,36 +20,12 @@ const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
 interface ArcadeProps {
     playerCharacter: number;
     opponent: Opponent | OnlineOpponent;
-    onQuit: () => void;
-    onContinue: () => void;
-    transitionToActionReference: () => void;
     volume: number;
-    setVolume: (volume: number) => void;
-    backgroundId?: number;
+    pauseMenu: ReactNode;
 }
 
 const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
-    (
-        {
-            playerCharacter,
-            opponent,
-            onQuit,
-            onContinue,
-            transitionToActionReference,
-            volume,
-            setVolume,
-            backgroundId,
-        },
-        ref
-    ) => {
-        let p2: Agent;
-        if ('layers' in opponent.agent) {
-            const { layers, character, combos } = opponent.agent;
-            const charIndex = character == Character.Jessica ? 0 : 1;
-            p2 = buildAgentFromLayers(layers, charIndex, combos);
-        } else {
-            p2 = opponent.agent;
-        }
+    ({ playerCharacter, opponent, volume, pauseMenu }, ref) => {
         const [playerStatuses, setPlayerStatuses] =
             useState<StatusBarPanelProps>({
                 integrity_0: 1000,
@@ -64,6 +40,17 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
             [keyName: string]: boolean;
         }>({});
 
+        const backgroundId =
+            'backgroundId' in opponent ? opponent.backgroundId : 0;
+
+        let p2: Agent;
+        if ('layers' in opponent.agent) {
+            const { layers, character, combos } = opponent.agent;
+            const charIndex = character == Character.Jessica ? 0 : 1;
+            p2 = buildAgentFromLayers(layers, charIndex, combos);
+        } else {
+            p2 = opponent.agent;
+        }
         useEffect(() => {
             // keyup
             const handleKeyPress = (ev: KeyboardEvent) => {
@@ -111,17 +98,7 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                         width: '800px',
                     }}
                 >
-                    {openPauseMenu ? (
-                        <PauseMenu
-                            onQuit={onQuit}
-                            onChooseCharacter={onContinue}
-                            transitionToActionReference={
-                                transitionToActionReference
-                            }
-                            volume={volume}
-                            setVolume={setVolume}
-                        />
-                    ) : null}
+                    {openPauseMenu ? pauseMenu : null}
 
                     {/* <StatusBarPanel
                         integrity_0={playerStatuses.integrity_0}

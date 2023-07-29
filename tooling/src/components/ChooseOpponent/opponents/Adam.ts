@@ -1,4 +1,4 @@
-import { OnlineOpponent } from '../../layout/SceneSelector';
+import { OnlineOpponent } from '../../../types/Opponent';
 import { buildAgentFromLayers } from './util';
 
 const json = {

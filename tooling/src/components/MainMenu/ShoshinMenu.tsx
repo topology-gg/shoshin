@@ -1,4 +1,11 @@
-import { Box, Slider, Stack, Typography } from '@mui/material';
+import {
+    Box,
+    Checkbox,
+    FormControlLabel,
+    Slider,
+    Stack,
+    Typography,
+} from '@mui/material';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import LogoBig from '../layout/LogoBig';
 import { VolumeDown, VolumeUp } from '@mui/icons-material';
@@ -13,12 +20,16 @@ interface ShoshinMenuProps {
     menuItems: ShoshinMenuItem[];
     volume?: number;
     setVolume?: (volume: number) => void;
+    showFullReplay?: boolean;
+    setShowFullReplay?: (showFullReplay: boolean) => void;
 }
 const ShoshinMenu = ({
     displayLogo,
     menuItems,
     volume,
     setVolume,
+    showFullReplay,
+    setShowFullReplay,
 }: ShoshinMenuProps) => {
     const buttons = menuItems.map((item) => {
         return (
@@ -76,6 +87,18 @@ const ShoshinMenu = ({
                             />
                             <VolumeUp />
                         </Stack>
+
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={showFullReplay}
+                                    onChange={() =>
+                                        setShowFullReplay(!showFullReplay)
+                                    }
+                                />
+                            }
+                            label="Full Screen Winning Replays"
+                        />
                     </Box>
                 )}
                 {buttons}
