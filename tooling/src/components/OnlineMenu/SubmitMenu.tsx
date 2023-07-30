@@ -108,15 +108,21 @@ const SubmitMenu = ({ closeMenu, username }: SubmitMenuProps) => {
         content = (
             <Box>
                 <Typography>Name your mind</Typography>
-                <TextField
-                    label="Mind Name"
+                <input
+                    autoFocus
+                    type="text"
+                    id="name"
+                    placeholder="Mind Name"
+                    style={{ width: '100%', marginTop: '1rem' }}
                     value={mindName}
                     onChange={handleMindNameChange}
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
                 />
-                <Button variant={'text'} onClick={() => handleSubmitAgent()}>
+
+                <Button
+                    variant={'text'}
+                    disabled={mindName.length == 0}
+                    onClick={() => handleSubmitAgent()}
+                >
                     Submit
                 </Button>
             </Box>
