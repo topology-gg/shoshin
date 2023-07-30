@@ -381,17 +381,6 @@ const SceneSelector = () => {
         musicRef.current.play();
     };
 
-    const pauseMenu = (
-        <PauseMenu
-            onQuit={() => onTransition(Scenes.MAIN_MENU)}
-            onChooseCharacter={() => onTransition(Scenes.CHOOSE_OPPONENT)}
-            transitionToActionReference={transitionToActionReference}
-            volume={volume}
-            setVolume={setVolume}
-            setShowFullReplay={setShowFullReplay}
-            showFullReplay={showFullReplay}
-        />
-    );
     const transitionFromOnlineMenu = (opponent: OnlineOpponent) => {
         setOnlineMode(true);
         setScene(Scenes.MAIN_SCENE);
@@ -414,6 +403,18 @@ const SceneSelector = () => {
             setScene(Scenes.CHOOSE_OPPONENT);
         }
     };
+
+    const pauseMenu = (
+        <PauseMenu
+            onQuit={handleQuit}
+            onChooseCharacter={handleContinue}
+            transitionToActionReference={transitionToActionReference}
+            volume={volume}
+            setVolume={setVolume}
+            setShowFullReplay={setShowFullReplay}
+            showFullReplay={showFullReplay}
+        />
+    );
 
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
