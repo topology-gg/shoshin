@@ -16,6 +16,10 @@ const PauseMenu = ({
             onClick: () => onChooseCharacter(),
         },
         {
+            title: 'Action Reference',
+            onClick: () => transitionToActionReference(),
+        },
+        {
             title: 'Exit to Main Menu',
             onClick: () => onQuit(),
         },
