@@ -135,7 +135,6 @@ const SceneSelector = () => {
         setScene(Scenes.CHOOSE_CHARACTER);
         pauseMusic();
     };
-    3;
 
     const onChooseCharacter = (character: Character) => {
         setCharacter((_) => character);
@@ -144,6 +143,7 @@ const SceneSelector = () => {
 
         const state = getLocalState();
         if (!state) {
+            setScene(Scenes.MOVE_TUTORIAL);
             return;
         }
         const playerAgent: PlayerAgent =
