@@ -117,6 +117,8 @@ struct BodyState {
     stamina: felt,
     dir: felt,
     fatigued : felt,
+    state_index: felt,
+    opponent_state_index_last_hit: felt,
 }
 
 struct PhysicsState {
