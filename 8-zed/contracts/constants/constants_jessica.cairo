@@ -203,13 +203,9 @@ namespace ns_jessica_body_state_qualifiers {
             return 1;
         }
 
-        // if (counter == 4) {
-        //     return 1;
-        // }
-
-        // if (counter == 5) {
-        //     return 1;
-        // }
+        if (counter == 4) {
+            return 1;
+        }
 
         return 0;
     }

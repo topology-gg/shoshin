@@ -197,7 +197,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     assert arr_frames[0] = FrameScene(
         agent_0 = Frame(
             mental_state  = agent_0_initial_state,
-            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1, 0),
+            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1, 0, 0, -1),
             physics_state = physics_state_0,
             action        = 0,
             stimulus      = ns_stimulus.GROUND * ns_stimulus.ENCODING,
@@ -212,7 +212,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             ),
         agent_1 = Frame(
             mental_state  = agent_1_initial_state,
-            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0, 0),
+            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0, 0, 0, -1),
             physics_state = physics_state_1,
             action        = 0,
             stimulus      = ns_stimulus.GROUND * ns_stimulus.ENCODING,
@@ -446,12 +446,14 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         body_state     = last_frame.agent_0.body_state,
         stimulus       = last_frame.agent_0.stimulus,
         intent         = a_0,
+        opponent_body_state_index = last_frame.agent_1.body_state.state_index,
     );
     let (body_state_1 : BodyState) = _body (
         character_type = character_type_1,
         body_state     = last_frame.agent_1.body_state,
         stimulus       = last_frame.agent_1.stimulus,
         intent         = a_1,
+        opponent_body_state_index = last_frame.agent_0.body_state.state_index,
     );
 
     //
@@ -493,6 +495,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 stamina = new_rage_0,
                 dir = new_dir_0,
                 fatigued = body_state_0.fatigued,
+                state_index = body_state_0.state_index,
+                opponent_state_index_last_hit = body_state_0.opponent_state_index_last_hit,
             ),
             physics_state = physics_state_0,
             action        = a_0,
@@ -512,6 +516,8 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 stamina = new_rage_1,
                 dir = new_dir_1,
                 fatigued = body_state_1.fatigued,
+                state_index = body_state_1.state_index,
+                opponent_state_index_last_hit = body_state_1.opponent_state_index_last_hit,
             ),
             physics_state = physics_state_1,
             action        = a_1,
@@ -554,6 +560,8 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         agent_0_body_state_stamina: felt,
         agent_0_body_state_dir: felt,
         agent_0_body_state_fatigued: felt,
+        agent_0_body_state_state_index: felt,
+        agent_0_body_state_opponent_state_index_last_hit: felt,
 
         agent_0_physics_state_pos_x: felt,
         agent_0_physics_state_pos_y: felt,
@@ -572,6 +580,8 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         agent_1_body_state_stamina: felt,
         agent_1_body_state_dir: felt,
         agent_1_body_state_fatigued: felt,
+        agent_1_body_state_state_index: felt,
+        agent_1_body_state_opponent_state_index_last_hit: felt,
 
         agent_1_physics_state_pos_x: felt,
         agent_1_physics_state_pos_y: felt,
@@ -640,6 +650,8 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         stamina=agent_0_body_state_stamina,
         dir=agent_0_body_state_dir,
         fatigued=agent_0_body_state_fatigued,
+        state_index=agent_0_body_state_state_index,
+        opponent_state_index_last_hit=agent_0_body_state_opponent_state_index_last_hit,
     );
 
     let agent_0_position = Vec2(agent_0_physics_state_pos_x, agent_0_physics_state_pos_y);
@@ -657,7 +669,9 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         agent_1_body_state_integrity,
         agent_1_body_state_stamina,
         agent_1_body_state_dir,
-        agent_1_body_state_fatigued
+        agent_1_body_state_fatigued,
+        state_index=agent_1_body_state_state_index,
+        opponent_state_index_last_hit=agent_1_body_state_opponent_state_index_last_hit,
     );
 
     let agent_1_position = Vec2(agent_1_physics_state_pos_x, agent_1_physics_state_pos_y);
@@ -740,12 +754,14 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         body_state     = agent_0_body_state,
         stimulus       = agent_0_stimulus,
         intent         = agent_0_action,
+        opponent_body_state_index = agent_1_body_state_state_index,
     );
     let (body_state_1 : BodyState) = _body (
         character_type = agent_1_character_type,
         body_state     = agent_1_body_state,
         stimulus       = agent_1_stimulus,
         intent         = agent_1_action,
+        opponent_body_state_index = agent_0_body_state_state_index,
     );
 
     //
@@ -793,6 +809,8 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
                 stamina = new_rage_0,
                 dir = new_dir_0,
                 fatigued = body_state_0.fatigued,
+                state_index = body_state_0.state_index,
+                opponent_state_index_last_hit = body_state_0.opponent_state_index_last_hit,
             ),
             physics_state=physics_state_0,
             stimulus=stimulus_0,
@@ -806,6 +824,8 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
                 stamina = new_rage_1,
                 dir = new_dir_1,
                 fatigued = body_state_1.fatigued,
+                state_index = body_state_1.state_index,
+                opponent_state_index_last_hit = body_state_1.opponent_state_index_last_hit,
             ),
             physics_state=physics_state_1,
             stimulus=stimulus_1,
