@@ -5,6 +5,8 @@ export interface BodyState {
     state: number;
     counter: number;
     fatigued: number;
+    state_index: number;
+    opponent_state_index_last_hit: number;
 }
 
 export interface Vec2 {
@@ -173,6 +175,8 @@ function getFlattenedBodyState(bodyState: BodyState): number[] {
         bodyState.stamina,
         bodyState.dir,
         bodyState.fatigued,
+        bodyState.state_index,
+        bodyState.opponent_state_index_last_hit,
     ];
 }
 
@@ -225,6 +229,8 @@ export function getSizeOfRealTimeInputScene() {
                 state: 1,
                 fatigued: 1,
                 counter: 1,
+                state_index: 1,
+                opponent_state_index_last_hit: 1,
             },
             physics_state: {
                 pos: {
@@ -272,6 +278,8 @@ export function getSizeOfRealTimeInputScene() {
                 state: 1,
                 fatigued: 1,
                 counter: 1,
+                state_index: 1,
+                opponent_state_index_last_hit: 1,
             },
             physics_state: {
                 pos: {
