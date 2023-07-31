@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Grid, MenuItem, Typography } from '@mui/material';
+import {
+    Box,
+    Button,
+    Grid,
+    MenuItem,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -26,8 +33,9 @@ let currentConditionMenu = 0;
 let gridOrderPortion = 1.2;
 let gridConditionPortionXl = 5;
 let gridConditionPortionMd = 5;
-let gridActionPortion = 5;
-let gridRemovePortion = 0.8;
+let gridActionPortion = 4;
+let checkboxPortion = 0.9;
+let gridRemovePortion = 0.9;
 
 const actionIndexToAction = (
     action: number,
@@ -94,6 +102,7 @@ export interface LayerProps {
     handleChooseCombo: (layerIndex: number) => void;
     isActive: boolean;
     features: GambitFeatures;
+    toggleIsLayerSui: (layerIndex: number) => void;
 }
 
 //Select +Combo,
@@ -105,6 +114,7 @@ const DraggableLayer = ({
     isReadOnly,
     character,
     conditions,
+    actions,
     combos,
     handleChooseAction,
     handleChooseCondition,
@@ -114,7 +124,7 @@ const DraggableLayer = ({
     handleChooseCombo,
     isActive,
     features,
-    actions,
+    toggleIsLayerSui,
 }: LayerProps) => {
     return (
         <Draggable draggableId={index.toString()} index={index}>
@@ -144,6 +154,7 @@ const DraggableLayer = ({
                         isActive={isActive}
                         features={features}
                         actions={actions}
+                        toggleIsLayerSui={toggleIsLayerSui}
                     />
                 </div>
             )}
@@ -167,6 +178,7 @@ const Layer = ({
     isActive,
     features,
     actions,
+    toggleIsLayerSui,
 }: LayerProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -267,7 +279,11 @@ const Layer = ({
                         </Typography>
                     </div>
                 </Grid>
-                <Grid item md={6} xl={6}>
+                <Grid
+                    item
+                    md={gridConditionPortionMd}
+                    xl={gridConditionPortionXl}
+                >
                     <Box
                         display="flex"
                         flexDirection="row"
@@ -334,7 +350,7 @@ const Layer = ({
                         );
                     })}
                 </Menu>
-                <Grid item md={4} xl={4}>
+                <Grid item md={gridActionPortion} xl={gridActionPortion}>
                     <BlurrableButton
                         className={`${styles.gambitButton} ${styles.actionButton}`}
                         key={`${i}`}
@@ -374,6 +390,17 @@ const Layer = ({
                         );
                     })}
                 </Menu>
+                <Grid item xs={checkboxPortion}>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={layer.sui}
+                            onChange={() => {
+                                toggleIsLayerSui(i);
+                            }}
+                        />
+                    </label>
+                </Grid>
                 <Grid item xs={gridRemovePortion}>
                     {features.layerAddAndDelete ? (
                         <IconButton
@@ -615,6 +642,12 @@ const Gambit = ({
         setLayers(updatedLayers);
     };
 
+    const handleToggleIsLayerSui = (layerIndex) => {
+        let updatedLayers = [...layers];
+        updatedLayers[layerIndex].sui = !updatedLayers[layerIndex].sui;
+        setLayers(updatedLayers);
+    };
+
     const LayerList = React.memo(function LayerList({
         layers,
         activeMs,
@@ -639,6 +672,7 @@ const Gambit = ({
                 isActive={activeMs == index + 1}
                 features={features}
                 actions={actions}
+                toggleIsLayerSui={handleToggleIsLayerSui}
             />
         ));
     });
@@ -671,7 +705,7 @@ const Gambit = ({
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        marginBottom: '4px',
+                        marginBottom: '16px',
                     }}
                 >
                     {componentAddLayer}
@@ -713,7 +747,11 @@ const Gambit = ({
                                                 Condition
                                             </Typography>
                                         </Grid>
-                                        <Grid item md={5} xl={4}>
+                                        <Grid
+                                            item
+                                            md={gridActionPortion - 0.2}
+                                            xl={gridActionPortion - 0.2}
+                                        >
                                             <Typography
                                                 sx={{
                                                     fontSize: '13px',
@@ -724,6 +762,64 @@ const Gambit = ({
                                                 Action
                                             </Typography>
                                         </Grid>
+                                        <Grid
+                                            item
+                                            md={checkboxPortion}
+                                            xl={checkboxPortion}
+                                            sx={{ pl: 0 }}
+                                        >
+                                            <Tooltip
+                                                title={
+                                                    <div>
+                                                        <p
+                                                            style={{
+                                                                fontSize:
+                                                                    '16px',
+                                                            }}
+                                                        >
+                                                            Stay-Until-Invalid
+                                                            (SUI)
+                                                        </p>
+                                                        <p
+                                                            style={{
+                                                                fontSize:
+                                                                    '16px',
+                                                            }}
+                                                        >
+                                                            With SUI, the mind
+                                                            will stay at this
+                                                            layer until its
+                                                            condition becomes
+                                                            invalid, which then
+                                                            returns the mind
+                                                            back to SHOSHIN
+                                                            immediately.
+                                                        </p>
+                                                    </div>
+                                                }
+                                            >
+                                                <Typography
+                                                    sx={{
+                                                        fontSize: '13px',
+                                                        fontFamily: 'Eurostile',
+                                                        color: '#000000',
+                                                    }}
+                                                >
+                                                    SUI
+                                                </Typography>
+                                            </Tooltip>
+                                        </Grid>
+                                        {/* <Grid item md={gridRemovePortion} xl={gridRemovePortion} sx={{pl:0}}>
+                                            <Typography
+                                                sx={{
+                                                    fontSize: '13px',
+                                                    fontFamily: 'Eurostile',
+                                                    color: '#000000',
+                                                }}
+                                            >
+                                                Remove
+                                            </Typography>
+                                        </Grid> */}
                                     </Grid>
 
                                     <LayerList
