@@ -236,7 +236,7 @@ const SimulationScene = React.forwardRef(
                 animationStepBackward();
             } else if (operation == 'ToggleRun') {
                 // If in Run => go to Pause
-                if (animationState == 'Run' && !beatAgent) {
+                if (animationState == 'Run') {
                     clearInterval(loop); // kill the timer
                     setAnimationState('Pause');
                 }
