@@ -131,20 +131,19 @@ const SceneSelector = () => {
 
     const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation);
 
-    const transitionChooseCharacter = (gameMode: GameModes) => {
-        setGameMode(gameMode);
+    const transitionChooseCharacter = () => {
         setScene(Scenes.CHOOSE_CHARACTER);
         pauseMusic();
     };
-    3;
 
     const onChooseCharacter = (character: Character) => {
         setCharacter((_) => character);
-        setScene(Scenes.MOVE_TUTORIAL);
+
         pauseMusic();
 
         const state = getLocalState();
         if (!state) {
+            setScene(Scenes.MOVE_TUTORIAL);
             return;
         }
         const playerAgent: PlayerAgent =
@@ -153,9 +152,20 @@ const SceneSelector = () => {
         if (playerAgent) {
             setPlayerAgent(playerAgent);
         }
+
+        if (!playerAgent) {
+            setScene(Scenes.MOVE_TUTORIAL);
+        } else {
+            transitionChooseOpponent();
+        }
     };
     const transitionChooseOpponent = () => {
-        setScene(Scenes.CHOOSE_OPPONENT);
+        if (onlineMode == true) {
+            setScene(Scenes.ONLINE_MENU);
+        } else {
+            setScene(Scenes.CHOOSE_OPPONENT);
+        }
+
         pauseMusic();
     };
 
@@ -348,9 +358,18 @@ const SceneSelector = () => {
 
     const transitionFromMainMenu = (scene: Scene, gameMode: GameModes) => {
         pauseMusic();
-        setOnlineMode(false);
-        if (scene == Scenes.ARCADE || scene == Scenes.MAIN_SCENE) {
-            transitionChooseCharacter(gameMode);
+        if (scene == Scenes.ARCADE) {
+            setGameMode(GameModes.realtime);
+            transitionChooseCharacter();
+            setOnlineMode(false);
+        } else if (scene == Scenes.MAIN_SCENE) {
+            setGameMode(GameModes.simulation);
+            transitionChooseCharacter();
+            setOnlineMode(false);
+        } else if (scene == Scenes.ONLINE_MENU) {
+            setGameMode(GameModes.simulation);
+            transitionChooseCharacter();
+            setOnlineMode(true);
         } else {
             setScene(scene);
         }
@@ -444,7 +463,7 @@ const SceneSelector = () => {
                     transitionMainScene={transitionMainScene}
                     opponents={opponentChoices}
                     playerCharacter={character}
-                    transitionBack={() => transitionChooseCharacter(gameMode)}
+                    transitionBack={() => transitionChooseCharacter()}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.MOVE_TUTORIAL}>
@@ -495,7 +514,7 @@ const SceneSelector = () => {
             <SceneSingle active={scene === Scenes.ONLINE_MENU}>
                 <OnlineMenu
                     transitionFromOnlineMenu={transitionFromOnlineMenu}
-                    transitionBack={() => onTransition(Scenes.MAIN_MENU)}
+                    transitionBack={() => onTransition(Scenes.CHOOSE_CHARACTER)}
                 />
             </SceneSingle>
         </Box>
