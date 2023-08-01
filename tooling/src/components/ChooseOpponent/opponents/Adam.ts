@@ -1,3 +1,4 @@
+import { Character } from '../../../constants/constants';
 import { OnlineOpponent } from '../../../types/Opponent';
 import { buildAgentFromLayers } from './util';
 
@@ -1991,7 +1992,7 @@ export const onlineOpponentAdam: OnlineOpponent = {
     agent: {
         //@ts-ignore
         layers,
-        char,
+        character: Character.Antoc,
         //@ts-ignore
         combos,
         //@ts-ignore

@@ -38,7 +38,7 @@ const OnlineTable = ({
     ));
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ height: '100%' }}>
             <Table>
                 <TableHead>
                     <TableRow>

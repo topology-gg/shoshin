@@ -28,6 +28,10 @@ const MainMenu = React.forwardRef<
                 transition(Scenes.GAMEPLAY_TUTORIAL, GameModes.simulation),
         },
         {
+            title: 'Minds',
+            onClick: () => transition(Scenes.MINDS, GameModes.simulation),
+        },
+        {
             title: 'Profile',
         },
         {

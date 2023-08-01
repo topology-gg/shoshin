@@ -3,38 +3,36 @@ import { useEffect, useState } from 'react';
 import { Character } from '../../constants/constants';
 import { useUpdateMind } from '../../../lib/api';
 import { getLocalState } from '../../helpers/localState';
+import OnlineTable from './OnlineTable';
+import { SavedMind } from '../../types/Opponent';
 
 interface SubmitMenuProps {
     closeMenu: () => void;
     username: string;
+    minds: SavedMind[];
 }
 
 enum SubmitMenuState {
     Submitting = 'Submitting',
-    SelectCharacter = 'SelectCharacter',
-    NameMind = 'NameMind',
+    SelectMind = 'SelectMind',
+    Confirm = 'Confirm',
     Success = 'Success',
 }
 
 interface SubmittingProps {
     username: string;
-    selectedChar: Character;
-    mindName: string;
-    mind: any;
+
+    mind: SavedMind;
     handleLoaded: () => void;
 }
-const Submitting = ({
-    username,
-    selectedChar,
-    mindName,
-    mind,
-    handleLoaded,
-}: SubmittingProps) => {
+const Submitting = ({ username, mind, handleLoaded }: SubmittingProps) => {
+    const characterName = mind.agent.character.toLowerCase();
+
     const res = useUpdateMind(
         username,
-        selectedChar.toLocaleLowerCase(),
-        mindName,
-        mind
+        characterName,
+        mind.mindName,
+        mind.agent
     );
 
     useEffect(() => {
@@ -48,81 +46,43 @@ const Submitting = ({
         </Box>
     );
 };
-const SubmitMenu = ({ closeMenu, username }: SubmitMenuProps) => {
+const SubmitMenu = ({ closeMenu, username, minds }: SubmitMenuProps) => {
     const [state, setState] = useState<SubmitMenuState>(
-        SubmitMenuState.SelectCharacter
+        SubmitMenuState.SelectMind
     );
 
-    const localState = getLocalState();
+    const [selectedMind, selectMind] = useState<number>(-1);
 
-    let antoc;
-    let jessica;
-    if (localState) {
-        antoc = localState.playerAgents.antoc;
-        jessica = localState.playerAgents.jessica;
-    }
-
-    console.log('localState', localState, antoc, jessica);
     let content = null;
-
-    const [selectedChar, setSelectedChar] = useState<Character>(
-        Character.Jessica
-    );
-
-    const [mindName, setMindName] = useState('');
-
-    const handleMindNameChange = (event) => {
-        setMindName(event.target.value);
-    };
-
-    const handleSelectCharacter = (char: Character) => {
-        setSelectedChar(char);
-        setState(SubmitMenuState.NameMind);
-    };
 
     const handleSubmitAgent = () => {
         setState(SubmitMenuState.Submitting);
     };
 
-    if (state == SubmitMenuState.SelectCharacter) {
+    if (state == SubmitMenuState.SelectMind) {
         content = (
             <Box>
-                <Typography>Select Character to Submit</Typography>
+                <Typography>Select Mind to Submit</Typography>
+                <OnlineTable
+                    opponents={minds}
+                    selectedOpponent={selectedMind}
+                    selectOpponent={selectMind}
+                />
                 <Button
                     variant={'text'}
-                    onClick={() => handleSelectCharacter(Character.Jessica)}
-                    disabled={jessica === undefined}
+                    onClick={() => setState(SubmitMenuState.Confirm)}
+                    disabled={selectedMind === -1}
                 >
-                    Jessica
-                </Button>
-                <Button
-                    variant={'text'}
-                    onClick={() => handleSelectCharacter(Character.Antoc)}
-                    disabled={antoc === undefined}
-                >
-                    Antoc
+                    Next
                 </Button>
             </Box>
         );
-    } else if (state == SubmitMenuState.NameMind) {
+    } else if (state == SubmitMenuState.Confirm) {
         content = (
             <Box>
-                <Typography>Name your mind</Typography>
-                <input
-                    autoFocus
-                    type="text"
-                    id="name"
-                    placeholder="Mind Name"
-                    style={{ width: '100%', marginTop: '1rem' }}
-                    value={mindName}
-                    onChange={handleMindNameChange}
-                />
-
-                <Button
-                    variant={'text'}
-                    disabled={mindName.length == 0}
-                    onClick={() => handleSubmitAgent()}
-                >
+                <Typography>Confirm</Typography>
+                Submitting {minds[selectedMind].mindName}
+                <Button variant={'text'} onClick={() => handleSubmitAgent()}>
                     Submit
                 </Button>
             </Box>
@@ -130,10 +90,8 @@ const SubmitMenu = ({ closeMenu, username }: SubmitMenuProps) => {
     } else if (state == SubmitMenuState.Submitting) {
         content = (
             <Submitting
-                mind={selectedChar == Character.Jessica ? jessica : antoc}
+                mind={minds[selectedMind]}
                 username={username}
-                selectedChar={selectedChar}
-                mindName={mindName}
                 handleLoaded={() => setState(SubmitMenuState.Success)}
             />
         );
