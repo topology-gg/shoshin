@@ -7,7 +7,7 @@ import {
 import { alwaysTrueCondition } from '../types/Layer';
 import { Direction, Tree } from '../types/Tree';
 
-export const spacing_preset_conditions = [
+export const my_frame_preset_conditions = [
     {
         elements: [
             {
@@ -15,39 +15,15 @@ export const spacing_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 'Abs(',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: Perceptible.SelfX,
+                value: Perceptible.SelfBodyCounter,
                 type: 'Perceptible',
             },
             {
-                value: '-',
+                value: '==',
                 type: 'Operator',
             },
             {
-                value: Perceptible.OpponentX,
-                type: 'Perceptible',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: '|',
-                type: 'Operator',
-            },
-            {
-                value: '<=',
-                type: 'Operator',
-            },
-            {
-                value: 80,
+                value: 0,
                 type: 'Constant',
             },
             {
@@ -55,8 +31,8 @@ export const spacing_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Within 80',
-        type: 'spacing',
+        displayName: 'My Frame = 1',
+        type: 'self state',
     },
     {
         elements: [
@@ -65,39 +41,15 @@ export const spacing_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 'Abs(',
-                type: 'Operator',
+                value: Perceptible.SelfBodyCounter,
+                type: 'Perceptible',
             },
             {
-                value: '(',
+                value: '==',
                 type: 'Operator',
             },
             {
                 value: 1,
-                type: 'Perceptible',
-            },
-            {
-                value: '-',
-                type: 'Operator',
-            },
-            {
-                value: 101,
-                type: 'Perceptible',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: '|',
-                type: 'Operator',
-            },
-            {
-                value: '<=',
-                type: 'Operator',
-            },
-            {
-                value: 100,
                 type: 'Constant',
             },
             {
@@ -105,8 +57,8 @@ export const spacing_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Within 100',
-        type: 'spacing',
+        displayName: 'My Frame = 2',
+        type: 'self state',
     },
     {
         elements: [
@@ -115,39 +67,15 @@ export const spacing_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 'Abs(',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 1,
+                value: Perceptible.SelfBodyCounter,
                 type: 'Perceptible',
             },
             {
-                value: '-',
+                value: '==',
                 type: 'Operator',
             },
             {
-                value: 101,
-                type: 'Perceptible',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: '|',
-                type: 'Operator',
-            },
-            {
-                value: '<=',
-                type: 'Operator',
-            },
-            {
-                value: 120,
+                value: 2,
                 type: 'Constant',
             },
             {
@@ -155,8 +83,8 @@ export const spacing_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Within 120',
-        type: 'spacing',
+        displayName: 'My Frame = 3',
+        type: 'self state',
     },
     {
         elements: [
@@ -165,39 +93,15 @@ export const spacing_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 'Abs(',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 1,
+                value: Perceptible.SelfBodyCounter,
                 type: 'Perceptible',
             },
             {
-                value: '-',
+                value: '==',
                 type: 'Operator',
             },
             {
-                value: 101,
-                type: 'Perceptible',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: '|',
-                type: 'Operator',
-            },
-            {
-                value: '<=',
-                type: 'Operator',
-            },
-            {
-                value: 150,
+                value: 3,
                 type: 'Constant',
             },
             {
@@ -205,8 +109,8 @@ export const spacing_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Within 150',
-        type: 'spacing',
+        displayName: 'My Frame = 4',
+        type: 'self state',
     },
     {
         elements: [
@@ -215,39 +119,15 @@ export const spacing_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 'Abs(',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 1,
+                value: Perceptible.SelfBodyCounter,
                 type: 'Perceptible',
             },
             {
-                value: '-',
+                value: '==',
                 type: 'Operator',
             },
             {
-                value: 101,
-                type: 'Perceptible',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: '|',
-                type: 'Operator',
-            },
-            {
-                value: '<=',
-                type: 'Operator',
-            },
-            {
-                value: 180,
+                value: 4,
                 type: 'Constant',
             },
             {
@@ -255,8 +135,8 @@ export const spacing_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Within 180',
-        type: 'spacing',
+        displayName: 'My Frame = 5',
+        type: 'self state',
     },
     {
         elements: [
@@ -265,39 +145,15 @@ export const spacing_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 'Abs(',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: 1,
+                value: Perceptible.SelfBodyCounter,
                 type: 'Perceptible',
             },
             {
-                value: '-',
+                value: '==',
                 type: 'Operator',
             },
             {
-                value: 101,
-                type: 'Perceptible',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: '|',
-                type: 'Operator',
-            },
-            {
-                value: '<=',
-                type: 'Operator',
-            },
-            {
-                value: 250,
+                value: 5,
                 type: 'Constant',
             },
             {
@@ -305,7 +161,163 @@ export const spacing_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Within 250',
-        type: 'spacing',
+        displayName: 'My Frame = 6',
+        type: 'self state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyCounter,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: 6,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'My Frame = 7',
+        type: 'self state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyCounter,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: 7,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'My Frame = 8',
+        type: 'self state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyCounter,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: 8,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'My Frame == 9',
+        type: 'self state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyCounter,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: 9,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'My Frame == 10',
+        type: 'self state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyCounter,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: 10,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'My Frame == 11',
+        type: 'self state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyCounter,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: 17,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'My Frame == 18',
+        type: 'self state',
     },
 ];

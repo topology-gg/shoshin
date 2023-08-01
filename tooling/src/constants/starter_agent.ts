@@ -9,7 +9,10 @@ import { alwaysTrueCondition } from '../types/Layer';
 import { Direction, Tree } from '../types/Tree';
 import { antoc_preset_conditions } from './antoc_preset_conditions';
 import { jessica_preset_conditions } from './jessica_preset_conditions';
+import { my_frame_preset_conditions } from './my_frame_preset_conditions';
+import { opponent_frame_preset_conditions } from './opponent_frame_preset_conditions';
 import { spacing_preset_conditions } from './spacing_preset_conditions';
+import { y_position_preset_conditions } from './y_position_preset_conditions';
 
 // source: https://stackoverflow.com/a/40958850
 function simpleHash(str: string) {
@@ -62,7 +65,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My rage > 500',
+        displayName: 'My Rage > 500',
         type: 'my rage',
     },
     {
@@ -88,7 +91,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My rage = 1000',
+        displayName: 'My Rage = 1000',
         type: 'my rage',
     },
     {
@@ -114,7 +117,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My health < 200',
+        displayName: 'My Health < 200',
         type: 'my health',
     },
     {
@@ -140,7 +143,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My health < 400',
+        displayName: 'My Health < 400',
         type: 'my health',
     },
     {
@@ -166,7 +169,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My health < 600',
+        displayName: 'My Health < 600',
         type: 'my health',
     },
     {
@@ -192,7 +195,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My health < 800',
+        displayName: 'My Health < 800',
         type: 'my health',
     },
     {
@@ -230,7 +233,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent rage > 500',
+        displayName: 'Opponent Rage > 500',
         type: 'opponent rage',
     },
     {
@@ -256,7 +259,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent rage = 1000',
+        displayName: 'Opponent Rage = 1000',
         type: 'opponent rage',
     },
     {
@@ -282,7 +285,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent health < 100',
+        displayName: 'Opponent Health < 100',
         type: 'opponent health',
     },
     {
@@ -308,7 +311,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent health < 200',
+        displayName: 'Opponent Health < 200',
         type: 'opponent health',
     },
     {
@@ -334,7 +337,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent health < 300',
+        displayName: 'Opponent Health < 300',
         type: 'opponent health',
     },
     {
@@ -360,7 +363,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent health < 400',
+        displayName: 'Opponent Health < 400',
         type: 'opponent health',
     },
     {
@@ -386,7 +389,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent health < 500',
+        displayName: 'Opponent Health < 500',
         type: 'opponent health',
     },
     {
@@ -412,7 +415,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent health < 600',
+        displayName: 'Opponent Health < 600',
         type: 'opponent health',
     },
     {
@@ -438,7 +441,7 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent health < 700',
+        displayName: 'Opponent Health < 700',
         type: 'opponent health',
     },
     {
@@ -464,12 +467,12 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent health < 800',
+        displayName: 'Opponent Health < 800',
         type: 'opponent health',
     },
 ];
 
-const common_body_state_preset_conditions = [
+const common_opponent_body_state_preset_conditions = [
     {
         elements: [
             {
@@ -775,7 +778,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent attacking',
+        displayName: 'Opponent Attacking',
         type: 'opponent state',
     },
     {
@@ -987,7 +990,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent jumping',
+        displayName: 'Opponent Jumping',
         type: 'opponent state',
     },
     {
@@ -1037,7 +1040,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent low kicking',
+        displayName: 'Opponent LowKicking',
         type: 'opponent state',
     },
     {
@@ -1055,7 +1058,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 50,
+                value: BodystatesJessica.Clash,
                 type: 'BodyState',
             },
             {
@@ -1079,7 +1082,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 1130,
+                value: BodystatesAntoc.Clash,
                 type: 'BodyState',
             },
             {
@@ -1087,7 +1090,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent clashed',
+        displayName: 'Opponent Clashed',
         type: 'opponent state',
     },
     {
@@ -1109,7 +1112,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 60,
+                value: BodystatesJessica.Hurt,
                 type: 'BodyState',
             },
             {
@@ -1133,7 +1136,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 1050,
+                value: BodystatesAntoc.Hurt,
                 type: 'BodyState',
             },
             {
@@ -1145,7 +1148,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent hurt',
+        displayName: 'Opponent Hurt',
         type: 'opponent state',
     },
     {
@@ -1225,7 +1228,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 110,
+                value: BodystatesJessica.DashForward,
                 type: 'BodyState',
             },
             {
@@ -1249,7 +1252,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 1110,
+                value: BodystatesAntoc.DashForward,
                 type: 'BodyState',
             },
             {
@@ -1283,7 +1286,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 120,
+                value: BodystatesJessica.DashBackward,
                 type: 'BodyState',
             },
             {
@@ -1307,7 +1310,7 @@ const common_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 1120,
+                value: BodystatesAntoc.DashBackward,
                 type: 'BodyState',
             },
             {
@@ -1382,10 +1385,513 @@ const common_body_state_preset_conditions = [
     },
 ];
 
+const common_self_body_state_preset_conditions = [
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.Idle,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.Idle,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Self Idle',
+        type: 'self state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.Block,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.Block,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Self Block',
+        type: 'self state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.Jump,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.JumpMoveForward,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.JumpMoveBackward,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.Jump,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.JumpMoveForward,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.JumpMoveBackward,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Self Jumping',
+        type: 'self state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.Clash,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.Clash,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Self Clashed',
+        type: 'self state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.Hurt,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.Hurt,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Self Hurt',
+        type: 'self state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.Launched,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.Launched,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Self Launched',
+        type: 'self state',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.Knocked,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.Knocked,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'Self Knocked',
+        type: 'self state',
+    },
+];
+
 let preset_conditions = spacing_preset_conditions;
+preset_conditions = preset_conditions.concat(y_position_preset_conditions);
 preset_conditions = preset_conditions.concat(
-    common_body_state_preset_conditions
+    common_opponent_body_state_preset_conditions
 );
+preset_conditions = preset_conditions.concat(
+    common_self_body_state_preset_conditions
+);
+preset_conditions = preset_conditions.concat(opponent_frame_preset_conditions);
+preset_conditions = preset_conditions.concat(my_frame_preset_conditions);
 preset_conditions = preset_conditions.concat(jessica_preset_conditions);
 preset_conditions = preset_conditions.concat(antoc_preset_conditions);
 preset_conditions = preset_conditions.concat(common_stats_preset_conditions);
