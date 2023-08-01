@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, WithId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
 import {
@@ -6,17 +6,29 @@ import {
     Character,
     DB_NAME,
 } from '../../../src/constants/constants';
-import { PlayerAgent } from '../../../src/types/Agent';
+import cairoOutputToFrameScene from '../../../src/helpers/cairoOutputToFrameScene';
+import Agent, { PlayerAgent, agentsToArray, buildAgent } from '../../../src/types/Agent';
+import { FrameScene } from '../../../src/types/Frame';
+import { layersToAgentComponents } from '../../../src/types/Layer';
+import initWasm from '../../../wasm/shoshin/pkg/shoshin';
 
-type SubmittedMind = {
+type PvPResult = {
+    result: 'win' | 'loss' ;
+    score: number;
+    hp: number;
+} ;
+
+type PvPProfile = {
     mindName: string;
     playerName: string;
-    mind: PlayerAgent;
+    agent: PlayerAgent;
+    rank: number;
+    records: Map<string, PvPResult>
 };
 
-type PutRequest = {
-    mind: PlayerAgent;
-};
+
+let wasm; 
+
 
 export default async function handler(
     req: NextApiRequest,
@@ -27,19 +39,19 @@ export default async function handler(
     if (req.method === 'PUT') {
         const client: MongoClient = await clientPromise;
         const db = client.db(DB_NAME);
-        const submittedMinds =
-            db.collection<SubmittedMind>(COLLECTION_NAME_PVP);
+        const pvpProfileCollection =
+            db.collection<PvPProfile>(COLLECTION_NAME_PVP);
         const playerName = data[0];
         const character = data[1];
         const mindName = data[2];
 
         try {
-            const updateResult = await submittedMinds.updateOne(
+            const updateResult = await pvpProfileCollection.updateOne(
                 {
                     $and: [
                         { mindName: mindName },
                         { playerName: playerName },
-                        { agent: { character: character as Character } },
+                        { 'agent.character': character as Character },
                     ],
                 },
                 {
@@ -52,16 +64,16 @@ export default async function handler(
                 { upsert: true }
             );
             if (updateResult.acknowledged) {
-                const latest = await submittedMinds.findOne({
+                const latest = await pvpProfileCollection.findOne({
                     $and: [
                         { mindName: mindName },
                         { playerName: playerName },
-                        { 'mind.character': character as Character },
+                        { 'agent.character': character as Character },
                     ],
                 });
                 if (!latest) {
                     console.error(
-                        `unable to update minds, req url = ${req.url}, req body = ${req.body}, update result = ${updateResult},  `
+                        `unable to update minds, req url = ${req.url}, req body = ${JSON.stringify(req.body)}, update result = ${JSON.stringify(updateResult)},  `
                     );
                     res.status(500).json({
                         error: 'Error updating mind, unable to find updated minds',
@@ -70,9 +82,10 @@ export default async function handler(
                 }
                 const { _id, ...responseBody } = latest;
                 res.status(200).json(responseBody);
+                postProcess();
             } else {
                 console.error(
-                    `unable to update minds, req url = ${req.url}, req body = ${req.body}, update result = ${updateResult},  `
+                    `unable to update minds, req url = ${req.url}, req body = ${JSON.stringify(req.body)}, update result = ${JSON.stringify(updateResult)},  `
                 );
                 res.status(500).json({
                     error: 'Error updating mind: Failed to upload minds',
@@ -87,4 +100,126 @@ export default async function handler(
     } else {
         res.status(405).json({ error: 'Method not allowed' });
     }
+}
+
+async function postProcess(){
+    const client: MongoClient = await clientPromise;
+    const db = client.db(DB_NAME);
+    const pvpRankedCollection = db.collection<PvPProfile>(COLLECTION_NAME_PVP + '-ranked');
+    let pvpProfiles = await pvpRankedCollection
+    .find({})
+    .sort({_id: -1})
+    .toArray();
+    
+    if(pvpProfiles.length == 0){
+        const pvpProfileCollection = db.collection<PvPProfile>(COLLECTION_NAME_PVP);
+        pvpProfiles = await pvpProfileCollection
+        .find({})
+        .sort({_id: -1})
+        .toArray();
+    }
+
+    const rankedMinds = await rankMinds(pvpProfiles);
+    console.log(`rankedMinds = ${JSON.stringify(rankedMinds)}`);
+    
+    const bulkUpdate = generateBulkUpdate(rankedMinds);
+    console.log(`bulkUpdate = ${JSON.stringify(bulkUpdate)}`);
+    
+    // await pvpRankedCollection.bulkWrite(bulkUpdate);
+    
+}
+
+async function rankMinds(pvpProfiles: WithId<PvPProfile>[]){
+    const unrankedProfiles = pvpProfiles.filter((profile) => profile.records == null || profile.records.size == 0);
+    for (let index = 0; index < unrankedProfiles.length; index++) {
+        const unrankedProfile = unrankedProfiles[index];
+        if (unrankedProfile.records == null ){
+            unrankedProfile.records = new Map<string, PvPResult>();
+        }
+        for (let index = 0; index < pvpProfiles.length; index++) {
+            const profile = pvpProfiles[index];
+            if(profile._id == unrankedProfile._id) continue;
+            if(unrankedProfile.records.has(getProfileKey(profile))) continue;
+
+            const result = await fight(unrankedProfile, profile);
+            unrankedProfile.records.set(getProfileKey(profile), result[0]);
+            profile.records.set(getProfileKey(unrankedProfile), result[1]);
+        }
+    }
+
+    const result = pvpProfiles.sort((prev, curr) => {
+        const prevWins = Array.from(prev.records.values()).filter((result) => result.result == 'win').length;
+        const currWins = Array.from(curr.records.values()).filter((result) => result.result == 'win').length;
+        if(prevWins == currWins){
+            return prev.records.get(getProfileKey(curr))?.result == 'win' ? -1 : 1;
+        };
+        return currWins - prevWins;
+    })
+
+    result.forEach((profile, index) => {
+        profile.rank = index + 1;
+    });
+    
+    return result;
+}
+
+function getProfileKey(profile: PvPProfile): string{
+    return `${profile.playerName}-${profile.mindName}-${profile.agent.character}`;
+}
+
+async function fight(challenger: PvPProfile, opponent: PvPProfile): Promise<[PvPResult, PvPResult]>{
+
+    const p1 = getAgentFromProfile(challenger);
+    const p2 = getAgentFromProfile(opponent);
+
+    const [output, err] = await runSimulation(p1, p2);
+
+    const p1FinalHp = output.agent_0[output.agent_1.length - 1].body_state.integrity
+    const p2FinalHp = output.agent_1[output.agent_1.length - 1].body_state.integrity
+    const beatAgent = output !== undefined ? p1FinalHp > p2FinalHp : false;
+
+    return [{ result: beatAgent? 'win': 'loss', score: p1FinalHp, hp: p1FinalHp }, { result: beatAgent? 'loss': 'win', score: p2FinalHp, hp: p2FinalHp } ]
+
+}
+
+async function runSimulation(p1: Agent, p2: Agent): Promise<[FrameScene, Error]>{
+
+    if(wasm == null){
+        wasm = await initWasm(new URL('/_next/static/media/shoshin_bg.b5f2a667.wasm', 'http://localhost:3000'));
+    }
+    let shoshinInput = new Int32Array(agentsToArray(p1, p2));
+    let output = wasm.runCairoProgram(shoshinInput);
+    return [cairoOutputToFrameScene(output), null];
+}
+
+function getAgentFromProfile(profile: PvPProfile): Agent{
+    const playerAgent = profile.agent;
+    const char = Object.keys(Character).indexOf(playerAgent.character);
+    const {
+        mentalStates: generatedMs,
+        conditions: generatedConditions,
+        trees: generatedTrees,
+    } = layersToAgentComponents(playerAgent.layers, char, playerAgent.combos);
+
+    return buildAgent(
+        generatedMs,
+        playerAgent.combos,
+        generatedTrees,
+        generatedConditions,
+        0,
+        char
+    );
+}
+
+function generateBulkUpdate(pvpProfiles: WithId<PvPProfile>[]): any[]{
+    const bulkUpdate = [];
+    pvpProfiles.forEach((profile) => {
+        bulkUpdate.push({
+            updateOne: {
+                filter: { _id: profile._id },
+                update: { $set: profile },
+            },
+        });
+    });
+    return bulkUpdate;
 }
