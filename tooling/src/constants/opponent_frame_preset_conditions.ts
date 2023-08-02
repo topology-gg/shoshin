@@ -239,7 +239,7 @@ export const opponent_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent Frame == 9',
+        displayName: 'Opponent Frame = 9',
         type: 'opponent state',
     },
     {
@@ -265,7 +265,7 @@ export const opponent_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent Frame == 10',
+        displayName: 'Opponent Frame = 10',
         type: 'opponent state',
     },
     {
@@ -291,7 +291,7 @@ export const opponent_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent Frame == 11',
+        displayName: 'Opponent Frame = 11',
         type: 'opponent state',
     },
     {
@@ -317,7 +317,7 @@ export const opponent_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent Frame == 18',
+        displayName: 'Opponent Frame = 18',
         type: 'opponent state',
     },
 ];

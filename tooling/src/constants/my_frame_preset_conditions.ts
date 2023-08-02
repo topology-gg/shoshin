@@ -31,7 +31,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Frame = 1',
+        displayName: 'Self Frame = 1',
         type: 'self state',
     },
     {
@@ -57,7 +57,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Frame = 2',
+        displayName: 'Self Frame = 2',
         type: 'self state',
     },
     {
@@ -83,7 +83,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Frame = 3',
+        displayName: 'Self Frame = 3',
         type: 'self state',
     },
     {
@@ -109,7 +109,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Frame = 4',
+        displayName: 'Self Frame = 4',
         type: 'self state',
     },
     {
@@ -135,7 +135,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Frame = 5',
+        displayName: 'Self Frame = 5',
         type: 'self state',
     },
     {
@@ -161,7 +161,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Frame = 6',
+        displayName: 'Self Frame = 6',
         type: 'self state',
     },
     {
@@ -187,7 +187,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Frame = 7',
+        displayName: 'Self Frame = 7',
         type: 'self state',
     },
     {
@@ -213,7 +213,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Frame = 8',
+        displayName: 'Self Frame = 8',
         type: 'self state',
     },
     {
@@ -239,7 +239,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Frame == 9',
+        displayName: 'Self Frame = 9',
         type: 'self state',
     },
     {
@@ -265,7 +265,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Frame == 10',
+        displayName: 'Self Frame = 10',
         type: 'self state',
     },
     {
@@ -291,7 +291,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Frame == 11',
+        displayName: 'Self Frame = 11',
         type: 'self state',
     },
     {
@@ -317,7 +317,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Frame == 18',
+        displayName: 'Self Frame = 18',
         type: 'self state',
     },
 ];

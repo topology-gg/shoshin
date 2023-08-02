@@ -43,7 +43,7 @@ export const y_position_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Y > 0',
+        displayName: 'Self Y > 0',
         type: 'spacing',
     },
     {
@@ -81,7 +81,7 @@ export const y_position_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Y > 45',
+        displayName: 'Self Y > 45',
         type: 'spacing',
     },
     {
@@ -119,7 +119,7 @@ export const y_position_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'My Y > 100',
+        displayName: 'Self Y > 100',
         type: 'spacing',
     },
     {
