@@ -279,6 +279,7 @@ const SceneSelector = () => {
     const backgroundId = 'backgroundId' in opponent ? opponent.backgroundId : 0;
 
     const savePlayerAgent = (playerAgent: Playable) => {
+        console.log('save agent', playerAgent);
         setPlayerAgent(playerAgent);
         let updatedState = deafaultState;
         const state = getLocalState();
@@ -286,10 +287,28 @@ const SceneSelector = () => {
             updatedState = state;
         }
 
-        if ('agent' in playerAgent) {
-            updatedState.playerAgents[character.toLocaleLowerCase()] =
-                playerAgent.agent;
-        } else {
+        if ('mindName' in playerAgent) {
+            const newMinds = minds.map((mind) => {
+                if (
+                    mind.mindName == playerAgent.mindName &&
+                    mind.agent.character == playerAgent.agent.character &&
+                    mind.playerName == playerAgent.playerName
+                ) {
+                    return {
+                        ...mind,
+                        agent: playerAgent.agent,
+                        lastUpdatedDate: Date.now().toString(),
+                    };
+                }
+                return mind;
+            });
+
+            updatedState.minds = newMinds;
+            setMinds(newMinds);
+        }
+
+        if ('layers' in playerAgent) {
+            console.log('saving player agent');
             updatedState.playerAgents[character.toLocaleLowerCase()] =
                 playerAgent;
         }
