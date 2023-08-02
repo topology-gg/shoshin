@@ -49,6 +49,7 @@ const SimpleLayerList = ({ playerAgent }: SimpleLayerList) => {
             handleRemoveLayer={() => {}}
             isActive={false}
             toggleIsLayerSui={() => {}}
+            handleDuplicateLayer={() => {}}
             features={features}
         />
     ));
