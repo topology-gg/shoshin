@@ -19,6 +19,7 @@ import { Frame } from '../types/Frame';
 import { BodystatesAntoc, BodystatesJessica } from '../types/Condition';
 import Timeline from './ui/Timeline';
 import EventSymbol from './ui/EventSymbol';
+import SubmitMindButton from './SimulationScene/MainSceneSubmit';
 
 // Calculate key events to be displayed along the timeline slider
 function findFrameNumbersAtHurt(frames: Frame[]) {
@@ -85,6 +86,7 @@ const MidScreenControl = ({
     handleSlideChange,
     checkedShowDebugInfo,
     handleChangeDebugInfo,
+    player,
 }) => {
     const BLANK_COLOR = 'rgba(242, 242, 242, 0.8)';
 
@@ -144,6 +146,7 @@ const MidScreenControl = ({
         [agent_1_frames, animationFrame]
     );
 
+    console.log('player', player);
     return (
         <Box
             sx={{
@@ -277,6 +280,13 @@ const MidScreenControl = ({
                     }
                     sx={{ ml: 1 }}
                 />
+
+                {'createdDate' in player && (
+                    <SubmitMindButton
+                        mind={player}
+                        username={player.playerName}
+                    />
+                )}
             </Box>
 
             <Box sx={{ minWidth: 400, mt: 3 }}>

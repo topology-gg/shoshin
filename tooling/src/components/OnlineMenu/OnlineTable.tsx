@@ -38,8 +38,8 @@ const OnlineTable = ({
     ));
 
     return (
-        <TableContainer component={Paper} sx={{ height: '100%' }}>
-            <Table>
+        <TableContainer sx={{ overflowX: 'initial' }} component={Paper}>
+            <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                     <TableRow>
                         <TableCell>Name</TableCell>

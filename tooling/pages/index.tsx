@@ -1190,6 +1190,7 @@ export default function Home() {
                                 (_) => !checkedShowDebugInfo
                             )
                         }
+                        player={p1}
                     />
                 ) : (
                     <MidScreenKeybinding

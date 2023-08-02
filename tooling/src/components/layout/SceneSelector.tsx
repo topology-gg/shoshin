@@ -77,6 +77,8 @@ const defaultOpponent: Opponent = {
     backgroundId: 0,
 };
 
+export type Playable = SavedMind | OnlineOpponent | PlayerAgent;
+
 const SceneSelector = () => {
     const [scene, setScene] = useState<Scene>();
 
@@ -190,6 +192,17 @@ const SceneSelector = () => {
     };
 
     //Play state
+
+    const initialPlayerAgener: PlayerAgent = {
+        layers: [],
+        character: Character.Jessica,
+        conditions: [],
+        combos: [],
+    };
+
+    const [playerAgent, setPlayerAgent] =
+        useState<Playable>(initialPlayerAgener);
+
     const [layers, setLayers] = useState<Layer[]>([]);
     const [character, setCharacter] = useState<Character>(Character.Jessica);
     const [conditions, setConditions] =
@@ -265,7 +278,7 @@ const SceneSelector = () => {
 
     const backgroundId = 'backgroundId' in opponent ? opponent.backgroundId : 0;
 
-    const savePlayerAgent = (playerAgent: PlayerAgent) => {
+    const savePlayerAgent = (playerAgent: Playable) => {
         setPlayerAgent(playerAgent);
         let updatedState = deafaultState;
         const state = getLocalState();
@@ -273,23 +286,15 @@ const SceneSelector = () => {
             updatedState = state;
         }
 
-        updatedState.playerAgents[character.toLocaleLowerCase()] = playerAgent;
+        if ('agent' in playerAgent) {
+            updatedState.playerAgents[character.toLocaleLowerCase()] =
+                playerAgent.agent;
+        } else {
+            updatedState.playerAgents[character.toLocaleLowerCase()] =
+                playerAgent;
+        }
 
         setLocalState(updatedState);
-    };
-
-    const setPlayerAgent = (playerAgent: PlayerAgent) => {
-        setLayers(playerAgent.layers);
-        setConditions(playerAgent.conditions);
-        setCombos(playerAgent.combos);
-        setCharacter(playerAgent.character);
-    };
-
-    const playerAgent: PlayerAgent = {
-        layers,
-        character,
-        conditions,
-        combos,
     };
 
     const characterIndex = character == Character.Jessica ? 0 : 1;
@@ -393,9 +398,9 @@ const SceneSelector = () => {
             setPreviewMode(false);
         } else if (scene == Scenes.ONLINE_MENU) {
             setGameMode(GameModes.simulation);
-            transitionChooseCharacter();
             setOnlineMode(true);
             setPreviewMode(false);
+            setScene(scene);
         } else if (scene == Scenes.MINDS) {
             setGameMode(GameModes.simulation);
             setOnlineMode(false);
@@ -437,12 +442,12 @@ const SceneSelector = () => {
         setOnlineMode(true);
         setScene(Scenes.MAIN_SCENE);
         pauseMusic();
-        setPlayerAgent(playerOneMind.agent);
+        setPlayerAgent(playerOneMind);
         setOnlineOpponentChoice(opponent);
     };
 
     const handleQuit = () => {
-        if (onlineMode && previewMode) {
+        if (onlineMode) {
             setScene(Scenes.ONLINE_MENU);
         } else if (previewMode) {
             setScene(Scenes.MINDS);
@@ -452,7 +457,7 @@ const SceneSelector = () => {
     };
 
     const handleContinue = () => {
-        if (onlineMode && previewMode) {
+        if (onlineMode) {
             setScene(Scenes.ONLINE_MENU);
         } else if (previewMode) {
             setScene(Scenes.MINDS);
@@ -478,7 +483,7 @@ const SceneSelector = () => {
         opponent: SavedMind | OnlineOpponent
     ) => {
         setOnlineOpponentChoice(opponent as OnlineOpponent);
-        setPlayerAgent(player.agent);
+        setPlayerAgent(player);
         setScene(Scenes.MAIN_SCENE);
         setPreviewMode(true);
     };
@@ -497,7 +502,6 @@ const SceneSelector = () => {
         setLocalState(updatedState);
     };
 
-    console.log('onlineMode', onlineMode);
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
             <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
@@ -538,7 +542,7 @@ const SceneSelector = () => {
             </SceneSingle>
             <SceneSingle active={scene === Scenes.MAIN_SCENE}>
                 <MainScene
-                    setPlayerAgent={savePlayerAgent}
+                    savePlayerAgent={savePlayerAgent}
                     player={playerAgent}
                     opponent={opponent}
                     submitWin={handleWin}
@@ -577,7 +581,7 @@ const SceneSelector = () => {
             <SceneSingle active={scene === Scenes.ONLINE_MENU}>
                 <OnlineMenu
                     transitionFromOnlineMenu={transitionFromOnlineMenu}
-                    transitionBack={() => onTransition(Scenes.CHOOSE_CHARACTER)}
+                    transitionBack={() => onTransition(Scenes.MAIN_MENU)}
                     savedMinds={minds}
                     saveMinds={onSaveMinds}
                 />

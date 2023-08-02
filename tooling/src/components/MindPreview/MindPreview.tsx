@@ -23,30 +23,33 @@ const MindPreview = ({ mind }: MindPreviewProps) => {
 
     return (
         <Paper sx={{ height: '100%' }}>
-            <Tabs value={activeTab} onChange={handleTabChange} centered>
-                <Tab label="Info" />
-                <Tab label="Layers" />
-            </Tabs>
+            <Box height={'100%'} display={'flex'} flexDirection={'column'}>
+                <Tabs value={activeTab} onChange={handleTabChange} centered>
+                    <Tab label="Info" />
+                    <Tab label="Layers" />
+                </Tabs>
 
-            {/* Tab Content */}
-            {activeTab === 0 && (
-                <Box p={2}>
-                    <Typography variant="h6">Mind Info</Typography>
-                    <Typography>Mind Name: {mind.mindName}</Typography>
-                    <Typography>
-                        <strong>Author Name: {mind.playerName}</strong>
-                    </Typography>
-                    <Typography>
-                        <strong>Layer Count:</strong> {mind.agent.layers.length}
-                    </Typography>
-                </Box>
-            )}
+                {/* Tab Content */}
+                {activeTab === 0 && (
+                    <Box p={2}>
+                        <Typography variant="h6">Mind Info</Typography>
+                        <Typography>Mind Name: {mind.mindName}</Typography>
+                        <Typography>
+                            <strong>Author Name: {mind.playerName}</strong>
+                        </Typography>
+                        <Typography>
+                            <strong>Layer Count:</strong>{' '}
+                            {mind.agent.layers.length}
+                        </Typography>
+                    </Box>
+                )}
 
-            {activeTab === 1 && (
-                <Box p={2}>
-                    <SimpleLayerList playerAgent={mind.agent} />
-                </Box>
-            )}
+                {activeTab === 1 && (
+                    <Box p={2} overflow={'auto'} height={'100%'}>
+                        <SimpleLayerList playerAgent={mind.agent} />
+                    </Box>
+                )}
+            </Box>
         </Paper>
     );
 };

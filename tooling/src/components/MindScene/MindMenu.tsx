@@ -4,6 +4,7 @@ import {
     Box,
     Button,
     Dialog,
+    DialogActions,
     DialogContent,
     DialogTitle,
     Grid,
@@ -32,6 +33,27 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
         const [selectedMind, selectMind] = useState<number>(-1);
 
         const [previewOpen, setPreviewOpen] = useState<boolean>(false);
+
+        const [renameOpen, setRenameOpen] = useState<boolean>(false);
+        const [newMindName, setNewMindName] = useState<string>('');
+
+        const handleMindNameChange = (event) => {
+            setNewMindName(event.target.value);
+        };
+
+        const handleRenameClick = () => {
+            setNewMindName(minds[selectedMind].mindName);
+            setRenameOpen(true);
+        };
+
+        const handleRenameConfirm = () => {
+            let mindsCopy = [...minds];
+
+            mindsCopy[selectedMind].mindName = newMindName;
+
+            saveMinds(mindsCopy);
+            setRenameOpen(false);
+        };
 
         const handleChooseOpponent = (opponent: SavedMind | OnlineOpponent) => {
             transitionToPreview(minds[selectedMind], opponent);
@@ -73,9 +95,47 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
                             />
                         </DialogContent>
                     </Dialog>
-                    <Grid container sx={{ width: '66%', height: '50%' }}>
-                        <Grid item xs={4}>
-                            <Box maxHeight={'60vh'} width={'100%'}>
+                    <Dialog
+                        open={renameOpen}
+                        onClose={() => setRenameOpen(false)}
+                        fullWidth={true}
+                        maxWidth={'lg'}
+                    >
+                        <DialogTitle>Input a new name</DialogTitle>
+                        <DialogContent>
+                            <input
+                                autoFocus
+                                type="text"
+                                id="name"
+                                placeholder="Mind Name"
+                                style={{ width: '100%', marginTop: '1rem' }}
+                                value={newMindName}
+                                onChange={handleMindNameChange}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button
+                                onClick={() => setRenameOpen(false)}
+                                color="primary"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleRenameConfirm}
+                                color="primary"
+                                variant="contained"
+                            >
+                                Confirm
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                    <Grid
+                        container
+                        sx={{ width: '66%', height: '70%' }}
+                        spacing={2}
+                    >
+                        <Grid item xs={4} sx={{ height: '100%' }}>
+                            <Box height={'100%'} width={'100%'} overflow="auto">
                                 <OnlineTable
                                     opponents={minds}
                                     selectedOpponent={selectedMind}
@@ -83,7 +143,7 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
                                 />
                             </Box>
                         </Grid>
-                        <Grid item xs={8} sx={{ height: '100%', flex: 1 }}>
+                        <Grid item xs={8} sx={{ height: '100%' }}>
                             {selectedMind !== -1 && (
                                 <Box sx={{ height: '100%' }}>
                                     <MindPreview
@@ -98,6 +158,9 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
                                             onClick={() => setPreviewOpen(true)}
                                         >
                                             Preview
+                                        </Button>
+                                        <Button onClick={handleRenameClick}>
+                                            Rename
                                         </Button>
                                         <Button
                                             onClick={() =>

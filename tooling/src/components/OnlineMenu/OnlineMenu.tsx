@@ -64,7 +64,14 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
         const [openChooseMind, setOpenChooseMind] = useState<boolean>(false);
 
         const handleAddToSavedMinds = () => {
-            saveMinds([...savedMinds, onlineOpponents[selectedOpponent]]);
+            saveMinds([
+                ...savedMinds,
+                {
+                    ...onlineOpponents[selectedOpponent],
+                    createdDate: Date.now(),
+                    lastUpdatedDate: Date.now(),
+                },
+            ]);
         };
 
         const [isSubmitOpeoned, setOpenSubmit] = useState<boolean>(false);
