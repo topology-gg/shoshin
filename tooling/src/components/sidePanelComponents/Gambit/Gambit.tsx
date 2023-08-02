@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Box,
     Button,
     Grid,
     MenuItem,
+    Switch,
     Tooltip,
     Typography,
 } from '@mui/material';
@@ -21,7 +22,7 @@ import { Action, CHARACTERS_ACTIONS } from '../../../types/Action';
 import styles from './Gambit.module.css';
 import ComboEditor from '../ComboEditor';
 import CloseIcon from '@mui/icons-material/Close';
-import { VerticalAlignCenter } from '@mui/icons-material';
+import { FileCopy, MoreHoriz, VerticalAlignCenter } from '@mui/icons-material';
 import Actions from '../../ComboEditor/Actions';
 import SingleCondition, { ConditionLabel } from './Condition';
 
@@ -94,6 +95,7 @@ export interface LayerProps {
     actions: Action[];
     combos: Action[][];
     handleRemoveLayer: (index: number) => void;
+    handleDuplicateLayer: (index: number) => void;
     //Check if previously combo and close
     handleChooseAction: (actionName: string, layerIndex: number) => void;
     // -1 index is a new condition
@@ -122,6 +124,7 @@ const DraggableLayer = ({
     handleChooseCondition,
     handleRemoveCondition,
     handleRemoveLayer,
+    handleDuplicateLayer,
     handleInvertCondition,
     handleChooseCombo,
     isActive,
@@ -150,6 +153,7 @@ const DraggableLayer = ({
                         handleChooseAction={handleChooseAction}
                         handleChooseCondition={handleChooseCondition}
                         handleRemoveLayer={handleRemoveLayer}
+                        handleDuplicateLayer={handleDuplicateLayer}
                         handleRemoveCondition={handleRemoveCondition}
                         handleInvertCondition={handleInvertCondition}
                         handleChooseCombo={handleChooseCombo}
@@ -175,6 +179,7 @@ export const LayerComponent = ({
     handleChooseCondition,
     handleRemoveCondition,
     handleRemoveLayer,
+    handleDuplicateLayer,
     handleInvertCondition,
     handleChooseCombo,
     isActive,
@@ -188,6 +193,10 @@ export const LayerComponent = ({
 
     const [conditionAnchorEl, setConditionAnchorEl] =
         useState<null | HTMLElement>(null);
+
+    const [layerOptionsMenuOpen, setLayerOptionsMenuOpen] = useState(false);
+
+    const moreOptionsButtonRef = useRef();
 
     let characterIndex = Object.keys(Character).indexOf(character);
 
@@ -394,30 +403,41 @@ export const LayerComponent = ({
                 </Menu>
                 {features.sui && (
                     <Grid item xs={checkboxPortion}>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={layer.sui}
-                                onChange={() => {
-                                    toggleIsLayerSui(i);
-                                }}
-                            />
-                        </label>
+                        <Switch
+                            size="small"
+                            onChange={() => {
+                                toggleIsLayerSui(i);
+                            }}
+                            checked={layer.sui}
+                        />
                     </Grid>
                 )}
 
                 <Grid item xs={gridRemovePortion}>
                     {features.layerAddAndDelete ? (
                         <IconButton
-                            onClick={(_) => handleRemoveLayer(i)}
+                            onClick={() => setLayerOptionsMenuOpen(true)}
                             disabled={isReadOnly}
                             style={{ marginLeft: 'auto' }}
+                            ref={moreOptionsButtonRef}
                         >
-                            <DeleteIcon
+                            <MoreHoriz
                                 sx={{ fontSize: '16px', color: '#888' }}
                             />
                         </IconButton>
                     ) : null}
+                    <Menu
+                        open={layerOptionsMenuOpen}
+                        onClose={() => setLayerOptionsMenuOpen(false)}
+                        anchorEl={moreOptionsButtonRef.current}
+                    >
+                        <MenuItem onClick={(_) => handleRemoveLayer(i)}>
+                            Delete
+                        </MenuItem>
+                        <MenuItem onClick={() => handleDuplicateLayer(i)}>
+                            Duplicate
+                        </MenuItem>
+                    </Menu>
                 </Grid>
             </Grid>
         </Box>
@@ -529,6 +549,17 @@ const Gambit = ({
     const handleRemoveLayer = (index: number) => {
         let updatedArray = [...layers];
         updatedArray.splice(index, 1);
+
+        setLayers(updatedArray);
+    };
+
+    const handleDuplicateLayer = (index: number) => {
+        let updatedArray = [...layers];
+        updatedArray.splice(
+            index + 1,
+            0,
+            JSON.parse(JSON.stringify(layers[index]))
+        );
 
         setLayers(updatedArray);
     };
@@ -665,6 +696,7 @@ const Gambit = ({
                 index={index}
                 key={index}
                 handleRemoveLayer={handleRemoveLayer}
+                handleDuplicateLayer={handleDuplicateLayer}
                 handleChooseAction={handleChooseAction}
                 isReadOnly={false}
                 character={character}
