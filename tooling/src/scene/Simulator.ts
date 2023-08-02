@@ -1326,30 +1326,44 @@ export default class Simulator extends Phaser.Scene {
         const leftCharX = charOneX < charTwoX ? charOneX : charTwoX;
 
         // At the closest distance zoom is default, at further distances we zoom out till .9
+        // const calculatedZoom =
+        //     charDistance < CHAR_DISTANCE_CUTOFF
+        //         ? this.scaledZoom
+        //         : this.scaledZoom +
+        //           CAMERA_ZOOM_MULTIPLIER *
+        //               ((charDistance - CHAR_DISTANCE_CUTOFF) / ARENA_WIDTH);
+        // camera.zoomTo(calculatedZoom, CAMERA_REACTION_TIME);
+
+        // // pan to midpoint between characters
+        // const calculatedPanY =
+        //     charDistance < CHAR_DISTANCE_CUTOFF
+        //         ? DEFAULT_CAMERA_CENTER_Y
+        //         : DEFAULT_CAMERA_CENTER_Y +
+        //           CAMERA_PAN_Y_MULTIPLIER *
+        //               ((charDistance - CHAR_DISTANCE_CUTOFF) / ARENA_WIDTH);
+        // camera.pan(
+        //     leftCharX + charDistance / 2 + DEFAULT_CAMERA_CENTER_X,
+        //     calculatedPanY,
+        //     CAMERA_REACTION_TIME
+        // );
+
+        // At the closest distance zoom is default, at further distances we zoom out till .9
         const calculatedZoom =
-            charDistance < CHAR_DISTANCE_CUTOFF
-                ? this.scaledZoom
-                : this.scaledZoom +
-                  CAMERA_ZOOM_MULTIPLIER *
-                      ((charDistance - CHAR_DISTANCE_CUTOFF) / ARENA_WIDTH);
+            charDistance < 400
+                ? DEFAULT_ZOOM
+                : DEFAULT_ZOOM - 0.3 * (charDistance / 800);
         camera.zoomTo(calculatedZoom, CAMERA_REACTION_TIME);
 
         // pan to midpoint between characters
-        const calculatedPanY =
-            charDistance < CHAR_DISTANCE_CUTOFF
-                ? DEFAULT_CAMERA_CENTER_Y
-                : DEFAULT_CAMERA_CENTER_Y +
-                  CAMERA_PAN_Y_MULTIPLIER *
-                      ((charDistance - CHAR_DISTANCE_CUTOFF) / ARENA_WIDTH);
         camera.pan(
             leftCharX + charDistance / 2 + DEFAULT_CAMERA_CENTER_X,
-            calculatedPanY,
+            DEFAULT_CAMERA_CENTER_Y,
             CAMERA_REACTION_TIME
         );
     }
 
     init(data) {
-        console.log('>>>>>> init(); data.backgroundId', data.backgroundId);
+        console.log('>> init(); data.backgroundId', data.backgroundId);
         this.backgroundId = data.backgroundId;
     }
 
