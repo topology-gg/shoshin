@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { OnlineOpponent, SavedMind } from '../../types/Opponent';
 import SimpleLayerList from '../sidePanelComponents/Gambit/SimpleLayerList';
+import { useGetMind } from '../../../lib/api';
 
 interface MindPreviewProps {
     mind: SavedMind;
@@ -21,6 +22,14 @@ const MindPreview = ({ mind }: MindPreviewProps) => {
         setActiveTab(newValue);
     };
 
+    const onlineMind = useGetMind(
+        mind.playerName,
+        mind.agent.character,
+        mind.mindName
+    );
+
+    console.log('onlineMind', onlineMind);
+    const isOnline = onlineMind.error ? false : true;
     return (
         <Paper sx={{ height: '100%' }}>
             <Box height={'100%'} display={'flex'} flexDirection={'column'}>
@@ -40,6 +49,9 @@ const MindPreview = ({ mind }: MindPreviewProps) => {
                         <Typography>
                             <strong>Layer Count:</strong>{' '}
                             {mind.agent.layers.length}
+                        </Typography>
+                        <Typography>
+                            <strong>Online</strong> : {isOnline ? 'Yes' : 'No'}
                         </Typography>
                     </Box>
                 )}

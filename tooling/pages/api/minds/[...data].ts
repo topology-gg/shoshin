@@ -23,16 +23,14 @@ export default async function handler(
     res: NextApiResponse
 ) {
     const { data } = req.query;
-    console.log('req.body', req.body);
-    if (req.method === 'PUT') {
-        const client: MongoClient = await clientPromise;
-        const db = client.db(DB_NAME);
-        const submittedMinds =
-            db.collection<SubmittedMind>(COLLECTION_NAME_PVP);
-        const playerName = data[0];
-        const character = data[1];
-        const mindName = data[2];
 
+    const client: MongoClient = await clientPromise;
+    const db = client.db(DB_NAME);
+    const submittedMinds = db.collection<SubmittedMind>(COLLECTION_NAME_PVP);
+    const playerName = data[0];
+    const character = data[1];
+    const mindName = data[2];
+    if (req.method === 'PUT') {
         try {
             const updateResult = await submittedMinds.updateOne(
                 {
@@ -56,7 +54,7 @@ export default async function handler(
                     $and: [
                         { mindName: mindName },
                         { playerName: playerName },
-                        { 'mind.character': character as Character },
+                        { 'agent.character': character as Character },
                     ],
                 });
                 if (!latest) {
@@ -83,6 +81,19 @@ export default async function handler(
             res.status(500).json({
                 error: 'Error updating mind: Internal Server Error',
             });
+        }
+    } else if (req.method === 'GET') {
+        console.log('get request');
+        const result = await submittedMinds.findOne({
+            mindName: mindName,
+            playerName: playerName,
+            'agent.character': character as Character,
+        });
+
+        if (!result) {
+            res.status(404).json({ error: 'Mind not found' });
+        } else {
+            res.status(200).json(result);
         }
     } else {
         res.status(405).json({ error: 'Method not allowed' });
