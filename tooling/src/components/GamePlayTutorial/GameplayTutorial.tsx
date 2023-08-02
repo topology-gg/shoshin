@@ -625,6 +625,7 @@ const GameplayTutorialScene = React.forwardRef(
                                                 (_) => !checkedShowDebugInfo
                                             )
                                         }
+                                        player={p1}
                                     />
                                 </div>
                             </Grid>

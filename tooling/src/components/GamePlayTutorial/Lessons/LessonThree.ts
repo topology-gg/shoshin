@@ -147,6 +147,7 @@ const LessonThree: Lesson = {
         layerAddAndDelete: true,
         conditionAnd: false,
         combos: false,
+        sui: false,
     },
     player: {
         //@ts-ignore
