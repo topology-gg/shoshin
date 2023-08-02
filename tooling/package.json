@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:wasm": "wasm-pack build wasm/shoshin --release --target web && wasm-pack build wasm/condition_eval --release --target web && wasm-pack build wasm/shoshin --out-dir pkg_nodejs --release --target nodejs",
-    "postbuild": "cp -av wasm/shoshin/pkg_nodejs/shoshin_bg.wasm .next/server/pages/api/minds/",
+    "postbuild": "find .next/server/chunks/static/media/ -name 'shoshin_bg.*.wasm' -exec ln -s {} .next/server/pages/api/minds/shoshin_bg.wasm \\;",
     "start": "next start",
     "lint": "next lint",
     "test": "cross-env TS_NODE_PROJECT=\"tsconfig.testing.json\" mocha",
