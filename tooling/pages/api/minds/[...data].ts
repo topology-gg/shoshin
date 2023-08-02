@@ -122,7 +122,7 @@ async function postProcess(newProfile: WithId<PvPProfile>) {
     const update = pvpProfiles.find((profile) => {
         return profile._id.toString() == newProfile._id.toString();
     });
-    
+
     if (update) {
         update.records = null;
     }
@@ -148,7 +148,8 @@ async function rankMinds(pvpProfiles: WithId<PvPProfile>[]) {
             if (unrankedProfile.records.has(getProfileKey(profile))) continue;
             if (profile.records == null)
                 profile.records = new Map<string, PvPResult>();
-            else if(!(profile.records instanceof Map)) profile.records = new Map(Object.entries(profile.records));
+            else if (!(profile.records instanceof Map))
+                profile.records = new Map(Object.entries(profile.records));
 
             const result = await fight(unrankedProfile, profile);
             unrankedProfile.records.set(getProfileKey(profile), result[0]);
@@ -156,8 +157,10 @@ async function rankMinds(pvpProfiles: WithId<PvPProfile>[]) {
         }
     }
     const result = pvpProfiles.sort((prev, curr) => {
-        if(!(prev.records instanceof Map)) prev.records = new Map(Object.entries(prev.records));
-        if(!(curr.records instanceof Map)) curr.records = new Map(Object.entries(curr.records));
+        if (!(prev.records instanceof Map))
+            prev.records = new Map(Object.entries(prev.records));
+        if (!(curr.records instanceof Map))
+            curr.records = new Map(Object.entries(curr.records));
         const prevWins = Array.from(prev.records.values()).filter(
             (result) => result.result == 'win'
         ).length;
