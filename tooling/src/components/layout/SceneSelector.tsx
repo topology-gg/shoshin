@@ -279,7 +279,6 @@ const SceneSelector = () => {
     const backgroundId = 'backgroundId' in opponent ? opponent.backgroundId : 0;
 
     const savePlayerAgent = (playerAgent: Playable) => {
-        console.log('save agent', playerAgent);
         setPlayerAgent(playerAgent);
         let updatedState = deafaultState;
         const state = getLocalState();
@@ -287,7 +286,7 @@ const SceneSelector = () => {
             updatedState = state;
         }
 
-        if ('mindName' in playerAgent) {
+        if ('mindName' in playerAgent && !previewMode) {
             const newMinds = minds.map((mind) => {
                 if (
                     mind.mindName == playerAgent.mindName &&
@@ -571,6 +570,7 @@ const SceneSelector = () => {
                     volume={volume}
                     pauseMenu={pauseMenu}
                     showFullReplay={showFullReplay && !previewMode}
+                    isPreview={previewMode}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ARCADE}>

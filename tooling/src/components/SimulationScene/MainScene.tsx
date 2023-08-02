@@ -63,6 +63,7 @@ interface SimulationProps {
     volume: number;
     pauseMenu: ReactNode;
     showFullReplay: boolean;
+    isPreview: boolean;
 }
 //We need Players agent and opponent
 const SimulationScene = React.forwardRef(
@@ -76,6 +77,7 @@ const SimulationScene = React.forwardRef(
             volume,
             pauseMenu,
             showFullReplay,
+            isPreview,
         } = props;
         // Constants
         const LATENCY = 70;
@@ -613,6 +615,7 @@ const SimulationScene = React.forwardRef(
                                                 )
                                             }
                                             player={player}
+                                            isPreview={isPreview}
                                         />
 
                                         <Box

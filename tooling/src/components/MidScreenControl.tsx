@@ -92,6 +92,7 @@ const MidScreenControl = ({
     checkedShowDebugInfo,
     handleChangeDebugInfo,
     player,
+    isPreview,
 }) => {
     const BLANK_COLOR = 'rgba(242, 242, 242, 0.8)';
 
@@ -151,8 +152,19 @@ const MidScreenControl = ({
         [agent_1_frames, animationFrame]
     );
 
-    const isSavedMind = 'createdDate' in player;
-    const isPlayerAgent = 'layers' in player;
+    const isSavedMind = player !== undefined && 'createdDate' in player;
+    const isPlayerAgent = player !== undefined && 'layers' in player;
+
+    let saveMessage = '';
+
+    if (isPreview) {
+        saveMessage = `No changes saved in practice fight`;
+    } else if (isSavedMind) {
+        saveMessage = `Changes to ${player.mindName} are saved automatically`;
+    } else {
+        saveMessage = 'Changes to online minds are not saved';
+    }
+
     return (
         <Box
             sx={{
@@ -288,15 +300,9 @@ const MidScreenControl = ({
                 />
 
                 {!isPlayerAgent && (
-                    <Tooltip
-                        title={
-                            isSavedMind
-                                ? `Changes to ${player.mindName} are saved automatically`
-                                : 'Changes to online minds are not saved'
-                        }
-                    >
+                    <Tooltip title={saveMessage}>
                         <Icon aria-label="download">
-                            {isSavedMind ? (
+                            {isSavedMind && !isPreview ? (
                                 <FileDownloadIcon color="success" />
                             ) : (
                                 <FileDownloadOffIcon />
