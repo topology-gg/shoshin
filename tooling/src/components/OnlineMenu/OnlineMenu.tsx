@@ -148,7 +148,11 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                         <Typography variant="h3" gutterBottom>
                             Online Opponents
                         </Typography>
-                        <Box maxHeight={'60vh'} width={'100%'}>
+                        <Box
+                            maxHeight={'60vh'}
+                            width={'100%'}
+                            sx={{ overflowY: 'auto', marginBottom: '16px' }}
+                        >
                             <OnlineTable
                                 opponents={onlineOpponents}
                                 selectedOpponent={selectedOpponent}
