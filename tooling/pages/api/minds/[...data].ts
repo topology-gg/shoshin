@@ -14,8 +14,7 @@ import Agent, {
 } from '../../../src/types/Agent';
 import { FrameScene } from '../../../src/types/Frame';
 import { layersToAgentComponents } from '../../../src/types/Layer';
-import initWasm from '../../../wasm/shoshin/pkg/shoshin';
-
+import wasm from '../../../wasm/shoshin/pkg_nodejs/shoshin';
 type PvPResult = {
     result: 'win' | 'loss';
     score: number;
@@ -29,8 +28,6 @@ type PvPProfile = {
     rank: number;
     records: Map<string, PvPResult>;
 };
-
-let wasm;
 
 export default async function handler(
     req: NextApiRequest,
@@ -88,7 +85,7 @@ export default async function handler(
                 }
                 const { _id, ...responseBody } = latest;
                 res.status(200).json(responseBody);
-                postProcess();
+                postProcess(latest);
             } else {
                 console.error(
                     `unable to update minds, req url = ${
@@ -112,56 +109,55 @@ export default async function handler(
     }
 }
 
-async function postProcess() {
+async function postProcess(newProfile: WithId<PvPProfile>) {
     const client: MongoClient = await clientPromise;
     const db = client.db(DB_NAME);
-    const pvpRankedCollection = db.collection<PvPProfile>(
-        COLLECTION_NAME_PVP + '-ranked'
-    );
-    let pvpProfiles = await pvpRankedCollection
+
+    const pvpProfileCollection = db.collection<PvPProfile>(COLLECTION_NAME_PVP);
+    let pvpProfiles = await pvpProfileCollection
         .find({})
         .sort({ _id: -1 })
         .toArray();
 
-    if (pvpProfiles.length == 0) {
-        const pvpProfileCollection =
-            db.collection<PvPProfile>(COLLECTION_NAME_PVP);
-        pvpProfiles = await pvpProfileCollection
-            .find({})
-            .sort({ _id: -1 })
-            .toArray();
+    const update = pvpProfiles.find((profile) => {
+        return profile._id.toString() == newProfile._id.toString();
+    });
+    
+    if (update) {
+        update.records = null;
     }
 
     const rankedMinds = await rankMinds(pvpProfiles);
-    console.log(`rankedMinds = ${JSON.stringify(rankedMinds)}`);
-
     const bulkUpdate = generateBulkUpdate(rankedMinds);
-    console.log(`bulkUpdate = ${JSON.stringify(bulkUpdate)}`);
-
-    // await pvpRankedCollection.bulkWrite(bulkUpdate);
+    await pvpProfileCollection.bulkWrite(bulkUpdate);
 }
 
 async function rankMinds(pvpProfiles: WithId<PvPProfile>[]) {
     const unrankedProfiles = pvpProfiles.filter(
         (profile) => profile.records == null || profile.records.size == 0
     );
-    for (let index = 0; index < unrankedProfiles.length; index++) {
-        const unrankedProfile = unrankedProfiles[index];
-        if (unrankedProfile.records == null) {
+
+    for (let i = 0; i < unrankedProfiles.length; i++) {
+        const unrankedProfile = unrankedProfiles[i];
+        if (unrankedProfile.records == null)
             unrankedProfile.records = new Map<string, PvPResult>();
-        }
-        for (let index = 0; index < pvpProfiles.length; index++) {
-            const profile = pvpProfiles[index];
+
+        for (let j = 0; j < pvpProfiles.length; j++) {
+            const profile = pvpProfiles[j];
             if (profile._id == unrankedProfile._id) continue;
             if (unrankedProfile.records.has(getProfileKey(profile))) continue;
+            if (profile.records == null)
+                profile.records = new Map<string, PvPResult>();
+            else if(!(profile.records instanceof Map)) profile.records = new Map(Object.entries(profile.records));
 
             const result = await fight(unrankedProfile, profile);
             unrankedProfile.records.set(getProfileKey(profile), result[0]);
             profile.records.set(getProfileKey(unrankedProfile), result[1]);
         }
     }
-
     const result = pvpProfiles.sort((prev, curr) => {
+        if(!(prev.records instanceof Map)) prev.records = new Map(Object.entries(prev.records));
+        if(!(curr.records instanceof Map)) curr.records = new Map(Object.entries(curr.records));
         const prevWins = Array.from(prev.records.values()).filter(
             (result) => result.result == 'win'
         ).length;
@@ -212,14 +208,6 @@ async function runSimulation(
     p1: Agent,
     p2: Agent
 ): Promise<[FrameScene, Error]> {
-    if (wasm == null) {
-        wasm = await initWasm(
-            new URL(
-                '/_next/static/media/shoshin_bg.b5f2a667.wasm',
-                'http://localhost:3000'
-            )
-        );
-    }
     let shoshinInput = new Int32Array(agentsToArray(p1, p2));
     let output = wasm.runCairoProgram(shoshinInput);
     return [cairoOutputToFrameScene(output), null];
@@ -251,6 +239,7 @@ function generateBulkUpdate(pvpProfiles: WithId<PvPProfile>[]): any[] {
             updateOne: {
                 filter: { _id: profile._id },
                 update: { $set: profile },
+                upsert: true,
             },
         });
     });
