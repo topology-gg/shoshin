@@ -44,6 +44,7 @@ const CAMERA_REACTION_TIME = 50;
 const HITBOX_STROKE_WIDTH = 1.5;
 
 const PLAYER_POINTER_DIM = 20;
+const DISTANCE_MARKER_LABEL_DIM = 16;
 
 // Effects
 const SPARK_SCALE = 0.3;
@@ -97,12 +98,12 @@ interface BattleEvent {
     eventCount: number;
 }
 
-interface PlayerPointer {
+interface CircleLabel {
     cir: Phaser.GameObjects.Arc;
     text: Phaser.GameObjects.Text;
 }
 const setPlayerPointerVisible = (
-    playerPointer: PlayerPointer,
+    playerPointer: CircleLabel,
     visible: boolean
 ) => {
     playerPointer.cir.setVisible(visible);
@@ -131,13 +132,17 @@ export default class Simulator extends Phaser.Scene {
     player_one_action_hitbox_text: Phaser.GameObjects.Text;
     player_two_action_hitbox_text: Phaser.GameObjects.Text;
 
-    player_pointers: PlayerPointer[];
+    distance_marker: Phaser.GameObjects.Line;
+    distance_marker_label: CircleLabel;
+
+    player_pointers: CircleLabel[];
 
     player_one_combat_log: BattleEvent;
     player_two_combat_log: BattleEvent;
 
     readonly STROKE_STYLE_BODY_HITBOX = 0x7cfc00; //0xFEBA4F;
     readonly STROKE_STYLE_ACTION_HITBOX = 0xff2400; //0xFB4D46;
+    readonly STROKE_STYLE_DISTANCE_MARKER = 0x000000;
 
     // Background
     backgroundSets: { [key: number]: Phaser.GameObjects.Image };
@@ -858,6 +863,9 @@ export default class Simulator extends Phaser.Scene {
         sound.play();
     }
 
+    //
+    // Initialize
+    //
     initialize() {
         console.log('initialize()');
         this.initializeVFX();
@@ -930,6 +938,22 @@ export default class Simulator extends Phaser.Scene {
             0.4
         );
 
+        this.distance_marker = this.add.line(
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            this.STROKE_STYLE_DISTANCE_MARKER
+        );
+        const cir = this.addCircleHelper(0x0, 1, 0xffffff, 1.0);
+        const text = this.addDarkTextHelper(8);
+        this.distance_marker_label = {
+            cir: cir,
+            text: text,
+        };
+
         this.player_pointers = [];
         [0, 1].forEach((index) => {
             const cir = this.addCircleHelper(
@@ -996,6 +1020,16 @@ export default class Simulator extends Phaser.Scene {
         return tri;
     }
 
+    addDarkTextHelper(fontSize: number) {
+        const text = this.add.text(0, 0, '', {
+            fontFamily: 'sans-serif',
+            fontSize: '15px',
+            fontStyle: 'bold',
+            color: '#000',
+        });
+        text.setFontSize(fontSize).setAlign('center');
+        return text;
+    }
     addTextHelper(colorHexString: string) {
         const text = this.add.text(0, 0, '', { color: '#fff' });
         text.setFontSize(12).setAlign('center');
@@ -1120,7 +1154,7 @@ export default class Simulator extends Phaser.Scene {
 
     private setPointerHelper(
         hitbox: Rectangle,
-        playerPointer: PlayerPointer,
+        playerPointer: CircleLabel,
         text: string
     ) {
         const hitboxW = hitbox.dimension.x;
@@ -1205,6 +1239,43 @@ export default class Simulator extends Phaser.Scene {
         );
     }
 
+    private setDistanceMarker(frameP1: FrameLike, frameP2: FrameLike) {
+        //
+        // Set the line
+        //
+        const bodyP1 = frameP1.hitboxes.body;
+        const bodyP2 = frameP2.hitboxes.body;
+        const bodyLeft = bodyP1.origin.x < bodyP2.origin.x ? bodyP1 : bodyP2;
+        const bodyRight = bodyP1.origin.x < bodyP2.origin.x ? bodyP2 : bodyP1;
+        const x1 = bodyLeft.origin.x + bodyLeft.dimension.x;
+        const x2 = bodyRight.origin.x;
+        const y =
+            (bodyLeft.origin.y +
+                bodyLeft.dimension.y / 2 +
+                (bodyRight.origin.y + bodyRight.dimension.y / 2)) /
+            2;
+        const top = -y;
+        this.distance_marker.setTo(x1, top, x2, top);
+
+        //
+        // set the label
+        //
+        // this.distance_marker_label
+
+        this.distance_marker_label.cir.setRadius(DISTANCE_MARKER_LABEL_DIM / 2);
+        this.distance_marker_label.cir.setPosition((x1 + x2) / 2, top);
+
+        this.distance_marker_label.text.setText(Math.abs(x1 - x2).toString());
+        Phaser.Display.Align.In.Center(
+            this.distance_marker_label.text,
+            this.distance_marker_label.cir
+        );
+        this.distance_marker_label.text.setPosition(
+            Math.floor(this.distance_marker_label.text.x + 1),
+            Math.floor(this.distance_marker_label.text.y + 1)
+        );
+    }
+
     private showDebug() {
         this.player_one_body_hitbox.setVisible(true);
         this.player_two_body_hitbox.setVisible(true);
@@ -1215,6 +1286,10 @@ export default class Simulator extends Phaser.Scene {
         this.player_two_body_hitbox_text.setVisible(true);
         this.player_one_action_hitbox_text.setVisible(true);
         this.player_two_action_hitbox_text.setVisible(true);
+
+        this.distance_marker.setVisible(true);
+        this.distance_marker_label.cir.setVisible(true);
+        this.distance_marker_label.text.setVisible(true);
 
         [0, 1].forEach((index) => {
             setPlayerPointerVisible(this.player_pointers[index], true);
@@ -1231,6 +1306,10 @@ export default class Simulator extends Phaser.Scene {
         this.player_two_body_hitbox_text.setVisible(false);
         this.player_one_action_hitbox_text.setVisible(false);
         this.player_two_action_hitbox_text.setVisible(false);
+
+        this.distance_marker.setVisible(false);
+        this.distance_marker_label.cir.setVisible(false);
+        this.distance_marker_label.text.setVisible(false);
 
         [0, 1].forEach((index) => {
             setPlayerPointerVisible(this.player_pointers[index], false);
@@ -1866,6 +1945,7 @@ export default class Simulator extends Phaser.Scene {
             this.setPlayerTwoActionHitbox(agentFrame1);
             this.setPlayerOnePointer(agentFrame0);
             this.setPlayerTwoPointer(agentFrame1);
+            this.setDistanceMarker(agentFrame0, agentFrame1);
 
             eventsCenter.emit('frame-data-show', [
                 agentFrame0,
