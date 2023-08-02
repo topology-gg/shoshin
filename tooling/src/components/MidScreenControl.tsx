@@ -4,7 +4,10 @@ import {
     Button,
     Chip,
     FormControlLabel,
+    Icon,
+    IconButton,
     Switch,
+    Tooltip,
     Typography,
 } from '@mui/material';
 import {
@@ -20,6 +23,8 @@ import { BodystatesAntoc, BodystatesJessica } from '../types/Condition';
 import Timeline from './ui/Timeline';
 import EventSymbol from './ui/EventSymbol';
 import SubmitMindButton from './SimulationScene/MainSceneSubmit';
+import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 // Calculate key events to be displayed along the timeline slider
 function findFrameNumbersAtHurt(frames: Frame[]) {
@@ -146,7 +151,8 @@ const MidScreenControl = ({
         [agent_1_frames, animationFrame]
     );
 
-    console.log('player', player);
+    const isSavedMind = 'createdDate' in player;
+    const isPlayerAgent = 'layers' in player;
     return (
         <Box
             sx={{
@@ -281,7 +287,24 @@ const MidScreenControl = ({
                     sx={{ ml: 1 }}
                 />
 
-                {'createdDate' in player && (
+                {!isPlayerAgent && (
+                    <Tooltip
+                        title={
+                            isSavedMind
+                                ? `Changes to ${player.mindName} are saved automatically`
+                                : 'Changes to online minds are not saved'
+                        }
+                    >
+                        <Icon aria-label="download">
+                            {isSavedMind ? (
+                                <FileDownloadIcon color="success" />
+                            ) : (
+                                <FileDownloadOffIcon />
+                            )}
+                        </Icon>
+                    </Tooltip>
+                )}
+                {isSavedMind && (
                     <SubmitMindButton
                         mind={player}
                         username={player.playerName}

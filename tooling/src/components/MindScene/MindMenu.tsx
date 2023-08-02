@@ -59,7 +59,12 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
             transitionToPreview(minds[selectedMind], opponent);
         };
 
-        const handleDuplicatClick = () => {
+        const copyExists = minds.some((mind) => {
+            if (selectedMind === -1) return false;
+            return minds[selectedMind].mindName + ' copy' === mind.mindName;
+        });
+
+        const handleDuplicateClick = () => {
             saveMinds([
                 ...minds,
                 {
@@ -73,6 +78,10 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
             let mindsCopy = [...minds];
 
             mindsCopy.splice(selectedMind, 1);
+
+            if (selectedMind >= minds.length - 2) {
+                selectMind(minds.length - 2);
+            }
 
             saveMinds(mindsCopy);
         };
@@ -98,8 +107,6 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
                     <Dialog
                         open={renameOpen}
                         onClose={() => setRenameOpen(false)}
-                        fullWidth={true}
-                        maxWidth={'lg'}
                     >
                         <DialogTitle>Input a new name</DialogTitle>
                         <DialogContent>
@@ -146,25 +153,20 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
                         <Grid item xs={8} sx={{ height: '100%' }}>
                             {selectedMind !== -1 && (
                                 <Box sx={{ height: '100%' }}>
-                                    <MindPreview
-                                        mind={{
-                                            ...minds[selectedMind],
-                                            createdDate: '',
-                                            lastUpdatedDate: '',
-                                        }}
-                                    />
+                                    <MindPreview mind={minds[selectedMind]} />
                                     <Box>
                                         <Button
                                             onClick={() => setPreviewOpen(true)}
                                         >
-                                            Preview
+                                            Practice fight
                                         </Button>
                                         <Button onClick={handleRenameClick}>
                                             Rename
                                         </Button>
                                         <Button
+                                            disabled={copyExists}
                                             onClick={() =>
-                                                handleDuplicatClick()
+                                                handleDuplicateClick()
                                             }
                                         >
                                             Duplicate

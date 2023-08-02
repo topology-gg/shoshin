@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SavedMind } from '../../types/Opponent';
 import { useUpdateMind } from '../../../lib/api';
-import { Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Tooltip } from '@mui/material';
 
 interface SubmitButtonProps {
     mind: SavedMind;
@@ -37,21 +37,23 @@ const SubmitMindButton = ({ mind, username }: SubmitButtonProps) => {
     const [loading, setLoading] = useState<boolean>(false);
 
     return (
-        <Button
-            variant="outlined"
-            disabled={loading}
-            onClick={() => setLoading(true)}
-        >
-            {!loading ? (
-                'Submit'
-            ) : (
-                <Submitting
-                    mind={mind}
-                    username={username}
-                    handleLoaded={() => setLoading(false)}
-                />
-            )}
-        </Button>
+        <Tooltip title={'Submit to fight against other players'}>
+            <Button
+                variant="outlined"
+                disabled={loading}
+                onClick={() => setLoading(true)}
+            >
+                {!loading ? (
+                    'Submit'
+                ) : (
+                    <Submitting
+                        mind={mind}
+                        username={username}
+                        handleLoaded={() => setLoading(false)}
+                    />
+                )}
+            </Button>
+        </Tooltip>
     );
 };
 

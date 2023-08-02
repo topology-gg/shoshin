@@ -22,13 +22,11 @@ const MindPreview = ({ savedMinds, chooseMind }: CombinedMindListProps) => {
     const handleSelectMind = (mindIndex: number) => {
         selectMind(mindIndex);
         if (activeTab == 0) {
-            chooseMind(shimmedMinds[mindIndex]);
+            chooseMind(savedMinds[mindIndex]);
         } else {
             chooseMind(onlineOpponents[mindIndex]);
         }
     };
-
-    const shimmedMinds = [...savedMinds, onlineOpponentAdam];
 
     const { data: data } = useListMinds();
     const onlineOpponents = data?.onlineOpponents;
@@ -43,7 +41,7 @@ const MindPreview = ({ savedMinds, chooseMind }: CombinedMindListProps) => {
             {/* Tab Content */}
             {activeTab === 0 && (
                 <OnlineTable
-                    opponents={shimmedMinds}
+                    opponents={savedMinds}
                     selectedOpponent={selectedMind}
                     selectOpponent={handleSelectMind}
                 />

@@ -57,6 +57,7 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
             if (onlineOpponents === undefined) {
                 return;
             }
+            setOpenChooseMind(false);
             transitionFromOnlineMenu(mind, onlineOpponents[selectedOpponent]);
         };
 
