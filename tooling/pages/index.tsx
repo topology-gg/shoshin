@@ -1166,6 +1166,8 @@ export default function Home() {
                 </div>
                 {gameMode == GameModes.simulation ? (
                     <MidScreenControl
+                        reSimulationNeeded={false}
+                        unsetResimulationNeeded={() => {}}
                         runnable={
                             !(p1 == null || p2 == null) &&
                             gameMode == GameModes.simulation

@@ -184,7 +184,7 @@ const SimulationScene = React.forwardRef(
             }
 
             setP1(builtAgent);
-            setReSimulationNeeded(true);
+            setReSimulationNeeded((_) => true);
             setAnimationFrame(0);
         }, [character, combos, conditions, layers]);
 

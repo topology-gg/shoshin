@@ -73,6 +73,8 @@ const GameplayTutorialScene = React.forwardRef(
         const [simulationError, setSimulationError] = useState();
         const [p1, setP1] = useState<Agent>();
         const p2: Agent = lesson.opponent;
+        const [reSimulationNeeded, setReSimulationNeeded] =
+            useState<boolean>(false);
 
         const [loop, setLoop] = useState<NodeJS.Timer>();
         const [animationFrame, setAnimationFrame] = useState<number>(0);
@@ -153,6 +155,7 @@ const GameplayTutorialScene = React.forwardRef(
         useEffect(() => {
             let builtAgent = handleBuildAgent();
             setP1(builtAgent);
+            setReSimulationNeeded((_) => true);
         }, [character, combos, conditions, layers]);
 
         function handleBuildAgent() {
@@ -594,6 +597,10 @@ const GameplayTutorialScene = React.forwardRef(
                                         <div style={{ height: '400px' }}></div>
                                     ) : null}
                                     <MidScreenControl
+                                        reSimulationNeeded={reSimulationNeeded}
+                                        unsetResimulationNeeded={() =>
+                                            setReSimulationNeeded((_) => false)
+                                        }
                                         runnable={
                                             !(p1 == null || p2 == null) &&
                                             !playOnly
