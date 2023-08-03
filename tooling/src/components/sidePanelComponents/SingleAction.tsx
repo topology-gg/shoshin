@@ -25,7 +25,7 @@ const SingleAction = ({
         console.log('double click');
         onDoubleClick(actionIndex);
     };
-    const width = duration * 1.3;
+    const width = duration * 2.0;
     return (
         <div onDoubleClick={handleDoubleClick}>
             <ActionToken
@@ -36,7 +36,7 @@ const SingleAction = ({
             >
                 <img
                     src={icon}
-                    width="20px"
+                    width="30px"
                     style={{ margin: '0 auto' }}
                     unselectable="on"
                 />
