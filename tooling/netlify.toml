@@ -1,0 +1,2 @@
+[functions]
+  included_files = ["wasm/shoshin/pkg_nodejs/shoshin_bg.wasm"]
