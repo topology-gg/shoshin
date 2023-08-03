@@ -18,7 +18,8 @@ export default async function handler(
     const db = client.db(DB_NAME);
     const pvpProfileCollection = db.collection<PvPProfile>(COLLECTION_NAME_PVP);
     const playerName = data[0];
-    const character = data[1].charAt(0).toUpperCase() + data[1].substring(1).toLowerCase();
+    const character =
+        data[1].charAt(0).toUpperCase() + data[1].substring(1).toLowerCase();
     const mindName = data[2];
     if (req.method === 'PUT') {
         try {
