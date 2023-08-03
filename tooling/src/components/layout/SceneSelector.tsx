@@ -160,7 +160,11 @@ const SceneSelector = () => {
             state.playerAgents[character.toLowerCase()];
 
         if (playerAgent) {
-            setPlayerAgent(playerAgent);
+            //Combine missing conditions with initial conditions
+            setPlayerAgent({
+                ...playerAgent,
+                conditions: INITIAL_AGENT_COMPONENTS.conditions,
+            });
         }
 
         if (!playerAgent) {
