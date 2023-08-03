@@ -735,6 +735,9 @@ const SimulationScene = React.forwardRef(
                                             }}
                                         >
                                             <Gambit
+                                                isAnimationRunning={
+                                                    animationState == 'Run'
+                                                }
                                                 layers={layers}
                                                 setLayers={setLayers}
                                                 features={FullGambitFeatures}

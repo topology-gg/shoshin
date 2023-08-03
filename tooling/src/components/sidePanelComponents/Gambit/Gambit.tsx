@@ -74,6 +74,7 @@ export const FullGambitFeatures: GambitFeatures = {
     sui: true,
 };
 interface GambitProps {
+    isAnimationRunning: boolean;
     layers: Layer[];
     setLayers: (layers: Layer[]) => void;
     character: Character;
@@ -107,6 +108,7 @@ export interface LayerProps {
     isActive: boolean;
     features: GambitFeatures;
     toggleIsLayerSui: (layerIndex: number) => void;
+    isAnimationRunning: boolean;
 }
 
 //Select +Combo,
@@ -130,9 +132,14 @@ const DraggableLayer = ({
     isActive,
     features,
     toggleIsLayerSui,
+    isAnimationRunning,
 }: LayerProps) => {
     return (
-        <Draggable draggableId={index.toString()} index={index}>
+        <Draggable
+            draggableId={index.toString()}
+            index={index}
+            isDragDisabled={isAnimationRunning}
+        >
             {(provided) => (
                 <div
                     ref={provided.innerRef}
@@ -161,6 +168,7 @@ const DraggableLayer = ({
                         features={features}
                         actions={actions}
                         toggleIsLayerSui={toggleIsLayerSui}
+                        isAnimationRunning={isAnimationRunning}
                     />
                 </div>
             )}
@@ -186,6 +194,7 @@ export const LayerComponent = ({
     features,
     actions,
     toggleIsLayerSui,
+    isAnimationRunning,
 }: LayerProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -445,6 +454,7 @@ export const LayerComponent = ({
 };
 
 const Gambit = ({
+    isAnimationRunning,
     layers,
     setLayers,
     character,
@@ -685,6 +695,7 @@ const Gambit = ({
     };
 
     const LayerList = React.memo(function LayerList({
+        isAnimationRunning,
         layers,
         activeMs,
         features,
@@ -710,6 +721,7 @@ const Gambit = ({
                 features={features}
                 actions={actions}
                 toggleIsLayerSui={handleToggleIsLayerSui}
+                isAnimationRunning={isAnimationRunning}
             />
         ));
     });
@@ -860,6 +872,7 @@ const Gambit = ({
                                     </Grid>
 
                                     <LayerList
+                                        isAnimationRunning={isAnimationRunning}
                                         layers={layers}
                                         activeMs={activeMs}
                                         features={features}
