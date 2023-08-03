@@ -87,6 +87,8 @@ const SimulationScene = React.forwardRef(
         const [output, setOuput] = useState<FrameScene>();
         const [simulationError, setSimulationError] = useState();
         const [p1, setP1] = useState<Agent>();
+        const [reSimulationNeeded, setReSimulationNeeded] =
+            useState<boolean>(false);
 
         let p2: Agent;
         if ('layers' in opponent.agent) {
@@ -156,6 +158,9 @@ const SimulationScene = React.forwardRef(
             };
         }, [openPauseMenu]);
 
+        //
+        // useEffect hook to update p1
+        //
         useEffect(() => {
             let builtAgent = handleBuildAgent();
 
@@ -179,6 +184,8 @@ const SimulationScene = React.forwardRef(
             }
 
             setP1(builtAgent);
+            setReSimulationNeeded(true);
+            setAnimationFrame(0);
         }, [character, combos, conditions, layers]);
 
         function handleBuildAgent() {
@@ -584,6 +591,14 @@ const SimulationScene = React.forwardRef(
                                             ></div>
                                         ) : null}
                                         <MidScreenControl
+                                            reSimulationNeeded={
+                                                reSimulationNeeded
+                                            }
+                                            unsetResimulationNeeded={() =>
+                                                setReSimulationNeeded(
+                                                    (_) => false
+                                                )
+                                            }
                                             runnable={
                                                 !(p1 == null || p2 == null) &&
                                                 !playOnly

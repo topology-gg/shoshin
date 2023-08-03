@@ -80,6 +80,8 @@ function findFrameNumbersAtLaunched(frames: Frame[]) {
 }
 
 const MidScreenControl = ({
+    reSimulationNeeded,
+    unsetResimulationNeeded,
     runnable,
     playOnly,
     testJsonAvailable,
@@ -195,7 +197,12 @@ const MidScreenControl = ({
                 <Button
                     size="small"
                     variant="outlined"
-                    onClick={() => handleClick('ToggleRun')}
+                    onClick={() => {
+                        if (animationState != 'Run') {
+                            unsetResimulationNeeded();
+                        }
+                        handleClick('ToggleRun');
+                    }}
                     disabled={!runnable && !playOnly}
                 >
                     {animationState != 'Run' || playOnly ? (
@@ -209,7 +216,9 @@ const MidScreenControl = ({
                     size="small"
                     variant="outlined"
                     onClick={() => handleClick('Stop')}
-                    disabled={!runnable || !testJsonAvailable}
+                    disabled={
+                        !runnable || !testJsonAvailable || reSimulationNeeded
+                    }
                 >
                     <Stop />
                 </Button>
@@ -218,7 +227,9 @@ const MidScreenControl = ({
                     size="small"
                     variant="outlined"
                     onClick={() => handleClick('PrevFrame')}
-                    disabled={!runnable || !testJsonAvailable}
+                    disabled={
+                        !runnable || !testJsonAvailable || reSimulationNeeded
+                    }
                 >
                     <FastRewind />
                 </Button>
@@ -227,7 +238,9 @@ const MidScreenControl = ({
                     size="small"
                     variant="outlined"
                     onClick={() => handleClick('NextFrame')}
-                    disabled={!runnable || !testJsonAvailable}
+                    disabled={
+                        !runnable || !testJsonAvailable || reSimulationNeeded
+                    }
                 >
                     <FastForward />
                 </Button>
