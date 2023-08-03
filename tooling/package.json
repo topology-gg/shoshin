@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:wasm": "wasm-pack build wasm/shoshin --release --target web && wasm-pack build wasm/condition_eval --release --target web && wasm-pack build wasm/shoshin --out-dir pkg_nodejs --release --target nodejs",
+    "postbuild:wasm": "sed -i 's/__dirname/(process.env.LAMBDA_TASK_ROOT)?process.env.LAMBDA_TASK_ROOT:__dirname/'  wasm/shoshin/pkg_nodejs/shoshin.js",
     "postbuild": "cp -av wasm/shoshin/pkg_nodejs/shoshin_bg.wasm .next/server/pages/api/minds/",
     "start": "next start",
     "lint": "next lint",
