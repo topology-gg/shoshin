@@ -16,7 +16,7 @@ type PvPResult = {
     hp: number;
 };
 
-type PvPProfile = {
+export type PvPProfile = {
     mindName: string;
     playerName: string;
     agent: PlayerAgent;
