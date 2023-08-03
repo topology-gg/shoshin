@@ -268,6 +268,7 @@ export const LayerComponent = ({
             sx={{
                 width: '100%',
                 border: `1px solid ${isActive ? '#000' : '#ccc'}`,
+                background: isActive ? '#ffffffCC' : '00000000',
                 marginBottom: '4px',
                 borderRadius: '20px',
             }}
