@@ -42,10 +42,7 @@ const OnlineTable = ({
     ));
 
     return (
-        <TableContainer
-            component={Paper}
-            sx={{ border: '2px solid #000', borderRadius: '16px' }}
-        >
+        <TableContainer component={Paper}>
             <Table>
                 <TableHead>
                     <TableRow>
