@@ -989,6 +989,7 @@ export default function Home() {
         <LayerContext.Provider value={layers}>
             <CharacterContext.Provider value={character}>
                 <EditorView
+                    animationState={animationState}
                     editorMode={editorMode}
                     settingModalOpen={settingModalOpen}
                     setSettingModalOpen={(bool) =>

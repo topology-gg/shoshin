@@ -657,6 +657,9 @@ const GameplayTutorialScene = React.forwardRef(
                                         }}
                                     >
                                         <Gambit
+                                            isAnimationRunning={
+                                                animationState == 'Run'
+                                            }
                                             layers={layers}
                                             setLayers={setLayers}
                                             features={lesson.features}
