@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:wasm": "wasm-pack build wasm/shoshin --release --target web && wasm-pack build wasm/condition_eval --release --target web && wasm-pack build wasm/shoshin --out-dir pkg_nodejs --release --target nodejs",
-    "postbuild:wasm": "sed -i 's/__dirname/(process.env.LAMBDA_TASK_ROOT)?`${process.env.LAMBDA_TASK_ROOT}\/wasm\/shoshin\/pkg_nodejs`:__dirname/' wasm/shoshin/pkg_nodejs/shoshin.js",
+    "postbuild:wasm": "sed -i 's/__dirname/(process.env.LAMBDA_TASK_ROOT)?`${process.env.LAMBDA_TASK_ROOT}\\/wasm\\/shoshin\\/pkg_nodejs`:__dirname/' wasm/shoshin/pkg_nodejs/shoshin.js",
     "start": "next start",
     "lint": "next lint",
     "test": "cross-env TS_NODE_PROJECT=\"tsconfig.testing.json\" mocha",
