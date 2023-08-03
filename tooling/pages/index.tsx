@@ -989,6 +989,7 @@ export default function Home() {
         <LayerContext.Provider value={layers}>
             <CharacterContext.Provider value={character}>
                 <EditorView
+                    animationState={animationState}
                     editorMode={editorMode}
                     settingModalOpen={settingModalOpen}
                     setSettingModalOpen={(bool) =>
@@ -1166,6 +1167,8 @@ export default function Home() {
                 </div>
                 {gameMode == GameModes.simulation ? (
                     <MidScreenControl
+                        reSimulationNeeded={false}
+                        unsetResimulationNeeded={() => {}}
                         runnable={
                             !(p1 == null || p2 == null) &&
                             gameMode == GameModes.simulation

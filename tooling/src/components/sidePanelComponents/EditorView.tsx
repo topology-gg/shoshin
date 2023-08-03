@@ -28,6 +28,7 @@ import { Action } from '../../types/Action';
 import { RestartAlt } from '@mui/icons-material';
 
 interface EditorViewProps {
+    animationState: string;
     editorMode: EditorMode;
     settingModalOpen: boolean;
     setSettingModalOpen: (bool: boolean) => void;
@@ -87,6 +88,7 @@ interface EditorViewProps {
 }
 
 const EditorView = ({
+    animationState,
     editorMode,
     settingModalOpen,
     setSettingModalOpen,
@@ -158,6 +160,7 @@ const EditorView = ({
             case EditorTabName.Mind: {
                 return (
                     <Gambit
+                        isAnimationRunning={animationState == 'Run'}
                         layers={layers}
                         setLayers={setLayers}
                         features={FullGambitFeatures}
