@@ -7,9 +7,7 @@ import {
     DB_NAME,
 } from '../../../src/constants/constants';
 import { runRank } from '../../../src/helpers/pvpHelper';
-import {
-    PlayerAgent
-} from '../../../src/types/Agent';
+import { PlayerAgent } from '../../../src/types/Agent';
 type PvPResult = {
     result: 'win' | 'loss';
     score: number;
@@ -103,4 +101,3 @@ export default async function handler(
         res.status(405).json({ error: 'Method not allowed' });
     }
 }
-

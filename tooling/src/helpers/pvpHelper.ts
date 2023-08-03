@@ -1,7 +1,11 @@
 import { MongoClient, WithId } from 'mongodb';
 import clientPromise from '../../lib/mongodb';
 import wasm from '../../wasm/shoshin/pkg_nodejs/shoshin';
-import { COLLECTION_NAME_PVP, Character, DB_NAME } from '../constants/constants';
+import {
+    COLLECTION_NAME_PVP,
+    Character,
+    DB_NAME,
+} from '../constants/constants';
 import Agent, { PlayerAgent, agentsToArray, buildAgent } from '../types/Agent';
 import { FrameScene } from '../types/Frame';
 import { layersToAgentComponents } from '../types/Layer';
