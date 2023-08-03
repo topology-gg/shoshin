@@ -15,6 +15,11 @@ export interface OnlineOpponent {
     playerName: string;
 }
 
+export interface SavedMind extends OnlineOpponent {
+    createdDate: string;
+    lastUpdatedDate: string;
+}
+
 export enum Medal {
     NONE = 'None',
     GOLD = 'Gold',

@@ -19,11 +19,18 @@ import { JessicaOpponents } from '../ChooseOpponent/opponents/opponents';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import SubmitMenu from './SubmitMenu';
 import { useListMinds } from '../../../lib/api';
-import { OnlineOpponent } from '../../types/Opponent';
+import { OnlineOpponent, SavedMind } from '../../types/Opponent';
+import MindPreview from '../MindPreview/MindPreview';
+import PreviewAgainst from '../MindPreview/PreviewAgainst';
 
 interface OnlineMenuProps {
     transitionBack: () => void;
-    transitionFromOnlineMenu: (opp: OnlineOpponent) => void;
+    transitionFromOnlineMenu: (
+        playerMind: SavedMind | OnlineOpponent,
+        opp: OnlineOpponent
+    ) => void;
+    savedMinds: SavedMind[];
+    saveMinds: (minds: SavedMind[]) => void;
 }
 
 const ShimmedOnlineOpponents: OnlineOpponent[] = JessicaOpponents.map(
@@ -37,18 +44,35 @@ const ShimmedOnlineOpponents: OnlineOpponent[] = JessicaOpponents.map(
 );
 
 const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
-    ({ transitionBack, transitionFromOnlineMenu }, ref) => {
-        console.log('from the top');
-
+    (
+        { transitionBack, transitionFromOnlineMenu, savedMinds, saveMinds },
+        ref
+    ) => {
         const [selectedOpponent, selectOpponent] = useState<number>(-1);
 
         const { data: data } = useListMinds();
         const onlineOpponents = data?.onlineOpponents;
-        const handleFightClick = () => {
+
+        const handleChooseMind = (mind: SavedMind | OnlineOpponent) => {
             if (onlineOpponents === undefined) {
                 return;
             }
-            transitionFromOnlineMenu(onlineOpponents[selectedOpponent]);
+            setOpenChooseMind(false);
+            transitionFromOnlineMenu(mind, onlineOpponents[selectedOpponent]);
+        };
+
+        const [previewOpen, setPreviewOpen] = useState<boolean>(false);
+        const [openChooseMind, setOpenChooseMind] = useState<boolean>(false);
+
+        const handleAddToSavedMinds = () => {
+            saveMinds([
+                ...savedMinds,
+                {
+                    ...onlineOpponents[selectedOpponent],
+                    createdDate: Date.now(),
+                    lastUpdatedDate: Date.now(),
+                },
+            ]);
         };
 
         const [isSubmitOpeoned, setOpenSubmit] = useState<boolean>(false);
@@ -90,7 +114,19 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
             setUsername(e.target.value);
         };
 
-        console.log('rendering online menu');
+        const mindAlreadySaved =
+            selectedOpponent !== -1
+                ? savedMinds.find(
+                      (mind) =>
+                          mind.mindName ===
+                          onlineOpponents[selectedOpponent].mindName
+                  ) !== undefined
+                : false;
+
+        const selectedOnlineOpponent =
+            selectedOpponent >= 0 && onlineOpponents !== undefined
+                ? onlineOpponents[selectedOpponent]
+                : undefined;
         return (
             <div ref={ref}>
                 <FullArtBackground useAlt={true}>
@@ -115,6 +151,43 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                         </DialogActions>
                     </Dialog>
 
+                    <Dialog
+                        open={previewOpen}
+                        onClose={() => setPreviewOpen(false)}
+                        fullWidth={true}
+                        maxWidth={'lg'}
+                    >
+                        <DialogTitle>
+                            Preview {selectedOnlineOpponent?.mindName} by{' '}
+                            {selectedOnlineOpponent?.playerName}
+                        </DialogTitle>
+                        <DialogContent>
+                            <MindPreview
+                                mind={{
+                                    ...selectedOnlineOpponent,
+                                    createdDate: '',
+                                    lastUpdatedDate: '',
+                                }}
+                            />
+                        </DialogContent>
+                    </Dialog>
+
+                    <Dialog
+                        open={openChooseMind}
+                        onClose={() => setOpenChooseMind(false)}
+                        fullWidth={true}
+                        maxWidth={'lg'}
+                    >
+                        <DialogTitle>Choose your mind</DialogTitle>
+                        <DialogContent>
+                            <PreviewAgainst
+                                savedMinds={savedMinds}
+                                chooseOpponent={handleChooseMind}
+                                close={() => setOpenChooseMind(false)}
+                            />
+                        </DialogContent>
+                    </Dialog>
+
                     {isSubmitOpeoned && (
                         <div className={'overlay-menu'} onClick={toggleMenu}>
                             <Box
@@ -128,6 +201,7 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                                         <SubmitMenu
                                             closeMenu={toggleMenu}
                                             username={username}
+                                            minds={savedMinds}
                                         />
                                     </CardContent>
                                 </Card>
@@ -169,8 +243,8 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                         username: {username}
                     </Button>
                     <Grid container>
-                        <Grid item xs={9} />
-                        <Grid item xs={3}>
+                        <Grid item xs={7} />
+                        <Grid item xs={5}>
                             <Box display={'flex'}>
                                 <ShoshinMenuButton
                                     sx={{ width: 150 }}
@@ -178,10 +252,30 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                                 >
                                     Back
                                 </ShoshinMenuButton>
+
+                                <ShoshinMenuButton
+                                    sx={{ width: 175 }}
+                                    onClick={handleAddToSavedMinds}
+                                    disabled={
+                                        mindAlreadySaved ||
+                                        selectedOpponent === -1
+                                    }
+                                >
+                                    Add to minds
+                                </ShoshinMenuButton>
+
+                                <ShoshinMenuButton
+                                    sx={{ width: 200 }}
+                                    onClick={() => setPreviewOpen(true)}
+                                    disabled={selectedOpponent === -1}
+                                >
+                                    Preview
+                                </ShoshinMenuButton>
+
                                 <ShoshinMenuButton
                                     isAlt
                                     sx={{ width: 175 }}
-                                    onClick={handleFightClick}
+                                    onClick={() => setOpenChooseMind(true)}
                                     disabled={selectedOpponent === -1}
                                 >
                                     Fight

@@ -45,14 +45,16 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
+import { Playable } from '../layout/SceneSelector';
+import SubmitMindButton from './MainSceneSubmit';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
 });
 
 interface SimulationProps {
-    player: PlayerAgent;
-    setPlayerAgent: (playerAgent: PlayerAgent) => void;
+    player: Playable;
+    savePlayerAgent: (playerAgent: Playable) => void;
     opponent: Opponent | OnlineOpponent;
     submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
     onContinue: () => void;
@@ -61,19 +63,21 @@ interface SimulationProps {
     volume: number;
     pauseMenu: ReactNode;
     showFullReplay: boolean;
+    isPreview: boolean;
 }
 //We need Players agent and opponent
 const SimulationScene = React.forwardRef(
     (props: SimulationProps, ref: ForwardedRef<HTMLDivElement>) => {
         const {
             player,
-            setPlayerAgent,
+            savePlayerAgent,
             opponent,
             submitWin,
             onContinue,
             volume,
             pauseMenu,
             showFullReplay,
+            isPreview,
         } = props;
         // Constants
         const LATENCY = 70;
@@ -107,16 +111,25 @@ const SimulationScene = React.forwardRef(
             stamina_1: 100,
         });
 
+        let playerAgent;
+        if ('layers' in player) {
+            playerAgent = player;
+        } else {
+            playerAgent = player.agent;
+        }
+
         // React states for tracking the New Agent being edited in the right panel
-        const [combos, setCombos] = useState<Action[][]>(player.combos);
+        const [combos, setCombos] = useState<Action[][]>(playerAgent.combos);
 
         const [conditions, setConditions] =
             //@ts-ignore
-            useState<Condition[]>(player.conditions);
+            useState<Condition[]>(playerAgent.conditions);
 
-        const [character, setCharacter] = useState<Character>(player.character);
+        const [character, setCharacter] = useState<Character>(
+            playerAgent.character
+        );
 
-        const [layers, setLayers] = useState<Layer[]>(player.layers);
+        const [layers, setLayers] = useState<Layer[]>(playerAgent.layers);
 
         const actions =
             CHARACTERS_ACTIONS[character == Character.Jessica ? 0 : 1];
@@ -146,12 +159,25 @@ const SimulationScene = React.forwardRef(
         useEffect(() => {
             let builtAgent = handleBuildAgent();
 
-            setPlayerAgent({
-                layers,
-                combos,
-                conditions,
-                character,
-            });
+            if ('agent' in player) {
+                savePlayerAgent({
+                    ...player,
+                    agent: {
+                        layers,
+                        combos,
+                        conditions,
+                        character,
+                    },
+                });
+            } else {
+                savePlayerAgent({
+                    layers,
+                    combos,
+                    conditions,
+                    character,
+                });
+            }
+
             setP1(builtAgent);
         }, [character, combos, conditions, layers]);
 
@@ -308,7 +334,8 @@ const SimulationScene = React.forwardRef(
             if (
                 beatAgent &&
                 'medal' in opponent &&
-                achievedBetterPerformance(performance, opponent.medal)
+                achievedBetterPerformance(performance, opponent.medal) &&
+                'layers' in player
             ) {
                 submitWin(player, { ...opponent, medal: performance });
             }
@@ -357,19 +384,28 @@ const SimulationScene = React.forwardRef(
         //Having this class be conditional on playOnly may not be needed
         const overlayClassName = playOnly ? mainSceneStyles.overlay : '';
 
-        const p1Name = player.character;
+        let playerOneName = null;
 
-        let playerTwoStyle = null;
-
-        if ('playerName' in opponent) {
-            playerTwoStyle = (
+        if ('playerName' in player) {
+            playerOneName = (
                 <Typography>
-                    {opponent.agent.character}-{opponent.mindName}-
-                    {opponent.playerName}
+                    {player.mindName} by {player.playerName}
                 </Typography>
             );
         } else {
-            playerTwoStyle = (
+            playerOneName = <Typography>{player.character}</Typography>;
+        }
+
+        let playerTwoName = null;
+
+        if ('playerName' in opponent) {
+            playerTwoName = (
+                <Typography>
+                    {opponent.mindName} by {opponent.playerName}
+                </Typography>
+            );
+        } else {
+            playerTwoName = (
                 <Typography>
                     {numberToCharacter(opponent.agent.character)}
                 </Typography>
@@ -491,7 +527,7 @@ const SimulationScene = React.forwardRef(
                                                             P1
                                                         </Typography>
                                                         <Typography>
-                                                            {p1Name}
+                                                            {playerOneName}
                                                         </Typography>
                                                     </Box>
                                                     <Box
@@ -511,7 +547,7 @@ const SimulationScene = React.forwardRef(
                                                         >
                                                             P2
                                                         </Typography>
-                                                        {playerTwoStyle}
+                                                        {playerTwoName}
                                                     </Box>
                                                 </Box>
                                                 <Game
@@ -578,7 +614,10 @@ const SimulationScene = React.forwardRef(
                                                     (_) => !checkedShowDebugInfo
                                                 )
                                             }
+                                            player={player}
+                                            isPreview={isPreview}
                                         />
+
                                         <Box
                                             sx={{
                                                 padding: '10px',

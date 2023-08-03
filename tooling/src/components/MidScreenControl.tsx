@@ -4,7 +4,10 @@ import {
     Button,
     Chip,
     FormControlLabel,
+    Icon,
+    IconButton,
     Switch,
+    Tooltip,
     Typography,
 } from '@mui/material';
 import {
@@ -19,6 +22,9 @@ import { Frame } from '../types/Frame';
 import { BodystatesAntoc, BodystatesJessica } from '../types/Condition';
 import Timeline from './ui/Timeline';
 import EventSymbol from './ui/EventSymbol';
+import SubmitMindButton from './SimulationScene/MainSceneSubmit';
+import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 // Calculate key events to be displayed along the timeline slider
 function findFrameNumbersAtHurt(frames: Frame[]) {
@@ -85,6 +91,8 @@ const MidScreenControl = ({
     handleSlideChange,
     checkedShowDebugInfo,
     handleChangeDebugInfo,
+    player,
+    isPreview,
 }) => {
     const BLANK_COLOR = 'rgba(242, 242, 242, 0.8)';
 
@@ -143,6 +151,19 @@ const MidScreenControl = ({
         ],
         [agent_1_frames, animationFrame]
     );
+
+    const isSavedMind = player !== undefined && 'createdDate' in player;
+    const isPlayerAgent = player !== undefined && 'layers' in player;
+
+    let saveMessage = '';
+
+    if (isPreview) {
+        saveMessage = `No changes saved in practice fight`;
+    } else if (isSavedMind) {
+        saveMessage = `Changes to ${player.mindName} are saved automatically`;
+    } else {
+        saveMessage = 'Changes to online minds are not saved';
+    }
 
     return (
         <Box
@@ -277,6 +298,24 @@ const MidScreenControl = ({
                     }
                     sx={{ ml: 1 }}
                 />
+
+                {!isPlayerAgent && (
+                    <Tooltip title={saveMessage}>
+                        <Icon aria-label="download">
+                            {isSavedMind && !isPreview ? (
+                                <FileDownloadIcon color="success" />
+                            ) : (
+                                <FileDownloadOffIcon />
+                            )}
+                        </Icon>
+                    </Tooltip>
+                )}
+                {isSavedMind && (
+                    <SubmitMindButton
+                        mind={player}
+                        username={player.playerName}
+                    />
+                )}
             </Box>
 
             <Box sx={{ minWidth: 400, mt: 3 }}>

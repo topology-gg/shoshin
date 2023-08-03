@@ -65,11 +65,13 @@ export interface GambitFeatures {
     layerAddAndDelete: boolean;
     conditionAnd: boolean;
     combos: boolean;
+    sui: boolean;
 }
 export const FullGambitFeatures: GambitFeatures = {
     layerAddAndDelete: true,
     conditionAnd: true,
     combos: true,
+    sui: true,
 };
 interface GambitProps {
     layers: Layer[];
@@ -141,7 +143,7 @@ const DraggableLayer = ({
                     }}
                     {...provided.dragHandleProps}
                 >
-                    <Layer
+                    <LayerComponent
                         layer={layer}
                         index={index}
                         isReadOnly={isReadOnly}
@@ -166,7 +168,7 @@ const DraggableLayer = ({
     );
 };
 
-const Layer = ({
+export const LayerComponent = ({
     layer,
     index: i,
     isReadOnly,
@@ -399,15 +401,18 @@ const Layer = ({
                         );
                     })}
                 </Menu>
-                <Grid item xs={checkboxPortion}>
-                    <Switch
-                        size="small"
-                        onChange={() => {
-                            toggleIsLayerSui(i);
-                        }}
-                        checked={layer.sui}
-                    />
-                </Grid>
+                {features.sui && (
+                    <Grid item xs={checkboxPortion}>
+                        <Switch
+                            size="small"
+                            onChange={() => {
+                                toggleIsLayerSui(i);
+                            }}
+                            checked={layer.sui}
+                        />
+                    </Grid>
+                )}
+
                 <Grid item xs={gridRemovePortion}>
                     {features.layerAddAndDelete ? (
                         <IconButton

@@ -1,5 +1,5 @@
 import { PlayerAgent } from '../types/Agent';
-import { Opponent } from '../types/Opponent';
+import { OnlineOpponent, Opponent, SavedMind } from '../types/Opponent';
 
 export interface ShoshinPersistedState {
     playerAgents: {
@@ -10,7 +10,9 @@ export interface ShoshinPersistedState {
         jessica: Opponent[];
         antoc: Opponent[];
     };
+    minds: SavedMind[];
 }
+
 const StorageKey = 'PersistedGameState';
 
 export const getLocalState = (): ShoshinPersistedState | null => {
