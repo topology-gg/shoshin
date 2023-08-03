@@ -161,22 +161,9 @@ const SceneSelector = () => {
 
         if (playerAgent) {
             //Combine missing conditions with initial conditions
-
-            const extraCondtions = playerAgent.conditions.filter(
-                (condition) => {
-                    return (
-                        INITIAL_AGENT_COMPONENTS.conditions.find(
-                            (c) => c.key == condition.key
-                        ) == undefined
-                    );
-                }
-            );
             setPlayerAgent({
                 ...playerAgent,
-                conditions: [
-                    ...INITIAL_AGENT_COMPONENTS.conditions,
-                    ...extraCondtions,
-                ],
+                conditions: INITIAL_AGENT_COMPONENTS.conditions,
             });
         }
 
