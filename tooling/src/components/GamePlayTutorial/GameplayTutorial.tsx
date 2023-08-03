@@ -158,7 +158,6 @@ const GameplayTutorialScene = React.forwardRef(
         function handleBuildAgent() {
             let char = Object.keys(Character).indexOf(character);
 
-            console.log('layers', layers);
             //given layers
             const {
                 mentalStates: generatedMs,
@@ -625,6 +624,8 @@ const GameplayTutorialScene = React.forwardRef(
                                                 (_) => !checkedShowDebugInfo
                                             )
                                         }
+                                        player={{ layers: layers }}
+                                        isPreview={false}
                                     />
                                 </div>
                             </Grid>

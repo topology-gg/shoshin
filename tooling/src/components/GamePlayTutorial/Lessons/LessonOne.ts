@@ -194,6 +194,7 @@ const LessonOne: Lesson = {
         layerAddAndDelete: false,
         conditionAnd: false,
         combos: false,
+        sui: false,
     },
     player: {
         //@ts-ignore

@@ -6,37 +6,21 @@ import {
     Character,
     DB_NAME,
 } from '../../../src/constants/constants';
-import { runRank } from '../../../src/helpers/pvpHelper';
-import { PlayerAgent } from '../../../src/types/Agent';
-type PvPResult = {
-    result: 'win' | 'loss';
-    score: number;
-    hp: number;
-};
-
-type PvPProfile = {
-    mindName: string;
-    playerName: string;
-    agent: PlayerAgent;
-    rank: number;
-    records: Map<string, PvPResult>;
-};
+import { PvPProfile, runRank } from '../../../src/helpers/pvpHelper';
 
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
     const { data } = req.query;
-    console.log('req.body', req.body);
-    if (req.method === 'PUT') {
-        const client: MongoClient = await clientPromise;
-        const db = client.db(DB_NAME);
-        const pvpProfileCollection =
-            db.collection<PvPProfile>(COLLECTION_NAME_PVP);
-        const playerName = data[0];
-        const character = data[1];
-        const mindName = data[2];
 
+    const client: MongoClient = await clientPromise;
+    const db = client.db(DB_NAME);
+    const pvpProfileCollection = db.collection<PvPProfile>(COLLECTION_NAME_PVP);
+    const playerName = data[0];
+    const character = data[1];
+    const mindName = data[2];
+    if (req.method === 'PUT') {
         try {
             const updateResult = await pvpProfileCollection.updateOne(
                 {
@@ -96,6 +80,19 @@ export default async function handler(
             res.status(500).json({
                 error: 'Error updating mind: Internal Server Error',
             });
+        }
+    } else if (req.method === 'GET') {
+        console.log('get request');
+        const result = await pvpProfileCollection.findOne({
+            mindName: mindName,
+            playerName: playerName,
+            'agent.character': character as Character,
+        });
+
+        if (!result) {
+            res.status(404).json({ error: 'Mind not found' });
+        } else {
+            res.status(200).json(result);
         }
     } else {
         res.status(405).json({ error: 'Method not allowed' });
