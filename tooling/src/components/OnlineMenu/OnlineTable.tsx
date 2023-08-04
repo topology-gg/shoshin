@@ -10,13 +10,18 @@ import {
 } from '@mui/material';
 import { OnlineOpponent } from '../../types/Opponent';
 import CardSimple from '../ui/CardSimple';
+import { EMPTY_JESSICA } from '../../constants/starter_agent';
+import { PlayerAgent } from '../../types/Agent';
+import { Character, JESSICA } from '../../constants/constants';
 
 interface OnlineTableProps {
+    isLocal?: boolean;
     opponents: OnlineOpponent[];
     selectedOpponent: number;
     selectOpponent: (index: number) => void;
 }
 const OnlineTable = ({
+    isLocal,
     opponents,
     selectOpponent,
     selectedOpponent,
