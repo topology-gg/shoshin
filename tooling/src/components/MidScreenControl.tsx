@@ -66,7 +66,7 @@ function findFrameNumbersAtLaunched(frames: Frame[]) {
     // find the frame number at which the agent is at the first frame (counter == 0) for hurt state (currently need to iterate over all character types)
     // and record that frame number minus one, which is the frame number where the agent is knocked by opponent
     let frameNumbers = [];
-    console.log('frames', frames);
+    // console.log('frames', frames);
     frames.forEach((frame, frame_i) => {
         if (
             (frame.body_state.state == BodystatesAntoc.Launched ||
