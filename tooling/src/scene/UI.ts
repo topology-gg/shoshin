@@ -313,7 +313,6 @@ export default class UI extends Phaser.Scene {
     //
     onStatsUpdate(stats: statsInfo[]) {
         try {
-            console.log('onStatsUpdate!');
             // render P1 stats
             this.stats_bars[0]['hp_bg'].setVisible(true);
             this.stats_bars[0]['stamina_bg'].setVisible(true);
@@ -382,8 +381,6 @@ export default class UI extends Phaser.Scene {
     }
 
     onPlayerEventRemove(playerIndex: number) {
-        console.log('remove event ', playerIndex);
-
         if (playerIndex == 1) {
             this.PlayerOneEvent?.setText(``);
         } else {

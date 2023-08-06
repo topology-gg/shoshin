@@ -1,4 +1,10 @@
-import React, { ForwardedRef, ReactNode, useEffect, useState } from 'react';
+import React, {
+    ForwardedRef,
+    ReactNode,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import {
     Typography,
     Box,
@@ -82,6 +88,7 @@ const SimulationScene = React.forwardRef(
         } = props;
         // Constants
         const LATENCY = 70;
+        const HITSTOP_TIMER = LATENCY * 3;
         const runnable = true;
 
         // React states for simulation / animation control
@@ -98,8 +105,8 @@ const SimulationScene = React.forwardRef(
             p2 = opponent.agent;
         }
 
-        const [loop, setLoop] = useState<NodeJS.Timer>();
-        const [hitStopTimer, setHitStopTimer] = useState<NodeJS.Timer>();
+        const loop = useRef<NodeJS.Timer>();
+        const hitStopTimer = useRef<NodeJS.Timer>();
         const [animationFrame, setAnimationFrame] = useState<number>(0);
         const [animationState, setAnimationState] = useState<string>('Stop');
         const [testJson, setTestJson] = useState<TestJson>(null);
@@ -239,15 +246,14 @@ const SimulationScene = React.forwardRef(
             setAnimationFrame((prev) => (prev > 0 ? prev - 1 : prev));
         };
 
-        const handleHitStop = (animFrame, simulationOutput) => {
+        const handleHitStop = (animFrame: number, simulationOutput) => {
             const frames_0 = simulationOutput?.agent_0;
             const frames_1 = simulationOutput?.agent_1;
 
-            // console.log('animFrame', animFrame);
             // check if hit-stop timer is required
             // (if any of the character is in counter==1 of HURT / KNOCKED / LAUNCH / CLASHED)
-            const bodyStateP1 = frames_0[animFrame].body_state;
-            const bodyStateP2 = frames_1[animFrame].body_state;
+            const bodyStateP1 = frames_0[animFrame]?.body_state;
+            const bodyStateP2 = frames_1[animFrame]?.body_state;
             const stateP1: string =
                 bodyStateNumberToName[characterTypeToString[p1.character]][
                     bodyStateP1.state
@@ -268,27 +274,23 @@ const SimulationScene = React.forwardRef(
                 }) && bodyStateP2.counter == 1;
 
             if (p1NeedsHitstop || p2NeedsHitstop) {
-                console.log('>>>> HIT STOP');
-
                 // 1. kill the simulation timer
-                clearInterval(loop);
+                clearInterval(loop.current);
                 // 2. launch the hit stop timer
-                setHitStopTimer(
-                    setInterval(() => {
-                        // hit stop timer's callback:
-                        // kill itself
-                        clearInterval(hitStopTimer);
-                        // relaunch simulation timer
-                        setLoop(
-                            setInterval(() => {
-                                animationStepForward(
-                                    simulationOutput.agent_0.length,
-                                    simulationOutput
-                                );
-                            }, LATENCY)
+                // Clear any hitstop timer if started
+                clearTimeout(hitStopTimer.current);
+                hitStopTimer.current = setTimeout(() => {
+                    // hit stop timer's callback:
+                    // kill itself
+                    clearTimeout(hitStopTimer.current);
+                    // relaunch simulation timer
+                    loop.current = setInterval(() => {
+                        animationStepForward(
+                            simulationOutput.agent_0.length,
+                            simulationOutput
                         );
-                    }, LATENCY * 10)
-                );
+                    }, LATENCY);
+                }, HITSTOP_TIMER);
             }
         };
 
@@ -300,8 +302,8 @@ const SimulationScene = React.forwardRef(
             } else if (operation == 'ToggleRun') {
                 // If in Run => go to Pause
                 if (animationState == 'Run') {
-                    clearInterval(loop); // kill the simulation timer
-                    clearInterval(hitStopTimer); // kill the hit-stop timer
+                    clearInterval(loop.current); // kill the simulation timer
+                    clearInterval(hitStopTimer.current); // kill the hit-stop timer
                     setAnimationState('Pause');
                 }
 
@@ -309,11 +311,10 @@ const SimulationScene = React.forwardRef(
                 else if (animationState == 'Pause') {
                     // Begin animation
                     setAnimationState('Run');
-                    setLoop(
-                        setInterval(() => {
-                            animationStepForward(N_FRAMES, testJson);
-                        }, LATENCY)
-                    );
+                    const newLoop = setInterval(() => {
+                        animationStepForward(N_FRAMES, output);
+                    }, LATENCY);
+                    loop.current = newLoop;
                 }
 
                 // If in Stop => perform simulation then go to Run
@@ -328,15 +329,14 @@ const SimulationScene = React.forwardRef(
                     // Begin animation
                     setAnimationState('Run');
 
-                    setLoop(
-                        setInterval(() => {
-                            animationStepForward(out.agent_0.length, out);
-                        }, LATENCY)
-                    );
+                    const newLoop = setInterval(() => {
+                        animationStepForward(out.agent_0.length, out);
+                    }, LATENCY);
+                    loop.current = newLoop;
                 }
             } else {
                 // Stop
-                clearInterval(loop); // kill the timer
+                clearInterval(loop.current); // kill the timer
                 setAnimationState('Stop');
                 setAnimationFrame((_) => 0);
             }
@@ -385,7 +385,7 @@ const SimulationScene = React.forwardRef(
             }
 
             if (animationFrame == N_FRAMES - 1) {
-                clearInterval(loop); // kill the timer
+                clearInterval(loop.current); // kill the timer
                 setAnimationState('Pause');
             }
         }, [animationFrame]);
