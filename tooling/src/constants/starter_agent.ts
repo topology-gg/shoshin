@@ -508,10 +508,6 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: '(',
-                type: 'Operator',
-            },
-            {
                 value: Perceptible.OpponentBodyState,
                 type: 'Perceptible',
             },
@@ -520,36 +516,9 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
+                // note: BodystatesJessica.Idle and BodystatesAntoc.Idle are both 0
                 value: BodystatesJessica.Idle,
                 type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: Perceptible.OpponentBodyState,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: BodystatesAntoc.Idle,
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
             },
             {
                 value: ')',
@@ -1445,10 +1414,6 @@ const common_self_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: '(',
-                type: 'Operator',
-            },
-            {
                 value: Perceptible.SelfBodyState,
                 type: 'Perceptible',
             },
@@ -1457,36 +1422,9 @@ const common_self_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
+                // note: BodystatesJessica.Idle and BodystatesAntoc.Idle are both 0
                 value: BodystatesJessica.Idle,
                 type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: Perceptible.SelfBodyState,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: BodystatesAntoc.Idle,
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
             },
             {
                 value: ')',
