@@ -508,10 +508,6 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: '(',
-                type: 'Operator',
-            },
-            {
                 value: Perceptible.OpponentBodyState,
                 type: 'Perceptible',
             },
@@ -520,36 +516,9 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
+                // note: BodystatesJessica.Idle and BodystatesAntoc.Idle are both 0
                 value: BodystatesJessica.Idle,
                 type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: Perceptible.OpponentBodyState,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: BodystatesAntoc.Idle,
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
             },
             {
                 value: ')',
@@ -570,7 +539,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 110,
+                value: Perceptible.OpponentBodyState,
                 type: 'Perceptible',
             },
             {
@@ -578,7 +547,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 10, // jessica slash
+                value: BodystatesJessica.Slash,
                 type: 'BodyState',
             },
             {
@@ -594,7 +563,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 110,
+                value: Perceptible.OpponentBodyState,
                 type: 'Perceptible',
             },
             {
@@ -602,7 +571,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 20, // jessica upswing
+                value: BodystatesJessica.Upswing,
                 type: 'BodyState',
             },
             {
@@ -618,7 +587,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 110,
+                value: Perceptible.OpponentBodyState,
                 type: 'Perceptible',
             },
             {
@@ -626,7 +595,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 30, // jessica sidecut
+                value: BodystatesJessica.Sidecut,
                 type: 'BodyState',
             },
             {
@@ -642,7 +611,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 110,
+                value: Perceptible.OpponentBodyState,
                 type: 'Perceptible',
             },
             {
@@ -650,7 +619,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 1010, // antoc hori
+                value: BodystatesAntoc.HorizontalSwing,
                 type: 'BodyState',
             },
             {
@@ -666,7 +635,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 110,
+                value: Perceptible.OpponentBodyState,
                 type: 'Perceptible',
             },
             {
@@ -674,7 +643,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 1020, // antoc vert
+                value: BodystatesAntoc.VerticalSwing,
                 type: 'BodyState',
             },
             {
@@ -690,7 +659,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 110,
+                value: Perceptible.OpponentBodyState,
                 type: 'Perceptible',
             },
             {
@@ -698,7 +667,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 140, // jessica gatotsu
+                value: BodystatesJessica.Gatotsu,
                 type: 'BodyState',
             },
             {
@@ -714,7 +683,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 110,
+                value: Perceptible.OpponentBodyState,
                 type: 'Perceptible',
             },
             {
@@ -722,7 +691,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 150, // jessica low kick
+                value: BodystatesJessica.LowKick,
                 type: 'BodyState',
             },
             {
@@ -738,7 +707,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 110,
+                value: Perceptible.OpponentBodyState,
                 type: 'Perceptible',
             },
             {
@@ -746,7 +715,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 1160, // antoc low kick
+                value: BodystatesAntoc.LowKick,
                 type: 'BodyState',
             },
             {
@@ -762,7 +731,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 110,
+                value: Perceptible.OpponentBodyState,
                 type: 'Perceptible',
             },
             {
@@ -770,7 +739,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 160, // Birdswing
+                value: BodystatesJessica.BirdSwing,
                 type: 'BodyState',
             },
             {
@@ -786,7 +755,7 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 110,
+                value: Perceptible.OpponentBodyState,
                 type: 'Perceptible',
             },
             {
@@ -794,7 +763,31 @@ const common_opponent_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: 1190, // Drop Slash
+                value: BodystatesAntoc.DropSlash,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.OpponentBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.Cyclone,
                 type: 'BodyState',
             },
             {
@@ -1421,10 +1414,6 @@ const common_self_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
-                value: '(',
-                type: 'Operator',
-            },
-            {
                 value: Perceptible.SelfBodyState,
                 type: 'Perceptible',
             },
@@ -1433,36 +1422,9 @@ const common_self_body_state_preset_conditions = [
                 type: 'Operator',
             },
             {
+                // note: BodystatesJessica.Idle and BodystatesAntoc.Idle are both 0
                 value: BodystatesJessica.Idle,
                 type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
-            },
-            {
-                value: 'OR',
-                type: 'Operator',
-            },
-            {
-                value: '(',
-                type: 'Operator',
-            },
-            {
-                value: Perceptible.SelfBodyState,
-                type: 'Perceptible',
-            },
-            {
-                value: '==',
-                type: 'Operator',
-            },
-            {
-                value: BodystatesAntoc.Idle,
-                type: 'BodyState',
-            },
-            {
-                value: ')',
-                type: 'Operator',
             },
             {
                 value: ')',

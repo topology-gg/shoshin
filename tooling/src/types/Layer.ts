@@ -1,13 +1,17 @@
 import { Action, CHARACTERS_ACTIONS } from './Action';
 import {
+    BodystatesAntoc,
+    BodystatesJessica,
     Condition,
     ConditionElement,
     ElementType,
     Operator,
+    Perceptible,
 } from './Condition';
 import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
 import { actionIntentsInCombo } from './Action';
+import { JESSICA } from '../constants/constants';
 //Layer conditions have extra metadate while they are being edited
 export interface LayerCondition extends Condition {
     isInverted: boolean;
@@ -293,7 +297,7 @@ const getIsFinishedCondition = (duration: number, id: number) => {
                 type: 'Operator',
             },
             {
-                value: 11,
+                value: Perceptible.SelfBodyCounter,
                 type: 'Perceptible',
             },
             {
@@ -339,7 +343,7 @@ const getIsComboFinishedCondition = (comboDuration: number, id: number) => {
                 type: 'Operator',
             },
             {
-                value: '13',
+                value: Perceptible.SelfComboCounter,
                 type: 'Perceptible',
             },
             {
@@ -368,7 +372,11 @@ const getInterruptedCondition = (character: number, id: number) => {
                 type: 'Operator',
             },
             {
-                value: 10,
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
                 type: 'Perceptible',
             },
             {
@@ -376,8 +384,10 @@ const getInterruptedCondition = (character: number, id: number) => {
                 type: 'Operator',
             },
             {
-                //hurt
-                value: character == 0 ? 60 : 1050,
+                value:
+                    character == JESSICA
+                        ? BodystatesJessica.Hurt
+                        : BodystatesAntoc.Hurt,
                 type: 'BodyState',
             },
             {
@@ -393,7 +403,7 @@ const getInterruptedCondition = (character: number, id: number) => {
                 type: 'Operator',
             },
             {
-                value: 10,
+                value: Perceptible.SelfBodyState,
                 type: 'Perceptible',
             },
             {
@@ -401,8 +411,10 @@ const getInterruptedCondition = (character: number, id: number) => {
                 type: 'Operator',
             },
             {
-                //knocked
-                value: character == 0 ? 70 : 1060,
+                value:
+                    character == JESSICA
+                        ? BodystatesJessica.Knocked
+                        : BodystatesAntoc.Knocked,
                 type: 'BodyState',
             },
             {
@@ -418,7 +430,7 @@ const getInterruptedCondition = (character: number, id: number) => {
                 type: 'Operator',
             },
             {
-                value: 10,
+                value: Perceptible.SelfBodyState,
                 type: 'Perceptible',
             },
             {
@@ -427,8 +439,42 @@ const getInterruptedCondition = (character: number, id: number) => {
             },
             {
                 //clash
-                value: character == 0 ? 50 : 1130,
+                value:
+                    character == JESSICA
+                        ? BodystatesJessica.Clash
+                        : BodystatesAntoc.Clash,
                 type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value:
+                    character == JESSICA
+                        ? BodystatesJessica.Launched
+                        : BodystatesAntoc.Launched,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
             },
             {
                 value: ')',
