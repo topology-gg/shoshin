@@ -205,6 +205,32 @@ const common_stats_preset_conditions = [
                 type: 'Operator',
             },
             {
+                value: Perceptible.SelfInt,
+                type: 'Perceptible',
+            },
+            {
+                value: '<=',
+                type: 'Operator',
+            },
+            {
+                value: 900,
+                type: 'Constant',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ],
+        displayName: 'My health < X',
+        type: 'my health',
+    },
+    {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
                 value: '!',
                 type: 'Operator',
             },

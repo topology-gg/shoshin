@@ -48,6 +48,7 @@ const SimpleLayerList = ({ playerAgent }: SimpleLayerList) => {
             handleInvertCondition={() => {}}
             handleRemoveCondition={() => {}}
             handleRemoveLayer={() => {}}
+            handleChangeCondition={() => {}}
             isActive={false}
             toggleIsLayerSui={() => {}}
             handleDuplicateLayer={() => {}}

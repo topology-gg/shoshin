@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { ChangeEventHandler } from 'react';
 import ConditionContextMenu from './ConditionContextMenu';
-import { Box, Chip, Typography } from '@mui/material';
+import { Box, Chip, Input, Typography } from '@mui/material';
 import { LayerCondition } from '../../../types/Layer';
 import { LayerProps } from './Gambit';
-import { conditionTypeToEmojiFile } from '../../../types/Condition';
+import {
+    Condition as ConditionType,
+    conditionTypeToEmojiFile,
+} from '../../../types/Condition';
 import styles from './Gambit.module.css';
 import { SpaRounded } from '@mui/icons-material';
+
+/**
+ * Store information about all the conditions that have a value that
+ * can be customized. The condition is matched by name.
+ * The customizable value is at the specified index.
+ */
+const customValueConditions = [
+    // displayName, element index for custom value
+    { displayName: 'My health < X', index: 3 },
+];
 
 type ConditionProps = {
     condition: LayerCondition;
@@ -16,6 +29,7 @@ type ConditionProps = {
     ) => void;
     onRemove: (layerIndex: number, conditionIndex: number) => void;
     onInvertCondition: LayerProps['handleInvertCondition'];
+    onValueChange: (condition: ConditionType, index: number) => void;
 };
 
 export const ConditionLabel = ({
@@ -62,9 +76,33 @@ const Condition = ({
     conditionIndex,
     onClick,
     onInvertCondition,
+    onValueChange,
     onRemove,
     layerIndex,
 }: ConditionProps) => {
+    const customValueCondition = customValueConditions.find(
+        ({ displayName }) => displayName === condition.displayName
+    );
+
+    const conditionCustomValue =
+        customValueCondition && condition.elements[customValueCondition.index];
+
+    const onCustomValueChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+        const newCondition = {
+            ...condition,
+            elements: condition.elements.map((elem, i) =>
+                i === customValueCondition.index
+                    ? { ...elem, value: parseInt(e.target.value) }
+                    : elem
+            ),
+        };
+        onValueChange(newCondition, conditionIndex);
+    };
+
+    const displayName = customValueCondition
+        ? condition.displayName.replace(/([<>=]) X/, '$1')
+        : condition.displayName;
+
     return (
         <ConditionContextMenu
             handleInvertCondition={onInvertCondition}
@@ -74,14 +112,23 @@ const Condition = ({
             <Chip
                 color="default"
                 label={
-                    <>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
                         <ConditionLabel
-                            name={condition.displayName}
+                            name={displayName}
                             type={condition.type}
                             isInverted={condition.isInverted}
                             hasLayer={true}
                         />
-                    </>
+                        {customValueCondition && (
+                            <Input
+                                type="number"
+                                onClick={(e) => e.stopPropagation()}
+                                value={conditionCustomValue.value}
+                                onChange={onCustomValueChange}
+                                sx={{ width: 50 }}
+                            />
+                        )}
+                    </Box>
                 }
                 className={`${styles.gambitButton} ${styles.conditionButton}`}
                 id={`condition-btn-${layerIndex}-${conditionIndex}`}

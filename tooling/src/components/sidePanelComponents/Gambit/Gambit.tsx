@@ -14,7 +14,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Menu from '@mui/material/Menu';
 import { ACTION_UNICODE_MAP, Character } from '../../../constants/constants';
 import BlurrableButton from '../../ui/BlurrableButton';
-import { Layer, defaultLayer, alwaysTrueCondition } from '../../../types/Layer';
+import {
+    Layer,
+    defaultLayer,
+    alwaysTrueCondition,
+    LayerCondition,
+} from '../../../types/Layer';
 import { Condition, conditionTypeToEmojiFile } from '../../../types/Condition';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import BlurrableListItemText from '../../ui/BlurrableListItemText';
@@ -105,6 +110,11 @@ export interface LayerProps {
     handleInvertCondition: (layerIndex: number, conditionIndex: number) => void;
     //Layer either can make combo or edit the combo
     handleChooseCombo: (layerIndex: number) => void;
+    handleChangeCondition: (
+        condition: Condition,
+        conditionIndex: number,
+        layerIndex: number
+    ) => void;
     isActive: boolean;
     features: GambitFeatures;
     toggleIsLayerSui: (layerIndex: number) => void;
@@ -129,11 +139,17 @@ const DraggableLayer = ({
     handleDuplicateLayer,
     handleInvertCondition,
     handleChooseCombo,
+    handleChangeCondition,
     isActive,
     features,
     toggleIsLayerSui,
     isAnimationRunning,
 }: LayerProps) => {
+    const handleChangeLayerCondition = (
+        condition: Condition,
+        conditionIndex: number
+    ) => handleChangeCondition(condition, conditionIndex, index);
+
     return (
         <Draggable
             draggableId={index.toString()}
@@ -164,6 +180,7 @@ const DraggableLayer = ({
                         handleRemoveCondition={handleRemoveCondition}
                         handleInvertCondition={handleInvertCondition}
                         handleChooseCombo={handleChooseCombo}
+                        handleChangeCondition={handleChangeLayerCondition}
                         isActive={isActive}
                         features={features}
                         actions={actions}
@@ -190,6 +207,7 @@ export const LayerComponent = ({
     handleDuplicateLayer,
     handleInvertCondition,
     handleChooseCombo,
+    handleChangeCondition,
     isActive,
     features,
     actions,
@@ -232,6 +250,7 @@ export const LayerComponent = ({
     const onConditionSelect = (condition: Condition) => {
         handleChooseCondition(condition, conditionIndex);
         setAnchorEl(null);
+        setConditionAnchorEl(null);
     };
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -267,6 +286,10 @@ export const LayerComponent = ({
 
     const handleCloseConditionDropdown = () => {
         setConditionAnchorEl(null);
+    };
+
+    const handleConditionValueChange = (condition, index) => {
+        handleChangeCondition(condition, index, i);
     };
 
     const action: Action = actionIndexToAction(layer.action.id, characterIndex);
@@ -323,6 +346,7 @@ export const LayerComponent = ({
                                     handleRemoveCondition
                                 }
                                 onInvertCondition={handleInvertCondition}
+                                onValueChange={handleConditionValueChange}
                             />
                         ))}
 
@@ -695,37 +719,49 @@ const Gambit = ({
         setLayers(updatedLayers);
     };
 
-    const LayerList = React.memo(function LayerList({
-        isAnimationRunning,
-        layers,
-        activeMs,
-        features,
-        actions,
-    }: any) {
-        return layers.map((layer: Layer, index: number) => (
-            <DraggableLayer
-                layer={layer}
-                index={index}
-                key={index}
-                handleRemoveLayer={handleRemoveLayer}
-                handleDuplicateLayer={handleDuplicateLayer}
-                handleChooseAction={handleChooseAction}
-                isReadOnly={false}
-                character={character}
-                conditions={conditions}
-                handleChooseCondition={handleChooseCondition}
-                handleRemoveCondition={handleRemoveCondition}
-                handleInvertCondition={handleInvertCondition}
-                combos={combos}
-                handleChooseCombo={handleSelectCombo}
-                isActive={activeMs == index + 1}
-                features={features}
-                actions={actions}
-                toggleIsLayerSui={handleToggleIsLayerSui}
-                isAnimationRunning={isAnimationRunning}
-            />
-        ));
-    });
+    const handleChangeCondition = (
+        condition: LayerCondition,
+        conditionIndex: number,
+        layerIndex: number
+    ) => {
+        setLayers(
+            layers.map((layer, lIndex) =>
+                lIndex === layerIndex
+                    ? {
+                          ...layer,
+                          conditions: layer.conditions.map((c, cIndex) =>
+                              cIndex === conditionIndex ? condition : c
+                          ),
+                      }
+                    : layer
+            )
+        );
+    };
+
+    const layerList = layers.map((layer: Layer, index: number) => (
+        <DraggableLayer
+            layer={layer}
+            index={index}
+            key={index}
+            handleRemoveLayer={handleRemoveLayer}
+            handleDuplicateLayer={handleDuplicateLayer}
+            handleChooseAction={handleChooseAction}
+            isReadOnly={false}
+            character={character}
+            conditions={conditions}
+            handleChooseCondition={handleChooseCondition}
+            handleRemoveCondition={handleRemoveCondition}
+            handleInvertCondition={handleInvertCondition}
+            combos={combos}
+            handleChooseCombo={handleSelectCombo}
+            handleChangeCondition={handleChangeCondition}
+            isActive={activeMs == index + 1}
+            features={features}
+            actions={actions}
+            toggleIsLayerSui={handleToggleIsLayerSui}
+            isAnimationRunning={isAnimationRunning}
+        />
+    ));
 
     const closeComboEditor = () => {
         changeSelectedCombo(-1);
@@ -872,13 +908,7 @@ const Gambit = ({
                                         </Grid> */}
                                     </Grid>
 
-                                    <LayerList
-                                        isAnimationRunning={isAnimationRunning}
-                                        layers={layers}
-                                        activeMs={activeMs}
-                                        features={features}
-                                        actions={actions}
-                                    />
+                                    {layerList}
                                     {provided.placeholder}
                                 </div>
                             )}

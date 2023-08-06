@@ -209,9 +209,6 @@ const SceneSelector = () => {
 
     const [layers, setLayers] = useState<Layer[]>([]);
     const [character, setCharacter] = useState<Character>(Character.Jessica);
-    const [conditions, setConditions] =
-        //@ts-ignore
-        useState<Condition[]>(INITIAL_AGENT_COMPONENTS.conditions);
     const [combos, setCombos] = useState<Action[][]>(
         INITIAL_AGENT_COMPONENTS.combos
     );
