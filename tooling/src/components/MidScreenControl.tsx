@@ -25,6 +25,7 @@ import EventSymbol from './ui/EventSymbol';
 import SubmitMindButton from './SimulationScene/MainSceneSubmit';
 import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import { AnimationState } from '../hooks/useAnimationControls';
 
 // Calculate key events to be displayed along the timeline slider
 function findFrameNumbersAtHurt(frames: Frame[]) {
@@ -198,14 +199,14 @@ const MidScreenControl = ({
                     size="small"
                     variant="outlined"
                     onClick={() => {
-                        if (animationState != 'Run') {
+                        if (animationState != AnimationState.RUN) {
                             unsetResimulationNeeded();
                         }
                         handleClick('ToggleRun');
                     }}
                     disabled={!runnable && !playOnly}
                 >
-                    {animationState != 'Run' || playOnly ? (
+                    {animationState != AnimationState.RUN || playOnly ? (
                         <PlayArrow />
                     ) : (
                         <Pause />

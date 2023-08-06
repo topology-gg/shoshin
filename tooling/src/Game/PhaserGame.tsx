@@ -18,7 +18,6 @@ import { PHASER_CANVAS_H, PHASER_CANVAS_W } from '../constants/constants';
 const Game = ({
     testJson,
     animationFrame,
-    animationState,
     showDebug,
     gameMode,
     realTimeOptions,
@@ -245,13 +244,12 @@ const Game = ({
             scene.updateSceneFromFrame({
                 testJson,
                 animationFrame,
-                animationState,
                 showDebug,
             });
             scene.setVolume(volume);
         }
         //render stuff
-    }, [testJson, animationFrame, animationState, showDebug, ctx.wasm, volume]);
+    }, [testJson, animationFrame, showDebug, ctx.wasm, volume]);
 
     return (
         <div

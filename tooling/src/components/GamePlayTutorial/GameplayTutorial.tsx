@@ -579,7 +579,6 @@ const GameplayTutorialScene = React.forwardRef(
                                             <Game
                                                 testJson={testJson}
                                                 animationFrame={animationFrame}
-                                                animationState={animationState}
                                                 showDebug={checkedShowDebugInfo}
                                                 gameMode={GameModes.simulation}
                                                 realTimeOptions={{
