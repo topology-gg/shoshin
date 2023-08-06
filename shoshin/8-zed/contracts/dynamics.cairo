@@ -184,6 +184,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     local acc_fp_y;
     local vel_fp_x;
     local vel_fp_y;
+    let last_vel_fp_x = physics_state.vel_fp.x;
     let sign_vel_x = sign(physics_state.vel_fp.x);
     local physics_state_fwd: PhysicsState;
 
@@ -208,23 +209,40 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     }
 
     if (state == DASH_FORWARD) {
-        // prepare the dash at counter==1
-        // dash with vel = DASH_VEL_FP
-        local vel;
+        // prepare dash initial velocity of magnitude DASH_VEL_FP
+        local vel_dash;
         if (dir == 1) {
-            assert vel = DASH_VEL_FP;
+            assert vel_dash = DASH_VEL_FP;
         } else {
-            assert vel = (-1) * DASH_VEL_FP;
+            assert vel_dash = (-1) * DASH_VEL_FP;
         }
-        if (counter == 1) {
-            assert vel_fp_nxt = Vec2(vel, 0);
+
+        if (counter == 0) {
+            // static at the first frame
+            assert vel_fp_x = 0;
+            assert acc_fp_x = 0;
         } else {
-            assert vel_fp_nxt = Vec2(0, 0);
+            if (counter == 1) {
+                // gain initial velocity at the second frame; still no friction
+                assert vel_fp_x = vel_dash;
+                assert acc_fp_x = 0;
+            } else {
+                // subject to friction on the third frame onward
+                assert vel_fp_x = last_vel_fp_x;
+
+                if (dir == RIGHT) {
+                    assert acc_fp_x = (-1) * ns_dynamics.FRICTION_ACC_FP;
+                } else {
+                    assert acc_fp_x = ns_dynamics.FRICTION_ACC_FP;
+                }
+            }
         }
-        assert acc_fp_x = 0;
+
+        assert vel_fp_y = 0;
         assert acc_fp_y = 0;
+
         tempvar range_check_ptr = range_check_ptr;
-        jmp update_pos;
+        jmp update_vel_with_init_vel_cap_0_directionally;
     }
 
     if (state == DASH_BACKWARD) {
@@ -323,7 +341,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
             }
         }
         tempvar range_check_ptr = range_check_ptr;
-        jmp update_vel_knocked_jump_gatotsu;
+        jmp update_vel_with_init_vel;
     }
 
     if (state == JUMP) {
@@ -347,7 +365,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
             }
         }
         tempvar range_check_ptr = range_check_ptr;
-        jmp update_vel_knocked_jump_gatotsu;
+        jmp update_vel_with_init_vel;
     }
 
     if (state == JUMP_MOVE_FORWARD) {
@@ -371,7 +389,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
             }
         }
         tempvar range_check_ptr = range_check_ptr;
-        jmp update_vel_knocked_jump_gatotsu;
+        jmp update_vel_with_init_vel;
     }
 
     if (state == JUMP_MOVE_BACKWARD) {
@@ -395,7 +413,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
             }
         }
         tempvar range_check_ptr = range_check_ptr;
-        jmp update_vel_knocked_jump_gatotsu;
+        jmp update_vel_with_init_vel;
     }
 
     if (state == AIR_ATTACK) {
@@ -412,7 +430,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         }
 
         tempvar range_check_ptr = range_check_ptr;
-        jmp update_vel_knocked_jump_gatotsu;
+        jmp update_vel_with_init_vel;
     }
 
     if (state == STEP_FORWARD) {
@@ -498,7 +516,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
             tempvar range_check_ptr = range_check_ptr;
         }
         tempvar range_check_ptr = range_check_ptr;
-        jmp update_vel_knocked_jump_gatotsu;
+        jmp update_vel_with_init_vel;
     }
 
     // otherwise
@@ -524,7 +542,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     tempvar range_check_ptr = range_check_ptr;
     jmp update_pos;
 
-    update_vel_knocked_jump_gatotsu:
+    update_vel_with_init_vel:
     // reusing dash's max & min velocity for knocked physics for now
     // note: only x-axis velocity is capped by max & min
     let (vel_fp_nxt_: Vec2) = _euler_forward_vel_no_hitbox(
@@ -532,6 +550,28 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         Vec2(acc_fp_x, acc_fp_y),
         MAX_VEL_DASH_FP,
         MIN_VEL_DASH_FP,
+    );
+    assert vel_fp_nxt = vel_fp_nxt_;
+    tempvar range_check_ptr = range_check_ptr;
+    jmp update_pos;
+
+    update_vel_with_init_vel_cap_0_directionally:
+    // reusing dash's max & min velocity for knocked physics for now
+    // note: only x-axis velocity is capped by max & min
+    local vx_max;
+    local vx_min;
+    if (dir == RIGHT) {
+        assert vx_max = MAX_VEL_DASH_FP;
+        assert vx_min = 0;
+    } else {
+        assert vx_max = 0;
+        assert vx_min = (-1) * MAX_VEL_DASH_FP;
+    }
+    let (vel_fp_nxt_: Vec2) = _euler_forward_vel_no_hitbox(
+        Vec2(vel_fp_x, vel_fp_y),
+        Vec2(acc_fp_x, acc_fp_y),
+        vx_max,
+        vx_min,
     );
     assert vel_fp_nxt = vel_fp_nxt_;
     tempvar range_check_ptr = range_check_ptr;

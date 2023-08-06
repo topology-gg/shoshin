@@ -195,18 +195,9 @@ namespace ns_jessica_body_state_qualifiers {
     }
 
     func is_in_gatotsu_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state != ns_jessica_body_state.GATOTSU) {
-            return 0;
-        }
-
-        if (counter == 3) {
+        if (state == ns_jessica_body_state.GATOTSU and (counter-3) * (counter-4) == 0) {
             return 1;
         }
-
-        if (counter == 4) {
-            return 1;
-        }
-
         return 0;
     }
 
