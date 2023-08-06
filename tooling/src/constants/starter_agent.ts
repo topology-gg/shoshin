@@ -1,3 +1,4 @@
+import { buildAgentFromLayers } from '../components/ChooseOpponent/opponents/util';
 import Agent, { buildAgent } from '../types/Agent';
 import {
     BodystatesAntoc,
@@ -8,6 +9,7 @@ import {
 import { alwaysTrueCondition } from '../types/Layer';
 import { Direction, Tree } from '../types/Tree';
 import { antoc_preset_conditions } from './antoc_preset_conditions';
+import { ANTOC, JESSICA } from './constants';
 import { jessica_preset_conditions } from './jessica_preset_conditions';
 import { my_frame_preset_conditions } from './my_frame_preset_conditions';
 import { opponent_frame_preset_conditions } from './opponent_frame_preset_conditions';
@@ -1930,6 +1932,12 @@ preset_conditions = preset_conditions.map((condition, i) => ({
 const conditions: Condition[] = [alwaysTrueCondition as Condition].concat(
     preset_conditions as Condition[]
 );
+
+//
+// Build an empty Jessica agent and an empty Antoc agent here
+//
+export const EMPTY_JESSICA = buildAgentFromLayers([], JESSICA, []);
+export const EMPTY_ANTOC = buildAgentFromLayers([], ANTOC, []);
 
 const trees: Tree[] = [
     {

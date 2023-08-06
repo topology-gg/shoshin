@@ -1,9 +1,15 @@
 import { Box, Paper, Tab, Tabs } from '@mui/material';
-import { OnlineOpponent, SavedMind } from '../../types/Opponent';
+import {
+    EMPTY_SAVED_MINDS,
+    OnlineOpponent,
+    SavedMind,
+} from '../../types/Opponent';
 import { useState } from 'react';
 import OnlineTable from '../OnlineMenu/OnlineTable';
 import { onlineOpponentAdam } from '../ChooseOpponent/opponents/Adam';
 import { useListMinds } from '../../../lib/api';
+import { PlayerAgent } from '../../types/Agent';
+import { Character } from '../../constants/constants';
 
 interface CombinedMindListProps {
     savedMinds: SavedMind[];
@@ -12,6 +18,8 @@ interface CombinedMindListProps {
 const MindPreview = ({ savedMinds, chooseMind }: CombinedMindListProps) => {
     const [activeTab, setActiveTab] = useState(0);
     const [selectedMind, selectMind] = useState<number>(-1);
+
+    const localMinds = savedMinds.concat(EMPTY_SAVED_MINDS);
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
@@ -22,7 +30,7 @@ const MindPreview = ({ savedMinds, chooseMind }: CombinedMindListProps) => {
     const handleSelectMind = (mindIndex: number) => {
         selectMind(mindIndex);
         if (activeTab == 0) {
-            chooseMind(savedMinds[mindIndex]);
+            chooseMind(localMinds[mindIndex]);
         } else {
             chooseMind(onlineOpponents[mindIndex]);
         }
@@ -41,7 +49,7 @@ const MindPreview = ({ savedMinds, chooseMind }: CombinedMindListProps) => {
             {/* Tab Content */}
             {activeTab === 0 && (
                 <OnlineTable
-                    opponents={savedMinds}
+                    opponents={localMinds}
                     selectedOpponent={selectedMind}
                     selectOpponent={handleSelectMind}
                 />

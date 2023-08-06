@@ -47,13 +47,13 @@ const ComboEditor = ({
         }
     };
 
-    useEffect(() => {
-        document.addEventListener('keydown', handleKeyPress);
+    // useEffect(() => {
+    //     document.addEventListener('keydown', handleKeyPress);
 
-        return () => {
-            document.removeEventListener('keydown', handleKeyPress);
-        };
-    }, [editingCombo]);
+    //     return () => {
+    //         document.removeEventListener('keydown', handleKeyPress);
+    //     };
+    // }, [editingCombo]);
 
     //remove an action
     const handleActionDoubleClick = (index) => {

@@ -12,7 +12,11 @@ import {
 } from '@mui/material';
 import OnlineTable from '../OnlineMenu/OnlineTable';
 import FullArtBackground from '../layout/FullArtBackground';
-import { OnlineOpponent, SavedMind } from '../../types/Opponent';
+import {
+    EMPTY_SAVED_MINDS,
+    OnlineOpponent,
+    SavedMind,
+} from '../../types/Opponent';
 import MindPreview from '../MindPreview/MindPreview';
 import { onlineOpponentAdam } from '../ChooseOpponent/opponents/Adam';
 import PreviewAgainst from '../MindPreview/PreviewAgainst';
@@ -37,6 +41,8 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
         const [renameOpen, setRenameOpen] = useState<boolean>(false);
         const [newMindName, setNewMindName] = useState<string>('');
 
+        const ExtendedMinds: SavedMind[] = minds.concat(EMPTY_SAVED_MINDS);
+
         const handleMindNameChange = (event) => {
             setNewMindName(event.target.value);
         };
@@ -56,20 +62,27 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
         };
 
         const handleChooseOpponent = (opponent: SavedMind | OnlineOpponent) => {
-            transitionToPreview(minds[selectedMind], opponent);
+            transitionToPreview(ExtendedMinds[selectedMind], opponent);
         };
 
-        const copyExists = minds.some((mind) => {
+        // const copyExists = minds.some((mind) => {
+        //     if (selectedMind === -1) return false;
+        //     return minds[selectedMind].mindName + ' copy' === mind.mindName;
+        // });
+        const copyExistsInExtended = ExtendedMinds.some((mind) => {
             if (selectedMind === -1) return false;
-            return minds[selectedMind].mindName + ' copy' === mind.mindName;
+            return (
+                ExtendedMinds[selectedMind].mindName + ' copy' === mind.mindName
+            );
         });
 
         const handleDuplicateClick = () => {
             saveMinds([
                 ...minds,
                 {
-                    ...minds[selectedMind],
-                    mindName: minds[selectedMind].mindName + ' copy',
+                    ...ExtendedMinds[selectedMind],
+                    mindName: ExtendedMinds[selectedMind].mindName + ' copy',
+                    playerName: '-',
                 },
             ]);
         };
@@ -144,7 +157,7 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
                         <Grid item xs={4} sx={{ height: '100%' }}>
                             <Box height={'100%'} width={'100%'} overflow="auto">
                                 <OnlineTable
-                                    opponents={minds}
+                                    opponents={ExtendedMinds}
                                     selectedOpponent={selectedMind}
                                     selectOpponent={selectMind}
                                 />
@@ -153,18 +166,30 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
                         <Grid item xs={8} sx={{ height: '100%' }}>
                             {selectedMind !== -1 && (
                                 <Box sx={{ height: '100%' }}>
-                                    <MindPreview mind={minds[selectedMind]} />
+                                    <MindPreview
+                                        mind={ExtendedMinds[selectedMind]}
+                                    />
                                     <Box>
                                         <Button
+                                            disabled={
+                                                ExtendedMinds[selectedMind]
+                                                    .playerName == 'SYSTEM'
+                                            }
                                             onClick={() => setPreviewOpen(true)}
                                         >
-                                            Practice fight
+                                            Use this Mind to Fight
                                         </Button>
-                                        <Button onClick={handleRenameClick}>
+                                        <Button
+                                            disabled={
+                                                ExtendedMinds[selectedMind]
+                                                    .playerName == 'SYSTEM'
+                                            }
+                                            onClick={handleRenameClick}
+                                        >
                                             Rename
                                         </Button>
                                         <Button
-                                            disabled={copyExists}
+                                            disabled={copyExistsInExtended}
                                             onClick={() =>
                                                 handleDuplicateClick()
                                             }
@@ -172,6 +197,10 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
                                             Duplicate
                                         </Button>
                                         <Button
+                                            disabled={
+                                                ExtendedMinds[selectedMind]
+                                                    .playerName == 'SYSTEM'
+                                            }
                                             onClick={() => handleDeleteClick()}
                                         >
                                             Delete
