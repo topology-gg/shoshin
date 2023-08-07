@@ -141,8 +141,11 @@ const useAnimationControls = (
 
     // Handle hit-stop calculation each frame
     useEffect(() => {
+        // We're not interested in hit-stop unless we're running the animation
+        if (animationState !== AnimationState.RUN) return;
+
         handleHitStop(animationFrame, animationStepForward);
-    }, [animationFrame, handleHitStop, animationStepForward]);
+    }, [animationFrame, handleHitStop, animationStepForward, animationState]);
 
     // Pause the state on last frame
     useEffect(() => {
