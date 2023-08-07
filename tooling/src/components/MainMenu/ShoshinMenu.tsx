@@ -56,7 +56,7 @@ const ShoshinMenu = ({
         <Box
             display="flex"
             flexDirection="column"
-            justifyContent="flex-start"
+            justifyContent="center"
             alignItems="center"
             height="30%"
             width="25%"
