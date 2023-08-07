@@ -16,7 +16,7 @@ namespace ns_jessica_dynamics {
 
     const MAX_VEL_DASH_FP = 1200 * ns_dynamics.SCALE_FP;
     const MIN_VEL_DASH_FP = (-1200) * ns_dynamics.SCALE_FP;
-    const DASH_VEL_FP = 900 * ns_dynamics.SCALE_FP;
+    const DASH_VEL_FP = 700 * ns_dynamics.SCALE_FP;
 
     const KNOCK_VEL_X_FP = 150 * ns_dynamics.SCALE_FP;
     const KNOCK_VEL_Y_FP = 350 * ns_dynamics.SCALE_FP;
