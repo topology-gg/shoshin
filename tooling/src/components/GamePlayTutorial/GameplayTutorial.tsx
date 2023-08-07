@@ -54,7 +54,7 @@ const GameplayTutorialScene = React.forwardRef(
         const LATENCY = 70;
         const runnable = true;
 
-        const [lessonIndex, changeLesson] = useState<number>(0);
+        const [lessonIndex, changeLesson] = useState<number>(4);
         const lesson = tutorial[lessonIndex];
         const [slideIndex, changeSlide] = useState<number>(0);
 
@@ -145,15 +145,21 @@ const GameplayTutorialScene = React.forwardRef(
             };
         }, [openPauseMenu]);
 
-        useEffect(() => {
+        const setPlayerAgentToLesson = () => {
             const { combos, conditions, layers, character } =
                 tutorial[lessonIndex].player;
             setLayers(layers);
             setCombos(combos);
             setConditions(conditions);
             setCharacter(character);
+        };
+        useEffect(() => {
+            setPlayerAgentToLesson();
         }, [lessonIndex]);
 
+        const handleResetClick = () => {
+            setPlayerAgentToLesson();
+        };
         useEffect(() => {
             let builtAgent = handleBuildAgent();
             setP1(builtAgent);
@@ -673,6 +679,7 @@ const GameplayTutorialScene = React.forwardRef(
                                             initialSelectedCombo={
                                                 lesson.initialSelectedCombo
                                             }
+                                            onResetClick={handleResetClick}
                                         />
                                     </Box>
                                 </GameCard>
