@@ -109,7 +109,6 @@ const Arcade = React.forwardRef<HTMLDivElement, ArcadeProps>(
                     <Game
                         testJson={undefined}
                         animationFrame={undefined}
-                        animationState={undefined}
                         showDebug={false}
                         gameMode={GameModes.realtime}
                         realTimeOptions={{
