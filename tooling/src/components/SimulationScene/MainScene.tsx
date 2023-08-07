@@ -24,12 +24,7 @@ import StatusBarPanel, {
     StatusBarPanelProps as PlayerStatuses,
 } from '../../../src/components/StatusBar';
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
-import {
-    Character,
-    bodyStateNumberToName,
-    characterTypeToString,
-    numberToCharacter,
-} from '../../constants/constants';
+import { Character, numberToCharacter } from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
 import useRunCairoSimulation from '../../hooks/useRunCairoSimulation';
 import dynamic from 'next/dynamic';
@@ -58,6 +53,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
 import { Playable } from '../layout/SceneSelector';
 import SubmitMindButton from './MainSceneSubmit';
+import useAnimationControls, {
+    AnimationState,
+} from '../../hooks/useAnimationControls';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -91,8 +89,6 @@ const SimulationScene = React.forwardRef(
             isPreview,
         } = props;
         // Constants
-        const LATENCY = 70;
-        const HITSTOP_TIMER = LATENCY * 3;
         const runnable = true;
 
         // React states for simulation / animation control
@@ -111,13 +107,20 @@ const SimulationScene = React.forwardRef(
             p2 = opponent.agent;
         }
 
-        const loop = useRef<NodeJS.Timer>();
-        const hitStopTimer = useRef<NodeJS.Timer>();
-        const [animationFrame, setAnimationFrame] = useState<number>(0);
-        const [animationState, setAnimationState] = useState<string>('Stop');
         const [testJson, setTestJson] = useState<TestJson>(null);
         const [checkedShowDebugInfo, setCheckedShowDebugInfo] =
             useState<boolean>(false);
+
+        const {
+            start,
+            pause,
+            stop,
+            animationFrame,
+            setAnimationFrame,
+            animationState,
+            animationStepForward,
+            animationStepBackward,
+        } = useAnimationControls(output, p1?.character, p2?.character);
 
         const [playerStatuses, setPlayerStatuses] = useState<PlayerStatuses>({
             integrity_0: 1000,
@@ -198,8 +201,8 @@ const SimulationScene = React.forwardRef(
 
             setP1(builtAgent);
             setReSimulationNeeded((_) => true);
-            setAnimationFrame(0);
-        }, [character, combos, conditions, layers]);
+            stop();
+        }, [character, combos, conditions, layers, stop]);
 
         function handleBuildAgent() {
             let char = Object.keys(Character).indexOf(character);
@@ -268,90 +271,30 @@ const SimulationScene = React.forwardRef(
 
         const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length;
 
-        const animationStepForward = (len, simulationOutput) => {
-            setAnimationFrame((prev) => {
-                handleHitStop(prev, simulationOutput);
-
-                return prev == len - 1 ? prev : prev + 1;
-            });
-        };
-        const animationStepBackward = () => {
-            setAnimationFrame((prev) => (prev > 0 ? prev - 1 : prev));
-        };
-
-        const handleHitStop = (animFrame: number, simulationOutput) => {
-            const frames_0 = simulationOutput?.agent_0;
-            const frames_1 = simulationOutput?.agent_1;
-
-            // check if hit-stop timer is required
-            // (if any of the character is in counter==1 of HURT / KNOCKED / LAUNCH / CLASHED)
-            const bodyStateP1 = frames_0[animFrame]?.body_state;
-            const bodyStateP2 = frames_1[animFrame]?.body_state;
-            const stateP1: string =
-                bodyStateNumberToName[characterTypeToString[p1.character]][
-                    bodyStateP1.state
-                ];
-            const stateP2: string =
-                bodyStateNumberToName[characterTypeToString[p2.character]][
-                    bodyStateP2.state
-                ];
-            const hitstop_strings = ['hurt', 'knocked', 'launched', 'clash'];
-
-            const p1NeedsHitstop =
-                hitstop_strings.some(function (s) {
-                    return stateP1.indexOf(s) >= 0;
-                }) && bodyStateP1.counter == 1;
-            const p2NeedsHitstop =
-                hitstop_strings.some(function (s) {
-                    return stateP2.indexOf(s) >= 0;
-                }) && bodyStateP2.counter == 1;
-
-            if (p1NeedsHitstop || p2NeedsHitstop) {
-                // 1. kill the simulation timer
-                clearInterval(loop.current);
-                // 2. launch the hit stop timer
-                // Clear any hitstop timer if started
-                clearTimeout(hitStopTimer.current);
-                hitStopTimer.current = setTimeout(() => {
-                    // hit stop timer's callback:
-                    // kill itself
-                    clearTimeout(hitStopTimer.current);
-                    // relaunch simulation timer
-                    loop.current = setInterval(() => {
-                        animationStepForward(
-                            simulationOutput.agent_0.length,
-                            simulationOutput
-                        );
-                    }, LATENCY);
-                }, HITSTOP_TIMER);
-            }
-        };
-
         function handleMidScreenControlClick(operation: string) {
-            if (operation == 'NextFrame' && animationState != 'Run') {
-                animationStepForward(N_FRAMES, testJson);
-            } else if (operation == 'PrevFrame' && animationState != 'Run') {
+            if (
+                operation == 'NextFrame' &&
+                animationState != AnimationState.RUN
+            ) {
+                animationStepForward();
+            } else if (
+                operation == 'PrevFrame' &&
+                animationState != AnimationState.RUN
+            ) {
                 animationStepBackward();
             } else if (operation == 'ToggleRun') {
                 // If in Run => go to Pause
-                if (animationState == 'Run') {
-                    clearInterval(loop.current); // kill the simulation timer
-                    clearInterval(hitStopTimer.current); // kill the hit-stop timer
-                    setAnimationState('Pause');
+                if (animationState == AnimationState.RUN) {
+                    pause();
                 }
 
                 // If in Pause => resume Run without simulation
-                else if (animationState == 'Pause') {
-                    // Begin animation
-                    setAnimationState('Run');
-                    const newLoop = setInterval(() => {
-                        animationStepForward(N_FRAMES, output);
-                    }, LATENCY);
-                    loop.current = newLoop;
+                else if (animationState == AnimationState.PAUSE) {
+                    start();
                 }
 
                 // If in Stop => perform simulation then go to Run
-                else if (animationState == 'Stop' && runnable) {
+                else if (animationState == AnimationState.STOP && runnable) {
                     const [out, err] = runCairoSimulation();
                     if (err != null) {
                         setSimulationError(err);
@@ -359,19 +302,10 @@ const SimulationScene = React.forwardRef(
                     }
                     setOuput(out);
 
-                    // Begin animation
-                    setAnimationState('Run');
-
-                    const newLoop = setInterval(() => {
-                        animationStepForward(out.agent_0.length, out);
-                    }, LATENCY);
-                    loop.current = newLoop;
+                    start();
                 }
             } else {
-                // Stop
-                clearInterval(loop.current); // kill the timer
-                setAnimationState('Stop');
-                setAnimationFrame((_) => 0);
+                stop();
             }
         }
 
@@ -419,10 +353,9 @@ const SimulationScene = React.forwardRef(
             }
 
             if (animationFrame == N_FRAMES - 1) {
-                clearInterval(loop.current); // kill the timer
-                setAnimationState('Pause');
+                pause();
             }
-        }, [animationFrame]);
+        }, [animationFrame, pause]);
 
         const [playedWinningReplay, changePlayedWinningReplay] =
             useState<boolean>(false);
@@ -629,9 +562,6 @@ const SimulationScene = React.forwardRef(
                                                     animationFrame={
                                                         animationFrame
                                                     }
-                                                    animationState={
-                                                        animationState
-                                                    }
                                                     showDebug={
                                                         checkedShowDebugInfo
                                                     }
@@ -679,7 +609,10 @@ const SimulationScene = React.forwardRef(
                                                 handleMidScreenControlClick
                                             }
                                             handleSlideChange={(evt) => {
-                                                if (animationState == 'Run')
+                                                if (
+                                                    animationState ==
+                                                    AnimationState.RUN
+                                                )
                                                     return;
                                                 const slide_val: number =
                                                     parseInt(evt.target.value);
@@ -800,7 +733,8 @@ const SimulationScene = React.forwardRef(
                                         >
                                             <Gambit
                                                 isAnimationRunning={
-                                                    animationState == 'Run'
+                                                    animationState ==
+                                                    AnimationState.RUN
                                                 }
                                                 layers={layers}
                                                 setLayers={setLayers}

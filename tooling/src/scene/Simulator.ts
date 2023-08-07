@@ -1370,7 +1370,6 @@ export default class Simulator extends Phaser.Scene {
     updateSceneFromFrame({
         testJson,
         animationFrame,
-        animationState,
         showDebug,
     }: SimulatorProps) {
         const characterType0 = testJson?.agent_0.type;
