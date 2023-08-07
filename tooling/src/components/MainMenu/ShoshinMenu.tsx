@@ -23,7 +23,7 @@ interface ShoshinMenuProps {
     setVolume?: (volume: number) => void;
     showFullReplay?: boolean;
     setShowFullReplay?: (showFullReplay: boolean) => void;
-    children: ReactNode;
+    children?: ReactNode;
 }
 const ShoshinMenu = ({
     displayLogo,

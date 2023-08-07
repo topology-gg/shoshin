@@ -14,7 +14,6 @@ export const GambitMs = ({
 }) => {
     let char = Object.keys(Character).indexOf(character);
 
-    console.log('layers', layers);
     //given layers
     const {
         mentalStates: generatedMs,
