@@ -40,6 +40,7 @@ const Game = dynamic(() => import('../../Game/PhaserGame'), {
 interface MoveTutorialProps {
     onContinue: () => void;
     onQuit: () => void;
+    onCompleteTutorial: () => void;
     volume: number;
     setVolume: (volume: number) => void;
 }
@@ -47,7 +48,8 @@ interface MoveTutorialProps {
 //We need Players agent and opponent
 const GameplayTutorialScene = React.forwardRef(
     (props: MoveTutorialProps, ref: ForwardedRef<HTMLDivElement>) => {
-        const { onQuit, onContinue, volume, setVolume } = props;
+        const { onQuit, onContinue, onCompleteTutorial, volume, setVolume } =
+            props;
         // Constants
         const LATENCY = 70;
         const runnable = true;
@@ -363,7 +365,7 @@ const GameplayTutorialScene = React.forwardRef(
                     setAnimationFrame((_) => 0);
                     setTestJson(null);
                 } else {
-                    onContinue();
+                    onCompleteTutorial();
                 }
             }
         };

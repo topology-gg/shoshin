@@ -9,6 +9,7 @@ import {
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import LogoBig from '../layout/LogoBig';
 import { VolumeDown, VolumeUp } from '@mui/icons-material';
+import { ReactNode } from 'react';
 
 export interface ShoshinMenuItem {
     title: string;
@@ -22,6 +23,7 @@ interface ShoshinMenuProps {
     setVolume?: (volume: number) => void;
     showFullReplay?: boolean;
     setShowFullReplay?: (showFullReplay: boolean) => void;
+    children: ReactNode;
 }
 const ShoshinMenu = ({
     displayLogo,
@@ -30,6 +32,7 @@ const ShoshinMenu = ({
     setVolume,
     showFullReplay,
     setShowFullReplay,
+    children,
 }: ShoshinMenuProps) => {
     const buttons = menuItems.map((item) => {
         return (
@@ -53,7 +56,7 @@ const ShoshinMenu = ({
         <Box
             display="flex"
             flexDirection="column"
-            justifyContent="center"
+            justifyContent="flex-start"
             alignItems="center"
             height="30%"
             width="25%"
@@ -102,6 +105,7 @@ const ShoshinMenu = ({
                     </Box>
                 )}
                 {buttons}
+                {children}
             </Box>
         </Box>
     );
