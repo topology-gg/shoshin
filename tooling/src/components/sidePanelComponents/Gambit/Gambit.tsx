@@ -76,7 +76,7 @@ export const FullGambitFeatures: GambitFeatures = {
     layerAddAndDelete: true,
     conditionAnd: true,
     combos: true,
-    sui: true,
+    sui: false,
 };
 interface GambitProps {
     isAnimationRunning: boolean;
@@ -853,46 +853,51 @@ const Gambit = ({
                                             xl={checkboxPortion}
                                             sx={{ pl: 0 }}
                                         >
-                                            <Tooltip
-                                                title={
-                                                    <div>
-                                                        <p
-                                                            style={{
-                                                                fontSize:
-                                                                    '16px',
-                                                            }}
-                                                        >
-                                                            Stay-Until-Invalid
-                                                            (SUI)
-                                                        </p>
-                                                        <p
-                                                            style={{
-                                                                fontSize:
-                                                                    '16px',
-                                                            }}
-                                                        >
-                                                            With SUI, the mind
-                                                            will stay at this
-                                                            layer until its
-                                                            condition becomes
-                                                            invalid, which then
-                                                            returns the mind
-                                                            back to SHOSHIN
-                                                            immediately.
-                                                        </p>
-                                                    </div>
-                                                }
-                                            >
-                                                <Typography
-                                                    sx={{
-                                                        fontSize: '13px',
-                                                        fontFamily: 'Eurostile',
-                                                        color: '#000000',
-                                                    }}
+                                            {features.sui && (
+                                                <Tooltip
+                                                    title={
+                                                        <div>
+                                                            <p
+                                                                style={{
+                                                                    fontSize:
+                                                                        '16px',
+                                                                }}
+                                                            >
+                                                                Stay-Until-Invalid
+                                                                (SUI)
+                                                            </p>
+                                                            <p
+                                                                style={{
+                                                                    fontSize:
+                                                                        '16px',
+                                                                }}
+                                                            >
+                                                                With SUI, the
+                                                                mind will stay
+                                                                at this layer
+                                                                until its
+                                                                condition
+                                                                becomes invalid,
+                                                                which then
+                                                                returns the mind
+                                                                back to SHOSHIN
+                                                                immediately.
+                                                            </p>
+                                                        </div>
+                                                    }
                                                 >
-                                                    SUI
-                                                </Typography>
-                                            </Tooltip>
+                                                    <Typography
+                                                        sx={{
+                                                            fontSize: '13px',
+                                                            fontFamily:
+                                                                'Eurostile',
+                                                            color: '#000000',
+                                                        }}
+                                                    >
+                                                        SUI
+                                                    </Typography>
+                                                </Tooltip>
+                                            )}
                                         </Grid>
                                         {/* <Grid item md={gridRemovePortion} xl={gridRemovePortion} sx={{pl:0}}>
                                             <Typography
