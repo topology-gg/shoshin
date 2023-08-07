@@ -197,7 +197,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     assert arr_frames[0] = FrameScene(
         agent_0 = Frame(
             mental_state  = agent_0_initial_state,
-            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, 500, 1, 0, 0, -1),
+            body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 1, 0, 0, -1),
             physics_state = physics_state_0,
             action        = 0,
             stimulus      = ns_stimulus.GROUND * ns_stimulus.ENCODING,
