@@ -30,6 +30,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { FileCopy, MoreHoriz, VerticalAlignCenter } from '@mui/icons-material';
 import Actions from '../../ComboEditor/Actions';
 import SingleCondition, { ConditionLabel } from './Condition';
+import { truncate } from 'fs';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 // I think we can just parse this index from id={....}
@@ -76,7 +77,7 @@ export const FullGambitFeatures: GambitFeatures = {
     layerAddAndDelete: true,
     conditionAnd: true,
     combos: true,
-    sui: false,
+    sui: true,
 };
 interface GambitProps {
     isAnimationRunning: boolean;
