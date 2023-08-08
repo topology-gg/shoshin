@@ -375,13 +375,12 @@ const SimulationScene = React.forwardRef(
             }
             changeHasBeatenOpponent(opponent.medal !== Medal.NONE);
         }, []);
-        let playOnly =
+        const playOnly =
             !hasBeatenOpponent &&
             showFullReplay &&
             !playedWinningReplay &&
             beatAgent;
 
-        playOnly = true;
         const overlayContainerClassName = playOnly
             ? mainSceneStyles.overlayContainer
             : '';
