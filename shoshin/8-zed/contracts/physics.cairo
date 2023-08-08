@@ -196,32 +196,6 @@ func _physicality{range_check_ptr}(
         curr_body_state_1.counter
     );
 
-    // compute action hitboxes
-    let (action_0: Rectangle) = get_action_hitbox (
-        character_type_0,
-        bool_body_in_active_0,
-        bool_body_in_atk_active_0,
-        bool_body_in_block_0,
-        curr_body_state_0.dir,
-        candidate_physics_state_0.pos.x,
-        candidate_physics_state_0.pos.y,
-        body_dim_0,
-        curr_body_state_0.state,
-        curr_body_state_0.counter
-    );
-    let (action_1: Rectangle) = get_action_hitbox (
-        character_type_1,
-        bool_body_in_active_1,
-        bool_body_in_atk_active_1,
-        bool_body_in_block_1,
-        curr_body_state_1.dir,
-        candidate_physics_state_1.pos.x,
-        candidate_physics_state_1.pos.y,
-        body_dim_1,
-        curr_body_state_1.state,
-        curr_body_state_1.counter
-    );
-
     // compute is_action_x_attack flags
     local is_action_0_attack: felt;
     local is_action_1_attack: felt;
@@ -247,40 +221,32 @@ func _physicality{range_check_ptr}(
         assert is_action_1_attack = 0;
     }
 
-    // assemble the hitboxes
-    local hitboxes_0: Hitboxes = Hitboxes(
-        action = action_0,
-        body = Rectangle (candidate_physics_state_0.pos, body_dim_0)
-    );
+    // Create candidate body hitboxes
+    let body_0_cand: Rectangle = Rectangle (candidate_physics_state_0.pos, body_dim_0);
+    let body_1_cand: Rectangle = Rectangle (candidate_physics_state_1.pos, body_dim_1);
 
-    local hitboxes_1: Hitboxes = Hitboxes(
-        action = action_1,
-        body = Rectangle (candidate_physics_state_1.pos, body_dim_1)
-    );
+    // local hitboxes_0: Hitboxes = Hitboxes(
+    //     action = action_0,
+    //     body = Rectangle (candidate_physics_state_0.pos, body_dim_0)
+    // );
+
+    // local hitboxes_1: Hitboxes = Hitboxes(
+    //     action = action_1,
+    //     body = Rectangle (candidate_physics_state_1.pos, body_dim_1)
+    // );
 
     //
-    // 3. Test hitbox overlaps
+    // 3. Test body hitbox overlaps
     //
-
-    // Agent 1 hit:  action 0 against body 1
-    let (bool_agent_1_hit) = _test_rectangle_overlap(hitboxes_0.action, hitboxes_1.body);
-    tempvar bool_agent_1_hit = bool_agent_1_hit * is_action_0_attack;
-
-    // Agent 0 hit:  action 1 against body 0
-    let (bool_agent_0_hit) = _test_rectangle_overlap(hitboxes_1.action, hitboxes_0.body);
-    tempvar bool_agent_0_hit = bool_agent_0_hit * is_action_1_attack;
-
-    // Action clash / block: action 0 against action 1
-    let (bool_action_overlap) = _test_rectangle_overlap(hitboxes_0.action, hitboxes_1.action);
 
     // Body clash:   body 0 against body 1
-    let (bool_body_overlap) = _test_rectangle_overlap(hitboxes_0.body, hitboxes_1.body);
+    let (bool_body_overlap) = _test_rectangle_overlap(body_0_cand, body_1_cand);
 
     // Agent 0 clashes against ground
-    let bool_agent_0_ground = is_le (hitboxes_0.body.origin.y, 0);
+    let bool_agent_0_ground = is_le (candidate_physics_state_0.pos.y, 0);
 
     // Agent 1 clashes against ground
-    let bool_agent_1_ground = is_le (hitboxes_1.body.origin.y, 0);
+    let bool_agent_1_ground = is_le (candidate_physics_state_1.pos.y, 0);
 
     //
     // 4. Movement second pass, incorporating hitbox overlap (final positions) to produce final physics states
@@ -299,17 +265,60 @@ func _physicality{range_check_ptr}(
         bool_body_in_knocked_1,
     );
 
+    // Create final body hitboxes
+    let body_0: Rectangle = Rectangle (curr_physics_state_0.pos, body_dim_0);
+    let body_1: Rectangle = Rectangle (curr_physics_state_1.pos, body_dim_1);
+
+    // Compute final action hitboxes
+    let (action_0: Rectangle) = get_action_hitbox (
+        character_type_0,
+        bool_body_in_active_0,
+        bool_body_in_atk_active_0,
+        bool_body_in_block_0,
+        curr_body_state_0.dir,
+        curr_physics_state_0.pos.x,
+        curr_physics_state_0.pos.y,
+        body_dim_0,
+        curr_body_state_0.state,
+        curr_body_state_0.counter
+    );
+    let (action_1: Rectangle) = get_action_hitbox (
+        character_type_1,
+        bool_body_in_active_1,
+        bool_body_in_atk_active_1,
+        bool_body_in_block_1,
+        curr_body_state_1.dir,
+        curr_physics_state_1.pos.x,
+        curr_physics_state_1.pos.y,
+        body_dim_1,
+        curr_body_state_1.state,
+        curr_body_state_1.counter
+    );
+
     // Hitbox 0 update
     local hitboxes_0: Hitboxes = Hitboxes(
-        action = hitboxes_0.action,
-        body = Rectangle (curr_physics_state_0.pos, body_dim_0)
+        action = action_0,
+        body = body_0
     );
 
     // Hitbox 1 update
     local hitboxes_1: Hitboxes = Hitboxes(
-        action = hitboxes_1.action,
-        body = Rectangle (curr_physics_state_1.pos, body_dim_1)
+        action = action_1,
+        body = body_1
     );
+
+    // Test action hitbox overlaps
+
+    // Agent 1 hit:  action 0 against body 1
+    let (bool_agent_1_hit) = _test_rectangle_overlap(hitboxes_0.action, hitboxes_1.body);
+    tempvar bool_agent_1_hit = bool_agent_1_hit * is_action_0_attack;
+
+    // Agent 0 hit:  action 1 against body 0
+    let (bool_agent_0_hit) = _test_rectangle_overlap(hitboxes_1.action, hitboxes_0.body);
+    tempvar bool_agent_0_hit = bool_agent_0_hit * is_action_1_attack;
+
+    // Action clash / block: action 0 against action 1
+    let (bool_action_overlap) = _test_rectangle_overlap(hitboxes_0.action, hitboxes_1.action);
 
     //
     // 5. Handle direction switching
