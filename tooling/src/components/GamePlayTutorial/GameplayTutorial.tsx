@@ -54,7 +54,7 @@ const GameplayTutorialScene = React.forwardRef(
         const LATENCY = 70;
         const runnable = true;
 
-        const [lessonIndex, changeLesson] = useState<number>(4);
+        const [lessonIndex, changeLesson] = useState<number>(0);
         const lesson = tutorial[lessonIndex];
         const [slideIndex, changeSlide] = useState<number>(0);
 
