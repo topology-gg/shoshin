@@ -204,15 +204,15 @@ const SceneSelector = () => {
 
     //Play state
 
-    const initialPlayerAgener: PlayerAgent = {
+    const initialPlayerAgent: PlayerAgent = {
         layers: [],
         character: Character.Jessica,
-        conditions: [],
+        conditions: INITIAL_AGENT_COMPONENTS.conditions,
         combos: [],
     };
 
     const [playerAgent, setPlayerAgent] =
-        useState<Playable>(initialPlayerAgener);
+        useState<Playable>(initialPlayerAgent);
 
     const [layers, setLayers] = useState<Layer[]>([]);
     const [character, setCharacter] = useState<Character>(Character.Jessica);
