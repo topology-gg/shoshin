@@ -375,12 +375,13 @@ const SimulationScene = React.forwardRef(
             }
             changeHasBeatenOpponent(opponent.medal !== Medal.NONE);
         }, []);
-        const playOnly =
+        let playOnly =
             !hasBeatenOpponent &&
             showFullReplay &&
             !playedWinningReplay &&
             beatAgent;
 
+        playOnly = true;
         const overlayContainerClassName = playOnly
             ? mainSceneStyles.overlayContainer
             : '';
@@ -588,6 +589,15 @@ const SimulationScene = React.forwardRef(
                                                     volume={volume}
                                                 />
                                             </div>
+                                            {playOnly && (
+                                                <Typography
+                                                    color="lightGrey"
+                                                    mt="16px"
+                                                >
+                                                    Click anywhere to skip
+                                                    replay
+                                                </Typography>
+                                            )}
                                         </div>
                                         {playOnly ? (
                                             <div
