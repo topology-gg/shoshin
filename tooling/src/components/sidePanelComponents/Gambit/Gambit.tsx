@@ -76,7 +76,7 @@ export const FullGambitFeatures: GambitFeatures = {
     layerAddAndDelete: true,
     conditionAnd: true,
     combos: true,
-    sui: true,
+    sui: false,
 };
 interface GambitProps {
     isAnimationRunning: boolean;
@@ -90,6 +90,7 @@ interface GambitProps {
     activeMs: number;
     features: GambitFeatures;
     initialSelectedCombo?: number;
+    onResetClick?: () => void;
 }
 
 export interface LayerProps {
@@ -490,6 +491,7 @@ const Gambit = ({
     features,
     actions,
     initialSelectedCombo,
+    onResetClick,
 }: GambitProps) => {
     const handleCreateLayer = () => {
         // We need to make a deep copy otherwise this exported object is reassigned
@@ -517,51 +519,6 @@ const Gambit = ({
             return updated;
         }, [])
         .join(', ');
-    let componentAddLayer = (
-        <>
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'flex-end',
-                    justifyContent: 'space-between',
-                    width: '100%',
-                }}
-            >
-                {features.layerAddAndDelete ? (
-                    <Button
-                        onClick={(_) => {
-                            handleCreateLayer();
-                        }}
-                        style={{ fontFamily: 'Eurostile', color: '#000' }}
-                    >
-                        <AddIcon sx={{ mr: '3px' }} />
-                        {'LAYER'}
-                    </Button>
-                ) : (
-                    <div />
-                )}
-
-                <Box
-                    sx={{
-                        border: '1px solid',
-                        borderColor: `${activeMs == 0 ? '#000' : '#ccc'}`,
-                        opacity: activeMs == 0 ? 1 : 0.5,
-                    }}
-                >
-                    <Typography
-                        paddingLeft={'8px'}
-                        paddingRight={'8px'}
-                        sx={{
-                            fontFamily: 'Eurostile',
-                            color: activeMs == 0 ? '#000' : '#ccc',
-                        }}
-                    >
-                        SHOSHIN
-                    </Typography>
-                </Box>
-            </Box>
-        </>
-    );
 
     function onDragEnd(result) {
         const { draggableId, source, destination } = result;
@@ -783,19 +740,82 @@ const Gambit = ({
             }}
         >
             <Box sx={{ padding: '0.5rem 0.5rem 2rem 0.5rem' }}>
-                <Typography sx={{ fontSize: '17px', color: '#000000' }}>
-                    Mind
-                </Typography>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        marginBottom: '16px',
-                    }}
-                >
-                    {componentAddLayer}
-                </div>
+                <Grid container>
+                    <Grid item xs={10} marginBottom={'16px'}>
+                        <Typography sx={{ fontSize: '17px', color: '#000000' }}>
+                            Mind
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Box
+                            sx={{
+                                border: '1px solid',
+                                borderColor: `${
+                                    activeMs == 0 ? '#000' : '#ccc'
+                                }`,
+                                opacity: activeMs == 0 ? 1 : 0.5,
 
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Typography
+                                paddingLeft={'8px'}
+                                paddingRight={'8px'}
+                                sx={{
+                                    fontFamily: 'Eurostile',
+                                    color: activeMs == 0 ? '#000' : '#ccc',
+                                }}
+                                align="right"
+                            >
+                                SHOSHIN
+                            </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={10} marginBottom={'16px'}>
+                        {features.layerAddAndDelete ? (
+                            <Button
+                                onClick={(_) => {
+                                    handleCreateLayer();
+                                }}
+                                style={{
+                                    fontFamily: 'Eurostile',
+                                    color: '#000',
+                                }}
+                            >
+                                <AddIcon sx={{ mr: '3px' }} />
+                                {'LAYER'}
+                            </Button>
+                        ) : (
+                            <div />
+                        )}
+                    </Grid>
+
+                    <Grid item xs={2}>
+                        {onResetClick && (
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+
+                                    alignItems: 'flex-end',
+                                }}
+                            >
+                                <Button
+                                    sx={{
+                                        width: '100px',
+                                        alignSelf: 'flex-end',
+                                    }}
+                                    variant={'text'}
+                                    onClick={onResetClick}
+                                >
+                                    Start Over
+                                </Button>
+                            </div>
+                        )}
+                    </Grid>
+                </Grid>
                 <Grid container>
                     <DragDropContext onDragEnd={onDragEnd}>
                         <Droppable droppableId="droppable">
@@ -853,46 +873,51 @@ const Gambit = ({
                                             xl={checkboxPortion}
                                             sx={{ pl: 0 }}
                                         >
-                                            <Tooltip
-                                                title={
-                                                    <div>
-                                                        <p
-                                                            style={{
-                                                                fontSize:
-                                                                    '16px',
-                                                            }}
-                                                        >
-                                                            Stay-Until-Invalid
-                                                            (SUI)
-                                                        </p>
-                                                        <p
-                                                            style={{
-                                                                fontSize:
-                                                                    '16px',
-                                                            }}
-                                                        >
-                                                            With SUI, the mind
-                                                            will stay at this
-                                                            layer until its
-                                                            condition becomes
-                                                            invalid, which then
-                                                            returns the mind
-                                                            back to SHOSHIN
-                                                            immediately.
-                                                        </p>
-                                                    </div>
-                                                }
-                                            >
-                                                <Typography
-                                                    sx={{
-                                                        fontSize: '13px',
-                                                        fontFamily: 'Eurostile',
-                                                        color: '#000000',
-                                                    }}
+                                            {features.sui && (
+                                                <Tooltip
+                                                    title={
+                                                        <div>
+                                                            <p
+                                                                style={{
+                                                                    fontSize:
+                                                                        '16px',
+                                                                }}
+                                                            >
+                                                                Stay-Until-Invalid
+                                                                (SUI)
+                                                            </p>
+                                                            <p
+                                                                style={{
+                                                                    fontSize:
+                                                                        '16px',
+                                                                }}
+                                                            >
+                                                                With SUI, the
+                                                                mind will stay
+                                                                at this layer
+                                                                until its
+                                                                condition
+                                                                becomes invalid,
+                                                                which then
+                                                                returns the mind
+                                                                back to SHOSHIN
+                                                                immediately.
+                                                            </p>
+                                                        </div>
+                                                    }
                                                 >
-                                                    SUI
-                                                </Typography>
-                                            </Tooltip>
+                                                    <Typography
+                                                        sx={{
+                                                            fontSize: '13px',
+                                                            fontFamily:
+                                                                'Eurostile',
+                                                            color: '#000000',
+                                                        }}
+                                                    >
+                                                        SUI
+                                                    </Typography>
+                                                </Tooltip>
+                                            )}
                                         </Grid>
                                         {/* <Grid item md={gridRemovePortion} xl={gridRemovePortion} sx={{pl:0}}>
                                             <Typography
