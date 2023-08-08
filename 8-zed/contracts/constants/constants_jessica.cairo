@@ -16,7 +16,7 @@ namespace ns_jessica_dynamics {
 
     const MAX_VEL_DASH_FP = 1200 * ns_dynamics.SCALE_FP;
     const MIN_VEL_DASH_FP = (-1200) * ns_dynamics.SCALE_FP;
-    const DASH_VEL_FP = 900 * ns_dynamics.SCALE_FP;
+    const DASH_VEL_FP = 700 * ns_dynamics.SCALE_FP;
 
     const KNOCK_VEL_X_FP = 150 * ns_dynamics.SCALE_FP;
     const KNOCK_VEL_Y_FP = 350 * ns_dynamics.SCALE_FP;
@@ -195,18 +195,9 @@ namespace ns_jessica_body_state_qualifiers {
     }
 
     func is_in_gatotsu_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state != ns_jessica_body_state.GATOTSU) {
-            return 0;
-        }
-
-        if (counter == 3) {
+        if (state == ns_jessica_body_state.GATOTSU and (counter-4) * (counter-5) == 0) {
             return 1;
         }
-
-        if (counter == 4) {
-            return 1;
-        }
-
         return 0;
     }
 
