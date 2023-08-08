@@ -19,10 +19,10 @@ const MainMenu = React.forwardRef<
             title: 'Play',
             onClick: () => transition(Scenes.MAIN_SCENE, GameModes.simulation),
         },
-        /* {
+        {
             title: 'Online',
             onClick: () => transition(Scenes.ONLINE_MENU, GameModes.simulation),
-        }, */
+        },
         {
             title: 'Arcade Mode',
             onClick: () => transition(Scenes.ARCADE, GameModes.realtime),
@@ -32,10 +32,10 @@ const MainMenu = React.forwardRef<
             onClick: () =>
                 transition(Scenes.GAMEPLAY_TUTORIAL, GameModes.simulation),
         },
-        /*         {
+        {
             title: 'Minds',
             onClick: () => transition(Scenes.MINDS, GameModes.simulation),
-        }, */
+        },
         {
             title: 'Settings',
         },
