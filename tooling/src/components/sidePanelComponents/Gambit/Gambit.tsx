@@ -349,6 +349,7 @@ export const LayerComponent = ({
                                 }
                                 onInvertCondition={handleInvertCondition}
                                 onValueChange={handleConditionValueChange}
+                                isReadOnly={isReadOnly}
                             />
                         ))}
 

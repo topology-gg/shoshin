@@ -1,6 +1,7 @@
 import React, { ChangeEventHandler } from 'react';
 import ConditionContextMenu from './ConditionContextMenu';
-import { Box, Chip, Input, Typography } from '@mui/material';
+import { Box, Chip, IconButton, Input, Typography } from '@mui/material';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { LayerCondition } from '../../../types/Layer';
 import { LayerProps } from './Gambit';
 import {
@@ -30,6 +31,7 @@ type ConditionProps = {
     onRemove: (layerIndex: number, conditionIndex: number) => void;
     onInvertCondition: LayerProps['handleInvertCondition'];
     onValueChange: (condition: ConditionType, index: number) => void;
+    isReadOnly: boolean;
 };
 
 export const ConditionLabel = ({
@@ -79,6 +81,7 @@ const Condition = ({
     onValueChange,
     onRemove,
     layerIndex,
+    isReadOnly,
 }: ConditionProps) => {
     const customValueCondition = customValueConditions.find(
         ({ displayName }) => displayName === condition.displayName
@@ -132,9 +135,20 @@ const Condition = ({
                 }
                 className={`${styles.gambitButton} ${styles.conditionButton}`}
                 id={`condition-btn-${layerIndex}-${conditionIndex}`}
-                onClick={onClick}
+                onClick={(event) => {
+                    isReadOnly ? null : onClick(event);
+                }}
                 onDelete={
                     onRemove && (() => onRemove(layerIndex, conditionIndex))
+                }
+                deleteIcon={
+                    isReadOnly ? (
+                        <></>
+                    ) : (
+                        <IconButton sx={{ p: '4px' }}>
+                            <CancelIcon />
+                        </IconButton>
+                    )
                 }
                 style={{
                     fontFamily: 'Raleway',
