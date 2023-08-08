@@ -154,7 +154,12 @@ const SceneSelector = () => {
     };
 
     const onChooseCharacter = (character: Character) => {
-        setCharacter((_) => character);
+        setPlayerAgent((playerAgent) => {
+            return {
+                ...playerAgent,
+                character: character,
+            };
+        });
 
         pauseMusic();
 
@@ -214,11 +219,12 @@ const SceneSelector = () => {
     const [playerAgent, setPlayerAgent] =
         useState<Playable>(initialPlayerAgent);
 
-    const [layers, setLayers] = useState<Layer[]>([]);
-    const [character, setCharacter] = useState<Character>(Character.Jessica);
-    const [combos, setCombos] = useState<Action[][]>(
-        INITIAL_AGENT_COMPONENTS.combos
-    );
+    let character;
+    if (!('character' in playerAgent)) {
+        character = playerAgent.agent.character;
+    } else {
+        character = playerAgent.character;
+    }
 
     //Prop for action reference when coming from choose opponent, character might not be chosen
     const [referenceCharacter, setReferenceCharacter] = useState<Character>(
