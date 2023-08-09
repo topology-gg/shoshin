@@ -60,10 +60,15 @@ func _body_antoc {range_check_ptr}(
         if (counter == ns_antoc_body_state_duration.KO - 1) {
             // stop at last frame
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KO, counter, updated_integrity, updated_stamina, dir, is_fatigued, state_index, opponent_state_index_last_hit) );
-        } else {
-            // increment
-            return ( body_state_nxt = BodyState(ns_antoc_body_state.KO, counter + 1, updated_integrity, updated_stamina, dir, is_fatigued, state_index, opponent_state_index_last_hit) );
         }
+
+        // if reach counter==2 and still in air => remain in counter==2
+        if (counter == 2 and stimulus_type != ns_stimulus.GROUND) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.KO, counter, updated_integrity, updated_stamina, dir, is_fatigued, state_index, opponent_state_index_last_hit) );
+        }
+
+        // increment
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.KO, counter + 1, updated_integrity, updated_stamina, dir, is_fatigued, state_index, opponent_state_index_last_hit) );
     }
 
     //
