@@ -388,6 +388,15 @@ const SimulationScene = React.forwardRef(
         //Having this class be conditional on playOnly may not be needed
         const overlayClassName = playOnly ? mainSceneStyles.overlay : '';
 
+        const handleOverlayClick = () => {
+            if (playOnly) {
+                setAnimationFrame(N_FRAMES - 1);
+                changeShowVictory(true);
+                changePlayedWinningReplay(true);
+                pause();
+            }
+        };
+
         let playerOneName = null;
 
         if ('playerName' in player) {
@@ -503,6 +512,7 @@ const SimulationScene = React.forwardRef(
                                             className={
                                                 overlayContainerClassName
                                             }
+                                            onClick={() => handleOverlayClick()}
                                         >
                                             <div className={overlayClassName}>
                                                 <Box
@@ -578,6 +588,15 @@ const SimulationScene = React.forwardRef(
                                                     volume={volume}
                                                 />
                                             </div>
+                                            {playOnly && (
+                                                <Typography
+                                                    color="lightGrey"
+                                                    mt="16px"
+                                                >
+                                                    Click anywhere to skip
+                                                    replay
+                                                </Typography>
+                                            )}
                                         </div>
                                         {playOnly ? (
                                             <div
