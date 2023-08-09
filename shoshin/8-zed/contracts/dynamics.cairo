@@ -32,6 +32,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
     BLOCK: felt,
     JUMP_MOVE_FORWARD: felt,
     JUMP_MOVE_BACKWARD: felt,
+    KO: felt,
 
     MAX_VEL_MOVE_FP: felt,
     MIN_VEL_MOVE_FP: felt,
@@ -67,6 +68,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_jessica_body_state.BLOCK,
             ns_jessica_body_state.JUMP_MOVE_FORWARD,
             ns_jessica_body_state.JUMP_MOVE_BACKWARD,
+            ns_jessica_body_state.KO,
 
             ns_jessica_dynamics.MAX_VEL_MOVE_FP,
             ns_jessica_dynamics.MIN_VEL_MOVE_FP,
@@ -102,6 +104,7 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_antoc_body_state.BLOCK,
             ns_antoc_body_state.JUMP_MOVE_FORWARD,
             ns_antoc_body_state.JUMP_MOVE_BACKWARD,
+            ns_antoc_body_state.KO,
 
             ns_antoc_dynamics.MAX_VEL_MOVE_FP,
             ns_antoc_dynamics.MIN_VEL_MOVE_FP,
@@ -158,6 +161,7 @@ func _euler_forward_no_hitbox {range_check_ptr}(
         BLOCK: felt,
         JUMP_MOVE_FORWARD: felt,
         JUMP_MOVE_BACKWARD: felt,
+        KO: felt,
 
         MAX_VEL_MOVE_FP: felt,
         MIN_VEL_MOVE_FP: felt,
@@ -344,14 +348,48 @@ func _euler_forward_no_hitbox {range_check_ptr}(
             // apply momentum at first frame depending on direction
             if (dir == 1) {
                 // facing right
-                assert vel_fp_y = KNOCK_VEL_Y_FP;
-                assert vel_fp_x = (-1) * KNOCK_VEL_X_FP;
+                assert vel_fp_y = physics_state.vel_fp.y + KNOCK_VEL_Y_FP;
+                assert vel_fp_x = physics_state.vel_fp.x + (-1) * KNOCK_VEL_X_FP;
                 assert acc_fp_y = 0;
                 assert acc_fp_x = 0;
             } else {
                 // facing left
-                assert vel_fp_y = KNOCK_VEL_Y_FP;
-                assert vel_fp_x = KNOCK_VEL_X_FP;
+                assert vel_fp_y = physics_state.vel_fp.y + KNOCK_VEL_Y_FP;
+                assert vel_fp_x = physics_state.vel_fp.x + KNOCK_VEL_X_FP;
+                assert acc_fp_y = 0;
+                assert acc_fp_x = 0;
+            }
+        } else {
+            // for y-axis, apply gravity
+            assert acc_fp_y = ns_dynamics.GRAVITY_ACC_FP;
+            assert acc_fp_x = 0;
+            assert vel_fp_y = physics_state.vel_fp.y;
+
+            // for x-axis, zero velocity if already touched down ie infinite friction
+            if (physics_state.pos.y == 0) {
+                assert vel_fp_x = 0;
+            } else {
+                assert vel_fp_x = physics_state.vel_fp.x;
+            }
+        }
+        tempvar range_check_ptr = range_check_ptr;
+        jmp update_vel_with_init_vel;
+    }
+
+    if (state == KO) {
+
+        if (counter == 0) {
+            // apply momentum at first frame depending on direction
+            if (dir == 1) {
+                // facing right
+                assert vel_fp_y = ns_dynamics.KO_VEL_Y_FP;
+                assert vel_fp_x = (-1) * ns_dynamics.KO_VEL_X_FP;
+                assert acc_fp_y = 0;
+                assert acc_fp_x = 0;
+            } else {
+                // facing left
+                assert vel_fp_y = ns_dynamics.KO_VEL_Y_FP;
+                assert vel_fp_x = ns_dynamics.KO_VEL_X_FP;
                 assert acc_fp_y = 0;
                 assert acc_fp_x = 0;
             }
