@@ -11,8 +11,8 @@ const tutorial = [
     LessonTwo,
     LessonThree,
     LessonFour,
-    LessonFive,
     LessonSix,
+    LessonFive,
     LessonSeven,
 ];
 
