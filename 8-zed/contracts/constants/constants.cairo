@@ -24,6 +24,9 @@ namespace ns_dynamics {
     const BLOCK_BACKOFF_VEL_X_FP = 75 * ns_dynamics.SCALE_FP;
 
     const IN_AIR_VEL_X_FP = 150 * ns_dynamics.SCALE_FP;
+
+    const KO_VEL_X_FP = 0  * ns_dynamics.SCALE_FP;
+    const KO_VEL_Y_FP = 200 * ns_dynamics.SCALE_FP;
 }
 
 namespace ns_stamina {
