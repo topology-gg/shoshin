@@ -1496,8 +1496,11 @@ export default class Simulator extends Phaser.Scene {
             BodystatesAntoc.Knocked,
             BodystatesAntoc.Launched,
         ];
+        const koStates = [BodystatesAntoc.KO, BodystatesJessica.KO];
         const hitBodyStates = jessicaHitBodyStates.concat(antocHitBodyStates);
-        const sparkBodyStates = hitBodyStates.concat(clashBodyStates);
+        const sparkBodyStates = hitBodyStates
+            .concat(clashBodyStates)
+            .concat(koStates);
 
         [
             [0, 1],
@@ -1550,7 +1553,8 @@ export default class Simulator extends Phaser.Scene {
                 if (subjectFrame.body_state.state == BodystatesAntoc.Hurt)
                     this.playSound(GameSound.antocHurt);
                 else if (
-                    subjectFrame.body_state.state == BodystatesAntoc.Knocked
+                    subjectFrame.body_state.state == BodystatesAntoc.Knocked ||
+                    subjectFrame.body_state.state == BodystatesAntoc.KO
                 )
                     this.playSound(GameSound.antocKnocked);
                 else if (
@@ -1562,7 +1566,9 @@ export default class Simulator extends Phaser.Scene {
                 )
                     this.playSound(GameSound.jessicaHurt);
                 else if (
-                    subjectFrame.body_state.state == BodystatesJessica.Knocked
+                    subjectFrame.body_state.state ==
+                        BodystatesJessica.Knocked ||
+                    subjectFrame.body_state.state == BodystatesJessica.KO
                 )
                     this.playSound(GameSound.jessicaKnocked);
                 else if (
@@ -1743,7 +1749,7 @@ export default class Simulator extends Phaser.Scene {
             BodystatesJessica.Launched,
             BodystatesJessica.JumpMoveForward,
             BodystatesJessica.JumpMoveBackward,
-        ];
+        ].concat(koStates);
         [0, 1].forEach((playerIndex) => {
             const frame = frames[playerIndex];
             const prevFrame = prevFrames[playerIndex];
@@ -1806,6 +1812,12 @@ export default class Simulator extends Phaser.Scene {
                     // involuntary landing
                     this.playSound(GameSound.landingFromKnocked);
                 }
+            } else if (
+                koStates.includes(frame.body_state.state) &&
+                frame.body_state.counter == 3
+            ) {
+                // landing from KO
+                this.playSound(GameSound.landingFromKnocked);
             }
         });
 

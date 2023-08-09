@@ -41,7 +41,7 @@ const needsHitStop = (
         bodyStateNumberToName[characterTypeToString[characterP2]][
             bodyStateP2.state
         ];
-    const hitstop_strings = ['hurt', 'knocked', 'launched', 'clash'];
+    const hitstop_strings = ['hurt', 'knocked', 'launched', 'clash', 'ko'];
 
     const p1NeedsHitstop =
         hitstop_strings.some(function (s) {
