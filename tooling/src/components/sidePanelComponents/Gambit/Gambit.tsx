@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import {
     Box,
     Button,
@@ -987,4 +987,4 @@ const Gambit = ({
     );
 };
 
-export default Gambit;
+export default memo(Gambit);
