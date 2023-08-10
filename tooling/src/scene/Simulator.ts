@@ -54,6 +54,7 @@ const JUMP_TAKEOFF_SMOKE_SCALE_X = 0.15;
 const JUMP_TAKEOFF_SMOKE_SCALE_Y = 0.15;
 const JUMP_SMOKE_SCALE_X = 0.15;
 const JUMP_SMOKE_SCALE_Y = 0.15;
+const SPECIAL_CHARGING_SMOKE_SCALE = 0.4;
 const AIR_DASH_SCALE_X = 0.04;
 const AIR_DASH_SCALE_Y = 0.04;
 const GOOD_BLOCK_PINK_SCALE = 0.05;
@@ -162,6 +163,7 @@ export default class Simulator extends Phaser.Scene {
     bluePuffSprites: Phaser.GameObjects.Sprite[];
     blueLightningSprites: Phaser.GameObjects.Sprite[];
     pinkLightningSprites: Phaser.GameObjects.Sprite[];
+    specialChargingSmokeSprites: Phaser.GameObjects.Sprite[];
 
     player_one_action_confirm = false;
     player_two_action_confirm = false;
@@ -661,6 +663,17 @@ export default class Simulator extends Phaser.Scene {
         });
 
         this.anims.create({
+            key: 'specialChargingSmokeAnim',
+            frameRate: 10,
+            frames: this.anims.generateFrameNumbers('jump-landing-smoke', {
+                start: 0,
+                end: 5,
+            }),
+            repeat: 0,
+            hideOnComplete: true, // this setting makes the animation hide itself (setVisible false) on completion
+        });
+
+        this.anims.create({
             key: 'jumpTakeoffSmokeAnim',
             frameRate: 20,
             frames: this.anims.generateFrameNumbers('jump-takeoff-smoke', {
@@ -741,6 +754,7 @@ export default class Simulator extends Phaser.Scene {
         this.stepForwardSmokeSprites = [];
         this.jumpTakeoffSmokeSprites = [];
         this.jumpLandingSmokeSprites = [];
+        this.specialChargingSmokeSprites = [];
         this.airDashSmokeSprites = [];
         this.goodBlockPinkSprites = [];
         this.goodBlockTurquoiseSprites = [];
@@ -795,6 +809,15 @@ export default class Simulator extends Phaser.Scene {
                 this.add
                     .sprite(0, 0, 'smoke')
                     .setScale(JUMP_SMOKE_SCALE_X, JUMP_SMOKE_SCALE_Y)
+                    .setVisible(false)
+                    .setAlpha(0.9)
+                    .setDepth(100)
+            );
+
+            this.specialChargingSmokeSprites.push(
+                this.add
+                    .sprite(0, 0, 'smoke')
+                    .setScale(SPECIAL_CHARGING_SMOKE_SCALE)
                     .setVisible(false)
                     .setAlpha(0.9)
                     .setDepth(100)
@@ -1878,6 +1901,11 @@ export default class Simulator extends Phaser.Scene {
                 (frame.hitboxes.body.origin.y +
                     0.5 * frame.hitboxes.body.dimension.y);
 
+            this.specialChargingSmokeSprites[playerIndex]
+                .setPosition(x, y)
+                .setVisible(true)
+                .play('specialChargingSmokeAnim');
+
             if (frame.body_state.state == BodystatesAntoc.Cyclone) {
                 this.blueLightningSprites[playerIndex]
                     .setPosition(x, y)
@@ -1889,6 +1917,10 @@ export default class Simulator extends Phaser.Scene {
                     .setVisible(true)
                     .play('pinkLightningAnim');
             }
+
+            // TODO: Cyclone SFX x 2
+
+            // TODO: Gatotsu SFX x 1
         });
     }
 
