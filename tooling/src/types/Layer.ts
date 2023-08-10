@@ -1,16 +1,19 @@
 import { Action, CHARACTERS_ACTIONS } from './Action';
-import { customDurations } from './Combos';
 import {
+    BodystatesAntoc,
+    BodystatesJessica,
     Condition,
     ConditionElement,
     ElementType,
     Operator,
+    Perceptible,
 } from './Condition';
 import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
-
+import { actionIntentsInCombo } from './Action';
+import { JESSICA } from '../constants/constants';
 //Layer conditions have extra metadate while they are being edited
-interface LayerCondition extends Condition {
+export interface LayerCondition extends Condition {
     isInverted: boolean;
 }
 export interface Layer {
@@ -20,6 +23,7 @@ export interface Layer {
         id: number;
         isCombo: boolean;
     };
+    sui?: boolean;
 }
 
 const getActionCondition = (
@@ -32,20 +36,23 @@ const getActionCondition = (
     );
     const actionName = action.display.name;
     const duration = action.frames.duration - 1;
+    const sui = layer.sui ?? false;
 
-    console.log('action', action);
-    // block needs to be handled differently because its body counter saturates at 3 until intent changes
-    // when blocking, termination condition is the inverse of the condition for this layer
+    // Block needs to be handled differently because its body counter saturates at 3 until intent changes
+    // when blocking, termination condition is the inverse of the condition for this layer;
+    // The same applies to move forward/backward, taunt, and rest; all these actions are intuitively expected to sustain only while the layer's condition stays true
     if (
+        sui ||
         actionName.includes('MoveForward') ||
         actionName.includes('MoveBackward') ||
-        actionName.includes('Block')
+        actionName.includes('Block') ||
+        actionName.includes('Taunt') ||
+        actionName.includes('Rest')
     ) {
         const inverseCondition = getInverseCondition(
             layerIndex,
             layer.conditions
         );
-        console.log('inverse condition', inverseCondition);
         return inverseCondition;
     } else {
         return getIsFinishedCondition(duration, layerIndex);
@@ -94,18 +101,18 @@ export const layersToAgentComponents = (
             //if combo, we need to get combo length, and put in the action for the node
 
             const comboDuration = combos[layer.action.id - 101].reduce(
-                (acc, a) =>
-                    acc +
-                    (customDurations[character][a.id] == undefined
-                        ? a.frames.duration + 1
-                        : a.frames.duration),
+                (acc, a, index, combo) =>
+                    acc + actionIntentsInCombo(a, index, combo).length,
                 0
             );
 
-            terminatingCondition = getIsComboFinishedCondition(
-                comboDuration,
-                layer.action.id
-            );
+            // console.log('combo duration', comboDuration);
+
+            // terminatingCondition = getIsComboFinishedCondition(
+            //     comboDuration,
+            //     layer.action.id
+            // );
+            terminatingCondition = getComboCondition(comboDuration, layer, i);
         } else {
             terminatingCondition = getActionCondition(layer, i, character);
         }
@@ -130,8 +137,8 @@ export const layersToAgentComponents = (
         ? unflattenedConditions.flat()
         : [];
 
-    const rootConditions = layersInverted.map((layer) => {
-        return appendConditions(layer.conditions);
+    const rootConditions = layersInverted.map((layer, index) => {
+        return appendConditions(layer.conditions, index);
     });
 
     //@ts-ignore
@@ -217,7 +224,6 @@ const getNode = (
 };
 
 const getAppendedElements = (conditions: Condition[]): any[] => {
-    console.log('input conditions', conditions);
     let res = conditions
         .map((condition) => condition.elements)
         .reduce((acc, elements, i) => {
@@ -233,11 +239,10 @@ const getAppendedElements = (conditions: Condition[]): any[] => {
             return [...acc, ...elements];
         }, []);
 
-    console.log('appended elements', res);
     return res;
 };
 
-const appendConditions = (conditions: Condition[]) => {
+const appendConditions = (conditions: Condition[], index) => {
     const elementsAppended = getAppendedElements(conditions);
     return {
         elements: [
@@ -252,7 +257,7 @@ const appendConditions = (conditions: Condition[]) => {
             },
         ],
         displayName: 'actionCondition',
-        key: `${conditions[0].key}`,
+        key: `${conditions[0].key}${index}`,
     };
 };
 
@@ -292,7 +297,7 @@ const getIsFinishedCondition = (duration: number, id: number) => {
                 type: 'Operator',
             },
             {
-                value: 11,
+                value: Perceptible.SelfBodyCounter,
                 type: 'Perceptible',
             },
             {
@@ -313,6 +318,23 @@ const getIsFinishedCondition = (duration: number, id: number) => {
     };
 };
 
+const getComboCondition = (
+    comboDuration: number,
+    layer: Layer,
+    layerIndex: number
+) => {
+    const sui = layer.sui ?? false;
+    if (sui) {
+        const inverseCondition = getInverseCondition(
+            layerIndex,
+            layer.conditions
+        );
+        return inverseCondition;
+    } else {
+        return getIsComboFinishedCondition(comboDuration, layer.action.id);
+    }
+};
+
 const getIsComboFinishedCondition = (comboDuration: number, id: number) => {
     return {
         elements: [
@@ -321,7 +343,7 @@ const getIsComboFinishedCondition = (comboDuration: number, id: number) => {
                 type: 'Operator',
             },
             {
-                value: '13',
+                value: Perceptible.SelfComboCounter,
                 type: 'Perceptible',
             },
             {
@@ -350,7 +372,11 @@ const getInterruptedCondition = (character: number, id: number) => {
                 type: 'Operator',
             },
             {
-                value: 10,
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
                 type: 'Perceptible',
             },
             {
@@ -358,8 +384,10 @@ const getInterruptedCondition = (character: number, id: number) => {
                 type: 'Operator',
             },
             {
-                //hurt
-                value: character == 0 ? 60 : 1050,
+                value:
+                    character == JESSICA
+                        ? BodystatesJessica.Hurt
+                        : BodystatesAntoc.Hurt,
                 type: 'BodyState',
             },
             {
@@ -375,7 +403,7 @@ const getInterruptedCondition = (character: number, id: number) => {
                 type: 'Operator',
             },
             {
-                value: 10,
+                value: Perceptible.SelfBodyState,
                 type: 'Perceptible',
             },
             {
@@ -383,8 +411,10 @@ const getInterruptedCondition = (character: number, id: number) => {
                 type: 'Operator',
             },
             {
-                //knocked
-                value: character == 0 ? 70 : 1060,
+                value:
+                    character == JESSICA
+                        ? BodystatesJessica.Knocked
+                        : BodystatesAntoc.Knocked,
                 type: 'BodyState',
             },
             {
@@ -400,7 +430,7 @@ const getInterruptedCondition = (character: number, id: number) => {
                 type: 'Operator',
             },
             {
-                value: 10,
+                value: Perceptible.SelfBodyState,
                 type: 'Perceptible',
             },
             {
@@ -409,8 +439,42 @@ const getInterruptedCondition = (character: number, id: number) => {
             },
             {
                 //clash
-                value: character == 0 ? 50 : 1130,
+                value:
+                    character == JESSICA
+                        ? BodystatesJessica.Clash
+                        : BodystatesAntoc.Clash,
                 type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value:
+                    character == JESSICA
+                        ? BodystatesJessica.Launched
+                        : BodystatesAntoc.Launched,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
             },
             {
                 value: ')',

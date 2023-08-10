@@ -16,7 +16,7 @@ export const conditionTypeToEmojiFile = (conditionType: string) => {
         return '/images/emojis/woman_lotus.png';
     else if (conditionType.includes('health'))
         return '/images/emojis/red_heart.png';
-    else if (conditionType.includes('stamina'))
+    else if (conditionType.includes('rage'))
         return '/images/emojis/battery.png';
     else return '/images/emojis/light_bulb.png';
 };
@@ -98,6 +98,12 @@ export enum BodystatesJessica {
     Jump = 130,
     Gatotsu = 140,
     LowKick = 150,
+    BirdSwing = 160,
+    Launched = 170,
+    JumpMoveForward = 180,
+    JumpMoveBackward = 190,
+    Taunt = 200,
+    KO = 240,
 }
 
 export enum BodystatesAntoc {
@@ -115,6 +121,13 @@ export enum BodystatesAntoc {
     StepForward = 1140,
     Jump = 1150,
     LowKick = 1160,
+    Launched = 1170,
+    DropSlash = 1190,
+    JumpMoveForward = 1200,
+    JumpMoveBackward = 1210,
+    Cyclone = 1220,
+    Taunt = 1250,
+    KO = 1320,
 }
 
 export enum Perceptible {

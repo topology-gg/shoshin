@@ -5,16 +5,17 @@ import { StatusBarPanelProps as PlayerStatuses } from '../components/StatusBar';
 export interface PhaserGameProps {
     testJson: TestJson;
     animationFrame: number;
-    animationState: string;
     showDebug: boolean;
     gameMode: GameModes;
     realTimeOptions: RealTimeOptions;
     isInView: boolean;
+    backgroundId: number;
+    onPhaserLoad?: () => void;
+    volume: number;
 }
 export interface SimulatorProps {
     testJson: TestJson;
     animationFrame: number;
-    animationState: string;
     showDebug: boolean;
 }
 

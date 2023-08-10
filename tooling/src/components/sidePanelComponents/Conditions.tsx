@@ -34,7 +34,7 @@ import {
 import PerceptibleList from './PerceptibleList';
 import { BodystatesAntoc, BodystatesJessica } from '../../types/Condition';
 import ConditionEditor from '../ConditionEditor';
-import { conditionEmojiElement } from './Gambit/Gambit';
+import { ConditionLabel } from './Gambit/Condition';
 
 // Interfaces
 
@@ -217,15 +217,12 @@ const Conditions = ({
                                 // .slice(0, conditions.length)
                                 .map((condition, i) => (
                                     <MenuItem value={i}>
-                                        <Box>
-                                            {conditionEmojiElement(
-                                                condition.type
-                                            )}
-                                            <div style={{ marginLeft: '25px' }}>
-                                                {condition.displayName ||
-                                                    `C${i}`}
-                                            </div>
-                                        </Box>
+                                        <ConditionLabel
+                                            name={
+                                                condition.displayName || `C${i}`
+                                            }
+                                            type={condition.type}
+                                        />
                                     </MenuItem>
                                 ))}
                             <MenuItem

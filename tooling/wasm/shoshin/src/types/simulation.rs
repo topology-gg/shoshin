@@ -56,7 +56,7 @@ pub struct RealTimeAgent {
 pub struct  ComboInfo {
     current_combo : BigInt,
     combo_counter : BigInt
-    
+
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
@@ -87,6 +87,8 @@ pub struct BodyState {
     pub stamina: BigInt,
     pub dir: BigInt,
     pub fatigued: BigInt,
+    pub state_index: BigInt,
+    pub opponent_state_index_last_hit: BigInt,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
@@ -122,12 +124,12 @@ pub struct Combo {
 
 impl Sizeable for FrameScene {
     fn size() -> usize {
-        50
+        54
     }
 }
 impl Sizeable for RealTimeFrameScene {
     fn size() -> usize {
-        45
+        43
     }
 }
 
@@ -151,6 +153,8 @@ mod tests {
                 self.agent_0.body_state.stamina,
                 self.agent_0.body_state.dir,
                 self.agent_0.body_state.fatigued,
+                self.agent_0.body_state.state_index,
+                self.agent_0.body_state.opponent_state_index_last_hit,
                 self.agent_0.physics_state.pos.x,
                 self.agent_0.physics_state.pos.y,
                 self.agent_0.physics_state.vel_fp.x,
@@ -176,6 +180,8 @@ mod tests {
                 self.agent_1.body_state.stamina,
                 self.agent_1.body_state.dir,
                 self.agent_1.body_state.fatigued,
+                self.agent_1.body_state.state_index,
+                self.agent_1.body_state.opponent_state_index_last_hit,
                 self.agent_1.physics_state.pos.x,
                 self.agent_1.physics_state.pos.y,
                 self.agent_1.physics_state.vel_fp.x,
@@ -197,7 +203,7 @@ mod tests {
             ]
         }
     }
-    
+
     #[test]
     fn test_framescene_from_raw_ptr() {
         let data = get_random_input_data(FrameScene::size());

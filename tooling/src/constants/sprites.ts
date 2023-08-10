@@ -336,8 +336,8 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
         ],
         hurt: [
             {
-                size: [187, 140],
-                hitboxOffset: { left: [83, -69], right: [17, -70] },
+                size: [343, 239],
+                hitboxOffset: { left: [11, -100], right: [91, -100] },
             },
         ],
         clash: [
@@ -368,6 +368,24 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
             {
                 size: [343, 244],
                 hitboxOffset: { left: [63, -83], right: [87, -100] },
+            },
+        ],
+        cyclone: [
+            {
+                size: [323, 217],
+                hitboxOffset: { left: [50, -81], right: [50, -81] },
+            },
+        ],
+        taunt: [
+            {
+                size: [343, 239],
+                hitboxOffset: { left: [10, -101], right: [90, -101] },
+            },
+        ],
+        ko: [
+            {
+                size: [343, 239],
+                hitboxOffset: { left: [50, -70], right: [50, -70] },
             },
         ],
     },
@@ -546,6 +564,18 @@ export const spriteDataPhaser: Record<string, Record<string, SpriteData[]>> = {
             {
                 size: [259, 218],
                 hitboxOffset: { left: [10, -63], right: [87, -63] },
+            },
+        ],
+        taunt: [
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [23, -63], right: [72, -63] },
+            },
+        ],
+        ko: [
+            {
+                size: [261, 137],
+                hitboxOffset: { left: [23, -63], right: [72, -63] },
             },
         ],
     },

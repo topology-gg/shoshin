@@ -25,6 +25,7 @@ export const Keyword = ({
                 padding: '6px',
                 borderRadius: '4px',
                 height: '24px',
+                fontFamily: 'Eurostile',
             }}
         >
             {text}

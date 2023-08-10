@@ -2,10 +2,11 @@ import { parseConditionToLeaf, Condition } from './Condition';
 import Leaf, { flattenLeaf, unwrapLeafToTree } from './Leaf';
 import { MentalState, parseTree, updateMentalStates } from './MentalState';
 import { Tree } from './Tree';
-import { FRAME_COUNT, PRIME } from '../constants/constants';
+import { Character, FRAME_COUNT, PRIME } from '../constants/constants';
 import { encodeStringToFelt } from './utils';
 import { addActionBuffersToCombo } from './Combos';
 import { Action, defaultAction } from './Action';
+import { Layer } from './Layer';
 
 export default interface Agent {
     mentalStatesNames?: string[];
@@ -22,6 +23,13 @@ export interface LeagueAgent extends Agent {
     agentName: string;
 }
 
+export interface PlayerAgent {
+    layers: Layer[];
+    character: Character;
+    conditions: Condition[];
+    combos: Action[][];
+}
+
 // Build the agent from the user's mental states (consisting of the Tree construction for each mental state and the
 // action linked to this state), combos, conditions, initial mental state and character
 export function buildAgent(
@@ -31,7 +39,7 @@ export function buildAgent(
     conditions: Condition[],
     initialMentalState,
     character: number
-) {
+): Agent {
     //console.log('ms', mentalStates);
     //console.log('tree', trees);
     //console.log('conditions', conditions);

@@ -1,25 +1,120 @@
+import Phaser from 'phaser';
 import eventsCenter from '../Game/EventsCenter';
-import { PHASER_CANVAS_W, bodyStateNumberToName } from '../constants/constants';
+import {
+    PHASER_CANVAS_W,
+    PHASER_CANVAS_H,
+    bodyStateNumberToName,
+} from '../constants/constants';
 import { Action, CHARACTERS_ACTIONS } from '../types/Action';
 import { Frame, FrameLike } from '../types/Frame';
 
-export default {
-    key: 'ui',
+const HP_BAR_COLOR = 0xff355e; //0xf7a08c;
+const STAMINA_BAR_COLOR = 0x00ff7f; //0xa06ccb; //0xadd8e6;
+const TIMER_FONT_COLOR = '#FEEEAA'; //'#FFFD01'; //'#FFFFFF';
+const STATS_BAR_W = 410;
+const STATS_BAR_H = 26;
+const STATS_BAR_X_OFFSET = 30;
+const STATS_BAR_Y_OFFSET = 30;
+const STATA_BAR_Y_SPACING = 15;
+const STATS_BAR_P1_LEFT_BOUND = STATS_BAR_X_OFFSET + STATS_BAR_W / 2;
+const STATS_BAR_P2_LEFT_BOUND =
+    PHASER_CANVAS_W - STATS_BAR_X_OFFSET - STATS_BAR_W / 2;
+const STATS_BAR_HP_Y = STATS_BAR_Y_OFFSET;
+const STATS_BAR_STAMINA_Y = STATS_BAR_HP_Y + STATS_BAR_H + STATA_BAR_Y_SPACING;
+const STATS_BAR_BG_BORDER_STROKEWIDTH = 1.5;
 
-    plugins: ['InputPlugin'],
+export interface statsInfo {
+    hp: number;
+    stamina: number;
+}
 
-    create: function () {
+export default class UI extends Phaser.Scene {
+    stats_bars;
+
+    timerText: Phaser.GameObjects.Text;
+    timerFractionalText: Phaser.GameObjects.Text;
+
+    PlayerOneEvent: Phaser.GameObjects.Text;
+    PlayerTwoEvent: Phaser.GameObjects.Text;
+
+    debug_info_objects;
+
+    endTextBg: Phaser.GameObjects.Rectangle;
+    endText: Phaser.GameObjects.Text;
+    endTextFootnote: Phaser.GameObjects.Text;
+
+    initialize() {
+        console.log('UI scene initialize()');
+        //
+        // Create hp and stamina bar
+        //
+        this.stats_bars = {};
+        [0, 1].forEach((playerIndex) => {
+            this.stats_bars[playerIndex] = {};
+            const x =
+                playerIndex == 0
+                    ? STATS_BAR_P1_LEFT_BOUND
+                    : STATS_BAR_P2_LEFT_BOUND;
+            this.stats_bars[playerIndex]['hp_bg'] = this.add
+                .rectangle(
+                    x,
+                    STATS_BAR_HP_Y,
+                    STATS_BAR_W + STATS_BAR_BG_BORDER_STROKEWIDTH,
+                    STATS_BAR_H + STATS_BAR_BG_BORDER_STROKEWIDTH
+                )
+                .setStrokeStyle(STATS_BAR_BG_BORDER_STROKEWIDTH, 0x0)
+                .setFillStyle(0x111111, 0.7)
+                .setVisible(false);
+
+            this.stats_bars[playerIndex]['hp'] = this.add
+                .rectangle(x, STATS_BAR_HP_Y, STATS_BAR_W, STATS_BAR_H)
+                .setFillStyle(HP_BAR_COLOR)
+                .setVisible(false);
+
+            this.stats_bars[playerIndex]['stamina_bg'] = this.add
+                .rectangle(
+                    x,
+                    STATS_BAR_STAMINA_Y,
+                    STATS_BAR_W + STATS_BAR_BG_BORDER_STROKEWIDTH,
+                    STATS_BAR_H + STATS_BAR_BG_BORDER_STROKEWIDTH
+                )
+                .setStrokeStyle(STATS_BAR_BG_BORDER_STROKEWIDTH, 0x0)
+                .setFillStyle(0x111111, 0.7)
+                .setVisible(false);
+
+            this.stats_bars[playerIndex]['stamina'] = this.add
+                .rectangle(x, STATS_BAR_STAMINA_Y, STATS_BAR_W, STATS_BAR_H)
+                .setFillStyle(STAMINA_BAR_COLOR)
+                .setVisible(false);
+        });
+
+        //
+        // Create timer countdown text
+        //
         this.timerText = this.add
-            .text(PHASER_CANVAS_W / 2, 40, '', {
-                fontSize: 54,
+            .text(PHASER_CANVAS_W / 2, 50, '', {
                 fontFamily: 'Oswald',
-                fill: '#FF7E00',
+                color: TIMER_FONT_COLOR,
+                fontSize: '62px',
+                stroke: '#111111',
+                strokeThickness: 6,
+            })
+            .setOrigin(0.5, 0.5)
+            .setVisible(false);
+        this.timerFractionalText = this.add
+            .text(PHASER_CANVAS_W / 2 + 36, 60, '', {
+                fontFamily: 'Oswald',
+                color: TIMER_FONT_COLOR,
+                fontSize: '24px',
                 stroke: '#000000',
-                strokeThickness: 4,
+                strokeThickness: 4.5,
             })
             .setOrigin(0.5, 0.5)
             .setVisible(false);
 
+        //
+        // Event alert for player 1
+        //
         this.PlayerOneEvent = this.add
             .text(25, 140, '', {
                 fontFamily: 'Oswald',
@@ -28,18 +123,13 @@ export default {
                 fontStyle: 'italic',
                 stroke: '#000000',
                 strokeThickness: 4,
-                // shadow: {
-                //     stroke: false,
-                //     offsetX: 10,
-                //     color: '#000000bb',
-                //     fill: true,
-                //     offsetY: 7,
-                //     blur: 6,
-                // },
                 padding: { left: null, right: 30 },
             })
             .setAlpha(0.8);
 
+        //
+        // Event alert for player 2
+        //
         this.PlayerTwoEvent = this.add
             .text(600, 140, '', {
                 fontFamily: 'Oswald',
@@ -48,32 +138,33 @@ export default {
                 fontStyle: 'italic',
                 stroke: '#000000',
                 strokeThickness: 4,
-                // shadow: {
-                //     stroke: false,
-                //     offsetX: 10,
-                //     color: '#00000022',
-                //     fill: true,
-                //     offsetY: 7,
-                //     blur: 6,
-                // },
                 padding: { left: null, right: 30 },
             })
             .setAlpha(0.8);
 
+        //
+        // Frame data shown under debug mode
+        //
         this.debug_info_objects = {};
         const borderWidth = 250;
         const borderHeight = 86.5;
         const borderStrokeWidth = 4;
-        const topMargin = 10;
+        const topMargin = 102;
         const topPadding = 5;
-        const leftMargin = 5;
+        const leftMargin = 35;
         [0, 1].forEach((index) => {
-            const x = index == 0 ? 10 : PHASER_CANVAS_W - borderWidth - 5;
+            const x =
+                index == 0
+                    ? leftMargin
+                    : PHASER_CANVAS_W -
+                      borderWidth -
+                      leftMargin +
+                      borderStrokeWidth * 2;
             this.debug_info_objects[index] = {};
 
             this.debug_info_objects[index]['border'] = this.add
                 .rectangle(
-                    x + borderWidth / 2 - leftMargin,
+                    x + borderWidth / 2 - borderStrokeWidth - 1,
                     borderHeight / 2 + topMargin,
                     borderWidth,
                     borderHeight
@@ -118,6 +209,34 @@ export default {
             );
         });
 
+        //
+        // End game message
+        //
+        this.endTextBg = this.add
+            .rectangle(
+                PHASER_CANVAS_W / 2,
+                PHASER_CANVAS_H / 2,
+                PHASER_CANVAS_W,
+                300
+            )
+            .setFillStyle(0x222222, 0.95)
+            .setVisible(false);
+        this.endText = this.add
+            .text(PHASER_CANVAS_W / 2, PHASER_CANVAS_H / 2 - 20, '', {
+                fontSize: '30px',
+                color: '#fff',
+            })
+            .setOrigin(0.5);
+        this.endTextFootnote = this.add
+            .text(PHASER_CANVAS_W / 2, PHASER_CANVAS_H / 2 + 20, '', {
+                fontSize: '18px',
+                color: '#fff',
+            })
+            .setOrigin(0.5);
+
+        //
+        // Register event handlers at events center
+        //
         eventsCenter
             .on('timer-change', this.onTimerChange, this)
             .on('timer-reset', this.onTimerReset, this)
@@ -125,8 +244,34 @@ export default {
             .on('player-event-create', this.onPlayerEventCreate, this)
             .on('player-event-remove', this.onPlayerEventRemove, this)
             .on('frame-data-show', this.onFrameDataShow, this)
-            .on('frame-data-hide', this.onFrameDataHide, this);
+            .on('frame-data-hide', this.onFrameDataHide, this)
+            .on('end-text-show', this.onEndTextShow, this)
+            .on('end-text-hide', this.onEndTextHide, this)
+            .on('update-stats', this.onStatsUpdate, this)
+            .on('reset-stats', this.onStatsReset, this);
 
+        this.events.on('destroy', () => {
+            eventsCenter
+                .removeListener('timer-change', this.onTimerChange, this)
+                .removeListener('timer-reset', this.onTimerReset, this)
+                .removeListener('timer-hide', this.onTimerHide, this)
+                .removeListener(
+                    'player-event-create',
+                    this.onPlayerEventCreate,
+                    this
+                )
+                .removeListener(
+                    'player-event-remove',
+                    this.onPlayerEventRemove,
+                    this
+                )
+                .removeListener('frame-data-show', this.onFrameDataShow, this)
+                .removeListener('frame-data-hide', this.onFrameDataHide, this)
+                .removeListener('end-text-show', this.onEndTextShow, this)
+                .removeListener('end-text-hide', this.onEndTextHide, this)
+                .removeListener('update-stats', this.onStatsUpdate, this)
+                .removeListener('reset-stats', this.onStatsReset, this);
+        });
         // this.scene.get('play').events
         // eventsCenter
         //     .on('pause', this.showPauseText, this)
@@ -138,168 +283,198 @@ export default {
         //   .on('keydown-R', this.restartPlay, this)
         //   .on('keydown-Q', this.quitPlay, this)
         //   .on('keydown-Z', this.toggleZoom, this);
-    },
+    }
+    create() {
+        this.initialize();
+    }
 
-    extend: {
-        onTimerChange: function (value) {
-            this.timerText.setText(`${value}`);
-        },
+    //
+    // Timer countdown handlers
+    //
+    onTimerChange(whole, fractional) {
+        this.timerText.setText(`${whole}`);
+        this.timerFractionalText.setText(`.${fractional}`);
+    }
 
-        onTimerReset: function () {
-            this.timerText.setVisible(true);
-            this.timerText.setText('');
-        },
+    onTimerReset() {
+        this.timerText.setVisible(true);
+        this.timerText.setText('');
+        this.timerFractionalText.setVisible(true);
+        this.timerFractionalText.setText('');
+    }
 
-        onTimerHide: function () {
-            this.timerText.setVisible(false);
-        },
+    onTimerHide() {
+        this.timerText.setVisible(false);
+        this.timerFractionalText.setVisible(false);
+    }
 
-        // Note Next JS Hot/Fast reloading nullifies these text boxes, we should create new one rather than edit existing
-        onPlayerEventCreate: function (
-            playerIndex: number,
-            eventText: string,
-            eventCount: number
-        ) {
-            if (playerIndex == 1) {
-                this.PlayerOneEvent?.setText(
-                    eventCount > 0
-                        ? `${eventText} x${eventCount + 1}`
-                        : eventText
-                );
-            } else {
-                this.PlayerTwoEvent?.setText(
-                    eventCount > 0
-                        ? `${eventText} x${eventCount + 1}`
-                        : eventText
-                );
-            }
-        },
+    //
+    // Stats handlers
+    //
+    onStatsUpdate(stats: statsInfo[]) {
+        try {
+            // render P1 stats
+            this.stats_bars[0]['hp_bg'].setVisible(true);
+            this.stats_bars[0]['stamina_bg'].setVisible(true);
+            this.stats_bars[0]['hp']
+                .setSize((stats[0]['hp'] / 1000) * STATS_BAR_W, STATS_BAR_H)
+                .setPosition(
+                    STATS_BAR_P1_LEFT_BOUND +
+                        (1 - stats[0]['hp'] / 1000) * STATS_BAR_W,
+                    STATS_BAR_HP_Y
+                )
+                .setVisible(true);
+            this.stats_bars[0]['stamina']
+                .setSize(
+                    (stats[0]['stamina'] / 1000) * STATS_BAR_W,
+                    STATS_BAR_H
+                )
+                .setPosition(
+                    STATS_BAR_P1_LEFT_BOUND +
+                        (1 - stats[0]['stamina'] / 1000) * STATS_BAR_W,
+                    STATS_BAR_STAMINA_Y
+                )
+                .setVisible(true);
 
-        onPlayerEventRemove: function (playerIndex: number) {
-            console.log('remove event ', playerIndex);
+            // render P2 stats
+            this.stats_bars[1]['hp_bg'].setVisible(true);
+            this.stats_bars[1]['stamina_bg'].setVisible(true);
+            this.stats_bars[1]['hp']
+                .setSize((stats[1]['hp'] / 1000) * STATS_BAR_W, STATS_BAR_H)
+                .setVisible(true);
+            this.stats_bars[1]['stamina']
+                .setSize(
+                    (stats[1]['stamina'] / 1000) * STATS_BAR_W,
+                    STATS_BAR_H
+                )
+                .setVisible(true);
+        } catch (e) {
+            console.log('onStatsUpdate', e);
+        }
+    }
 
-            if (playerIndex == 1) {
-                this.PlayerOneEvent?.setText(``);
-            } else {
-                this.PlayerTwoEvent?.setText(``);
-            }
-        },
+    onStatsReset() {
+        this.onStatsUpdate([
+            { hp: 1000, stamina: 1000 },
+            { hp: 1000, stamina: 1000 },
+        ]);
+    }
 
-        onFrameDataShow: function (frames: FrameLike[]) {
-            [0, 1].forEach((index) => {
-                this.debug_info_objects[index]['border'].setVisible(true);
+    //
+    // Event alert handlers
+    // Note: Next JS Hot/Fast reloading nullifies these text boxes, we should create new one rather than edit existing
+    //
+    onPlayerEventCreate(
+        playerIndex: number,
+        eventText: string,
+        eventCount: number
+    ) {
+        if (playerIndex == 1) {
+            this.PlayerOneEvent?.setText(
+                eventCount > 0 ? `${eventText} x${eventCount + 1}` : eventText
+            );
+        } else {
+            this.PlayerTwoEvent?.setText(
+                eventCount > 0 ? `${eventText} x${eventCount + 1}` : eventText
+            );
+        }
+    }
 
-                // body state
-                const state = frames[index].body_state.state;
-                const isAntoc = state > 1000;
-                const stateName =
-                    bodyStateNumberToName[isAntoc ? 'antoc' : 'jessica'][state];
-                this.debug_info_objects[index]['body_state']['data'].setText(
-                    stateName
-                );
-                this.debug_info_objects[index]['body_state']['desc'].setText(
-                    'Body State'
-                );
-                this.debug_info_objects[index]['body_state']['bg'].setVisible(
-                    true
-                );
+    onPlayerEventRemove(playerIndex: number) {
+        if (playerIndex == 1) {
+            this.PlayerOneEvent?.setText(``);
+        } else {
+            this.PlayerTwoEvent?.setText(``);
+        }
+    }
 
-                // body counter (display value+1 to start from 1)
-                this.debug_info_objects[index]['body_counter']['data'].setText(
-                    `${frames[index].body_state.counter + 1}`
-                );
-                this.debug_info_objects[index]['body_counter']['desc'].setText(
-                    'Body Frame'
-                );
-                this.debug_info_objects[index]['body_counter']['bg'].setVisible(
-                    true
-                );
+    //
+    // Frame data handlers
+    //
+    onFrameDataShow(frames: FrameLike[]) {
+        [0, 1].forEach((index) => {
+            this.debug_info_objects[index]['border'].setVisible(true);
 
-                // action
-                console.log('frame', frames[index]);
-                const action = (frames[index] as Frame).action;
-                const characterActions = CHARACTERS_ACTIONS[isAntoc ? 1 : 0];
-                const actionMatched: Action = characterActions.find(
-                    (value) => value.id == action
-                );
-                const actionName = actionMatched
-                    ? actionMatched.display.name
-                    : '-';
-                this.debug_info_objects[index]['action']['data'].setText(
-                    actionName
-                );
-                this.debug_info_objects[index]['action']['desc'].setText(
-                    'Action'
-                );
-                this.debug_info_objects[index]['action']['bg'].setVisible(true);
+            // body state
+            const state = frames[index].body_state.state;
+            const isAntoc = state > 1000;
+            const stateName =
+                bodyStateNumberToName[isAntoc ? 'antoc' : 'jessica'][state];
+            this.debug_info_objects[index]['body_state']['data'].setText(
+                stateName
+            );
+            this.debug_info_objects[index]['body_state']['desc'].setText(
+                'Body State'
+            );
+            this.debug_info_objects[index]['body_state']['bg'].setVisible(true);
 
-                // position
-                this.debug_info_objects[index]['position']['data'].setText(
-                    `(${frames[index].physics_state.pos.x},${frames[index].physics_state.pos.y})`
-                );
-                this.debug_info_objects[index]['position']['desc'].setText(
-                    'Position'
-                );
-                this.debug_info_objects[index]['position']['bg'].setVisible(
-                    true
-                );
-            });
-        },
+            // body counter (display value+1 to start from 1)
+            this.debug_info_objects[index]['body_counter']['data'].setText(
+                `${frames[index].body_state.counter + 1}`
+            );
+            this.debug_info_objects[index]['body_counter']['desc'].setText(
+                'Body Frame'
+            );
+            this.debug_info_objects[index]['body_counter']['bg'].setVisible(
+                true
+            );
 
-        onFrameDataHide: function () {
-            [0, 1].forEach((index) => {
-                this.debug_info_objects[index]['border'].setVisible(false);
+            // action
+            console.log('frame', frames[index]);
+            const action = (frames[index] as Frame).action;
+            const characterActions = CHARACTERS_ACTIONS[isAntoc ? 1 : 0];
+            const actionMatched: Action = characterActions.find(
+                (value) => value.id == action
+            );
+            const actionName = actionMatched ? actionMatched.display.name : '-';
+            this.debug_info_objects[index]['action']['data'].setText(
+                actionName
+            );
+            this.debug_info_objects[index]['action']['desc'].setText('Action');
+            this.debug_info_objects[index]['action']['bg'].setVisible(true);
 
-                ['body_state', 'body_counter', 'action', 'position'].forEach(
-                    (stats) => {
-                        this.debug_info_objects[index][stats]['bg'].setVisible(
-                            false
-                        );
-                        ['data', 'desc'].forEach((item) => {
-                            this.debug_info_objects[index][stats][item].setText(
-                                ''
-                            );
-                        });
-                    }
-                );
-            });
-        },
+            // position
+            this.debug_info_objects[index]['position']['data'].setText(
+                `(${frames[index].physics_state.pos.x},${frames[index].physics_state.pos.y})`
+            );
+            this.debug_info_objects[index]['position']['desc'].setText(
+                'Position'
+            );
+            this.debug_info_objects[index]['position']['bg'].setVisible(true);
+        });
+    }
 
-        //
-        // keyboard event handlers
-        //
-        // quitPlay: function () {
-        //   this.scene
-        //     .stop('play')
-        //     .run('menu');
+    onFrameDataHide() {
+        [0, 1].forEach((index) => {
+            this.debug_info_objects[index]['border'].setVisible(false);
 
-        //   // Don't sleep a scene that hasn't started!
-        //   if (this.scene.isActive('end')) {
-        //     this.scene.sleep('end');
-        //   }
-        // },
+            ['body_state', 'body_counter', 'action', 'position'].forEach(
+                (stats) => {
+                    this.debug_info_objects[index][stats]['bg'].setVisible(
+                        false
+                    );
+                    ['data', 'desc'].forEach((item) => {
+                        this.debug_info_objects[index][stats][item].setText('');
+                    });
+                }
+            );
+        });
+    }
 
-        // restartPlay: function () {
-        //   this.scene.launch('play');
+    //
+    // End game message handlers
+    //
+    onEndTextShow(text: string, footnote?: string) {
+        if (footnote) {
+            this.endTextFootnote.setText(footnote);
+        }
+        this.endText.setText(text);
+        this.endTextBg.setVisible(true);
+    }
 
-        //   // Don't sleep a scene that hasn't started!
-        //   if (this.scene.isActive('end')) {
-        //     this.scene.sleep('end');
-        //   }
-        // },
-
-        // togglePause: function () {
-        //   if (this.scene.isActive('play')) {
-        //     this.scene.pause('play');
-        //   } else if (this.scene.isPaused('play')) {
-        //     this.scene.resume('play');
-        //   }
-        // },
-
-        // toggleZoom: function () {
-        //   const camera = this.scene.get('play').cameras.main;
-
-        //   camera.setZoom(camera.zoom === 2 ? 1 : 2);
-        // }
-    },
-};
+    onEndTextHide() {
+        this.endTextFootnote.setText('');
+        this.endText.setText('');
+        this.endTextBg.setVisible(false);
+    }
+}

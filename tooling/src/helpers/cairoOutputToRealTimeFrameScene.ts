@@ -29,6 +29,15 @@ const cairoOutputToRealTimeFrameScene = (output: any[]): RealTimeFrameScene => {
                     ? f.agent_0.body_state.fatigued[0] *
                       f.agent_0.body_state.fatigued[1][0]
                     : 0,
+                state_index: f.agent_0.body_state.state_index[0]
+                    ? f.agent_0.body_state.state_index[0] *
+                      f.agent_0.body_state.state_index[1][0]
+                    : 0,
+                opponent_state_index_last_hit: f.agent_0.body_state
+                    .opponent_state_index_last_hit[0]
+                    ? f.agent_0.body_state.opponent_state_index_last_hit[0] *
+                      f.agent_0.body_state.opponent_state_index_last_hit[1][0]
+                    : 0,
             },
             physics_state: {
                 pos: {
@@ -137,6 +146,15 @@ const cairoOutputToRealTimeFrameScene = (output: any[]): RealTimeFrameScene => {
                 fatigued: f.agent_1.body_state.fatigued[0]
                     ? f.agent_1.body_state.fatigued[0] *
                       f.agent_1.body_state.fatigued[1][0]
+                    : 0,
+                state_index: f.agent_1.body_state.state_index[0]
+                    ? f.agent_1.body_state.state_index[0] *
+                      f.agent_1.body_state.state_index[1][0]
+                    : 0,
+                opponent_state_index_last_hit: f.agent_1.body_state
+                    .opponent_state_index_last_hit[0]
+                    ? f.agent_1.body_state.opponent_state_index_last_hit[0] *
+                      f.agent_1.body_state.opponent_state_index_last_hit[1][0]
                     : 0,
             },
             physics_state: {

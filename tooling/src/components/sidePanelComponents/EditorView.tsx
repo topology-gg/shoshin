@@ -21,13 +21,14 @@ import { Tree } from '../../types/Tree';
 import { Condition, ConditionElement } from '../../types/Condition';
 import { CircularProgress } from '@mui/material';
 import { Layer } from '../../types/Layer';
-import Gambit from './Gambit/Gambit';
+import Gambit, { FullGambitFeatures, GambitFeatures } from './Gambit/Gambit';
 import { GambitMs } from './GambitMs';
 import { GambitTree } from './GambitTreeEditor';
 import { Action } from '../../types/Action';
 import { RestartAlt } from '@mui/icons-material';
 
 interface EditorViewProps {
+    animationState: string;
     editorMode: EditorMode;
     settingModalOpen: boolean;
     setSettingModalOpen: (bool: boolean) => void;
@@ -81,9 +82,13 @@ interface EditorViewProps {
     setLayers: (layers: Layer[]) => void;
     selectedCombo: number;
     handleChangeSelectedCombo: (comboIndex: number) => void;
+    setCombos: (combos: Action[][]) => void;
+    activeMs: number;
+    actions: Action[];
 }
 
 const EditorView = ({
+    animationState,
     editorMode,
     settingModalOpen,
     setSettingModalOpen,
@@ -130,6 +135,9 @@ const EditorView = ({
     setLayers,
     selectedCombo,
     handleChangeSelectedCombo,
+    setCombos,
+    activeMs,
+    actions,
 }: EditorViewProps) => {
     const isReadOnly = editorMode == EditorMode.ReadOnly;
     const [openContractInformation, setOpenContractInformation] =
@@ -152,12 +160,16 @@ const EditorView = ({
             case EditorTabName.Mind: {
                 return (
                     <Gambit
+                        isAnimationRunning={animationState == 'Run'}
                         layers={layers}
                         setLayers={setLayers}
-                        isReadOnly={isReadOnly}
+                        features={FullGambitFeatures}
                         character={character}
                         conditions={conditions}
                         combos={combos}
+                        setCombos={setCombos}
+                        activeMs={activeMs}
+                        actions={actions}
                     />
                 );
             }
@@ -192,6 +204,7 @@ const EditorView = ({
                         handleValidateCombo={handleValidateCombo}
                         selectedCombo={selectedCombo}
                         handleChangeSelectedCombo={handleChangeSelectedCombo}
+                        actions={actions}
                     ></Combos>
                 );
             }

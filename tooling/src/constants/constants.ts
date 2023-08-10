@@ -6,15 +6,22 @@ import {
     Operator,
     Perceptible,
 } from '../types/Condition';
-import { RealTimeFrameScene } from '../types/Frame';
+import {
+    RealTimeFrameScene,
+    STIMULUS_ENCODING,
+    StimulusType,
+} from '../types/Frame';
 import { MentalState } from '../types/MentalState';
 import { Direction, Tree } from '../types/Tree';
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 // Mongo db name and collection
 export const DB_NAME = 'shoshin_indexer_5';
 export const COLLECTION_NAME_SUBMISSION = 'shoshin-dogfooding-submission';
 export const COLLECTION_NAME_LEAGUE = 'shoshin-league';
 export const COLLECTION_NAME_WHITELIST = 'shoshin-whitelist';
+export const COLLECTION_NAME_PVP = true ? 'shoshin-pvp' : 'shoshin-pvp-dev';
 
 export const PRIME =
     BigInt(2 ** 251) + BigInt(17) * BigInt(2 ** 192) + BigInt(1);
@@ -30,7 +37,7 @@ export const PHASER_CANVAS_W = 1000;
 export const PHASER_CANVAS_H = Math.round((PHASER_CANVAS_W / 16) * 9);
 
 // Simulation related constants
-export const TICK_IN_SECONDS = 0.07;
+export const TICK_IN_SECONDS = 0.07; // ~14 FPS
 export const SIMULATION_TIME_IN_SECONDS = 30;
 export const FRAME_COUNT = Math.round(
     SIMULATION_TIME_IN_SECONDS / TICK_IN_SECONDS
@@ -46,6 +53,11 @@ export enum EditorMode {
     ReadOnly = 'ReadOnly',
     Edit = 'Edit',
 }
+
+// Character type
+export const JESSICA = 0;
+export const ANTOC = 1;
+export const characterTypeToString = ['jessica', 'antoc'];
 
 // Physics / numerics related constants
 export const SCALE_FP = 10 ** 4;
@@ -70,6 +82,10 @@ export const bodyStateNumberToName = {
         150: 'low_kick',
         160: 'birdswing',
         170: 'launched',
+        180: 'jump_move_forward',
+        190: 'jump_move_backward',
+        200: 'taunt',
+        240: 'ko',
     },
     antoc: {
         0: 'idle',
@@ -88,8 +104,16 @@ export const bodyStateNumberToName = {
         1160: 'low_kick',
         1170: 'launched',
         1190: 'drop_slash',
+        1200: 'jump_move_forward',
+        1210: 'jump_move_backward',
+        1220: 'cyclone',
+        1250: 'taunt',
+        1320: 'ko',
     },
 };
+
+export const ANTOC_KO_DURATION = 14;
+export const JESSICA_KO_DURATION = 14;
 
 const actionsToBodyStateJessica = {
     0: 0,
@@ -178,6 +202,13 @@ export enum Character {
     Antoc = 'Antoc',
 }
 
+export const numberToCharacter = (char: number) => {
+    if (char == 0) {
+        return Character.Jessica;
+    }
+    return Character.Antoc;
+};
+
 export enum KeysToActionsJessica {
     '-' = 'Rest',
     'J' = 'Slash',
@@ -191,6 +222,7 @@ export enum KeysToActionsJessica {
     'W' = 'Jump',
     'N' = 'Gatotsu',
     'U' = 'LowKick',
+    'O' = 'Taunt',
 }
 
 export enum KeysToActionsAntoc {
@@ -205,6 +237,8 @@ export enum KeysToActionsAntoc {
     'F' = 'StepForward',
     'W' = 'Jump',
     'U' = 'LowKick',
+    'N' = 'Cyclone',
+    'O' = 'Taunt',
 }
 
 // Mapping such that { 'Rest' : '-' }
@@ -264,6 +298,7 @@ export const characterActionToNumber = {
         Jump: 9,
         Gatotsu: 10,
         LowKick: 11,
+        Taunt: 12,
     },
     antoc: {
         Rest: 0,
@@ -277,6 +312,8 @@ export const characterActionToNumber = {
         StepForward: 8,
         Jump: 9,
         LowKick: 11,
+        Cyclone: 12,
+        Taunt: 13,
     },
 };
 export function getIntentNameByCharacterTypeAndNumber(
@@ -814,6 +851,8 @@ export const InitialRealTimeFrameScene: RealTimeFrameScene = {
             stamina: INIT_STAMINA,
             state: 0,
             fatigued: 0,
+            state_index: 0,
+            opponent_state_index_last_hit: -1,
         },
         hitboxes: {
             action: {
@@ -851,7 +890,7 @@ export const InitialRealTimeFrameScene: RealTimeFrameScene = {
                 y: 0,
             },
         },
-        stimulus: 0,
+        stimulus: StimulusType.GROUND * STIMULUS_ENCODING,
     },
     agent_1: {
         body_state: {
@@ -861,6 +900,8 @@ export const InitialRealTimeFrameScene: RealTimeFrameScene = {
             stamina: INIT_STAMINA,
             state: 0,
             fatigued: 0,
+            state_index: 0,
+            opponent_state_index_last_hit: -1,
         },
         hitboxes: {
             action: {
@@ -898,7 +939,7 @@ export const InitialRealTimeFrameScene: RealTimeFrameScene = {
                 y: 0,
             },
         },
-        stimulus: 0,
+        stimulus: StimulusType.GROUND * STIMULUS_ENCODING,
         mental_state: 0,
         combo_info: {
             combo_counter: 0,

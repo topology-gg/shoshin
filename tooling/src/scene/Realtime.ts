@@ -7,23 +7,32 @@ import {
     characterActionToNumber,
     LEFT,
     RIGHT,
+    bodyStateNumberToName,
+    characterTypeToString,
+    ANTOC,
+    JESSICA,
+    JESSICA_KO_DURATION,
+    ANTOC_KO_DURATION,
 } from '../constants/constants';
 import { IShoshinWASMContext } from '../context/wasm-shoshin';
 import { runRealTimeFromContext } from '../hooks/useRunRealtime';
 import Agent from '../types/Agent';
 import { RealTimeFrameScene } from '../types/Frame';
 import { GameModes } from '../types/Simulator';
-import Platformer from './Simulator';
+import Simulator from './Simulator';
 import eventsCenter from '../Game/EventsCenter';
 
-export default class RealTime extends Platformer {
+import * as wasm from '../../wasm/shoshin/pkg/shoshin';
+import { BodystatesAntoc, BodystatesJessica } from '../types/Condition';
+
+export default class RealTime extends Simulator {
     prevState: RealTimeFrameScene = InitialRealTimeFrameScene;
     state: RealTimeFrameScene = InitialRealTimeFrameScene;
 
     private player_action: number = 5;
     private character_type_0: number = 0;
 
-    private wasmContext?: IShoshinWASMContext;
+    private wasmContext?: IShoshinWASMContext = { wasm };
 
     startText: Phaser.GameObjects.Text;
     endTextP1Won: Phaser.GameObjects.Text;
@@ -31,8 +40,12 @@ export default class RealTime extends Platformer {
     endTextDraw: Phaser.GameObjects.Text;
 
     private isGameRunning: boolean;
+    private isGamePaused: boolean;
+    private inPauseMenu: boolean = false;
 
     private gameTimer: Phaser.Time.TimerEvent;
+    private hitstopTimer: Phaser.Time.TimerEvent;
+    private repeatCountLeft: number;
 
     private keyboard: any;
 
@@ -45,6 +58,7 @@ export default class RealTime extends Platformer {
     private tick: number = 0;
 
     private debugToggleLocked: boolean = false;
+    private spaceLocked: boolean = false;
 
     private tickLatencyInSecond = TICK_IN_SECONDS;
 
@@ -60,18 +74,19 @@ export default class RealTime extends Platformer {
         this.isFirstTick = true;
         this.tick = 0;
         this.debugToggleLocked = false;
+        this.spaceLocked = false;
+        this.repeatCountLeft = -1;
     }
 
     set_wasm_context(ctx: IShoshinWASMContext) {
         console.log('initialize wasm context', ctx);
-        this.wasmContext = ctx;
+        //this.wasmContext = ctx;
     }
 
     set_opponent_agent(agent: Agent) {
         this.opponent = agent;
         this.setPlayerTwoCharacter(agent.character);
 
-        console.log('opponent', this.opponent);
         if (!this.isGameRunning) {
             this.setMenuText();
             this.resetGameState();
@@ -86,10 +101,13 @@ export default class RealTime extends Platformer {
         }
     }
 
-    init(data: any) {
+    init(data) {
         if (data !== undefined) {
-            this.wasmContext = data.context;
-            this.setPlayerStatuses = data.setPlayerStatuses;
+            console.log('>>>>>> init(); data.backgroundId', data.backgroundId);
+            this.backgroundId = data.backgroundId;
+
+            //this.wasmContext = data.context;
+            //this.setPlayerStatuses = data.setPlayerStatuses;
         }
     }
 
@@ -124,21 +142,6 @@ export default class RealTime extends Platformer {
 
         this.startText = this.createCenteredText('Press Space to start');
 
-        this.endTextP1Won = this.createCenteredText(
-            'Player 1 won!\nPress Space to restart'
-        );
-        this.endTextP1Won.setVisible(false);
-
-        this.endTextP2Won = this.createCenteredText(
-            'Player 2 won!\nPress Space to restart'
-        );
-        this.endTextP2Won.setVisible(false);
-
-        this.endTextDraw = this.createCenteredText(
-            'Draw!\nPress Space to restart'
-        );
-        this.endTextDraw.setVisible(false);
-
         this.initializeCameraSettings();
     }
 
@@ -149,7 +152,7 @@ export default class RealTime extends Platformer {
         );
     }
     create() {
-        this.intitialize();
+        this.initialize();
         this.createMenu();
 
         this.isGameRunning = false;
@@ -173,6 +176,8 @@ export default class RealTime extends Platformer {
             n: Phaser.Input.Keyboard.KeyCodes.N,
             z: Phaser.Input.Keyboard.KeyCodes.Z,
             u: Phaser.Input.Keyboard.KeyCodes.U,
+            o: Phaser.Input.Keyboard.KeyCodes.O,
+            esc: Phaser.Input.Keyboard.KeyCodes.ESC,
         });
         this.set_player_character(this.character_type_0);
         this.scene.scene.events.on('pause', () => {
@@ -183,6 +188,10 @@ export default class RealTime extends Platformer {
     }
 
     startMatch() {
+        if (!this.wasmContext || this.is_wasm_undefined()) {
+            console.log('no wasm context');
+            return;
+        }
         this.set_player_character(this.character_type_0);
         this.resetGameState();
 
@@ -197,23 +206,29 @@ export default class RealTime extends Platformer {
 
         this.isGameRunning = true;
         this.startText.setVisible(false);
-        this.endTextP1Won.setVisible(false);
-        this.endTextP2Won.setVisible(false);
-        this.endTextDraw.setVisible(false);
     }
 
     checkEndGame(integrityP1: number, integrityP2: number) {
-        if (integrityP1 == integrityP2) {
-            // draw
-            this.centerText(this.endTextDraw);
-            this.endTextDraw.setVisible(true);
-        } else if (integrityP1 < integrityP2) {
-            this.centerText(this.endTextP2Won);
-            this.endTextP2Won.setVisible(true);
+        if (integrityP1 < integrityP2) {
+            eventsCenter.emit(
+                'end-text-show',
+                'Player 2 won!',
+                'Press Space to restart'
+            );
+        } else if (integrityP1 > integrityP2) {
+            eventsCenter.emit(
+                'end-text-show',
+                'Player 1 won!',
+                'Press Space to restart'
+            );
         } else {
-            this.centerText(this.endTextP1Won);
-            this.endTextP1Won.setVisible(true);
+            eventsCenter.emit(
+                'end-text-show',
+                'Draw!',
+                'Press Space to restart'
+            );
         }
+
         this.gameTimer.destroy();
         this.isGameRunning = false;
     }
@@ -226,10 +241,60 @@ export default class RealTime extends Platformer {
         }
     }
 
+    pauseGame() {
+        eventsCenter.emit('end-text-show', 'Paused', '');
+
+        // pause the game by saving the remaining time and destroy the timer
+        this.repeatCountLeft = this.gameTimer.repeatCount;
+        console.log('repeatCountLeft', this.repeatCountLeft);
+        this.gameTimer.destroy();
+        this.isGamePaused = true;
+        console.log('game paused');
+    }
+
+    resumeGame() {
+        // resume the game by creating the timer with `repeatCountLeft`
+        this.gameTimer = this.time.addEvent({
+            delay: this.tickLatencyInSecond * 1000, // ms
+            callback: () => this.run(),
+            repeat: this.repeatCountLeft,
+        });
+        this.isGamePaused = false;
+        console.log('game resumed');
+        eventsCenter.emit('end-text-hide');
+    }
     update(t, ds) {
-        if (this.keyboard.space.isDown && !this.isGameRunning) {
-            this.startMatch();
+        const spaceIsDown = this.keyboard.space.isDown;
+        const escIsDown = this.keyboard.esc.isDown;
+
+        if (escIsDown && !this.spaceLocked) {
+            if (this.isGameRunning) {
+                this.pauseGame();
+            }
+            this.inPauseMenu = !this.inPauseMenu;
+            this.spaceLocked = true;
         }
+
+        if (spaceIsDown && !this.inPauseMenu && !this.spaceLocked) {
+            if (!this.isGameRunning && spaceIsDown && !this.inPauseMenu) {
+                this.startMatch();
+            } else {
+                if (!this.spaceLocked) {
+                    if (this.isGamePaused) {
+                        this.resumeGame();
+                    } else {
+                        this.pauseGame();
+                    }
+                }
+            }
+            // debounce lock
+            this.spaceLocked = true;
+        }
+        if (this.keyboard.space.isUp && this.keyboard.esc.isUp) {
+            // debounce release
+            this.spaceLocked = false;
+        }
+
         if (this.isGameRunning) {
             if (this.keyboard.s.isDown) {
                 //block
@@ -303,16 +368,30 @@ export default class RealTime extends Platformer {
                 // antoc's step forward
                 this.player_action =
                     characterActionToNumber['antoc']['StepForward'];
-            } else if (this.keyboard.n.isDown && this.character_type_0 == 0) {
-                // jessica's gatotsu
-                this.player_action =
-                    characterActionToNumber['jessica']['Gatotsu'];
+            } else if (this.keyboard.n.isDown) {
+                if (this.character_type_0 == JESSICA) {
+                    this.player_action =
+                        characterActionToNumber['jessica']['Gatotsu'];
+                } else {
+                    this.player_action =
+                        characterActionToNumber['antoc']['Cyclone'];
+                    console.log(
+                        'cyclone -- this.player_action',
+                        this.player_action
+                    );
+                }
             } else if (this.keyboard.u.isDown) {
                 // low_kick
                 this.player_action =
                     characterActionToNumber[
                         this.character_type_0 == 1 ? 'antoc' : 'jessica'
                     ]['LowKick'];
+            } else if (this.keyboard.o.isDown) {
+                // taunt
+                this.player_action =
+                    characterActionToNumber[
+                        this.character_type_0 == 1 ? 'antoc' : 'jessica'
+                    ]['Taunt'];
             }
         }
 
@@ -330,12 +409,9 @@ export default class RealTime extends Platformer {
         }
     }
 
+    timestamp = new Date();
     run() {
-        if (!this.wasmContext) {
-            console.log('no wasm context');
-            return;
-        }
-
+        console.log('this wasm context', this.wasmContext);
         let [out, err] = runRealTimeFromContext(
             this.wasmContext,
             this.state,
@@ -365,19 +441,72 @@ export default class RealTime extends Platformer {
                 this.isDebug
             );
 
+            // Handle hit-stop
+            // 1. check newState if any of the character is in counter==1 of HURT / KNOCKED / LAUNCH / CLASHED
+            // 2. if so, kill gameTimer after recording its repeatCount; start hitstopTimer, whose callBack is self destruction + restart gameTimer with remaining repeatCount
+            // 3. for the duration of hitstopTimer, also stop vfx animation via https://phaser.discourse.group/t/how-to-slow-down-the-frame-rate-animations-globally-slow-motion/11339/3
+            const p1_state: string =
+                bodyStateNumberToName[
+                    characterTypeToString[this.character_type_0]
+                ][newState.agent_0.body_state.state];
+            const p2_state: string =
+                bodyStateNumberToName[
+                    characterTypeToString[this.opponent.character]
+                ][newState.agent_1.body_state.state];
+            const hitstop_strings = ['hurt', 'knocked', 'launched', 'clash'];
+            const p1_needs_hitstop =
+                hitstop_strings.some(function (s) {
+                    return p1_state.indexOf(s) >= 0;
+                }) && newState.agent_0.body_state.counter == 1;
+            const p2_needs_hitstop =
+                hitstop_strings.some(function (s) {
+                    return p2_state.indexOf(s) >= 0;
+                }) && newState.agent_1.body_state.counter == 1;
+            if (p1_needs_hitstop || p2_needs_hitstop) {
+                console.log('should hitstop!');
+
+                // Kill gameTimer
+                this.repeatCountLeft = this.gameTimer.repeatCount;
+                this.gameTimer.destroy();
+
+                // Stops vfx
+                this.anims.pauseAll();
+
+                // Start hitstopTimer, whose callback is self destruction + restart gameTimer with remaining repeatCount
+                this.hitstopTimer = this.time.addEvent({
+                    delay: 100, // ms
+                    callback: () => {
+                        console.log('resume from hitstop!');
+                        this.gameTimer = this.time.addEvent({
+                            delay: this.tickLatencyInSecond * 1000, // ms
+                            callback: () => this.run(),
+                            repeat: this.repeatCountLeft,
+                        });
+                        this.hitstopTimer.destroy();
+                        this.anims.resumeAll();
+                    },
+                    repeat: 0, // hitstopTimer plays only once before self destruction
+                });
+            }
+
+            // Emit event for UI scene
+            const timeLeftDecimalString = (
+                this.gameTimer.repeatCount * this.tickLatencyInSecond
+            )
+                .toFixed(1)
+                .toString();
+            const timeLeftSplit = timeLeftDecimalString.split('.');
+            eventsCenter.emit(
+                'timer-change',
+                timeLeftSplit[0],
+                timeLeftSplit[1]
+            );
+
+            // Set stats
             const integrity_0 = newState.agent_0.body_state.integrity;
             const integrity_1 = newState.agent_1.body_state.integrity;
             const stamina_0 = newState.agent_0.body_state.stamina;
             const stamina_1 = newState.agent_1.body_state.stamina;
-
-            // emit event for UI scene
-            eventsCenter.emit(
-                'timer-change',
-                Math.round(
-                    this.gameTimer.repeatCount * this.tickLatencyInSecond
-                )
-            );
-
             this.setPlayerStatuses({
                 integrity_0,
                 integrity_1,
@@ -391,9 +520,38 @@ export default class RealTime extends Platformer {
                 this.checkEndGame(integrity_0, integrity_1);
             }
 
-            if (integrity_0 <= 0 || integrity_1 <= 0) {
+            if (
+                isKO(
+                    this.character_type_0,
+                    newState.agent_0.body_state.state,
+                    newState.agent_0.body_state.counter
+                ) ||
+                isKO(
+                    this.opponent.character,
+                    newState.agent_1.body_state.state,
+                    newState.agent_1.body_state.counter
+                )
+            ) {
                 this.checkEndGame(integrity_0, integrity_1);
             }
         }
     }
+}
+
+function isKO(character_type, state, counter) {
+    if (
+        character_type == JESSICA &&
+        state == BodystatesJessica.KO &&
+        counter == JESSICA_KO_DURATION - 1
+    ) {
+        return true;
+    }
+    if (
+        character_type == ANTOC &&
+        state == BodystatesAntoc.KO &&
+        counter == ANTOC_KO_DURATION - 1
+    ) {
+        return true;
+    }
+    return false;
 }

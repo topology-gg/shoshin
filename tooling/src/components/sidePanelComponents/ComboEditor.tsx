@@ -3,13 +3,16 @@ import { Box, Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import { ACTIONS_TO_KEYS } from '../../constants/constants';
 import Actions from '../ComboEditor/Actions';
-import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
+import { Action, Rest } from '../../types/Action';
 
 interface ComboEditor {
     isReadOnly: boolean;
     editingCombo: Action[];
-    //Todo : add the rest types
-    [key: string]: any;
+    characterIndex: number;
+    selectedIndex: number;
+    handleValidateCombo: (combo: Action[], index: number) => void;
+    setEditingCombo?: (combo: Action[]) => void;
+    actions: Action[];
 }
 
 const ComboEditor = ({
@@ -19,11 +22,9 @@ const ComboEditor = ({
     characterIndex,
     selectedIndex,
     handleValidateCombo,
-    displayButton,
+    actions,
 }: ComboEditor) => {
     const [selectedNewAction, setSelectedNewAction] = useState<boolean>(false);
-
-    let actions = CHARACTERS_ACTIONS[characterIndex];
 
     const handleKeyPress = (ev: KeyboardEvent) => {
         const key = ev.key.toUpperCase();
@@ -32,36 +33,34 @@ const ComboEditor = ({
 
         if (key.includes('BACKSPACE')) {
             let prev_copy = editingCombo.slice(0, -1);
-            setEditingCombo(prev_copy);
+            setEditingCombo?.(prev_copy);
             handleValidateCombo(prev_copy, selectedIndex);
             return;
         }
-        const action = CHARACTERS_ACTIONS[characterIndex].find(
-            (action) => action.key == key
-        );
+        const action = actions.find((action) => action.key == key);
 
         if (action !== undefined) {
             let prev_copy: Action[] = JSON.parse(JSON.stringify(editingCombo));
             prev_copy.push(action);
-            setEditingCombo(prev_copy);
+            setEditingCombo?.(prev_copy);
             handleValidateCombo(prev_copy, selectedIndex);
         }
     };
 
-    useEffect(() => {
-        document.addEventListener('keydown', handleKeyPress);
+    // useEffect(() => {
+    //     document.addEventListener('keydown', handleKeyPress);
 
-        return () => {
-            document.removeEventListener('keydown', handleKeyPress);
-        };
-    }, [editingCombo]);
+    //     return () => {
+    //         document.removeEventListener('keydown', handleKeyPress);
+    //     };
+    // }, [editingCombo]);
 
     //remove an action
     const handleActionDoubleClick = (index) => {
         let prev_copy = JSON.parse(JSON.stringify(editingCombo));
         prev_copy.splice(index, 1);
 
-        setEditingCombo(prev_copy);
+        setEditingCombo?.(prev_copy);
 
         handleValidateCombo(prev_copy, selectedIndex);
     };
@@ -73,11 +72,17 @@ const ComboEditor = ({
 
         let prev_copy: Action[] = JSON.parse(JSON.stringify(editingCombo));
         if (!isNaN(action_int)) {
-            let action = CHARACTERS_ACTIONS[characterIndex][action_int];
+            let action = actions[action_int];
             prev_copy.push(action);
         }
-        setEditingCombo(prev_copy);
+        setEditingCombo?.(prev_copy);
         handleValidateCombo(prev_copy, selectedIndex);
+    };
+
+    const handleClearEditingCombo = () => {
+        const newEditingCombo = [];
+        setEditingCombo?.(newEditingCombo);
+        handleValidateCombo(newEditingCombo, selectedIndex);
     };
 
     return (
@@ -87,7 +92,6 @@ const ComboEditor = ({
                 flexDirection: 'column',
                 justifyContent: 'left',
                 alignItems: 'left',
-                mt: '2rem',
             }}
         >
             <Typography variant="body1" color="textSecondary" sx={{ mb: 1 }}>
@@ -98,14 +102,14 @@ const ComboEditor = ({
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        margin: '0rem 0 2rem 0',
-                        justifyContent: 'center',
+                        margin: '0rem 0 0rem 0',
+                        justifyContent: 'space-evenly',
                     }}
                 >
                     {actions.map((action, index) => {
                         const frameString =
                             action.frames.duration == 1 ? 'frame' : 'frames';
-                        const actionDuration = action.frames.duration;
+
                         let actionActiveFramesString = action.frames?.active
                             ?.length
                             ? action.frames?.active[0].toString()
@@ -128,7 +132,7 @@ const ComboEditor = ({
                                         </Typography>
                                         <p>
                                             <em>{'Duration : '}</em>{' '}
-                                            <b>{actionDuration}</b>{' '}
+                                            <b>{action.frames.duration}</b>{' '}
                                             {`${frameString}`}.{' '}
                                         </p>
                                         <p>{actionActiveFramesString}</p>
@@ -142,9 +146,15 @@ const ComboEditor = ({
                                     className={'comboActionDiv'}
                                     onClick={handleActionAddClick}
                                 >
-                                    <span style={{}}>
+                                    {/* <span style={{}}>
                                         {action.display.unicode}
-                                    </span>
+                                    </span> */}
+
+                                    <img
+                                        src={action.display.icon}
+                                        width="24px"
+                                        style={{ margin: '0 auto' }}
+                                    />
 
                                     <p
                                         style={{
@@ -163,6 +173,36 @@ const ComboEditor = ({
                         );
                     })}
                 </Box>
+
+                <Box
+                    sx={{
+                        textAlign: 'right',
+                        pr: 1.5,
+                        mt: 1,
+                        mb: 2,
+                        fontSize: '12px',
+                    }}
+                >
+                    <Tooltip
+                        key={`combo-clearing-span-tooltip`}
+                        title={
+                            <React.Fragment>
+                                <Typography color="inherit">
+                                    Clear this combo
+                                </Typography>
+                            </React.Fragment>
+                        }
+                        placement="left"
+                    >
+                        <u
+                            onClick={handleClearEditingCombo}
+                            className={'hoverable'}
+                        >
+                            Clear
+                        </u>
+                    </Tooltip>
+                </Box>
+
                 <div
                     style={{
                         height: '25px',
@@ -172,11 +212,13 @@ const ComboEditor = ({
                     }}
                 >
                     <Actions
-                        characterIndex={characterIndex}
                         handleActionDoubleClick={handleActionDoubleClick}
                         isReadOnly={isReadOnly}
                         combo={editingCombo}
-                        onChange={(newCombo) => setEditingCombo(newCombo)}
+                        onChange={(newCombo: Action[]) => {
+                            handleValidateCombo(newCombo, selectedIndex);
+                            setEditingCombo?.(newCombo);
+                        }}
                     />
                 </div>
                 <Typography

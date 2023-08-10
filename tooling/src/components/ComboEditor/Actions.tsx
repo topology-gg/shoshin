@@ -4,15 +4,16 @@ import {
     Draggable,
     DraggableChildrenFn,
     Droppable,
+    OnDragEndResponder,
 } from 'react-beautiful-dnd';
 import SingleAction from '../sidePanelComponents/SingleAction';
-import { Action } from '../../types/Action';
+import { Action, actionIntentsInCombo } from '../../types/Action';
 
 interface Actions {
     isReadOnly: boolean;
     combo: Action[];
-    //Todo : add the rest types
-    [key: string]: any;
+    onChange: (actions: Action[]) => void;
+    handleActionDoubleClick: (index: number) => void;
 }
 
 const Actions = ({
@@ -22,8 +23,8 @@ const Actions = ({
     onChange,
 }: Actions) => {
     //Reorder combos in an action
-    function onDragEnd(result) {
-        const { draggableId, source, destination } = result;
+    const onDragEnd: OnDragEndResponder = (result) => {
+        const { source, destination } = result;
 
         if (!destination) {
             return;
@@ -38,27 +39,38 @@ const Actions = ({
         prev_copy.splice(destination.index, 0, removedItem);
 
         onChange(prev_copy);
-    }
+    };
 
     const renderAction = useCallback<DraggableChildrenFn>(
-        (provided, _snapshot, rubric) => (
-            <div
-                ref={provided.innerRef}
-                {...provided.draggableProps}
-                style={{
-                    ...provided.draggableProps.style,
-                }}
-                {...provided.dragHandleProps}
-            >
-                <SingleAction
-                    key={`action-${rubric.source.index}`}
-                    disabled={isReadOnly}
-                    action={combo[rubric.source.index]}
-                    onDoubleClick={handleActionDoubleClick}
-                    actionIndex={rubric.source.index}
-                />
-            </div>
-        ),
+        (provided, _snapshot, rubric) => {
+            const action = combo[rubric.source.index];
+            const index = rubric.source.index;
+            let actionDuration = actionIntentsInCombo(
+                action,
+                index,
+                combo
+            ).length;
+            return (
+                <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    style={{
+                        ...provided.draggableProps.style,
+                    }}
+                    {...provided.dragHandleProps}
+                >
+                    <SingleAction
+                        key={`action-${rubric.source.index}`}
+                        disabled={isReadOnly}
+                        unicode={action.display.unicode}
+                        icon={action.display.icon}
+                        duration={actionDuration}
+                        onDoubleClick={handleActionDoubleClick}
+                        actionIndex={rubric.source.index}
+                    />
+                </div>
+            );
+        },
         [combo, isReadOnly, handleActionDoubleClick]
     );
 
@@ -76,7 +88,12 @@ const Actions = ({
             >
                 {(provided) => (
                     <div
-                        style={{ width: '100%', display: 'flex' }}
+                        style={{
+                            width: '100%',
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '2px',
+                        }}
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                     >

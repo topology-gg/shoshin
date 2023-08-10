@@ -1,4 +1,11 @@
 import { GameModes } from '../types/Simulator';
+import * as amplitude from '@amplitude/analytics-browser';
+import mixpanel from 'mixpanel-browser';
+
+export const track = (event: GamePlayEvent) => {
+    mixpanel.track(event.name, event.data);
+    amplitude.track(event.name, event.data);
+};
 
 export type GamePlayEvent = {
     name: 'GamePlayTrack';

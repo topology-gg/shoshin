@@ -14,6 +14,8 @@ pub struct RealTimeInput {
     pub agent_0_body_state_stamina: Base32,
     pub agent_0_body_state_dir: Base32,
     pub agent_0_body_state_fatigued: Base32,
+    pub agent_0_body_state_state_index: Base32,
+    pub agent_0_body_state_opponent_state_index_last_hit: Base32,
 
     pub agent_0_physics_state_pos_x: Base32,
     pub agent_0_physics_state_pos_y: Base32,
@@ -25,13 +27,15 @@ pub struct RealTimeInput {
     pub agent_0_stimulus : Base32,
     pub agent_0_action: Base32,
     pub agent_0_character_type: Base32,
-    
+
     pub agent_1_body_state_state: Base32,
     pub agent_1_body_state_counter: Base32,
     pub agent_1_body_state_integrity: Base32,
     pub agent_1_body_state_stamina: Base32,
     pub agent_1_body_state_dir: Base32,
     pub agent_1_body_state_fatigued: Base32,
+    pub agent_1_body_state_state_index: Base32,
+    pub agent_1_body_state_opponent_state_index_last_hit: Base32,
 
     pub agent_1_physics_state_pos_x: Base32,
     pub agent_1_physics_state_pos_y: Base32,
@@ -39,7 +43,7 @@ pub struct RealTimeInput {
     pub agent_1_physics_state_vel_y: Base32,
     pub agent_1_physics_state_acc_x: Base32,
     pub agent_1_physics_state_acc_y: Base32,
-    
+
     pub agent_1_stimulus : Base32,
     pub agent_1_character_type: Base32,
 
@@ -52,6 +56,6 @@ pub struct RealTimeInput {
     pub _agent_1_mental_state: u8,
     pub _functions_offset_1: Vec<Base32>,
     pub _functions_1: Vec<Tree>,
-    
+
     pub _actions_1: Vec<Base32>,
 }

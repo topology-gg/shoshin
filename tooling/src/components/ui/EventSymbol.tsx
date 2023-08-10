@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import React from 'react';
 
-export type EventType = 'hurt' | 'knocked';
+export type EventType = 'hurt' | 'knocked' | 'launched' | 'ko';
 
 const EventSymbol = ({
     type,
@@ -12,10 +12,15 @@ const EventSymbol = ({
 }) => {
     const color =
         type === 'hurt'
-            ? 'warning.light'
+            ? '#FF8000'
             : type === 'knocked'
-            ? 'error.main'
+            ? '#4737DB'
+            : type == 'launched'
+            ? '#BB0FF5'
+            : type == 'ko'
+            ? '#ED2939'
             : null;
+
     return (
         <Box
             sx={{

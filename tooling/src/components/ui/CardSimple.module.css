@@ -1,0 +1,61 @@
+.card {
+    position: relative;
+
+    &.cardClickable {
+        cursor: pointer;
+    }
+}
+
+/* Border */
+.card:before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background: #000000;
+    clip-path: polygon(
+        0 40px,
+        40px 0,
+        100% 0,
+        100% calc(100% - 40px),
+        calc(100% - 40px) 100%,
+        0 100%,
+        0 40px,
+        5px calc(40px + 2.07px),
+        5px calc(100% - 5px),
+        calc(100% - 40px - 2.07px) calc(100% - 5px),
+        calc(100% - 5px) calc(100% - 40px - 2.07px),
+        calc(100% - 5px) 5px,
+        calc(40px + 2.07px) 5px,
+        5px calc(40px + 2.07px)
+    );
+}
+
+.content {
+    padding: 20px 40px;
+    z-index: 1;
+    position: relative;
+}
+
+.media {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    background-image: var(--bg-image);
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: background-image 0.2s ease-in-out;
+
+    clip-path: polygon(
+        0 40px,
+        40px 0,
+        100% 0,
+        100% calc(100% - 40px),
+        calc(100% - 40px) 100%,
+        0 100%,
+        0 40px
+    );
+}

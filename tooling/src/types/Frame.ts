@@ -5,6 +5,8 @@ export interface BodyState {
     state: number;
     counter: number;
     fatigued: number;
+    state_index: number;
+    opponent_state_index_last_hit: number;
 }
 
 export interface Vec2 {
@@ -41,6 +43,17 @@ export interface FrameScene {
 interface ComboInfo {
     current_combo: number;
     combo_counter: number;
+}
+
+export const STIMULUS_ENCODING = 10000;
+export enum StimulusType {
+    NULL = 0,
+    HURT = 1,
+    KNOCKED = 2,
+    CLASH = 3,
+    GROUND = 4,
+    LAUNCHED = 5,
+    GOOD_BLOCK = 6,
 }
 
 export interface RealTimeAgent {
@@ -162,6 +175,8 @@ function getFlattenedBodyState(bodyState: BodyState): number[] {
         bodyState.stamina,
         bodyState.dir,
         bodyState.fatigued,
+        bodyState.state_index,
+        bodyState.opponent_state_index_last_hit,
     ];
 }
 
@@ -214,6 +229,8 @@ export function getSizeOfRealTimeInputScene() {
                 state: 1,
                 fatigued: 1,
                 counter: 1,
+                state_index: 1,
+                opponent_state_index_last_hit: 1,
             },
             physics_state: {
                 pos: {
@@ -261,6 +278,8 @@ export function getSizeOfRealTimeInputScene() {
                 state: 1,
                 fatigued: 1,
                 counter: 1,
+                state_index: 1,
+                opponent_state_index_last_hit: 1,
             },
             physics_state: {
                 pos: {
