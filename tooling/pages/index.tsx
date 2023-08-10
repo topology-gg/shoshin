@@ -21,7 +21,6 @@ amplitude.init(process.env.NEXT_PUBLIC_AMPLITUDE_APIKEY, {
     },
 });
 
-
 export default function Home() {
     return (
         <StyledEngineProvider injectFirst>
