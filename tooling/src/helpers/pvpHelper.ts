@@ -22,9 +22,11 @@ export type PvPProfile = {
     agent: PlayerAgent;
     rank: number;
     records: Map<string, PvPResult>;
+    lastAgentModified: number,
+    lastRankTime: number 
 };
 
-export async function runRank(newProfile: WithId<PvPProfile>) {
+export async function runRank() {
     const client: MongoClient = await clientPromise;
     const db = client.db(DB_NAME);
 
@@ -34,13 +36,10 @@ export async function runRank(newProfile: WithId<PvPProfile>) {
         .sort({ _id: -1 })
         .toArray();
 
-    const update = pvpProfiles.find((profile) => {
-        return profile._id.toString() == newProfile._id.toString();
-    });
-
-    if (update) {
-        update.records = null;
-    }
+    const modifiedAgent = pvpProfiles.filter( profile => !profile.lastRankTime || profile.lastAgentModified > profile.lastRankTime );
+    modifiedAgent.forEach( (profile) => {
+        profile.records = null ;
+    })
 
     const rankedMinds = await rankMinds(pvpProfiles);
     const bulkUpdate = generateBulkUpdate(rankedMinds);

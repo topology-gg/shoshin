@@ -6,7 +6,7 @@ import {
     Character,
     DB_NAME,
 } from '../../../src/constants/constants';
-import { PvPProfile, runRank } from '../../../src/helpers/pvpHelper';
+import { PvPProfile } from '../../../src/helpers/pvpHelper';
 
 export default async function handler(
     req: NextApiRequest,
@@ -36,6 +36,7 @@ export default async function handler(
                         agent: req.body,
                         mindName: mindName,
                         playerName: playerName,
+                        lastAgentModified: new Date().getTime()
                     },
                 },
                 { upsert: true }
@@ -63,7 +64,6 @@ export default async function handler(
                 }
                 const { _id, ...responseBody } = latest;
                 res.status(200).json(responseBody);
-                runRank(latest);
             } else {
                 console.error(
                     `unable to update minds, req url = ${
