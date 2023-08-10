@@ -1,5 +1,19 @@
 import React from 'react';
 import ActionToken from './ActionToken';
+import { Badge, BadgeProps, styled } from '@mui/material';
+
+const ActionBadge = styled(Badge)<BadgeProps>(() => ({
+    '& .MuiBadge-badge': {
+        top: '50%',
+        left: '3px',
+        transform: 'translate(0, -50%)',
+        padding: '0 3px',
+        height: '16px',
+        minWidth: '16px',
+        backgroundColor: '#f2f2f2',
+        opacity: 0.8,
+    },
+}));
 
 interface SingleAction {
     disabled: boolean;
@@ -30,41 +44,25 @@ const SingleAction = ({
     const nudge = 3;
     return (
         <div onDoubleClick={handleDoubleClick}>
-            <span
-                style={{
-                    fontSize: '8px',
-                    position: 'relative',
-                    top: -1 * durationDimension + nudge,
-                    right: (-1 * durationDimension) / 2 + nudge,
-                    zIndex: 100,
-                    border: '1px solid #555',
-                    width: `${durationDimension}px`,
-                    height: `${durationDimension}px`,
-                    borderRadius: `${durationDimension / 2}px`,
-                    textAlign: 'center',
-                    verticalAlign: 'middle',
-                    background: '#555',
-                    color: '#FFF',
-                }}
+            <ActionBadge
+                badgeContent={duration}
+                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
             >
-                {duration}
-            </span>
+                <ActionToken
+                    disabled={disabled}
+                    onClick={() => {}}
+                    selected={false}
+                    width={width}
+                >
+                    <img
+                        src={icon}
+                        width="30px"
+                        style={{ margin: '0 auto' }}
+                        unselectable="on"
+                    />
 
-            <ActionToken
-                disabled={disabled}
-                onClick={() => {}}
-                selected={false}
-                width={width}
-            >
-                <img
-                    src={icon}
-                    width="30px"
-                    style={{ margin: '0 auto' }}
-                    unselectable="on"
-                />
-
-                {/* <span style={{}}>{unicode}</span> */}
-                {/* <p
+                    {/* <span style={{}}>{unicode}</span> */}
+                    {/* <p
                     style={{
                         marginTop: '0.1rem',
                         marginBottom: '0',
@@ -74,7 +72,8 @@ const SingleAction = ({
                         action.display.name
                     }
                 </p> */}
-            </ActionToken>
+                </ActionToken>
+            </ActionBadge>
         </div>
     );
 };

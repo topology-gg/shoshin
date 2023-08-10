@@ -205,7 +205,6 @@ const ComboEditor = ({
 
                 <div
                     style={{
-                        height: '25px',
                         margin: '0 0 0.5rem 0',
                         position: 'relative',
                         display: 'flex',

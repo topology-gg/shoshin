@@ -6,7 +6,8 @@ const ActionToken = ({ children, disabled, selected, onClick, width }) => {
         <Card
             sx={{
                 border: '1px!important solid #ffffff00',
-                width: `${width}rem`,
+                width: `calc(${width}rem + 19px)`,
+                pl: '19px',
                 height: `2.1rem`,
                 display: 'flex',
                 alignItems: 'center',
