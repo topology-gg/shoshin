@@ -22,8 +22,8 @@ export type PvPProfile = {
     agent: PlayerAgent;
     rank: number;
     records: Map<string, PvPResult>;
-    lastAgentModified: number,
-    lastRankTime: number 
+    lastAgentModified: number;
+    lastRankTime: number;
 };
 
 export async function runRank() {
@@ -36,10 +36,14 @@ export async function runRank() {
         .sort({ _id: -1 })
         .toArray();
 
-    const modifiedAgent = pvpProfiles.filter( profile => !profile.lastRankTime || profile.lastAgentModified > profile.lastRankTime );
-    modifiedAgent.forEach( (profile) => {
-        profile.records = null ;
-    })
+    const modifiedAgent = pvpProfiles.filter(
+        (profile) =>
+            !profile.lastRankTime ||
+            profile.lastAgentModified > profile.lastRankTime
+    );
+    modifiedAgent.forEach((profile) => {
+        profile.records = null;
+    });
 
     const rankedMinds = await rankMinds(pvpProfiles);
     const bulkUpdate = generateBulkUpdate(rankedMinds);

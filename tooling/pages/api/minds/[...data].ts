@@ -36,7 +36,7 @@ export default async function handler(
                         agent: req.body,
                         mindName: mindName,
                         playerName: playerName,
-                        lastAgentModified: new Date().getTime()
+                        lastAgentModified: new Date().getTime(),
                     },
                 },
                 { upsert: true }
