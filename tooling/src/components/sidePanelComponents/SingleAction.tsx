@@ -26,8 +26,30 @@ const SingleAction = ({
         onDoubleClick(actionIndex);
     };
     const width = duration * 2.0;
+    const durationDimension = 14;
+    const nudge = 3;
     return (
         <div onDoubleClick={handleDoubleClick}>
+            <span
+                style={{
+                    fontSize: '8px',
+                    position: 'relative',
+                    top: -1 * durationDimension + nudge,
+                    right: (-1 * durationDimension) / 2 + nudge,
+                    zIndex: 100,
+                    border: '1px solid #555',
+                    width: `${durationDimension}px`,
+                    height: `${durationDimension}px`,
+                    borderRadius: `${durationDimension / 2}px`,
+                    textAlign: 'center',
+                    verticalAlign: 'middle',
+                    background: '#555',
+                    color: '#FFF',
+                }}
+            >
+                {duration}
+            </span>
+
             <ActionToken
                 disabled={disabled}
                 onClick={() => {}}
