@@ -1890,7 +1890,6 @@ export default class Simulator extends Phaser.Scene {
         ];
         [0, 1].forEach((playerIndex) => {
             const frame = frames[playerIndex];
-            if (frame.body_state.counter != 0) return;
             if (!specialStates.includes(frame.body_state.state)) return;
 
             const x =
@@ -1901,26 +1900,34 @@ export default class Simulator extends Phaser.Scene {
                 (frame.hitboxes.body.origin.y +
                     0.5 * frame.hitboxes.body.dimension.y);
 
-            this.specialChargingSmokeSprites[playerIndex]
-                .setPosition(x, y)
-                .setVisible(true)
-                .play('specialChargingSmokeAnim');
+            if (frame.body_state.counter == 0) {
+                this.specialChargingSmokeSprites[playerIndex]
+                    .setPosition(x, y)
+                    .setVisible(true)
+                    .play('specialChargingSmokeAnim');
 
-            if (frame.body_state.state == BodystatesAntoc.Cyclone) {
-                this.blueLightningSprites[playerIndex]
-                    .setPosition(x, y)
-                    .setVisible(true)
-                    .play('blueLightningAnim');
-            } else if (frame.body_state.state == BodystatesJessica.Gatotsu) {
-                this.pinkLightningSprites[playerIndex]
-                    .setPosition(x, y)
-                    .setVisible(true)
-                    .play('pinkLightningAnim');
+                if (frame.body_state.state == BodystatesAntoc.Cyclone) {
+                    this.blueLightningSprites[playerIndex]
+                        .setPosition(x, y)
+                        .setVisible(true)
+                        .play('blueLightningAnim');
+                } else if (
+                    frame.body_state.state == BodystatesJessica.Gatotsu
+                ) {
+                    this.pinkLightningSprites[playerIndex]
+                        .setPosition(x, y)
+                        .setVisible(true)
+                        .play('pinkLightningAnim');
+                }
             }
 
-            // TODO: Cyclone SFX x 2
-
-            // TODO: Gatotsu SFX x 1
+            // Cyclone SFX x 2 at 6th frame and 11th frame (counter = 5 and 10)
+            if (
+                frame.body_state.state == BodystatesAntoc.Cyclone &&
+                [5, 10].includes(frame.body_state.counter)
+            ) {
+                this.playSound(GameSound.greatSword2);
+            }
         });
     }
 
