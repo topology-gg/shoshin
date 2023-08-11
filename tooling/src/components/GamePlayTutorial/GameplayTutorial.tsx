@@ -32,6 +32,8 @@ import GameplayTutorialMenu from './GameplayTutorialMenu';
 import { Medal } from '../../types/Opponent';
 import CardSimple from '../ui/CardSimple';
 import { FastForward, FastRewind } from '@mui/icons-material';
+import { track_lesson_complete } from '../../helpers/track';
+
 //@ts-ignore
 const Game = dynamic(() => import('../../Game/PhaserGame'), {
     ssr: false,
@@ -371,6 +373,7 @@ const GameplayTutorialScene = React.forwardRef(
                     setAnimationFrame((_) => 0);
                     setTestJson(null);
                 } else {
+                    track_lesson_complete(lessonIndex, lesson.title);
                     onCompleteTutorial();
                 }
             }
