@@ -1,6 +1,7 @@
 import { GameModes } from '../types/Simulator';
 import * as amplitude from '@amplitude/analytics-browser';
 import mixpanel from 'mixpanel-browser';
+import { Medal } from '../types/Opponent';
 
 export const track = (event: GamePlayEvent) => {
     mixpanel.track(event.name, event.data);
@@ -57,3 +58,40 @@ export class GamePlayTimer {
         };
     }
 }
+
+export const track_lesson_complete = (
+    lessonIndex: number,
+    lessonTitle: string
+) => {
+    amplitude.track('Complete Lesson', {
+        lessonIndex: lessonIndex,
+        lessonTitle: lessonTitle,
+    });
+};
+
+export const track_scene_change = (currentScene, incomingScene: string) => {
+    amplitude.track('Change Scene', {
+        currentScene,
+        incomingScene,
+    });
+};
+
+export const track_character_select = (character: string) => {
+    amplitude.track('Select Character', {
+        character,
+    });
+};
+
+export const track_beat_opponent = (
+    opponentName: string,
+    opponentIndex: number,
+    performance: Medal,
+    layerCount: number
+) => {
+    amplitude.track('Beat Opponent', {
+        opponentName,
+        opponentIndex,
+        performance,
+        layerCount,
+    });
+};

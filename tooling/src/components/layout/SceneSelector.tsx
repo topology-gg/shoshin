@@ -54,6 +54,10 @@ export const Scenes = {
     ONLINE_MENU: 'online_menu',
     MINDS: 'minds',
 } as const;
+import {
+    track_character_select,
+    track_scene_change,
+} from '../../helpers/track';
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
 
@@ -154,6 +158,7 @@ const SceneSelector = () => {
     };
 
     const onChooseCharacter = (character: Character) => {
+        track_character_select(character);
         setPlayerAgent((playerAgent) => {
             return {
                 ...playerAgent,
