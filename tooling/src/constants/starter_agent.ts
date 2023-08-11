@@ -8,9 +8,15 @@ import {
 } from '../types/Condition';
 import { alwaysTrueCondition } from '../types/Layer';
 import { Direction, Tree } from '../types/Tree';
-import { antoc_preset_conditions } from './antoc_preset_conditions';
+import {
+    antoc_opponent_preset_conditions,
+    antoc_my_preset_conditions,
+} from './antoc_preset_conditions';
+import {
+    jessica_opponent_preset_conditions,
+    jessica_my_preset_conditions,
+} from './jessica_preset_conditions';
 import { ANTOC, JESSICA } from './constants';
-import { jessica_preset_conditions } from './jessica_preset_conditions';
 import { my_frame_preset_conditions } from './my_frame_preset_conditions';
 import { opponent_frame_preset_conditions } from './opponent_frame_preset_conditions';
 import { spacing_preset_conditions } from './spacing_preset_conditions';
@@ -31,7 +37,7 @@ function simpleHash(str: string) {
     return hash;
 }
 
-const common_stats_preset_conditions = [
+const common_my_stats_preset_conditions = [
     {
         elements: [
             {
@@ -226,6 +232,9 @@ const common_stats_preset_conditions = [
         displayName: 'My health < X',
         type: 'my health',
     },
+];
+
+const common_opponent_stats_preset_conditions = [
     {
         elements: [
             {
@@ -1406,7 +1415,7 @@ const common_opponent_body_state_preset_conditions = [
     },
 ];
 
-const common_self_body_state_preset_conditions = [
+const common_my_body_state_preset_conditions = [
     {
         elements: [
             {
@@ -1872,19 +1881,31 @@ const common_self_body_state_preset_conditions = [
     },
 ];
 
+// spacing
 let preset_conditions = spacing_preset_conditions;
 preset_conditions = preset_conditions.concat(y_position_preset_conditions);
+
+// opponent
 preset_conditions = preset_conditions.concat(
     common_opponent_body_state_preset_conditions
 );
 preset_conditions = preset_conditions.concat(
-    common_self_body_state_preset_conditions
+    jessica_opponent_preset_conditions
 );
+preset_conditions = preset_conditions.concat(antoc_opponent_preset_conditions);
 preset_conditions = preset_conditions.concat(opponent_frame_preset_conditions);
+preset_conditions = preset_conditions.concat(
+    common_opponent_stats_preset_conditions
+);
+
+// mine
+preset_conditions = preset_conditions.concat(
+    common_my_body_state_preset_conditions
+);
+preset_conditions = preset_conditions.concat(jessica_my_preset_conditions);
+preset_conditions = preset_conditions.concat(antoc_my_preset_conditions);
 preset_conditions = preset_conditions.concat(my_frame_preset_conditions);
-preset_conditions = preset_conditions.concat(jessica_preset_conditions);
-preset_conditions = preset_conditions.concat(antoc_preset_conditions);
-preset_conditions = preset_conditions.concat(common_stats_preset_conditions);
+preset_conditions = preset_conditions.concat(common_my_stats_preset_conditions);
 
 preset_conditions = preset_conditions.map((condition, i) => ({
     ...condition,
