@@ -108,6 +108,9 @@ const SceneSelector = () => {
     });
  */
     useEffect(() => {
+        track_scene_change(scene);
+    }, [scene]);
+    useEffect(() => {
         musicRef.current = new Audio('/music/shoshintitle-audio.wav');
         musicRef.current.onended = function () {
             if (scene == Scenes.MAIN_MENU) {

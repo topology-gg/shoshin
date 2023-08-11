@@ -69,9 +69,8 @@ export const track_lesson_complete = (
     });
 };
 
-export const track_scene_change = (currentScene, incomingScene: string) => {
+export const track_scene_change = (incomingScene: string) => {
     amplitude.track('Change Scene', {
-        currentScene,
         incomingScene,
     });
 };
