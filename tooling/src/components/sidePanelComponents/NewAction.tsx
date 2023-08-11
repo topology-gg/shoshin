@@ -58,7 +58,6 @@ const NewAction = ({
             onClick={handleClick}
             selected={selected}
             disabled={disabled}
-            width={`1.1`}
         >
             <InputBase
                 inputRef={inputRef}

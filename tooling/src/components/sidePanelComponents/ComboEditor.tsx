@@ -146,28 +146,11 @@ const ComboEditor = ({
                                     className={'comboActionDiv'}
                                     onClick={handleActionAddClick}
                                 >
-                                    {/* <span style={{}}>
-                                        {action.display.unicode}
-                                    </span> */}
-
                                     <img
                                         src={action.display.icon}
                                         width="24px"
                                         style={{ margin: '0 auto' }}
                                     />
-
-                                    <p
-                                        style={{
-                                            marginTop: '0.1rem',
-                                            marginBottom: '0',
-                                        }}
-                                    >
-                                        {
-                                            ACTIONS_TO_KEYS[characterIndex][
-                                                action.display.name
-                                            ]
-                                        }
-                                    </p>
                                 </div>
                             </Tooltip>
                         );
@@ -205,7 +188,6 @@ const ComboEditor = ({
 
                 <div
                     style={{
-                        height: '25px',
                         margin: '0 0 0.5rem 0',
                         position: 'relative',
                         display: 'flex',
