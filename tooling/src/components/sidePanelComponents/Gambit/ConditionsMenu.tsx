@@ -1,8 +1,9 @@
-import { Menu, MenuItem } from '@mui/material';
-import React from 'react';
+import { Collapse, List, Menu, MenuItem } from '@mui/material';
+import React, { useState } from 'react';
 import { ConditionLabel } from './Condition';
 import BlurrableListItemText from '../../ui/BlurrableListItemText';
 import { Condition } from '../../../types/Condition';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 type ConditionMenuProps = {
     anchorEl: Element;
@@ -19,6 +20,16 @@ const ConditionsMenu = ({
     onSelect,
     open,
 }: ConditionMenuProps) => {
+    const byCategory: Record<string, Condition[]> = conditions.reduce(
+        (res: Record<string, Condition[]>, condition) => {
+            res[condition.type] = res[condition.type] ?? [];
+            res[condition.type].push(condition);
+            return res;
+        },
+        {}
+    );
+    const [openCategory, setOpenCategory] = useState<string>();
+
     return (
         <Menu
             anchorEl={anchorEl}
@@ -31,20 +42,57 @@ const ConditionsMenu = ({
                 },
             }}
         >
-            {conditions.map((condition) => {
+            {Object.entries(byCategory).map(([category, conditions]) => {
+                const isNoCategory = category === 'undefined';
+                const categoryDisplayName = category.replace(
+                    /(^\w|\s\w)/g,
+                    (m) => m.toUpperCase()
+                );
                 return (
-                    <MenuItem>
-                        <BlurrableListItemText
-                            onClick={(e) => {
-                                onSelect(condition);
-                            }}
+                    <>
+                        {!isNoCategory && (
+                            <MenuItem>
+                                <BlurrableListItemText
+                                    onClick={() =>
+                                        setOpenCategory((prev) =>
+                                            prev === category ? null : category
+                                        )
+                                    }
+                                >
+                                    <ConditionLabel
+                                        name={categoryDisplayName}
+                                        type={category}
+                                    />
+                                </BlurrableListItemText>
+                                {openCategory === category ? (
+                                    <ExpandLess color="info" />
+                                ) : (
+                                    <ExpandMore color="info" />
+                                )}
+                            </MenuItem>
+                        )}
+                        <Collapse
+                            in={openCategory === category || isNoCategory}
+                            timeout="auto"
+                            unmountOnExit
                         >
-                            <ConditionLabel
-                                name={condition.displayName}
-                                type={condition.type}
-                            />
-                        </BlurrableListItemText>
-                    </MenuItem>
+                            <List component="div" disablePadding>
+                                {conditions.map((condition) => (
+                                    <MenuItem>
+                                        <BlurrableListItemText
+                                            sx={{ pl: isNoCategory ? 0 : 4 }}
+                                            onClick={() => onSelect(condition)}
+                                        >
+                                            <ConditionLabel
+                                                name={condition.displayName}
+                                                type={condition.type}
+                                            />
+                                        </BlurrableListItemText>
+                                    </MenuItem>
+                                ))}
+                            </List>
+                        </Collapse>
+                    </>
                 );
             })}
         </Menu>
