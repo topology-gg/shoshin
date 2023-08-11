@@ -1,8 +1,8 @@
 import { Action, AntocBlock, AntocMoveBackward, Hori } from '../types/Action';
 import Agent, { buildAgent } from '../types/Agent';
 import {
-    ElementType,
     Condition,
+    ElementType,
     Operator,
     Perceptible,
 } from '../types/Condition';

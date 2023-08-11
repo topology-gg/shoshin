@@ -1,11 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { useAccount, useConnectors } from '@starknet-react/core';
-import { useTranslation } from 'react-i18next';
-import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import { useAccount, useConnectors } from '@starknet-react/core';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import styles from './ConnectWallet.module.css';
+import * as amplitude from '@amplitude/analytics-browser';
 import { Button } from '@mui/material';
+import mixpanel from 'mixpanel-browser';
+import styles from './ConnectWallet.module.css';
+
+const setUserId = (address: string) => {
+    try {
+        mixpanel.identify(address);
+        amplitude.setUserId(address);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const clearUserId = () => {
+    try {
+        mixpanel.reset();
+        amplitude.reset();
+    } catch (error) {
+        console.error(error);
+    }
+};
 
 // export default function ConnectWallet ({ modalOpen, handleOnOpen, handleOnClose }) {
 export default function ConnectWallet() {
@@ -48,12 +68,16 @@ export default function ConnectWallet() {
 
                 <MenuItem
                     sx={{ width: '100%', mt: 2, justifyContent: 'center' }}
-                    onClick={() => disconnect()}
+                    onClick={() => {
+                        disconnect();
+                        clearUserId();
+                    }}
                 >
                     Disconnect
                 </MenuItem>
             </div>
         );
+        setUserId(address);
     } else {
         const menu_items_sorted = []
             .concat(connectors)
