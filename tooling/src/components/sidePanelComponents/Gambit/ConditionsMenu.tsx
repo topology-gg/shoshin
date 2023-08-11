@@ -43,7 +43,8 @@ const ConditionsMenu = ({
             }}
         >
             {Object.entries(byCategory).map(([category, conditions]) => {
-                const isNoCategory = category === 'undefined';
+                const isNoCategory =
+                    category === 'undefined' || conditions.length === 1;
                 const categoryDisplayName = category.replace(
                     /(^\w|\s\w)/g,
                     (m) => m.toUpperCase()
@@ -51,14 +52,14 @@ const ConditionsMenu = ({
                 return (
                     <>
                         {!isNoCategory && (
-                            <MenuItem>
-                                <BlurrableListItemText
-                                    onClick={() =>
-                                        setOpenCategory((prev) =>
-                                            prev === category ? null : category
-                                        )
-                                    }
-                                >
+                            <MenuItem
+                                onClick={() =>
+                                    setOpenCategory((prev) =>
+                                        prev === category ? null : category
+                                    )
+                                }
+                            >
+                                <BlurrableListItemText>
                                     <ConditionLabel
                                         name={categoryDisplayName}
                                         type={category}
