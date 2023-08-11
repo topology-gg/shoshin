@@ -62,8 +62,7 @@ const Actions = ({
                     <SingleAction
                         key={`action-${rubric.source.index}`}
                         disabled={isReadOnly}
-                        unicode={action.display.unicode}
-                        icon={action.display.icon}
+                        action={action}
                         duration={actionDuration}
                         onDoubleClick={handleActionDoubleClick}
                         actionIndex={rubric.source.index}

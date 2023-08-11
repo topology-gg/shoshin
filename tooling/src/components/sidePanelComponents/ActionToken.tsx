@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card } from '@mui/material';
 
-const ActionToken = ({ children, disabled, selected, onClick, width }) => {
+const ActionToken = ({ children, disabled, selected, onClick }) => {
     return (
         <Card
             sx={{
                 border: '1px!important solid #ffffff00',
-                width: `calc(${width}rem + 19px)`,
-                pl: '19px',
+                pl: '36px',
+                pr: '3px',
                 height: `2.1rem`,
                 display: 'flex',
                 alignItems: 'center',
