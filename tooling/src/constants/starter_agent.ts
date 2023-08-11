@@ -1431,8 +1431,8 @@ const common_self_body_state_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Idle',
-        type: 'self state',
+        displayName: "I'm Idle",
+        type: 'my state',
     },
     {
         elements: [
@@ -1489,8 +1489,8 @@ const common_self_body_state_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Block',
-        type: 'self state',
+        displayName: "I'm Blocking",
+        type: 'my state',
     },
     {
         elements: [
@@ -1643,8 +1643,8 @@ const common_self_body_state_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Jumping',
-        type: 'self state',
+        displayName: "I'm Jumping",
+        type: 'my state',
     },
     {
         elements: [
@@ -1693,8 +1693,8 @@ const common_self_body_state_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Clashed',
-        type: 'self state',
+        displayName: "I'm Clashed",
+        type: 'my state',
     },
     {
         elements: [
@@ -1751,8 +1751,8 @@ const common_self_body_state_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Hurt',
-        type: 'self state',
+        displayName: "I'm Hurt",
+        type: 'my state',
     },
     {
         elements: [
@@ -1809,8 +1809,8 @@ const common_self_body_state_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Launched',
-        type: 'self state',
+        displayName: "I'm Launched",
+        type: "my state",
     },
     {
         elements: [
@@ -1867,8 +1867,8 @@ const common_self_body_state_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Knocked',
-        type: 'self state',
+        displayName: "I'm Knocked",
+        type: 'my state',
     },
 ];
 
