@@ -57,6 +57,7 @@ export const Scenes = {
 import {
     track_character_select,
     track_scene_change,
+    track_beat_opponent,
 } from '../../helpers/track';
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
@@ -402,6 +403,13 @@ const SceneSelector = () => {
     }, [opponentChoices]);
 
     const handleWin = (player: PlayerAgent, opponent: Opponent) => {
+        track_beat_opponent(
+            opponent.name,
+            selectedOpponent,
+            opponent.medal,
+            player.layers.length
+        );
+
         let updatedState = deafaultState;
         const state = getLocalState();
         if (state !== null) {
