@@ -1810,7 +1810,7 @@ const common_self_body_state_preset_conditions = [
             },
         ],
         displayName: "I'm Launched",
-        type: "my state",
+        type: 'my state',
     },
     {
         elements: [
