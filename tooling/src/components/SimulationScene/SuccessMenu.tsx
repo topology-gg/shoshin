@@ -4,7 +4,7 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import { Medal } from '../../types/Opponent';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { ScoreMap } from '../../constants/constants';
+import { ScoreMap, nullScoreMap } from '../../constants/constants';
 
 const scoreRow = (scoreName: string, scoreAmount: number, isLast: boolean) => {
     return (

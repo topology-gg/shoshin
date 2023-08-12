@@ -74,7 +74,7 @@ const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
 });
 
-const calculateScoreMap = (
+export const calculateScoreMap = (
     play: FrameScene,
     character: Character
 ): ScoreMap => {
