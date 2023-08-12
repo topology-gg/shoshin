@@ -144,14 +144,24 @@ export enum SCORING {
 }
 
 export interface ScoreMap {
-    laborPoints: number;
+    labor: {
+        ko: number;
+        hurt: number;
+        knocked: number;
+        launched: number;
+    };
     healthBonus: number;
     fullHealthBonus: number;
     timeBonus: number;
     totalScore: number;
 }
 export const nullScoreMap: ScoreMap = {
-    laborPoints: 0,
+    labor: {
+        ko: 0,
+        hurt: 0,
+        knocked: 0,
+        launched: 0,
+    },
     healthBonus: 0,
     fullHealthBonus: 0,
     timeBonus: 0,

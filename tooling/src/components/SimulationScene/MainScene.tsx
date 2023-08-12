@@ -169,7 +169,12 @@ export const calculateScoreMap = (
         : 0;
     const scoreTimeBonus = (FRAME_COUNT - frameSpent) * SCORING.M_TIME;
     const scoreMap: ScoreMap = {
-        laborPoints: scoreLaborPoints,
+        labor: {
+            hurt: scoreHurts * SCORING.S_HURT,
+            knocked: scoreKnocks * SCORING.S_KNOCK,
+            launched: scoreLaunches * SCORING.S_LAUNCH,
+            ko: scoreKO * SCORING.S_KO,
+        },
         healthBonus: scoreHealthBonus,
         fullHealthBonus: scoreFullHealthBonus,
         timeBonus: scoreTimeBonus,
