@@ -431,6 +431,9 @@ const SimulationScene = React.forwardRef(
             }
         }
 
+        //
+        // Compute flags from the fight
+        //
         const beatAgent =
             output !== undefined
                 ? output.agent_0[output.agent_1.length - 1].body_state
@@ -438,6 +441,9 @@ const SimulationScene = React.forwardRef(
                   output.agent_1[output.agent_1.length - 1].body_state.integrity
                 : false;
 
+        //
+        // Compute performance (medal earned) from the fight
+        //
         let performance = Medal.NONE;
         const hpRemaining =
             output !== undefined
@@ -456,6 +462,12 @@ const SimulationScene = React.forwardRef(
             performance = Medal.BRONZE;
         }
 
+        //
+        // Compute score from the fight
+        //
+        const scoreMap = calculateScoreMap(output, character);
+        const score = scoreMap.totalScore;
+
         const [showVictory, changeShowVictory] = useState<boolean>(false);
         useEffect(() => {
             if (
@@ -464,7 +476,11 @@ const SimulationScene = React.forwardRef(
                 achievedBetterPerformance(performance, opponent.medal) &&
                 'layers' in player
             ) {
-                submitWin(player, { ...opponent, medal: performance });
+                submitWin(player, {
+                    ...opponent,
+                    medal: performance,
+                    scoreMap: scoreMap,
+                });
             }
         }, [beatAgent]);
 
@@ -556,9 +572,6 @@ const SimulationScene = React.forwardRef(
                 : 0;
 
         const [showVictorySnackBar, setShowVictorySnackBar] = useState(false);
-
-        const scoreMap = calculateScoreMap(output, character);
-        const score = scoreMap.totalScore;
 
         //Show Victory Snack Bar if it is a subsequent win, or if they beat the opponent for the first time and showFullReplay is false
         useEffect(() => {

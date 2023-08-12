@@ -1,10 +1,11 @@
-import { Character } from '../constants/constants';
+import { Character, ScoreMap } from '../constants/constants';
 import { PRESET_CONDITIONS } from '../constants/starter_agent';
 import Agent, { PlayerAgent } from './Agent';
 
 export interface Opponent {
     agent: Agent;
     medal: Medal;
+    scoreMap?: ScoreMap;
     id: number;
     name: string;
     backgroundId: number;
