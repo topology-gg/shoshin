@@ -26,7 +26,12 @@ import StatusBarPanel, {
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 import {
     Character,
+    DamageType,
+    FRAME_COUNT,
+    SCORING,
+    ScoreMap,
     isDamaged,
+    nullScoreMap,
     numberToCharacter,
 } from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
@@ -40,7 +45,11 @@ import FrameDecisionPathViewer from '../FrameDecisionPathViewer';
 import Gambit, {
     FullGambitFeatures,
 } from '../sidePanelComponents/Gambit/Gambit';
-import { Condition } from '../../types/Condition';
+import {
+    BodystatesAntoc,
+    BodystatesJessica,
+    Condition,
+} from '../../types/Condition';
 import SquareOverlayMenu from './SuccessMenu';
 import mainSceneStyles from './MainScene.module.css';
 import FullArtBackground from '../layout/FullArtBackground';
@@ -65,29 +74,113 @@ const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
 });
 
-const calculateScore = (play: FrameScene, character: Character) => {
-    if (play == null) return 0;
+const calculateScoreMap = (
+    play: FrameScene,
+    character: Character
+): ScoreMap => {
+    if (play == null) return nullScoreMap;
 
-    const MAX_TIME = 428;
-    const hits = play.agent_0.reduce((acc, frame) => {
+    //
+    // Score calculation
+    //
+
+    // Labor points
+    // (player would get these regardless player wins the fight or not)
+    // - each hurt inflicted on opponent gives S_HURT points
+    // - each knock inflicted on opponent gives S_KNOCK points
+    // - each launch inflicted on opponent gives S_LAUNCH points
+    // - each KO (one at most) inflicted on opponent gives S_KO points
+
+    // Health Bonus
+    // (only when player wins the fight)
+    // - player gets (player HP - opponent HP) * M_HEALTH points as bonus
+
+    // Full Health Bonus
+    // (only when player wins the fight)
+    // - players gets S_FULL_HEALTH as bonus
+
+    // Time Bonus
+    // (only when player wins the fight)
+    // - player gets (MAX_TIME - time spent to win) * M_TIME points as bonus
+
+    let scoreHurts = 0;
+    let scoreKnocks = 0;
+    let scoreLaunches = 0;
+    let scoreKO = 0;
+    play.agent_1.forEach((frame, _) => {
+        const counter = frame.body_state.counter;
+        const state = frame.body_state.state;
+
         if (
-            frame.body_state.counter == 0 &&
-            isDamaged(frame.body_state.state, character)
-        ) {
-            return acc + 1;
-        }
-        return acc;
-    }, 0);
+            counter == 0 &&
+            isDamaged(
+                [BodystatesJessica.Hurt, BodystatesAntoc.Hurt],
+                state,
+                character
+            )
+        )
+            scoreHurts += 1;
+        if (
+            counter == 0 &&
+            isDamaged(
+                [BodystatesJessica.Knocked, BodystatesAntoc.Knocked],
+                state,
+                character
+            )
+        )
+            scoreKnocks += 1;
+        if (
+            counter == 0 &&
+            isDamaged(
+                [BodystatesJessica.Launched, BodystatesAntoc.Launched],
+                state,
+                character
+            )
+        )
+            scoreLaunches += 1;
+        if (
+            counter == 0 &&
+            isDamaged(
+                [BodystatesJessica.KO, BodystatesAntoc.KO],
+                state,
+                character
+            )
+        )
+            scoreKO = 1;
+    });
 
-    const speed = play.agent_0.length;
+    const frameSpent = play.agent_0.length;
 
     const healthDifference =
         play.agent_0[play.agent_0.length - 1].body_state.integrity -
         play.agent_1[play.agent_1.length - 1].body_state.integrity;
 
-    const score = (MAX_TIME - speed) * 10 + healthDifference * 10;
+    const hasFullHealthAtTheEnd: boolean =
+        play.agent_0[play.agent_0.length - 1].body_state.integrity == 1000;
 
-    return score;
+    const scoreLaborPoints =
+        scoreHurts * SCORING.S_HURT +
+        scoreKnocks * SCORING.S_KNOCK +
+        scoreLaunches * SCORING.S_LAUNCH +
+        scoreKO * SCORING.S_KO;
+    const scoreHealthBonus = healthDifference * SCORING.M_HEALTH;
+    const scoreFullHealthBonus = hasFullHealthAtTheEnd
+        ? SCORING.S_FULL_HEALTH
+        : 0;
+    const scoreTimeBonus = (FRAME_COUNT - frameSpent) * SCORING.M_TIME;
+    const scoreMap: ScoreMap = {
+        laborPoints: scoreLaborPoints,
+        healthBonus: scoreHealthBonus,
+        fullHealthBonus: scoreFullHealthBonus,
+        timeBonus: scoreTimeBonus,
+        totalScore:
+            scoreLaborPoints +
+            scoreHealthBonus +
+            scoreFullHealthBonus +
+            scoreTimeBonus,
+    };
+
+    return scoreMap;
 };
 
 interface SimulationProps {
@@ -464,7 +557,9 @@ const SimulationScene = React.forwardRef(
 
         const [showVictorySnackBar, setShowVictorySnackBar] = useState(false);
 
-        const score = calculateScore(output, character);
+        const scoreMap = calculateScoreMap(output, character);
+        const score = scoreMap.totalScore;
+
         //Show Victory Snack Bar if it is a subsequent win, or if they beat the opponent for the first time and showFullReplay is false
         useEffect(() => {
             if (!('medal' in opponent)) {
@@ -524,7 +619,7 @@ const SimulationScene = React.forwardRef(
                                 <SquareOverlayMenu
                                     opponentName={opponentName}
                                     performance={performance}
-                                    score={score}
+                                    scoreMap={scoreMap}
                                     handleContinueClick={handleContinueClick}
                                     closeMenu={() => changeShowVictory(false)}
                                 />

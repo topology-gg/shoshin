@@ -1,6 +1,8 @@
 import { Action, AntocBlock, AntocMoveBackward, Hori } from '../types/Action';
 import Agent, { buildAgent } from '../types/Agent';
 import {
+    BodystatesAntoc,
+    BodystatesJessica,
     Condition,
     ElementType,
     Operator,
@@ -112,20 +114,48 @@ export const bodyStateNumberToName = {
     },
 };
 
-export const isDamaged = (bodyState: number, char: Character) => {
-    if (
-        char == Character.Jessica &&
-        (bodyState == 60 || bodyState == 70 || bodyState == 170)
-    ) {
+export enum DamageType {
+    Hurt = 'Hurt',
+    Knocked = 'Knocked',
+    Launched = 'Launched',
+    KO = 'KO',
+}
+
+export const isDamaged = (
+    targetStates: number[],
+    bodyState: number,
+    char: Character
+) => {
+    if (targetStates.includes(bodyState)) {
         return true;
     }
 
-    if (
-        char == Character.Antoc &&
-        (bodyState == 1050 || bodyState == 1060 || bodyState == 1170)
-    ) {
-        return true;
-    }
+    return false;
+};
+
+export enum SCORING {
+    S_HURT = 100,
+    S_KNOCK = 350,
+    S_LAUNCH = 150,
+    S_KO = 3000,
+    M_HEALTH = 5,
+    M_TIME = 15,
+    S_FULL_HEALTH = 5000,
+}
+
+export interface ScoreMap {
+    laborPoints: number;
+    healthBonus: number;
+    fullHealthBonus: number;
+    timeBonus: number;
+    totalScore: number;
+}
+export const nullScoreMap: ScoreMap = {
+    laborPoints: 0,
+    healthBonus: 0,
+    fullHealthBonus: 0,
+    timeBonus: 0,
+    totalScore: 0,
 };
 
 export const ANTOC_KO_DURATION = 14;

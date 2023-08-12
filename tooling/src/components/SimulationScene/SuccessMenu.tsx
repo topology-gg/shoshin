@@ -2,11 +2,29 @@ import React, { useState } from 'react';
 import styles from './SuccessMenu.module.css';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { Medal } from '../../types/Opponent';
+import FastForwardIcon from '@mui/icons-material/FastForward';
+import ReplayIcon from '@mui/icons-material/Replay';
+import { ScoreMap } from '../../constants/constants';
+
+const scoreRow = (scoreName: string, scoreAmount: number, isLast: boolean) => {
+    return (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                borderTop: isLast ? '1px solid #555' : '',
+            }}
+        >
+            <span style={{ width: '170px' }}>{scoreName}</span>
+            <span style={{ width: '100px' }}>{scoreAmount}</span>
+        </div>
+    );
+};
 
 interface SquareOverlayMenu {
     opponentName: string;
     performance: Medal;
-    score: number;
+    scoreMap: ScoreMap;
     handleContinueClick: () => void;
     closeMenu: () => void;
 }
@@ -15,7 +33,7 @@ const SquareOverlayMenu = ({
     performance,
     handleContinueClick,
     closeMenu,
-    score,
+    scoreMap,
 }: SquareOverlayMenu) => {
     return (
         <div className={'overlay-menu'}>
@@ -32,8 +50,22 @@ const SquareOverlayMenu = ({
                     <Typography variant="h6" align="center" gutterBottom>
                         Grade: {performance}
                     </Typography>
-                    <Typography variant="h6" align="center" gutterBottom>
-                        Score: {score}
+                    <Typography
+                        variant="h6"
+                        align="center"
+                        gutterBottom
+                        sx={{ mb: 3 }}
+                    >
+                        Score
+                        {scoreRow('Labor Points', scoreMap.laborPoints, false)}
+                        {scoreRow('Health Bonus', scoreMap.healthBonus, false)}
+                        {scoreRow(
+                            'Full Health Bonus',
+                            scoreMap.fullHealthBonus,
+                            false
+                        )}
+                        {scoreRow('Time Bonus', scoreMap.timeBonus, false)}
+                        {scoreRow('Total', scoreMap.totalScore, true)}
                     </Typography>
                     <Stack spacing={2}>
                         <Button
@@ -41,14 +73,14 @@ const SquareOverlayMenu = ({
                             color="primary"
                             onClick={handleContinueClick}
                         >
-                            Next Opponent
+                            <FastForwardIcon sx={{ mr: '4px' }} /> Next Opponent
                         </Button>
                         <Button
                             variant="contained"
                             color="primary"
                             onClick={closeMenu}
                         >
-                            Keep playing
+                            <ReplayIcon sx={{ mr: '4px' }} /> Keep playing
                         </Button>
                     </Stack>
                 </Box>
