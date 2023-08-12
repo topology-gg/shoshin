@@ -14,7 +14,11 @@ import StatusBarPanel, {
     StatusBarPanelProps as PlayerStatuses,
 } from '../StatusBar';
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
-import { Character, numberToCharacter } from '../../constants/constants';
+import {
+    Character,
+    nullScoreMap,
+    numberToCharacter,
+} from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
 import useRunCairoSimulation from '../../hooks/useRunCairoSimulation';
 import dynamic from 'next/dynamic';
@@ -33,6 +37,7 @@ import { Medal } from '../../types/Opponent';
 import CardSimple from '../ui/CardSimple';
 import { FastForward, FastRewind } from '@mui/icons-material';
 import { track_lesson_complete } from '../../helpers/track';
+import { calculateScoreMap } from '../SimulationScene/MainScene';
 
 //@ts-ignore
 const Game = dynamic(() => import('../../Game/PhaserGame'), {
@@ -337,6 +342,10 @@ const GameplayTutorialScene = React.forwardRef(
         } else {
             performance = Medal.BRONZE;
         }
+        const scoreMap =
+            output == undefined
+                ? nullScoreMap
+                : calculateScoreMap(output, character);
 
         const [showVictory, changeShowVictory] = useState<boolean>(false);
 
@@ -453,6 +462,7 @@ const GameplayTutorialScene = React.forwardRef(
                                 performance={performance}
                                 handleContinueClick={handleContinueClick}
                                 closeMenu={() => changeShowVictory(false)}
+                                scoreMap={scoreMap}
                             />
                         ) : null}
                         {openPauseMenu ? (

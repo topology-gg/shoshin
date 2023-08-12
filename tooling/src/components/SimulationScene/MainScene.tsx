@@ -24,7 +24,16 @@ import StatusBarPanel, {
     StatusBarPanelProps as PlayerStatuses,
 } from '../../../src/components/StatusBar';
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
-import { Character, numberToCharacter } from '../../constants/constants';
+import {
+    Character,
+    DamageType,
+    FRAME_COUNT,
+    SCORING,
+    ScoreMap,
+    isDamaged,
+    nullScoreMap,
+    numberToCharacter,
+} from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
 import useRunCairoSimulation from '../../hooks/useRunCairoSimulation';
 import dynamic from 'next/dynamic';
@@ -36,7 +45,11 @@ import FrameDecisionPathViewer from '../FrameDecisionPathViewer';
 import Gambit, {
     FullGambitFeatures,
 } from '../sidePanelComponents/Gambit/Gambit';
-import { Condition } from '../../types/Condition';
+import {
+    BodystatesAntoc,
+    BodystatesJessica,
+    Condition,
+} from '../../types/Condition';
 import SquareOverlayMenu from './SuccessMenu';
 import mainSceneStyles from './MainScene.module.css';
 import FullArtBackground from '../layout/FullArtBackground';
@@ -60,6 +73,120 @@ import useAnimationControls, {
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
 });
+
+export const calculateScoreMap = (
+    play: FrameScene,
+    character: Character
+): ScoreMap => {
+    if (play == null) return nullScoreMap;
+
+    //
+    // Score calculation
+    //
+
+    // Labor points
+    // (player would get these regardless player wins the fight or not)
+    // - each hurt inflicted on opponent gives S_HURT points
+    // - each knock inflicted on opponent gives S_KNOCK points
+    // - each launch inflicted on opponent gives S_LAUNCH points
+    // - each KO (one at most) inflicted on opponent gives S_KO points
+
+    // Health Bonus
+    // (only when player wins the fight)
+    // - player gets (player HP - opponent HP) * M_HEALTH points as bonus
+
+    // Full Health Bonus
+    // (only when player wins the fight)
+    // - players gets S_FULL_HEALTH as bonus
+
+    // Time Bonus
+    // (only when player wins the fight)
+    // - player gets (MAX_TIME - time spent to win) * M_TIME points as bonus
+
+    let scoreHurts = 0;
+    let scoreKnocks = 0;
+    let scoreLaunches = 0;
+    let scoreKO = 0;
+    play.agent_1.forEach((frame, _) => {
+        const counter = frame.body_state.counter;
+        const state = frame.body_state.state;
+
+        if (
+            counter == 0 &&
+            isDamaged(
+                [BodystatesJessica.Hurt, BodystatesAntoc.Hurt],
+                state,
+                character
+            )
+        )
+            scoreHurts += 1;
+        if (
+            counter == 0 &&
+            isDamaged(
+                [BodystatesJessica.Knocked, BodystatesAntoc.Knocked],
+                state,
+                character
+            )
+        )
+            scoreKnocks += 1;
+        if (
+            counter == 0 &&
+            isDamaged(
+                [BodystatesJessica.Launched, BodystatesAntoc.Launched],
+                state,
+                character
+            )
+        )
+            scoreLaunches += 1;
+        if (
+            counter == 0 &&
+            isDamaged(
+                [BodystatesJessica.KO, BodystatesAntoc.KO],
+                state,
+                character
+            )
+        )
+            scoreKO = 1;
+    });
+
+    const frameSpent = play.agent_0.length;
+
+    const healthDifference =
+        play.agent_0[play.agent_0.length - 1].body_state.integrity -
+        play.agent_1[play.agent_1.length - 1].body_state.integrity;
+
+    const hasFullHealthAtTheEnd: boolean =
+        play.agent_0[play.agent_0.length - 1].body_state.integrity == 1000;
+
+    const scoreLaborPoints =
+        scoreHurts * SCORING.S_HURT +
+        scoreKnocks * SCORING.S_KNOCK +
+        scoreLaunches * SCORING.S_LAUNCH +
+        scoreKO * SCORING.S_KO;
+    const scoreHealthBonus = healthDifference * SCORING.M_HEALTH;
+    const scoreFullHealthBonus = hasFullHealthAtTheEnd
+        ? SCORING.S_FULL_HEALTH
+        : 0;
+    const scoreTimeBonus = (FRAME_COUNT - frameSpent) * SCORING.M_TIME;
+    const scoreMap: ScoreMap = {
+        labor: {
+            hurt: scoreHurts * SCORING.S_HURT,
+            knocked: scoreKnocks * SCORING.S_KNOCK,
+            launched: scoreLaunches * SCORING.S_LAUNCH,
+            ko: scoreKO * SCORING.S_KO,
+        },
+        healthBonus: scoreHealthBonus,
+        fullHealthBonus: scoreFullHealthBonus,
+        timeBonus: scoreTimeBonus,
+        totalScore:
+            scoreLaborPoints +
+            scoreHealthBonus +
+            scoreFullHealthBonus +
+            scoreTimeBonus,
+    };
+
+    return scoreMap;
+};
 
 interface SimulationProps {
     player: Playable;
@@ -309,6 +436,9 @@ const SimulationScene = React.forwardRef(
             }
         }
 
+        //
+        // Compute flags from the fight
+        //
         const beatAgent =
             output !== undefined
                 ? output.agent_0[output.agent_1.length - 1].body_state
@@ -316,6 +446,9 @@ const SimulationScene = React.forwardRef(
                   output.agent_1[output.agent_1.length - 1].body_state.integrity
                 : false;
 
+        //
+        // Compute performance (medal earned) from the fight
+        //
         let performance = Medal.NONE;
         const hpRemaining =
             output !== undefined
@@ -334,6 +467,12 @@ const SimulationScene = React.forwardRef(
             performance = Medal.BRONZE;
         }
 
+        //
+        // Compute score from the fight
+        //
+        const scoreMap = calculateScoreMap(output, character);
+        const score = scoreMap.totalScore;
+
         const [showVictory, changeShowVictory] = useState<boolean>(false);
         useEffect(() => {
             if (
@@ -342,7 +481,11 @@ const SimulationScene = React.forwardRef(
                 achievedBetterPerformance(performance, opponent.medal) &&
                 'layers' in player
             ) {
-                submitWin(player, { ...opponent, medal: performance });
+                submitWin(player, {
+                    ...opponent,
+                    medal: performance,
+                    scoreMap: scoreMap,
+                });
             }
         }, [beatAgent]);
 
@@ -494,6 +637,7 @@ const SimulationScene = React.forwardRef(
                                 <SquareOverlayMenu
                                     opponentName={opponentName}
                                     performance={performance}
+                                    scoreMap={scoreMap}
                                     handleContinueClick={handleContinueClick}
                                     closeMenu={() => changeShowVictory(false)}
                                 />
@@ -766,6 +910,11 @@ const SimulationScene = React.forwardRef(
                                                 actions={actions}
                                             />
                                         </Box>
+                                        {score > 0 && (
+                                            <Typography>
+                                                Score : {score}
+                                            </Typography>
+                                        )}
                                     </GameCard>
                                 </Grid>
                             </Grid>
