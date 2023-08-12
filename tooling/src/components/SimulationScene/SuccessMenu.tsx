@@ -6,6 +6,7 @@ import { Medal } from '../../types/Opponent';
 interface SquareOverlayMenu {
     opponentName: string;
     performance: Medal;
+    score: number;
     handleContinueClick: () => void;
     closeMenu: () => void;
 }
@@ -14,6 +15,7 @@ const SquareOverlayMenu = ({
     performance,
     handleContinueClick,
     closeMenu,
+    score,
 }: SquareOverlayMenu) => {
     return (
         <div className={'overlay-menu'}>
@@ -29,6 +31,9 @@ const SquareOverlayMenu = ({
                     </Typography>
                     <Typography variant="h6" align="center" gutterBottom>
                         Grade: {performance}
+                    </Typography>
+                    <Typography variant="h6" align="center" gutterBottom>
+                        Score: {score}
                     </Typography>
                     <Stack spacing={2}>
                         <Button

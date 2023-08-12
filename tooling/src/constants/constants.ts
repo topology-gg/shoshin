@@ -112,6 +112,22 @@ export const bodyStateNumberToName = {
     },
 };
 
+export const isDamaged = (bodyState: number, char: Character) => {
+    if (
+        char == Character.Jessica &&
+        (bodyState == 60 || bodyState == 70 || bodyState == 170)
+    ) {
+        return true;
+    }
+
+    if (
+        char == Character.Antoc &&
+        (bodyState == 1050 || bodyState == 1060 || bodyState == 1170)
+    ) {
+        return true;
+    }
+};
+
 export const ANTOC_KO_DURATION = 14;
 export const JESSICA_KO_DURATION = 14;
 

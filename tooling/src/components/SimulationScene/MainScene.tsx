@@ -24,7 +24,11 @@ import StatusBarPanel, {
     StatusBarPanelProps as PlayerStatuses,
 } from '../../../src/components/StatusBar';
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
-import { Character, numberToCharacter } from '../../constants/constants';
+import {
+    Character,
+    isDamaged,
+    numberToCharacter,
+} from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
 import useRunCairoSimulation from '../../hooks/useRunCairoSimulation';
 import dynamic from 'next/dynamic';
@@ -60,6 +64,31 @@ import useAnimationControls, {
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
 });
+
+const calculateScore = (play: FrameScene, character: Character) => {
+    if (play == null) return 0;
+
+    const MAX_TIME = 428;
+    const hits = play.agent_0.reduce((acc, frame) => {
+        if (
+            frame.body_state.counter == 0 &&
+            isDamaged(frame.body_state.state, character)
+        ) {
+            return acc + 1;
+        }
+        return acc;
+    }, 0);
+
+    const speed = play.agent_0.length;
+
+    const healthDifference =
+        play.agent_0[play.agent_0.length - 1].body_state.integrity -
+        play.agent_1[play.agent_1.length - 1].body_state.integrity;
+
+    const score = (MAX_TIME - speed) * 10 + healthDifference * 10;
+
+    return score;
+};
 
 interface SimulationProps {
     player: Playable;
@@ -435,6 +464,7 @@ const SimulationScene = React.forwardRef(
 
         const [showVictorySnackBar, setShowVictorySnackBar] = useState(false);
 
+        const score = calculateScore(output, character);
         //Show Victory Snack Bar if it is a subsequent win, or if they beat the opponent for the first time and showFullReplay is false
         useEffect(() => {
             if (!('medal' in opponent)) {
@@ -494,6 +524,7 @@ const SimulationScene = React.forwardRef(
                                 <SquareOverlayMenu
                                     opponentName={opponentName}
                                     performance={performance}
+                                    score={score}
                                     handleContinueClick={handleContinueClick}
                                     closeMenu={() => changeShowVictory(false)}
                                 />
@@ -766,6 +797,11 @@ const SimulationScene = React.forwardRef(
                                                 actions={actions}
                                             />
                                         </Box>
+                                        {score > 0 && (
+                                            <Typography>
+                                                Score : {score}
+                                            </Typography>
+                                        )}
                                     </GameCard>
                                 </Grid>
                             </Grid>
