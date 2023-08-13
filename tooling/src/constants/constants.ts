@@ -453,7 +453,7 @@ export const ACTION_UNICODE_MAP = {
 
     Jump: '\u{1F998}',
 
-    Gatotsu: '\u{1F525}',
+    Gatotsu: '\u{1F985}',
 
     Cyclone: '\u{1F32A}',
 
