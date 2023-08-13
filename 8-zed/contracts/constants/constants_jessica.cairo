@@ -4,7 +4,7 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math_cmp import is_le
 from contracts.constants.constants import (
-    ns_dynamics, Vec2, Rectangle, ns_hitbox, ns_scene
+    ns_dynamics, Vec2, Rectangle, ns_hitbox, ns_scene, LEFT, RIGHT
 )
 
 namespace ns_jessica_dynamics {
@@ -33,49 +33,64 @@ namespace ns_jessica_dynamics {
 
 namespace ns_jessica_character_dimension {
     const BODY_HITBOX_W = 50;
+    const BODY_HITBOX_W_HALF = 25;
     const BODY_HITBOX_H = 116;
 
     const BODY_KNOCKED_EARLY_HITBOX_W = 70;
     const BODY_KNOCKED_LATE_HITBOX_W = 100;
     const BODY_KNOCKED_GROUND_HITBOX_W = 50;
+    const BODY_KNOCKED_EARLY_HITBOX_W_HALF = 35;
+    const BODY_KNOCKED_LATE_HITBOX_W_HALF = 50;
+    const BODY_KNOCKED_GROUND_HITBOX_W_HALF = 25;
     const BODY_KNOCKED_EARLY_HITBOX_H = 120;
     const BODY_KNOCKED_LATE_HITBOX_H = 50;
     const BODY_KNOCKED_GROUND_HITBOX_H = 70;
 
-    const BODY_DASH_FORWARD_0_W = 55;
+    const BODY_DASH_FORWARD_0_W = 56;
     const BODY_DASH_FORWARD_1_W = 70;
-    const BODY_DASH_FORWARD_2_W = 85;
-    const BODY_DASH_FORWARD_3_W = 85;
+    const BODY_DASH_FORWARD_2_W = 86;
+    const BODY_DASH_FORWARD_3_W = 86;
+    const BODY_DASH_FORWARD_0_W_HALF = 28;
+    const BODY_DASH_FORWARD_1_W_HALF = 35;
+    const BODY_DASH_FORWARD_2_W_HALF = 43;
+    const BODY_DASH_FORWARD_3_W_HALF = 43;
     const BODY_DASH_FORWARD_0_H = 100;
     const BODY_DASH_FORWARD_1_H = 95;
     const BODY_DASH_FORWARD_2_H = 90;
     const BODY_DASH_FORWARD_3_H = 90;
 
-    const SLASH_HITBOX_W = 75;
+    const SLASH_HITBOX_W = 76;
+    const SLASH_HITBOX_W_HALF = 38;
     const SLASH_HITBOX_H = 90;
     const SLASH_HITBOX_Y = BODY_HITBOX_H / 2 - 20;
 
     const UPSWING_HITBOX_W = 70;
+    const UPSWING_HITBOX_W_HALF = 35;
     const UPSWING_HITBOX_H = BODY_HITBOX_H + 15;
     const UPSWING_HITBOX_Y = 20;
 
     const SIDECUT_HITBOX_W = 70;
+    const SIDECUT_HITBOX_W_HALF = 35;
     const SIDECUT_HITBOX_H = BODY_HITBOX_H * 2 / 4;
     const SIDECUT_HITBOX_Y = BODY_HITBOX_H / 4;
 
-    const LOW_KICK_HITBOX_W = 45;
+    const LOW_KICK_HITBOX_W = 46;
+    const LOW_KICK_HITBOX_W_HALF = 23;
     const LOW_KICK_HITBOX_H = 20;
     const LOW_KICK_HITBOX_Y = 7;
 
     const BLOCK_HITBOX_W = 20;
+    const BLOCK_HITBOX_W_HALF = 10;
     const BLOCK_HITBOX_H = 60;
     const BLOCK_HITBOX_Y = BODY_HITBOX_H / 2;
 
     const GATOTSU_HITBOX_W = 80;
+    const GATOTSU_HITBOX_W_HALF = 40;
     const GATOTSU_HITBOX_H = 20;
     const GATOTSU_HITBOX_Y = BODY_HITBOX_H / 2 + 10;
 
     const BIRDSWING_HITBOX_W = 70;
+    const BIRDSWING_HITBOX_W_HALF = 35;
     const BIRDSWING_HITBOX_H = BODY_HITBOX_H * 2 / 4;
     const BIRDSWING_HITBOX_Y = BODY_HITBOX_H / 4;
 
@@ -273,7 +288,8 @@ namespace ns_jessica_hitbox {
         body_state: felt,
         body_counter: felt
     ) -> (
-        body_dimension: Vec2
+        body_dimension: Vec2,
+        body_half_width: felt
     ) {
         alloc_locals;
 
@@ -281,34 +297,58 @@ namespace ns_jessica_hitbox {
         if ( (body_state-ns_jessica_body_state.KNOCKED) * (body_state-ns_jessica_body_state.LAUNCHED) == 0 ) {
             let is_counter_le_1 = is_le(body_counter, 1);
             if (is_counter_le_1 == 1) {
-                return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H));
+                return (
+                    body_dimension = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_H),
+                    body_half_width = ns_jessica_character_dimension.BODY_KNOCKED_EARLY_HITBOX_W_HALF
+                );
             }
 
             let is_counter_le_6 = is_le(body_counter, 6);
             if (is_counter_le_6 == 1) {
-                return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H));
+                return (
+                    body_dimension = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_H),
+                    body_half_width = ns_jessica_character_dimension.BODY_KNOCKED_LATE_HITBOX_W_HALF
+                );
             }
 
             // the last frame right before idle can use the idle hitbox for now
             if (body_counter == 10) {
-                return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H));
+                return (
+                    body_dimension = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H),
+                    body_half_width = ns_jessica_character_dimension.BODY_HITBOX_W_HALF
+                );
             }
 
-            return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_GROUND_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_GROUND_HITBOX_H));
+            return (
+                body_dimension = Vec2 (ns_jessica_character_dimension.BODY_KNOCKED_GROUND_HITBOX_W, ns_jessica_character_dimension.BODY_KNOCKED_GROUND_HITBOX_H),
+                body_half_width = ns_jessica_character_dimension.BODY_KNOCKED_GROUND_HITBOX_W_HALF
+            );
         }
 
         // dash forward
         if (body_state == ns_jessica_body_state.DASH_FORWARD) {
             if (body_counter == 0) {
-                return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_0_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_0_H));
+                return (
+                    body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_0_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_0_H),
+                    body_half_width = ns_jessica_character_dimension.BODY_DASH_FORWARD_0_W_HALF
+                );
             }
             if (body_counter == 1) {
-                return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_1_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_1_H));
+                return (
+                    body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_1_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_1_H),
+                    body_half_width = ns_jessica_character_dimension.BODY_DASH_FORWARD_1_W_HALF
+                );
             }
             if (body_counter == 2) {
-                return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_2_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_2_H));
+                return (
+                    body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_2_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_2_H),
+                    body_half_width = ns_jessica_character_dimension.BODY_DASH_FORWARD_2_W_HALF
+                );
             }
-            return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_3_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_3_H));
+            return (
+                body_dimension = Vec2 (ns_jessica_character_dimension.BODY_DASH_FORWARD_3_W, ns_jessica_character_dimension.BODY_DASH_FORWARD_3_H),
+                body_half_width = ns_jessica_character_dimension.BODY_DASH_FORWARD_3_W_HALF
+            );
         }
 
         // gatotsu
@@ -316,11 +356,17 @@ namespace ns_jessica_hitbox {
 
         // ko
         if (body_state == ns_jessica_body_state.KO) {
-            return (body_dimension = Vec2 (0, 0));
+            return (
+                body_dimension = Vec2 (0, 0),
+                body_half_width = 0
+            );
         }
 
         // otherwise
-        return (body_dimension = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H));
+        return (
+            body_dimension = Vec2 (ns_jessica_character_dimension.BODY_HITBOX_W, ns_jessica_character_dimension.BODY_HITBOX_H),
+            body_half_width = ns_jessica_character_dimension.BODY_HITBOX_W_HALF
+        );
     }
 
     func get_action_hitbox {range_check_ptr}(
@@ -339,6 +385,10 @@ namespace ns_jessica_hitbox {
         alloc_locals;
 
         if (bool_is_active == 1) {
+
+            // TODO: figure out if we can eliminate this /2 operation
+            // note: body_hitbox_dimension.x must be a even number to ensure correct result from /2
+            let half_body_width = body_hitbox_dimension.x / 2;
 
             if (bool_is_attack_active == 1) {
 
@@ -379,10 +429,10 @@ namespace ns_jessica_hitbox {
                     }
                 }
 
-                if (dir == 1) {
+                if (dir == RIGHT) {
                     return (action_hitbox = Rectangle(
                         Vec2(
-                            pos_x + body_hitbox_dimension.x - ns_hitbox.NUDGE,
+                            pos_x + half_body_width - ns_hitbox.NUDGE,
                             pos_y + ATTACK_HITBOX_Y
                         ),
                         Vec2 (ATTACK_HITBOX_W, ATTACK_HITBOX_H)
@@ -390,7 +440,7 @@ namespace ns_jessica_hitbox {
                 } else {
                     return (action_hitbox = Rectangle(
                         Vec2(
-                            pos_x - ATTACK_HITBOX_W + ns_hitbox.NUDGE,
+                            pos_x - half_body_width - ATTACK_HITBOX_W + ns_hitbox.NUDGE,
                             pos_y + ATTACK_HITBOX_Y
                         ),
                         Vec2 (ATTACK_HITBOX_W, ATTACK_HITBOX_H)
@@ -399,10 +449,10 @@ namespace ns_jessica_hitbox {
             }
 
             if (bool_is_block_active == 1) {
-                if (dir == 1) {
+                if (dir == RIGHT) {
                     return (action_hitbox = Rectangle(
                         Vec2(
-                            pos_x + body_hitbox_dimension.x - ns_hitbox.NUDGE,
+                            pos_x + half_body_width - ns_hitbox.NUDGE,
                             pos_y + ns_jessica_character_dimension.BLOCK_HITBOX_Y
                         ),
                         Vec2 (
@@ -413,7 +463,7 @@ namespace ns_jessica_hitbox {
                 } else {
                     return (action_hitbox = Rectangle(
                         Vec2(
-                            pos_x - ns_jessica_character_dimension.BLOCK_HITBOX_W + ns_hitbox.NUDGE,
+                            pos_x - half_body_width - ns_jessica_character_dimension.BLOCK_HITBOX_W + ns_hitbox.NUDGE,
                             pos_y + ns_jessica_character_dimension.BLOCK_HITBOX_Y
                         ),
                         Vec2 (
