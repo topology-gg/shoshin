@@ -812,7 +812,8 @@ func _body_antoc {range_check_ptr}(
         }
 
         // else stay in CYCLONE and increment counter
-        return ( body_state_nxt = BodyState(ns_antoc_body_state.CYCLONE, counter + 1, integrity, stamina, dir, FALSE, state_index, opponent_state_index_last_hit) );
+        // note: increase state_index as well for the two active frames to have different state_index so that they both register
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.CYCLONE, counter + 1, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
     }
 
     //
