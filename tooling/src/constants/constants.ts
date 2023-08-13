@@ -455,7 +455,13 @@ export const ACTION_UNICODE_MAP = {
 
     Gatotsu: '\u{1F525}',
 
-    LowKick: '\u{1F986}',
+    Cyclone: '\u{1F32A}',
+
+    LowKick: '\u{1F9B6}',
+
+    Taunt: '\u{1F971}',
+
+    Combo: '\u{1F4BE}',
 };
 
 export const MAX_COMBO_SIZE = 20;
