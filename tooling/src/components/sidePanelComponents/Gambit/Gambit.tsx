@@ -429,10 +429,15 @@ export const LayerComponent = ({
                                 <BlurrableListItemText
                                     onClick={(e) => onActionSelect(action)}
                                 >
-                                    <span style={{ marginRight: '7px' }}>
+                                    <span
+                                        style={{
+                                            marginRight: '7px',
+                                            fontSize: '16px',
+                                        }}
+                                    >
                                         {ACTION_UNICODE_MAP[action]}
                                     </span>
-                                    {action.replaceAll('_', ' ')}
+                                    <span>{action.replaceAll('_', ' ')}</span>
                                 </BlurrableListItemText>
                             </MenuItem>
                         );
