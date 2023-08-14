@@ -510,7 +510,7 @@ const GameplayTutorialScene = React.forwardRef(
                                         alignItems="center"
                                         ml="250px"
                                     >
-                                        <Typography variant="h6" align="center">
+                                        <Typography variant="h5" align="center">
                                             {title}
                                         </Typography>
                                         <Typography
@@ -518,6 +518,7 @@ const GameplayTutorialScene = React.forwardRef(
                                             align="center"
                                             style={{
                                                 whiteSpace: 'pre-line',
+                                                fontSize: '15px',
                                             }}
                                         >
                                             {currentSlide.content}
