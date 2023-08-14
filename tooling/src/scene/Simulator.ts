@@ -1098,7 +1098,8 @@ export default class Simulator extends Phaser.Scene {
         const bodyStateCounter = frame.body_state.counter;
         const bodyStateDir = frame.body_state.dir;
         const physicsState = frame.physics_state;
-        const pos = physicsState.pos;
+        // const pos = physicsState.pos;
+        const pos = frame.hitboxes.body.origin;
         const hitboxW = frame.hitboxes.body.dimension.x;
 
         let bodyStateName = bodyStateNumberToName[characterName][bodyState];
