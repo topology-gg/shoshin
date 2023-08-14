@@ -68,3 +68,29 @@ export function useGetMind(username, character, mindName) {
         () => getMindRequest(`/api/minds/${username}/${character}/${mindName}`)
     );
 }
+
+export function useGetScoresForOpponent(index) {
+    return useSWR(`/api/campaign/list/${index}`, fetcher);
+}
+
+async function submitAgentRequest(url, requestBody) {
+    const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+
+    return await response.json();
+}
+
+export function useSubmitCampaignMind(index, mind) {
+    return useSWR<any, any>(`/api/campaign/${index}}`, () =>
+        submitAgentRequest(`/api/campaign/${index}`, mind)
+    );
+}

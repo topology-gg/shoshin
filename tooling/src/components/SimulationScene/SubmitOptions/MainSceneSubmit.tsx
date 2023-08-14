@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { SavedMind } from '../../types/Opponent';
-import { useUpdateMind } from '../../../lib/api';
+import { SavedMind } from '../../../types/Opponent';
+import { useUpdateMind } from '../../../../lib/api';
 import {
     Button,
     CircularProgress,

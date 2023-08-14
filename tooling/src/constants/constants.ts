@@ -24,6 +24,8 @@ export const COLLECTION_NAME_SUBMISSION = 'shoshin-dogfooding-submission';
 export const COLLECTION_NAME_LEAGUE = 'shoshin-league';
 export const COLLECTION_NAME_WHITELIST = 'shoshin-whitelist';
 export const COLLECTION_NAME_PVP = true ? 'shoshin-pvp' : 'shoshin-pvp-dev';
+export const COLLECTION_NAME_CAMPAIGN_SCORES = 'shoshin-campaign-scores';
+export const COLLECTION_NAME_CAMPAIGN_MINDS = 'shoshin-campaign-scores';
 
 export const PRIME =
     BigInt(2 ** 251) + BigInt(17) * BigInt(2 ** 192) + BigInt(1);

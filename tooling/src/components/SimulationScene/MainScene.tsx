@@ -60,15 +60,17 @@ import {
     OnlineOpponent,
     Opponent,
     achievedBetterPerformance,
+    achievedBetterScore,
 } from '../../types/Opponent';
 import CloseIcon from '@mui/icons-material/Close';
 
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
 import { Playable } from '../layout/SceneSelector';
-import SubmitMindButton from './MainSceneSubmit';
+import SubmitMindButton from './SubmitOptions/MainSceneSubmit';
 import useAnimationControls, {
     AnimationState,
 } from '../../hooks/useAnimationControls';
+import SubmitOptions from './SubmitOptions/SubmitOptions';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -192,6 +194,7 @@ interface SimulationProps {
     player: Playable;
     savePlayerAgent: (playerAgent: Playable) => void;
     opponent: Opponent | OnlineOpponent;
+    opponentIndex: number;
     submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
     onContinue: () => void;
     onQuit: () => void;
@@ -200,6 +203,7 @@ interface SimulationProps {
     pauseMenu: ReactNode;
     showFullReplay: boolean;
     isPreview: boolean;
+    isCampaign: boolean;
 }
 //We need Players agent and opponent
 const SimulationScene = React.forwardRef(
@@ -214,6 +218,8 @@ const SimulationScene = React.forwardRef(
             pauseMenu,
             showFullReplay,
             isPreview,
+            opponentIndex,
+            isCampaign,
         } = props;
         // Constants
         const runnable = true;
@@ -477,8 +483,8 @@ const SimulationScene = React.forwardRef(
         useEffect(() => {
             if (
                 beatAgent &&
-                'medal' in opponent &&
-                achievedBetterPerformance(performance, opponent.medal) &&
+                'scoreMap' in opponent &&
+                achievedBetterScore(scoreMap, opponent.scoreMap) &&
                 'layers' in player
             ) {
                 submitWin(player, {
@@ -613,6 +619,16 @@ const SimulationScene = React.forwardRef(
                 </IconButton>
             </React.Fragment>
         );
+
+        const MainSceneSubmitOption = (
+            <SubmitOptions
+                isPreview={isPreview}
+                isCampaign={isCampaign}
+                player={player}
+                opponentIndex={opponentIndex}
+            />
+        );
+
         return (
             <div id={'mother'} ref={ref}>
                 <Fade in={!phaserLoaded} timeout={500}>
@@ -789,8 +805,7 @@ const SimulationScene = React.forwardRef(
                                                     (_) => !checkedShowDebugInfo
                                                 )
                                             }
-                                            player={player}
-                                            isPreview={isPreview}
+                                            submitOption={MainSceneSubmitOption}
                                         />
 
                                         <Box
