@@ -251,7 +251,7 @@ export const Jump: Action = {
         interrupts: [
             {
                 right: [Sidecut.id],
-                duration: 3,
+                duration: 2,
             },
             {
                 right: [DashForward.id],
@@ -479,7 +479,11 @@ export const AntocDashForward: Action = {
         duration: 4,
         interrupts: [
             {
-                left: [JumpId],
+                right: [AntocJumpId],
+                duration: 2,
+            },
+            {
+                left: [AntocJumpId],
                 right: [VertId],
                 duration: 2,
             },
@@ -500,7 +504,11 @@ export const AntocDashBackward: Action = {
         duration: 4,
         interrupts: [
             {
-                left: [JumpId],
+                right: [AntocJumpId],
+                duration: 2,
+            },
+            {
+                left: [AntocJumpId],
                 right: [VertId],
                 duration: 2,
             },

@@ -14,7 +14,11 @@ import StatusBarPanel, {
     StatusBarPanelProps as PlayerStatuses,
 } from '../StatusBar';
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
-import { Character, numberToCharacter } from '../../constants/constants';
+import {
+    Character,
+    nullScoreMap,
+    numberToCharacter,
+} from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
 import useRunCairoSimulation from '../../hooks/useRunCairoSimulation';
 import dynamic from 'next/dynamic';
@@ -32,6 +36,9 @@ import GameplayTutorialMenu from './GameplayTutorialMenu';
 import { Medal } from '../../types/Opponent';
 import CardSimple from '../ui/CardSimple';
 import { FastForward, FastRewind } from '@mui/icons-material';
+import { track_lesson_complete } from '../../helpers/track';
+import { calculateScoreMap } from '../SimulationScene/MainScene';
+
 //@ts-ignore
 const Game = dynamic(() => import('../../Game/PhaserGame'), {
     ssr: false,
@@ -40,6 +47,7 @@ const Game = dynamic(() => import('../../Game/PhaserGame'), {
 interface MoveTutorialProps {
     onContinue: () => void;
     onQuit: () => void;
+    onCompleteTutorial: () => void;
     volume: number;
     setVolume: (volume: number) => void;
 }
@@ -47,7 +55,8 @@ interface MoveTutorialProps {
 //We need Players agent and opponent
 const GameplayTutorialScene = React.forwardRef(
     (props: MoveTutorialProps, ref: ForwardedRef<HTMLDivElement>) => {
-        const { onQuit, onContinue, volume, setVolume } = props;
+        const { onQuit, onContinue, onCompleteTutorial, volume, setVolume } =
+            props;
         // Constants
         const LATENCY = 70;
         const runnable = true;
@@ -73,6 +82,8 @@ const GameplayTutorialScene = React.forwardRef(
         const [simulationError, setSimulationError] = useState();
         const [p1, setP1] = useState<Agent>();
         const p2: Agent = lesson.opponent;
+        const [reSimulationNeeded, setReSimulationNeeded] =
+            useState<boolean>(false);
 
         const [loop, setLoop] = useState<NodeJS.Timer>();
         const [animationFrame, setAnimationFrame] = useState<number>(0);
@@ -141,18 +152,25 @@ const GameplayTutorialScene = React.forwardRef(
             };
         }, [openPauseMenu]);
 
-        useEffect(() => {
+        const setPlayerAgentToLesson = () => {
             const { combos, conditions, layers, character } =
                 tutorial[lessonIndex].player;
             setLayers(layers);
             setCombos(combos);
             setConditions(conditions);
             setCharacter(character);
+        };
+        useEffect(() => {
+            setPlayerAgentToLesson();
         }, [lessonIndex]);
 
+        const handleResetClick = () => {
+            setPlayerAgentToLesson();
+        };
         useEffect(() => {
             let builtAgent = handleBuildAgent();
             setP1(builtAgent);
+            setReSimulationNeeded((_) => true);
         }, [character, combos, conditions, layers]);
 
         function handleBuildAgent() {
@@ -324,6 +342,10 @@ const GameplayTutorialScene = React.forwardRef(
         } else {
             performance = Medal.BRONZE;
         }
+        const scoreMap =
+            output == undefined
+                ? nullScoreMap
+                : calculateScoreMap(output, character);
 
         const [showVictory, changeShowVictory] = useState<boolean>(false);
 
@@ -360,7 +382,8 @@ const GameplayTutorialScene = React.forwardRef(
                     setAnimationFrame((_) => 0);
                     setTestJson(null);
                 } else {
-                    onContinue();
+                    track_lesson_complete(lessonIndex, lesson.title);
+                    onCompleteTutorial();
                 }
             }
         };
@@ -439,6 +462,7 @@ const GameplayTutorialScene = React.forwardRef(
                                 performance={performance}
                                 handleContinueClick={handleContinueClick}
                                 closeMenu={() => changeShowVictory(false)}
+                                scoreMap={scoreMap}
                             />
                         ) : null}
                         {openPauseMenu ? (
@@ -576,7 +600,6 @@ const GameplayTutorialScene = React.forwardRef(
                                             <Game
                                                 testJson={testJson}
                                                 animationFrame={animationFrame}
-                                                animationState={animationState}
                                                 showDebug={checkedShowDebugInfo}
                                                 gameMode={GameModes.simulation}
                                                 realTimeOptions={{
@@ -594,6 +617,10 @@ const GameplayTutorialScene = React.forwardRef(
                                         <div style={{ height: '400px' }}></div>
                                     ) : null}
                                     <MidScreenControl
+                                        reSimulationNeeded={reSimulationNeeded}
+                                        unsetResimulationNeeded={() =>
+                                            setReSimulationNeeded((_) => false)
+                                        }
                                         runnable={
                                             !(p1 == null || p2 == null) &&
                                             !playOnly
@@ -650,6 +677,9 @@ const GameplayTutorialScene = React.forwardRef(
                                         }}
                                     >
                                         <Gambit
+                                            isAnimationRunning={
+                                                animationState == 'Run'
+                                            }
                                             layers={layers}
                                             setLayers={setLayers}
                                             features={lesson.features}
@@ -662,6 +692,7 @@ const GameplayTutorialScene = React.forwardRef(
                                             initialSelectedCombo={
                                                 lesson.initialSelectedCombo
                                             }
+                                            onResetClick={handleResetClick}
                                         />
                                     </Box>
                                 </GameCard>

@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import MentalStates from './MentalStates';
 import { createContext } from 'vm';
-import { CharacterContext, LayerContext } from '../../../pages';
+import { CharacterContext, LayerContext } from '../../../pages/simulate';
 import { layersToAgentComponents } from '../../types/Layer';
 import { Character } from '../../constants/constants';
 
@@ -14,7 +14,6 @@ export const GambitMs = ({
 }) => {
     let char = Object.keys(Character).indexOf(character);
 
-    console.log('layers', layers);
     //given layers
     const {
         mentalStates: generatedMs,

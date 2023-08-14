@@ -1,8 +1,11 @@
+import { Character, ScoreMap } from '../constants/constants';
+import { PRESET_CONDITIONS } from '../constants/starter_agent';
 import Agent, { PlayerAgent } from './Agent';
 
 export interface Opponent {
     agent: Agent;
     medal: Medal;
+    scoreMap?: ScoreMap;
     id: number;
     name: string;
     backgroundId: number;
@@ -19,6 +22,33 @@ export interface SavedMind extends OnlineOpponent {
     createdDate: string;
     lastUpdatedDate: string;
 }
+
+export const EMPTY_SAVED_MINDS: SavedMind[] = [
+    {
+        agent: {
+            layers: [],
+            character: Character.Jessica,
+            conditions: PRESET_CONDITIONS,
+            combos: [],
+        } as PlayerAgent,
+        mindName: 'Blank Jessica',
+        playerName: 'SYSTEM',
+        createdDate: '',
+        lastUpdatedDate: '',
+    },
+    {
+        agent: {
+            layers: [],
+            character: Character.Antoc,
+            conditions: PRESET_CONDITIONS,
+            combos: [],
+        } as PlayerAgent,
+        mindName: 'Blank Antoc',
+        playerName: 'SYSTEM',
+        createdDate: '',
+        lastUpdatedDate: '',
+    },
+];
 
 export enum Medal {
     NONE = 'None',

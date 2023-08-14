@@ -54,6 +54,11 @@ export const Scenes = {
     ONLINE_MENU: 'online_menu',
     MINDS: 'minds',
 } as const;
+import {
+    track_character_select,
+    track_scene_change,
+    track_beat_opponent,
+} from '../../helpers/track';
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
 
@@ -79,12 +84,16 @@ const defaultOpponent: Opponent = {
 
 export type Playable = SavedMind | OnlineOpponent | PlayerAgent;
 
+const ShowFullReplayStorageKey = 'showFullReplay';
+const CompletedTutorialStorageKey = 'CompletedTutorial';
+
 const SceneSelector = () => {
     const [scene, setScene] = useState<Scene>();
 
     const [lastScene, setLastScene] = useState<Scene>(Scenes.MAIN_MENU);
     const [onlineMode, setOnlineMode] = useState<boolean>(false);
     const [previewMode, setPreviewMode] = useState<boolean>(false);
+    const [completedTutorial, setCompletedTutorial] = useState<boolean>(true);
 
     const musicRef = useRef<HTMLAudioElement>();
     const ctx = React.useContext(ShoshinWASMContext);
@@ -99,6 +108,9 @@ const SceneSelector = () => {
         console.log(e);
     });
  */
+    useEffect(() => {
+        track_scene_change(scene);
+    }, [scene]);
     useEffect(() => {
         musicRef.current = new Audio('/music/shoshintitle-audio.wav');
         musicRef.current.onended = function () {
@@ -128,7 +140,7 @@ const SceneSelector = () => {
 
     useEffect(() => {
         const newShowFullReplay = JSON.parse(
-            localStorage.getItem('showFullReplay')
+            localStorage.getItem(ShowFullReplayStorageKey)
         );
         if (newShowFullReplay && newShowFullReplay !== showFullReplay) {
             setShowFullReplay(JSON.parse(newShowFullReplay));
@@ -136,7 +148,10 @@ const SceneSelector = () => {
     }, []);
 
     useEffect(() => {
-        localStorage.setItem('showFullReplay', JSON.stringify(showFullReplay));
+        localStorage.setItem(
+            ShowFullReplayStorageKey,
+            JSON.stringify(showFullReplay)
+        );
     }, [showFullReplay]);
 
     const [gameMode, setGameMode] = useState<GameModes>(GameModes.simulation);
@@ -147,7 +162,13 @@ const SceneSelector = () => {
     };
 
     const onChooseCharacter = (character: Character) => {
-        setCharacter((_) => character);
+        track_character_select(character);
+        setPlayerAgent((playerAgent) => {
+            return {
+                ...playerAgent,
+                character: character,
+            };
+        });
 
         pauseMusic();
 
@@ -160,7 +181,11 @@ const SceneSelector = () => {
             state.playerAgents[character.toLowerCase()];
 
         if (playerAgent) {
-            setPlayerAgent(playerAgent);
+            //Combine missing conditions with initial conditions
+            setPlayerAgent({
+                ...playerAgent,
+                conditions: INITIAL_AGENT_COMPONENTS.conditions,
+            });
         }
 
         if (!playerAgent) {
@@ -193,24 +218,22 @@ const SceneSelector = () => {
 
     //Play state
 
-    const initialPlayerAgener: PlayerAgent = {
+    const initialPlayerAgent: PlayerAgent = {
         layers: [],
         character: Character.Jessica,
-        conditions: [],
+        conditions: INITIAL_AGENT_COMPONENTS.conditions,
         combos: [],
     };
 
     const [playerAgent, setPlayerAgent] =
-        useState<Playable>(initialPlayerAgener);
+        useState<Playable>(initialPlayerAgent);
 
-    const [layers, setLayers] = useState<Layer[]>([]);
-    const [character, setCharacter] = useState<Character>(Character.Jessica);
-    const [conditions, setConditions] =
-        //@ts-ignore
-        useState<Condition[]>(INITIAL_AGENT_COMPONENTS.conditions);
-    const [combos, setCombos] = useState<Action[][]>(
-        INITIAL_AGENT_COMPONENTS.combos
-    );
+    let character;
+    if (!('character' in playerAgent)) {
+        character = playerAgent.agent.character;
+    } else {
+        character = playerAgent.character;
+    }
 
     //Prop for action reference when coming from choose opponent, character might not be chosen
     const [referenceCharacter, setReferenceCharacter] = useState<Character>(
@@ -252,6 +275,18 @@ const SceneSelector = () => {
         }
         setMinds(state.minds);
     }, []);
+
+    useEffect(() => {
+        const state = JSON.parse(
+            localStorage.getItem(CompletedTutorialStorageKey)
+        );
+        if (state === undefined || state === null) {
+            setCompletedTutorial(false);
+            return;
+        }
+        setCompletedTutorial(state);
+    }, []);
+
     const defaultOpponents = (
         character == Character.Jessica ? JessicaOpponents : AntocOpponents
     ).map((agent, id) => {
@@ -368,6 +403,13 @@ const SceneSelector = () => {
     }, [opponentChoices]);
 
     const handleWin = (player: PlayerAgent, opponent: Opponent) => {
+        track_beat_opponent(
+            opponent.name,
+            selectedOpponent,
+            opponent.medal,
+            player.layers.length
+        );
+
         let updatedState = deafaultState;
         const state = getLocalState();
         if (state !== null) {
@@ -520,6 +562,17 @@ const SceneSelector = () => {
         setLocalState(updatedState);
     };
 
+    const handleCompleteTutorial = () => {
+        setCompletedTutorial(true);
+        localStorage.setItem(CompletedTutorialStorageKey, JSON.stringify(true));
+        onTransition(Scenes.MAIN_MENU);
+    };
+
+    const handleSkipTutorial = () => {
+        setCompletedTutorial(true);
+        localStorage.setItem(CompletedTutorialStorageKey, JSON.stringify(true));
+    };
+
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
             <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
@@ -529,7 +582,11 @@ const SceneSelector = () => {
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.MAIN_MENU}>
-                <MainMenu transition={transitionFromMainMenu} />
+                <MainMenu
+                    transition={transitionFromMainMenu}
+                    completedTutorial={completedTutorial}
+                    onSkipTutorial={handleSkipTutorial}
+                />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.CHOOSE_CHARACTER}>
                 <ChooseCharacter
@@ -587,6 +644,7 @@ const SceneSelector = () => {
                     onQuit={() => onTransition(Scenes.MAIN_MENU)}
                     volume={volume}
                     setVolume={setVolume}
+                    onCompleteTutorial={handleCompleteTutorial}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ACTION_REFERENCE}>

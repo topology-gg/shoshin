@@ -1,4 +1,10 @@
-import React, { ForwardedRef, ReactNode, useEffect, useState } from 'react';
+import React, {
+    ForwardedRef,
+    ReactNode,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import {
     Typography,
     Box,
@@ -18,7 +24,16 @@ import StatusBarPanel, {
     StatusBarPanelProps as PlayerStatuses,
 } from '../../../src/components/StatusBar';
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
-import { Character, numberToCharacter } from '../../constants/constants';
+import {
+    Character,
+    DamageType,
+    FRAME_COUNT,
+    SCORING,
+    ScoreMap,
+    isDamaged,
+    nullScoreMap,
+    numberToCharacter,
+} from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
 import useRunCairoSimulation from '../../hooks/useRunCairoSimulation';
 import dynamic from 'next/dynamic';
@@ -30,7 +45,11 @@ import FrameDecisionPathViewer from '../FrameDecisionPathViewer';
 import Gambit, {
     FullGambitFeatures,
 } from '../sidePanelComponents/Gambit/Gambit';
-import { Condition } from '../../types/Condition';
+import {
+    BodystatesAntoc,
+    BodystatesJessica,
+    Condition,
+} from '../../types/Condition';
 import SquareOverlayMenu from './SuccessMenu';
 import mainSceneStyles from './MainScene.module.css';
 import FullArtBackground from '../layout/FullArtBackground';
@@ -47,10 +66,127 @@ import CloseIcon from '@mui/icons-material/Close';
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
 import { Playable } from '../layout/SceneSelector';
 import SubmitMindButton from './MainSceneSubmit';
+import useAnimationControls, {
+    AnimationState,
+} from '../../hooks/useAnimationControls';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
 });
+
+export const calculateScoreMap = (
+    play: FrameScene,
+    character: Character
+): ScoreMap => {
+    if (play == null) return nullScoreMap;
+
+    //
+    // Score calculation
+    //
+
+    // Labor points
+    // (player would get these regardless player wins the fight or not)
+    // - each hurt inflicted on opponent gives S_HURT points
+    // - each knock inflicted on opponent gives S_KNOCK points
+    // - each launch inflicted on opponent gives S_LAUNCH points
+    // - each KO (one at most) inflicted on opponent gives S_KO points
+
+    // Health Bonus
+    // (only when player wins the fight)
+    // - player gets (player HP - opponent HP) * M_HEALTH points as bonus
+
+    // Full Health Bonus
+    // (only when player wins the fight)
+    // - players gets S_FULL_HEALTH as bonus
+
+    // Time Bonus
+    // (only when player wins the fight)
+    // - player gets (MAX_TIME - time spent to win) * M_TIME points as bonus
+
+    let scoreHurts = 0;
+    let scoreKnocks = 0;
+    let scoreLaunches = 0;
+    let scoreKO = 0;
+    play.agent_1.forEach((frame, _) => {
+        const counter = frame.body_state.counter;
+        const state = frame.body_state.state;
+
+        if (
+            counter == 0 &&
+            isDamaged(
+                [BodystatesJessica.Hurt, BodystatesAntoc.Hurt],
+                state,
+                character
+            )
+        )
+            scoreHurts += 1;
+        if (
+            counter == 0 &&
+            isDamaged(
+                [BodystatesJessica.Knocked, BodystatesAntoc.Knocked],
+                state,
+                character
+            )
+        )
+            scoreKnocks += 1;
+        if (
+            counter == 0 &&
+            isDamaged(
+                [BodystatesJessica.Launched, BodystatesAntoc.Launched],
+                state,
+                character
+            )
+        )
+            scoreLaunches += 1;
+        if (
+            counter == 0 &&
+            isDamaged(
+                [BodystatesJessica.KO, BodystatesAntoc.KO],
+                state,
+                character
+            )
+        )
+            scoreKO = 1;
+    });
+
+    const frameSpent = play.agent_0.length;
+
+    const healthDifference =
+        play.agent_0[play.agent_0.length - 1].body_state.integrity -
+        play.agent_1[play.agent_1.length - 1].body_state.integrity;
+
+    const hasFullHealthAtTheEnd: boolean =
+        play.agent_0[play.agent_0.length - 1].body_state.integrity == 1000;
+
+    const scoreLaborPoints =
+        scoreHurts * SCORING.S_HURT +
+        scoreKnocks * SCORING.S_KNOCK +
+        scoreLaunches * SCORING.S_LAUNCH +
+        scoreKO * SCORING.S_KO;
+    const scoreHealthBonus = healthDifference * SCORING.M_HEALTH;
+    const scoreFullHealthBonus = hasFullHealthAtTheEnd
+        ? SCORING.S_FULL_HEALTH
+        : 0;
+    const scoreTimeBonus = (FRAME_COUNT - frameSpent) * SCORING.M_TIME;
+    const scoreMap: ScoreMap = {
+        labor: {
+            hurt: scoreHurts * SCORING.S_HURT,
+            knocked: scoreKnocks * SCORING.S_KNOCK,
+            launched: scoreLaunches * SCORING.S_LAUNCH,
+            ko: scoreKO * SCORING.S_KO,
+        },
+        healthBonus: scoreHealthBonus,
+        fullHealthBonus: scoreFullHealthBonus,
+        timeBonus: scoreTimeBonus,
+        totalScore:
+            scoreLaborPoints +
+            scoreHealthBonus +
+            scoreFullHealthBonus +
+            scoreTimeBonus,
+    };
+
+    return scoreMap;
+};
 
 interface SimulationProps {
     player: Playable;
@@ -80,13 +216,14 @@ const SimulationScene = React.forwardRef(
             isPreview,
         } = props;
         // Constants
-        const LATENCY = 70;
         const runnable = true;
 
         // React states for simulation / animation control
         const [output, setOuput] = useState<FrameScene>();
         const [simulationError, setSimulationError] = useState();
         const [p1, setP1] = useState<Agent>();
+        const [reSimulationNeeded, setReSimulationNeeded] =
+            useState<boolean>(false);
 
         let p2: Agent;
         if ('layers' in opponent.agent) {
@@ -97,12 +234,20 @@ const SimulationScene = React.forwardRef(
             p2 = opponent.agent;
         }
 
-        const [loop, setLoop] = useState<NodeJS.Timer>();
-        const [animationFrame, setAnimationFrame] = useState<number>(0);
-        const [animationState, setAnimationState] = useState<string>('Stop');
         const [testJson, setTestJson] = useState<TestJson>(null);
         const [checkedShowDebugInfo, setCheckedShowDebugInfo] =
             useState<boolean>(false);
+
+        const {
+            start,
+            pause,
+            stop,
+            animationFrame,
+            setAnimationFrame,
+            animationState,
+            animationStepForward,
+            animationStepBackward,
+        } = useAnimationControls(output, p1?.character, p2?.character);
 
         const [playerStatuses, setPlayerStatuses] = useState<PlayerStatuses>({
             integrity_0: 1000,
@@ -156,6 +301,9 @@ const SimulationScene = React.forwardRef(
             };
         }, [openPauseMenu]);
 
+        //
+        // useEffect hook to update p1
+        //
         useEffect(() => {
             let builtAgent = handleBuildAgent();
 
@@ -179,7 +327,9 @@ const SimulationScene = React.forwardRef(
             }
 
             setP1(builtAgent);
-        }, [character, combos, conditions, layers]);
+            setReSimulationNeeded((_) => true);
+            stop();
+        }, [character, combos, conditions, layers, stop]);
 
         function handleBuildAgent() {
             let char = Object.keys(Character).indexOf(character);
@@ -248,38 +398,30 @@ const SimulationScene = React.forwardRef(
 
         const N_FRAMES = testJson == null ? 0 : testJson.agent_0.frames.length;
 
-        const animationStepForward = (frames) => {
-            setAnimationFrame((prev) => (prev == frames - 1 ? prev : prev + 1));
-        };
-        const animationStepBackward = () => {
-            setAnimationFrame((prev) => (prev > 0 ? prev - 1 : prev));
-        };
-
         function handleMidScreenControlClick(operation: string) {
-            if (operation == 'NextFrame' && animationState != 'Run') {
-                animationStepForward(N_FRAMES);
-            } else if (operation == 'PrevFrame' && animationState != 'Run') {
+            if (
+                operation == 'NextFrame' &&
+                animationState != AnimationState.RUN
+            ) {
+                animationStepForward();
+            } else if (
+                operation == 'PrevFrame' &&
+                animationState != AnimationState.RUN
+            ) {
                 animationStepBackward();
             } else if (operation == 'ToggleRun') {
                 // If in Run => go to Pause
-                if (animationState == 'Run') {
-                    clearInterval(loop); // kill the timer
-                    setAnimationState('Pause');
+                if (animationState == AnimationState.RUN) {
+                    pause();
                 }
 
                 // If in Pause => resume Run without simulation
-                else if (animationState == 'Pause') {
-                    // Begin animation
-                    setAnimationState('Run');
-                    setLoop(
-                        setInterval(() => {
-                            animationStepForward(N_FRAMES);
-                        }, LATENCY)
-                    );
+                else if (animationState == AnimationState.PAUSE) {
+                    start();
                 }
 
                 // If in Stop => perform simulation then go to Run
-                else if (animationState == 'Stop' && runnable) {
+                else if (animationState == AnimationState.STOP && runnable) {
                     const [out, err] = runCairoSimulation();
                     if (err != null) {
                         setSimulationError(err);
@@ -287,23 +429,16 @@ const SimulationScene = React.forwardRef(
                     }
                     setOuput(out);
 
-                    // Begin animation
-                    setAnimationState('Run');
-
-                    setLoop(
-                        setInterval(() => {
-                            animationStepForward(out.agent_0.length);
-                        }, LATENCY)
-                    );
+                    start();
                 }
             } else {
-                // Stop
-                clearInterval(loop); // kill the timer
-                setAnimationState('Stop');
-                setAnimationFrame((_) => 0);
+                stop();
             }
         }
 
+        //
+        // Compute flags from the fight
+        //
         const beatAgent =
             output !== undefined
                 ? output.agent_0[output.agent_1.length - 1].body_state
@@ -311,6 +446,9 @@ const SimulationScene = React.forwardRef(
                   output.agent_1[output.agent_1.length - 1].body_state.integrity
                 : false;
 
+        //
+        // Compute performance (medal earned) from the fight
+        //
         let performance = Medal.NONE;
         const hpRemaining =
             output !== undefined
@@ -329,6 +467,12 @@ const SimulationScene = React.forwardRef(
             performance = Medal.BRONZE;
         }
 
+        //
+        // Compute score from the fight
+        //
+        const scoreMap = calculateScoreMap(output, character);
+        const score = scoreMap.totalScore;
+
         const [showVictory, changeShowVictory] = useState<boolean>(false);
         useEffect(() => {
             if (
@@ -337,7 +481,11 @@ const SimulationScene = React.forwardRef(
                 achievedBetterPerformance(performance, opponent.medal) &&
                 'layers' in player
             ) {
-                submitWin(player, { ...opponent, medal: performance });
+                submitWin(player, {
+                    ...opponent,
+                    medal: performance,
+                    scoreMap: scoreMap,
+                });
             }
         }, [beatAgent]);
 
@@ -348,10 +496,9 @@ const SimulationScene = React.forwardRef(
             }
 
             if (animationFrame == N_FRAMES - 1) {
-                clearInterval(loop); // kill the timer
-                setAnimationState('Pause');
+                pause();
             }
-        }, [animationFrame]);
+        }, [animationFrame, pause]);
 
         const [playedWinningReplay, changePlayedWinningReplay] =
             useState<boolean>(false);
@@ -383,6 +530,15 @@ const SimulationScene = React.forwardRef(
 
         //Having this class be conditional on playOnly may not be needed
         const overlayClassName = playOnly ? mainSceneStyles.overlay : '';
+
+        const handleOverlayClick = () => {
+            if (playOnly) {
+                setAnimationFrame(N_FRAMES - 1);
+                changeShowVictory(true);
+                changePlayedWinningReplay(true);
+                pause();
+            }
+        };
 
         let playerOneName = null;
 
@@ -459,7 +615,7 @@ const SimulationScene = React.forwardRef(
         );
         return (
             <div id={'mother'} ref={ref}>
-                <Fade in={!phaserLoaded} timeout={1000}>
+                <Fade in={!phaserLoaded} timeout={500}>
                     <LoadingFull />
                 </Fade>
                 <FullArtBackground useAlt={true}>
@@ -481,6 +637,7 @@ const SimulationScene = React.forwardRef(
                                 <SquareOverlayMenu
                                     opponentName={opponentName}
                                     performance={performance}
+                                    scoreMap={scoreMap}
                                     handleContinueClick={handleContinueClick}
                                     closeMenu={() => changeShowVictory(false)}
                                 />
@@ -499,6 +656,7 @@ const SimulationScene = React.forwardRef(
                                             className={
                                                 overlayContainerClassName
                                             }
+                                            onClick={() => handleOverlayClick()}
                                         >
                                             <div className={overlayClassName}>
                                                 <Box
@@ -558,9 +716,6 @@ const SimulationScene = React.forwardRef(
                                                     animationFrame={
                                                         animationFrame
                                                     }
-                                                    animationState={
-                                                        animationState
-                                                    }
                                                     showDebug={
                                                         checkedShowDebugInfo
                                                     }
@@ -577,6 +732,15 @@ const SimulationScene = React.forwardRef(
                                                     volume={volume}
                                                 />
                                             </div>
+                                            {playOnly && (
+                                                <Typography
+                                                    color="lightGrey"
+                                                    mt="16px"
+                                                >
+                                                    Click anywhere to skip
+                                                    replay
+                                                </Typography>
+                                            )}
                                         </div>
                                         {playOnly ? (
                                             <div
@@ -584,6 +748,14 @@ const SimulationScene = React.forwardRef(
                                             ></div>
                                         ) : null}
                                         <MidScreenControl
+                                            reSimulationNeeded={
+                                                reSimulationNeeded
+                                            }
+                                            unsetResimulationNeeded={() =>
+                                                setReSimulationNeeded(
+                                                    (_) => false
+                                                )
+                                            }
                                             runnable={
                                                 !(p1 == null || p2 == null) &&
                                                 !playOnly
@@ -600,7 +772,10 @@ const SimulationScene = React.forwardRef(
                                                 handleMidScreenControlClick
                                             }
                                             handleSlideChange={(evt) => {
-                                                if (animationState == 'Run')
+                                                if (
+                                                    animationState ==
+                                                    AnimationState.RUN
+                                                )
                                                     return;
                                                 const slide_val: number =
                                                     parseInt(evt.target.value);
@@ -720,6 +895,10 @@ const SimulationScene = React.forwardRef(
                                             }}
                                         >
                                             <Gambit
+                                                isAnimationRunning={
+                                                    animationState ==
+                                                    AnimationState.RUN
+                                                }
                                                 layers={layers}
                                                 setLayers={setLayers}
                                                 features={FullGambitFeatures}
@@ -731,6 +910,11 @@ const SimulationScene = React.forwardRef(
                                                 actions={actions}
                                             />
                                         </Box>
+                                        {score > 0 && (
+                                            <Typography>
+                                                Score : {score}
+                                            </Typography>
+                                        )}
                                     </GameCard>
                                 </Grid>
                             </Grid>

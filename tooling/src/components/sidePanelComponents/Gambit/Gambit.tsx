@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import {
     Box,
     Button,
@@ -14,7 +14,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Menu from '@mui/material/Menu';
 import { ACTION_UNICODE_MAP, Character } from '../../../constants/constants';
 import BlurrableButton from '../../ui/BlurrableButton';
-import { Layer, defaultLayer, alwaysTrueCondition } from '../../../types/Layer';
+import {
+    Layer,
+    defaultLayer,
+    alwaysTrueCondition,
+    LayerCondition,
+} from '../../../types/Layer';
 import { Condition, conditionTypeToEmojiFile } from '../../../types/Condition';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import BlurrableListItemText from '../../ui/BlurrableListItemText';
@@ -25,6 +30,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { FileCopy, MoreHoriz, VerticalAlignCenter } from '@mui/icons-material';
 import Actions from '../../ComboEditor/Actions';
 import SingleCondition, { ConditionLabel } from './Condition';
+import { truncate } from 'fs';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 // I think we can just parse this index from id={....}
@@ -74,6 +80,7 @@ export const FullGambitFeatures: GambitFeatures = {
     sui: true,
 };
 interface GambitProps {
+    isAnimationRunning: boolean;
     layers: Layer[];
     setLayers: (layers: Layer[]) => void;
     character: Character;
@@ -84,6 +91,7 @@ interface GambitProps {
     activeMs: number;
     features: GambitFeatures;
     initialSelectedCombo?: number;
+    onResetClick?: () => void;
 }
 
 export interface LayerProps {
@@ -104,9 +112,15 @@ export interface LayerProps {
     handleInvertCondition: (layerIndex: number, conditionIndex: number) => void;
     //Layer either can make combo or edit the combo
     handleChooseCombo: (layerIndex: number) => void;
+    handleChangeCondition: (
+        condition: Condition,
+        conditionIndex: number,
+        layerIndex: number
+    ) => void;
     isActive: boolean;
     features: GambitFeatures;
     toggleIsLayerSui: (layerIndex: number) => void;
+    isAnimationRunning: boolean;
 }
 
 //Select +Combo,
@@ -127,12 +141,23 @@ const DraggableLayer = ({
     handleDuplicateLayer,
     handleInvertCondition,
     handleChooseCombo,
+    handleChangeCondition,
     isActive,
     features,
     toggleIsLayerSui,
+    isAnimationRunning,
 }: LayerProps) => {
+    const handleChangeLayerCondition = (
+        condition: Condition,
+        conditionIndex: number
+    ) => handleChangeCondition(condition, conditionIndex, index);
+
     return (
-        <Draggable draggableId={index.toString()} index={index}>
+        <Draggable
+            draggableId={index.toString()}
+            index={index}
+            isDragDisabled={isAnimationRunning}
+        >
             {(provided) => (
                 <div
                     ref={provided.innerRef}
@@ -157,10 +182,12 @@ const DraggableLayer = ({
                         handleRemoveCondition={handleRemoveCondition}
                         handleInvertCondition={handleInvertCondition}
                         handleChooseCombo={handleChooseCombo}
+                        handleChangeCondition={handleChangeLayerCondition}
                         isActive={isActive}
                         features={features}
                         actions={actions}
                         toggleIsLayerSui={toggleIsLayerSui}
+                        isAnimationRunning={isAnimationRunning}
                     />
                 </div>
             )}
@@ -182,10 +209,12 @@ export const LayerComponent = ({
     handleDuplicateLayer,
     handleInvertCondition,
     handleChooseCombo,
+    handleChangeCondition,
     isActive,
     features,
     actions,
     toggleIsLayerSui,
+    isAnimationRunning,
 }: LayerProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -223,6 +252,7 @@ export const LayerComponent = ({
     const onConditionSelect = (condition: Condition) => {
         handleChooseCondition(condition, conditionIndex);
         setAnchorEl(null);
+        setConditionAnchorEl(null);
     };
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -260,6 +290,10 @@ export const LayerComponent = ({
         setConditionAnchorEl(null);
     };
 
+    const handleConditionValueChange = (condition, index) => {
+        handleChangeCondition(condition, index, i);
+    };
+
     const action: Action = actionIndexToAction(layer.action.id, characterIndex);
 
     return (
@@ -268,6 +302,7 @@ export const LayerComponent = ({
             sx={{
                 width: '100%',
                 border: `1px solid ${isActive ? '#000' : '#ccc'}`,
+                background: isActive ? '#ffffffCC' : '00000000',
                 marginBottom: '4px',
                 borderRadius: '20px',
             }}
@@ -313,6 +348,8 @@ export const LayerComponent = ({
                                     handleRemoveCondition
                                 }
                                 onInvertCondition={handleInvertCondition}
+                                onValueChange={handleConditionValueChange}
+                                isReadOnly={isReadOnly}
                             />
                         ))}
 
@@ -445,6 +482,7 @@ export const LayerComponent = ({
 };
 
 const Gambit = ({
+    isAnimationRunning,
     layers,
     setLayers,
     character,
@@ -455,6 +493,7 @@ const Gambit = ({
     features,
     actions,
     initialSelectedCombo,
+    onResetClick,
 }: GambitProps) => {
     const handleCreateLayer = () => {
         // We need to make a deep copy otherwise this exported object is reassigned
@@ -482,51 +521,6 @@ const Gambit = ({
             return updated;
         }, [])
         .join(', ');
-    let componentAddLayer = (
-        <>
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'flex-end',
-                    justifyContent: 'space-between',
-                    width: '100%',
-                }}
-            >
-                {features.layerAddAndDelete ? (
-                    <Button
-                        onClick={(_) => {
-                            handleCreateLayer();
-                        }}
-                        style={{ fontFamily: 'Eurostile', color: '#000' }}
-                    >
-                        <AddIcon sx={{ mr: '3px' }} />
-                        {'LAYER'}
-                    </Button>
-                ) : (
-                    <div />
-                )}
-
-                <Box
-                    sx={{
-                        border: '1px solid',
-                        borderColor: `${activeMs == 0 ? '#000' : '#ccc'}`,
-                        opacity: activeMs == 0 ? 1 : 0.5,
-                    }}
-                >
-                    <Typography
-                        paddingLeft={'8px'}
-                        paddingRight={'8px'}
-                        sx={{
-                            fontFamily: 'Eurostile',
-                            color: activeMs == 0 ? '#000' : '#ccc',
-                        }}
-                    >
-                        SHOSHIN
-                    </Typography>
-                </Box>
-            </Box>
-        </>
-    );
 
     function onDragEnd(result) {
         const { draggableId, source, destination } = result;
@@ -684,35 +678,49 @@ const Gambit = ({
         setLayers(updatedLayers);
     };
 
-    const LayerList = React.memo(function LayerList({
-        layers,
-        activeMs,
-        features,
-        actions,
-    }: any) {
-        return layers.map((layer: Layer, index: number) => (
-            <DraggableLayer
-                layer={layer}
-                index={index}
-                key={index}
-                handleRemoveLayer={handleRemoveLayer}
-                handleDuplicateLayer={handleDuplicateLayer}
-                handleChooseAction={handleChooseAction}
-                isReadOnly={false}
-                character={character}
-                conditions={conditions}
-                handleChooseCondition={handleChooseCondition}
-                handleRemoveCondition={handleRemoveCondition}
-                handleInvertCondition={handleInvertCondition}
-                combos={combos}
-                handleChooseCombo={handleSelectCombo}
-                isActive={activeMs == index + 1}
-                features={features}
-                actions={actions}
-                toggleIsLayerSui={handleToggleIsLayerSui}
-            />
-        ));
-    });
+    const handleChangeCondition = (
+        condition: LayerCondition,
+        conditionIndex: number,
+        layerIndex: number
+    ) => {
+        setLayers(
+            layers.map((layer, lIndex) =>
+                lIndex === layerIndex
+                    ? {
+                          ...layer,
+                          conditions: layer.conditions.map((c, cIndex) =>
+                              cIndex === conditionIndex ? condition : c
+                          ),
+                      }
+                    : layer
+            )
+        );
+    };
+
+    const layerList = layers.map((layer: Layer, index: number) => (
+        <DraggableLayer
+            layer={layer}
+            index={index}
+            key={index}
+            handleRemoveLayer={handleRemoveLayer}
+            handleDuplicateLayer={handleDuplicateLayer}
+            handleChooseAction={handleChooseAction}
+            isReadOnly={false}
+            character={character}
+            conditions={conditions}
+            handleChooseCondition={handleChooseCondition}
+            handleRemoveCondition={handleRemoveCondition}
+            handleInvertCondition={handleInvertCondition}
+            combos={combos}
+            handleChooseCombo={handleSelectCombo}
+            handleChangeCondition={handleChangeCondition}
+            isActive={activeMs == index + 1}
+            features={features}
+            actions={actions}
+            toggleIsLayerSui={handleToggleIsLayerSui}
+            isAnimationRunning={isAnimationRunning}
+        />
+    ));
 
     const closeComboEditor = () => {
         changeSelectedCombo(-1);
@@ -724,7 +732,6 @@ const Gambit = ({
         setCombos(prev_copy);
     }
 
-    console.log('selected combo', selectedCombo, 'combos', combos);
     return (
         <Box
             sx={{
@@ -735,19 +742,82 @@ const Gambit = ({
             }}
         >
             <Box sx={{ padding: '0.5rem 0.5rem 2rem 0.5rem' }}>
-                <Typography sx={{ fontSize: '17px', color: '#000000' }}>
-                    Mind
-                </Typography>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        marginBottom: '16px',
-                    }}
-                >
-                    {componentAddLayer}
-                </div>
+                <Grid container>
+                    <Grid item xs={10} marginBottom={'16px'}>
+                        <Typography sx={{ fontSize: '17px', color: '#000000' }}>
+                            Mind
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Box
+                            sx={{
+                                border: '1px solid',
+                                borderColor: `${
+                                    activeMs == 0 ? '#000' : '#ccc'
+                                }`,
+                                opacity: activeMs == 0 ? 1 : 0.5,
 
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Typography
+                                paddingLeft={'8px'}
+                                paddingRight={'8px'}
+                                sx={{
+                                    fontFamily: 'Eurostile',
+                                    color: activeMs == 0 ? '#000' : '#ccc',
+                                }}
+                                align="right"
+                            >
+                                SHOSHIN
+                            </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={10} marginBottom={'16px'}>
+                        {features.layerAddAndDelete ? (
+                            <Button
+                                onClick={(_) => {
+                                    handleCreateLayer();
+                                }}
+                                style={{
+                                    fontFamily: 'Eurostile',
+                                    color: '#000',
+                                }}
+                            >
+                                <AddIcon sx={{ mr: '3px' }} />
+                                {'LAYER'}
+                            </Button>
+                        ) : (
+                            <div />
+                        )}
+                    </Grid>
+
+                    <Grid item xs={2}>
+                        {onResetClick && (
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+
+                                    alignItems: 'flex-end',
+                                }}
+                            >
+                                <Button
+                                    sx={{
+                                        width: '100px',
+                                        alignSelf: 'flex-end',
+                                    }}
+                                    variant={'text'}
+                                    onClick={onResetClick}
+                                >
+                                    Start Over
+                                </Button>
+                            </div>
+                        )}
+                    </Grid>
+                </Grid>
                 <Grid container>
                     <DragDropContext onDragEnd={onDragEnd}>
                         <Droppable droppableId="droppable">
@@ -805,46 +875,51 @@ const Gambit = ({
                                             xl={checkboxPortion}
                                             sx={{ pl: 0 }}
                                         >
-                                            <Tooltip
-                                                title={
-                                                    <div>
-                                                        <p
-                                                            style={{
-                                                                fontSize:
-                                                                    '16px',
-                                                            }}
-                                                        >
-                                                            Stay-Until-Invalid
-                                                            (SUI)
-                                                        </p>
-                                                        <p
-                                                            style={{
-                                                                fontSize:
-                                                                    '16px',
-                                                            }}
-                                                        >
-                                                            With SUI, the mind
-                                                            will stay at this
-                                                            layer until its
-                                                            condition becomes
-                                                            invalid, which then
-                                                            returns the mind
-                                                            back to SHOSHIN
-                                                            immediately.
-                                                        </p>
-                                                    </div>
-                                                }
-                                            >
-                                                <Typography
-                                                    sx={{
-                                                        fontSize: '13px',
-                                                        fontFamily: 'Eurostile',
-                                                        color: '#000000',
-                                                    }}
+                                            {features.sui && (
+                                                <Tooltip
+                                                    title={
+                                                        <div>
+                                                            <p
+                                                                style={{
+                                                                    fontSize:
+                                                                        '16px',
+                                                                }}
+                                                            >
+                                                                Stay-Until-Invalid
+                                                                (SUI)
+                                                            </p>
+                                                            <p
+                                                                style={{
+                                                                    fontSize:
+                                                                        '16px',
+                                                                }}
+                                                            >
+                                                                With SUI, the
+                                                                mind will stay
+                                                                at this layer
+                                                                until its
+                                                                condition
+                                                                becomes invalid,
+                                                                which then
+                                                                returns the mind
+                                                                back to SHOSHIN
+                                                                immediately.
+                                                            </p>
+                                                        </div>
+                                                    }
                                                 >
-                                                    SUI
-                                                </Typography>
-                                            </Tooltip>
+                                                    <Typography
+                                                        sx={{
+                                                            fontSize: '13px',
+                                                            fontFamily:
+                                                                'Eurostile',
+                                                            color: '#000000',
+                                                        }}
+                                                    >
+                                                        SUI
+                                                    </Typography>
+                                                </Tooltip>
+                                            )}
                                         </Grid>
                                         {/* <Grid item md={gridRemovePortion} xl={gridRemovePortion} sx={{pl:0}}>
                                             <Typography
@@ -859,12 +934,7 @@ const Gambit = ({
                                         </Grid> */}
                                     </Grid>
 
-                                    <LayerList
-                                        layers={layers}
-                                        activeMs={activeMs}
-                                        features={features}
-                                        actions={actions}
-                                    />
+                                    {layerList}
                                     {provided.placeholder}
                                 </div>
                             )}
@@ -917,4 +987,4 @@ const Gambit = ({
     );
 };
 
-export default Gambit;
+export default memo(Gambit);

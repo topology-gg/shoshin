@@ -1,8 +1,10 @@
 import { Action, AntocBlock, AntocMoveBackward, Hori } from '../types/Action';
 import Agent, { buildAgent } from '../types/Agent';
 import {
-    ElementType,
+    BodystatesAntoc,
+    BodystatesJessica,
     Condition,
+    ElementType,
     Operator,
     Perceptible,
 } from '../types/Condition';
@@ -21,9 +23,7 @@ export const DB_NAME = 'shoshin_indexer_5';
 export const COLLECTION_NAME_SUBMISSION = 'shoshin-dogfooding-submission';
 export const COLLECTION_NAME_LEAGUE = 'shoshin-league';
 export const COLLECTION_NAME_WHITELIST = 'shoshin-whitelist';
-export const COLLECTION_NAME_PVP = isProduction
-    ? 'shoshin-pvp'
-    : 'shoshin-pvp-dev';
+export const COLLECTION_NAME_PVP = true ? 'shoshin-pvp' : 'shoshin-pvp-dev';
 
 export const PRIME =
     BigInt(2 ** 251) + BigInt(17) * BigInt(2 ** 192) + BigInt(1);
@@ -112,6 +112,60 @@ export const bodyStateNumberToName = {
         1250: 'taunt',
         1320: 'ko',
     },
+};
+
+export enum DamageType {
+    Hurt = 'Hurt',
+    Knocked = 'Knocked',
+    Launched = 'Launched',
+    KO = 'KO',
+}
+
+export const isDamaged = (
+    targetStates: number[],
+    bodyState: number,
+    char: Character
+) => {
+    if (targetStates.includes(bodyState)) {
+        return true;
+    }
+
+    return false;
+};
+
+export enum SCORING {
+    S_HURT = 100,
+    S_KNOCK = 350,
+    S_LAUNCH = 150,
+    S_KO = 3000,
+    M_HEALTH = 5,
+    M_TIME = 15,
+    S_FULL_HEALTH = 5000,
+}
+
+export interface ScoreMap {
+    labor: {
+        ko: number;
+        hurt: number;
+        knocked: number;
+        launched: number;
+    };
+    healthBonus: number;
+    fullHealthBonus: number;
+    timeBonus: number;
+    totalScore: number;
+}
+export const nullScoreMap: ScoreMap = {
+    labor: {
+        ko: 0,
+        hurt: 0,
+        knocked: 0,
+        launched: 0,
+    },
+    healthBonus: 0,
+    fullHealthBonus: 0,
+    timeBonus: 0,
+    totalScore: 0,
 };
 
 export const ANTOC_KO_DURATION = 14;

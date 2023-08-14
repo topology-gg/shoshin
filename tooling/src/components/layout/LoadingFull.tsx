@@ -12,6 +12,7 @@ const LoadingFull = React.forwardRef<HTMLDivElement>((props: BoxProps, ref) => {
                 alignItems: 'flex-end',
                 height: '100vh',
                 backgroundImage: bgUrl,
+                backgroundColor: 'black',
                 backgroundSize: 'cover',
                 backgroundPosition: '50% 50%',
                 position: 'absolute',

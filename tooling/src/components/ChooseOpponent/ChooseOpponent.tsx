@@ -81,6 +81,8 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                 ? 'Jessica'
                 : 'Antoc';
         const selectedOpponentGrade = opponents[selectedOpponent].medal;
+        const selectedOpponentScore =
+            opponents[selectedOpponent].scoreMap?.totalScore;
 
         const decrementSelectedOpponent = () => {
             const newIndex =
@@ -172,13 +174,20 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                                         {opponents.length}
                                     </Typography>
                                     <Typography variant="h5" fontWeight="bold">
-                                        Grade: {selectedOpponentGrade}
+                                        Best Grade:{' '}
+                                        {selectedOpponentGrade == Medal.NONE
+                                            ? '---'
+                                            : selectedOpponentGrade}
                                     </Typography>
-                                    {mindName !== undefined && (
+                                    <Typography variant="h5" fontWeight="bold">
+                                        Best Score:{' '}
+                                        {selectedOpponentScore ?? '---'}
+                                    </Typography>
+                                    {/* {mindName !== undefined && (
                                         <Typography variant="body2">
                                             Level Name : {mindName}
                                         </Typography>
-                                    )}
+                                    )} */}
                                 </Grid>
                                 <Grid item xs={2}></Grid>
                                 <Grid item xs={2}>

@@ -4,11 +4,16 @@ import { GameModes } from '../../types/Simulator';
 import ShoshinMenu, { ShoshinMenuItem } from './ShoshinMenu';
 import FullArtBackground from '../layout/FullArtBackground';
 import { Scene, Scenes } from '../layout/SceneSelector';
+import { Button } from '@mui/material';
 
 const MainMenu = React.forwardRef<
     unknown,
-    { transition: (scene: Scene, gameMode: GameModes) => void }
->(({ transition }, ref) => {
+    {
+        transition: (scene: Scene, gameMode: GameModes) => void;
+        completedTutorial: boolean;
+        onSkipTutorial: () => void;
+    }
+>(({ transition, completedTutorial = true, onSkipTutorial }, ref) => {
     const items: ShoshinMenuItem[] = [
         {
             title: 'Play',
@@ -32,17 +37,29 @@ const MainMenu = React.forwardRef<
             onClick: () => transition(Scenes.MINDS, GameModes.simulation),
         },
         {
-            title: 'Profile',
-        },
-        {
             title: 'Settings',
+        },
+    ];
+
+    const newPlayerItems: ShoshinMenuItem[] = [
+        {
+            title: 'Tutorial',
+            onClick: () =>
+                transition(Scenes.GAMEPLAY_TUTORIAL, GameModes.simulation),
         },
     ];
 
     const title = 'Shoshin';
     return (
         <FullArtBackground ref={ref}>
-            <ShoshinMenu displayLogo={false} menuItems={items} />
+            <ShoshinMenu
+                displayLogo={false}
+                menuItems={completedTutorial ? items : newPlayerItems}
+            >
+                {!completedTutorial && (
+                    <Button onClick={onSkipTutorial}> Skip Tutorial </Button>
+                )}
+            </ShoshinMenu>
         </FullArtBackground>
     );
 });

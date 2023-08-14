@@ -34,6 +34,7 @@ const SimpleLayerList = ({ playerAgent }: SimpleLayerList) => {
 
     const renderedLayers = layers.map((layer, i) => (
         <LayerComponent
+            isAnimationRunning={false}
             layer={layer}
             index={i}
             isReadOnly={true}
@@ -47,6 +48,7 @@ const SimpleLayerList = ({ playerAgent }: SimpleLayerList) => {
             handleInvertCondition={() => {}}
             handleRemoveCondition={() => {}}
             handleRemoveLayer={() => {}}
+            handleChangeCondition={() => {}}
             isActive={false}
             toggleIsLayerSui={() => {}}
             handleDuplicateLayer={() => {}}

@@ -88,7 +88,7 @@ const layers = [
 ];
 
 const LessonSeven: Lesson = {
-    title: 'Layers',
+    title: 'Combos',
     opponent: opponent0Jessica,
     slides: [slide0, slide1, slide2],
     features: {
