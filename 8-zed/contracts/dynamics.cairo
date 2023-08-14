@@ -808,14 +808,20 @@ func _euler_forward_consider_hitbox{range_check_ptr}(
         }
         tempvar range_check_ptr = range_check_ptr;
 
-        local direction;
+        //
+        // Compute abs_distance - the amount of overlap on X axis
+        //
         // note: body_dim_i contains the current body dimension
         // fix direction of backoff based on how agents are placed
+        local direction;
+        let body_width_half_0 = body_dim_0.x / 2;
+        let body_width_half_1 = body_dim_1.x / 2;
+        let body_width_half_sum = body_width_half_0 + body_width_half_1;
         if (bool_1_to_the_right_of_0 == 1) {
-            assert abs_distance = body_dim_0.x - (physics_state_cand_1.pos.x - physics_state_cand_0.pos.x);
+            assert abs_distance = body_width_half_sum - (physics_state_cand_1.pos.x - physics_state_cand_0.pos.x);
             assert direction = -1;
         } else {
-            assert abs_distance = body_dim_1.x - (physics_state_cand_0.pos.x - physics_state_cand_1.pos.x);
+            assert abs_distance = body_width_half_sum - (physics_state_cand_0.pos.x - physics_state_cand_1.pos.x);
             assert direction = 1;
         }
         // abs(physics_state_cand_0.vel_fp.x) = sign_vx_cand_0 * physics_state_cand_0.vel_fp.x;

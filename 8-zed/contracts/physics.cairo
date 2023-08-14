@@ -60,19 +60,20 @@ func get_body_hitbox_dimension{range_check_ptr} (
     body_state: felt,
     body_counter: felt
 ) -> (
-    body_dimension: Vec2
+    body_dimension: Vec2,
+    body_half_width: felt
 ) {
-    if (character_type == ns_character_type.JESSICA) {
-        return ns_jessica_hitbox.get_body_hitbox_dimension(body_state, body_counter);
-    }
-    if (character_type == ns_character_type.ANTOC) {
-        return ns_antoc_hitbox.get_body_hitbox_dimension(body_state, body_counter);
-    }
+    alloc_locals;
 
-    with_attr error_message("Character type is not recognized.") {
-        assert 0 = 1;
+    if (character_type == ns_character_type.JESSICA) {
+        // Jessica
+        let (body_dimension, body_half_width) = ns_jessica_hitbox.get_body_hitbox_dimension(body_state, body_counter);
+        return (body_dimension = body_dimension, body_half_width = body_half_width);
+    } else {
+        // Antoc
+        let (body_dimension, body_half_width) = ns_antoc_hitbox.get_body_hitbox_dimension(body_state, body_counter);
+        return (body_dimension = body_dimension, body_half_width = body_half_width);
     }
-    return ( body_dimension = Vec2(0,0) );
 }
 
 func get_action_hitbox{range_check_ptr} (
@@ -185,12 +186,12 @@ func _physicality{range_check_ptr}(
     ) = is_in_various_states_given_character_type (character_type_1, curr_body_state_1.state, curr_body_state_1.counter);
 
     // compute body hitboxes
-    let (body_dim_0) = get_body_hitbox_dimension (
+    let (body_dim_0: Vec2, body_half_width_0: felt) = get_body_hitbox_dimension (
         character_type_0,
         curr_body_state_0.state,
         curr_body_state_0.counter
     );
-    let (body_dim_1) = get_body_hitbox_dimension (
+    let (body_dim_1: Vec2, body_half_width_1: felt) = get_body_hitbox_dimension (
         character_type_1,
         curr_body_state_1.state,
         curr_body_state_1.counter
@@ -222,18 +223,14 @@ func _physicality{range_check_ptr}(
     }
 
     // Create candidate body hitboxes
-    let body_0_cand: Rectangle = Rectangle (candidate_physics_state_0.pos, body_dim_0);
-    let body_1_cand: Rectangle = Rectangle (candidate_physics_state_1.pos, body_dim_1);
-
-    // local hitboxes_0: Hitboxes = Hitboxes(
-    //     action = action_0,
-    //     body = Rectangle (candidate_physics_state_0.pos, body_dim_0)
-    // );
-
-    // local hitboxes_1: Hitboxes = Hitboxes(
-    //     action = action_1,
-    //     body = Rectangle (candidate_physics_state_1.pos, body_dim_1)
-    // );
+    let body_0_cand: Rectangle = Rectangle (
+        Vec2(candidate_physics_state_0.pos.x - body_half_width_0, candidate_physics_state_0.pos.y),
+        body_dim_0
+    );
+    let body_1_cand: Rectangle = Rectangle (
+        Vec2(candidate_physics_state_1.pos.x - body_half_width_1, candidate_physics_state_1.pos.y),
+        body_dim_1
+    );
 
     //
     // 3. Test body hitbox overlaps
@@ -266,8 +263,14 @@ func _physicality{range_check_ptr}(
     );
 
     // Create final body hitboxes
-    let body_0: Rectangle = Rectangle (curr_physics_state_0.pos, body_dim_0);
-    let body_1: Rectangle = Rectangle (curr_physics_state_1.pos, body_dim_1);
+    let body_0: Rectangle = Rectangle (
+        Vec2(curr_physics_state_0.pos.x - body_half_width_0, curr_physics_state_0.pos.y),
+        body_dim_0
+    );
+    let body_1: Rectangle = Rectangle (
+        Vec2(curr_physics_state_1.pos.x - body_half_width_1, curr_physics_state_1.pos.y),
+        body_dim_1
+    );
 
     // Compute final action hitboxes
     let (action_0: Rectangle) = get_action_hitbox (
