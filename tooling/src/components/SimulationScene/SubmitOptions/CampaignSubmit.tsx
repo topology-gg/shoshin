@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Opponent, Opponent, SavedMind } from '../../../types/Opponent';
+import { Opponent, SavedMind } from '../../../types/Opponent';
 import { useSubmitCampaignMind, useUpdateMind } from '../../../../lib/api';
 import {
     Button,
@@ -20,11 +20,18 @@ interface CampaignSubmitButtonProps {
     opponent: Opponent;
 }
 
-interface SubmittingProps extends CampaignSubmitButtonProps {
+type SubmittingProps = Omit<CampaignSubmitButtonProps, 'opponent'> & {
     handleLoaded: () => void;
-}
-const Submitting = ({ mind, opponentIndex, handleLoaded }: SubmittingProps) => {
-    const res = useSubmitCampaignMind(opponentIndex, mind);
+    address: string;
+};
+
+const Submitting = ({
+    mind,
+    opponentIndex,
+    address,
+    handleLoaded,
+}: SubmittingProps) => {
+    const res = useSubmitCampaignMind(opponentIndex, mind, address);
 
     useEffect(() => {
         if (res) {
@@ -62,14 +69,31 @@ const CampaignSubmitButton = ({
         setLoading(false);
         setStage(CampaignSubmitStage.SUCCESS);
     };
+
+    const handleClose = () => {
+        setNamingOpen(false);
+        setStage(
+            !address
+                ? CampaignSubmitStage.WALLET_AUTH
+                : CampaignSubmitStage.CONFIRM
+        );
+    };
+
+    useEffect(() => {
+        if (address) {
+            setStage(CampaignSubmitStage.CONFIRM);
+        }
+    }, [address]);
     return (
-        <Tooltip title={'Submit to fight against other players'}>
+        <Tooltip title={'Submit your mind to log your high score'}>
             <div>
                 <Button
                     variant="outlined"
-                    disabled={loading}
+                    disabled={CampaignSubmitStage.LOADING == stage}
                     onClick={() => setNamingOpen(true)}
-                ></Button>
+                >
+                    Submit
+                </Button>
 
                 <Dialog
                     open={namingOpen}
@@ -77,7 +101,7 @@ const CampaignSubmitButton = ({
                     fullWidth
                     maxWidth={'md'}
                 >
-                    {CampaignSubmitStage.WALLET_AUTH && (
+                    {stage == CampaignSubmitStage.WALLET_AUTH && (
                         <div>
                             <DialogTitle>Connect StarkNet Wallet</DialogTitle>
                             <DialogContent>
@@ -90,41 +114,53 @@ const CampaignSubmitButton = ({
                         </div>
                     )}
 
-                    {CampaignSubmitStage.CONFIRM && (
+                    {stage == CampaignSubmitStage.CONFIRM && (
                         <div>
                             <DialogTitle>Submit Agent</DialogTitle>
                             <DialogContent>Address : {address}</DialogContent>
                         </div>
                     )}
 
-                    {CampaignSubmitStage.LOADING && (
+                    {stage == CampaignSubmitStage.LOADING && (
                         <Submitting
                             mind={mind}
                             opponentIndex={opponentIndex}
                             handleLoaded={handleLoaded}
+                            address={address}
                         />
                     )}
 
-                    {CampaignSubmitStage.SUCCESS && <div>Mind Submitted</div>}
+                    {stage == CampaignSubmitStage.SUCCESS && (
+                        <div>Mind Submitted</div>
+                    )}
 
                     <DialogActions>
-                        <Button
-                            onClick={() => setNamingOpen(false)}
-                            color="primary"
-                        >
+                        <Button onClick={handleClose} color="primary">
                             Cancel
                         </Button>
-                        <Button
-                            onClick={() => {
-                                setLoading(true);
-                                setNamingOpen(false);
-                            }}
-                            color="primary"
-                            variant="contained"
-                            disabled={!address}
-                        >
-                            Confirm
-                        </Button>
+                        {stage == CampaignSubmitStage.CONFIRM && (
+                            <Button
+                                onClick={() => {
+                                    setStage(CampaignSubmitStage.LOADING);
+                                }}
+                                color="primary"
+                                variant="contained"
+                                disabled={!address}
+                            >
+                                Submit
+                            </Button>
+                        )}
+
+                        {stage == CampaignSubmitStage.SUCCESS && (
+                            <Button
+                                onClick={handleClose}
+                                color="primary"
+                                variant="contained"
+                                disabled={!address}
+                            >
+                                Close
+                            </Button>
+                        )}
                     </DialogActions>
                 </Dialog>
             </div>

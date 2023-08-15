@@ -1,8 +1,8 @@
-import clientPromise from '../../../lib/mongodb';
+import clientPromise from '../../../../lib/mongodb';
 import {
     DB_NAME,
     COLLECTION_NAME_CAMPAIGN_SCORES,
-} from '../../../src/constants/constants';
+} from '../../../../src/constants/constants';
 
 export default async function handler(req, res) {
     const client = await clientPromise;

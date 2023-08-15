@@ -626,6 +626,7 @@ const SimulationScene = React.forwardRef(
                 isCampaign={isCampaign}
                 player={player}
                 opponentIndex={opponentIndex}
+                opponent={opponent}
             />
         );
 

@@ -11,7 +11,7 @@ interface SubmitOptionsProps {
     isCampaign: boolean;
     player: Playable;
     opponentIndex: number;
-    opponent: Opponent;
+    opponent: any;
 }
 
 const SubmitOptions = ({

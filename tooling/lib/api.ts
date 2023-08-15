@@ -75,7 +75,7 @@ export function useGetScoresForOpponent(index) {
 
 async function submitAgentRequest(url, requestBody) {
     const response = await fetch(url, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -89,8 +89,12 @@ async function submitAgentRequest(url, requestBody) {
     return await response.json();
 }
 
-export function useSubmitCampaignMind(index, mind) {
+export function useSubmitCampaignMind(index, mind, address) {
+    const reqBody = {
+        mind,
+        address,
+    };
     return useSWR<any, any>(`/api/campaign/${index}}`, () =>
-        submitAgentRequest(`/api/campaign/${index}`, mind)
+        submitAgentRequest(`/api/campaign/${index}`, reqBody)
     );
 }
