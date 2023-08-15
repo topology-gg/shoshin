@@ -24,6 +24,7 @@ export interface Layer {
         isCombo: boolean;
     };
     sui?: boolean;
+    locked?: boolean;
 }
 
 const getActionCondition = (
@@ -659,4 +660,6 @@ export const defaultLayer: Layer = {
         id: 0,
         isCombo: false,
     },
+    sui: false,
+    locked: false,
 };
