@@ -71,7 +71,7 @@
     "wasm-pack": "^0.10.3"
   },
   "files": [
-    "src",
+    "dist",
     "wasm/shoshin/pkg_nodejs/*",
     "lib",
     "abi"

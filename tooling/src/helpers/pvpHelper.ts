@@ -10,8 +10,8 @@ import Agent, { PlayerAgent, agentsToArray, buildAgent } from '../types/Agent';
 import { FrameScene } from '../types/Frame';
 import { layersToAgentComponents } from '../types/Layer';
 import cairoOutputToFrameScene from './cairoOutputToFrameScene';
-type PvPResult = {
-    result: 'win' | 'loss';
+export type PvPResult = {
+    result: 'win' | 'loss' | 'draw';
     score: number;
     hp: number;
 };
@@ -26,7 +26,7 @@ export type PvPProfile = {
     lastRankTime: number;
 };
 
-export async function runRank() {
+export default async function runRank() {
     const client: MongoClient = await clientPromise;
     const db = client.db(DB_NAME);
 
