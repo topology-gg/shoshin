@@ -25,7 +25,7 @@ export default async function handler(
 ) {
     const { opponent } = req.query;
 
-    console.log('in opp api', req);
+    console.log('in opp api', req.body);
     const client: MongoClient = await clientPromise;
     const db = client.db(DB_NAME);
     const campaingMinds = db.collection<CampaignMind>(
@@ -37,12 +37,12 @@ export default async function handler(
     if (req.method === 'POST') {
         try {
             const updateResult = await campaingMinds.insertOne({
-                mind: req.body,
+                mind: req.body.mind,
                 address: req.body.address,
                 opponentIndex: opponentIndex,
             });
             if (updateResult.acknowledged) {
-                res.status(200);
+                res.status(200).json({ success: true });
             } else {
                 console.error(
                     `unable to update minds, req url = ${req.url}, req body = ${req.body}, update result = ${updateResult},  `

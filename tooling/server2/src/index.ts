@@ -1,11 +1,9 @@
-import { Command } from 'commander';
-
 import { MongoClient, ChangeStream } from 'mongodb';
 import {
     COLLECTION_NAME_CAMPAIGN_MINDS,
     DB_NAME,
 } from '../../src/constants/constants';
-import clientPromise from '../../lib/mongodb';
+import { getScoreForOpponent } from './helper';
 require('dotenv').config();
 
 const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
@@ -26,9 +24,16 @@ const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
 
         const changeStream: ChangeStream = collection.watch();
 
-        changeStream.on('change', (change) => {
+        changeStream.on('change', async (change) => {
             // Perform your desired action with the change event
             console.log('Change event:', change);
+
+            if (change.operationType === 'insert') {
+                const [score, err] = await getScoreForOpponent(
+                    change.fullDocument.mind,
+                    change.fullDocument.opponentIndex
+                );
+            }
         });
 
         // Keep the script running

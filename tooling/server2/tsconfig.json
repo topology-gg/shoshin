@@ -9,6 +9,7 @@
         "esModuleInterop": true,
         "moduleResolution": "node",
         "noImplicitAny": false,
-        "strictNullChecks": false
+        "strictNullChecks": false,
+        "jsx": "react"
     }
 }
