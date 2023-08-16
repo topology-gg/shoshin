@@ -6,17 +6,7 @@ import {
     Character,
     DB_NAME,
 } from '../../../src/constants/constants';
-import { PlayerAgent } from '../../../src/types/Agent';
-
-type SubmittedMind = {
-    mindName: string;
-    playerName: string;
-    mind: PlayerAgent;
-};
-
-type PutRequest = {
-    mind: PlayerAgent;
-};
+import { PvPProfile } from '../../../src/helpers/pvpHelper';
 
 export default async function handler(
     req: NextApiRequest,
@@ -26,18 +16,19 @@ export default async function handler(
 
     const client: MongoClient = await clientPromise;
     const db = client.db(DB_NAME);
-    const submittedMinds = db.collection<SubmittedMind>(COLLECTION_NAME_PVP);
+    const pvpProfileCollection = db.collection<PvPProfile>(COLLECTION_NAME_PVP);
     const playerName = data[0];
-    const character = data[1];
+    const character =
+        data[1].charAt(0).toUpperCase() + data[1].substring(1).toLowerCase();
     const mindName = data[2];
     if (req.method === 'PUT') {
         try {
-            const updateResult = await submittedMinds.updateOne(
+            const updateResult = await pvpProfileCollection.updateOne(
                 {
                     $and: [
                         { mindName: mindName },
                         { playerName: playerName },
-                        { agent: { character: character as Character } },
+                        { 'agent.character': character as Character },
                     ],
                 },
                 {
@@ -45,12 +36,13 @@ export default async function handler(
                         agent: req.body,
                         mindName: mindName,
                         playerName: playerName,
+                        lastAgentModified: new Date().getTime(),
                     },
                 },
                 { upsert: true }
             );
             if (updateResult.acknowledged) {
-                const latest = await submittedMinds.findOne({
+                const latest = await pvpProfileCollection.findOne({
                     $and: [
                         { mindName: mindName },
                         { playerName: playerName },
@@ -59,7 +51,11 @@ export default async function handler(
                 });
                 if (!latest) {
                     console.error(
-                        `unable to update minds, req url = ${req.url}, req body = ${req.body}, update result = ${updateResult},  `
+                        `unable to update minds, req url = ${
+                            req.url
+                        }, req body = ${JSON.stringify(
+                            req.body
+                        )}, update result = ${JSON.stringify(updateResult)},  `
                     );
                     res.status(500).json({
                         error: 'Error updating mind, unable to find updated minds',
@@ -70,7 +66,11 @@ export default async function handler(
                 res.status(200).json(responseBody);
             } else {
                 console.error(
-                    `unable to update minds, req url = ${req.url}, req body = ${req.body}, update result = ${updateResult},  `
+                    `unable to update minds, req url = ${
+                        req.url
+                    }, req body = ${JSON.stringify(
+                        req.body
+                    )}, update result = ${JSON.stringify(updateResult)},  `
                 );
                 res.status(500).json({
                     error: 'Error updating mind: Failed to upload minds',
@@ -84,7 +84,7 @@ export default async function handler(
         }
     } else if (req.method === 'GET') {
         console.log('get request');
-        const result = await submittedMinds.findOne({
+        const result = await pvpProfileCollection.findOne({
             mindName: mindName,
             playerName: playerName,
             'agent.character': character as Character,
