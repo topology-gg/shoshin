@@ -12,18 +12,22 @@ import cron from 'node-cron';
 dotenv.config();
 
 const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING
+const SCHEDULED_CRON = process.env.SCHEDULED_CRON ;
 const options = {}
 
 if (!MONGO_CONNECTION_STRING) {
-    throw new Error('Please add MONGO_CONNECTION_STRING to your .env.local')
+    throw new Error('Please add MONGO_CONNECTION_STRING to your .env')
+}
+
+if (!SCHEDULED_CRON) {
+    throw new Error('Please add SCHEDULED_CRON to your .env')
 }
 
 const client = new MongoClient(MONGO_CONNECTION_STRING, options)
 const clientPromise = client.connect()
 
-
-const task = cron.schedule('22 0 * * *', () => {
-    console.log('Running a job ', new Date().toISOString());
+const task = cron.schedule(SCHEDULED_CRON, () => {
+    console.log('ranking job ', new Date().toISOString());
     runRank();
     
   }, {
