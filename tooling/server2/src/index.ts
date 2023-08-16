@@ -37,13 +37,24 @@ const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
                     change.fullDocument.opponentIndex
                 );
 
-                collectionScores.insertOne({
+                const existingScore = await collectionScores.findOne({
                     playerAddress: change.fullDocument.address,
-                    mindId: change.fullDocument._id,
-                    score: score,
                     opponentIndex: change.fullDocument.opponentIndex,
                     character: change.fullDocument.mind.character,
                 });
+
+                if (
+                    existingScore == undefined ||
+                    score.totalScore > existingScore.score.totalScore
+                ) {
+                    collectionScores.insertOne({
+                        playerAddress: change.fullDocument.address,
+                        mindId: change.fullDocument._id,
+                        score: score,
+                        opponentIndex: change.fullDocument.opponentIndex,
+                        character: change.fullDocument.mind.character,
+                    });
+                }
 
                 console.log('score is ', score, err);
             }

@@ -30,7 +30,7 @@ export interface SinglePlayerScore {
 }
 const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
     const { data: data } = useGetScoresForOpponent(opponentIndex);
-    const scores = data?.scores ? data.scores : undefined;
+    const scores = data?.scores ? data.scores : [];
 
     const tableCellSx = {
         fontSize: '14px',
