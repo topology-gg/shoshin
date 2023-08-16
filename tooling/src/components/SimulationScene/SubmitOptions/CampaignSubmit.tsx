@@ -9,6 +9,7 @@ import {
     DialogContent,
     DialogTitle,
     Tooltip,
+    Typography,
 } from '@mui/material';
 import ConnectWallet from '../../ConnectWallet';
 import { useAccount } from '@starknet-react/core';
@@ -117,7 +118,14 @@ const CampaignSubmitButton = ({
                     {stage == CampaignSubmitStage.CONFIRM && (
                         <div>
                             <DialogTitle>Submit Agent</DialogTitle>
-                            <DialogContent>Address : {address}</DialogContent>
+                            <DialogContent>
+                                Submitting as: {address} {'\n'}
+                                <Typography>
+                                    If you have already submitted a mind for
+                                    this opponent. Your highest score will be
+                                    reflected in the leaderboard.
+                                </Typography>
+                            </DialogContent>
                         </div>
                     )}
 
@@ -131,13 +139,21 @@ const CampaignSubmitButton = ({
                     )}
 
                     {stage == CampaignSubmitStage.SUCCESS && (
-                        <div>Mind Submitted</div>
+                        <div>
+                            <DialogTitle>Submit Agent</DialogTitle>
+                            <DialogContent>
+                                Mind submitted successfully!
+                            </DialogContent>
+                        </div>
                     )}
 
                     <DialogActions>
-                        <Button onClick={handleClose} color="primary">
-                            Cancel
-                        </Button>
+                        {stage !== CampaignSubmitStage.SUCCESS && (
+                            <Button onClick={handleClose} color="primary">
+                                Cancel
+                            </Button>
+                        )}
+
                         {stage == CampaignSubmitStage.CONFIRM && (
                             <Button
                                 onClick={() => {
