@@ -1,10 +1,12 @@
 import { MongoClient, ChangeStream } from 'mongodb';
 import {
     COLLECTION_NAME_CAMPAIGN_MINDS,
+    COLLECTION_NAME_CAMPAIGN_SCORES,
     DB_NAME,
-} from '../../src/constants/constants';
-import { getScoreForOpponent } from './helper';
-require('dotenv').config();
+} from 'next-exp/dist/src/constants/constants.js';
+import { getScoreForOpponent } from './util.js';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
 
@@ -20,9 +22,10 @@ const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
         await client.connect();
 
         const db = client.db(DB_NAME);
-        const collection = db.collection(COLLECTION_NAME_CAMPAIGN_MINDS);
+        const collectionMinds = db.collection(COLLECTION_NAME_CAMPAIGN_MINDS);
+        const collectionScores = db.collection(COLLECTION_NAME_CAMPAIGN_SCORES);
 
-        const changeStream: ChangeStream = collection.watch();
+        const changeStream: ChangeStream = collectionMinds.watch();
 
         changeStream.on('change', async (change) => {
             // Perform your desired action with the change event
@@ -33,6 +36,16 @@ const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
                     change.fullDocument.mind,
                     change.fullDocument.opponentIndex
                 );
+
+                collectionScores.insertOne({
+                    playerAddress: change.fullDocument.address,
+                    mindId: change.fullDocument._id,
+                    score: score,
+                    opponentIndex: change.fullDocument.opponentIndex,
+                    character: change.fullDocument.mind.character,
+                });
+
+                console.log('score is ', score, err);
             }
         });
 

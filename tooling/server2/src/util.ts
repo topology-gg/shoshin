@@ -1,20 +1,22 @@
-import * as wasm from '../../wasm/shoshin/pkg/shoshin';
+import * as wasm from 'next-exp/wasm/shoshin/pkg_nodejs/shoshin.js';
 import Agent, {
     PlayerAgent,
     agentsToArray,
     buildAgent,
-} from '../../src/types/Agent';
+} from 'next-exp/dist/src/types/Agent.js';
 
-import { layersToAgentComponents } from '../../src/types/Layer';
-import cairoOutputToFrameScene from '../../src/helpers/cairoOutputToFrameScene';
-import { FrameScene } from '../../src/types/Frame';
-import { buildAgentFromLayers } from '.../../../src/components/ChooseOpponent/opponents/util';
-import { Character, ScoreMap } from '../../src/constants/constants';
+import cairoOutputToFrameScene from 'next-exp/dist/src/helpers/cairoOutputToFrameScene.js';
+import { FrameScene } from 'next-exp/dist/src/types/Frame.js';
+import { buildAgentFromLayers } from 'next-exp/dist/src/components/ChooseOpponent/opponents/util.js';
+import {
+    Character,
+    ScoreMap,
+    calculateScoreMap,
+} from 'next-exp/dist/src/constants/constants.js';
 import {
     JessicaOpponents,
     AntocOpponents,
-} from '../../src/components/ChooseOpponent/opponents/opponents';
-import { calculateScoreMap } from '../../src/components/SimulationScene/MainScene';
+} from 'next-exp/dist/src/components/ChooseOpponent/opponents/opponents.js';
 
 export async function getScoreForOpponent(
     p1: PlayerAgent,
@@ -32,7 +34,7 @@ export async function getScoreForOpponent(
 
 async function runSimulation(
     p1: PlayerAgent,
-    p2Agent: Agent
+    p2Agent: Agent.default
 ): Promise<[FrameScene, Error]> {
     const p1Agent = buildAgentFromLayers(
         p1.layers,
@@ -42,5 +44,5 @@ async function runSimulation(
 
     let shoshinInput = new Int32Array(agentsToArray(p1Agent, p2Agent));
     let output = wasm.runCairoProgram(shoshinInput);
-    return [cairoOutputToFrameScene(output), null];
+    return [cairoOutputToFrameScene.default(output), null];
 }

@@ -70,7 +70,7 @@ export function useGetMind(username, character, mindName) {
 }
 
 export function useGetScoresForOpponent(index) {
-    return useSWR(`/api/campaign/list/${index}`, fetcher);
+    return useSWR(`/api/campaign/list?opponentIndex=${index}`, fetcher);
 }
 
 async function submitCampaignMindRequest(url, requestBody) {

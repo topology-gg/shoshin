@@ -15,6 +15,7 @@ import { EMPTY_JESSICA } from '../../constants/starter_agent';
 import { PlayerAgent } from '../../types/Agent';
 import { Character, JESSICA, ScoreMap } from '../../constants/constants';
 import { useGetScoresForOpponent } from '../../../lib/api';
+import { useAccount } from '@starknet-react/core';
 
 interface ScoreDisplayProps {
     opponentIndex: number;
@@ -22,51 +23,18 @@ interface ScoreDisplayProps {
 
 export interface SinglePlayerScore {
     playerAddress: string;
+    mindId: number;
     character: Character;
     score: ScoreMap;
-    scoreIndex: number;
+    opponentIndex: number;
 }
 const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
-    //const { data: data } = useGetScoresForOpponent(scoreIndex);
-    //const scores = data?.scores;
+    const { data: data } = useGetScoresForOpponent(opponentIndex);
+    const scores = data?.scores ? data.scores : undefined;
 
-    const scores = [
-        {
-            playerAddress:
-                '0x0266eD55Be7054c74Db3F8Ec2E79C728056C802a11481fAD0E91220139B8916A',
-            character: Character.Jessica,
-            score: {
-                totalScore: 100,
-            },
-        },
-        {
-            playerAddress:
-                '0x0266eD55Be7054c74Db3F8Ec2E79C728056C802a11481fAD0E91220139B8916A',
-            character: Character.Jessica,
-            score: {
-                totalScore: 100,
-            },
-        },
-        {
-            playerAddress:
-                '0x0266eD55Be7054c74Db3F8Ec2E79C728056C802a11481fAD0E91220139B8916A',
-            character: Character.Jessica,
-            score: {
-                totalScore: 100,
-            },
-        },
-        {
-            playerAddress:
-                '0x0266eD55Be7054c74Db3F8Ec2E79C728056C802a11481fAD0E91220139B8916A',
-            character: Character.Jessica,
-            score: {
-                totalScore: 100,
-            },
-        },
-    ];
-    if (scores === undefined) {
-        return <CircularProgress />;
-    }
+    const { account, address, status } = useAccount();
+
+    console.log('scores', scores);
 
     const tableCellSx = {
         fontSize: '14px',
@@ -78,13 +46,16 @@ const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
         };
         return (
             <TableRow key={index} hover={true} style={{ cursor: 'pointer' }}>
+                <TableCell sx={{ ...tableCellSx, textAlign: 'center' }}>
+                    {index + 1}
+                </TableCell>
                 <TableCell sx={tableCellSx}>{score.score.totalScore}</TableCell>
                 <TableCell sx={tableCellSx}>
                     <Tooltip title={`Click to copy ${score.playerAddress}`}>
                         <Box
                             textOverflow={'ellipsis'}
                             overflow={'hidden'}
-                            width={'300px'}
+                            width={'200px'}
                             onClick={copyAddress}
                         >
                             {score.playerAddress}
@@ -101,12 +72,23 @@ const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
             <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                     <TableRow>
+                        <TableCell sx={tableCellSx}>Rank</TableCell>
                         <TableCell sx={tableCellSx}>Score</TableCell>
                         <TableCell sx={tableCellSx}>Submitted by</TableCell>
                         <TableCell sx={tableCellSx}>Character</TableCell>
                     </TableRow>
                 </TableHead>
-                <TableBody>{scoreRows}</TableBody>
+                {data?.scores == undefined ? (
+                    <TableBody>
+                        <TableRow>
+                            <TableCell colSpan={4} align="center">
+                                <CircularProgress />
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                ) : (
+                    <TableBody>{scoreRows}</TableBody>
+                )}
             </Table>
         </TableContainer>
     );
