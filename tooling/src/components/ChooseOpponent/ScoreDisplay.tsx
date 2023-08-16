@@ -32,10 +32,6 @@ const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
     const { data: data } = useGetScoresForOpponent(opponentIndex);
     const scores = data?.scores ? data.scores : undefined;
 
-    const { account, address, status } = useAccount();
-
-    console.log('scores', scores);
-
     const tableCellSx = {
         fontSize: '14px',
     };
