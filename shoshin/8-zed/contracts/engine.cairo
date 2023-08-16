@@ -400,6 +400,34 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         dict_accesses_start=dict_new, dict_accesses_end=dict_new, default_value=0
     );
 
+    //
+    // Mapping state to action
+    //
+    // TODO:
+    // - currently the mapping is (state)->(action) determinstically.
+    // - with action randomness, we need (state, rv) -> (action), where rv is a random variable.
+    // - for simplicity, only implement discrete uniform distribution. sampling a lower decimal digit from a hash (whose image is sufficiently un-gameable)
+    // - gives us U(0,9). Support at most two options for now, meaning 1 sample + 1 is_le operation is needed to choose an action
+    // - draw sample from distribution only at state entry.
+    //
+    // Pseudocode
+    // >   if no rand involved: map state to action
+    // >   if rand is involved:
+    // >     if fresh gamma is needed: sample distribution to get a fresh gamma, and map (state, gamma) to action
+    // >     if fresh gamma not neeeded: make use of old gamma to map (state, gamma) to action
+    //
+    // when is a fresh gamma needed?
+    // - a simple solution is: when "current mental state involves randomness" && "last frame's mental state is different from this frame's mental state".
+    // - issue with this solution is that as a player I want to be able to stay at a SUI layer (SUI = stay-until-invalid) with [action1, action2], where action1/2 can be atomic or combo,
+    // - and when I repeat this layer I want to act randomly again. So that I can stay at this layer witout returning to shoshin, and act action1-action2-action2-action1-action1,
+    // - which is a sequence of actions following the probability that I set.
+    // - a better solution is to have a boolean signal indicating if the action of this layer has been completed
+    //   (for atomic action, this signal shows 1 always; for combo, this signal shows 1 when combo counter reaches combo length),
+    //   and grab a fresh gamma when "current mental state involves randomness" && signal==1
+    //
+    // Thoughts on implementation:
+    // - from the pseudocode above we know it's helpful to keep the last gamma in Frame for reuse.
+    //
     tempvar agent_action_0 = actions_0 [agent_state_0];
     tempvar agent_action_1 = actions_1 [agent_state_1];
 
