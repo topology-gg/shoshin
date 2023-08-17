@@ -53,7 +53,6 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
         const { data: data } = useListMinds();
         const onlineOpponents = data?.onlineOpponents;
 
-        console.log('online opps', onlineOpponents);
         const handleChooseMind = (mind: SavedMind | OnlineOpponent) => {
             if (onlineOpponents === undefined) {
                 return;
@@ -229,6 +228,7 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                             sx={{ overflowY: 'auto', marginBottom: '16px' }}
                         >
                             <OnlineTable
+                                displayRank={true}
                                 opponents={onlineOpponents}
                                 selectedOpponent={selectedOpponent}
                                 selectOpponent={selectOpponent}

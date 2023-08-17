@@ -20,14 +20,11 @@ const tableCellSx = { fontSize: '14px' };
 const MatchHistory = ({ records }: MatchHistoryProps) => {
     let index = 0;
 
-    console.log('records', records);
-
     const mapped = Object.entries(records).map(([player, result]) => ({
         player,
         result,
     }));
 
-    console.log('mapped', mapped);
     const recordRows = mapped.map((record, index) => {
         index = index + 1;
 
