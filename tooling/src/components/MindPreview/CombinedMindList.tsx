@@ -52,6 +52,7 @@ const MindPreview = ({ savedMinds, chooseMind }: CombinedMindListProps) => {
                     opponents={localMinds}
                     selectedOpponent={selectedMind}
                     selectOpponent={handleSelectMind}
+                    displayRank={false}
                 />
             )}
 
@@ -60,6 +61,7 @@ const MindPreview = ({ savedMinds, chooseMind }: CombinedMindListProps) => {
                     opponents={onlineOpponents}
                     selectedOpponent={selectedMind}
                     selectOpponent={handleSelectMind}
+                    displayRank={false}
                 />
             )}
         </Box>
