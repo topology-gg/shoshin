@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:wasm": "wasm-pack build wasm/shoshin --release --target web && wasm-pack build wasm/condition_eval --release --target web",
+    "build:server": "tsc --noEmit false --outDir 'dist' --module 'commonjs' --declaration",
+    "build:wasm": "wasm-pack build wasm/shoshin --release --target web && wasm-pack build wasm/condition_eval --release --target web && wasm-pack build wasm/shoshin --out-dir pkg_nodejs --release --target nodejs",
     "start": "next start",
     "lint": "next lint",
     "test": "cross-env TS_NODE_PROJECT=\"tsconfig.testing.json\" mocha",
@@ -68,5 +69,11 @@
     "ts-node": "^10.9.1",
     "typescript": "4.8.4",
     "wasm-pack": "^0.10.3"
-  }
+  },
+  "files": [
+    "dist",
+    "wasm/shoshin/pkg_nodejs/*",
+    "lib",
+    "abi"
+  ]
 }
