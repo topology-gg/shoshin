@@ -67,6 +67,7 @@ const SubmitMenu = ({ closeMenu, username, minds }: SubmitMenuProps) => {
                     opponents={minds}
                     selectedOpponent={selectedMind}
                     selectOpponent={selectMind}
+                    displayRank={false}
                 />
                 <Button
                     variant={'text'}
