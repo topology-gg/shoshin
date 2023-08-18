@@ -1,12 +1,16 @@
-import { ListItemText } from '@mui/material';
+import { ListItemText, ListItemTextProps } from '@mui/material';
 import React from 'react';
 
 /**
  * A button wrapper that auto-blurs itself after change
  */
-const BlurrableListItemText = ({ children, onClick, ...props }) => {
+const BlurrableListItemText = ({
+    children,
+    onClick,
+    ...props
+}: ListItemTextProps) => {
     const handleClick = (event) => {
-        onClick(event);
+        onClick?.(event);
         setTimeout(() => {
             const activeElement = document.activeElement as Element & {
                 blur: any;
