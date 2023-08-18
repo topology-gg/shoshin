@@ -244,7 +244,7 @@ const SceneSelector = () => {
     useEffect(() => {
         const state = getLocalState();
 
-        const defaultOpponents = (
+        const defaultOpponents: Opponent[] = (
             character == Character.Jessica ? JessicaOpponents : AntocOpponents
         ).map(({ agent, mindName, backgroundId }, id) => {
             return {
@@ -254,7 +254,8 @@ const SceneSelector = () => {
                 id,
                 name: id.toString(),
                 backgroundId: backgroundId,
-            } as Opponent;
+                scoreMap: nullScoreMap,
+            };
         });
         if (!state) {
             setOpponentChoices(defaultOpponents);
