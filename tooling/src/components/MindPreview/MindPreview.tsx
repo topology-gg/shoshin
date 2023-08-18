@@ -11,6 +11,7 @@ import {
 import { OnlineOpponent, SavedMind } from '../../types/Opponent';
 import SimpleLayerList from '../sidePanelComponents/Gambit/SimpleLayerList';
 import { useGetMind } from '../../../lib/api';
+import MatchHistory from './MatchHistory';
 
 interface MindPreviewProps {
     mind: SavedMind;
@@ -28,6 +29,8 @@ const MindPreview = ({ mind }: MindPreviewProps) => {
         mind.mindName
     );
 
+    console.log('mind mind', mind);
+
     const isOnline = onlineMind.error ? false : true;
     return (
         <Paper sx={{ height: '100%' }}>
@@ -35,6 +38,7 @@ const MindPreview = ({ mind }: MindPreviewProps) => {
                 <Tabs value={activeTab} onChange={handleTabChange} centered>
                     <Tab label="Info" />
                     <Tab label="Layers" />
+                    {isOnline && <Tab label="Match History" />}
                 </Tabs>
 
                 {/* Tab Content */}
@@ -52,12 +56,23 @@ const MindPreview = ({ mind }: MindPreviewProps) => {
                         <Typography>
                             <strong>Online</strong> : {isOnline ? 'Yes' : 'No'}
                         </Typography>
+                        {isOnline && (
+                            <Typography>
+                                <strong>Rank</strong> : {mind.rank}
+                            </Typography>
+                        )}
                     </Box>
                 )}
 
                 {activeTab === 1 && (
                     <Box p={2} overflow={'auto'} height={'100%'}>
                         <SimpleLayerList playerAgent={mind.agent} />
+                    </Box>
+                )}
+
+                {activeTab === 2 && (
+                    <Box p={2} overflow={'auto'} height={'100%'}>
+                        <MatchHistory records={mind.records} />
                     </Box>
                 )}
             </Box>

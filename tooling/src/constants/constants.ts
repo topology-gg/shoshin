@@ -24,7 +24,7 @@ export const DB_NAME = 'shoshin_indexer_5';
 export const COLLECTION_NAME_SUBMISSION = 'shoshin-dogfooding-submission';
 export const COLLECTION_NAME_LEAGUE = 'shoshin-league';
 export const COLLECTION_NAME_WHITELIST = 'shoshin-whitelist';
-export const COLLECTION_NAME_PVP = true ? 'shoshin-pvp' : 'shoshin-pvp-dev';
+export const COLLECTION_NAME_PVP = 'shoshin-pvp';
 export const COLLECTION_NAME_CAMPAIGN_SCORES = 'shoshin-campaign-scores';
 export const COLLECTION_NAME_CAMPAIGN_MINDS = 'shoshin-campaign-minds';
 
