@@ -11,6 +11,7 @@ import {
     DialogContentText,
     DialogTitle,
     Grid,
+    Paper,
     TextField,
     Typography,
 } from '@mui/material';
@@ -22,6 +23,7 @@ import { useListMinds } from '../../../lib/api';
 import { OnlineOpponent, SavedMind } from '../../types/Opponent';
 import MindPreview from '../MindPreview/MindPreview';
 import PreviewAgainst from '../MindPreview/PreviewAgainst';
+import PreviewAgainstDialogue from '../MindPreview/PreviewAgainst';
 
 interface OnlineMenuProps {
     transitionBack: () => void;
@@ -63,6 +65,7 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
 
         const [previewOpen, setPreviewOpen] = useState<boolean>(false);
         const [openChooseMind, setOpenChooseMind] = useState<boolean>(false);
+        const [selectFormat, setSelectFormat] = useState<boolean>(false);
 
         const handleAddToSavedMinds = () => {
             saveMinds([
@@ -178,14 +181,15 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                         fullWidth={true}
                         maxWidth={'lg'}
                     >
-                        <DialogTitle>Choose your mind</DialogTitle>
-                        <DialogContent>
-                            <PreviewAgainst
+                        {!selectFormat && (
+                            <PreviewAgainstDialogue
                                 savedMinds={savedMinds}
                                 chooseOpponent={handleChooseMind}
                                 close={() => setOpenChooseMind(false)}
+                                previewOpen={openChooseMind}
+                                selectFormat={() => {}}
                             />
-                        </DialogContent>
+                        )}
                     </Dialog>
 
                     {isSubmitOpeoned && (

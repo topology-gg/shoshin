@@ -21,6 +21,7 @@ import MindPreview from '../MindPreview/MindPreview';
 import { onlineOpponentAdam } from '../ChooseOpponent/opponents/Adam';
 import PreviewAgainst from '../MindPreview/PreviewAgainst';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
+import PreviewAgainstDialogue from '../MindPreview/PreviewAgainst';
 
 interface MindMenuProps {
     minds: SavedMind[];
@@ -102,21 +103,14 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
             <div ref={ref}>
                 <FullArtBackground useAlt={true}>
                     <Typography variant="h2">Minds</Typography>
-                    <Dialog
-                        open={previewOpen}
-                        onClose={() => setPreviewOpen(false)}
-                        fullWidth={true}
-                        maxWidth={'lg'}
-                    >
-                        <DialogTitle>Choose an opponent</DialogTitle>
-                        <DialogContent>
-                            <PreviewAgainst
-                                savedMinds={minds}
-                                chooseOpponent={handleChooseOpponent}
-                                close={() => setPreviewOpen(false)}
-                            />
-                        </DialogContent>
-                    </Dialog>
+
+                    <PreviewAgainstDialogue
+                        savedMinds={minds}
+                        chooseOpponent={handleChooseOpponent}
+                        close={() => setPreviewOpen(false)}
+                        previewOpen={previewOpen}
+                    />
+
                     <Dialog
                         open={renameOpen}
                         onClose={() => setRenameOpen(false)}

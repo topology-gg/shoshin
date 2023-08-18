@@ -1009,3 +1009,8 @@ export const InitialRealTimeFrameScene: RealTimeFrameScene = {
         },
     },
 };
+
+export enum MatchFormat {
+    SINGLE = 'SINGLE',
+    BO3 = 'BO3',
+}
