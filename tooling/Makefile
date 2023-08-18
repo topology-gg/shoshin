@@ -16,3 +16,10 @@ build_bytecode:
 	npm run build:wasm
 
 update: new_bytecode build_bytecode
+
+build_server :
+	npm run build:wasm && npm run build:server && npm pack && cd server && npm install ../next-exp-0.1.0.tgz && npm run build && npm run start
+
+
+build_server2 :
+	npm run build:wasm && npm pack && npm run build:server  && cd server2 && npm install ../next-exp-0.1.0.tgz && npm run build && npm run start

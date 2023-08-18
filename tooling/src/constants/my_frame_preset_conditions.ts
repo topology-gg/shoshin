@@ -31,8 +31,8 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Frame = 1',
-        type: 'self state',
+        displayName: 'My Frame = 1',
+        type: 'my state',
     },
     {
         elements: [
@@ -57,8 +57,8 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Frame = 2',
-        type: 'self state',
+        displayName: 'My Frame = 2',
+        type: 'my state',
     },
     {
         elements: [
@@ -83,8 +83,8 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Frame = 3',
-        type: 'self state',
+        displayName: 'My Frame = 3',
+        type: 'my state',
     },
     {
         elements: [
@@ -109,8 +109,8 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Frame = 4',
-        type: 'self state',
+        displayName: 'My Frame = 4',
+        type: 'my state',
     },
     {
         elements: [
@@ -135,8 +135,8 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Frame = 5',
-        type: 'self state',
+        displayName: 'My Frame = 5',
+        type: 'my state',
     },
     {
         elements: [
@@ -161,8 +161,8 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Frame = 6',
-        type: 'self state',
+        displayName: 'My Frame = 6',
+        type: 'my state',
     },
     {
         elements: [
@@ -187,8 +187,8 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Frame = 7',
-        type: 'self state',
+        displayName: 'My Frame = 7',
+        type: 'my state',
     },
     {
         elements: [
@@ -213,8 +213,8 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Frame = 8',
-        type: 'self state',
+        displayName: 'My Frame = 8',
+        type: 'my state',
     },
     {
         elements: [
@@ -239,8 +239,8 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Frame = 9',
-        type: 'self state',
+        displayName: 'My Frame = 9',
+        type: 'my state',
     },
     {
         elements: [
@@ -265,8 +265,8 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Frame = 10',
-        type: 'self state',
+        displayName: 'My Frame = 10',
+        type: 'my state',
     },
     {
         elements: [
@@ -291,8 +291,8 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Frame = 11',
-        type: 'self state',
+        displayName: 'My Frame = 11',
+        type: 'my state',
     },
     {
         elements: [
@@ -317,7 +317,7 @@ export const my_frame_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Self Frame = 18',
-        type: 'self state',
+        displayName: 'My Frame = 18',
+        type: 'my state',
     },
 ];

@@ -6,7 +6,7 @@ import Agent, { PlayerAgent } from './Agent';
 export interface Opponent {
     agent: Agent;
     medal: Medal;
-    scoreMap?: ScoreMap;
+    scoreMap: ScoreMap;
     id: number;
     name: string;
     backgroundId: number;
@@ -82,6 +82,13 @@ const medalToNumber = (medal: Medal) => {
 };
 export const achievedBetterPerformance = (newGrade: Medal, oldGrade: Medal) => {
     if (medalToNumber(newGrade) >= medalToNumber(oldGrade)) {
+        return true;
+    }
+    return false;
+};
+
+export const achievedBetterScore = (newScore: ScoreMap, oldScore: ScoreMap) => {
+    if (newScore.totalScore > oldScore.totalScore) {
         return true;
     }
     return false;
