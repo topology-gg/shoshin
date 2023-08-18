@@ -16,6 +16,7 @@ import StatusBarPanel, {
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 import {
     Character,
+    calculateScoreMap,
     nullScoreMap,
     numberToCharacter,
 } from '../../constants/constants';
@@ -37,7 +38,6 @@ import { Medal } from '../../types/Opponent';
 import CardSimple from '../ui/CardSimple';
 import { FastForward, FastRewind } from '@mui/icons-material';
 import { track_lesson_complete } from '../../helpers/track';
-import { calculateScoreMap } from '../SimulationScene/MainScene';
 
 //@ts-ignore
 const Game = dynamic(() => import('../../Game/PhaserGame'), {
@@ -652,8 +652,7 @@ const GameplayTutorialScene = React.forwardRef(
                                                 (_) => !checkedShowDebugInfo
                                             )
                                         }
-                                        player={{ layers: layers }}
-                                        isPreview={false}
+                                        submitOption={undefined}
                                     />
                                 </div>
                             </Grid>

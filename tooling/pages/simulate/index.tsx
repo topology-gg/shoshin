@@ -1192,8 +1192,7 @@ export default function Home() {
                                 (_) => !checkedShowDebugInfo
                             )
                         }
-                        player={{ layers }}
-                        isPreview={false}
+                        submitOption={undefined}
                     />
                 ) : (
                     <MidScreenKeybinding
