@@ -44,10 +44,18 @@ const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
                 });
 
                 if (
-                    existingScore == undefined ||
+                    existingScore != undefined &&
                     score.totalScore > existingScore.score.totalScore
                 ) {
                     collectionScores.deleteOne({ _id: existingScore._id });
+                    collectionScores.insertOne({
+                        playerAddress: change.fullDocument.address,
+                        mindId: change.fullDocument._id,
+                        score: score,
+                        opponentIndex: change.fullDocument.opponentIndex,
+                        character: change.fullDocument.mind.character,
+                    });
+                } else if (existingScore == undefined) {
                     collectionScores.insertOne({
                         playerAddress: change.fullDocument.address,
                         mindId: change.fullDocument._id,
