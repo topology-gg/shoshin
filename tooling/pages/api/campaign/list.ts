@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     const scores = await db
         .collection(COLLECTION_NAME_CAMPAIGN_SCORES)
         .find(queryFilter)
-        .sort({ total: -1 }) // sort by total field in descending order
+        .sort({ 'score.totalScore': -1 }) // sort by total field in descending order
         .limit(20) // get 20 last tuples of agents
         .toArray();
 
