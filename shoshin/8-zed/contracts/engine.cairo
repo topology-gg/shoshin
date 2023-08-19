@@ -35,7 +35,7 @@ from contracts.combo import _combo
 from contracts.physics import _physicality, _test_rectangle_overlap
 from contracts.perceptibles import update_perceptibles
 from lib.bto_cairo_git.lib.tree import Tree, BinaryOperatorTree
-from contracts.utils import fill_dictionary_offsets, fill_dictionary
+from contracts.utils import fill_dictionary_offsets, fill_dictionary, get_prn_mod
 
 @external
 func submit_agent{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
@@ -122,6 +122,16 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     actions_0: felt*,
     actions_1_len: felt,
     actions_1: felt*,
+    actions_alternative_0_len: felt,
+    actions_alternative_0: felt*,
+    actions_alternative_1_len: felt,
+    actions_alternative_1: felt*,
+    probabilities_0_len: felt,
+    probabilities_0: felt*,
+    probabilities_1_len: felt,
+    probabilities_1: felt*,
+    seed_0: felt,
+    seed_1: felt,
     character_type_0: felt,
     character_type_1: felt,
 ) -> () {
@@ -209,6 +219,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 combo_index   = 0,
                 action_index = 0,
                 ),
+            gamma         = 0,
             ),
         agent_1 = Frame(
             mental_state  = agent_1_initial_state,
@@ -224,6 +235,7 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 combo_index   = 0,
                 action_index = 0,
                 ),
+            gamma         = 1,
             ),
         );
 
@@ -285,6 +297,14 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         conditions_1 = conditions_1_new,
         actions_0 = actions_0,
         actions_1 = actions_1,
+        actions_alternative_0 = actions_alternative_0,
+        actions_alternative_1 = actions_alternative_1,
+        prev_action_completed_0 = 1,
+        prev_action_completed_1 = 1,
+        prev_seed_0 = seed_0,
+        prev_seed_1 = seed_1,
+        probabilities_0 = probabilities_0,
+        probabilities_1 = probabilities_1,
         character_type_0 = character_type_0,
         character_type_1 = character_type_1,
     );
@@ -308,6 +328,14 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     conditions_1: DictAccess*,
     actions_0: felt*,
     actions_1: felt*,
+    actions_alternative_0: felt*,
+    actions_alternative_1: felt*,
+    prev_action_completed_0: felt,
+    prev_action_completed_1: felt,
+    prev_seed_0: felt,
+    prev_seed_1: felt,
+    probabilities_0: felt*,
+    probabilities_1: felt*,
     character_type_0: felt,
     character_type_1: felt,
 ) -> (idx: felt) {
@@ -403,7 +431,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     //
     // Mapping state to action
     //
-    // TODO:
+
     // - currently the mapping is (state)->(action) determinstically.
     // - with action randomness, we need (state, rv) -> (action), where rv is a random variable.
     // - for simplicity, only implement discrete uniform distribution. sampling a lower decimal digit from a hash (whose image is sufficiently un-gameable)
@@ -419,7 +447,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // when is a fresh gamma needed?
     // - a simple solution is: when "current mental state involves randomness" && "last frame's mental state is different from this frame's mental state".
     // - issue with this solution is that as a player I want to be able to stay at a SUI layer (SUI = stay-until-invalid) with [action1, action2], where action1/2 can be atomic or combo,
-    // - and when I repeat this layer I want to act randomly again. So that I can stay at this layer witout returning to shoshin, and act action1-action2-action2-action1-action1,
+    // - and when I repeat this layer I want to act randomly again. So that I can stay at this layer without returning to shoshin, and act action1-action2-action2-action1-action1,
     // - which is a sequence of actions following the probability that I set.
     // - a better solution is to have a boolean signal indicating if the action of this layer has been completed
     //   (for atomic action, this signal shows 1 always; for combo, this signal shows 1 when combo counter reaches combo length),
@@ -428,8 +456,95 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     // Thoughts on implementation:
     // - from the pseudocode above we know it's helpful to keep the last gamma in Frame for reuse.
     //
-    tempvar agent_action_0 = actions_0 [agent_state_0];
-    tempvar agent_action_1 = actions_1 [agent_state_1];
+
+    //
+    // Current mental state involves randomness or not
+    //
+    let curr_probability_0 = probabilities_0 [agent_state_0];
+    let curr_probability_1 = probabilities_1 [agent_state_1];
+
+    local agent_action_0;
+    local agent_action_1;
+    local gamma_0;
+    local gamma_1;
+    local new_seed_0;
+    local new_seed_1;
+
+    //
+    // Handle agent 0 gamma generation + action derivation
+    //
+    if (prev_action_completed_0 == 1) {
+        if (curr_probability_0 != 0) {
+            //
+            // Produce a fresh gamma, with entropy = 0 and modulo = 11
+            //
+            let (new_seed_, gamma) = get_prn_mod (prev_seed_0, 0, 11);
+            assert gamma_0 = gamma;
+            assert new_seed_0 = new_seed_;
+
+            //
+            // Map (state, gamma) to action
+            //
+            let isTwo = is_le (gamma_0, curr_probability_0);
+            if (isTwo == 1) {
+                assert agent_action_0 = actions_alternative_0 [agent_state_0];
+            } else {
+                assert agent_action_0 = actions_0 [agent_state_0];
+            }
+            tempvar range_check_ptr = range_check_ptr;
+        } else {
+            assert agent_action_0 = actions_0 [agent_state_0];
+            assert gamma_0 = 0;
+            assert new_seed_0 = prev_seed_0;
+            tempvar range_check_ptr = range_check_ptr;
+        }
+
+        tempvar range_check_ptr = range_check_ptr;
+    } else {
+        assert agent_action_0 = actions_0 [agent_state_0];
+        assert gamma_0 = 0;
+        assert new_seed_0 = prev_seed_0;
+
+        tempvar range_check_ptr = range_check_ptr;
+    }
+
+    //
+    // Handle agent 1 gamma generation + action derivation
+    //
+    if (prev_action_completed_1 == 1) {
+        if (curr_probability_1 != 0) {
+            //
+            // Produce a fresh gamma, with entropy = 0 and modulo = 11
+            //
+            let (new_seed_, gamma) = get_prn_mod (prev_seed_1, 0, 11);
+            assert gamma_1 = gamma;
+            assert new_seed_1 = new_seed_;
+
+            //
+            // Map (state, gamma) to action
+            //
+            let isTwo = is_le (gamma_1, curr_probability_1);
+            if (isTwo == 1) {
+                assert agent_action_1 = actions_alternative_1 [agent_state_1];
+            } else {
+                assert agent_action_1 = actions_1 [agent_state_1];
+            }
+            tempvar range_check_ptr = range_check_ptr;
+        } else {
+            assert agent_action_1 = actions_1 [agent_state_1];
+            assert gamma_1 = 0;
+            assert new_seed_1 = prev_seed_0;
+            tempvar range_check_ptr = range_check_ptr;
+        }
+
+        tempvar range_check_ptr = range_check_ptr;
+    } else {
+        assert agent_action_1 = actions_1 [agent_state_1];
+        assert gamma_1 = 0;
+        assert new_seed_1 = prev_seed_0;
+
+        tempvar range_check_ptr = range_check_ptr;
+    }
 
     //
     // Combo Phase
@@ -437,31 +552,37 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     //
     local a_0;
     local combos_0_new: ComboBuffer;
-    let is_combo = is_le(ns_combos.ENCODING, agent_action_0);
+    local combo_len_0: felt;
+    let is_combo_0 = is_le(ns_combos.ENCODING, agent_action_0);
 
-    if (is_combo == 1) {
-        let (a, c) = _combo(agent_action_0 - ns_combos.ENCODING, combos_0);
+    if (is_combo_0 == 1) {
+        let (a, c, l) = _combo(agent_action_0 - ns_combos.ENCODING, combos_0);
         assert a_0 = a;
         assert combos_0_new = c;
+        assert combo_len_0 = l;
         tempvar range_check_ptr = range_check_ptr;
     } else {
         assert a_0 = agent_action_0;
         assert combos_0_new = ComboBuffer(combos_0.combos_offset_len, combos_0.combos_offset, combos_0.combos, 0, 0);
+        assert combo_len_0 = 1;
         tempvar range_check_ptr = range_check_ptr;
     }
 
     local a_1;
     local combos_1_new: ComboBuffer;
-    let is_combo = is_le(ns_combos.ENCODING, agent_action_1);
+    local combo_len_1: felt;
+    let is_combo_1 = is_le(ns_combos.ENCODING, agent_action_1);
 
-    if (is_combo == 1) {
-        let (a, c) = _combo(agent_action_1 - ns_combos.ENCODING, combos_1);
+    if (is_combo_1 == 1) {
+        let (a, c, l) = _combo(agent_action_1 - ns_combos.ENCODING, combos_1);
         assert a_1 = a;
         assert combos_1_new = c;
+        assert combo_len_1 = l;
         tempvar range_check_ptr = range_check_ptr;
     } else {
         assert a_1 = agent_action_1;
         assert combos_1_new = ComboBuffer(combos_1.combos_offset_len, combos_1.combos_offset, combos_1.combos, 0, 0);
+        assert combo_len_1 = 1;
         tempvar range_check_ptr = range_check_ptr;
     }
 
@@ -511,6 +632,36 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     );
 
     //
+    // Housekeeping: update boolean signal indicating action completion for this layer
+    //
+    local new_action_completed_0;
+    local new_action_completed_1;
+    if (is_combo_0 == 1) {
+        if (combos_0_new.combo_counter == combo_len_0 - 1) {
+            // is combo and combo counter reaches the end of combo
+            assert new_action_completed_0 = 0;
+        } else {
+            // in the middle of a combo
+            assert new_action_completed_0 = 1;
+        }
+    } else {
+        // is atomic action
+        assert new_action_completed_0 = 1;
+    }
+    if (is_combo_1 == 1) {
+        if (combos_1_new.combo_counter == combo_len_1 - 1) {
+            // is combo and combo counter reaches the end of combo
+            assert new_action_completed_1 = 0;
+        } else {
+            // in the middle of a combo
+            assert new_action_completed_1 = 1;
+        }
+    } else {
+        // is atomic action
+        assert new_action_completed_1 = 1;
+    }
+
+    //
     // Recording Phase:
     //
     assert arr_frames[idx] = FrameScene(
@@ -534,6 +685,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 combo_index   = combos_0_new.current_combo,
                 action_index  = combos_0_new.combo_counter
                 ),
+            gamma         = gamma_0,
         ),
         agent_1 = Frame (
             mental_state  = agent_state_1,
@@ -555,6 +707,7 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 combo_index   = combos_1_new.current_combo,
                 action_index  = combos_1_new.combo_counter
                 ),
+            gamma         = gamma_1,
         )
     );
 
@@ -575,11 +728,18 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         conditions_1 = conditions_1_new,
         actions_0 = actions_0,
         actions_1 = actions_1,
+        actions_alternative_0 = actions_alternative_0,
+        actions_alternative_1 = actions_alternative_1,
+        prev_action_completed_0 = new_action_completed_0,
+        prev_action_completed_1 = new_action_completed_1,
+        prev_seed_0 = new_seed_0,
+        prev_seed_1 = new_seed_1,
+        probabilities_0 = probabilities_0,
+        probabilities_1 = probabilities_1,
         character_type_0 = character_type_0,
         character_type_1 = character_type_1,
     );
 }
-
 
 func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         agent_0_body_state_state: felt,
@@ -760,16 +920,19 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
     local agent_1_action;
     tempvar combo_buffer = ComboBuffer(combos_offset_1_len, combos_offset_1, combos_1, current_combo_1, combo_counter_1);
     local combos_1_new: ComboBuffer;
+    local combo_len_1: felt;
     let is_combo = is_le(ns_combos.ENCODING, agent_action_1);
 
     if (is_combo == 1) {
-        let (a, c) = _combo(agent_action_1 - ns_combos.ENCODING, combo_buffer);
+        let (a, c, l) = _combo(agent_action_1 - ns_combos.ENCODING, combo_buffer);
         assert agent_1_action = a;
         assert combos_1_new = c;
+        assert combo_len_1 = l;
         tempvar range_check_ptr = range_check_ptr;
     } else {
         assert agent_1_action = agent_action_1;
         assert combos_1_new = ComboBuffer(combo_buffer.combos_offset_len, combo_buffer.combos_offset, combo_buffer.combos, 0, 0);
+        assert combo_len_1 = 1;
         tempvar range_check_ptr = range_check_ptr;
     }
 
