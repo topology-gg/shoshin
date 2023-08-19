@@ -1,4 +1,4 @@
-import { Action, CHARACTERS_ACTIONS } from './Action';
+import { Action, CHARACTERS_ACTIONS, MoveForward, Rest } from './Action';
 import {
     BodystatesAntoc,
     BodystatesJessica,
@@ -25,6 +25,15 @@ export interface Layer {
     };
     sui?: boolean;
     locked?: boolean;
+    action_alternative?: {
+        //Id is either that action decimal number or combo decimal number (both are defined in shoshin smart contracts)
+        id: number;
+        isCombo: boolean;
+    };
+
+    // domain: [0,10], 0 means constant layer, otherwise probability n means probability n*10% of taking action 1,
+    // and probability (10-n)% of taking the alternative action.
+    probability?: number;
 }
 
 const getActionCondition = (
@@ -85,6 +94,7 @@ export const layersToAgentComponents = (
     const startMentalState: MentalState = {
         state: 'Start',
         action: 0,
+        actionAlternative: 0, // START state doesn't have meaningful alternative action because of being deterministic
     };
 
     const generatedMentalStates = [
@@ -92,7 +102,8 @@ export const layersToAgentComponents = (
             return {
                 state: `ms_${i}`,
                 action: layer.action.id,
-            };
+                actionAlternative: MoveForward.id, // TODO: this is only placeholder; plumbing to come
+            } as MentalState;
         }),
     ];
 
@@ -657,9 +668,14 @@ export const defaultLayer: Layer = {
     //@ts-ignore
     conditions: [alwaysTrueCondition],
     action: {
-        id: 0,
+        id: Rest.id,
         isCombo: false,
     },
     sui: false,
     locked: false,
+    action_alternative: {
+        id: MoveForward.id,
+        isCombo: false,
+    },
+    probability: 5,
 };

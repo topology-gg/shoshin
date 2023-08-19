@@ -16,6 +16,9 @@ export default interface Agent {
     conditions?: Leaf[];
     conditionNames?: string[];
     actions?: number[];
+    actions_alternative?: number[];
+    seed?: number;
+    action_probabilities?: number[];
     character?: number;
 }
 
@@ -102,6 +105,18 @@ export function buildAgent(
     agent.actions = mentalStates.map((ms) => ms.action);
     agent.character = character;
 
+    //
+    // randomness
+    //
+    let placeholderActionProbabilities = agent.actions.map((a) => 5);
+    placeholderActionProbabilities[0] = 0; // START state doesn't have not randomness
+    let placeholderActionsAlternative = mentalStates.map(
+        (ms) => ms.actionAlternative
+    );
+    agent.action_probabilities = placeholderActionProbabilities;
+    agent.actions_alternative = placeholderActionsAlternative;
+    agent.seed = 1;
+
     //console.log('agent', agent);
     return agent;
 }
@@ -165,6 +180,7 @@ export function agentsToArray(p1: Agent, p2: Agent): number[] {
         p1ConditionsOffset,
         p1Conditions,
     ] = flattenAgent(p1);
+
     // flatten the second agent
     let [
         p2CombosOffset,
@@ -174,6 +190,22 @@ export function agentsToArray(p1: Agent, p2: Agent): number[] {
         p2ConditionsOffset,
         p2Conditions,
     ] = flattenAgent(p2);
+
+    // _actions_alternative_0
+    console.log(
+        'p1.actions_alternative',
+        p1.actions_alternative,
+        'p2.actions_alternative',
+        p2.actions_alternative ?? p2.actions,
+        'p1.action_probabilities',
+        p1.action_probabilities,
+        'p2.action_probabilities',
+        p2.action_probabilities ?? p2.actions.map((a) => 0),
+        'p1.seed',
+        p1.seed,
+        'p2.seed',
+        p2.seed ?? 0
+    );
 
     return [
         FRAME_COUNT,
@@ -207,6 +239,27 @@ export function agentsToArray(p1: Agent, p2: Agent): number[] {
         ...p1.actions,
         p2.actions.length,
         ...p2.actions,
+
+        // _actions_alternative_0
+        p1.actions.length,
+        ...p1.actions_alternative,
+
+        // _actions_alternative_1
+        p2.actions.length,
+        ...(p2.actions_alternative ?? p2.actions),
+
+        // _probabilities_0
+        p1.actions.length,
+        ...p1.action_probabilities,
+
+        // _probabilities_1
+        p2.actions.length,
+        ...(p2.action_probabilities ?? p2.actions.map((a) => 0)),
+
+        // seed_0 & seed_1
+        p1.seed,
+        p2.seed ?? 0,
+
         p1.character,
         p2.character,
     ];

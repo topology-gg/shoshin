@@ -26,6 +26,14 @@ pub struct ShoshinInput {
     pub _functions_1: Vec<Tree>,
     pub _actions_0: Vec<Base32>,
     pub _actions_1: Vec<Base32>,
+
+    pub _actions_alternative_0: Vec<Base32>,
+    pub _actions_alternative_1: Vec<Base32>,
+    pub _probabilities_0: Vec<Base32>,
+    pub _probabilities_1: Vec<Base32>,
+    pub _seed_0: i32,
+    pub _seed_1: i32,
+
     pub _char_0: u8,
     pub _char_1: u8,
 }
@@ -77,6 +85,7 @@ pub struct Agent {
     pub stimulus: BigInt,
     pub hitboxes: Hitboxes,
     pub combo: Combo,
+    pub gamma: BigInt,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, CairoStruct)]
@@ -124,7 +133,7 @@ pub struct Combo {
 
 impl Sizeable for FrameScene {
     fn size() -> usize {
-        54
+        56
     }
 }
 impl Sizeable for RealTimeFrameScene {
@@ -173,6 +182,7 @@ mod tests {
                 self.agent_0.hitboxes.body.dimension.y,
                 self.agent_0.combo.combo_index,
                 self.agent_0.combo.action_index,
+                self.agent_0.gamma,
                 self.agent_1.mental_state,
                 self.agent_1.body_state.state,
                 self.agent_1.body_state.counter,
@@ -200,6 +210,7 @@ mod tests {
                 self.agent_1.hitboxes.body.dimension.y,
                 self.agent_1.combo.combo_index,
                 self.agent_1.combo.action_index,
+                self.agent_1.gamma,
             ]
         }
     }
