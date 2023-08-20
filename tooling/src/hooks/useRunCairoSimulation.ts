@@ -15,8 +15,9 @@ const useRunCairoSimulation = (p1: Agent, p2: Agent) => {
             return;
         }
 
+        console.log('player 1 agent before calldata formation:', p1);
         let calldataArray = agentsToArray(p1, p2);
-        console.log('calldataArray', calldataArray);
+        // console.log('calldataArray', calldataArray);
         let shoshinInput = new Int32Array(calldataArray);
         console.log('shoshinInput', shoshinInput);
 

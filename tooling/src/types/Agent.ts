@@ -16,9 +16,9 @@ export default interface Agent {
     conditions?: Leaf[];
     conditionNames?: string[];
     actions?: number[];
-    actions_alternative?: number[];
+    alternativeActions?: number[];
     seed?: number;
-    action_probabilities?: number[];
+    actionProbabilities?: number[];
     character?: number;
 }
 
@@ -108,13 +108,8 @@ export function buildAgent(
     //
     // randomness
     //
-    let placeholderActionProbabilities = agent.actions.map((a) => 5);
-    placeholderActionProbabilities[0] = 0; // START state doesn't have not randomness
-    let placeholderActionsAlternative = mentalStates.map(
-        (ms) => ms.actionAlternative
-    );
-    agent.action_probabilities = placeholderActionProbabilities;
-    agent.actions_alternative = placeholderActionsAlternative;
+    agent.actionProbabilities = mentalStates.map((ms) => ms.probability);
+    agent.alternativeActions = mentalStates.map((ms) => ms.actionAlternative);
     agent.seed = 1;
 
     //console.log('agent', agent);
@@ -192,20 +187,20 @@ export function agentsToArray(p1: Agent, p2: Agent): number[] {
     ] = flattenAgent(p2);
 
     // _actions_alternative_0
-    console.log(
-        'p1.actions_alternative',
-        p1.actions_alternative,
-        'p2.actions_alternative',
-        p2.actions_alternative ?? p2.actions,
-        'p1.action_probabilities',
-        p1.action_probabilities,
-        'p2.action_probabilities',
-        p2.action_probabilities ?? p2.actions.map((a) => 0),
-        'p1.seed',
-        p1.seed,
-        'p2.seed',
-        p2.seed ?? 0
-    );
+    // console.log(
+    //     'p1.actions_alternative',
+    //     p1.alternativeActions,
+    //     'p2.actions_alternative',
+    //     p2.alternativeActions ?? p2.actions,
+    //     'p1.action_probabilities',
+    //     p1.alternativeActions,
+    //     'p2.action_probabilities',
+    //     p2.alternativeActions ?? p2.actions.map((a) => 0),
+    //     'p1.seed',
+    //     p1.seed,
+    //     'p2.seed',
+    //     p2.seed ?? 0
+    // );
 
     return [
         FRAME_COUNT,
@@ -242,19 +237,19 @@ export function agentsToArray(p1: Agent, p2: Agent): number[] {
 
         // _actions_alternative_0
         p1.actions.length,
-        ...p1.actions_alternative,
+        ...p1.alternativeActions,
 
         // _actions_alternative_1
         p2.actions.length,
-        ...(p2.actions_alternative ?? p2.actions),
+        ...(p2.alternativeActions ?? p2.actions),
 
         // _probabilities_0
         p1.actions.length,
-        ...p1.action_probabilities,
+        ...p1.alternativeActions,
 
         // _probabilities_1
         p2.actions.length,
-        ...(p2.action_probabilities ?? p2.actions.map((a) => 0)),
+        ...(p2.alternativeActions ?? p2.actions.map((a) => 0)),
 
         // seed_0 & seed_1
         p1.seed,

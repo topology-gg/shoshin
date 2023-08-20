@@ -25,12 +25,15 @@ export interface Layer {
     };
     sui?: boolean;
     locked?: boolean;
-    action_alternative?: {
+
+    // Alternative action, applicable when the layer employs action randomness
+    actionAlternative?: {
         //Id is either that action decimal number or combo decimal number (both are defined in shoshin smart contracts)
         id: number;
         isCombo: boolean;
     };
 
+    // Probability for action randomness;
     // domain: [0,10], 0 means constant layer, otherwise probability n means probability n*10% of taking action 1,
     // and probability (10-n)% of taking the alternative action.
     probability?: number;
@@ -95,6 +98,7 @@ export const layersToAgentComponents = (
         state: 'Start',
         action: 0,
         actionAlternative: 0, // START state doesn't have meaningful alternative action because of being deterministic
+        probability: 0,
     };
 
     const generatedMentalStates = [
@@ -102,7 +106,10 @@ export const layersToAgentComponents = (
             return {
                 state: `ms_${i}`,
                 action: layer.action.id,
-                actionAlternative: MoveForward.id, // TODO: this is only placeholder; plumbing to come
+                actionAlternative: layer.actionAlternative
+                    ? layer.actionAlternative.id
+                    : Rest.id,
+                probability: layer.probability ? layer.probability : 0,
             } as MentalState;
         }),
     ];
@@ -673,9 +680,9 @@ export const defaultLayer: Layer = {
     },
     sui: false,
     locked: false,
-    action_alternative: {
-        id: MoveForward.id,
+    actionAlternative: {
+        id: Rest.id,
         isCombo: false,
     },
-    probability: 5,
+    probability: 0,
 };
