@@ -220,12 +220,6 @@ export default class UI extends Phaser.Scene {
                 }
             );
 
-            const LIFE_COUNT_H = 20;
-            const LIFE_COUNT_W = 20;
-            const LIFE_COUNT_Y = STATS_BAR_STAMINA_Y + STATS_BAR_H + 20;
-            const SECOND_LIFE_X_P1 = STATS_BAR_P1_LEFT_BOUND + 30;
-            const SECOND_LIFE_X_P2 = STATS_BAR_P2_LEFT_BOUND + 30;
-
             let graphics = this.add.graphics();
             graphics.fillStyle(0xff0000); // Red color
             graphics.beginPath();
