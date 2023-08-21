@@ -8,19 +8,18 @@ from starkware.cairo.common.math_cmp import is_le, is_nn_le, is_not_zero
 from contracts.constants.constants import (
     BodyState, ns_stimulus, ns_stamina, ns_character_type, HURT_EFFECT, KNOCKED_EFFECT, CLASH_EFFECT
 )
-from contracts.constants.constants_jessica import (
-    ns_jessica_action, ns_jessica_body_state, ns_jessica_body_state_duration, ns_jessica_body_state_qualifiers
+from contracts.constants.constants_projectile import (
+    ns_projectile_body_state, ns_projectile_body_state_duration, ns_jessica_body_state_qualifiers
 )
 from contracts.body.body_utils import (
     calculate_integrity_change, calculate_stamina_change
 )
 //
-// Jessica's Body State Diagram
+// Projectile's Body State Diagram
 //
-func _body_jessica {range_check_ptr}(
+func _body_projectile {range_check_ptr}(
         body_state: BodyState,
         stimulus: felt,
-        intent: felt,
         opponent_body_state_index: felt,
     ) -> (
         body_state_nxt: BodyState
@@ -836,35 +835,6 @@ func _body_jessica {range_check_ptr}(
 
         // else stay and increment counter
         return ( body_state_nxt = BodyState(ns_jessica_body_state.TAUNT_PARIS23, counter + 1, integrity, stamina, dir, FALSE, state_index, opponent_state_index_last_hit) );
-    }
-
-    //
-    // Sword energy (long-range attack)
-    //
-    if (state == ns_jessica_body_state.SWORD_ENERGY) {
-
-        if (opponent_state_index_has_progressed == 1) {
-            // can be hurt
-            if (stimulus_type == ns_stimulus.HURT) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            // can be knocked
-            if (stimulus_type == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            // can be launched
-            if (stimulus_type == ns_stimulus.LAUNCHED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-        }
-
-        // if counter is full => return to IDLE
-        if (counter == ns_jessica_body_state_duration.SWORD_ENERGY - 1) {
-            return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
-        }
-
-        // else stay in SWORD_ENERGY and increment counter
-        return ( body_state_nxt = BodyState(ns_jessica_body_state.SWORD_ENERGY, counter + 1, integrity, stamina, dir, FALSE, state_index, opponent_state_index_last_hit) );
     }
 
     with_attr error_message("Input body state is not recognized.") {

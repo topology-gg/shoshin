@@ -124,6 +124,12 @@ struct BodyState {
     opponent_state_index_last_hit: felt,
 }
 
+struct ProjectileBodyState {
+    state: felt,
+    counter: felt,
+    dir: felt,
+}
+
 struct PhysicsState {
     pos: Vec2,
     vel_fp: Vec2,
@@ -146,6 +152,13 @@ struct Frame {
     stimulus: felt,
     hitboxes: Hitboxes,
     combo: Combo,
+}
+
+struct ProjectileFrame {
+    body_state: ProjectileBodyState,
+    physics_state: PhysicsState,
+    stimulus: felt,
+    hitbox: Rectangle,
 }
 
 struct RealTimePlayer {
@@ -171,6 +184,8 @@ struct RealTimeAgent {
 struct FrameScene {
     agent_0: Frame,
     agent_1: Frame,
+    // projectile_0: ProjectileFrame,
+    // projectile_1: ProjectileFrame,
 }
 
 struct RealTimeFrameScene {

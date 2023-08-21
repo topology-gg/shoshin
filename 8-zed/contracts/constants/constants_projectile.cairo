@@ -7,7 +7,7 @@ from contracts.constants.constants import (
     ns_dynamics, Vec2, Rectangle, ns_hitbox, ns_scene, LEFT, RIGHT
 )
 
-namespace ns_jessica_dynamics {
+namespace ns_projectile_dynamics {
 
     // dt = 0.1; one frame from static to max vel; two frames from minus max vel to positive max vel
     const MOVE_ACC_FP = 1200 * ns_dynamics.SCALE_FP;
@@ -31,216 +31,25 @@ namespace ns_jessica_dynamics {
     const GATOTSU_VEL_X_FP = 1200 * ns_dynamics.SCALE_FP;
 }
 
-namespace ns_jessica_character_dimension {
+namespace ns_projectile_dimension {
     const BODY_HITBOX_W = 50;
     const BODY_HITBOX_W_HALF = 25;
     const BODY_HITBOX_H = 116;
-
-    const BODY_KNOCKED_EARLY_HITBOX_W = 70;
-    const BODY_KNOCKED_LATE_HITBOX_W = 100;
-    const BODY_KNOCKED_GROUND_HITBOX_W = 50;
-    const BODY_KNOCKED_EARLY_HITBOX_W_HALF = 35;
-    const BODY_KNOCKED_LATE_HITBOX_W_HALF = 50;
-    const BODY_KNOCKED_GROUND_HITBOX_W_HALF = 25;
-    const BODY_KNOCKED_EARLY_HITBOX_H = 120;
-    const BODY_KNOCKED_LATE_HITBOX_H = 50;
-    const BODY_KNOCKED_GROUND_HITBOX_H = 70;
-
-    const BODY_DASH_FORWARD_0_W = 56;
-    const BODY_DASH_FORWARD_1_W = 70;
-    const BODY_DASH_FORWARD_2_W = 86;
-    const BODY_DASH_FORWARD_3_W = 86;
-    const BODY_DASH_FORWARD_0_W_HALF = 28;
-    const BODY_DASH_FORWARD_1_W_HALF = 35;
-    const BODY_DASH_FORWARD_2_W_HALF = 43;
-    const BODY_DASH_FORWARD_3_W_HALF = 43;
-    const BODY_DASH_FORWARD_0_H = 100;
-    const BODY_DASH_FORWARD_1_H = 95;
-    const BODY_DASH_FORWARD_2_H = 90;
-    const BODY_DASH_FORWARD_3_H = 90;
-
-    const SLASH_HITBOX_W = 76;
-    const SLASH_HITBOX_W_HALF = 38;
-    const SLASH_HITBOX_H = 90;
-    const SLASH_HITBOX_Y = BODY_HITBOX_H / 2 - 20;
-
-    const UPSWING_HITBOX_W = 70;
-    const UPSWING_HITBOX_W_HALF = 35;
-    const UPSWING_HITBOX_H = BODY_HITBOX_H + 15;
-    const UPSWING_HITBOX_Y = 20;
-
-    const SIDECUT_HITBOX_W = 70;
-    const SIDECUT_HITBOX_W_HALF = 35;
-    const SIDECUT_HITBOX_H = BODY_HITBOX_H * 2 / 4;
-    const SIDECUT_HITBOX_Y = BODY_HITBOX_H / 4;
-
-    const LOW_KICK_HITBOX_W = 46;
-    const LOW_KICK_HITBOX_W_HALF = 23;
-    const LOW_KICK_HITBOX_H = 20;
-    const LOW_KICK_HITBOX_Y = 7;
-
-    const BLOCK_HITBOX_W = 20;
-    const BLOCK_HITBOX_W_HALF = 10;
-    const BLOCK_HITBOX_H = 60;
-    const BLOCK_HITBOX_Y = BODY_HITBOX_H / 2;
-
-    const GATOTSU_HITBOX_W = 80;
-    const GATOTSU_HITBOX_W_HALF = 40;
-    const GATOTSU_HITBOX_H = 20;
-    const GATOTSU_HITBOX_Y = BODY_HITBOX_H / 2 + 10;
-
-    const BIRDSWING_HITBOX_W = 70;
-    const BIRDSWING_HITBOX_W_HALF = 35;
-    const BIRDSWING_HITBOX_H = BODY_HITBOX_H * 2 / 4;
-    const BIRDSWING_HITBOX_Y = BODY_HITBOX_H / 4;
-
-    const BODY_KNOCKED_ADJUST_W = BODY_KNOCKED_LATE_HITBOX_W - BODY_HITBOX_W;
 }
 
-namespace ns_jessica_action {
-    const NULL = 0;
-    const SLASH = 1;
-    const UPSWING = 2;
-    const SIDECUT = 3;
-    const BLOCK = 4;
-    const MOVE_FORWARD  = 5;
-    const MOVE_BACKWARD = 6;
-    const DASH_FORWARD  = 7;
-    const DASH_BACKWARD = 8;
-    const JUMP = 9;
-    const GATOTSU = 10;
-    const LOW_KICK = 11;
-    const TAUNT = 12;
-    const SWORD_ENERGY = 13;
+namespace ns_projectile_body_state_duration {
+    const DORMANT = 1;
+    const FLY = 3;
+    const BREAK = 3;
 }
 
-namespace ns_jessica_stamina_effect {
-
-    // whiff gives rage gain too
-    const SLASH = 5;
-    const UPSWING = 5;
-    const SIDECUT = 5;
-    const LOW_KICK = 5;
-    const BIRDSWING = 5;
-    const SWORD_ENERGY = 5;
-
-    // character special consumes rage, whether hit or whiff
-    const GATOTSU = -500;
-}
-
-namespace ns_jessica_stimulus {
-    // note: 1/2 of damage inflicted becomes rage gain;
-    // damage value needs to be even number for modulo division to work
-
-    const SLASH_DAMAGE = 80;
-    const UPSWING_DAMAGE = 80;
-    const SIDECUT_DAMAGE = 80;
-    const LOW_KICK_DAMAGE = 50;
-    const BIRDSWING_DAMAGE = 80;
-    const SWORD_ENERGY_DAMAGE = 50;
-
-    // character special
-    const GATOTSU_DAMAGE = 300;
-}
-
-namespace ns_jessica_body_state_duration {
-    const IDLE = 5;
-    const SLASH = 5;
-    const UPSWING = 8;
-    const SIDECUT = 5;
-    const BLOCK = 3;
-    const CLASH = 4;
-    const HURT = 2;
-    const KNOCKED = 11;
-    const MOVE_FORWARD = 8;
-    const MOVE_BACKWARD = 6;
-    const DASH_FORWARD = 4;
-    const DASH_BACKWARD = 4;
-    const JUMP = 6;
-    const GATOTSU = 7;
-    const LOW_KICK = 6;
-    const BIRDSWING = 6;
-    const LAUNCHED = 11;
-    const TAUNT_PARIS23 = 33;
-    const KO = 14;
-    const SWORD_ENERGY = 8;
-}
-
-namespace ns_jessica_body_state {
-    const IDLE = 0; // 5 frames
-    const SLASH = 10; // 5 frames
-    const UPSWING = 20;  // 8 frames
-    const SIDECUT = 30;  // 5 frames
-    const BLOCK = 40; // 3 frames
-    const CLASH = 50; // 4 frames;
-    const HURT = 60; // 3 frames
-    const KNOCKED = 70; // 11 frames
-    const MOVE_FORWARD = 90;  // 8 frames
-    const MOVE_BACKWARD = 100;  // 6 frames
-    const DASH_FORWARD = 110;  // 5 frames
-    const DASH_BACKWARD = 120;  // 5 frames
-    const JUMP = 130; // 7 frames
-    const GATOTSU = 140;
-    const LOW_KICK = 150;
-    const BIRDSWING = 160;
-    const LAUNCHED = 170; // 11 frames
-    const JUMP_MOVE_FORWARD = 180;
-    const JUMP_MOVE_BACKWARD = 190;
-    const TAUNT_PARIS23 = 200; // 33 frames
-    const KO = 240; // 14 frames
-    const SWORD_ENERGY = 260; // 8 frames
+namespace ns_projectile_body_state {
+    const DORMANT = 2000;
+    const FLY = 2010;
+    const BREAK = 2020;
 }
 
 namespace ns_jessica_body_state_qualifiers {
-
-    func is_in_slash_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state == ns_jessica_body_state.SLASH and counter == 2) {
-            return 1;
-        }
-        return 0;
-    }
-
-    func is_in_upswing_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state == ns_jessica_body_state.UPSWING and counter == 2) {
-            return 1;
-        }
-        return 0;
-    }
-
-    func is_in_sidecut_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state == ns_jessica_body_state.SIDECUT and counter == 2) {
-            return 1;
-        }
-        return 0;
-    }
-
-    func is_in_gatotsu_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state == ns_jessica_body_state.GATOTSU and (counter-4) * (counter-5) == 0) {
-            return 1;
-        }
-        return 0;
-    }
-
-    func is_in_low_kick_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state == ns_jessica_body_state.LOW_KICK and counter == 3) {
-            return 1;
-        }
-        return 0;
-    }
-
-    func is_in_birdswing_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state == ns_jessica_body_state.BIRDSWING and counter == 3) {
-            return 1;
-        }
-        return 0;
-    }
-
-    func is_in_block_active {range_check_ptr}(state: felt, counter: felt) -> felt {
-        if (state == ns_jessica_body_state.BLOCK and counter == 1) {
-            return 1;
-        }
-        return 0;
-    }
 
     func is_in_knocked {range_check_ptr}(state: felt) -> felt {
         if (state == ns_jessica_body_state.KNOCKED) {
@@ -287,7 +96,7 @@ namespace ns_jessica_body_state_qualifiers {
     }
 }
 
-namespace ns_jessica_hitbox {
+namespace ns_projectile_hitbox {
 
     func get_body_hitbox_dimension {range_check_ptr}(
         body_state: felt,

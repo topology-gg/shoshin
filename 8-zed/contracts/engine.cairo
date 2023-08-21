@@ -16,6 +16,7 @@ from contracts.constants.constants import (
     PhysicsState,
     BodyState,
     Frame,
+    ProjectileFrame,
     FrameScene,
     Combo,
     Metadata,
@@ -26,9 +27,12 @@ from contracts.constants.constants import (
     RealTimeAgent,
     RealTimePlayer,
     RealTimeFrameScene,
-    RealTimeComboInfo
+    RealTimeComboInfo,
+    LEFT,
+    RIGHT,
 )
 from contracts.constants.constants_jessica import ns_jessica_character_dimension
+from contracts.constants.constants_projectile import ns_projectile_body_state, ns_projectile_dimension
 from contracts.body.body import _body
 from contracts.body.body_utils import player_lost
 from contracts.combo import _combo
@@ -191,6 +195,17 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     let physics_state_1 = PhysicsState(
         pos=agent_1_origin, vel_fp=Vec2(0, 0), acc_fp=Vec2(0, 0)
     );
+    let projectile_physics_state_origin = PhysicsState(
+        pos=Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM), vel_fp=Vec2(0, 0), acc_fp=Vec2(0, 0)
+    );
+    let projectile_0_body = Rectangle(
+        agent_0_origin,
+        Vec2(ns_projectile_dimension.BODY_HITBOX_W, ns_projectile_dimension.BODY_HITBOX_H),
+    );
+    let projectile_1_body = Rectangle(
+        agent_1_origin,
+        Vec2(ns_projectile_dimension.BODY_HITBOX_W, ns_projectile_dimension.BODY_HITBOX_H),
+    );
 
     // IDLE body state is 0 for both Jessica and Antoc; right is 1
     // NULL action is 0 for both Jessica and Antoc
@@ -225,6 +240,18 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 action_index = 0,
                 ),
             ),
+        // projectile_0 = ProjectileFrame(
+        //     body_state = ProjectileBodyState(ns_projectile_body_state.DORMANT, 0, RIGHT),
+        //     physics_state = projectile_physics_state_origin,
+        //     stimulus = ns_stimulus.NULL,
+        //     hitbox = projectile_0_body,
+        //     ),
+        // projectile_1 = ProjectileFrame(
+        //     body_state = ProjectileBodyState(ns_projectile_body_state.DORMANT, 0, LEFT),
+        //     physics_state = projectile_physics_state_origin,
+        //     stimulus = ns_stimulus.NULL,
+        //     hitbox = projectile_1_body,
+        //     ),
         );
 
     //
