@@ -21,7 +21,14 @@ const STATS_BAR_P2_LEFT_BOUND =
     PHASER_CANVAS_W - STATS_BAR_X_OFFSET - STATS_BAR_W / 2;
 const STATS_BAR_HP_Y = STATS_BAR_Y_OFFSET;
 const STATS_BAR_STAMINA_Y = STATS_BAR_HP_Y + STATS_BAR_H + STATA_BAR_Y_SPACING;
+
 const STATS_BAR_BG_BORDER_STROKEWIDTH = 1.5;
+
+const LIFE_COUNT_H = 20;
+const LIFE_COUNT_W = 20;
+const LIFE_COUNT_Y = STATS_BAR_STAMINA_Y + STATS_BAR_H + 20;
+const SECOND_LIFE_X_P1 = STATS_BAR_P1_LEFT_BOUND + 30;
+const SECOND_LIFE_X_P2 = STATS_BAR_P2_LEFT_BOUND + 30;
 
 export interface statsInfo {
     hp: number;
@@ -42,6 +49,11 @@ export default class UI extends Phaser.Scene {
     endTextBg: Phaser.GameObjects.Rectangle;
     endText: Phaser.GameObjects.Text;
     endTextFootnote: Phaser.GameObjects.Text;
+
+    p1life1: Phaser.GameObjects.Graphics;
+    p1life2: Phaser.GameObjects.Graphics;
+    p2life1: Phaser.GameObjects.Graphics;
+    p2life2: Phaser.GameObjects.Graphics;
 
     initialize() {
         console.log('UI scene initialize()');
@@ -207,6 +219,39 @@ export default class UI extends Phaser.Scene {
                         });
                 }
             );
+
+            const LIFE_COUNT_H = 20;
+            const LIFE_COUNT_W = 20;
+            const LIFE_COUNT_Y = STATS_BAR_STAMINA_Y + STATS_BAR_H + 20;
+            const SECOND_LIFE_X_P1 = STATS_BAR_P1_LEFT_BOUND + 30;
+            const SECOND_LIFE_X_P2 = STATS_BAR_P2_LEFT_BOUND + 30;
+
+            let graphics = this.add.graphics();
+            graphics.fillStyle(0xff0000); // Red color
+            graphics.beginPath();
+            graphics.moveTo(STATS_BAR_P1_LEFT_BOUND, +20);
+            graphics.arc(
+                STATS_BAR_P1_LEFT_BOUND - 10,
+                LIFE_COUNT_Y,
+                10,
+                0,
+                Math.PI,
+                true
+            );
+            graphics.arc(
+                STATS_BAR_P1_LEFT_BOUND + 10,
+                LIFE_COUNT_Y,
+                10,
+                0,
+                Math.PI,
+                true
+            );
+            graphics.lineTo(STATS_BAR_P1_LEFT_BOUND, LIFE_COUNT_Y + 34);
+            graphics.closePath();
+
+            this.p1life2 = this.add.graphics();
+            this.p1life1 = this.add.graphics();
+            this.p1life2 = this.add.graphics();
         });
 
         //
@@ -248,7 +293,8 @@ export default class UI extends Phaser.Scene {
             .on('end-text-show', this.onEndTextShow, this)
             .on('end-text-hide', this.onEndTextHide, this)
             .on('update-stats', this.onStatsUpdate, this)
-            .on('reset-stats', this.onStatsReset, this);
+            .on('reset-stats', this.onStatsReset, this)
+            .on('setLives', this.onSetLives, this);
 
         this.events.on('destroy', () => {
             eventsCenter
@@ -476,5 +522,10 @@ export default class UI extends Phaser.Scene {
         this.endTextFootnote.setText('');
         this.endText.setText('');
         this.endTextBg.setVisible(false);
+    }
+
+    onSetLives(lives: number[]) {
+        if (lives.length == 2) {
+        }
     }
 }
