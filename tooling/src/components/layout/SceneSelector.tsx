@@ -345,7 +345,7 @@ const SceneSelector = () => {
         }
 
         if ('layers' in playerAgent) {
-            console.log('saving player agent');
+            console.log('saving player agent:', playerAgent);
             updatedState.playerAgents[character.toLocaleLowerCase()] =
                 playerAgent;
         }

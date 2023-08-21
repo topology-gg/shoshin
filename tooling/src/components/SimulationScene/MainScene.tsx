@@ -161,6 +161,8 @@ const SimulationScene = React.forwardRef(
             playerAgent.character
         );
 
+        const [seed, setSeed] = useState<number>(0);
+
         const [layers, setLayers] = useState<Layer[]>(playerAgent.layers);
 
         const actions =

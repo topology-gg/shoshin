@@ -9,6 +9,8 @@ export interface Thought {
 export interface MentalState {
     state: string;
     action: number;
+    actionAlternative?: number;
+    probability?: number;
 }
 
 export function parseTree(
