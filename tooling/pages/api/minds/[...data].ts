@@ -83,7 +83,6 @@ export default async function handler(
             });
         }
     } else if (req.method === 'GET') {
-        console.log('get request');
         const result = await pvpProfileCollection.findOne({
             mindName: mindName,
             playerName: playerName,

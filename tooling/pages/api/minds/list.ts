@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     const onlineOpponents = await db
         .collection(COLLECTION_NAME_PVP)
         .find({})
-        .sort({ _id: -1 }) // sort by _id descending
+        .sort({ rank: 1 }) // sort by _id descending
         .limit(50) // get 20 last tuple of agents
         .toArray();
 

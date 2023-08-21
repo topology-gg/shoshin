@@ -160,6 +160,7 @@ const MindMenu = React.forwardRef<HTMLDivElement, MindMenuProps>(
                                     opponents={ExtendedMinds}
                                     selectedOpponent={selectedMind}
                                     selectOpponent={selectMind}
+                                    displayRank={false}
                                 />
                             </Box>
                         </Grid>

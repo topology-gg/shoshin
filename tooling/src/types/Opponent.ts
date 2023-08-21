@@ -1,11 +1,12 @@
 import { Character, ScoreMap } from '../constants/constants';
 import { PRESET_CONDITIONS } from '../constants/starter_agent';
+import { PvPResult } from '../helpers/pvpHelper';
 import Agent, { PlayerAgent } from './Agent';
 
 export interface Opponent {
     agent: Agent;
     medal: Medal;
-    scoreMap?: ScoreMap;
+    scoreMap: ScoreMap;
     id: number;
     name: string;
     backgroundId: number;
@@ -16,6 +17,9 @@ export interface OnlineOpponent {
     agent: PlayerAgent;
     mindName: string;
     playerName: string;
+    rank: number;
+    records: Map<string, PvPResult>;
+    lastRankTime: number;
 }
 
 export interface SavedMind extends OnlineOpponent {
@@ -35,6 +39,9 @@ export const EMPTY_SAVED_MINDS: SavedMind[] = [
         playerName: 'SYSTEM',
         createdDate: '',
         lastUpdatedDate: '',
+        records: new Map<string, PvPResult>(),
+        lastRankTime: 0,
+        rank: 0,
     },
     {
         agent: {
@@ -47,6 +54,9 @@ export const EMPTY_SAVED_MINDS: SavedMind[] = [
         playerName: 'SYSTEM',
         createdDate: '',
         lastUpdatedDate: '',
+        records: new Map<string, PvPResult>(),
+        lastRankTime: 0,
+        rank: 0,
     },
 ];
 
@@ -72,6 +82,13 @@ const medalToNumber = (medal: Medal) => {
 };
 export const achievedBetterPerformance = (newGrade: Medal, oldGrade: Medal) => {
     if (medalToNumber(newGrade) >= medalToNumber(oldGrade)) {
+        return true;
+    }
+    return false;
+};
+
+export const achievedBetterScore = (newScore: ScoreMap, oldScore: ScoreMap) => {
+    if (newScore.totalScore > oldScore.totalScore) {
         return true;
     }
     return false;

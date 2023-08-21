@@ -1,15 +1,22 @@
 import { MongoClient, WithId } from 'mongodb';
 import clientPromise from '../../lib/mongodb';
-import wasm from '../../wasm/shoshin/pkg_nodejs/shoshin';
+import * as wasm from '../../wasm/shoshin/pkg/shoshin';
 import {
     COLLECTION_NAME_PVP,
     Character,
     DB_NAME,
+    ScoreMap,
+    calculateScoreMap,
 } from '../constants/constants';
 import Agent, { PlayerAgent, agentsToArray, buildAgent } from '../types/Agent';
 import { FrameScene } from '../types/Frame';
 import { layersToAgentComponents } from '../types/Layer';
 import cairoOutputToFrameScene from './cairoOutputToFrameScene';
+import {
+    AntocOpponents,
+    JessicaOpponents,
+} from '../components/ChooseOpponent/opponents/opponents';
+import { buildAgentFromLayers } from '../components/ChooseOpponent/opponents/util';
 export type PvPResult = {
     result: 'win' | 'loss' | 'draw';
     score: number;
@@ -165,4 +172,27 @@ function generateBulkUpdate(pvpProfiles: WithId<PvPProfile>[]): any[] {
         });
     });
     return bulkUpdate;
+}
+
+export async function getScoreForOpponent(
+    p1: PlayerAgent,
+    opponentIndex: number
+): Promise<[ScoreMap, Error]> {
+    const opponents =
+        p1.character === Character.Jessica ? JessicaOpponents : AntocOpponents;
+    const p1Agent = buildAgentFromLayers(
+        p1.layers,
+        p1.character === Character.Jessica ? 0 : 1,
+        p1.combos
+    );
+
+    const frameScene = await runSimulation(
+        p1Agent,
+        opponents[opponentIndex].agent
+    );
+
+    if (frameScene[0] && !frameScene[1]) {
+        return [calculateScoreMap(frameScene[0], p1.character), null];
+    }
+    return [null, frameScene[1]];
 }

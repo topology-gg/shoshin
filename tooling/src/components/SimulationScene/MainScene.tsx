@@ -26,12 +26,7 @@ import StatusBarPanel, {
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 import {
     Character,
-    DamageType,
-    FRAME_COUNT,
-    SCORING,
-    ScoreMap,
-    isDamaged,
-    nullScoreMap,
+    calculateScoreMap,
     numberToCharacter,
 } from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
@@ -60,138 +55,27 @@ import {
     OnlineOpponent,
     Opponent,
     achievedBetterPerformance,
+    achievedBetterScore,
 } from '../../types/Opponent';
 import CloseIcon from '@mui/icons-material/Close';
 
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
 import { Playable } from '../layout/SceneSelector';
-import SubmitMindButton from './MainSceneSubmit';
+import SubmitMindButton from './SubmitOptions/MainSceneSubmit';
 import useAnimationControls, {
     AnimationState,
 } from '../../hooks/useAnimationControls';
+import SubmitOptions from './SubmitOptions/SubmitOptions';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
 });
 
-export const calculateScoreMap = (
-    play: FrameScene,
-    character: Character
-): ScoreMap => {
-    if (play == null) return nullScoreMap;
-
-    //
-    // Score calculation
-    //
-
-    // Labor points
-    // (player would get these regardless player wins the fight or not)
-    // - each hurt inflicted on opponent gives S_HURT points
-    // - each knock inflicted on opponent gives S_KNOCK points
-    // - each launch inflicted on opponent gives S_LAUNCH points
-    // - each KO (one at most) inflicted on opponent gives S_KO points
-
-    // Health Bonus
-    // (only when player wins the fight)
-    // - player gets (player HP - opponent HP) * M_HEALTH points as bonus
-
-    // Full Health Bonus
-    // (only when player wins the fight)
-    // - players gets S_FULL_HEALTH as bonus
-
-    // Time Bonus
-    // (only when player wins the fight)
-    // - player gets (MAX_TIME - time spent to win) * M_TIME points as bonus
-
-    let scoreHurts = 0;
-    let scoreKnocks = 0;
-    let scoreLaunches = 0;
-    let scoreKO = 0;
-    play.agent_1.forEach((frame, _) => {
-        const counter = frame.body_state.counter;
-        const state = frame.body_state.state;
-
-        if (
-            counter == 0 &&
-            isDamaged(
-                [BodystatesJessica.Hurt, BodystatesAntoc.Hurt],
-                state,
-                character
-            )
-        )
-            scoreHurts += 1;
-        if (
-            counter == 0 &&
-            isDamaged(
-                [BodystatesJessica.Knocked, BodystatesAntoc.Knocked],
-                state,
-                character
-            )
-        )
-            scoreKnocks += 1;
-        if (
-            counter == 0 &&
-            isDamaged(
-                [BodystatesJessica.Launched, BodystatesAntoc.Launched],
-                state,
-                character
-            )
-        )
-            scoreLaunches += 1;
-        if (
-            counter == 0 &&
-            isDamaged(
-                [BodystatesJessica.KO, BodystatesAntoc.KO],
-                state,
-                character
-            )
-        )
-            scoreKO = 1;
-    });
-
-    const frameSpent = play.agent_0.length;
-
-    const healthDifference =
-        play.agent_0[play.agent_0.length - 1].body_state.integrity -
-        play.agent_1[play.agent_1.length - 1].body_state.integrity;
-
-    const hasFullHealthAtTheEnd: boolean =
-        play.agent_0[play.agent_0.length - 1].body_state.integrity == 1000;
-
-    const scoreLaborPoints =
-        scoreHurts * SCORING.S_HURT +
-        scoreKnocks * SCORING.S_KNOCK +
-        scoreLaunches * SCORING.S_LAUNCH +
-        scoreKO * SCORING.S_KO;
-    const scoreHealthBonus = healthDifference * SCORING.M_HEALTH;
-    const scoreFullHealthBonus = hasFullHealthAtTheEnd
-        ? SCORING.S_FULL_HEALTH
-        : 0;
-    const scoreTimeBonus = (FRAME_COUNT - frameSpent) * SCORING.M_TIME;
-    const scoreMap: ScoreMap = {
-        labor: {
-            hurt: scoreHurts * SCORING.S_HURT,
-            knocked: scoreKnocks * SCORING.S_KNOCK,
-            launched: scoreLaunches * SCORING.S_LAUNCH,
-            ko: scoreKO * SCORING.S_KO,
-        },
-        healthBonus: scoreHealthBonus,
-        fullHealthBonus: scoreFullHealthBonus,
-        timeBonus: scoreTimeBonus,
-        totalScore:
-            scoreLaborPoints +
-            scoreHealthBonus +
-            scoreFullHealthBonus +
-            scoreTimeBonus,
-    };
-
-    return scoreMap;
-};
-
 interface SimulationProps {
     player: Playable;
     savePlayerAgent: (playerAgent: Playable) => void;
     opponent: Opponent | OnlineOpponent;
+    opponentIndex: number;
     submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
     onContinue: () => void;
     onQuit: () => void;
@@ -200,6 +84,7 @@ interface SimulationProps {
     pauseMenu: ReactNode;
     showFullReplay: boolean;
     isPreview: boolean;
+    isCampaign: boolean;
 }
 //We need Players agent and opponent
 const SimulationScene = React.forwardRef(
@@ -214,6 +99,8 @@ const SimulationScene = React.forwardRef(
             pauseMenu,
             showFullReplay,
             isPreview,
+            opponentIndex,
+            isCampaign,
         } = props;
         // Constants
         const runnable = true;
@@ -479,8 +366,8 @@ const SimulationScene = React.forwardRef(
         useEffect(() => {
             if (
                 beatAgent &&
-                'medal' in opponent &&
-                achievedBetterPerformance(performance, opponent.medal) &&
+                'scoreMap' in opponent &&
+                achievedBetterScore(scoreMap, opponent.scoreMap) &&
                 'layers' in player
             ) {
                 submitWin(player, {
@@ -615,6 +502,17 @@ const SimulationScene = React.forwardRef(
                 </IconButton>
             </React.Fragment>
         );
+
+        const MainSceneSubmitOption = (
+            <SubmitOptions
+                isPreview={isPreview}
+                isCampaign={isCampaign}
+                player={player}
+                opponentIndex={opponentIndex}
+                opponent={opponent}
+            />
+        );
+
         return (
             <div id={'mother'} ref={ref}>
                 <Fade in={!phaserLoaded} timeout={500}>
@@ -791,8 +689,7 @@ const SimulationScene = React.forwardRef(
                                                     (_) => !checkedShowDebugInfo
                                                 )
                                             }
-                                            player={player}
-                                            isPreview={isPreview}
+                                            submitOption={MainSceneSubmitOption}
                                         />
 
                                         <Box

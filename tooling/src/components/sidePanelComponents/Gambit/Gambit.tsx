@@ -10,7 +10,6 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
 import Menu from '@mui/material/Menu';
 import { ACTION_UNICODE_MAP, Character } from '../../../constants/constants';
 import BlurrableButton from '../../ui/BlurrableButton';
@@ -20,7 +19,7 @@ import {
     alwaysTrueCondition,
     LayerCondition,
 } from '../../../types/Layer';
-import { Condition, conditionTypeToEmojiFile } from '../../../types/Condition';
+import { Condition } from '../../../types/Condition';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import BlurrableListItemText from '../../ui/BlurrableListItemText';
 import { Action, CHARACTERS_ACTIONS, Rest } from '../../../types/Action';
@@ -28,9 +27,9 @@ import styles from './Gambit.module.css';
 import ComboEditor from '../ComboEditor';
 import CloseIcon from '@mui/icons-material/Close';
 import { FileCopy, MoreHoriz, VerticalAlignCenter } from '@mui/icons-material';
-import Actions from '../../ComboEditor/Actions';
-import SingleCondition, { ConditionLabel } from './Condition';
+import SingleCondition from './Condition';
 import { truncate } from 'fs';
+import ConditionsMenu from './ConditionsMenu';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 // I think we can just parse this index from id={....}
@@ -413,37 +412,15 @@ export const LayerComponent = ({
                         ) : null}
                     </Box>
                 </Grid>
-                <Menu
-                    id={`conditions-menu-${i}`}
+
+                <ConditionsMenu
                     anchorEl={conditionAnchorEl}
                     open={conditionsOpen}
-                    onClose={(e) => handleCloseConditionDropdown()}
-                    PaperProps={{
-                        style: {
-                            maxHeight: 220,
-                            backgroundColor: '#000',
-                        },
-                    }}
-                >
-                    {conditions.map((condition) => {
-                        return (
-                            <MenuItem>
-                                <BlurrableListItemText
-                                    onClick={(e) => {
-                                        onConditionSelect(condition);
-                                    }}
-                                >
-                                    <ConditionLabel
-                                        name={condition.displayName}
-                                        type={condition.type}
-                                    />
-                                </BlurrableListItemText>
-                            </MenuItem>
-                        );
-                    })}
-                </Menu>
+                    conditions={conditions}
+                    onClose={handleCloseConditionDropdown}
+                    onSelect={onConditionSelect}
+                />
 
-                {/* Action buttons */}
                 <Grid item md={gridActionPortion} xl={gridActionPortion}>
                     <Box
                         display="flex"
