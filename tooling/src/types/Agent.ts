@@ -235,24 +235,24 @@ export function agentsToArray(p1: Agent, p2: Agent): number[] {
         p2.actions.length,
         ...p2.actions,
 
-        // _actions_alternative_0
+        // _actions_alternative_0; set to primary action if not specified
         p1.actions.length,
-        ...p1.alternativeActions,
+        ...(p1.alternativeActions ?? p1.actions),
 
-        // _actions_alternative_1
+        // _actions_alternative_1; set to primary action if not specified
         p2.actions.length,
         ...(p2.alternativeActions ?? p2.actions),
 
-        // _probabilities_0
+        // _probabilities_0; set to 0 if not specified
         p1.actions.length,
-        ...p1.alternativeActions,
+        ...(p1.actionProbabilities ?? p1.actions.map((a) => 0)),
 
-        // _probabilities_1
+        // _probabilities_1; set to 0 if not specified
         p2.actions.length,
-        ...(p2.alternativeActions ?? p2.actions.map((a) => 0)),
+        ...(p2.actionProbabilities ?? p2.actions.map((a) => 0)),
 
-        // seed_0 & seed_1
-        p1.seed,
+        // seed_0 & seed_1; set to 0 if not specified
+        p1.seed ?? 0,
         p2.seed ?? 0,
 
         p1.character,
