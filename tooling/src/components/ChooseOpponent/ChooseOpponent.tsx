@@ -178,9 +178,18 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                                     </IconButton>
                                 </Box>
 
-                                <ScoreDisplay
-                                    opponentIndex={selectedOpponent}
-                                />
+                                <Box
+                                    maxHeight={'60vh'}
+                                    width={'100%'}
+                                    sx={{
+                                        overflowY: 'auto',
+                                        marginBottom: '16px',
+                                    }}
+                                >
+                                    <ScoreDisplay
+                                        opponentIndex={selectedOpponent}
+                                    />
+                                </Box>
                             </Box>
                             <Grid container>
                                 <Grid item xs={5}></Grid>
