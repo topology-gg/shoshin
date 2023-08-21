@@ -269,6 +269,7 @@ const LessonFive: Lesson = {
         conditionAnd: false,
         combos: false,
         sui: false,
+        actionRandomness: false,
     },
     player: {
         //@ts-ignore

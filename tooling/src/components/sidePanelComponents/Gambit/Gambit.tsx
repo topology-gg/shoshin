@@ -73,7 +73,7 @@ export interface GambitFeatures {
     conditionAnd: boolean;
     combos: boolean;
     sui: boolean;
-    actionRandomness: boolean;
+    actionRandomness?: boolean;
 }
 export const FullGambitFeatures: GambitFeatures = {
     layerAddAndDelete: true,
