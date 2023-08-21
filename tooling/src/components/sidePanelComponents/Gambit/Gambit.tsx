@@ -533,11 +533,22 @@ const Gambit = ({
 
     const handleDuplicateLayer = (index: number) => {
         let updatedArray = [...layers];
-        updatedArray.splice(
-            index + 1,
-            0,
-            JSON.parse(JSON.stringify(layers[index]))
-        );
+        let updatedLayer = JSON.parse(JSON.stringify(layers[index]));
+        if (layers[index].action.isCombo) {
+            let updatedCombos = [...combos];
+
+            updatedCombos.push(
+                JSON.parse(
+                    JSON.stringify(combos[layers[index].action.id - 101])
+                )
+            );
+            setCombos(updatedCombos);
+
+            let updatedLayer = layers[index];
+            updatedLayer.action.id = 101 + combos.length;
+        }
+
+        updatedArray.splice(index, 0, updatedLayer);
 
         setLayers(updatedArray);
     };
