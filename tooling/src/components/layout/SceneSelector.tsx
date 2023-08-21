@@ -7,7 +7,7 @@ import MainMenu from '../MainMenu/MainMenu';
 import ChooseCharacter from '../ChooseCharacter/ChooseCharacter';
 import ChooseOpponent from '../ChooseOpponent/ChooseOpponent';
 import MainScene from '../SimulationScene/MainScene';
-import { Character, IDLE_AGENT } from '../../constants/constants';
+import { Character, IDLE_AGENT, MatchFormat } from '../../constants/constants';
 import { INITIAL_AGENT_COMPONENTS } from '../../constants/starter_agent';
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 import { Layer } from '../../types/Layer';
@@ -94,6 +94,8 @@ const SceneSelector = () => {
     const [onlineMode, setOnlineMode] = useState<boolean>(false);
     const [previewMode, setPreviewMode] = useState<boolean>(false);
     const [completedTutorial, setCompletedTutorial] = useState<boolean>(true);
+
+    const [format, setFormat] = useState<MatchFormat>(MatchFormat.BO3);
 
     const musicRef = useRef<HTMLAudioElement>();
     const ctx = React.useContext(ShoshinWASMContext);
@@ -497,13 +499,15 @@ const SceneSelector = () => {
 
     const transitionFromOnlineMenu = (
         playerOneMind: SavedMind | OnlineOpponent,
-        opponent: OnlineOpponent
+        opponent: OnlineOpponent,
+        format: MatchFormat
     ) => {
         setOnlineMode(true);
         setScene(Scenes.MAIN_SCENE);
         pauseMusic();
         setPlayerAgent(playerOneMind);
         setOnlineOpponentChoice(opponent);
+        setFormat(format);
     };
 
     const handleQuit = () => {
@@ -628,6 +632,7 @@ const SceneSelector = () => {
                     pauseMenu={pauseMenu}
                     showFullReplay={showFullReplay && !previewMode}
                     isPreview={previewMode}
+                    matchFormat={format}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ARCADE}>

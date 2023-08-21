@@ -1391,10 +1391,37 @@ export default class Simulator extends Phaser.Scene {
         this.backgroundId = data.backgroundId;
     }
 
+    updateLives(lives) {
+        if (lives[0] == -1) {
+            return;
+        }
+        for (let i = 0; i < 2; i++) {
+            const x = 50 + i * 60;
+            const y = 300;
+
+            const graphics = this.add.graphics();
+            // Draw heart shapes
+            graphics.fillStyle(0xff0000); // Red color
+            graphics.beginPath();
+            graphics.moveTo(x, y + 20);
+            graphics.arc(x - 10, y, 10, 0, Math.PI, true);
+            graphics.arc(x + 10, y, 10, 0, Math.PI, true);
+            graphics.lineTo(x, y + 34);
+            graphics.closePath();
+
+            if (i <= lives[0]) {
+                graphics.fillPath(); // Fill the heart for the first heart
+            } else {
+                graphics.strokePath(); // Stroke the heart for the rest
+            }
+        }
+    }
+
     updateSceneFromFrame({
         testJson,
         animationFrame,
         showDebug,
+        lives,
     }: SimulatorProps) {
         const characterType0 = testJson?.agent_0.type;
         const characterType1 = testJson?.agent_1.type;
@@ -1411,6 +1438,7 @@ export default class Simulator extends Phaser.Scene {
         const fightLength = testJson?.agent_0.frames.length;
         // console.log('animationFrame', animationFrame, 'agentFrame0.body_state', agentFrame0.body_state, 'agentFrame1.body_state', agentFrame1.body_state)
 
+        this.updateLives(lives);
         this.updateScene(
             characterType0,
             characterType1,

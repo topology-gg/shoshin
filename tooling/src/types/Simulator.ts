@@ -17,6 +17,7 @@ export interface SimulatorProps {
     testJson: TestJson;
     animationFrame: number;
     showDebug: boolean;
+    lives?: number[];
 }
 
 interface RealTimeOptions {

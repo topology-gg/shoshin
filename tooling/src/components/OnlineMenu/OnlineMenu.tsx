@@ -24,12 +24,14 @@ import { OnlineOpponent, SavedMind } from '../../types/Opponent';
 import MindPreview from '../MindPreview/MindPreview';
 import PreviewAgainst from '../MindPreview/PreviewAgainst';
 import PreviewAgainstDialogue from '../MindPreview/PreviewAgainst';
+import { MatchFormat } from '../../constants/constants';
 
 interface OnlineMenuProps {
     transitionBack: () => void;
     transitionFromOnlineMenu: (
         playerMind: SavedMind | OnlineOpponent,
-        opp: OnlineOpponent
+        opp: OnlineOpponent,
+        format: MatchFormat
     ) => void;
     savedMinds: SavedMind[];
     saveMinds: (minds: SavedMind[]) => void;
@@ -60,12 +62,18 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                 return;
             }
             setOpenChooseMind(false);
-            transitionFromOnlineMenu(mind, onlineOpponents[selectedOpponent]);
+            transitionFromOnlineMenu(
+                mind,
+                onlineOpponents[selectedOpponent],
+                format
+            );
         };
 
         const [previewOpen, setPreviewOpen] = useState<boolean>(false);
         const [openChooseMind, setOpenChooseMind] = useState<boolean>(false);
-        const [selectFormat, setSelectFormat] = useState<boolean>(false);
+        const [format, selectFormat] = useState<MatchFormat>(
+            MatchFormat.SINGLE
+        );
 
         const handleAddToSavedMinds = () => {
             saveMinds([
@@ -175,22 +183,13 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                         </DialogContent>
                     </Dialog>
 
-                    <Dialog
-                        open={openChooseMind}
-                        onClose={() => setOpenChooseMind(false)}
-                        fullWidth={true}
-                        maxWidth={'lg'}
-                    >
-                        {!selectFormat && (
-                            <PreviewAgainstDialogue
-                                savedMinds={savedMinds}
-                                chooseOpponent={handleChooseMind}
-                                close={() => setOpenChooseMind(false)}
-                                previewOpen={openChooseMind}
-                                selectFormat={() => {}}
-                            />
-                        )}
-                    </Dialog>
+                    <PreviewAgainstDialogue
+                        savedMinds={savedMinds}
+                        chooseOpponent={handleChooseMind}
+                        close={() => setOpenChooseMind(false)}
+                        previewOpen={openChooseMind}
+                        selectFormat={selectFormat}
+                    />
 
                     {isSubmitOpeoned && (
                         <div className={'overlay-menu'} onClick={toggleMenu}>

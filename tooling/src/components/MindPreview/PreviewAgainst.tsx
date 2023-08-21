@@ -49,29 +49,30 @@ const PreviewAgainstDialogue = ({
 
     let dialogeButtons = null;
 
+    const handleSingleFormatClick = () => {
+        selectFormat(MatchFormat.SINGLE);
+        setStage(PreviewAgainstStages.Preview);
+    };
+
+    const handleBestOfThreeFormatClick = () => {
+        selectFormat(MatchFormat.BO3);
+        setStage(PreviewAgainstStages.Preview);
+    };
+
     if (stage == PreviewAgainstStages.SelectFormat) {
         dialogTitle = 'SelectFormat';
 
         dialogContent = (
             <Box>
-                <ShoshinMenuButton>Box</ShoshinMenuButton>
+                <ShoshinMenuButton onClick={handleSingleFormatClick}>
+                    Single Fight
+                </ShoshinMenuButton>
+                <ShoshinMenuButton onClick={handleBestOfThreeFormatClick}>
+                    Best of 3
+                </ShoshinMenuButton>
             </Box>
         );
-        dialogeButtons = (
-            <div>
-                <ShoshinMenuButton sx={{ width: 150 }} onClick={() => close()}>
-                    Cancel
-                </ShoshinMenuButton>
-                <ShoshinMenuButton
-                    isAlt
-                    sx={{ width: 175 }}
-                    disabled={selectedMind === undefined}
-                    onClick={() => setStage(PreviewAgainstStages.Preview)}
-                >
-                    Next
-                </ShoshinMenuButton>
-            </div>
-        );
+        dialogeButtons = <div></div>;
     } else if (stage == PreviewAgainstStages.Select) {
         dialogTitle = 'Choose Opponent';
         dialogContent = (

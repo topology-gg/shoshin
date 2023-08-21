@@ -28,6 +28,7 @@ import {
     Character,
     DamageType,
     FRAME_COUNT,
+    MatchFormat,
     SCORING,
     ScoreMap,
     isDamaged,
@@ -200,6 +201,7 @@ interface SimulationProps {
     pauseMenu: ReactNode;
     showFullReplay: boolean;
     isPreview: boolean;
+    matchFormat: MatchFormat;
 }
 //We need Players agent and opponent
 const SimulationScene = React.forwardRef(
@@ -214,6 +216,7 @@ const SimulationScene = React.forwardRef(
             pauseMenu,
             showFullReplay,
             isPreview,
+            matchFormat,
         } = props;
         // Constants
         const runnable = true;
@@ -226,6 +229,12 @@ const SimulationScene = React.forwardRef(
             useState<boolean>(false);
 
         let p2: Agent;
+
+        const [lives, setLives] =
+            matchFormat == MatchFormat.BO3
+                ? useState<number[]>([2, 2])
+                : useState<number[]>([-1, -1]);
+
         if ('layers' in opponent.agent) {
             const { layers, character, combos } = opponent.agent;
             const charIndex = character == Character.Jessica ? 0 : 1;
@@ -730,6 +739,7 @@ const SimulationScene = React.forwardRef(
                                                     isInView={true}
                                                     backgroundId={backgroundId}
                                                     volume={volume}
+                                                    lives={lives}
                                                 />
                                             </div>
                                             {playOnly && (
