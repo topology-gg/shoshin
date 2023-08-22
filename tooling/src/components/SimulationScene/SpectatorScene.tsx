@@ -211,6 +211,13 @@ enum PointOfView {
     PLAYER_2,
 }
 
+enum RoundView {
+    FULL,
+    ROUND_1,
+    ROUND_2,
+    ROUND_3,
+}
+
 //We need Players agent and opponent
 const SpectatorScene = React.forwardRef(
     (props: SimulationProps, ref: ForwardedRef<HTMLDivElement>) => {
@@ -229,8 +236,10 @@ const SpectatorScene = React.forwardRef(
         // Constants
         const runnable = true;
 
+        const [round, setRound] = useState<number>(0);
         // React states for simulation / animation control
-        const [output, setOuput] = useState<FrameScene>();
+        const [outputs, setOutputs] = useState<FrameScene[]>();
+
         const [simulationError, setSimulationError] = useState();
         const [p1, setP1] = useState<Agent>();
         const [reSimulationNeeded, setReSimulationNeeded] =
@@ -239,6 +248,8 @@ const SpectatorScene = React.forwardRef(
         const [pointOfView, setPointOfView] = useState<PointOfView>(
             PointOfView.SPECTATOR
         );
+
+        const [roundView, setRoundView] = useState<RoundView>(RoundView.FULL);
 
         let p2: Agent;
 
@@ -268,7 +279,7 @@ const SpectatorScene = React.forwardRef(
             animationState,
             animationStepForward,
             animationStepBackward,
-        } = useAnimationControls(output, p1?.character, p2?.character);
+        } = useAnimationControls(outputs[round], p1?.character, p2?.character);
 
         const [playerStatuses, setPlayerStatuses] = useState<PlayerStatuses>({
             integrity_0: 1000,
@@ -384,16 +395,22 @@ const SpectatorScene = React.forwardRef(
         }
 
         useEffect(() => {
-            if (output) {
-                console.log('caught output:', output);
+            if (outputs[round]) {
+                console.log('caught output:', outputs[round]);
                 setTestJson((_) => {
                     return {
-                        agent_0: { frames: output.agent_0, type: p1.character },
-                        agent_1: { frames: output.agent_1, type: p2.character },
+                        agent_0: {
+                            frames: outputs[round].agent_0,
+                            type: p1.character,
+                        },
+                        agent_1: {
+                            frames: outputs[round].agent_1,
+                            type: p2.character,
+                        },
                     };
                 });
             }
-        }, [output]);
+        }, [outputs]);
 
         useEffect(() => {
             const integrity_0 = testJson
@@ -418,6 +435,13 @@ const SpectatorScene = React.forwardRef(
         }, [testJson, animationFrame]);
 
         const { runCairoSimulation } = useRunCairoSimulation(p1, p2);
+
+        const [out, err] = runCairoSimulation();
+        if (err != null) {
+            setSimulationError(err);
+            return;
+        }
+        setGameOutp(out);
 
         useEffect(() => {
             if (!simulationError) return;
@@ -453,13 +477,6 @@ const SpectatorScene = React.forwardRef(
 
                 // If in Stop => perform simulation then go to Run
                 else if (animationState == AnimationState.STOP && runnable) {
-                    const [out, err] = runCairoSimulation();
-                    if (err != null) {
-                        setSimulationError(err);
-                        return;
-                    }
-                    setOuput(out);
-
                     start();
                 }
             } else {
