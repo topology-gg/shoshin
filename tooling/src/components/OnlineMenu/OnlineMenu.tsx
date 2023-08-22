@@ -36,17 +36,6 @@ interface OnlineMenuProps {
     savedMinds: SavedMind[];
     saveMinds: (minds: SavedMind[]) => void;
 }
-
-const ShimmedOnlineOpponents: OnlineOpponent[] = JessicaOpponents.map(
-    (opp, index) => {
-        return {
-            agent: opp.agent as any,
-            mindName: opp.mindName,
-            playerName: opp.mindName,
-        };
-    }
-);
-
 const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
     (
         { transitionBack, transitionFromOnlineMenu, savedMinds, saveMinds },
@@ -231,6 +220,7 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                             sx={{ overflowY: 'auto', marginBottom: '16px' }}
                         >
                             <OnlineTable
+                                displayRank={true}
                                 opponents={onlineOpponents}
                                 selectedOpponent={selectedOpponent}
                                 selectOpponent={selectOpponent}

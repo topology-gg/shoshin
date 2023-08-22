@@ -15,9 +15,16 @@ const useRunCairoSimulation = (p1: Agent, p2: Agent) => {
             console.warn('WASM not initialized');
             return;
         }
+
+        console.log('player 1 agent before calldata formation:', p1);
+        let calldataArray = agentsToArray(p1, p2);
+        // console.log('calldataArray', calldataArray);
+        let shoshinInput = new Int32Array(calldataArray);
+        console.log('shoshinInput', shoshinInput);
+
         try {
-            let shoshinInput = new Int32Array(agentsToArray(p1, p2));
             let output = ctx.wasm.runCairoProgram(shoshinInput);
+            console.log('raw output', output);
             return [cairoOutputToFrameScene(output), null];
         } catch (e) {
             console.log('Got an error running wasm', e);

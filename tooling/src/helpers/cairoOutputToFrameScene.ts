@@ -1,8 +1,5 @@
 import { FrameScene } from '../types/Frame';
 
-const DEFAULT_STAMINA = 1000;
-const DEFAULT_INTEGRITY = 1000;
-
 const cairoOutputToFrameScene = (output: any[]): FrameScene => {
     let scene: FrameScene = { agent_0: [], agent_1: [] };
     output.forEach((f) => {
@@ -139,6 +136,9 @@ const cairoOutputToFrameScene = (output: any[]): FrameScene => {
             stimulus: f.agent_0.stimulus[0]
                 ? f.agent_0.stimulus[0] * f.agent_0.stimulus[1][0]
                 : 0,
+            gamma: f.agent_0.gamma[0]
+                ? f.agent_0.gamma[0] * f.agent_0.gamma[1][0]
+                : 0,
         });
         scene.agent_1.push({
             action: f.agent_1.action[0]
@@ -272,6 +272,9 @@ const cairoOutputToFrameScene = (output: any[]): FrameScene => {
                 : 0,
             stimulus: f.agent_1.stimulus[0]
                 ? f.agent_1.stimulus[0] * f.agent_1.stimulus[1][0]
+                : 0,
+            gamma: f.agent_1.gamma[0]
+                ? f.agent_1.gamma[0] * f.agent_1.gamma[1][0]
                 : 0,
         });
     });

@@ -16,6 +16,9 @@ export default interface Agent {
     conditions?: Leaf[];
     conditionNames?: string[];
     actions?: number[];
+    alternativeActions?: number[];
+    seed?: number;
+    actionProbabilities?: number[];
     character?: number;
 }
 
@@ -102,6 +105,13 @@ export function buildAgent(
     agent.actions = mentalStates.map((ms) => ms.action);
     agent.character = character;
 
+    //
+    // randomness
+    //
+    agent.actionProbabilities = mentalStates.map((ms) => ms.probability);
+    agent.alternativeActions = mentalStates.map((ms) => ms.actionAlternative);
+    agent.seed = 1;
+
     //console.log('agent', agent);
     return agent;
 }
@@ -165,6 +175,7 @@ export function agentsToArray(p1: Agent, p2: Agent): number[] {
         p1ConditionsOffset,
         p1Conditions,
     ] = flattenAgent(p1);
+
     // flatten the second agent
     let [
         p2CombosOffset,
@@ -174,6 +185,22 @@ export function agentsToArray(p1: Agent, p2: Agent): number[] {
         p2ConditionsOffset,
         p2Conditions,
     ] = flattenAgent(p2);
+
+    // _actions_alternative_0
+    // console.log(
+    //     'p1.actions_alternative',
+    //     p1.alternativeActions,
+    //     'p2.actions_alternative',
+    //     p2.alternativeActions ?? p2.actions,
+    //     'p1.action_probabilities',
+    //     p1.alternativeActions,
+    //     'p2.action_probabilities',
+    //     p2.alternativeActions ?? p2.actions.map((a) => 0),
+    //     'p1.seed',
+    //     p1.seed,
+    //     'p2.seed',
+    //     p2.seed ?? 0
+    // );
 
     return [
         FRAME_COUNT,
@@ -207,6 +234,27 @@ export function agentsToArray(p1: Agent, p2: Agent): number[] {
         ...p1.actions,
         p2.actions.length,
         ...p2.actions,
+
+        // _actions_alternative_0; set to primary action if not specified
+        p1.actions.length,
+        ...(p1.alternativeActions ?? p1.actions),
+
+        // _actions_alternative_1; set to primary action if not specified
+        p2.actions.length,
+        ...(p2.alternativeActions ?? p2.actions),
+
+        // _probabilities_0; set to 0 if not specified
+        p1.actions.length,
+        ...(p1.actionProbabilities ?? p1.actions.map((a) => 0)),
+
+        // _probabilities_1; set to 0 if not specified
+        p2.actions.length,
+        ...(p2.actionProbabilities ?? p2.actions.map((a) => 0)),
+
+        // seed_0 & seed_1; set to 0 if not specified
+        p1.seed ?? 0,
+        p2.seed ?? 0,
+
         p1.character,
         p2.character,
     ];

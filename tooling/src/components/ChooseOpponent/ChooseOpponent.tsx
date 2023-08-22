@@ -7,6 +7,7 @@ import FullArtBackground from '../layout/FullArtBackground';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import OpponentTile from '../ChooseCharacter/OpponentTile';
 import { Medal, Opponent } from '../../types/Opponent';
+import ScoreDisplay from './ScoreDisplay';
 
 interface ChooseOpponentProps {
     opponents: Opponent[];
@@ -122,6 +123,7 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                         >
                             {selectedOpponentName}
                         </ShoshinMenuButton>
+
                         <Box
                             sx={{
                                 display: 'flex',
@@ -132,39 +134,62 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                             }}
                         >
                             <Box
-                                sx={{
-                                    width: '50%',
-                                    minWidth: '600px',
-                                    minHeight: '600px',
-                                    height: '50vh',
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                }}
+                                display={'flex'}
+                                flexDirection={'row'}
+                                width={'80%'}
                             >
-                                <IconButton
-                                    onClick={() => decrementSelectedOpponent()}
+                                <Box
+                                    sx={{
+                                        width: '50%',
+                                        minWidth: '800px',
+                                        minHeight: '600px',
+                                        height: '50vh',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                    }}
                                 >
-                                    <img
-                                        src="./images/ui/next-opponent-left.png"
-                                        alt="Button Icon"
+                                    <IconButton
+                                        onClick={() =>
+                                            decrementSelectedOpponent()
+                                        }
+                                    >
+                                        <img
+                                            src="./images/ui/next-opponent-left.png"
+                                            alt="Button Icon"
+                                        />
+                                    </IconButton>
+                                    <CardCarousel3D
+                                        offset={2}
+                                        showArrows={false}
+                                        cards={characterBoxes}
+                                        currentIndex={selectedOpponent}
+                                        selectIndex={selectOpponent}
                                     />
-                                </IconButton>
-                                <CardCarousel3D
-                                    offset={2}
-                                    showArrows={false}
-                                    cards={characterBoxes}
-                                    currentIndex={selectedOpponent}
-                                    selectIndex={selectOpponent}
-                                />
-                                <IconButton
-                                    onClick={() => incrementSelectedOpponent()}
+                                    <IconButton
+                                        onClick={() =>
+                                            incrementSelectedOpponent()
+                                        }
+                                    >
+                                        <img
+                                            src="./images/ui/next-opponent-right.png"
+                                            alt="Button Icon"
+                                        />
+                                    </IconButton>
+                                </Box>
+
+                                <Box
+                                    maxHeight={'60vh'}
+                                    width={'100%'}
+                                    sx={{
+                                        overflowY: 'auto',
+                                        marginBottom: '16px',
+                                    }}
                                 >
-                                    <img
-                                        src="./images/ui/next-opponent-right.png"
-                                        alt="Button Icon"
+                                    <ScoreDisplay
+                                        opponentIndex={selectedOpponent}
                                     />
-                                </IconButton>
+                                </Box>
                             </Box>
                             <Grid container>
                                 <Grid item xs={5}></Grid>
@@ -172,12 +197,6 @@ const ChooseOpponent = React.forwardRef<HTMLDivElement, ChooseOpponentProps>(
                                     <Typography variant="h6">
                                         {selectedOpponent + 1} /{' '}
                                         {opponents.length}
-                                    </Typography>
-                                    <Typography variant="h5" fontWeight="bold">
-                                        Best Grade:{' '}
-                                        {selectedOpponentGrade == Medal.NONE
-                                            ? '---'
-                                            : selectedOpponentGrade}
                                     </Typography>
                                     <Typography variant="h5" fontWeight="bold">
                                         Best Score:{' '}

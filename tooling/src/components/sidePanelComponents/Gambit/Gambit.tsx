@@ -10,7 +10,6 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
 import Menu from '@mui/material/Menu';
 import { ACTION_UNICODE_MAP, Character } from '../../../constants/constants';
 import BlurrableButton from '../../ui/BlurrableButton';
@@ -20,28 +19,29 @@ import {
     alwaysTrueCondition,
     LayerCondition,
 } from '../../../types/Layer';
-import { Condition, conditionTypeToEmojiFile } from '../../../types/Condition';
+import { Condition } from '../../../types/Condition';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import BlurrableListItemText from '../../ui/BlurrableListItemText';
-import { Action, CHARACTERS_ACTIONS } from '../../../types/Action';
+import { Action, CHARACTERS_ACTIONS, Rest } from '../../../types/Action';
 import styles from './Gambit.module.css';
 import ComboEditor from '../ComboEditor';
 import CloseIcon from '@mui/icons-material/Close';
 import { FileCopy, MoreHoriz, VerticalAlignCenter } from '@mui/icons-material';
-import Actions from '../../ComboEditor/Actions';
-import SingleCondition, { ConditionLabel } from './Condition';
+import SingleCondition from './Condition';
 import { truncate } from 'fs';
+import ConditionsMenu from './ConditionsMenu';
 
 //We have nested map calls in our render so we cannot access layer index from action/condition click
 // I think we can just parse this index from id={....}
 let currentMenu = 0;
 let currentConditionMenu = 0;
 
-let gridOrderPortion = 1.2;
-let gridConditionPortionXl = 5;
-let gridConditionPortionMd = 5;
-let gridActionPortion = 4;
-let checkboxPortion = 0.9;
+let gridOrderPortion = 1.3;
+let gridConditionPortionXl = 4;
+let gridConditionPortionMd = 4;
+let gridActionPortion = 3.6;
+let suiCheckboxPortion = 1.1;
+let randCheckboxPortion = 1.1;
 let gridRemovePortion = 0.9;
 
 const actionIndexToAction = (
@@ -72,12 +72,14 @@ export interface GambitFeatures {
     conditionAnd: boolean;
     combos: boolean;
     sui: boolean;
+    actionRandomness?: boolean;
 }
 export const FullGambitFeatures: GambitFeatures = {
     layerAddAndDelete: true,
     conditionAnd: true,
     combos: true,
     sui: true,
+    actionRandomness: true,
 };
 interface GambitProps {
     isAnimationRunning: boolean;
@@ -106,6 +108,10 @@ export interface LayerProps {
     handleDuplicateLayer: (index: number) => void;
     //Check if previously combo and close
     handleChooseAction: (actionName: string, layerIndex: number) => void;
+    handleChooseAlternativeAction: (
+        actionName: string,
+        layerIndex: number
+    ) => void;
     // -1 index is a new condition
     handleChooseCondition: (condition: Condition, index: number) => void;
     handleRemoveCondition: (layerIndex: number, conditionIndex: number) => void;
@@ -120,6 +126,7 @@ export interface LayerProps {
     isActive: boolean;
     features: GambitFeatures;
     toggleIsLayerSui: (layerIndex: number) => void;
+    setLayerProbability: (layerIndex: number, probability: number) => void;
     isAnimationRunning: boolean;
 }
 
@@ -135,6 +142,7 @@ const DraggableLayer = ({
     actions,
     combos,
     handleChooseAction,
+    handleChooseAlternativeAction,
     handleChooseCondition,
     handleRemoveCondition,
     handleRemoveLayer,
@@ -145,6 +153,7 @@ const DraggableLayer = ({
     isActive,
     features,
     toggleIsLayerSui,
+    setLayerProbability,
     isAnimationRunning,
 }: LayerProps) => {
     const handleChangeLayerCondition = (
@@ -176,6 +185,9 @@ const DraggableLayer = ({
                         conditions={conditions}
                         combos={combos}
                         handleChooseAction={handleChooseAction}
+                        handleChooseAlternativeAction={
+                            handleChooseAlternativeAction
+                        }
                         handleChooseCondition={handleChooseCondition}
                         handleRemoveLayer={handleRemoveLayer}
                         handleDuplicateLayer={handleDuplicateLayer}
@@ -187,6 +199,7 @@ const DraggableLayer = ({
                         features={features}
                         actions={actions}
                         toggleIsLayerSui={toggleIsLayerSui}
+                        setLayerProbability={setLayerProbability}
                         isAnimationRunning={isAnimationRunning}
                     />
                 </div>
@@ -203,6 +216,7 @@ export const LayerComponent = ({
     conditions,
     combos,
     handleChooseAction,
+    handleChooseAlternativeAction,
     handleChooseCondition,
     handleRemoveCondition,
     handleRemoveLayer,
@@ -214,14 +228,20 @@ export const LayerComponent = ({
     features,
     actions,
     toggleIsLayerSui,
+    setLayerProbability,
     isAnimationRunning,
 }: LayerProps) => {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [actionAnchorEl, setActionAnchorEl] = useState<null | HTMLElement>(
+        null
+    );
 
-    const [conditionIndex, changeConditionIndex] = useState<number>(-1);
+    const [alternativeActionAnchorEl, setAlternativeActionAnchorEl] =
+        useState<null | HTMLElement>(null);
 
     const [conditionAnchorEl, setConditionAnchorEl] =
         useState<null | HTMLElement>(null);
+
+    const [conditionIndex, changeConditionIndex] = useState<number>(-1);
 
     const [layerOptionsMenuOpen, setLayerOptionsMenuOpen] = useState(false);
 
@@ -229,7 +249,8 @@ export const LayerComponent = ({
 
     let characterIndex = Object.keys(Character).indexOf(character);
 
-    const open = Boolean(anchorEl);
+    const actionOpen = Boolean(actionAnchorEl);
+    const altActionOpen = Boolean(alternativeActionAnchorEl);
 
     const conditionsOpen = Boolean(conditionAnchorEl);
 
@@ -246,20 +267,35 @@ export const LayerComponent = ({
             handleChooseCombo(i);
         }
 
-        setAnchorEl(null);
+        setActionAnchorEl(null);
+    };
+
+    const onAltActionSelect = (action: string) => {
+        //
+        // TODO: support using combo as alternative action
+        //
+        handleChooseAlternativeAction(action, i);
+        setAlternativeActionAnchorEl(null);
     };
 
     const onConditionSelect = (condition: Condition) => {
         handleChooseCondition(condition, conditionIndex);
-        setAnchorEl(null);
+        setActionAnchorEl(null);
         setConditionAnchorEl(null);
     };
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleActionClick = (
+        event: React.MouseEvent<HTMLButtonElement>,
+        isAlt: boolean
+    ) => {
         let id = event.currentTarget.id.split('-');
         let menuIndex = parseInt(id[id.length - 1]);
-        currentMenu = menuIndex;
-        setAnchorEl(event.currentTarget);
+        if (!isAlt) {
+            currentMenu = menuIndex;
+            setActionAnchorEl(event.currentTarget);
+        } else {
+            setAlternativeActionAnchorEl(event.currentTarget);
+        }
     };
 
     const handleConditionClick = (
@@ -282,8 +318,12 @@ export const LayerComponent = ({
         setConditionAnchorEl(event.currentTarget);
     };
 
-    const handleCloseActionDropdown = () => {
-        setAnchorEl(null);
+    const handleCloseActionDropdown = (isAlt: boolean) => {
+        if (!isAlt) {
+            setActionAnchorEl(null);
+        } else {
+            setAlternativeActionAnchorEl(null);
+        }
     };
 
     const handleCloseConditionDropdown = () => {
@@ -295,6 +335,9 @@ export const LayerComponent = ({
     };
 
     const action: Action = actionIndexToAction(layer.action.id, characterIndex);
+    const altAction: Action = !layer.actionAlternative
+        ? actionIndexToAction(Rest.id, characterIndex)
+        : actionIndexToAction(layer.actionAlternative.id, characterIndex);
 
     return (
         <Box
@@ -369,59 +412,71 @@ export const LayerComponent = ({
                         ) : null}
                     </Box>
                 </Grid>
-                <Menu
-                    id={`conditions-menu-${i}`}
+
+                <ConditionsMenu
                     anchorEl={conditionAnchorEl}
                     open={conditionsOpen}
-                    onClose={(e) => handleCloseConditionDropdown()}
-                    PaperProps={{
-                        style: {
-                            maxHeight: 220,
-                            backgroundColor: '#000',
-                        },
-                    }}
-                >
-                    {conditions.map((condition) => {
-                        return (
-                            <MenuItem>
-                                <BlurrableListItemText
-                                    onClick={(e) => {
-                                        onConditionSelect(condition);
+                    conditions={conditions}
+                    onClose={handleCloseConditionDropdown}
+                    onSelect={onConditionSelect}
+                />
+
+                <Grid item md={gridActionPortion} xl={gridActionPortion}>
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        flexWrap={'wrap'}
+                    >
+                        <BlurrableButton
+                            className={`${styles.gambitButton} ${styles.actionButton}`}
+                            key={`action-button-${i}`}
+                            id={`condition-btn-${i}`}
+                            onClick={(evt) => handleActionClick(evt, false)}
+                            style={{
+                                fontFamily: 'Eurostile',
+                                fontSize: '15px',
+                                padding: '8px 14px',
+                                lineHeight: '9px',
+                            }}
+                        >
+                            <span style={{ marginRight: '7px' }}>
+                                {action.display.unicode}
+                            </span>{' '}
+                            {action.display.name}
+                        </BlurrableButton>
+
+                        {features.actionRandomness &&
+                            layer.probability != 0 && (
+                                <BlurrableButton
+                                    className={`${styles.gambitButton} ${styles.actionButton}`}
+                                    key={`alt-action-button-${i}`}
+                                    id={`condition-btn-${i}`}
+                                    onClick={(evt) =>
+                                        handleActionClick(evt, true)
+                                    }
+                                    style={{
+                                        fontFamily: 'Eurostile',
+                                        fontSize: '15px',
+                                        padding: '8px 14px',
+                                        lineHeight: '9px',
                                     }}
                                 >
-                                    <ConditionLabel
-                                        name={condition.displayName}
-                                        type={condition.type}
-                                    />
-                                </BlurrableListItemText>
-                            </MenuItem>
-                        );
-                    })}
-                </Menu>
-                <Grid item md={gridActionPortion} xl={gridActionPortion}>
-                    <BlurrableButton
-                        className={`${styles.gambitButton} ${styles.actionButton}`}
-                        key={`${i}`}
-                        id={`condition-btn-${i}`}
-                        onClick={handleClick}
-                        style={{
-                            fontFamily: 'Eurostile',
-                            fontSize: '15px',
-                            padding: '8px 14px',
-                            lineHeight: '9px',
-                        }}
-                    >
-                        <span style={{ marginRight: '7px' }}>
-                            {action.display.unicode}
-                        </span>{' '}
-                        {action.display.name}
-                    </BlurrableButton>
+                                    <span style={{ marginRight: '7px' }}>
+                                        {altAction.display.unicode}
+                                    </span>{' '}
+                                    {altAction.display.name}
+                                </BlurrableButton>
+                            )}
+                    </Box>
                 </Grid>
+
+                {/* Menu for picking the primary action */}
                 <Menu
                     id={`actions-menu-${i}`}
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleCloseActionDropdown}
+                    anchorEl={actionAnchorEl}
+                    open={actionOpen}
+                    onClose={(evt) => handleCloseActionDropdown(false)}
                 >
                     {actionsDisplayNames.map((action) => {
                         return (
@@ -443,14 +498,55 @@ export const LayerComponent = ({
                         );
                     })}
                 </Menu>
+
+                {/* Menu for picking the alternative action when action randomness is employed*/}
+                <Menu
+                    id={`alt-actions-menu-${i}`}
+                    anchorEl={alternativeActionAnchorEl}
+                    open={altActionOpen}
+                    onClose={(evt) => handleCloseActionDropdown(true)}
+                >
+                    {actionsDisplayNames.slice(0, -1).map((action) => {
+                        return (
+                            <MenuItem>
+                                <BlurrableListItemText
+                                    onClick={(e) => onAltActionSelect(action)}
+                                >
+                                    <span
+                                        style={{
+                                            marginRight: '7px',
+                                            fontSize: '16px',
+                                        }}
+                                    >
+                                        {ACTION_UNICODE_MAP[action]}
+                                    </span>
+                                    <span>{action.replaceAll('_', ' ')}</span>
+                                </BlurrableListItemText>
+                            </MenuItem>
+                        );
+                    })}
+                </Menu>
+
                 {features.sui && (
-                    <Grid item xs={checkboxPortion}>
+                    <Grid item xs={suiCheckboxPortion}>
                         <Switch
                             size="small"
                             onChange={() => {
                                 toggleIsLayerSui(i);
                             }}
                             checked={layer.sui}
+                        />
+                    </Grid>
+                )}
+
+                {features.actionRandomness && (
+                    <Grid item xs={randCheckboxPortion}>
+                        <Switch
+                            size="small"
+                            onChange={() => {
+                                setLayerProbability(i, 5);
+                            }}
+                            checked={layer.probability != 0}
                         />
                     </Grid>
                 )}
@@ -554,11 +650,22 @@ const Gambit = ({
 
     const handleDuplicateLayer = (index: number) => {
         let updatedArray = [...layers];
-        updatedArray.splice(
-            index + 1,
-            0,
-            JSON.parse(JSON.stringify(layers[index]))
-        );
+        let updatedLayer = JSON.parse(JSON.stringify(layers[index]));
+        if (layers[index].action.isCombo) {
+            let updatedCombos = [...combos];
+
+            updatedCombos.push(
+                JSON.parse(
+                    JSON.stringify(combos[layers[index].action.id - 101])
+                )
+            );
+            setCombos(updatedCombos);
+
+            let updatedLayer = layers[index];
+            updatedLayer.action.id = 101 + combos.length;
+        }
+
+        updatedArray.splice(index, 0, updatedLayer);
 
         setLayers(updatedArray);
     };
@@ -593,6 +700,29 @@ const Gambit = ({
         updatedLayers[layerIndex] = {
             ...layer,
             action: {
+                id:
+                    CHARACTERS_ACTIONS[characterIndex].find(
+                        (e) => e.display.name == actionName
+                    ).id || 0,
+                isCombo: false,
+            },
+        };
+
+        setCombos(combos);
+        setLayers(updatedLayers);
+    };
+
+    const handleChooseAlternativeAction = (
+        actionName: string,
+        layerIndex: number
+    ) => {
+        const layer = layers[layerIndex];
+
+        let updatedLayers: Layer[] = JSON.parse(JSON.stringify(layers));
+
+        updatedLayers[layerIndex] = {
+            ...layer,
+            actionAlternative: {
                 id:
                     CHARACTERS_ACTIONS[characterIndex].find(
                         (e) => e.display.name == actionName
@@ -683,6 +813,24 @@ const Gambit = ({
         setLayers(updatedLayers);
     };
 
+    const handleSetLayerProbability = (
+        layerIndex: number,
+        probability: number
+    ) => {
+        let updatedLayers = [...layers];
+
+        // TODO: change to setting instead of toggling
+        updatedLayers[layerIndex].probability =
+            updatedLayers[layerIndex].probability != 0 ? 0 : probability;
+        console.log(
+            'handleSetLayerProbability, layerIndex =',
+            layerIndex,
+            'probability =',
+            updatedLayers[layerIndex].probability
+        );
+        setLayers(updatedLayers);
+    };
+
     const handleChangeCondition = (
         condition: LayerCondition,
         conditionIndex: number,
@@ -710,6 +858,7 @@ const Gambit = ({
             handleRemoveLayer={handleRemoveLayer}
             handleDuplicateLayer={handleDuplicateLayer}
             handleChooseAction={handleChooseAction}
+            handleChooseAlternativeAction={handleChooseAlternativeAction}
             isReadOnly={false}
             character={character}
             conditions={conditions}
@@ -723,6 +872,7 @@ const Gambit = ({
             features={features}
             actions={actions}
             toggleIsLayerSui={handleToggleIsLayerSui}
+            setLayerProbability={handleSetLayerProbability}
             isAnimationRunning={isAnimationRunning}
         />
     ));
@@ -876,8 +1026,8 @@ const Gambit = ({
                                         </Grid>
                                         <Grid
                                             item
-                                            md={checkboxPortion}
-                                            xl={checkboxPortion}
+                                            md={suiCheckboxPortion}
+                                            xl={suiCheckboxPortion}
                                             sx={{ pl: 0 }}
                                         >
                                             {features.sui && (
@@ -926,6 +1076,56 @@ const Gambit = ({
                                                 </Tooltip>
                                             )}
                                         </Grid>
+
+                                        <Grid
+                                            item
+                                            md={randCheckboxPortion}
+                                            xl={randCheckboxPortion}
+                                            sx={{ pl: 0 }}
+                                        >
+                                            {features.actionRandomness && (
+                                                <Tooltip
+                                                    title={
+                                                        <div>
+                                                            <p
+                                                                style={{
+                                                                    fontSize:
+                                                                        '16px',
+                                                                }}
+                                                            >
+                                                                Rand
+                                                            </p>
+                                                            <p
+                                                                style={{
+                                                                    fontSize:
+                                                                        '16px',
+                                                                }}
+                                                            >
+                                                                Action
+                                                                randomness.
+                                                                Currently,
+                                                                probability is
+                                                                set to 50% if
+                                                                toggle is turned
+                                                                on.
+                                                            </p>
+                                                        </div>
+                                                    }
+                                                >
+                                                    <Typography
+                                                        sx={{
+                                                            fontSize: '13px',
+                                                            fontFamily:
+                                                                'Eurostile',
+                                                            color: '#000000',
+                                                        }}
+                                                    >
+                                                        RAND
+                                                    </Typography>
+                                                </Tooltip>
+                                            )}
+                                        </Grid>
+
                                         {/* <Grid item md={gridRemovePortion} xl={gridRemovePortion} sx={{pl:0}}>
                                             <Typography
                                                 sx={{

@@ -43,6 +43,8 @@ const SimpleLayerList = ({ playerAgent }: SimpleLayerList) => {
             actions={[]}
             combos={combos}
             handleChooseAction={() => {}}
+            handleChooseAlternativeAction={() => {}}
+            setLayerProbability={() => {}}
             handleChooseCombo={handleSelectCombo}
             handleChooseCondition={() => {}}
             handleInvertCondition={() => {}}

@@ -9,22 +9,20 @@ import {
     TableRow,
 } from '@mui/material';
 import { OnlineOpponent } from '../../types/Opponent';
-import CardSimple from '../ui/CardSimple';
-import { EMPTY_JESSICA } from '../../constants/starter_agent';
-import { PlayerAgent } from '../../types/Agent';
-import { Character, JESSICA } from '../../constants/constants';
 
 interface OnlineTableProps {
     isLocal?: boolean;
     opponents: OnlineOpponent[];
     selectedOpponent: number;
     selectOpponent: (index: number) => void;
+    displayRank: boolean;
 }
 const OnlineTable = ({
     isLocal,
     opponents,
     selectOpponent,
     selectedOpponent,
+    displayRank,
 }: OnlineTableProps) => {
     if (opponents === undefined) {
         return <CircularProgress />;
@@ -40,6 +38,8 @@ const OnlineTable = ({
             style={{ cursor: 'pointer' }}
             selected={index === selectedOpponent}
         >
+            {displayRank && <TableCell sx={tableCellSx}>{opp.rank}</TableCell>}
+
             <TableCell sx={tableCellSx}>{opp.mindName}</TableCell>
             <TableCell sx={tableCellSx}>{opp.playerName}</TableCell>
             <TableCell sx={tableCellSx}>{opp.agent.character}</TableCell>
@@ -51,6 +51,9 @@ const OnlineTable = ({
             <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                     <TableRow>
+                        {displayRank && (
+                            <TableCell sx={tableCellSx}>Rank</TableCell>
+                        )}
                         <TableCell sx={tableCellSx}>Name</TableCell>
                         <TableCell sx={tableCellSx}>Creator</TableCell>
                         <TableCell sx={tableCellSx}>Character</TableCell>

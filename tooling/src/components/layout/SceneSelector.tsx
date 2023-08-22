@@ -7,7 +7,12 @@ import MainMenu from '../MainMenu/MainMenu';
 import ChooseCharacter from '../ChooseCharacter/ChooseCharacter';
 import ChooseOpponent from '../ChooseOpponent/ChooseOpponent';
 import MainScene from '../SimulationScene/MainScene';
-import { Character, IDLE_AGENT, MatchFormat } from '../../constants/constants';
+import {
+    Character,
+    IDLE_AGENT,
+    MatchFormat,
+    nullScoreMap,
+} from '../../constants/constants';
 import { INITIAL_AGENT_COMPONENTS } from '../../constants/starter_agent';
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 import { Layer } from '../../types/Layer';
@@ -81,6 +86,7 @@ const defaultOpponent: Opponent = {
     id: 0,
     name: '0',
     backgroundId: 0,
+    scoreMap: nullScoreMap,
 };
 
 export type Playable = SavedMind | OnlineOpponent | PlayerAgent;
@@ -246,7 +252,7 @@ const SceneSelector = () => {
     useEffect(() => {
         const state = getLocalState();
 
-        const defaultOpponents = (
+        const defaultOpponents: Opponent[] = (
             character == Character.Jessica ? JessicaOpponents : AntocOpponents
         ).map(({ agent, mindName, backgroundId }, id) => {
             return {
@@ -256,7 +262,8 @@ const SceneSelector = () => {
                 id,
                 name: id.toString(),
                 backgroundId: backgroundId,
-            } as Opponent;
+                scoreMap: nullScoreMap,
+            };
         });
         if (!state) {
             setOpponentChoices(defaultOpponents);
@@ -299,6 +306,7 @@ const SceneSelector = () => {
             id,
             name: id.toString(),
             backgroundId: 0,
+            scoreMap: nullScoreMap,
         } as Opponent;
     });
     const [opponentChoices, setOpponentChoices] =
@@ -345,7 +353,7 @@ const SceneSelector = () => {
         }
 
         if ('layers' in playerAgent) {
-            console.log('saving player agent');
+            console.log('saving player agent:', playerAgent);
             updatedState.playerAgents[character.toLocaleLowerCase()] =
                 playerAgent;
         }
@@ -578,6 +586,8 @@ const SceneSelector = () => {
         localStorage.setItem(CompletedTutorialStorageKey, JSON.stringify(true));
     };
 
+    const isCampaign =
+        GameModes.simulation == gameMode && !onlineMode && !previewMode;
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
             <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
@@ -621,7 +631,7 @@ const SceneSelector = () => {
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.MAIN_SCENE}>
-                <SpectatorScene
+                <MainScene
                     savePlayerAgent={savePlayerAgent}
                     player={playerAgent}
                     opponent={opponent}
@@ -634,6 +644,8 @@ const SceneSelector = () => {
                     showFullReplay={showFullReplay && !previewMode}
                     isPreview={previewMode}
                     matchFormat={format}
+                    isCampaign={isCampaign}
+                    opponentIndex={selectedOpponent}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ARCADE}>

@@ -15,13 +15,13 @@ export const addActionBuffersToCombo = (
             // To keep the display data consistant we do custom intents for the correctly working actions, namely walk
             let intents = actionIntentsInCombo(action, index, combo);
 
-            console.log('final intents', intents, action);
+            // console.log('final intents', intents, action);
             intents ? temp.push(...intents) : null;
 
             return temp;
         },
         []
     );
-    console.log('buffered combo', bufferedCombo);
+    // console.log('buffered combo', bufferedCombo);
     return bufferedCombo;
 };

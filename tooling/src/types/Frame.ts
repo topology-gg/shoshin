@@ -85,6 +85,7 @@ export interface Frame {
     stimulus: number;
     hitboxes: Hitboxes;
     combo: Combo;
+    gamma: number;
 }
 
 export type FrameLike = Frame | RealTimePlayer | RealTimeAgent;
