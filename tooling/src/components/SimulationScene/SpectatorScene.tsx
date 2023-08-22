@@ -16,6 +16,7 @@ import {
     Snackbar,
     Button,
     IconButton,
+    CircularProgress,
 } from '@mui/material';
 import styles from '../../../styles/Home.module.css';
 import { FrameScene, TestJson } from '../../types/Frame';
@@ -66,7 +67,6 @@ import CloseIcon from '@mui/icons-material/Close';
 
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
 import { Playable } from '../layout/SceneSelector';
-import SubmitMindButton from './MainSceneSubmit';
 import useAnimationControls, {
     AnimationState,
 } from '../../hooks/useAnimationControls';
@@ -191,10 +191,9 @@ export const calculateScoreMap = (
 };
 
 interface SimulationProps {
-    player: Playable;
+    player: OnlineOpponent;
     savePlayerAgent: (playerAgent: Playable) => void;
-    opponent: Opponent | OnlineOpponent;
-    submitWin: (playerAgent: PlayerAgent, opponent: Opponent) => void;
+    opponent: OnlineOpponent;
     onContinue: () => void;
     onQuit: () => void;
     transitionToActionReference: () => void;
@@ -203,6 +202,7 @@ interface SimulationProps {
     showFullReplay: boolean;
     isPreview: boolean;
     matchFormat: MatchFormat;
+    bestOf: number;
 }
 
 enum PointOfView {
@@ -225,23 +225,22 @@ const SpectatorScene = React.forwardRef(
             player,
             savePlayerAgent,
             opponent,
-            submitWin,
             onContinue,
             volume,
             pauseMenu,
             showFullReplay,
             isPreview,
             matchFormat,
+            bestOf,
         } = props;
         // Constants
         const runnable = true;
 
         const [round, setRound] = useState<number>(0);
         // React states for simulation / animation control
-        const [outputs, setOutputs] = useState<FrameScene[]>();
+        const [outputs, setOutputs] = useState<FrameScene[]>([]);
 
         const [simulationError, setSimulationError] = useState();
-        const [p1, setP1] = useState<Agent>();
         const [reSimulationNeeded, setReSimulationNeeded] =
             useState<boolean>(false);
 
@@ -251,35 +250,14 @@ const SpectatorScene = React.forwardRef(
 
         const [roundView, setRoundView] = useState<RoundView>(RoundView.FULL);
 
-        let p2: Agent;
-
         const [lives, setLives] =
             matchFormat == MatchFormat.BO3
                 ? useState<number[]>([2, 2])
                 : useState<number[]>([-1, -1]);
 
-        if ('layers' in opponent.agent) {
-            const { layers, character, combos } = opponent.agent;
-            const charIndex = character == Character.Jessica ? 0 : 1;
-            p2 = buildAgentFromLayers(layers, charIndex, combos);
-        } else {
-            p2 = opponent.agent;
-        }
-
         const [testJson, setTestJson] = useState<TestJson>(null);
         const [checkedShowDebugInfo, setCheckedShowDebugInfo] =
             useState<boolean>(false);
-
-        const {
-            start,
-            pause,
-            stop,
-            animationFrame,
-            setAnimationFrame,
-            animationState,
-            animationStepForward,
-            animationStepBackward,
-        } = useAnimationControls(outputs[round], p1?.character, p2?.character);
 
         const [playerStatuses, setPlayerStatuses] = useState<PlayerStatuses>({
             integrity_0: 1000,
@@ -311,8 +289,7 @@ const SpectatorScene = React.forwardRef(
         const actions =
             CHARACTERS_ACTIONS[character == Character.Jessica ? 0 : 1];
 
-        const opponentName =
-            opponent.agent.character == 0 ? Character.Jessica : Character.Antoc;
+        const opponentName = opponent.mindName;
 
         const [openPauseMenu, changePauseMenu] = useState<boolean>(false);
 
@@ -343,38 +320,22 @@ const SpectatorScene = React.forwardRef(
             };
         }, [openPauseMenu]);
 
-        //
-        // useEffect hook to update p1
-        //
-        useEffect(() => {
-            let builtAgent = handleBuildAgent();
+        const char1 = player.agent.character === Character.Jessica ? 0 : 1;
+        const char2 = opponent.agent.character === Character.Jessica ? 0 : 1;
+        const {
+            start,
+            pause,
+            stop,
+            animationFrame,
+            setAnimationFrame,
+            animationState,
+            animationStepForward,
+            animationStepBackward,
+        } = useAnimationControls(outputs[round], char1, char2);
 
-            if ('agent' in player) {
-                savePlayerAgent({
-                    ...player,
-                    agent: {
-                        layers,
-                        combos,
-                        conditions,
-                        character,
-                    },
-                });
-            } else {
-                savePlayerAgent({
-                    layers,
-                    combos,
-                    conditions,
-                    character,
-                });
-            }
-
-            setP1(builtAgent);
-            setReSimulationNeeded((_) => true);
-            stop();
-        }, [character, combos, conditions, layers, stop]);
-
-        function handleBuildAgent() {
-            let char = Object.keys(Character).indexOf(character);
+        function playerAgentToAgent(playerAgent: PlayerAgent) {
+            const { layers, character, combos } = playerAgent;
+            let char = Object.keys(Character).indexOf(playerAgent.character);
 
             //given layers
             const {
@@ -412,6 +373,41 @@ const SpectatorScene = React.forwardRef(
             }
         }, [outputs]);
 
+        const [seed, setSeed] = useState<number>(0);
+
+        const p1 = playerAgentToAgent(player.agent);
+        const p2 = playerAgentToAgent(opponent.agent);
+        const { runCairoSimulation } = useRunCairoSimulation(
+            { ...p1, seed },
+            { ...p2, seed }
+        );
+        useEffect(() => {
+            for (let i = 0; i < bestOf; i++) {
+                console.log('in i', i);
+                const [out, err] = runCairoSimulation();
+
+                console.log('out', out);
+                if (err != null) {
+                    setSimulationError(err);
+                    return;
+                }
+                setOutputs((outputs) => {
+                    return [outputs, out];
+                });
+
+                setSeed(() => Math.random() * 100);
+            }
+        }, []);
+        if (outputs.length == 0) {
+            return (
+                <div id={'mother'} ref={ref}>
+                    <Box>
+                        <CircularProgress color="primary" />
+                    </Box>
+                </div>
+            );
+        }
+
         useEffect(() => {
             const integrity_0 = testJson
                 ? testJson.agent_0.frames[animationFrame].body_state.integrity
@@ -433,15 +429,6 @@ const SpectatorScene = React.forwardRef(
                 stamina_1,
             });
         }, [testJson, animationFrame]);
-
-        const { runCairoSimulation } = useRunCairoSimulation(p1, p2);
-
-        const [out, err] = runCairoSimulation();
-        if (err != null) {
-            setSimulationError(err);
-            return;
-        }
-        setGameOutp(out);
 
         useEffect(() => {
             if (!simulationError) return;
@@ -484,6 +471,11 @@ const SpectatorScene = React.forwardRef(
             }
         }
 
+        const output =
+            outputs.length - 1 >= round
+                ? outputs[round]
+                : { agent_0: [], agent_1: [] };
+
         //
         // Compute flags from the fight
         //
@@ -522,20 +514,6 @@ const SpectatorScene = React.forwardRef(
         const score = scoreMap.totalScore;
 
         const [showVictory, changeShowVictory] = useState<boolean>(false);
-        useEffect(() => {
-            if (
-                beatAgent &&
-                'medal' in opponent &&
-                achievedBetterPerformance(performance, opponent.medal) &&
-                'layers' in player
-            ) {
-                submitWin(player, {
-                    ...opponent,
-                    medal: performance,
-                    scoreMap: scoreMap,
-                });
-            }
-        }, [beatAgent]);
 
         useEffect(() => {
             if (beatAgent && N_FRAMES - 1 === animationFrame) {
@@ -594,31 +572,19 @@ const SpectatorScene = React.forwardRef(
 
         let playerOneName = null;
 
-        if ('playerName' in player) {
-            playerOneName = (
-                <Typography>
-                    {player.mindName} by {player.playerName}
-                </Typography>
-            );
-        } else {
-            playerOneName = <Typography>{player.character}</Typography>;
-        }
+        playerOneName = (
+            <Typography>
+                {player.mindName} by {player.playerName}
+            </Typography>
+        );
 
         let playerTwoName = null;
 
-        if ('playerName' in opponent) {
-            playerTwoName = (
-                <Typography>
-                    {opponent.mindName} by {opponent.playerName}
-                </Typography>
-            );
-        } else {
-            playerTwoName = (
-                <Typography>
-                    {numberToCharacter(opponent.agent.character)}
-                </Typography>
-            );
-        }
+        playerTwoName = (
+            <Typography>
+                {opponent.mindName} by {opponent.playerName}
+            </Typography>
+        );
 
         const backgroundId =
             'backgroundId' in opponent ? opponent.backgroundId : 0;
@@ -630,41 +596,6 @@ const SpectatorScene = React.forwardRef(
 
         const [showVictorySnackBar, setShowVictorySnackBar] = useState(false);
 
-        //Show Victory Snack Bar if it is a subsequent win, or if they beat the opponent for the first time and showFullReplay is false
-        useEffect(() => {
-            if (!('medal' in opponent)) {
-                return;
-            }
-            const showVictorySnackBar =
-                (!hasBeatenOpponent ||
-                    (!showFullReplay &&
-                        achievedBetterPerformance(
-                            performance,
-                            opponent.medal
-                        ))) &&
-                beatAgent;
-
-            setShowVictorySnackBar(showVictorySnackBar);
-        }, [hasBeatenOpponent, showFullReplay, performance, beatAgent]);
-        const closeSnackbar = () => {
-            setShowVictorySnackBar(false);
-        };
-
-        const snackBarAction = (
-            <React.Fragment>
-                <Button color="secondary" size="small" onClick={onContinue}>
-                    Next Opponent
-                </Button>
-                <IconButton
-                    size="small"
-                    aria-label="close"
-                    color="inherit"
-                    onClick={closeSnackbar}
-                >
-                    <CloseIcon fontSize="small" />
-                </IconButton>
-            </React.Fragment>
-        );
         return (
             <div id={'mother'} ref={ref}>
                 <Fade in={!phaserLoaded} timeout={500}>
@@ -676,17 +607,6 @@ const SpectatorScene = React.forwardRef(
                         onKeyDown={handleKeyPres2}
                     >
                         <div className={styles.main}>
-                            <Snackbar
-                                anchorOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={showVictorySnackBar}
-                                autoHideDuration={6000}
-                                onClose={closeSnackbar}
-                                message={`Beat ${opponent.mindName} with ${performance}`}
-                                action={snackBarAction}
-                            />
                             {openPauseMenu ? pauseMenu : null}
                             <Grid container spacing={{ md: 2 }}>
                                 <Grid item md={6} lg={7} xl={7}>
@@ -827,7 +747,11 @@ const SpectatorScene = React.forwardRef(
                                                         setPlayerStatuses,
                                                     }}
                                                     isInView={true}
-                                                    backgroundId={backgroundId}
+                                                    backgroundId={
+                                                        ((Math.random() * 100) %
+                                                            5) +
+                                                        1
+                                                    }
                                                     volume={volume}
                                                     lives={lives}
                                                 />

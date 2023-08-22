@@ -58,6 +58,7 @@ export const Scenes = {
     ACTION_REFERENCE: 'action_reference',
     ONLINE_MENU: 'online_menu',
     MINDS: 'minds',
+    SPECTATE: 'spectate',
 } as const;
 import {
     track_character_select,
@@ -512,7 +513,7 @@ const SceneSelector = () => {
         format: MatchFormat
     ) => {
         setOnlineMode(true);
-        setScene(Scenes.MAIN_SCENE);
+        setScene(Scenes.SPECTATE);
         pauseMusic();
         setPlayerAgent(playerOneMind);
         setOnlineOpponentChoice(opponent);
@@ -646,6 +647,23 @@ const SceneSelector = () => {
                     matchFormat={format}
                     isCampaign={isCampaign}
                     opponentIndex={selectedOpponent}
+                />
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.SPECTATE}>
+                <SpectatorScene
+                    savePlayerAgent={savePlayerAgent}
+                    player={playerAgent}
+                    opponent={opponent}
+                    submitWin={handleWin}
+                    onContinue={handleContinue}
+                    onQuit={handleQuit}
+                    transitionToActionReference={transitionToActionReference}
+                    volume={volume}
+                    pauseMenu={pauseMenu}
+                    showFullReplay={showFullReplay && !previewMode}
+                    isPreview={previewMode}
+                    matchFormat={format}
+                    bestOf={3}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ARCADE}>
