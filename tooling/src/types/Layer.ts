@@ -281,7 +281,12 @@ const appendConditions = (conditions: Condition[], index) => {
 };
 
 const getInverseConditionElements = (conditionElements: ConditionElement[]) => {
+    // need to put parenthesis on the outside to enclose the NOT operator
     return [
+        {
+            value: Operator.OpenParenthesis,
+            type: ElementType.Operator,
+        },
         {
             value: Operator.Not,
             type: ElementType.Operator,
@@ -291,6 +296,10 @@ const getInverseConditionElements = (conditionElements: ConditionElement[]) => {
             type: ElementType.Operator,
         },
         ...conditionElements,
+        {
+            value: Operator.CloseParenthesis,
+            type: ElementType.Operator,
+        },
         {
             value: Operator.CloseParenthesis,
             type: ElementType.Operator,
