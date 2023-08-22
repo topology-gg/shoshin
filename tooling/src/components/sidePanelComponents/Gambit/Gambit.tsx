@@ -81,6 +81,7 @@ export const FullGambitFeatures: GambitFeatures = {
     sui: true,
     actionRandomness: true,
 };
+
 interface GambitProps {
     isAnimationRunning: boolean;
     layers: Layer[];

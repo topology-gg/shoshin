@@ -51,6 +51,7 @@ import FrameInspector from '../FrameInspector';
 import FrameDecisionPathViewer from '../FrameDecisionPathViewer';
 import Gambit, {
     FullGambitFeatures,
+    GambitFeatures,
 } from '../sidePanelComponents/Gambit/Gambit';
 import {
     BodystatesAntoc,
@@ -225,6 +226,14 @@ enum RoundView {
     ROUND_3,
 }
 
+const SpectatorFeatures: GambitFeatures = {
+    layerAddAndDelete: false,
+    conditionAnd: false,
+    combos: true,
+    sui: true,
+    actionRandomness: true,
+};
+
 //We need Players agent and opponent
 const SpectatorScene = React.forwardRef(
     (props: SimulationProps, ref: ForwardedRef<HTMLDivElement>) => {
@@ -274,31 +283,22 @@ const SpectatorScene = React.forwardRef(
             stamina_1: 100,
         });
 
-        let playerAgent;
-        if ('layers' in player) {
-            playerAgent = player;
-        } else {
-            playerAgent = player.agent;
-        }
-
-        const chosenPlayer =
-            pointOfView == PointOfView.PLAYER_1 ? player.agent : opponent.agent;
-
-        // React states for tracking the New Agent being edited in the right panel
-        const [combos, setCombos] = useState<Action[][]>(chosenPlayer.combos);
-
-        const [conditions, setConditions] =
-            //@ts-ignore
-            useState<Condition[]>(chosenPlayer.conditions);
-
-        const [character, setCharacter] = useState<Character>(
-            chosenPlayer.character
+        const [chosenPlayer, setChosenPlayer] = useState<PlayerAgent>(
+            pointOfView == PointOfView.PLAYER_1 ? player.agent : opponent.agent
         );
 
-        const [layers, setLayers] = useState<Layer[]>(chosenPlayer.layers);
+        useEffect(() => {
+            if (pointOfView == PointOfView.PLAYER_1) {
+                setChosenPlayer(player.agent);
+            } else if (pointOfView == PointOfView.PLAYER_2) {
+                setChosenPlayer(opponent.agent);
+            }
+        }, [pointOfView]);
 
         const actions =
-            CHARACTERS_ACTIONS[character == Character.Jessica ? 0 : 1];
+            CHARACTERS_ACTIONS[
+                chosenPlayer.character == Character.Jessica ? 0 : 1
+            ];
 
         const opponentName = opponent.mindName;
 
@@ -553,7 +553,7 @@ const SpectatorScene = React.forwardRef(
         //
         // Compute score from the fight
         //
-        const scoreMap = calculateScoreMap(output, character);
+        const scoreMap = calculateScoreMap(output, chosenPlayer.character);
         const score = scoreMap.totalScore;
 
         const [showVictory, changeShowVictory] = useState<boolean>(false);
@@ -623,10 +623,23 @@ const SpectatorScene = React.forwardRef(
         const backgroundId =
             'backgroundId' in opponent ? opponent.backgroundId : 0;
 
-        const activeMs =
-            N_FRAMES > 0
-                ? testJson.agent_0.frames[animationFrame].mental_state
-                : 0;
+        let activeMs = 0;
+
+        if (
+            testJson !== null &&
+            testJson.agent_0.frames.length > 0 &&
+            PointOfView.PLAYER_1 == pointOfView
+        ) {
+            activeMs =
+                N_FRAMES > 0
+                    ? testJson.agent_0.frames[animationFrame].mental_state
+                    : 0;
+        } else {
+            activeMs =
+                N_FRAMES > 0
+                    ? testJson.agent_1.frames[animationFrame].mental_state
+                    : 0;
+        }
 
         const [showVictorySnackBar, setShowVictorySnackBar] = useState(false);
 
@@ -722,6 +735,9 @@ const SpectatorScene = React.forwardRef(
                                                                     alignContent={
                                                                         'left'
                                                                     }
+                                                                    marginRight={
+                                                                        '20px'
+                                                                    }
                                                                 >
                                                                     <Typography>
                                                                         Point of
@@ -790,11 +806,18 @@ const SpectatorScene = React.forwardRef(
                                                                     alignContent={
                                                                         'left'
                                                                     }
+                                                                    marginRight={
+                                                                        '20px'
+                                                                    }
                                                                 >
                                                                     <Typography>
                                                                         Play
                                                                     </Typography>
-                                                                    <Box>
+                                                                    <Box
+                                                                        marginRight={
+                                                                            '10px'
+                                                                        }
+                                                                    >
                                                                         <Button
                                                                             variant="contained"
                                                                             onClick={() =>
@@ -1062,13 +1085,17 @@ const SpectatorScene = React.forwardRef(
                                                     animationState ==
                                                     AnimationState.RUN
                                                 }
-                                                layers={layers}
-                                                setLayers={setLayers}
-                                                features={FullGambitFeatures}
-                                                character={character}
-                                                conditions={conditions}
-                                                combos={combos}
-                                                setCombos={setCombos}
+                                                layers={chosenPlayer.layers}
+                                                setLayers={() => {}}
+                                                features={SpectatorFeatures}
+                                                character={
+                                                    chosenPlayer.character
+                                                }
+                                                conditions={
+                                                    chosenPlayer.conditions
+                                                }
+                                                combos={chosenPlayer.combos}
+                                                setCombos={() => {}}
                                                 activeMs={activeMs}
                                                 actions={actions}
                                             />
