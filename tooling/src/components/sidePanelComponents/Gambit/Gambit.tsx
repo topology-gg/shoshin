@@ -238,6 +238,12 @@ export const LayerComponent = ({
     const [alternativeActionAnchorEl, setAlternativeActionAnchorEl] =
         useState<null | HTMLElement>(null);
 
+    const [actionProbAnchorEl, setActionProbAnchorEl] =
+        useState<null | HTMLElement>(null);
+
+    const [alternativeActionProbAnchorEl, setAlternativeActionProbAnchorEl] =
+        useState<null | HTMLElement>(null);
+
     const [conditionAnchorEl, setConditionAnchorEl] =
         useState<null | HTMLElement>(null);
 
@@ -251,7 +257,8 @@ export const LayerComponent = ({
 
     const actionOpen = Boolean(actionAnchorEl);
     const altActionOpen = Boolean(alternativeActionAnchorEl);
-
+    const actionProbOpen = Boolean(actionProbAnchorEl);
+    const altActionProbOpen = Boolean(alternativeActionProbAnchorEl);
     const conditionsOpen = Boolean(conditionAnchorEl);
 
     let actionsDisplayNames = actions.map((a) => a.display.name);
@@ -278,6 +285,18 @@ export const LayerComponent = ({
         setAlternativeActionAnchorEl(null);
     };
 
+    const onActionProbSelect = (prob: number, isAlt: boolean) => {
+        const probNormalized = prob / 10;
+        console.log('probNormalized', probNormalized);
+        if (!isAlt) {
+            setLayerProbability(i, probNormalized);
+            setActionProbAnchorEl(null);
+        } else {
+            setLayerProbability(i, 10 - probNormalized);
+            setAlternativeActionProbAnchorEl(null);
+        }
+    };
+
     const onConditionSelect = (condition: Condition) => {
         handleChooseCondition(condition, conditionIndex);
         setActionAnchorEl(null);
@@ -295,6 +314,20 @@ export const LayerComponent = ({
             setActionAnchorEl(event.currentTarget);
         } else {
             setAlternativeActionAnchorEl(event.currentTarget);
+        }
+    };
+
+    const handleActionProbClick = (
+        event: React.MouseEvent<HTMLButtonElement>,
+        isAlt: boolean
+    ) => {
+        let id = event.currentTarget.id.split('-');
+        let menuIndex = parseInt(id[id.length - 1]);
+        if (!isAlt) {
+            currentMenu = menuIndex;
+            setActionProbAnchorEl(event.currentTarget);
+        } else {
+            setAlternativeActionProbAnchorEl(event.currentTarget);
         }
     };
 
@@ -326,6 +359,14 @@ export const LayerComponent = ({
         }
     };
 
+    const handleCloseActionProbDropdown = (isAlt: boolean) => {
+        if (!isAlt) {
+            setActionProbAnchorEl(null);
+        } else {
+            setAlternativeActionProbAnchorEl(null);
+        }
+    };
+
     const handleCloseConditionDropdown = () => {
         setConditionAnchorEl(null);
     };
@@ -344,9 +385,9 @@ export const LayerComponent = ({
             {features.actionRandomness && layer.probability != 0 && (
                 <button
                     className={`${styles.gambitLeftHalfButton} ${styles.probabilityButton}`}
-                    onClick={() => {}}
+                    onClick={(evt) => handleActionProbClick(evt, false)}
                 >
-                    50%
+                    {`${layer.probability * 10}%`}
                 </button>
             )}
 
@@ -372,9 +413,9 @@ export const LayerComponent = ({
         <div style={{ height: '2rem', marginTop: '6px' }}>
             <button
                 className={`${styles.gambitLeftHalfButton} ${styles.probabilityButton}`}
-                onClick={() => {}}
+                onClick={(evt) => handleActionProbClick(evt, true)}
             >
-                50%
+                {`${(10 - layer.probability) * 10}%`}
             </button>
             <BlurrableButton
                 className={`${
@@ -548,6 +589,50 @@ export const LayerComponent = ({
                     })}
                 </Menu>
 
+                {/* Menu for picking the probability for the primary action */}
+                <Menu
+                    id={`actions-probability-menu-${i}`}
+                    anchorEl={actionProbAnchorEl}
+                    open={actionProbOpen}
+                    onClose={(evt) => handleCloseActionProbDropdown(false)}
+                >
+                    {[10, 20, 30, 40, 50, 60, 70, 80, 90].map((prob) => {
+                        return (
+                            <MenuItem>
+                                <BlurrableListItemText
+                                    onClick={(e) =>
+                                        onActionProbSelect(prob, false)
+                                    }
+                                >
+                                    <span>{`${prob}%`}</span>
+                                </BlurrableListItemText>
+                            </MenuItem>
+                        );
+                    })}
+                </Menu>
+
+                {/* Menu for picking the probability for the alternative action */}
+                <Menu
+                    id={`alt-actions-probability-menu-${i}`}
+                    anchorEl={alternativeActionProbAnchorEl}
+                    open={altActionProbOpen}
+                    onClose={(evt) => handleCloseActionProbDropdown(true)}
+                >
+                    {[10, 20, 30, 40, 50, 60, 70, 80, 90].map((prob) => {
+                        return (
+                            <MenuItem>
+                                <BlurrableListItemText
+                                    onClick={(e) =>
+                                        onActionProbSelect(prob, true)
+                                    }
+                                >
+                                    <span>{`${prob}%`}</span>
+                                </BlurrableListItemText>
+                            </MenuItem>
+                        );
+                    })}
+                </Menu>
+
                 {features.sui && (
                     <Grid item xs={suiCheckboxPortion}>
                         <Switch
@@ -565,7 +650,14 @@ export const LayerComponent = ({
                         <Switch
                             size="small"
                             onChange={() => {
-                                setLayerProbability(i, 5);
+                                setLayerProbability(
+                                    i,
+                                    !layer.probability
+                                        ? 5
+                                        : layer.probability == 0
+                                        ? 5
+                                        : 0
+                                );
                             }}
                             checked={layer.probability != 0}
                         />
@@ -841,13 +933,13 @@ const Gambit = ({
         let updatedLayers = [...layers];
 
         // TODO: change to setting instead of toggling
-        updatedLayers[layerIndex].probability =
-            updatedLayers[layerIndex].probability != 0 ? 0 : probability;
+        updatedLayers[layerIndex].probability = probability;
+        // updatedLayers[layerIndex].probability != 0 ? 0 : probability;
         console.log(
             'handleSetLayerProbability, layerIndex =',
             layerIndex,
             'probability =',
-            updatedLayers[layerIndex].probability
+            probability
         );
         setLayers(updatedLayers);
     };
@@ -1114,7 +1206,7 @@ const Gambit = ({
                                                                         '16px',
                                                                 }}
                                                             >
-                                                                Rand
+                                                                {'\u{2684}'}
                                                             </p>
                                                             <p
                                                                 style={{
