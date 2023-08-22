@@ -56,11 +56,11 @@ export const ConditionLabel = ({
             }}
         >
             {/* {isInverted && <Chip size="small" color="error" label="NOT" />} */}
-            {/* <ConditionEmojiElement type={type} /> */}
+            {!hasLayer && <ConditionEmojiElement type={type} />}
             <span
                 style={{
-                    // color: hasLayer ? 'black' : 'white',
-                    color: '#333',
+                    backgroundColor: hasLayer ? '#ffffff00' : 'black',
+                    color: hasLayer ? 'black' : 'white',
                     fontFamily: 'Eurostile',
                 }}
             >

@@ -588,10 +588,17 @@ export const LayerComponent = ({
                     anchorEl={actionAnchorEl}
                     open={actionOpen}
                     onClose={(evt) => handleCloseActionDropdown(false)}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 220,
+                            width: 180,
+                            backgroundColor: '#000',
+                        },
+                    }}
                 >
                     {actionsDisplayNames.map((action) => {
                         return (
-                            <MenuItem>
+                            <MenuItem className={'styles.actionMenuItem'}>
                                 <BlurrableListItemText
                                     onClick={(e) => onActionSelect(action)}
                                 >
@@ -603,7 +610,9 @@ export const LayerComponent = ({
                                     >
                                         {ACTION_UNICODE_MAP[action]}
                                     </span>
-                                    <span>{action.replaceAll('_', ' ')}</span>
+                                    <span style={{ color: '#fff' }}>
+                                        {action.replaceAll('_', ' ')}
+                                    </span>
                                 </BlurrableListItemText>
                             </MenuItem>
                         );
@@ -616,6 +625,13 @@ export const LayerComponent = ({
                     anchorEl={alternativeActionAnchorEl}
                     open={altActionOpen}
                     onClose={(evt) => handleCloseActionDropdown(true)}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 220,
+                            width: 180,
+                            backgroundColor: '#000',
+                        },
+                    }}
                 >
                     {actionsDisplayNames.slice(0, -1).map((action) => {
                         return (
@@ -631,7 +647,9 @@ export const LayerComponent = ({
                                     >
                                         {ACTION_UNICODE_MAP[action]}
                                     </span>
-                                    <span>{action.replaceAll('_', ' ')}</span>
+                                    <span style={{ color: '#fff' }}>
+                                        {action.replaceAll('_', ' ')}
+                                    </span>
                                 </BlurrableListItemText>
                             </MenuItem>
                         );
@@ -644,6 +662,13 @@ export const LayerComponent = ({
                     anchorEl={actionProbAnchorEl}
                     open={actionProbOpen}
                     onClose={(evt) => handleCloseActionProbDropdown(false)}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 220,
+                            width: 80,
+                            backgroundColor: '#000',
+                        },
+                    }}
                 >
                     {[10, 20, 30, 40, 50, 60, 70, 80, 90].map((prob) => {
                         return (
@@ -653,7 +678,9 @@ export const LayerComponent = ({
                                         onActionProbSelect(prob, false)
                                     }
                                 >
-                                    <span>{`${prob}%`}</span>
+                                    <span
+                                        style={{ color: '#fff' }}
+                                    >{`${prob}%`}</span>
                                 </BlurrableListItemText>
                             </MenuItem>
                         );
@@ -666,6 +693,13 @@ export const LayerComponent = ({
                     anchorEl={alternativeActionProbAnchorEl}
                     open={altActionProbOpen}
                     onClose={(evt) => handleCloseActionProbDropdown(true)}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 220,
+                            width: 80,
+                            backgroundColor: '#000',
+                        },
+                    }}
                 >
                     {[10, 20, 30, 40, 50, 60, 70, 80, 90].map((prob) => {
                         return (
@@ -675,7 +709,9 @@ export const LayerComponent = ({
                                         onActionProbSelect(prob, true)
                                     }
                                 >
-                                    <span>{`${prob}%`}</span>
+                                    <span
+                                        style={{ color: '#fff' }}
+                                    >{`${prob}%`}</span>
                                 </BlurrableListItemText>
                             </MenuItem>
                         );

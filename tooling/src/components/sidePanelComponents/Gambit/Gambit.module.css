@@ -91,3 +91,7 @@
     /* background-color: #a8e4a088; */
     background-color: #e5e5e5;
 }
+
+.actionMenuItem:hover{
+    background-color: #555555;
+}
