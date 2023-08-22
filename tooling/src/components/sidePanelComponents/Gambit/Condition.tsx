@@ -107,6 +107,12 @@ const Condition = ({
         ? condition.displayName.replace(/([<>=]) X/, '$1')
         : condition.displayName;
 
+    const handleCancelClick = (evt) => {
+        console.log('remove condition onClick()');
+        onRemove && onRemove(layerIndex, conditionIndex);
+        evt.stopPropagation();
+    };
+
     return (
         // <ConditionContextMenu
         //     handleInvertCondition={onInvertCondition}
@@ -159,16 +165,12 @@ const Condition = ({
                             sx={{ width: 50 }}
                         />
                     )}
-                    {isReadOnly ? (
+                    {isReadOnly || !onRemove ? (
                         <></>
                     ) : (
                         <IconButton
                             sx={{ p: '4px' }}
-                            onClick={(evt) => {
-                                console.log('remove condition onClick()');
-                                onRemove(layerIndex, conditionIndex);
-                                evt.stopPropagation();
-                            }}
+                            onClick={handleCancelClick}
                         >
                             <CancelIcon
                                 sx={{ width: '0.6em', height: '0.6em' }}

@@ -1,10 +1,11 @@
 .gambitButton {
-    margin-bottom: 0.5rem;
+    /* margin-bottom: 0.5rem;
     margin-top: 0.5rem;
     margin-left: 0.2rem;
-    margin-right: 0.2rem;
+    margin-right: 0.2rem; */
     height: 2rem;
     padding: 4px;
+    border: 2px solid #333;
     border-radius: 14px;
 }
 .gambitButton {
@@ -20,7 +21,7 @@
 }
 .gambitRightHalfButton {
     font-family: Raleway;
-    font-size: 14px;
+    font-size: 13px;
     vertical-align: middle;
     padding: 0 0 0 8px;
     border-top: 2px solid #333;
@@ -30,6 +31,14 @@
     height: 2.2rem;
     border-radius: 0px 14px 14px 0px;
     cursor: pointer;
+}
+.probabilityButton{
+    font-size: 11px;
+    color: #000;
+    background-color: #ffffff;
+}
+.probabilityButton:hover{
+    background-color: #eeeeee;
 }
 
 .mentalStateButton {
@@ -53,15 +62,20 @@
 
 .conditionButton:hover {
     /* background-color: #afdbf599; */
-    background-color: #f1f1f1;
+    background-color: #eeeeee;
 }
 
 .actionButton {
     /* background-color: #a8e4a0; */
     background-color: #ffffff;
-    border: 2px solid #555555;
+
+    font-family: Eurostile;
+    font-size: 13px;
+    padding: 8px 14px;
+    line-height: 9px;
+    width: 7rem;
 }
 .actionButton:hover {
     /* background-color: #a8e4a088; */
-    background-color: #f1f1f1;
+    background-color: #eeeeee;
 }

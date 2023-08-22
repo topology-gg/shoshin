@@ -36,13 +36,13 @@ import ConditionsMenu from './ConditionsMenu';
 let currentMenu = 0;
 let currentConditionMenu = 0;
 
-let gridOrderPortion = 1.3;
+let gridOrderPortion = 1.2;
 let gridConditionPortionXl = 4;
 let gridConditionPortionMd = 4;
-let gridActionPortion = 3.6;
-let suiCheckboxPortion = 1.1;
-let randCheckboxPortion = 1.1;
-let gridRemovePortion = 0.9;
+let gridActionPortion = 4;
+let suiCheckboxPortion = 1;
+let randCheckboxPortion = 1;
+let gridRemovePortion = 0.8;
 
 const actionIndexToAction = (
     action: number,
@@ -339,6 +339,61 @@ export const LayerComponent = ({
         ? actionIndexToAction(Rest.id, characterIndex)
         : actionIndexToAction(layer.actionAlternative.id, characterIndex);
 
+    const actionButton = (
+        <div style={{ height: '2rem' }}>
+            {features.actionRandomness && layer.probability != 0 && (
+                <button
+                    className={`${styles.gambitLeftHalfButton} ${styles.probabilityButton}`}
+                    onClick={() => {}}
+                >
+                    50%
+                </button>
+            )}
+
+            <BlurrableButton
+                className={`${
+                    features.actionRandomness && layer.probability != 0
+                        ? styles.gambitRightHalfButton
+                        : styles.gambitButton
+                } ${styles.actionButton}`}
+                key={`action-button-${i}`}
+                id={`condition-btn-${i}`}
+                onClick={(evt) => handleActionClick(evt, false)}
+            >
+                {/* <span style={{ marginRight: '7px' }}>
+                    {action.display.unicode}
+                </span>{' '} */}
+                {action.display.name}
+            </BlurrableButton>
+        </div>
+    );
+
+    const actionAlternativeButton = (
+        <div style={{ height: '2rem', marginTop: '6px' }}>
+            <button
+                className={`${styles.gambitLeftHalfButton} ${styles.probabilityButton}`}
+                onClick={() => {}}
+            >
+                50%
+            </button>
+            <BlurrableButton
+                className={`${
+                    features.actionRandomness && layer.probability != 0
+                        ? styles.gambitRightHalfButton
+                        : styles.gambitButton
+                } ${styles.actionButton}`}
+                key={`alt-action-button-${i}`}
+                id={`condition-btn-${i}`}
+                onClick={(evt) => handleActionClick(evt, true)}
+            >
+                {/* <span style={{ marginRight: '7px' }}>
+                    {altAction.display.unicode}
+                </span>{' '} */}
+                {altAction.display.name}
+            </BlurrableButton>
+        </div>
+    );
+
     return (
         <Box
             key={`button-wrapper-${i}`}
@@ -348,6 +403,7 @@ export const LayerComponent = ({
                 background: isActive ? '#ffffffCC' : '00000000',
                 marginBottom: '4px',
                 borderRadius: '20px',
+                padding: '8px 0 8px 0',
             }}
         >
             <Grid container alignItems={'center'} spacing={1}>
@@ -428,46 +484,11 @@ export const LayerComponent = ({
                         alignItems="center"
                         flexWrap={'wrap'}
                     >
-                        <BlurrableButton
-                            className={`${styles.gambitButton} ${styles.actionButton}`}
-                            key={`action-button-${i}`}
-                            id={`condition-btn-${i}`}
-                            onClick={(evt) => handleActionClick(evt, false)}
-                            style={{
-                                fontFamily: 'Eurostile',
-                                fontSize: '15px',
-                                padding: '8px 14px',
-                                lineHeight: '9px',
-                            }}
-                        >
-                            <span style={{ marginRight: '7px' }}>
-                                {action.display.unicode}
-                            </span>{' '}
-                            {action.display.name}
-                        </BlurrableButton>
+                        {actionButton}
 
                         {features.actionRandomness &&
-                            layer.probability != 0 && (
-                                <BlurrableButton
-                                    className={`${styles.gambitButton} ${styles.actionButton}`}
-                                    key={`alt-action-button-${i}`}
-                                    id={`condition-btn-${i}`}
-                                    onClick={(evt) =>
-                                        handleActionClick(evt, true)
-                                    }
-                                    style={{
-                                        fontFamily: 'Eurostile',
-                                        fontSize: '15px',
-                                        padding: '8px 14px',
-                                        lineHeight: '9px',
-                                    }}
-                                >
-                                    <span style={{ marginRight: '7px' }}>
-                                        {altAction.display.unicode}
-                                    </span>{' '}
-                                    {altAction.display.name}
-                                </BlurrableButton>
-                            )}
+                            layer.probability != 0 &&
+                            actionAlternativeButton}
                     </Box>
                 </Grid>
 
