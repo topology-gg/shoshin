@@ -52,14 +52,15 @@ export const ConditionLabel = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,
-                width: '7.5rem',
+                width: '7rem',
             }}
         >
             {/* {isInverted && <Chip size="small" color="error" label="NOT" />} */}
-            <ConditionEmojiElement type={type} />
+            {/* <ConditionEmojiElement type={type} /> */}
             <span
                 style={{
-                    color: hasLayer ? 'black' : 'white',
+                    // color: hasLayer ? 'black' : 'white',
+                    color: '#333',
                     fontFamily: 'Eurostile',
                 }}
             >
@@ -129,12 +130,13 @@ const Condition = ({
             }}
         >
             <button
-                className={`${styles.gambitLeftHalfButton} ${styles.conditionButton}`}
+                className={`${styles.gambitLeftHalfButton} ${
+                    condition.isInverted
+                        ? styles.invertNegative
+                        : styles.invertPositive
+                }`}
                 style={{
                     fontSize: '10px',
-                    backgroundColor: condition.isInverted
-                        ? '#ab3031'
-                        : '#2faa79',
                     color: '#fff',
                 }}
                 onClick={() => onInvertCondition(layerIndex, conditionIndex)}
@@ -143,7 +145,7 @@ const Condition = ({
             </button>
             <button
                 className={`${styles.gambitRightHalfButton} ${styles.conditionButton}`}
-                style={{ width: '8.2rem' }}
+                style={{ width: '7.5rem' }}
                 id={`condition-btn-${layerIndex}-${conditionIndex}`}
                 onClick={(event) => {
                     isReadOnly ? null : onClick(event);

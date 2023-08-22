@@ -37,12 +37,16 @@ let currentMenu = 0;
 let currentConditionMenu = 0;
 
 let gridOrderPortion = 1.2;
-let gridConditionPortionXl = 4;
-let gridConditionPortionMd = 4;
-let gridActionPortion = 4;
+let gridConditionPortionXl = 4.4;
+let gridConditionPortionMd = 4.4;
+let gridActionPortion = 4.4;
 let suiCheckboxPortion = 1;
 let randCheckboxPortion = 1;
+let checkboxPortion = 1.2;
 let gridRemovePortion = 0.8;
+
+const suiFontColor = '#003892';
+const rndFontColor = '#920000';
 
 const actionIndexToAction = (
     action: number,
@@ -435,6 +439,38 @@ export const LayerComponent = ({
         </div>
     );
 
+    const switchSx = (text: string, activeColor: string) => {
+        return {
+            width: '50px',
+            height: '45px',
+            '& .MuiSwitch-switchBase': {
+                '&.Mui-checked': {
+                    '& .MuiSwitch-thumb': {
+                        backgroundColor: activeColor,
+                    },
+                },
+            },
+            '& .MuiSwitch-thumb': {
+                backgroundColor: '#CCCCCC',
+                width: '28px',
+                height: '28px',
+                textAlign: 'center',
+                '&:before': {
+                    content: "'" + `${text}` + "'",
+                    width: '100%',
+                    height: '100%',
+                    lineHeight: '28px',
+                    fontSize: '11px',
+                    color: 'white',
+                },
+            },
+            '& .MuiSwitch-track': {
+                height: '21px',
+                borderRadius: '14px',
+            },
+        };
+    };
+
     return (
         <Box
             key={`button-wrapper-${i}`}
@@ -475,38 +511,51 @@ export const LayerComponent = ({
                         flexDirection="row"
                         alignItems="center"
                         flexWrap={'wrap'}
+                        style={{ verticalAlign: 'bottom' }}
                     >
-                        {layer.conditions.map((condition, index) => (
-                            <SingleCondition
-                                key={`${i}-${index}`}
-                                condition={condition}
-                                conditionIndex={index}
-                                layerIndex={i}
-                                onClick={handleConditionClick}
-                                onRemove={
-                                    layer.conditions.length > 1 &&
-                                    handleRemoveCondition
-                                }
-                                onInvertCondition={handleInvertCondition}
-                                onValueChange={handleConditionValueChange}
-                                isReadOnly={isReadOnly}
-                            />
-                        ))}
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: '100%',
+                            }}
+                        >
+                            {layer.conditions.map((condition, index) => (
+                                <SingleCondition
+                                    key={`${i}-${index}`}
+                                    condition={condition}
+                                    conditionIndex={index}
+                                    layerIndex={i}
+                                    onClick={handleConditionClick}
+                                    onRemove={
+                                        layer.conditions.length > 1 &&
+                                        handleRemoveCondition
+                                    }
+                                    onInvertCondition={handleInvertCondition}
+                                    onValueChange={handleConditionValueChange}
+                                    isReadOnly={isReadOnly}
+                                />
+                            ))}
+                        </div>
 
-                        {features.conditionAnd &&
-                        layer.conditions.length >= 1 &&
-                        !(
-                            JSON.stringify(layer.conditions[0]) ===
-                            JSON.stringify(alwaysTrueCondition)
-                        ) ? (
-                            <IconButton
-                                onClick={handleConditionClick}
-                                id={`condition-btn-${i}-new`}
-                                style={{ color: '#000' }}
-                            >
-                                <AddIcon />
-                            </IconButton>
-                        ) : null}
+                        <div>
+                            {features.conditionAnd &&
+                            layer.conditions.length >= 1 &&
+                            !(
+                                JSON.stringify(layer.conditions[0]) ===
+                                JSON.stringify(alwaysTrueCondition)
+                            ) ? (
+                                <IconButton
+                                    onClick={handleConditionClick}
+                                    id={`condition-btn-${i}-new`}
+                                    style={{ color: '#000' }}
+                                >
+                                    <AddIcon
+                                        sx={{ width: '0.6em', height: '0.6em' }}
+                                    />
+                                </IconButton>
+                            ) : null}
+                        </div>
                     </Box>
                 </Grid>
 
@@ -633,6 +682,39 @@ export const LayerComponent = ({
                     })}
                 </Menu>
 
+                <Grid item xs={checkboxPortion}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {features.sui && (
+                            <Switch
+                                size="small"
+                                onChange={() => {
+                                    toggleIsLayerSui(i);
+                                }}
+                                checked={layer.sui}
+                                sx={switchSx('SUI', suiFontColor)}
+                            />
+                        )}
+
+                        {features.actionRandomness && (
+                            <Switch
+                                size="small"
+                                onChange={() => {
+                                    setLayerProbability(
+                                        i,
+                                        !layer.probability
+                                            ? 5
+                                            : layer.probability == 0
+                                            ? 5
+                                            : 0
+                                    );
+                                }}
+                                checked={layer.probability != 0}
+                                sx={switchSx('MIX', rndFontColor)}
+                            />
+                        )}
+                    </div>
+                </Grid>
+                {/*
                 {features.sui && (
                     <Grid item xs={suiCheckboxPortion}>
                         <Switch
@@ -662,7 +744,7 @@ export const LayerComponent = ({
                             checked={layer.probability != 0}
                         />
                     </Grid>
-                )}
+                )} */}
 
                 <Grid item xs={gridRemovePortion}>
                     {features.layerAddAndDelete ? (
@@ -1117,6 +1199,7 @@ const Gambit = ({
                                                     fontSize: '13px',
                                                     fontFamily: 'Eurostile',
                                                     color: '#000000',
+                                                    textAlign: 'center',
                                                 }}
                                             >
                                                 Condition
@@ -1132,12 +1215,32 @@ const Gambit = ({
                                                     fontSize: '13px',
                                                     fontFamily: 'Eurostile',
                                                     color: '#000000',
+                                                    textAlign: 'center',
                                                 }}
                                             >
                                                 Action
                                             </Typography>
                                         </Grid>
+
                                         <Grid
+                                            item
+                                            md={checkboxPortion}
+                                            xl={checkboxPortion}
+                                            sx={{ pl: 0 }}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    fontSize: '13px',
+                                                    fontFamily: 'Eurostile',
+                                                    color: '#000000',
+                                                    textAlign: 'center',
+                                                }}
+                                            >
+                                                Pro
+                                            </Typography>
+                                        </Grid>
+
+                                        {/* <Grid
                                             item
                                             md={suiCheckboxPortion}
                                             xl={suiCheckboxPortion}
@@ -1237,7 +1340,7 @@ const Gambit = ({
                                                     </Typography>
                                                 </Tooltip>
                                             )}
-                                        </Grid>
+                                        </Grid> */}
 
                                         {/* <Grid item md={gridRemovePortion} xl={gridRemovePortion} sx={{pl:0}}>
                                             <Typography

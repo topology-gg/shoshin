@@ -38,7 +38,8 @@ const ConditionsMenu = ({
             PaperProps={{
                 style: {
                     maxHeight: 220,
-                    backgroundColor: '#000',
+                    width: 240,
+                    // backgroundColor: '#000',
                 },
             }}
         >
@@ -66,9 +67,9 @@ const ConditionsMenu = ({
                                     />
                                 </BlurrableListItemText>
                                 {openCategory === category ? (
-                                    <ExpandLess color="info" />
+                                    <ExpandLess />
                                 ) : (
-                                    <ExpandMore color="info" />
+                                    <ExpandMore />
                                 )}
                             </MenuItem>
                         )}
