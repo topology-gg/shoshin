@@ -52,7 +52,7 @@ import {
     Condition,
 } from '../../types/Condition';
 import SquareOverlayMenu from './SuccessMenu';
-import mainSceneStyles from './MainScene.module.css';
+import spectatorSceneStyles from './SpectatorScene.module.css';
 import FullArtBackground from '../layout/FullArtBackground';
 import GameCard from '../ui/GameCard';
 import LoadingFull from '../layout/LoadingFull';
@@ -204,8 +204,15 @@ interface SimulationProps {
     isPreview: boolean;
     matchFormat: MatchFormat;
 }
+
+enum PointOfView {
+    SPECTATOR,
+    PLAYER_1,
+    PLAYER_2,
+}
+
 //We need Players agent and opponent
-const SimulationScene = React.forwardRef(
+const SpectatorScene = React.forwardRef(
     (props: SimulationProps, ref: ForwardedRef<HTMLDivElement>) => {
         const {
             player,
@@ -228,6 +235,10 @@ const SimulationScene = React.forwardRef(
         const [p1, setP1] = useState<Agent>();
         const [reSimulationNeeded, setReSimulationNeeded] =
             useState<boolean>(false);
+
+        const [pointOfView, setPointOfView] = useState<PointOfView>(
+            PointOfView.SPECTATOR
+        );
 
         let p2: Agent;
 
@@ -301,6 +312,16 @@ const SimulationScene = React.forwardRef(
 
             if (key.includes('ESCAPE')) {
                 changePauseMenu(!openPauseMenu);
+            }
+        };
+
+        const handleKeyPres2 = (ev: React.KeyboardEvent<HTMLDivElement>) => {
+            const key = ev.key.toUpperCase();
+
+            console.log('keybord event', key);
+            if (key.includes(' ') && !(p1 == null || p2 == null)) {
+                ev.preventDefault();
+                handleMidScreenControlClick('ToggleRun');
             }
         };
         useEffect(() => {
@@ -534,12 +555,16 @@ const SimulationScene = React.forwardRef(
             !playedWinningReplay &&
             beatAgent;
 
-        const overlayContainerClassName = playOnly
-            ? mainSceneStyles.overlayContainer
-            : '';
+        const overlayContainerClassName =
+            pointOfView == PointOfView.SPECTATOR
+                ? spectatorSceneStyles.overlayContainer
+                : '';
 
         //Having this class be conditional on playOnly may not be needed
-        const overlayClassName = playOnly ? mainSceneStyles.overlay : '';
+        const overlayClassName =
+            pointOfView == PointOfView.SPECTATOR
+                ? spectatorSceneStyles.overlay
+                : '';
 
         const handleOverlayClick = () => {
             if (playOnly) {
@@ -629,8 +654,10 @@ const SimulationScene = React.forwardRef(
                     <LoadingFull />
                 </Fade>
                 <FullArtBackground useAlt={true}>
-                    <div className={styles.container}>
-                        <div className={mainSceneStyles.overlayMenu}></div>
+                    <div
+                        className={styles.container}
+                        onKeyDown={handleKeyPres2}
+                    >
                         <div className={styles.main}>
                             <Snackbar
                                 anchorOrigin={{
@@ -643,15 +670,6 @@ const SimulationScene = React.forwardRef(
                                 message={`Beat ${opponent.mindName} with ${performance}`}
                                 action={snackBarAction}
                             />
-                            {showVictory ? (
-                                <SquareOverlayMenu
-                                    opponentName={opponentName}
-                                    performance={performance}
-                                    scoreMap={scoreMap}
-                                    handleContinueClick={handleContinueClick}
-                                    closeMenu={() => changeShowVictory(false)}
-                                />
-                            ) : null}
                             {openPauseMenu ? pauseMenu : null}
                             <Grid container spacing={{ md: 2 }}>
                                 <Grid item md={6} lg={7} xl={7}>
@@ -669,6 +687,60 @@ const SimulationScene = React.forwardRef(
                                             onClick={() => handleOverlayClick()}
                                         >
                                             <div className={overlayClassName}>
+                                                <Box display={'flex'}>
+                                                    <Typography>
+                                                        Point of View
+                                                    </Typography>
+                                                    <ShoshinMenuButton
+                                                        onClick={() =>
+                                                            setPointOfView(
+                                                                PointOfView.SPECTATOR
+                                                            )
+                                                        }
+                                                    >
+                                                        Spectator
+                                                    </ShoshinMenuButton>
+
+                                                    <ShoshinMenuButton
+                                                        onClick={() =>
+                                                            setPointOfView(
+                                                                PointOfView.PLAYER_1
+                                                            )
+                                                        }
+                                                    >
+                                                        Player 1
+                                                    </ShoshinMenuButton>
+
+                                                    <ShoshinMenuButton
+                                                        onClick={() =>
+                                                            setPointOfView(
+                                                                PointOfView.PLAYER_2
+                                                            )
+                                                        }
+                                                    >
+                                                        Player 2
+                                                    </ShoshinMenuButton>
+
+                                                    <Typography>
+                                                        Play
+                                                    </Typography>
+
+                                                    <ShoshinMenuButton>
+                                                        Full Match
+                                                    </ShoshinMenuButton>
+
+                                                    <ShoshinMenuButton>
+                                                        Round 1
+                                                    </ShoshinMenuButton>
+
+                                                    <ShoshinMenuButton>
+                                                        Round 2
+                                                    </ShoshinMenuButton>
+
+                                                    <ShoshinMenuButton>
+                                                        Round 3
+                                                    </ShoshinMenuButton>
+                                                </Box>
                                                 <Box
                                                     sx={{
                                                         display: 'flex',
@@ -888,7 +960,17 @@ const SimulationScene = React.forwardRef(
                                         </Box>
                                     </div>
                                 </Grid>
-                                <Grid item md={6} lg={5} xl={5}>
+                                <Grid
+                                    item
+                                    md={6}
+                                    lg={5}
+                                    xl={5}
+                                    visibility={
+                                        pointOfView == PointOfView.SPECTATOR
+                                            ? 'hidden'
+                                            : 'visible'
+                                    }
+                                >
                                     <GameCard
                                         image={'/images/bg/f2f2f2.png'}
                                         bgOpacity={0.8}
@@ -937,4 +1019,4 @@ const SimulationScene = React.forwardRef(
     }
 );
 
-export default SimulationScene;
+export default SpectatorScene;

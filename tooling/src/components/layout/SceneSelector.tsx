@@ -59,6 +59,7 @@ import {
     track_scene_change,
     track_beat_opponent,
 } from '../../helpers/track';
+import SpectatorScene from '../SimulationScene/SpectatorScene';
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
 
@@ -620,7 +621,7 @@ const SceneSelector = () => {
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.MAIN_SCENE}>
-                <MainScene
+                <SpectatorScene
                     savePlayerAgent={savePlayerAgent}
                     player={playerAgent}
                     opponent={opponent}
