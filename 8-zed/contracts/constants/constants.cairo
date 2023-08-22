@@ -146,6 +146,7 @@ struct Frame {
     stimulus: felt,
     hitboxes: Hitboxes,
     combo: Combo,
+    gamma: felt,
 }
 
 struct RealTimePlayer {

@@ -4,7 +4,7 @@ from contracts.constants.constants import ComboBuffer
 from starkware.cairo.common.math import unsigned_div_rem
 
 func _combo{range_check_ptr}(combo_number: felt, combos: ComboBuffer) -> (
-    action: felt, combos_new: ComboBuffer
+    action: felt, combos_new: ComboBuffer, combo_len: felt,
 ) {
     alloc_locals;
     // index in the current combo
@@ -15,12 +15,12 @@ func _combo{range_check_ptr}(combo_number: felt, combos: ComboBuffer) -> (
     // retrieve the offset of the combo
     let offset = combos.combos_offset[combo_number - 1];
     // retrieve the length of the current combo
-    let l = combos.combos_offset[combo_number] - offset;
-    if (l == 1) {
+    let len = combos.combos_offset[combo_number] - offset;
+    if (len == 1) {
         assert index = 0;
         tempvar range_check_ptr = range_check_ptr;
     } else {
-        let (_, r) = unsigned_div_rem(combos.combo_counter, l);
+        let (_, r) = unsigned_div_rem(combos.combo_counter, len);
         assert index = r;
         tempvar range_check_ptr = range_check_ptr;
     }
@@ -36,5 +36,5 @@ func _combo{range_check_ptr}(combo_number: felt, combos: ComboBuffer) -> (
         assert combos_new = ComboBuffer(combos.combos_offset_len, combos.combos_offset, combos.combos, combo_number, 1);
         tempvar range_check_ptr = range_check_ptr;
     }
-    return (a_0, combos_new);
+    return (a_0, combos_new, len);
 }
