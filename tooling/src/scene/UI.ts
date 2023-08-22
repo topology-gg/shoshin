@@ -300,7 +300,8 @@ export default class UI extends Phaser.Scene {
                 .removeListener('end-text-show', this.onEndTextShow, this)
                 .removeListener('end-text-hide', this.onEndTextHide, this)
                 .removeListener('update-stats', this.onStatsUpdate, this)
-                .removeListener('reset-stats', this.onStatsReset, this);
+                .removeListener('reset-stats', this.onStatsReset, this)
+                .removeListener('setLives', this.onSetLives, this);
         });
         // this.scene.get('play').events
         // eventsCenter

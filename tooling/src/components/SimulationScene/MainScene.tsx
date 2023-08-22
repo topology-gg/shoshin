@@ -124,10 +124,7 @@ const SimulationScene = React.forwardRef(
 
         let p2: Agent;
 
-        const [lives, setLives] =
-            matchFormat == MatchFormat.BO3
-                ? useState<number[]>([2, 2])
-                : useState<number[]>([-1, -1]);
+        const [lives, setLives] = useState<number[]>([2, 2]);
 
         if ('layers' in opponent.agent) {
             const { layers, character, combos } = opponent.agent;
@@ -371,6 +368,20 @@ const SimulationScene = React.forwardRef(
         } else {
             performance = Medal.BRONZE;
         }
+
+        useEffect(() => {
+            let res = animationFrame % 4;
+
+            if (res == 0) {
+                setLives([2, 2]);
+            } else if (res == 1) {
+                setLives([1, 2]);
+            } else if (res == 2) {
+                setLives([1, 1]);
+            } else if (res == 3) {
+                setLives([1, 0]);
+            }
+        }, [animationFrame]);
 
         //
         // Compute score from the fight

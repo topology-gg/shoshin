@@ -1,6 +1,7 @@
 import React, {
     ForwardedRef,
     ReactNode,
+    useContext,
     useEffect,
     useRef,
     useState,
@@ -17,6 +18,8 @@ import {
     Button,
     IconButton,
     CircularProgress,
+    ButtonGroup,
+    Drawer,
 } from '@mui/material';
 import styles from '../../../styles/Home.module.css';
 import { FrameScene, TestJson } from '../../types/Frame';
@@ -37,7 +40,9 @@ import {
     numberToCharacter,
 } from '../../constants/constants';
 import { Layer, layersToAgentComponents } from '../../types/Layer';
-import useRunCairoSimulation from '../../hooks/useRunCairoSimulation';
+import useRunCairoSimulation, {
+    runCairoSimulation,
+} from '../../hooks/useRunCairoSimulation';
 import dynamic from 'next/dynamic';
 import { GameModes } from '../../types/Simulator';
 import MidScreenControl from '../MidScreenControl';
@@ -71,6 +76,8 @@ import useAnimationControls, {
     AnimationState,
 } from '../../hooks/useAnimationControls';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
+import { ShoshinWASMContext } from '../../context/wasm-shoshin';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -237,6 +244,7 @@ const SpectatorScene = React.forwardRef(
         const runnable = true;
 
         const [round, setRound] = useState<number>(0);
+        const [fullReplay, setFullReplay] = useState<boolean>(true);
         // React states for simulation / animation control
         const [outputs, setOutputs] = useState<FrameScene[]>([]);
 
@@ -273,18 +281,21 @@ const SpectatorScene = React.forwardRef(
             playerAgent = player.agent;
         }
 
+        const chosenPlayer =
+            pointOfView == PointOfView.PLAYER_1 ? player.agent : opponent.agent;
+
         // React states for tracking the New Agent being edited in the right panel
-        const [combos, setCombos] = useState<Action[][]>(playerAgent.combos);
+        const [combos, setCombos] = useState<Action[][]>(chosenPlayer.combos);
 
         const [conditions, setConditions] =
             //@ts-ignore
-            useState<Condition[]>(playerAgent.conditions);
+            useState<Condition[]>(chosenPlayer.conditions);
 
         const [character, setCharacter] = useState<Character>(
-            playerAgent.character
+            chosenPlayer.character
         );
 
-        const [layers, setLayers] = useState<Layer[]>(playerAgent.layers);
+        const [layers, setLayers] = useState<Layer[]>(chosenPlayer.layers);
 
         const actions =
             CHARACTERS_ACTIONS[character == Character.Jessica ? 0 : 1];
@@ -333,8 +344,8 @@ const SpectatorScene = React.forwardRef(
             animationStepBackward,
         } = useAnimationControls(outputs[round], char1, char2);
 
-        function playerAgentToAgent(playerAgent: PlayerAgent) {
-            const { layers, character, combos } = playerAgent;
+        function playerAgentToAgent(playerAgent: PlayerAgent): Agent {
+            const { layers, combos } = playerAgent;
             let char = Object.keys(Character).indexOf(playerAgent.character);
 
             //given layers
@@ -373,40 +384,30 @@ const SpectatorScene = React.forwardRef(
             }
         }, [outputs]);
 
-        const [seed, setSeed] = useState<number>(0);
-
         const p1 = playerAgentToAgent(player.agent);
         const p2 = playerAgentToAgent(opponent.agent);
-        const { runCairoSimulation } = useRunCairoSimulation(
-            { ...p1, seed },
-            { ...p2, seed }
-        );
+        console.log(`p1`, p1);
+        console.log(`p2`, p2);
+
+        const ctx = useContext(ShoshinWASMContext);
+
         useEffect(() => {
-            for (let i = 0; i < bestOf; i++) {
-                console.log('in i', i);
-                const [out, err] = runCairoSimulation();
+            if (phaserLoaded && outputs.length < bestOf) {
+                let outputs = [];
 
-                console.log('out', out);
-                if (err != null) {
-                    setSimulationError(err);
-                    return;
+                let randSeed = Math.random() * 100;
+                for (let i = 0; i < bestOf; i++) {
+                    const [output, err] = runCairoSimulation(
+                        { ...p1, seed: randSeed + i },
+                        { ...p2, seed: randSeed + i },
+                        ctx
+                    );
+                    outputs.push(output);
                 }
-                setOutputs((outputs) => {
-                    return [outputs, out];
-                });
 
-                setSeed(() => Math.random() * 100);
+                setOutputs(outputs);
             }
-        }, []);
-        if (outputs.length == 0) {
-            return (
-                <div id={'mother'} ref={ref}>
-                    <Box>
-                        <CircularProgress color="primary" />
-                    </Box>
-                </div>
-            );
-        }
+        }, [phaserLoaded]);
 
         useEffect(() => {
             const integrity_0 = testJson
@@ -471,10 +472,52 @@ const SpectatorScene = React.forwardRef(
             }
         }
 
-        const output =
-            outputs.length - 1 >= round
-                ? outputs[round]
-                : { agent_0: [], agent_1: [] };
+        const output = outputs.length >= round ? outputs[round] : undefined;
+
+        useEffect(() => {
+            console.log(
+                'output',
+                output,
+                'animationFrame',
+                animationFrame,
+                'fullReplay',
+                fullReplay,
+                'round',
+                round,
+                'bestOf',
+                bestOf,
+                'lives',
+                lives
+            );
+            if (
+                output !== undefined &&
+                animationFrame == output.agent_0.length - 1 &&
+                fullReplay == true &&
+                round + 1 < bestOf
+            ) {
+                console.log('round', round);
+                setRound(round + 1);
+                setAnimationFrame(0);
+                output;
+
+                const p1Hp =
+                    output.agent_0[output.agent_0.length - 1].body_state
+                        .integrity;
+                const p2Hp =
+                    output.agent_1[output.agent_1.length - 1].body_state
+                        .integrity;
+
+                if (p1Hp < p2Hp) {
+                    setLives((lives) => {
+                        return [lives[0] - 1, lives[1]];
+                    });
+                } else if (p1Hp > p2Hp) {
+                    setLives((lives) => {
+                        return [lives[0], lives[1] - 1];
+                    });
+                }
+            }
+        }, [output, animationFrame]);
 
         //
         // Compute flags from the fight
@@ -561,15 +604,6 @@ const SpectatorScene = React.forwardRef(
                 ? spectatorSceneStyles.overlay
                 : '';
 
-        const handleOverlayClick = () => {
-            if (playOnly) {
-                setAnimationFrame(N_FRAMES - 1);
-                changeShowVictory(true);
-                changePlayedWinningReplay(true);
-                pause();
-            }
-        };
-
         let playerOneName = null;
 
         playerOneName = (
@@ -596,6 +630,30 @@ const SpectatorScene = React.forwardRef(
 
         const [showVictorySnackBar, setShowVictorySnackBar] = useState(false);
 
+        const roundButtons = Array.from({ length: bestOf }, (_, index) => (
+            <Button
+                variant={round == index ? 'contained' : 'outlined'}
+                onClick={() => setRound(index)}
+            >
+                Round {index + 1}
+            </Button>
+        ));
+
+        const [isHovered, setIsHovered] = useState(false);
+
+        const handleMouseEnter = () => {
+            setIsHovered(true);
+        };
+
+        const handleMouseLeave = () => {
+            setIsHovered(false);
+        };
+
+        const hoveredClass =
+            isHovered && pointOfView == PointOfView.SPECTATOR
+                ? spectatorSceneStyles.optionsHover
+                : '';
+
         return (
             <div id={'mother'} ref={ref}>
                 <Fade in={!phaserLoaded} timeout={500}>
@@ -621,62 +679,146 @@ const SpectatorScene = React.forwardRef(
                                             className={
                                                 overlayContainerClassName
                                             }
-                                            onClick={() => handleOverlayClick()}
                                         >
                                             <div className={overlayClassName}>
                                                 <Box display={'flex'}>
-                                                    <Typography>
-                                                        Point of View
-                                                    </Typography>
-                                                    <ShoshinMenuButton
-                                                        onClick={() =>
-                                                            setPointOfView(
-                                                                PointOfView.SPECTATOR
-                                                            )
+                                                    <div
+                                                        onMouseEnter={
+                                                            handleMouseEnter
+                                                        }
+                                                        onMouseLeave={
+                                                            handleMouseLeave
                                                         }
                                                     >
-                                                        Spectator
-                                                    </ShoshinMenuButton>
-
-                                                    <ShoshinMenuButton
-                                                        onClick={() =>
-                                                            setPointOfView(
-                                                                PointOfView.PLAYER_1
-                                                            )
-                                                        }
-                                                    >
-                                                        Player 1
-                                                    </ShoshinMenuButton>
-
-                                                    <ShoshinMenuButton
-                                                        onClick={() =>
-                                                            setPointOfView(
-                                                                PointOfView.PLAYER_2
-                                                            )
-                                                        }
-                                                    >
-                                                        Player 2
-                                                    </ShoshinMenuButton>
-
-                                                    <Typography>
-                                                        Play
-                                                    </Typography>
-
-                                                    <ShoshinMenuButton>
-                                                        Full Match
-                                                    </ShoshinMenuButton>
-
-                                                    <ShoshinMenuButton>
-                                                        Round 1
-                                                    </ShoshinMenuButton>
-
-                                                    <ShoshinMenuButton>
-                                                        Round 2
-                                                    </ShoshinMenuButton>
-
-                                                    <ShoshinMenuButton>
-                                                        Round 3
-                                                    </ShoshinMenuButton>
+                                                        {!isHovered &&
+                                                            pointOfView ==
+                                                                PointOfView.SPECTATOR && (
+                                                                <Box
+                                                                    className={
+                                                                        spectatorSceneStyles.optionsHover
+                                                                    }
+                                                                >
+                                                                    <Button variant="text">
+                                                                        <ArrowDropDownIcon />
+                                                                    </Button>
+                                                                </Box>
+                                                            )}
+                                                        {(isHovered ||
+                                                            pointOfView !==
+                                                                PointOfView.SPECTATOR) && (
+                                                            <Box
+                                                                display={'flex'}
+                                                                className={
+                                                                    hoveredClass
+                                                                }
+                                                            >
+                                                                <Box
+                                                                    display={
+                                                                        'flex'
+                                                                    }
+                                                                    flexDirection={
+                                                                        'column'
+                                                                    }
+                                                                    alignContent={
+                                                                        'left'
+                                                                    }
+                                                                >
+                                                                    <Typography>
+                                                                        Point of
+                                                                        View
+                                                                    </Typography>
+                                                                    <ButtonGroup
+                                                                        variant="contained"
+                                                                        aria-label="outlined primary button group"
+                                                                    >
+                                                                        <Button
+                                                                            variant={
+                                                                                pointOfView ==
+                                                                                PointOfView.SPECTATOR
+                                                                                    ? 'contained'
+                                                                                    : 'outlined'
+                                                                            }
+                                                                            onClick={() =>
+                                                                                setPointOfView(
+                                                                                    PointOfView.SPECTATOR
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            Spectator
+                                                                        </Button>
+                                                                        <Button
+                                                                            variant={
+                                                                                pointOfView ==
+                                                                                PointOfView.PLAYER_1
+                                                                                    ? 'contained'
+                                                                                    : 'outlined'
+                                                                            }
+                                                                            onClick={() =>
+                                                                                setPointOfView(
+                                                                                    PointOfView.PLAYER_1
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            Player
+                                                                            1
+                                                                        </Button>
+                                                                        <Button
+                                                                            variant={
+                                                                                pointOfView ==
+                                                                                PointOfView.PLAYER_2
+                                                                                    ? 'contained'
+                                                                                    : 'outlined'
+                                                                            }
+                                                                            onClick={() =>
+                                                                                setPointOfView(
+                                                                                    PointOfView.PLAYER_2
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            Player
+                                                                            2
+                                                                        </Button>
+                                                                    </ButtonGroup>
+                                                                </Box>
+                                                                <Box
+                                                                    display={
+                                                                        'flex'
+                                                                    }
+                                                                    flexDirection={
+                                                                        'column'
+                                                                    }
+                                                                    alignContent={
+                                                                        'left'
+                                                                    }
+                                                                >
+                                                                    <Typography>
+                                                                        Play
+                                                                    </Typography>
+                                                                    <Box>
+                                                                        <Button
+                                                                            variant="contained"
+                                                                            onClick={() =>
+                                                                                setFullReplay(
+                                                                                    !fullReplay
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            Full
+                                                                            Match
+                                                                        </Button>
+                                                                        <ButtonGroup
+                                                                            variant="contained"
+                                                                            aria-label="outlined primary button group"
+                                                                        >
+                                                                            {
+                                                                                roundButtons
+                                                                            }
+                                                                        </ButtonGroup>
+                                                                    </Box>
+                                                                </Box>
+                                                            </Box>
+                                                        )}
+                                                    </div>
                                                 </Box>
                                                 <Box
                                                     sx={{
@@ -747,24 +889,11 @@ const SpectatorScene = React.forwardRef(
                                                         setPlayerStatuses,
                                                     }}
                                                     isInView={true}
-                                                    backgroundId={
-                                                        ((Math.random() * 100) %
-                                                            5) +
-                                                        1
-                                                    }
+                                                    backgroundId={1}
                                                     volume={volume}
                                                     lives={lives}
                                                 />
                                             </div>
-                                            {playOnly && (
-                                                <Typography
-                                                    color="lightGrey"
-                                                    mt="16px"
-                                                >
-                                                    Click anywhere to skip
-                                                    replay
-                                                </Typography>
-                                            )}
                                         </div>
                                         {playOnly ? (
                                             <div

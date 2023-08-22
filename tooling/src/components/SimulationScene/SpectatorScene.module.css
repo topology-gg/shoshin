@@ -26,3 +26,11 @@
 .simulatorContainer {
     background-color: white;
 }
+
+.optionsHover {
+    position: absolute;
+    top: 0;
+    left: 500px;
+    background-color: rgba(256, 256, 256, 0.2);
+    color: white;
+}

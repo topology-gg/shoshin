@@ -23,6 +23,7 @@ const MindPreview = ({ mind }: MindPreviewProps) => {
         setActiveTab(newValue);
     };
 
+    console.log('mind', mind);
     const onlineMind = useGetMind(
         mind.playerName,
         mind.agent.character,

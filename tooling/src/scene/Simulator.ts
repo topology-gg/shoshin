@@ -1395,26 +1395,8 @@ export default class Simulator extends Phaser.Scene {
         if (lives[0] == -1) {
             return;
         }
-        for (let i = 0; i < 2; i++) {
-            const x = 50 + i * 60;
-            const y = 300;
-
-            const graphics = this.add.graphics();
-            // Draw heart shapes
-            graphics.fillStyle(0xff0000); // Red color
-            graphics.beginPath();
-            graphics.moveTo(x, y + 20);
-            graphics.arc(x - 10, y, 10, 0, Math.PI, true);
-            graphics.arc(x + 10, y, 10, 0, Math.PI, true);
-            graphics.lineTo(x, y + 34);
-            graphics.closePath();
-
-            if (i <= lives[0]) {
-                graphics.fillPath(); // Fill the heart for the first heart
-            } else {
-                graphics.strokePath(); // Stroke the heart for the rest
-            }
-        }
+        console.log('emitting lives', lives);
+        eventsCenter.emit('setLives', lives);
     }
 
     updateSceneFromFrame({
@@ -1437,8 +1419,6 @@ export default class Simulator extends Phaser.Scene {
         const agentFrame1 = testJson?.agent_1.frames[animationFrame];
         const fightLength = testJson?.agent_0.frames.length;
         // console.log('animationFrame', animationFrame, 'agentFrame0.body_state', agentFrame0.body_state, 'agentFrame1.body_state', agentFrame1.body_state)
-
-        this.updateLives(lives);
         this.updateScene(
             characterType0,
             characterType1,
@@ -1458,6 +1438,8 @@ export default class Simulator extends Phaser.Scene {
             agentFrame1,
             animationFrame
         );
+
+        this.updateLives(lives);
 
         const rewound = this.last_accessed_frame > animationFrame;
         this.last_accessed_frame = animationFrame;

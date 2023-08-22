@@ -250,9 +250,9 @@ const Game = ({
             });
             scene.setVolume(volume);
         }
-        //render stuff
-    }, [testJson, animationFrame, showDebug, ctx.wasm, volume]);
 
+        //render stuff
+    }, [testJson, animationFrame, showDebug, ctx.wasm, volume, lives]);
     return (
         <div
             style={{

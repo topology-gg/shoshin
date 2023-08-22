@@ -56,7 +56,7 @@ const PreviewAgainstDialogue = ({
 
     const handleBestOfThreeFormatClick = () => {
         selectFormat(MatchFormat.BO3);
-        setStage(PreviewAgainstStages.Preview);
+        setStage(PreviewAgainstStages.Select);
     };
 
     if (stage == PreviewAgainstStages.SelectFormat) {
