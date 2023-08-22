@@ -6,9 +6,29 @@
     height: 2rem;
     padding: 4px;
     border-radius: 14px;
-    border: none;
 }
 .gambitButton {
+    cursor: pointer;
+}
+.gambitLeftHalfButton {
+    font-family: Raleway;
+    vertical-align: middle;
+    border: 2px solid #333;
+    border-radius: 14px 0 0 14px;
+    height: 2.2rem;
+    cursor: pointer;
+}
+.gambitRightHalfButton {
+    font-family: Raleway;
+    font-size: 14px;
+    vertical-align: middle;
+    padding: 0 0 0 8px;
+    border-top: 2px solid #333;
+    border-right: 2px solid #333;
+    border-bottom: 2px solid #333;
+    border-left: none;
+    height: 2.2rem;
+    border-radius: 0px 14px 14px 0px;
     cursor: pointer;
 }
 
@@ -20,22 +40,28 @@
 }
 
 .conditionButton {
-    background-color: #afdbf5;
+    /* background-color: #afdbf5; */
+    background-color: #ffffff;
 }
 
 .invertedConditionButton {
-    background-color: white;
+    /* background-color: white;
     color: #78c7f6;
-    border: 1px #78c7f6 solid;
+    border: 1px #78c7f6 solid; */
+    background-color: #ffffff;
 }
 
 .conditionButton:hover {
-    background-color: #afdbf599;
+    /* background-color: #afdbf599; */
+    background-color: #f1f1f1;
 }
 
 .actionButton {
-    background-color: #a8e4a0;
+    /* background-color: #a8e4a0; */
+    background-color: #ffffff;
+    border: 2px solid #555555;
 }
 .actionButton:hover {
-    background-color: #a8e4a088;
+    /* background-color: #a8e4a088; */
+    background-color: #f1f1f1;
 }

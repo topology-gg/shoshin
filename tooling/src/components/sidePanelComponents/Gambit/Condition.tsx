@@ -52,9 +52,10 @@ export const ConditionLabel = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,
+                width: '7.5rem',
             }}
         >
-            {isInverted && <Chip size="small" color="error" label="NOT" />}
+            {/* {isInverted && <Chip size="small" color="error" label="NOT" />} */}
             <ConditionEmojiElement type={type} />
             <span
                 style={{
@@ -107,57 +108,77 @@ const Condition = ({
         : condition.displayName;
 
     return (
-        <ConditionContextMenu
-            handleInvertCondition={onInvertCondition}
-            layerIndex={layerIndex}
-            conditionIndex={conditionIndex}
+        // <ConditionContextMenu
+        //     handleInvertCondition={onInvertCondition}
+        //     layerIndex={layerIndex}
+        //     conditionIndex={conditionIndex}
+        // >
+        <div
+            style={{
+                marginBottom: '0.5rem',
+                marginTop: '0.5rem',
+                marginLeft: '0.2rem',
+                marginRight: '0.2rem',
+                height: '2rem',
+            }}
         >
-            <Chip
-                color="default"
-                label={
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                        <ConditionLabel
-                            name={displayName}
-                            type={condition.type}
-                            isInverted={condition.isInverted}
-                            hasLayer={true}
-                        />
-                        {customValueCondition && (
-                            <Input
-                                type="number"
-                                onClick={(e) => e.stopPropagation()}
-                                value={conditionCustomValue.value}
-                                onChange={onCustomValueChange}
-                                sx={{ width: 50 }}
-                            />
-                        )}
-                    </Box>
-                }
-                className={`${styles.gambitButton} ${styles.conditionButton}`}
+            <button
+                className={`${styles.gambitLeftHalfButton} ${styles.conditionButton}`}
+                style={{
+                    fontSize: '10px',
+                    backgroundColor: condition.isInverted
+                        ? '#ab3031'
+                        : '#2faa79',
+                    color: '#fff',
+                }}
+                onClick={() => onInvertCondition(layerIndex, conditionIndex)}
+            >
+                ⇌
+            </button>
+            <button
+                className={`${styles.gambitRightHalfButton} ${styles.conditionButton}`}
+                style={{ width: '8.2rem' }}
                 id={`condition-btn-${layerIndex}-${conditionIndex}`}
                 onClick={(event) => {
                     isReadOnly ? null : onClick(event);
                 }}
-                onDelete={
-                    onRemove && (() => onRemove(layerIndex, conditionIndex))
-                }
-                deleteIcon={
-                    isReadOnly ? (
+            >
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <ConditionLabel
+                        name={displayName}
+                        type={condition.type}
+                        isInverted={condition.isInverted}
+                        hasLayer={true}
+                    />
+                    {customValueCondition && (
+                        <Input
+                            type="number"
+                            onClick={(e) => e.stopPropagation()}
+                            value={conditionCustomValue.value}
+                            onChange={onCustomValueChange}
+                            sx={{ width: 50 }}
+                        />
+                    )}
+                    {isReadOnly ? (
                         <></>
                     ) : (
-                        <IconButton sx={{ p: '4px' }}>
-                            <CancelIcon />
+                        <IconButton
+                            sx={{ p: '4px' }}
+                            onClick={(evt) => {
+                                console.log('remove condition onClick()');
+                                onRemove(layerIndex, conditionIndex);
+                                evt.stopPropagation();
+                            }}
+                        >
+                            <CancelIcon
+                                sx={{ width: '0.6em', height: '0.6em' }}
+                            />
                         </IconButton>
-                    )
-                }
-                style={{
-                    fontFamily: 'Raleway',
-                    fontSize: '14px',
-                    verticalAlign: 'middle',
-                    padding: '0',
-                }}
-            />
-        </ConditionContextMenu>
+                    )}
+                </Box>
+            </button>
+        </div>
+        // </ConditionContextMenu>
     );
 };
 
