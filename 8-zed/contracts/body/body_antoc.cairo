@@ -333,9 +333,9 @@ func _body_antoc {range_check_ptr}(
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
 
-            // cancellable into lowkick's first frame
+            // cancellable into lowkick's ACTIVE frame
             if (intent == ns_antoc_action.LOW_KICK) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 3, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
 
             // return to IDLE otherwise
@@ -766,9 +766,9 @@ func _body_antoc {range_check_ptr}(
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
 
-            // cancellable into lowkick's first frame
+            // cancellable into lowkick's ACTIVE frame
             if (intent == ns_antoc_action.LOW_KICK) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 3, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
 
             // return to IDLE otherwise
