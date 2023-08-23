@@ -413,8 +413,8 @@ func _physicality{range_check_ptr}(
     );
 
     // assemble the stimulus here
-    let curr_stimulus_0 = curr_stimulus_type_0 * ns_stimulus.ENCODING + damage_received_0;
-    let curr_stimulus_1 = curr_stimulus_type_1 * ns_stimulus.ENCODING + damage_received_1;
+    let curr_stimulus_0 = curr_stimulus_type_0 * ns_stimulus.ENCODING + bool_agent_0_ground * ns_stimulus.GROUND_ENCODING + damage_received_0;
+    let curr_stimulus_1 = curr_stimulus_type_1 * ns_stimulus.ENCODING + bool_agent_1_ground * ns_stimulus.GROUND_ENCODING + damage_received_1;
 
     // 1/2 of the damage inflicted on the opponent becomes rage gain to the attacker
     let (new_rage_0, _) = _settle_stamina_change(curr_body_state_0.stamina, damage_received_1 / 2, ns_stamina.MAX_STAMINA);
@@ -684,11 +684,6 @@ func produce_stimulus_given_conditions {range_check_ptr} (
 
         // otherwise => hurt
         return (ns_stimulus.HURT, damage);
-    }
-
-    // if grounded, return GROUND stimulus
-    if (bool_self_ground == 1) {
-        return (ns_stimulus.GROUND, 0);
     }
 
     // null stimulus otherwise
