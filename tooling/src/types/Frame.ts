@@ -46,6 +46,8 @@ interface ComboInfo {
 }
 
 export const STIMULUS_ENCODING = 10000;
+export const GROUND_ENCODING = 1000;
+
 export enum StimulusType {
     NULL = 0,
     HURT = 1,
