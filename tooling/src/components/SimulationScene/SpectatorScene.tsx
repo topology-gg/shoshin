@@ -603,12 +603,6 @@ const SpectatorScene = React.forwardRef(
         const [hasBeatenOpponent, changeHasBeatenOpponent] =
             useState<boolean>(false);
 
-        useEffect(() => {
-            if (!('medal' in opponent)) {
-                return;
-            }
-            changeHasBeatenOpponent(opponent.medal !== Medal.NONE);
-        }, []);
         const playOnly =
             !hasBeatenOpponent &&
             showFullReplay &&
@@ -641,9 +635,6 @@ const SpectatorScene = React.forwardRef(
                 {opponent.mindName} by {opponent.playerName}
             </Typography>
         );
-
-        const backgroundId =
-            'backgroundId' in opponent ? opponent.backgroundId : 0;
 
         let activeMs = 0;
 
@@ -1098,8 +1089,7 @@ const SpectatorScene = React.forwardRef(
                                                             !checkedShowDebugInfo
                                                     )
                                                 }
-                                                player={player}
-                                                isPreview={isPreview}
+                                                submitOption={undefined}
                                             />
                                         </Box>
 
