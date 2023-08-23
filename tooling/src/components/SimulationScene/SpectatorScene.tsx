@@ -396,9 +396,8 @@ const SpectatorScene = React.forwardRef(
         );
 
         const handleSeedChange = (event) => {
-            const newSeed = parseInt(event.target.value);
-            if (/^\d*$/.test(newSeed)) {
-                setSeed(newSeed);
+            if (/^\d*$/.test(event.target.value)) {
+                setSeed(parseInt(event.target.value));
             }
         };
 
@@ -749,7 +748,6 @@ const SpectatorScene = React.forwardRef(
                                             className={
                                                 overlayContainerClassName
                                             }
-                                            onClick={handleOverlayPress}
                                         >
                                             <div className={overlayClassName}>
                                                 <div
@@ -804,15 +802,6 @@ const SpectatorScene = React.forwardRef(
                                                                     hoveredClass
                                                                 }
                                                             >
-                                                                <TextField
-                                                                    label="Seed"
-                                                                    value={seed}
-                                                                    onChange={
-                                                                        handleSeedChange
-                                                                    }
-                                                                    type="number"
-                                                                    variant="outlined"
-                                                                />
                                                                 <Box
                                                                     display={
                                                                         'flex'
@@ -944,6 +933,27 @@ const SpectatorScene = React.forwardRef(
                                                                         </ButtonGroup>
                                                                     </Box>
                                                                 </Box>
+                                                                <Box
+                                                                    display={
+                                                                        'flex'
+                                                                    }
+                                                                    flexDirection={
+                                                                        'column'
+                                                                    }
+                                                                    alignContent={
+                                                                        'left'
+                                                                    }
+                                                                    marginRight={
+                                                                        '20px'
+                                                                    }
+                                                                >
+                                                                    <Typography>
+                                                                        Seed
+                                                                    </Typography>
+                                                                    <Typography>
+                                                                        {seed}
+                                                                    </Typography>
+                                                                </Box>
                                                             </Box>
                                                         )}
                                                     </div>
@@ -997,30 +1007,36 @@ const SpectatorScene = React.forwardRef(
                                                         {playerTwoName}
                                                     </Box>
                                                 </Box>
-                                                <Game
-                                                    onPhaserLoad={() =>
-                                                        setPhaserLoaded(true)
-                                                    }
-                                                    testJson={testJson}
-                                                    animationFrame={
-                                                        animationFrame
-                                                    }
-                                                    showDebug={
-                                                        checkedShowDebugInfo
-                                                    }
-                                                    gameMode={
-                                                        GameModes.simulation
-                                                    }
-                                                    realTimeOptions={{
-                                                        playerCharacter: 0,
-                                                        agentOpponent: p2,
-                                                        setPlayerStatuses,
-                                                    }}
-                                                    isInView={true}
-                                                    backgroundId={1}
-                                                    volume={volume}
-                                                    lives={lives}
-                                                />
+                                                <Box
+                                                    onClick={handleOverlayPress}
+                                                >
+                                                    <Game
+                                                        onPhaserLoad={() =>
+                                                            setPhaserLoaded(
+                                                                true
+                                                            )
+                                                        }
+                                                        testJson={testJson}
+                                                        animationFrame={
+                                                            animationFrame
+                                                        }
+                                                        showDebug={
+                                                            checkedShowDebugInfo
+                                                        }
+                                                        gameMode={
+                                                            GameModes.simulation
+                                                        }
+                                                        realTimeOptions={{
+                                                            playerCharacter: 0,
+                                                            agentOpponent: p2,
+                                                            setPlayerStatuses,
+                                                        }}
+                                                        isInView={true}
+                                                        backgroundId={1}
+                                                        volume={volume}
+                                                        lives={lives}
+                                                    />
+                                                </Box>
                                             </div>
                                         </div>
                                         {playOnly ? (
