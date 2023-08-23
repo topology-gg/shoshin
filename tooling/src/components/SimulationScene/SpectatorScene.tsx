@@ -319,7 +319,7 @@ const SpectatorScene = React.forwardRef(
         };
 
         const handleOverlayPress = () => {
-            if (round == 0 && pointOfView == PointOfView.SPECTATOR) {
+            if (isObserver) {
                 handleMidScreenControlClick('ToggleRun');
             }
         };
