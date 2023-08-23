@@ -12,6 +12,7 @@ import {
     Rectangle,
     StimulusType,
     STIMULUS_ENCODING,
+    GROUND_ENCODING,
 } from '../types/Frame';
 import { SimulatorProps } from '../types/Simulator';
 import { GameModes } from '../types/Simulator';
@@ -1783,6 +1784,12 @@ export default class Simulator extends Phaser.Scene {
             const prevStimulusType = Math.floor(
                 prevFrame.stimulus / STIMULUS_ENCODING
             );
+            const stimulusResidue = frame.stimulus % STIMULUS_ENCODING;
+            const prevStimulusResidue = prevFrame.stimulus % STIMULUS_ENCODING;
+            const grounded = Math.floor(stimulusResidue / GROUND_ENCODING);
+            const prevGrounded = Math.floor(
+                prevStimulusResidue / GROUND_ENCODING
+            );
 
             if (
                 (frame.body_state.state == BodystatesAntoc.Jump ||
@@ -1804,13 +1811,11 @@ export default class Simulator extends Phaser.Scene {
                 else if (frame.body_state.state == BodystatesJessica.Jump)
                     this.playSound(GameSound.jessicaJump);
             } else if (
-                stimulusType == StimulusType.GROUND &&
-                prevStimulusType != StimulusType.GROUND &&
+                grounded == 1 &&
+                prevGrounded == 0 &&
                 possibleLandingStates.includes(frame.body_state.state)
             ) {
-                const x =
-                    frame.physics_state.pos.x +
-                    frame.hitboxes.body.dimension.x / 2;
+                const x = frame.physics_state.pos.x;
                 const y = -1 * frame.physics_state.pos.y - 10;
 
                 this.jumpLandingSmokeSprites[playerIndex]
