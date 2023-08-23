@@ -474,32 +474,17 @@ const SpectatorScene = React.forwardRef(
 
         const output = outputs.length >= round ? outputs[round] : undefined;
 
-        useEffect(() => {
-            console.log(
-                'output',
-                output,
-                'animationFrame',
-                animationFrame,
-                'fullReplay',
-                fullReplay,
-                'round',
-                round,
-                'bestOf',
-                bestOf,
-                'lives',
-                lives
-            );
-            if (
-                output !== undefined &&
-                animationFrame == output.agent_0.length - 1 &&
-                fullReplay == true &&
-                round + 1 < bestOf
-            ) {
-                console.log('round', round);
-                setRound(round + 1);
-                setAnimationFrame(0);
-                output;
+        const handleFullReplayClick = () => {
+            setFullReplay(true);
+            setRound(0);
+            setAnimationFrame(0);
+            setLives([2, 2]);
+        };
 
+        const getLivesPerRound = (outputs) => {
+            let lives = [2, 2];
+
+            return outputs.map((output) => {
                 const p1Hp =
                     output.agent_0[output.agent_0.length - 1].body_state
                         .integrity;
@@ -508,13 +493,37 @@ const SpectatorScene = React.forwardRef(
                         .integrity;
 
                 if (p1Hp < p2Hp) {
-                    setLives((lives) => {
-                        return [lives[0] - 1, lives[1]];
-                    });
+                    lives = [lives[0] - 1, lives[1]];
+                    return lives;
                 } else if (p1Hp > p2Hp) {
-                    setLives((lives) => {
-                        return [lives[0], lives[1] - 1];
-                    });
+                    lives = [lives[0], lives[1] - 1];
+                    return lives;
+                } else if (p1Hp == p2Hp) {
+                    lives = [lives[0] - 1, lives[1] - 1];
+                    return lives;
+                }
+            });
+        };
+
+        const nextRound = () => {
+            setRound(round + 1);
+            setAnimationFrame(0);
+        };
+
+        useEffect(() => {
+            if (
+                output !== undefined &&
+                animationFrame == output.agent_0.length - 1 &&
+                fullReplay == true &&
+                round + 1 < bestOf
+            ) {
+                const livePerRound = getLivesPerRound(outputs);
+                setLives(livePerRound[round]);
+
+                if (fullReplay) {
+                    setTimeout(() => {
+                        nextRound();
+                    }, 5000);
                 }
             }
         }, [output, animationFrame]);
@@ -643,14 +652,38 @@ const SpectatorScene = React.forwardRef(
 
         const [showVictorySnackBar, setShowVictorySnackBar] = useState(false);
 
-        const roundButtons = Array.from({ length: bestOf }, (_, index) => (
-            <Button
-                variant={round == index ? 'contained' : 'outlined'}
-                onClick={() => setRound(index)}
-            >
-                Round {index + 1}
-            </Button>
-        ));
+        const roundButtons = Array.from({ length: bestOf }, (_, index) => {
+            const livesPerRound = getLivesPerRound(outputs);
+
+            const handleRoundOneClick = () => {
+                if (index == 0) {
+                    setLives([2, 2]);
+                } else {
+                    setLives(livesPerRound[index - 1]);
+                }
+
+                if (
+                    index !== 0 &&
+                    (livesPerRound[index - 1][0] == 0 ||
+                        livesPerRound[index - 1][1] == 0)
+                ) {
+                    return;
+                }
+
+                setRound(index);
+                setAnimationFrame(0);
+                setFullReplay(false);
+            };
+
+            return (
+                <Button
+                    variant={round == index ? 'contained' : 'outlined'}
+                    onClick={handleRoundOneClick}
+                >
+                    Round {index + 1}
+                </Button>
+            );
+        });
 
         const [isHovered, setIsHovered] = useState(false);
 
@@ -813,18 +846,20 @@ const SpectatorScene = React.forwardRef(
                                                                     <Typography>
                                                                         Play
                                                                     </Typography>
-                                                                    <Box
-                                                                        marginRight={
-                                                                            '10px'
-                                                                        }
-                                                                    >
+                                                                    <Box>
                                                                         <Button
-                                                                            variant="contained"
-                                                                            onClick={() =>
-                                                                                setFullReplay(
-                                                                                    !fullReplay
-                                                                                )
+                                                                            variant={
+                                                                                fullReplay
+                                                                                    ? 'contained'
+                                                                                    : 'outlined'
                                                                             }
+                                                                            onClick={
+                                                                                handleFullReplayClick
+                                                                            }
+                                                                            sx={{
+                                                                                marginRight:
+                                                                                    '10px',
+                                                                            }}
                                                                         >
                                                                             Full
                                                                             Match
