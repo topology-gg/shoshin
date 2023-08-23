@@ -127,6 +127,9 @@ func _body_antoc {range_check_ptr}(
             if (intent == ns_antoc_action.CYCLONE) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.CYCLONE, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
+            if (intent == ns_antoc_action.MOON) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOON, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
         }
 
         // otherwise stay in IDLE but increment counter modulo duration
@@ -402,6 +405,9 @@ func _body_antoc {range_check_ptr}(
             if (intent == ns_antoc_action.CYCLONE) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.CYCLONE, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
+            if (intent == ns_antoc_action.MOON) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOON, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
         }
 
         // continue moving forward
@@ -472,6 +478,9 @@ func _body_antoc {range_check_ptr}(
             }
             if (intent == ns_antoc_action.CYCLONE) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.CYCLONE, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+            if (intent == ns_antoc_action.MOON) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOON, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
         }
 
@@ -892,6 +901,9 @@ func _body_antoc {range_check_ptr}(
             if (intent == ns_antoc_action.CYCLONE) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.CYCLONE, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
+            if (intent == ns_antoc_action.MOON) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.MOON, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
         }
 
 
@@ -903,6 +915,33 @@ func _body_antoc {range_check_ptr}(
         // else stay and increment counter
         return ( body_state_nxt = BodyState(ns_antoc_body_state.TAUNT_PARIS23, counter + 1, integrity, stamina, dir, FALSE, state_index, opponent_state_index_last_hit) );
     }
+
+    //
+    // MOON
+    //
+    if (state == ns_antoc_body_state.MOON) {
+
+        if (opponent_state_index_has_progressed == 1) {
+            if (stimulus_type == ns_stimulus.HURT) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.HURT, 0, updated_integrity , stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+            }
+            if (stimulus_type == ns_stimulus.KNOCKED) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+            }
+            if (stimulus_type == ns_stimulus.LAUNCHED) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+            }
+        }
+
+        // if counter is full => return to IDLE
+        if (counter == ns_antoc_body_state_duration.MOON - 1) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+        }
+
+        // else stay in MOON and increment counter
+        return ( body_state_nxt = BodyState(ns_antoc_body_state.MOON, counter + 1, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+    }
+
 
     // handle exception
     with_attr error_message("Input body state is not recognized.") {

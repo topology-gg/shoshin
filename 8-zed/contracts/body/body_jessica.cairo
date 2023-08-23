@@ -49,6 +49,8 @@ func _body_jessica {range_check_ptr}(
     // for preventing incorrectly registering more than one hit per attack move
     let opponent_state_index_has_progressed = is_not_zero (opponent_body_state_index - opponent_state_index_last_hit);
 
+    // TODO: create a signal indicating bolt is doable (only one active bolt allowed at all times)
+
     //
     // KO
     // not interruptible; not responding to intent
@@ -126,6 +128,9 @@ func _body_jessica {range_check_ptr}(
             }
             if (intent == ns_jessica_action.GATOTSU) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.GATOTSU, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+            if (intent == ns_jessica_action.BOLT) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BOLT, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
         }
 
@@ -424,6 +429,12 @@ func _body_jessica {range_check_ptr}(
             if (intent == ns_jessica_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
+            if (intent == ns_jessica_action.GATOTSU) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.GATOTSU, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+            if (intent == ns_jessica_action.BOLT) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BOLT, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
         }
 
         // continue moving forward
@@ -485,6 +496,12 @@ func _body_jessica {range_check_ptr}(
             }
             if (intent == ns_jessica_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+            if (intent == ns_jessica_action.GATOTSU) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.GATOTSU, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+            if (intent == ns_jessica_action.BOLT) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BOLT, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
         }
 
@@ -863,6 +880,9 @@ func _body_jessica {range_check_ptr}(
             if (intent == ns_jessica_action.GATOTSU) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.GATOTSU, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
+            if (intent == ns_jessica_action.BOLT) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.BOLT, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
         }
 
         // if counter is full => return to IDLE
@@ -875,9 +895,9 @@ func _body_jessica {range_check_ptr}(
     }
 
     //
-    // Sword energy (long-range attack)
+    // Bolt (long-range attack)
     //
-    if (state == ns_jessica_body_state.SWORD_ENERGY) {
+    if (state == ns_jessica_body_state.BOLT) {
 
         if (opponent_state_index_has_progressed == 1) {
             // can be hurt
@@ -895,12 +915,12 @@ func _body_jessica {range_check_ptr}(
         }
 
         // if counter is full => return to IDLE
-        if (counter == ns_jessica_body_state_duration.SWORD_ENERGY - 1) {
+        if (counter == ns_jessica_body_state_duration.BOLT - 1) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
         }
 
-        // else stay in SWORD_ENERGY and increment counter
-        return ( body_state_nxt = BodyState(ns_jessica_body_state.SWORD_ENERGY, counter + 1, integrity, stamina, dir, FALSE, state_index, opponent_state_index_last_hit) );
+        // else stay in BOLT and increment counter
+        return ( body_state_nxt = BodyState(ns_jessica_body_state.BOLT, counter + 1, integrity, stamina, dir, FALSE, state_index, opponent_state_index_last_hit) );
     }
 
     with_attr error_message("Input body state is not recognized.") {

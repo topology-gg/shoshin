@@ -97,6 +97,10 @@ func calculate_stamina_change{range_check_ptr}(stamina : felt, intent : felt, ma
                 let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, 0, max_stamina);
                 return (updated_stamina, enough_stamina);
             }
+            if (intent == ns_jessica_action.BOLT){
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_jessica_stamina_effect.BOLT, max_stamina);
+                return (updated_stamina, enough_stamina);
+            }
             if (intent == ns_jessica_action.NULL){
                 let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_common_stamina_effect.NULL, max_stamina);
                 return (updated_stamina, enough_stamina);
@@ -154,6 +158,10 @@ func calculate_stamina_change{range_check_ptr}(stamina : felt, intent : felt, ma
             }
             if (intent == ns_antoc_action.TAUNT){
                 let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, 0, max_stamina);
+                return (updated_stamina, enough_stamina);
+            }
+            if (intent == ns_antoc_action.MOON){
+                let (updated_stamina, enough_stamina) = _settle_stamina_change(stamina, ns_antoc_stamina_effect.MOON, max_stamina);
                 return (updated_stamina, enough_stamina);
             }
         }

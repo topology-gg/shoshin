@@ -111,7 +111,7 @@ namespace ns_jessica_action {
     const GATOTSU = 10;
     const LOW_KICK = 11;
     const TAUNT = 12;
-    const SWORD_ENERGY = 13;
+    const BOLT = 13;
 }
 
 namespace ns_jessica_stamina_effect {
@@ -122,7 +122,7 @@ namespace ns_jessica_stamina_effect {
     const SIDECUT = 5;
     const LOW_KICK = 5;
     const BIRDSWING = 5;
-    const SWORD_ENERGY = 5;
+    const BOLT = 5;
 
     // character special consumes rage, whether hit or whiff
     const GATOTSU = -500;
@@ -137,7 +137,7 @@ namespace ns_jessica_stimulus {
     const SIDECUT_DAMAGE = 80;
     const LOW_KICK_DAMAGE = 50;
     const BIRDSWING_DAMAGE = 80;
-    const SWORD_ENERGY_DAMAGE = 50;
+    const BOLT_DAMAGE = 50;
 
     // character special
     const GATOTSU_DAMAGE = 300;
@@ -163,7 +163,7 @@ namespace ns_jessica_body_state_duration {
     const LAUNCHED = 11;
     const TAUNT_PARIS23 = 33;
     const KO = 14;
-    const SWORD_ENERGY = 8;
+    const BOLT = 7;
 }
 
 namespace ns_jessica_body_state {
@@ -188,7 +188,7 @@ namespace ns_jessica_body_state {
     const JUMP_MOVE_BACKWARD = 190;
     const TAUNT_PARIS23 = 200; // 33 frames
     const KO = 240; // 14 frames
-    const SWORD_ENERGY = 260; // 8 frames
+    const BOLT = 260; // 7 frames
 }
 
 namespace ns_jessica_body_state_qualifiers {
