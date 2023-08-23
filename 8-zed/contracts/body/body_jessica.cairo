@@ -37,7 +37,8 @@ func _body_jessica {range_check_ptr}(
     let opponent_state_index_last_hit = body_state.opponent_state_index_last_hit;
 
     // Decode stimulus
-    let (stimulus_type, stimulus_damage) = unsigned_div_rem (stimulus, ns_stimulus.ENCODING);
+    let (stimulus_type, residue) = unsigned_div_rem (stimulus, ns_stimulus.ENCODING);
+    let (grounded, stimulus_damage) = unsigned_div_rem (residue, ns_stimulus.GROUND_ENCODING);
 
     // Calculate new stats and stat flag
     let updated_integrity = calculate_integrity_change (integrity, stimulus_damage);
@@ -62,7 +63,7 @@ func _body_jessica {range_check_ptr}(
         }
 
         // if reach counter==2 and still in air => remain in counter==2
-        if (counter == 2 and stimulus_type != ns_stimulus.GROUND) {
+        if (counter == 2 and grounded == 0) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KO, counter, updated_integrity, updated_stamina, dir, is_fatigued, state_index, opponent_state_index_last_hit) );
         }
 
@@ -340,17 +341,41 @@ func _body_jessica {range_check_ptr}(
 
     //
     // Knocked
-    // note: uninterruptible
+    // note: hurtable!
     //
     if (state == ns_jessica_body_state.KNOCKED) {
 
-        // if counter is full => return to Idle
+        // interruptible by stimulus
+        if (opponent_state_index_has_progressed == 1) {
+            if (stimulus_type == ns_stimulus.HURT) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+            }
+            if (stimulus_type == ns_stimulus.KNOCKED) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+            }
+            if (stimulus_type == ns_stimulus.LAUNCHED) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+            }
+        }
+
+        // if counter is full => cancellable with the right actions, otherwise return to Idle
         if (counter == ns_jessica_body_state_duration.KNOCKED - 1) {
+            // cancellable into dash backward's first frame
+            if (intent == ns_jessica_action.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+
+            // cancellable into lowkick's ACTIVE frame
+            if (intent == ns_jessica_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.LOW_KICK, 3, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+
+            // return to IDLE otherwise
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
         }
 
         // if reach counter==5 and still in air => remain in counter==5
-        if (counter == 5 and stimulus_type != ns_stimulus.GROUND) {
+        if (counter == 5 and grounded == 0) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, counter, integrity, stamina, dir, FALSE, state_index, opponent_state_index_last_hit) );
         }
 
@@ -491,7 +516,7 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.DASH_FORWARD) {
 
         // can cancel dash into grounded attacks / JUMP while grounded
-        if(enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND) {
+        if(enough_stamina == TRUE and grounded == 1) {
             // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
                 // go straight to SLASH's active frame - 1
@@ -513,7 +538,7 @@ func _body_jessica {range_check_ptr}(
         }
 
         // can cancel dash into BIRDSWING's counter==2 while not grounded
-        if(enough_stamina == TRUE and stimulus_type != ns_stimulus.GROUND) {
+        if(enough_stamina == TRUE and grounded == 0) {
             if (intent == ns_jessica_action.SIDECUT) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, 2, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
@@ -522,7 +547,7 @@ func _body_jessica {range_check_ptr}(
         // last frame reached
         if (counter == ns_jessica_body_state_duration.DASH_FORWARD - 1) {
             // if not grounded => return to JUMP's counter==4
-            if (stimulus_type != ns_stimulus.GROUND) {
+            if (grounded == 0) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 4, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
 
@@ -543,7 +568,7 @@ func _body_jessica {range_check_ptr}(
     if (state == ns_jessica_body_state.DASH_BACKWARD) {
 
         // can cancel dash into grounded attacks / JUMP while grounded
-        if(enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND){
+        if(enough_stamina == TRUE and grounded == 1){
             // interruptible by offensive intent
             if (intent == ns_jessica_action.SLASH) {
                 // go straight to SLASH's active frame - 1
@@ -565,7 +590,7 @@ func _body_jessica {range_check_ptr}(
         }
 
         // can cancel dash into BIRDSWING's counter==2 while not grounded
-        if(enough_stamina == TRUE and stimulus_type != ns_stimulus.GROUND) {
+        if(enough_stamina == TRUE and grounded == 0) {
             if (intent == ns_jessica_action.SIDECUT) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.BIRDSWING, 2, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
@@ -574,7 +599,7 @@ func _body_jessica {range_check_ptr}(
         // last frame reached
         if (counter == ns_jessica_body_state_duration.DASH_BACKWARD - 1) {
             // if not grounded => return to JUMP's counter==4
-            if (stimulus_type != ns_stimulus.GROUND) {
+            if (grounded == 0) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 4, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
 
@@ -627,7 +652,7 @@ func _body_jessica {range_check_ptr}(
         }
 
         // if reach counter==4 and still in air => remain in the same state with counter==4
-        if (counter == 4 and stimulus_type != ns_stimulus.GROUND) {
+        if (counter == 4 and grounded == 0) {
             return ( body_state_nxt = BodyState(state, counter, integrity, stamina, dir, FALSE, state_index, opponent_state_index_last_hit) );
         }
 
@@ -731,7 +756,7 @@ func _body_jessica {range_check_ptr}(
         //   not grounded => go to JUMP's counter==4
         //   otherwise return to IDLE
         if (counter == ns_jessica_body_state_duration.BIRDSWING - 1) {
-            if (stimulus_type != ns_stimulus.GROUND) {
+            if (grounded == 0) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.JUMP, 4, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             } else {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
@@ -760,13 +785,24 @@ func _body_jessica {range_check_ptr}(
             }
         }
 
-        // if counter is full => return to IDLE
+        // if counter is full => cancellable with the right actions, otherwise return to IDLE
         if (counter == ns_jessica_body_state_duration.LAUNCHED - 1) {
+            // cancellable into dash backward's first frame
+            if (intent == ns_jessica_action.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+
+            // cancellable into lowkick's ACTIVE frame
+            if (intent == ns_jessica_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.LOW_KICK, 3, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+
+            // return to IDLE otherwise
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
         }
 
         // if reach counter==5 and still in air => remain in counter==5
-        if (counter == 5 and stimulus_type != ns_stimulus.GROUND) {
+        if (counter == 5 and grounded == 0) {
             return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, counter, integrity, stamina, dir, FALSE, state_index, opponent_state_index_last_hit) );
         }
 

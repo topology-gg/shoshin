@@ -38,7 +38,8 @@ func _body_antoc {range_check_ptr}(
     let opponent_state_index_last_hit = body_state.opponent_state_index_last_hit;
 
     // Decode stimulus
-    let (stimulus_type, stimulus_damage) = unsigned_div_rem (stimulus, ns_stimulus.ENCODING);
+    let (stimulus_type, residue) = unsigned_div_rem (stimulus, ns_stimulus.ENCODING);
+    let (grounded, stimulus_damage) = unsigned_div_rem (residue, ns_stimulus.GROUND_ENCODING);
 
     // Calculate new stats and stat flag
     let updated_integrity = calculate_integrity_change (integrity, stimulus_damage);
@@ -63,7 +64,7 @@ func _body_antoc {range_check_ptr}(
         }
 
         // if reach counter==2 and still in air => remain in counter==2
-        if (counter == 2 and stimulus_type != ns_stimulus.GROUND) {
+        if (counter == 2 and grounded == 0) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KO, counter, updated_integrity, updated_stamina, dir, is_fatigued, state_index, opponent_state_index_last_hit) );
         }
 
@@ -309,7 +310,7 @@ func _body_antoc {range_check_ptr}(
 
     //
     // Knocked
-    // note: interruptible
+    // note: hurtable!
     //
     if (state == ns_antoc_body_state.KNOCKED) {
 
@@ -326,13 +327,24 @@ func _body_antoc {range_check_ptr}(
             }
         }
 
-        // if counter is full => return to Idle
+        // if counter is full => cancellable with the right actions, otherwise return to Idle
         if (counter == ns_antoc_body_state_duration.KNOCKED - 1) {
+            // cancellable into dash backward's first frame
+            if (intent == ns_antoc_action.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+
+            // cancellable into lowkick's ACTIVE frame
+            if (intent == ns_antoc_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 3, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+
+            // return to IDLE otherwise
             return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
         }
 
         // if reach counter==6 and still in air => remain in counter==6
-        if (counter == 6 and stimulus_type != ns_stimulus.GROUND) {
+        if (counter == 6 and grounded == 0) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.KNOCKED, counter, integrity, stamina, dir, FALSE, state_index, opponent_state_index_last_hit) );
         }
 
@@ -490,14 +502,14 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.DASH_FORWARD) {
 
         // can cancel dash into JUMP's counter==0 while grounded
-        if (enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND) {
+        if (enough_stamina == TRUE and grounded == 1) {
             if (intent == ns_antoc_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
         }
 
         // can cancel dash into DROP_SLASH's counter==2 while not grounded
-        if (enough_stamina == TRUE and stimulus_type != ns_stimulus.GROUND) {
+        if (enough_stamina == TRUE and grounded == 0) {
             if (intent == ns_antoc_action.VERT) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.DROP_SLASH, 2, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
@@ -506,7 +518,7 @@ func _body_antoc {range_check_ptr}(
         // last frame reached
         if (counter == ns_antoc_body_state_duration.DASH_FORWARD - 1) {
             // if not grounded => return to JUMP's counter==4
-            if (stimulus_type != ns_stimulus.GROUND) {
+            if (grounded == 0) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 4, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
 
@@ -528,14 +540,14 @@ func _body_antoc {range_check_ptr}(
     if (state == ns_antoc_body_state.DASH_BACKWARD) {
 
         // can cancel dash into JUMP's counter==0 while grounded
-        if (enough_stamina == TRUE and stimulus_type == ns_stimulus.GROUND) {
+        if (enough_stamina == TRUE and grounded == 1) {
             if (intent == ns_antoc_action.JUMP) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
         }
 
         // can cancel dash into DROP_SLASH's counter==2 while not grounded
-        if (enough_stamina == TRUE and stimulus_type != ns_stimulus.GROUND) {
+        if (enough_stamina == TRUE and grounded == 0) {
             if (intent == ns_antoc_action.VERT) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.DROP_SLASH, 2, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
@@ -544,7 +556,7 @@ func _body_antoc {range_check_ptr}(
         // last frame reached
         if (counter == ns_antoc_body_state_duration.DASH_BACKWARD - 1) {
             // if not grounded => return to JUMP's counter==4
-            if (stimulus_type != ns_stimulus.GROUND) {
+            if (grounded == 0) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 4, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             }
 
@@ -627,7 +639,7 @@ func _body_antoc {range_check_ptr}(
         }
 
         // if reach counter==4 and still in air => remain in counter==4
-        if (counter == 4 and stimulus_type != ns_stimulus.GROUND) {
+        if (counter == 4 and grounded == 0) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, counter, integrity, stamina, dir, FALSE, state_index, opponent_state_index_last_hit) );
         }
 
@@ -748,13 +760,24 @@ func _body_antoc {range_check_ptr}(
             }
         }
 
-        // if counter is full => return to IDLE
+        // if counter is full => cancellable with the right actions, otherwise return to IDLE
         if (counter == ns_antoc_body_state_duration.LAUNCHED - 1) {
+            // cancellable into dash backward's first frame
+            if (intent == ns_antoc_action.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+
+            // cancellable into lowkick's ACTIVE frame
+            if (intent == ns_antoc_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_antoc_body_state.LOW_KICK, 3, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+
+            // return to IDLE otherwise
             return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
         }
 
         // if reach counter==6 and still in air => remain in counter==6
-        if (counter == 6 and stimulus_type != ns_stimulus.GROUND) {
+        if (counter == 6 and grounded == 0) {
             return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, counter, integrity, stamina, dir, FALSE, state_index, opponent_state_index_last_hit) );
         }
 
@@ -783,7 +806,7 @@ func _body_antoc {range_check_ptr}(
         //   not grounded => go to JUMP's counter==4
         //   otherwise return to IDLE
         if (counter == ns_antoc_body_state_duration.DROP_SLASH - 1) {
-            if (stimulus_type != ns_stimulus.GROUND) {
+            if (grounded == 0) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.JUMP, 4, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
             } else {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.IDLE, 0, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
