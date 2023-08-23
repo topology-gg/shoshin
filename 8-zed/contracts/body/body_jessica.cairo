@@ -340,12 +340,36 @@ func _body_jessica {range_check_ptr}(
 
     //
     // Knocked
-    // note: uninterruptible
+    // note: hurtable!
     //
     if (state == ns_jessica_body_state.KNOCKED) {
 
-        // if counter is full => return to Idle
+        // interruptible by stimulus
+        if (opponent_state_index_has_progressed == 1) {
+            if (stimulus_type == ns_stimulus.HURT) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+            }
+            if (stimulus_type == ns_stimulus.KNOCKED) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+            }
+            if (stimulus_type == ns_stimulus.LAUNCHED) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+            }
+        }
+
+        // if counter is full => cancellable with the right actions, otherwise return to Idle
         if (counter == ns_jessica_body_state_duration.KNOCKED - 1) {
+            // cancellable into dash backward's first frame
+            if (intent == ns_jessica_action.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+
+            // cancellable into lowkick's first frame
+            if (intent == ns_jessica_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+
+            // return to IDLE otherwise
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
         }
 
@@ -760,8 +784,19 @@ func _body_jessica {range_check_ptr}(
             }
         }
 
-        // if counter is full => return to IDLE
+        // if counter is full => cancellable with the right actions, otherwise return to IDLE
         if (counter == ns_jessica_body_state_duration.LAUNCHED - 1) {
+            // cancellable into dash backward's first frame
+            if (intent == ns_jessica_action.DASH_BACKWARD) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.DASH_BACKWARD, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+
+            // cancellable into lowkick's first frame
+            if (intent == ns_jessica_action.LOW_KICK) {
+                return ( body_state_nxt = BodyState(ns_jessica_body_state.LOW_KICK, 0, integrity, updated_stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
+            }
+
+            // return to IDLE otherwise
             return ( body_state_nxt = BodyState(ns_jessica_body_state.IDLE, 0, integrity, stamina, dir, FALSE, state_index+1, opponent_state_index_last_hit) );
         }
 
