@@ -1,6 +1,7 @@
 import React, {
     ForwardedRef,
     ReactNode,
+    SyntheticEvent,
     useContext,
     useEffect,
     useRef,
@@ -79,6 +80,7 @@ import useAnimationControls, {
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import { ShoshinWASMContext } from '../../context/wasm-shoshin';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -215,6 +217,7 @@ interface SimulationProps {
 
 enum PointOfView {
     SPECTATOR,
+    ANALYSIS,
     PLAYER_1,
     PLAYER_2,
 }
@@ -314,12 +317,8 @@ const SpectatorScene = React.forwardRef(
             }
         };
 
-        const handleKeyPres2 = (ev: React.KeyboardEvent<HTMLDivElement>) => {
-            const key = ev.key.toUpperCase();
-
-            console.log('keybord event', key);
-            if (key.includes(' ') && !(p1 == null || p2 == null)) {
-                ev.preventDefault();
+        const handleOverlayPress = () => {
+            if (round == 0 && pointOfView == PointOfView.SPECTATOR) {
                 handleMidScreenControlClick('ToggleRun');
             }
         };
@@ -520,7 +519,11 @@ const SpectatorScene = React.forwardRef(
                 const livePerRound = getLivesPerRound(outputs);
                 setLives(livePerRound[round]);
 
-                if (fullReplay) {
+                if (
+                    fullReplay &&
+                    livePerRound[round][0] > 0 &&
+                    livePerRound[round][1] > 0
+                ) {
                     setTimeout(() => {
                         nextRound();
                     }, 5000);
@@ -602,16 +605,16 @@ const SpectatorScene = React.forwardRef(
             !playedWinningReplay &&
             beatAgent;
 
-        const overlayContainerClassName =
-            pointOfView == PointOfView.SPECTATOR
-                ? spectatorSceneStyles.overlayContainer
-                : '';
+        const isObserver =
+            pointOfView == PointOfView.SPECTATOR ||
+            pointOfView == PointOfView.ANALYSIS;
+
+        const overlayContainerClassName = isObserver
+            ? spectatorSceneStyles.overlayContainer
+            : '';
 
         //Having this class be conditional on playOnly may not be needed
-        const overlayClassName =
-            pointOfView == PointOfView.SPECTATOR
-                ? spectatorSceneStyles.overlay
-                : '';
+        const overlayClassName = isObserver ? spectatorSceneStyles.overlay : '';
 
         let playerOneName = null;
 
@@ -655,7 +658,8 @@ const SpectatorScene = React.forwardRef(
         const roundButtons = Array.from({ length: bestOf }, (_, index) => {
             const livesPerRound = getLivesPerRound(outputs);
 
-            const handleRoundOneClick = () => {
+            const handleRoundOneClick = (e: SyntheticEvent) => {
+                e.preventDefault();
                 if (index == 0) {
                     setLives([2, 2]);
                 } else {
@@ -686,18 +690,30 @@ const SpectatorScene = React.forwardRef(
         });
 
         const [isHovered, setIsHovered] = useState(false);
+        const [isTimelineHovered, setIsTimelineHovered] = useState(false);
 
-        const handleMouseEnter = () => {
-            setIsHovered(true);
+        const handleMouseEnter = (isTimeline = false) => {
+            if (isTimeline) {
+                setIsTimelineHovered(true);
+            } else {
+                setIsHovered(true);
+            }
         };
 
-        const handleMouseLeave = () => {
-            setIsHovered(false);
+        const handleMouseLeave = (isTimeline = false) => {
+            if (isTimeline) {
+                setIsTimelineHovered(false);
+            } else {
+                setIsHovered(false);
+            }
         };
 
         const hoveredClass =
-            isHovered && pointOfView == PointOfView.SPECTATOR
-                ? spectatorSceneStyles.optionsHover
+            isHovered && isObserver ? spectatorSceneStyles.optionsHover : '';
+
+        const midscreenClassnames =
+            isTimelineHovered && pointOfView == PointOfView.ANALYSIS
+                ? spectatorSceneStyles.timeline
                 : '';
 
         return (
@@ -706,10 +722,7 @@ const SpectatorScene = React.forwardRef(
                     <LoadingFull />
                 </Fade>
                 <FullArtBackground useAlt={true}>
-                    <div
-                        className={styles.container}
-                        onKeyDown={handleKeyPres2}
-                    >
+                    <div className={styles.container}>
                         <div className={styles.main}>
                             {openPauseMenu ? pauseMenu : null}
                             <Grid container spacing={{ md: 2 }}>
@@ -725,20 +738,42 @@ const SpectatorScene = React.forwardRef(
                                             className={
                                                 overlayContainerClassName
                                             }
+                                            onClick={handleOverlayPress}
                                         >
                                             <div className={overlayClassName}>
+                                                <div
+                                                    onMouseEnter={() =>
+                                                        handleMouseEnter(true)
+                                                    }
+                                                    onMouseLeave={() =>
+                                                        handleMouseLeave(true)
+                                                    }
+                                                >
+                                                    {!isTimelineHovered &&
+                                                        pointOfView ==
+                                                            PointOfView.ANALYSIS && (
+                                                            <Box
+                                                                className={
+                                                                    spectatorSceneStyles.timelineHover
+                                                                }
+                                                            >
+                                                                <Button variant="text">
+                                                                    <ArrowDropUpIcon />
+                                                                </Button>
+                                                            </Box>
+                                                        )}
+                                                </div>
                                                 <Box display={'flex'}>
                                                     <div
-                                                        onMouseEnter={
-                                                            handleMouseEnter
+                                                        onMouseEnter={() =>
+                                                            handleMouseEnter()
                                                         }
-                                                        onMouseLeave={
-                                                            handleMouseLeave
+                                                        onMouseLeave={() =>
+                                                            handleMouseLeave()
                                                         }
                                                     >
                                                         {!isHovered &&
-                                                            pointOfView ==
-                                                                PointOfView.SPECTATOR && (
+                                                            isObserver && (
                                                                 <Box
                                                                     className={
                                                                         spectatorSceneStyles.optionsHover
@@ -749,133 +784,151 @@ const SpectatorScene = React.forwardRef(
                                                                     </Button>
                                                                 </Box>
                                                             )}
-                                                        {(isHovered ||
-                                                            pointOfView !==
-                                                                PointOfView.SPECTATOR) && (
-                                                            <Box
-                                                                display={'flex'}
-                                                                className={
-                                                                    hoveredClass
-                                                                }
-                                                            >
+
+                                                        {isHovered &&
+                                                            isObserver && (
                                                                 <Box
                                                                     display={
                                                                         'flex'
                                                                     }
-                                                                    flexDirection={
-                                                                        'column'
-                                                                    }
-                                                                    alignContent={
-                                                                        'left'
-                                                                    }
-                                                                    marginRight={
-                                                                        '20px'
+                                                                    className={
+                                                                        hoveredClass
                                                                     }
                                                                 >
-                                                                    <Typography>
-                                                                        Point of
-                                                                        View
-                                                                    </Typography>
-                                                                    <ButtonGroup
-                                                                        variant="contained"
-                                                                        aria-label="outlined primary button group"
+                                                                    <Box
+                                                                        display={
+                                                                            'flex'
+                                                                        }
+                                                                        flexDirection={
+                                                                            'column'
+                                                                        }
+                                                                        alignContent={
+                                                                            'left'
+                                                                        }
+                                                                        marginRight={
+                                                                            '20px'
+                                                                        }
                                                                     >
-                                                                        <Button
-                                                                            variant={
-                                                                                pointOfView ==
-                                                                                PointOfView.SPECTATOR
-                                                                                    ? 'contained'
-                                                                                    : 'outlined'
-                                                                            }
-                                                                            onClick={() =>
-                                                                                setPointOfView(
-                                                                                    PointOfView.SPECTATOR
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            Spectator
-                                                                        </Button>
-                                                                        <Button
-                                                                            variant={
-                                                                                pointOfView ==
-                                                                                PointOfView.PLAYER_1
-                                                                                    ? 'contained'
-                                                                                    : 'outlined'
-                                                                            }
-                                                                            onClick={() =>
-                                                                                setPointOfView(
-                                                                                    PointOfView.PLAYER_1
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            Player
-                                                                            1
-                                                                        </Button>
-                                                                        <Button
-                                                                            variant={
-                                                                                pointOfView ==
-                                                                                PointOfView.PLAYER_2
-                                                                                    ? 'contained'
-                                                                                    : 'outlined'
-                                                                            }
-                                                                            onClick={() =>
-                                                                                setPointOfView(
-                                                                                    PointOfView.PLAYER_2
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            Player
-                                                                            2
-                                                                        </Button>
-                                                                    </ButtonGroup>
-                                                                </Box>
-                                                                <Box
-                                                                    display={
-                                                                        'flex'
-                                                                    }
-                                                                    flexDirection={
-                                                                        'column'
-                                                                    }
-                                                                    alignContent={
-                                                                        'left'
-                                                                    }
-                                                                    marginRight={
-                                                                        '20px'
-                                                                    }
-                                                                >
-                                                                    <Typography>
-                                                                        Play
-                                                                    </Typography>
-                                                                    <Box>
-                                                                        <Button
-                                                                            variant={
-                                                                                fullReplay
-                                                                                    ? 'contained'
-                                                                                    : 'outlined'
-                                                                            }
-                                                                            onClick={
-                                                                                handleFullReplayClick
-                                                                            }
-                                                                            sx={{
-                                                                                marginRight:
-                                                                                    '10px',
-                                                                            }}
-                                                                        >
-                                                                            Full
-                                                                            Match
-                                                                        </Button>
+                                                                        <Typography>
+                                                                            Point
+                                                                            of
+                                                                            View
+                                                                        </Typography>
                                                                         <ButtonGroup
                                                                             variant="contained"
                                                                             aria-label="outlined primary button group"
                                                                         >
-                                                                            {
-                                                                                roundButtons
-                                                                            }
+                                                                            <Button
+                                                                                variant={
+                                                                                    pointOfView ==
+                                                                                    PointOfView.SPECTATOR
+                                                                                        ? 'contained'
+                                                                                        : 'outlined'
+                                                                                }
+                                                                                onClick={() =>
+                                                                                    setPointOfView(
+                                                                                        PointOfView.SPECTATOR
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                Spectator
+                                                                            </Button>
+                                                                            <Button
+                                                                                variant={
+                                                                                    pointOfView ==
+                                                                                    PointOfView.ANALYSIS
+                                                                                        ? 'contained'
+                                                                                        : 'outlined'
+                                                                                }
+                                                                                onClick={() =>
+                                                                                    setPointOfView(
+                                                                                        PointOfView.ANALYSIS
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                Analysis
+                                                                            </Button>
+                                                                            <Button
+                                                                                variant={
+                                                                                    pointOfView ==
+                                                                                    PointOfView.PLAYER_1
+                                                                                        ? 'contained'
+                                                                                        : 'outlined'
+                                                                                }
+                                                                                onClick={() =>
+                                                                                    setPointOfView(
+                                                                                        PointOfView.PLAYER_1
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                Player
+                                                                                1
+                                                                            </Button>
+                                                                            <Button
+                                                                                variant={
+                                                                                    pointOfView ==
+                                                                                    PointOfView.PLAYER_2
+                                                                                        ? 'contained'
+                                                                                        : 'outlined'
+                                                                                }
+                                                                                onClick={() =>
+                                                                                    setPointOfView(
+                                                                                        PointOfView.PLAYER_2
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                Player
+                                                                                2
+                                                                            </Button>
                                                                         </ButtonGroup>
                                                                     </Box>
+                                                                    <Box
+                                                                        display={
+                                                                            'flex'
+                                                                        }
+                                                                        flexDirection={
+                                                                            'column'
+                                                                        }
+                                                                        alignContent={
+                                                                            'left'
+                                                                        }
+                                                                        marginRight={
+                                                                            '20px'
+                                                                        }
+                                                                    >
+                                                                        <Typography>
+                                                                            Play
+                                                                        </Typography>
+                                                                        <Box>
+                                                                            <Button
+                                                                                variant={
+                                                                                    fullReplay
+                                                                                        ? 'contained'
+                                                                                        : 'outlined'
+                                                                                }
+                                                                                onClick={
+                                                                                    handleFullReplayClick
+                                                                                }
+                                                                                sx={{
+                                                                                    marginRight:
+                                                                                        '10px',
+                                                                                }}
+                                                                            >
+                                                                                Full
+                                                                                Match
+                                                                            </Button>
+                                                                            <ButtonGroup
+                                                                                variant="contained"
+                                                                                aria-label="outlined primary button group"
+                                                                            >
+                                                                                {
+                                                                                    roundButtons
+                                                                                }
+                                                                            </ButtonGroup>
+                                                                        </Box>
+                                                                    </Box>
                                                                 </Box>
-                                                            </Box>
-                                                        )}
+                                                            )}
                                                     </div>
                                                 </Box>
                                                 <Box
@@ -958,51 +1011,64 @@ const SpectatorScene = React.forwardRef(
                                                 style={{ height: '400px' }}
                                             ></div>
                                         ) : null}
-                                        <MidScreenControl
-                                            reSimulationNeeded={
-                                                reSimulationNeeded
+                                        <Box
+                                            className={midscreenClassnames}
+                                            onMouseLeave={() =>
+                                                handleMouseLeave(true)
                                             }
-                                            unsetResimulationNeeded={() =>
-                                                setReSimulationNeeded(
-                                                    (_) => false
-                                                )
-                                            }
-                                            runnable={
-                                                !(p1 == null || p2 == null) &&
-                                                !playOnly
-                                            }
-                                            playOnly={playOnly}
-                                            testJsonAvailable={
-                                                testJson ? true : false
-                                            }
-                                            testJson={testJson}
-                                            animationFrame={animationFrame}
-                                            n_cycles={N_FRAMES}
-                                            animationState={animationState}
-                                            handleClick={
-                                                handleMidScreenControlClick
-                                            }
-                                            handleSlideChange={(evt) => {
-                                                if (
-                                                    animationState ==
-                                                    AnimationState.RUN
-                                                )
-                                                    return;
-                                                const slide_val: number =
-                                                    parseInt(evt.target.value);
-                                                setAnimationFrame(slide_val);
-                                            }}
-                                            checkedShowDebugInfo={
-                                                checkedShowDebugInfo
-                                            }
-                                            handleChangeDebugInfo={() =>
-                                                setCheckedShowDebugInfo(
-                                                    (_) => !checkedShowDebugInfo
-                                                )
-                                            }
-                                            player={player}
-                                            isPreview={isPreview}
-                                        />
+                                        >
+                                            <MidScreenControl
+                                                reSimulationNeeded={
+                                                    reSimulationNeeded
+                                                }
+                                                unsetResimulationNeeded={() =>
+                                                    setReSimulationNeeded(
+                                                        (_) => false
+                                                    )
+                                                }
+                                                runnable={
+                                                    !(
+                                                        p1 == null || p2 == null
+                                                    ) && !playOnly
+                                                }
+                                                playOnly={playOnly}
+                                                testJsonAvailable={
+                                                    testJson ? true : false
+                                                }
+                                                testJson={testJson}
+                                                animationFrame={animationFrame}
+                                                n_cycles={N_FRAMES}
+                                                animationState={animationState}
+                                                handleClick={
+                                                    handleMidScreenControlClick
+                                                }
+                                                handleSlideChange={(evt) => {
+                                                    if (
+                                                        animationState ==
+                                                        AnimationState.RUN
+                                                    )
+                                                        return;
+                                                    const slide_val: number =
+                                                        parseInt(
+                                                            evt.target.value
+                                                        );
+                                                    setAnimationFrame(
+                                                        slide_val
+                                                    );
+                                                }}
+                                                checkedShowDebugInfo={
+                                                    checkedShowDebugInfo
+                                                }
+                                                handleChangeDebugInfo={() =>
+                                                    setCheckedShowDebugInfo(
+                                                        (_) =>
+                                                            !checkedShowDebugInfo
+                                                    )
+                                                }
+                                                player={player}
+                                                isPreview={isPreview}
+                                            />
+                                        </Box>
 
                                         <Box
                                             sx={{
@@ -1094,9 +1160,7 @@ const SpectatorScene = React.forwardRef(
                                     lg={5}
                                     xl={5}
                                     visibility={
-                                        pointOfView == PointOfView.SPECTATOR
-                                            ? 'hidden'
-                                            : 'visible'
+                                        isObserver ? 'hidden' : 'visible'
                                     }
                                 >
                                     <GameCard

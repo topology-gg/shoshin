@@ -34,3 +34,22 @@
     background-color: rgba(256, 256, 256, 0.2);
     color: white;
 }
+
+.timelineHover {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(256, 256, 256, 0.2);
+    color: white;
+}
+
+.timeline {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 40rem;
+    justify-self: center;
+    z-index: 10;
+}
