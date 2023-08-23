@@ -72,11 +72,12 @@ namespace ns_stimulus {
     const HURT = 1;
     const KNOCKED = 2;
     const CLASH = 3;
-    const GROUND = 4;
+    // const GROUND = 4;
     const LAUNCHED = 5;
     const GOOD_BLOCK = 6;
 
     const ENCODING = 10000;
+    const GROUND_ENCODING = 1000;
 
     const CLASH_DAMAGE = 10;
 }
