@@ -21,6 +21,7 @@ import {
     CircularProgress,
     ButtonGroup,
     Drawer,
+    TextField,
 } from '@mui/material';
 import styles from '../../../styles/Home.module.css';
 import { FrameScene, TestJson } from '../../types/Frame';
@@ -73,7 +74,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
-import { Playable } from '../layout/SceneSelector';
+import { Playable, Spectatable } from '../layout/SceneSelector';
 import useAnimationControls, {
     AnimationState,
 } from '../../hooks/useAnimationControls';
@@ -200,10 +201,10 @@ export const calculateScoreMap = (
     return scoreMap;
 };
 
-interface SimulationProps {
-    player: OnlineOpponent;
+interface SpectatorProps {
+    player: Spectatable;
     savePlayerAgent: (playerAgent: Playable) => void;
-    opponent: OnlineOpponent;
+    opponent: Spectatable;
     onContinue: () => void;
     onQuit: () => void;
     transitionToActionReference: () => void;
@@ -239,7 +240,7 @@ const SpectatorFeatures: GambitFeatures = {
 
 //We need Players agent and opponent
 const SpectatorScene = React.forwardRef(
-    (props: SimulationProps, ref: ForwardedRef<HTMLDivElement>) => {
+    (props: SpectatorProps, ref: ForwardedRef<HTMLDivElement>) => {
         const {
             player,
             savePlayerAgent,
@@ -390,15 +391,25 @@ const SpectatorScene = React.forwardRef(
 
         const ctx = useContext(ShoshinWASMContext);
 
+        const [seed, setSeed] = useState<number>(
+            Math.floor(Math.random() * 1000)
+        );
+
+        const handleSeedChange = (event) => {
+            const newSeed = parseInt(event.target.value);
+            if (/^\d*$/.test(newSeed)) {
+                setSeed(newSeed);
+            }
+        };
+
         useEffect(() => {
             if (phaserLoaded && outputs.length < bestOf) {
                 let outputs = [];
 
-                let randSeed = Math.random() * 100;
                 for (let i = 0; i < bestOf; i++) {
                     const [output, err] = runCairoSimulation(
-                        { ...p1, seed: randSeed + i },
-                        { ...p2, seed: randSeed + i },
+                        { ...p1, seed: seed + i },
+                        { ...p2, seed: seed + i },
                         ctx
                     );
                     outputs.push(output);
@@ -785,150 +796,156 @@ const SpectatorScene = React.forwardRef(
                                                                 </Box>
                                                             )}
 
-                                                        {isHovered &&
-                                                            isObserver && (
+                                                        {(isHovered ||
+                                                            !isObserver) && (
+                                                            <Box
+                                                                display={'flex'}
+                                                                className={
+                                                                    hoveredClass
+                                                                }
+                                                            >
+                                                                <TextField
+                                                                    label="Seed"
+                                                                    value={seed}
+                                                                    onChange={
+                                                                        handleSeedChange
+                                                                    }
+                                                                    type="number"
+                                                                    variant="outlined"
+                                                                />
                                                                 <Box
                                                                     display={
                                                                         'flex'
                                                                     }
-                                                                    className={
-                                                                        hoveredClass
+                                                                    flexDirection={
+                                                                        'column'
+                                                                    }
+                                                                    alignContent={
+                                                                        'left'
+                                                                    }
+                                                                    marginRight={
+                                                                        '20px'
                                                                     }
                                                                 >
-                                                                    <Box
-                                                                        display={
-                                                                            'flex'
-                                                                        }
-                                                                        flexDirection={
-                                                                            'column'
-                                                                        }
-                                                                        alignContent={
-                                                                            'left'
-                                                                        }
-                                                                        marginRight={
-                                                                            '20px'
-                                                                        }
+                                                                    <Typography>
+                                                                        Point of
+                                                                        View
+                                                                    </Typography>
+                                                                    <ButtonGroup
+                                                                        variant="contained"
+                                                                        aria-label="outlined primary button group"
                                                                     >
-                                                                        <Typography>
-                                                                            Point
-                                                                            of
-                                                                            View
-                                                                        </Typography>
+                                                                        <Button
+                                                                            variant={
+                                                                                pointOfView ==
+                                                                                PointOfView.SPECTATOR
+                                                                                    ? 'contained'
+                                                                                    : 'outlined'
+                                                                            }
+                                                                            onClick={() =>
+                                                                                setPointOfView(
+                                                                                    PointOfView.SPECTATOR
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            Spectator
+                                                                        </Button>
+                                                                        <Button
+                                                                            variant={
+                                                                                pointOfView ==
+                                                                                PointOfView.ANALYSIS
+                                                                                    ? 'contained'
+                                                                                    : 'outlined'
+                                                                            }
+                                                                            onClick={() =>
+                                                                                setPointOfView(
+                                                                                    PointOfView.ANALYSIS
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            Analysis
+                                                                        </Button>
+                                                                        <Button
+                                                                            variant={
+                                                                                pointOfView ==
+                                                                                PointOfView.PLAYER_1
+                                                                                    ? 'contained'
+                                                                                    : 'outlined'
+                                                                            }
+                                                                            onClick={() =>
+                                                                                setPointOfView(
+                                                                                    PointOfView.PLAYER_1
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            Player
+                                                                            1
+                                                                        </Button>
+                                                                        <Button
+                                                                            variant={
+                                                                                pointOfView ==
+                                                                                PointOfView.PLAYER_2
+                                                                                    ? 'contained'
+                                                                                    : 'outlined'
+                                                                            }
+                                                                            onClick={() =>
+                                                                                setPointOfView(
+                                                                                    PointOfView.PLAYER_2
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            Player
+                                                                            2
+                                                                        </Button>
+                                                                    </ButtonGroup>
+                                                                </Box>
+                                                                <Box
+                                                                    display={
+                                                                        'flex'
+                                                                    }
+                                                                    flexDirection={
+                                                                        'column'
+                                                                    }
+                                                                    alignContent={
+                                                                        'left'
+                                                                    }
+                                                                    marginRight={
+                                                                        '20px'
+                                                                    }
+                                                                >
+                                                                    <Typography>
+                                                                        Play
+                                                                    </Typography>
+                                                                    <Box>
+                                                                        <Button
+                                                                            variant={
+                                                                                fullReplay
+                                                                                    ? 'contained'
+                                                                                    : 'outlined'
+                                                                            }
+                                                                            onClick={
+                                                                                handleFullReplayClick
+                                                                            }
+                                                                            sx={{
+                                                                                marginRight:
+                                                                                    '10px',
+                                                                            }}
+                                                                        >
+                                                                            Full
+                                                                            Match
+                                                                        </Button>
                                                                         <ButtonGroup
                                                                             variant="contained"
                                                                             aria-label="outlined primary button group"
                                                                         >
-                                                                            <Button
-                                                                                variant={
-                                                                                    pointOfView ==
-                                                                                    PointOfView.SPECTATOR
-                                                                                        ? 'contained'
-                                                                                        : 'outlined'
-                                                                                }
-                                                                                onClick={() =>
-                                                                                    setPointOfView(
-                                                                                        PointOfView.SPECTATOR
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                Spectator
-                                                                            </Button>
-                                                                            <Button
-                                                                                variant={
-                                                                                    pointOfView ==
-                                                                                    PointOfView.ANALYSIS
-                                                                                        ? 'contained'
-                                                                                        : 'outlined'
-                                                                                }
-                                                                                onClick={() =>
-                                                                                    setPointOfView(
-                                                                                        PointOfView.ANALYSIS
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                Analysis
-                                                                            </Button>
-                                                                            <Button
-                                                                                variant={
-                                                                                    pointOfView ==
-                                                                                    PointOfView.PLAYER_1
-                                                                                        ? 'contained'
-                                                                                        : 'outlined'
-                                                                                }
-                                                                                onClick={() =>
-                                                                                    setPointOfView(
-                                                                                        PointOfView.PLAYER_1
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                Player
-                                                                                1
-                                                                            </Button>
-                                                                            <Button
-                                                                                variant={
-                                                                                    pointOfView ==
-                                                                                    PointOfView.PLAYER_2
-                                                                                        ? 'contained'
-                                                                                        : 'outlined'
-                                                                                }
-                                                                                onClick={() =>
-                                                                                    setPointOfView(
-                                                                                        PointOfView.PLAYER_2
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                Player
-                                                                                2
-                                                                            </Button>
+                                                                            {
+                                                                                roundButtons
+                                                                            }
                                                                         </ButtonGroup>
                                                                     </Box>
-                                                                    <Box
-                                                                        display={
-                                                                            'flex'
-                                                                        }
-                                                                        flexDirection={
-                                                                            'column'
-                                                                        }
-                                                                        alignContent={
-                                                                            'left'
-                                                                        }
-                                                                        marginRight={
-                                                                            '20px'
-                                                                        }
-                                                                    >
-                                                                        <Typography>
-                                                                            Play
-                                                                        </Typography>
-                                                                        <Box>
-                                                                            <Button
-                                                                                variant={
-                                                                                    fullReplay
-                                                                                        ? 'contained'
-                                                                                        : 'outlined'
-                                                                                }
-                                                                                onClick={
-                                                                                    handleFullReplayClick
-                                                                                }
-                                                                                sx={{
-                                                                                    marginRight:
-                                                                                        '10px',
-                                                                                }}
-                                                                            >
-                                                                                Full
-                                                                                Match
-                                                                            </Button>
-                                                                            <ButtonGroup
-                                                                                variant="contained"
-                                                                                aria-label="outlined primary button group"
-                                                                            >
-                                                                                {
-                                                                                    roundButtons
-                                                                                }
-                                                                            </ButtonGroup>
-                                                                        </Box>
-                                                                    </Box>
                                                                 </Box>
-                                                            )}
+                                                            </Box>
+                                                        )}
                                                     </div>
                                                 </Box>
                                                 <Box

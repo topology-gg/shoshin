@@ -91,6 +91,7 @@ const defaultOpponent: Opponent = {
 };
 
 export type Playable = SavedMind | OnlineOpponent | PlayerAgent;
+export type Spectatable = SavedMind | OnlineOpponent;
 
 const ShowFullReplayStorageKey = 'showFullReplay';
 const CompletedTutorialStorageKey = 'CompletedTutorial';
@@ -510,10 +511,15 @@ const SceneSelector = () => {
     const transitionFromOnlineMenu = (
         playerOneMind: SavedMind | OnlineOpponent,
         opponent: OnlineOpponent,
-        format: MatchFormat
+        isSpectate: boolean
     ) => {
         setOnlineMode(true);
-        setScene(Scenes.SPECTATE);
+        if (isSpectate == true) {
+            setScene(Scenes.SPECTATE);
+        } else {
+            setScene(Scenes.MAIN_SCENE);
+        }
+
         pauseMusic();
         setPlayerAgent(playerOneMind);
         setOnlineOpponentChoice(opponent);
@@ -652,9 +658,8 @@ const SceneSelector = () => {
             <SceneSingle active={scene === Scenes.SPECTATE}>
                 <SpectatorScene
                     savePlayerAgent={savePlayerAgent}
-                    player={playerAgent}
-                    opponent={opponent}
-                    submitWin={handleWin}
+                    player={playerAgent as Spectatable}
+                    opponent={opponent as Spectatable}
                     onContinue={handleContinue}
                     onQuit={handleQuit}
                     transitionToActionReference={transitionToActionReference}

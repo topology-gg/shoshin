@@ -64,9 +64,6 @@ const PreviewAgainstDialogue = ({
 
         dialogContent = (
             <Box>
-                <ShoshinMenuButton onClick={handleSingleFormatClick}>
-                    Single Fight
-                </ShoshinMenuButton>
                 <ShoshinMenuButton onClick={handleBestOfThreeFormatClick}>
                     Best of 3
                 </ShoshinMenuButton>
@@ -76,28 +73,7 @@ const PreviewAgainstDialogue = ({
     } else if (stage == PreviewAgainstStages.Select) {
         dialogTitle = 'Choose Opponent';
         dialogContent = (
-            <Box>
-                <CombinedMindList
-                    savedMinds={savedMinds}
-                    chooseMind={selectMind}
-                />
-                <Box display={'flex'}>
-                    <ShoshinMenuButton
-                        sx={{ width: 150 }}
-                        onClick={() => close()}
-                    >
-                        Cancel
-                    </ShoshinMenuButton>
-                    <ShoshinMenuButton
-                        isAlt
-                        sx={{ width: 175 }}
-                        disabled={selectedMind === undefined}
-                        onClick={() => setStage(PreviewAgainstStages.Preview)}
-                    >
-                        Next
-                    </ShoshinMenuButton>
-                </Box>
-            </Box>
+            <CombinedMindList savedMinds={savedMinds} chooseMind={selectMind} />
         );
 
         dialogeButtons = (
