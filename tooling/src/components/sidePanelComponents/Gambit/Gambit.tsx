@@ -384,9 +384,12 @@ export const LayerComponent = ({
         ? actionIndexToAction(Rest.id, characterIndex)
         : actionIndexToAction(layer.actionAlternative.id, characterIndex);
 
+    const randomnessEnabled =
+        typeof layer.probability === 'number' && layer.probability != 0;
+
     const actionButton = (
         <div style={{ height: '2rem' }}>
-            {features.actionRandomness && layer.probability != 0 && (
+            {features.actionRandomness && randomnessEnabled && (
                 <button
                     className={`${styles.gambitLeftHalfButton} ${styles.probabilityButton}`}
                     onClick={(evt) => handleActionProbClick(evt, false)}
@@ -397,7 +400,7 @@ export const LayerComponent = ({
 
             <BlurrableButton
                 className={`${
-                    features.actionRandomness && layer.probability != 0
+                    features.actionRandomness && randomnessEnabled
                         ? styles.gambitRightHalfButton
                         : styles.gambitButton
                 } ${styles.actionButton}`}
@@ -423,7 +426,7 @@ export const LayerComponent = ({
             </button>
             <BlurrableButton
                 className={`${
-                    features.actionRandomness && layer.probability != 0
+                    features.actionRandomness && randomnessEnabled
                         ? styles.gambitRightHalfButton
                         : styles.gambitButton
                 } ${styles.actionButton}`}
@@ -577,7 +580,7 @@ export const LayerComponent = ({
                         {actionButton}
 
                         {features.actionRandomness &&
-                            layer.probability != 0 &&
+                            randomnessEnabled &&
                             actionAlternativeButton}
                     </Box>
                 </Grid>
@@ -744,7 +747,7 @@ export const LayerComponent = ({
                                             : 0
                                     );
                                 }}
-                                checked={layer.probability != 0}
+                                checked={randomnessEnabled}
                                 sx={switchSx('MIX', rndFontColor)}
                             />
                         )}
