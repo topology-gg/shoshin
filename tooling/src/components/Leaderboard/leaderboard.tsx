@@ -1,6 +1,9 @@
 import {
     Box,
     CircularProgress,
+    Dialog,
+    DialogContent,
+    DialogTitle,
     Paper,
     Table,
     TableBody,
@@ -13,6 +16,8 @@ import {
 import { useGetScoresForOpponents } from '../../../lib/api';
 import { SinglePlayerScore } from '../ChooseOpponent/ScoreDisplay';
 import { Character } from '../../constants/constants';
+import React from 'react';
+import ScoreDetail from './ScoreDetail';
 
 interface LeaderboardProps {
     opponents: number[];
@@ -115,6 +120,7 @@ const Leaderboard = ({ opponents }: LeaderboardProps) => {
                     key={index}
                     hover={true}
                     style={{ cursor: 'pointer' }}
+                    onClick={() => handleScoreClick(index)}
                 >
                     <TableCell sx={{ ...tableCellSx, textAlign: 'center' }}>
                         {index + 1}
@@ -138,30 +144,55 @@ const Leaderboard = ({ opponents }: LeaderboardProps) => {
         }
     );
 
+    const [openSelectScore, setOpenSelectScore] = React.useState(false);
+    const [selectedScore, setSelectedScore] = React.useState<number>(0);
+
+    const handleScoreClick = (index: number) => {
+        setSelectedScore(index);
+        setOpenSelectScore(true);
+    };
     return (
-        <TableContainer sx={{ overflowX: 'initial' }} component={Paper}>
-            <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell sx={tableCellSx}>Rank</TableCell>
-                        <TableCell sx={tableCellSx}>Total Score</TableCell>
-                        <TableCell sx={tableCellSx}>Character</TableCell>
-                        <TableCell sx={tableCellSx}>Player</TableCell>
-                    </TableRow>
-                </TableHead>
-                {data?.scores == undefined ? (
-                    <TableBody>
+        <Box>
+            <Dialog
+                open={openSelectScore}
+                onClose={() => setOpenSelectScore(false)}
+                fullWidth={true}
+                maxWidth={'lg'}
+            >
+                <DialogTitle>
+                    {sortedScores.length
+                        ? sortedScores[selectedScore].playerAddress
+                        : ''}
+                </DialogTitle>
+                <DialogContent>
+                    <ScoreDetail score={sortedScores[selectedScore]} />
+                </DialogContent>
+            </Dialog>
+
+            <TableContainer sx={{ overflowX: 'initial' }} component={Paper}>
+                <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
                         <TableRow>
-                            <TableCell colSpan={4} align="center">
-                                <CircularProgress />
-                            </TableCell>
+                            <TableCell sx={tableCellSx}>Rank</TableCell>
+                            <TableCell sx={tableCellSx}>Total Score</TableCell>
+                            <TableCell sx={tableCellSx}>Character</TableCell>
+                            <TableCell sx={tableCellSx}>Player</TableCell>
                         </TableRow>
-                    </TableBody>
-                ) : (
-                    <TableBody>{scoreRows}</TableBody>
-                )}
-            </Table>
-        </TableContainer>
+                    </TableHead>
+                    {data?.scores == undefined ? (
+                        <TableBody>
+                            <TableRow>
+                                <TableCell colSpan={4} align="center">
+                                    <CircularProgress />
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    ) : (
+                        <TableBody>{scoreRows}</TableBody>
+                    )}
+                </Table>
+            </TableContainer>
+        </Box>
     );
 };
 

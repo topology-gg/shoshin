@@ -101,3 +101,7 @@ export function useSubmitCampaignMind(index, mind, address) {
         submitCampaignMindRequest(`/api/campaign/${index}`, reqBody)
     );
 }
+
+export function useGetMindFromId(id) {
+    return useSWR(`/api/minds/id?id=${id}`, fetcher);
+}
