@@ -53,12 +53,14 @@ export const Scenes = {
     ACTION_REFERENCE: 'action_reference',
     ONLINE_MENU: 'online_menu',
     MINDS: 'minds',
+    LEADERBOARD: 'leaderboard',
 } as const;
 import {
     track_character_select,
     track_scene_change,
     track_beat_opponent,
 } from '../../helpers/track';
+import LeadboardScene from '../Leaderboard/LeaderboardScene';
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
 
@@ -678,6 +680,9 @@ const SceneSelector = () => {
                     transitionToPreview={transitionToPreview}
                     transitionBack={() => onTransition(Scenes.MAIN_MENU)}
                 />
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.LEADERBOARD}>
+                <LeadboardScene />
             </SceneSingle>
         </Box>
     );

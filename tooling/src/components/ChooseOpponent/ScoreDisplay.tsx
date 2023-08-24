@@ -14,7 +14,7 @@ import CardSimple from '../ui/CardSimple';
 import { EMPTY_JESSICA } from '../../constants/starter_agent';
 import { PlayerAgent } from '../../types/Agent';
 import { Character, JESSICA, ScoreMap } from '../../constants/constants';
-import { useGetScoresForOpponent } from '../../../lib/api';
+import { useGetScoresForOpponents } from '../../../lib/api';
 import { useAccount } from '@starknet-react/core';
 
 interface ScoreDisplayProps {
@@ -29,7 +29,7 @@ export interface SinglePlayerScore {
     opponentIndex: number;
 }
 const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
-    const { data: data } = useGetScoresForOpponent(opponentIndex);
+    const { data: data } = useGetScoresForOpponents([opponentIndex], 20);
     const scores = data?.scores ? data.scores : [];
 
     const tableCellSx = {
