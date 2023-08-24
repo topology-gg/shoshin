@@ -36,13 +36,17 @@ import ConditionsMenu from './ConditionsMenu';
 let currentMenu = 0;
 let currentConditionMenu = 0;
 
-let gridOrderPortion = 1.3;
-let gridConditionPortionXl = 4;
-let gridConditionPortionMd = 4;
-let gridActionPortion = 3.6;
-let suiCheckboxPortion = 1.1;
-let randCheckboxPortion = 1.1;
-let gridRemovePortion = 0.9;
+let gridOrderPortion = 1.2;
+let gridConditionPortionXl = 4.4;
+let gridConditionPortionMd = 4.4;
+let gridActionPortion = 4.4;
+let suiCheckboxPortion = 1;
+let randCheckboxPortion = 1;
+let checkboxPortion = 1.2;
+let gridRemovePortion = 0.8;
+
+const suiFontColor = '#003892';
+const rndFontColor = '#920000';
 
 const actionIndexToAction = (
     action: number,
@@ -238,6 +242,12 @@ export const LayerComponent = ({
     const [alternativeActionAnchorEl, setAlternativeActionAnchorEl] =
         useState<null | HTMLElement>(null);
 
+    const [actionProbAnchorEl, setActionProbAnchorEl] =
+        useState<null | HTMLElement>(null);
+
+    const [alternativeActionProbAnchorEl, setAlternativeActionProbAnchorEl] =
+        useState<null | HTMLElement>(null);
+
     const [conditionAnchorEl, setConditionAnchorEl] =
         useState<null | HTMLElement>(null);
 
@@ -251,7 +261,8 @@ export const LayerComponent = ({
 
     const actionOpen = Boolean(actionAnchorEl);
     const altActionOpen = Boolean(alternativeActionAnchorEl);
-
+    const actionProbOpen = Boolean(actionProbAnchorEl);
+    const altActionProbOpen = Boolean(alternativeActionProbAnchorEl);
     const conditionsOpen = Boolean(conditionAnchorEl);
 
     let actionsDisplayNames = actions.map((a) => a.display.name);
@@ -278,6 +289,18 @@ export const LayerComponent = ({
         setAlternativeActionAnchorEl(null);
     };
 
+    const onActionProbSelect = (prob: number, isAlt: boolean) => {
+        const probNormalized = prob / 10;
+        console.log('probNormalized', probNormalized);
+        if (!isAlt) {
+            setLayerProbability(i, probNormalized);
+            setActionProbAnchorEl(null);
+        } else {
+            setLayerProbability(i, 10 - probNormalized);
+            setAlternativeActionProbAnchorEl(null);
+        }
+    };
+
     const onConditionSelect = (condition: Condition) => {
         handleChooseCondition(condition, conditionIndex);
         setActionAnchorEl(null);
@@ -295,6 +318,20 @@ export const LayerComponent = ({
             setActionAnchorEl(event.currentTarget);
         } else {
             setAlternativeActionAnchorEl(event.currentTarget);
+        }
+    };
+
+    const handleActionProbClick = (
+        event: React.MouseEvent<HTMLButtonElement>,
+        isAlt: boolean
+    ) => {
+        let id = event.currentTarget.id.split('-');
+        let menuIndex = parseInt(id[id.length - 1]);
+        if (!isAlt) {
+            currentMenu = menuIndex;
+            setActionProbAnchorEl(event.currentTarget);
+        } else {
+            setAlternativeActionProbAnchorEl(event.currentTarget);
         }
     };
 
@@ -326,6 +363,14 @@ export const LayerComponent = ({
         }
     };
 
+    const handleCloseActionProbDropdown = (isAlt: boolean) => {
+        if (!isAlt) {
+            setActionProbAnchorEl(null);
+        } else {
+            setAlternativeActionProbAnchorEl(null);
+        }
+    };
+
     const handleCloseConditionDropdown = () => {
         setConditionAnchorEl(null);
     };
@@ -339,6 +384,96 @@ export const LayerComponent = ({
         ? actionIndexToAction(Rest.id, characterIndex)
         : actionIndexToAction(layer.actionAlternative.id, characterIndex);
 
+    const randomnessEnabled =
+        typeof layer.probability === 'number' && layer.probability != 0;
+
+    const actionButton = (
+        <div style={{ height: '2rem' }}>
+            {features.actionRandomness && randomnessEnabled && (
+                <button
+                    className={`${styles.gambitLeftHalfButton} ${styles.probabilityButton}`}
+                    onClick={(evt) => handleActionProbClick(evt, false)}
+                >
+                    {`${layer.probability * 10}%`}
+                </button>
+            )}
+
+            <BlurrableButton
+                className={`${
+                    features.actionRandomness && randomnessEnabled
+                        ? styles.gambitRightHalfButton
+                        : styles.gambitButton
+                } ${styles.actionButton}`}
+                key={`action-button-${i}`}
+                id={`condition-btn-${i}`}
+                onClick={(evt) => handleActionClick(evt, false)}
+            >
+                {/* <span style={{ marginRight: '7px' }}>
+                    {action.display.unicode}
+                </span>{' '} */}
+                {action.display.name}
+            </BlurrableButton>
+        </div>
+    );
+
+    const actionAlternativeButton = (
+        <div style={{ height: '2rem', marginTop: '6px' }}>
+            <button
+                className={`${styles.gambitLeftHalfButton} ${styles.probabilityButton}`}
+                onClick={(evt) => handleActionProbClick(evt, true)}
+            >
+                {`${(10 - layer.probability) * 10}%`}
+            </button>
+            <BlurrableButton
+                className={`${
+                    features.actionRandomness && randomnessEnabled
+                        ? styles.gambitRightHalfButton
+                        : styles.gambitButton
+                } ${styles.actionButton}`}
+                key={`alt-action-button-${i}`}
+                id={`condition-btn-${i}`}
+                onClick={(evt) => handleActionClick(evt, true)}
+            >
+                {/* <span style={{ marginRight: '7px' }}>
+                    {altAction.display.unicode}
+                </span>{' '} */}
+                {altAction.display.name}
+            </BlurrableButton>
+        </div>
+    );
+
+    const switchSx = (text: string, activeColor: string) => {
+        return {
+            width: '50px',
+            height: '45px',
+            '& .MuiSwitch-switchBase': {
+                '&.Mui-checked': {
+                    '& .MuiSwitch-thumb': {
+                        backgroundColor: activeColor,
+                    },
+                },
+            },
+            '& .MuiSwitch-thumb': {
+                backgroundColor: '#CCCCCC',
+                width: '28px',
+                height: '28px',
+                textAlign: 'center',
+                '&:before': {
+                    content: "'" + `${text}` + "'",
+                    width: '100%',
+                    height: '100%',
+                    lineHeight: '28px',
+                    fontSize: '11px',
+                    color: 'white',
+                },
+            },
+            '& .MuiSwitch-track': {
+                height: '21px',
+                borderRadius: '14px',
+            },
+        };
+    };
+
     return (
         <Box
             key={`button-wrapper-${i}`}
@@ -348,6 +483,7 @@ export const LayerComponent = ({
                 background: isActive ? '#ffffffCC' : '00000000',
                 marginBottom: '4px',
                 borderRadius: '20px',
+                padding: '8px 0 8px 0',
             }}
         >
             <Grid container alignItems={'center'} spacing={1}>
@@ -378,38 +514,51 @@ export const LayerComponent = ({
                         flexDirection="row"
                         alignItems="center"
                         flexWrap={'wrap'}
+                        style={{ verticalAlign: 'bottom' }}
                     >
-                        {layer.conditions.map((condition, index) => (
-                            <SingleCondition
-                                key={`${i}-${index}`}
-                                condition={condition}
-                                conditionIndex={index}
-                                layerIndex={i}
-                                onClick={handleConditionClick}
-                                onRemove={
-                                    layer.conditions.length > 1 &&
-                                    handleRemoveCondition
-                                }
-                                onInvertCondition={handleInvertCondition}
-                                onValueChange={handleConditionValueChange}
-                                isReadOnly={isReadOnly}
-                            />
-                        ))}
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: '100%',
+                            }}
+                        >
+                            {layer.conditions.map((condition, index) => (
+                                <SingleCondition
+                                    key={`${i}-${index}`}
+                                    condition={condition}
+                                    conditionIndex={index}
+                                    layerIndex={i}
+                                    onClick={handleConditionClick}
+                                    onRemove={
+                                        layer.conditions.length > 1 &&
+                                        handleRemoveCondition
+                                    }
+                                    onInvertCondition={handleInvertCondition}
+                                    onValueChange={handleConditionValueChange}
+                                    isReadOnly={isReadOnly}
+                                />
+                            ))}
+                        </div>
 
-                        {features.conditionAnd &&
-                        layer.conditions.length >= 1 &&
-                        !(
-                            JSON.stringify(layer.conditions[0]) ===
-                            JSON.stringify(alwaysTrueCondition)
-                        ) ? (
-                            <IconButton
-                                onClick={handleConditionClick}
-                                id={`condition-btn-${i}-new`}
-                                style={{ color: '#000' }}
-                            >
-                                <AddIcon />
-                            </IconButton>
-                        ) : null}
+                        <div>
+                            {features.conditionAnd &&
+                            layer.conditions.length >= 1 &&
+                            !(
+                                JSON.stringify(layer.conditions[0]) ===
+                                JSON.stringify(alwaysTrueCondition)
+                            ) ? (
+                                <IconButton
+                                    onClick={handleConditionClick}
+                                    id={`condition-btn-${i}-new`}
+                                    style={{ color: '#000' }}
+                                >
+                                    <AddIcon
+                                        sx={{ width: '0.6em', height: '0.6em' }}
+                                    />
+                                </IconButton>
+                            ) : null}
+                        </div>
                     </Box>
                 </Grid>
 
@@ -428,46 +577,11 @@ export const LayerComponent = ({
                         alignItems="center"
                         flexWrap={'wrap'}
                     >
-                        <BlurrableButton
-                            className={`${styles.gambitButton} ${styles.actionButton}`}
-                            key={`action-button-${i}`}
-                            id={`condition-btn-${i}`}
-                            onClick={(evt) => handleActionClick(evt, false)}
-                            style={{
-                                fontFamily: 'Eurostile',
-                                fontSize: '15px',
-                                padding: '8px 14px',
-                                lineHeight: '9px',
-                            }}
-                        >
-                            <span style={{ marginRight: '7px' }}>
-                                {action.display.unicode}
-                            </span>{' '}
-                            {action.display.name}
-                        </BlurrableButton>
+                        {actionButton}
 
                         {features.actionRandomness &&
-                            layer.probability != 0 && (
-                                <BlurrableButton
-                                    className={`${styles.gambitButton} ${styles.actionButton}`}
-                                    key={`alt-action-button-${i}`}
-                                    id={`condition-btn-${i}`}
-                                    onClick={(evt) =>
-                                        handleActionClick(evt, true)
-                                    }
-                                    style={{
-                                        fontFamily: 'Eurostile',
-                                        fontSize: '15px',
-                                        padding: '8px 14px',
-                                        lineHeight: '9px',
-                                    }}
-                                >
-                                    <span style={{ marginRight: '7px' }}>
-                                        {altAction.display.unicode}
-                                    </span>{' '}
-                                    {altAction.display.name}
-                                </BlurrableButton>
-                            )}
+                            randomnessEnabled &&
+                            actionAlternativeButton}
                     </Box>
                 </Grid>
 
@@ -477,10 +591,17 @@ export const LayerComponent = ({
                     anchorEl={actionAnchorEl}
                     open={actionOpen}
                     onClose={(evt) => handleCloseActionDropdown(false)}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 220,
+                            width: 180,
+                            backgroundColor: '#000',
+                        },
+                    }}
                 >
                     {actionsDisplayNames.map((action) => {
                         return (
-                            <MenuItem>
+                            <MenuItem className={'styles.actionMenuItem'}>
                                 <BlurrableListItemText
                                     onClick={(e) => onActionSelect(action)}
                                 >
@@ -492,7 +613,9 @@ export const LayerComponent = ({
                                     >
                                         {ACTION_UNICODE_MAP[action]}
                                     </span>
-                                    <span>{action.replaceAll('_', ' ')}</span>
+                                    <span style={{ color: '#fff' }}>
+                                        {action.replaceAll('_', ' ')}
+                                    </span>
                                 </BlurrableListItemText>
                             </MenuItem>
                         );
@@ -505,6 +628,13 @@ export const LayerComponent = ({
                     anchorEl={alternativeActionAnchorEl}
                     open={altActionOpen}
                     onClose={(evt) => handleCloseActionDropdown(true)}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 220,
+                            width: 180,
+                            backgroundColor: '#000',
+                        },
+                    }}
                 >
                     {actionsDisplayNames.slice(0, -1).map((action) => {
                         return (
@@ -520,13 +650,110 @@ export const LayerComponent = ({
                                     >
                                         {ACTION_UNICODE_MAP[action]}
                                     </span>
-                                    <span>{action.replaceAll('_', ' ')}</span>
+                                    <span style={{ color: '#fff' }}>
+                                        {action.replaceAll('_', ' ')}
+                                    </span>
                                 </BlurrableListItemText>
                             </MenuItem>
                         );
                     })}
                 </Menu>
 
+                {/* Menu for picking the probability for the primary action */}
+                <Menu
+                    id={`actions-probability-menu-${i}`}
+                    anchorEl={actionProbAnchorEl}
+                    open={actionProbOpen}
+                    onClose={(evt) => handleCloseActionProbDropdown(false)}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 220,
+                            width: 80,
+                            backgroundColor: '#000',
+                        },
+                    }}
+                >
+                    {[10, 20, 30, 40, 50, 60, 70, 80, 90].map((prob) => {
+                        return (
+                            <MenuItem>
+                                <BlurrableListItemText
+                                    onClick={(e) =>
+                                        onActionProbSelect(prob, false)
+                                    }
+                                >
+                                    <span
+                                        style={{ color: '#fff' }}
+                                    >{`${prob}%`}</span>
+                                </BlurrableListItemText>
+                            </MenuItem>
+                        );
+                    })}
+                </Menu>
+
+                {/* Menu for picking the probability for the alternative action */}
+                <Menu
+                    id={`alt-actions-probability-menu-${i}`}
+                    anchorEl={alternativeActionProbAnchorEl}
+                    open={altActionProbOpen}
+                    onClose={(evt) => handleCloseActionProbDropdown(true)}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 220,
+                            width: 80,
+                            backgroundColor: '#000',
+                        },
+                    }}
+                >
+                    {[10, 20, 30, 40, 50, 60, 70, 80, 90].map((prob) => {
+                        return (
+                            <MenuItem>
+                                <BlurrableListItemText
+                                    onClick={(e) =>
+                                        onActionProbSelect(prob, true)
+                                    }
+                                >
+                                    <span
+                                        style={{ color: '#fff' }}
+                                    >{`${prob}%`}</span>
+                                </BlurrableListItemText>
+                            </MenuItem>
+                        );
+                    })}
+                </Menu>
+
+                <Grid item xs={checkboxPortion}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {features.sui && (
+                            <Switch
+                                size="small"
+                                onChange={() => {
+                                    toggleIsLayerSui(i);
+                                }}
+                                checked={layer.sui}
+                                sx={switchSx('SUI', suiFontColor)}
+                            />
+                        )}
+
+                        {features.actionRandomness && (
+                            <Switch
+                                size="small"
+                                onChange={() => {
+                                    setLayerProbability(
+                                        i,
+                                        !layer.probability
+                                            ? 5
+                                            : layer.probability == 0
+                                            ? 5
+                                            : 0
+                                    );
+                                }}
+                                checked={randomnessEnabled}
+                                sx={switchSx('MIX', rndFontColor)}
+                            />
+                        )}
+                    </div>
+                </Grid>
+                {/*
                 {features.sui && (
                     <Grid item xs={suiCheckboxPortion}>
                         <Switch
@@ -544,12 +771,19 @@ export const LayerComponent = ({
                         <Switch
                             size="small"
                             onChange={() => {
-                                setLayerProbability(i, 5);
+                                setLayerProbability(
+                                    i,
+                                    !layer.probability
+                                        ? 5
+                                        : layer.probability == 0
+                                        ? 5
+                                        : 0
+                                );
                             }}
                             checked={layer.probability != 0}
                         />
                     </Grid>
-                )}
+                )} */}
 
                 <Grid item xs={gridRemovePortion}>
                     {features.layerAddAndDelete ? (
@@ -820,13 +1054,13 @@ const Gambit = ({
         let updatedLayers = [...layers];
 
         // TODO: change to setting instead of toggling
-        updatedLayers[layerIndex].probability =
-            updatedLayers[layerIndex].probability != 0 ? 0 : probability;
+        updatedLayers[layerIndex].probability = probability;
+        // updatedLayers[layerIndex].probability != 0 ? 0 : probability;
         console.log(
             'handleSetLayerProbability, layerIndex =',
             layerIndex,
             'probability =',
-            updatedLayers[layerIndex].probability
+            probability
         );
         setLayers(updatedLayers);
     };
@@ -1004,6 +1238,7 @@ const Gambit = ({
                                                     fontSize: '13px',
                                                     fontFamily: 'Eurostile',
                                                     color: '#000000',
+                                                    textAlign: 'center',
                                                 }}
                                             >
                                                 Condition
@@ -1019,12 +1254,32 @@ const Gambit = ({
                                                     fontSize: '13px',
                                                     fontFamily: 'Eurostile',
                                                     color: '#000000',
+                                                    textAlign: 'center',
                                                 }}
                                             >
                                                 Action
                                             </Typography>
                                         </Grid>
+
                                         <Grid
+                                            item
+                                            md={checkboxPortion}
+                                            xl={checkboxPortion}
+                                            sx={{ pl: 0 }}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    fontSize: '13px',
+                                                    fontFamily: 'Eurostile',
+                                                    color: '#000000',
+                                                    textAlign: 'center',
+                                                }}
+                                            >
+                                                Pro
+                                            </Typography>
+                                        </Grid>
+
+                                        {/* <Grid
                                             item
                                             md={suiCheckboxPortion}
                                             xl={suiCheckboxPortion}
@@ -1093,7 +1348,7 @@ const Gambit = ({
                                                                         '16px',
                                                                 }}
                                                             >
-                                                                Rand
+                                                                {'\u{2684}'}
                                                             </p>
                                                             <p
                                                                 style={{
@@ -1124,7 +1379,7 @@ const Gambit = ({
                                                     </Typography>
                                                 </Tooltip>
                                             )}
-                                        </Grid>
+                                        </Grid> */}
 
                                         {/* <Grid item md={gridRemovePortion} xl={gridRemovePortion} sx={{pl:0}}>
                                             <Typography

@@ -38,6 +38,7 @@ const ConditionsMenu = ({
             PaperProps={{
                 style: {
                     maxHeight: 220,
+                    width: 270,
                     backgroundColor: '#000',
                 },
             }}

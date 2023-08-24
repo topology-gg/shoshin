@@ -26,7 +26,7 @@ export const jessica_opponent_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent Slash (Jessica)',
+        displayName: 'Opponent Slash',
         type: 'opponent state',
     },
     {
@@ -52,7 +52,7 @@ export const jessica_opponent_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent Sidecut (Jessica)',
+        displayName: 'Opponent Sidecut',
         type: 'opponent state',
     },
     {
@@ -78,7 +78,7 @@ export const jessica_opponent_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent Upswing (Jessica)',
+        displayName: 'Opponent Upswing',
         type: 'opponent state',
     },
     {
@@ -104,7 +104,7 @@ export const jessica_opponent_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent Birdswing (Jessica)',
+        displayName: 'Opponent Birdswing',
         type: 'opponent state',
     },
     {
@@ -130,7 +130,7 @@ export const jessica_opponent_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent Gatotsu (Jessica)',
+        displayName: 'Opponent Gatotsu',
         type: 'opponent state',
     },
 ];
@@ -159,7 +159,7 @@ export const jessica_my_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: "I'm Slash (Jessica)",
+        displayName: "I'm Slash",
         type: 'my state',
     },
     {
@@ -185,7 +185,7 @@ export const jessica_my_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: "I'm Sidecut (Jessica)",
+        displayName: "I'm Sidecut",
         type: 'my state',
     },
     {
@@ -211,7 +211,7 @@ export const jessica_my_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: "I'm Upswing (Jessica)",
+        displayName: "I'm Upswing",
         type: 'my state',
     },
     {
@@ -237,7 +237,7 @@ export const jessica_my_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: "I'm Birdswing (Jessica)",
+        displayName: "I'm Birdswing",
         type: 'my state',
     },
     {
@@ -263,7 +263,7 @@ export const jessica_my_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: "I'm Gatotsu (Jessica)",
+        displayName: "I'm Gatotsu",
         type: 'my state',
     },
 ];

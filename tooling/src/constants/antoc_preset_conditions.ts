@@ -31,7 +31,7 @@ export const antoc_opponent_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent Hori (Antoc)',
+        displayName: 'Opponent Hori',
         type: 'opponent state',
     },
     {
@@ -57,7 +57,7 @@ export const antoc_opponent_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent Vert (Antoc)',
+        displayName: 'Opponent Vert',
         type: 'opponent state',
     },
     {
@@ -83,7 +83,7 @@ export const antoc_opponent_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent DropSlash (Antoc)',
+        displayName: 'Opponent DropSlash',
         type: 'opponent state',
     },
     {
@@ -109,7 +109,7 @@ export const antoc_opponent_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent Cyclone (Antoc)',
+        displayName: 'Opponent Cyclone',
         type: 'opponent state',
     },
     {
@@ -135,7 +135,7 @@ export const antoc_opponent_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: 'Opponent StepForward (Antoc)',
+        displayName: 'Opponent StepForward',
         type: 'opponent state',
     },
 ];
@@ -164,7 +164,7 @@ export const antoc_my_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: "I'm Hori (Antoc)",
+        displayName: "I'm Hori",
         type: 'my state',
     },
     {
@@ -190,7 +190,7 @@ export const antoc_my_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: "I'm Vert (Antoc)",
+        displayName: "I'm Vert",
         type: 'my state',
     },
     {
@@ -216,7 +216,7 @@ export const antoc_my_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: "I'm DropSlash (Antoc)",
+        displayName: "I'm DropSlash",
         type: 'my state',
     },
     {
@@ -242,7 +242,7 @@ export const antoc_my_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: "I'm Cyclone (Antoc)",
+        displayName: "I'm Cyclone",
         type: 'my state',
     },
     {
@@ -268,7 +268,7 @@ export const antoc_my_preset_conditions = [
                 type: 'Operator',
             },
         ],
-        displayName: "I'm StepForward (Antoc)",
+        displayName: "I'm StepForward",
         type: 'my state',
     },
 ];
