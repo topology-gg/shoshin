@@ -21,7 +21,9 @@ import Arcade from '../Arcade/Arcade';
 import { GameModes } from '../../types/Simulator';
 import { ShoshinWASMContext } from '../../context/wasm-shoshin';
 import {
+    AntocOnlineOpponents,
     AntocOpponents,
+    JessicaOnlineOpponents,
     JessicaOpponents,
 } from '../ChooseOpponent/opponents/opponents';
 import MoveTutorial from '../MoveTutorial/MoveTutorial';
@@ -328,16 +330,35 @@ const SceneSelector = () => {
     const [opponentChoices, setOpponentChoices] =
         useState<Opponent[]>(defaultOpponents);
 
+    const defaultSpectatableOpponents =
+        character == Character.Jessica
+            ? JessicaOnlineOpponents
+            : AntocOnlineOpponents;
+
+    const [spectatableOpponentChoices, setSpectatableOpponentChoices] =
+        useState<any[]>(defaultSpectatableOpponents);
+
     const [onlineOpponentChoice, setOnlineOpponentChoice] =
         useState<OnlineOpponent>(onlineOpponentAdam);
 
     const [selectedOpponent, setSelectedOpponent] = useState<number>(0);
 
-    const opponent =
-        mainSceneMode == MainSceneMode.PREVIEW ||
-        mainSceneMode == MainSceneMode.ONLINE
-            ? onlineOpponentChoice
-            : opponentChoices[selectedOpponent];
+    const getOpponent = () => {
+        if (
+            mainSceneMode == MainSceneMode.PREVIEW ||
+            mainSceneMode == MainSceneMode.ONLINE
+        ) {
+            return onlineOpponentChoice;
+        }
+        console.log('mainSceneMode', mainSceneMode, spectatableOpponentChoices);
+        if (mainSceneMode == MainSceneMode.REPLAY) {
+            return spectatableOpponentChoices[selectedOpponent];
+        }
+        return opponentChoices[selectedOpponent];
+    };
+    const opponent = getOpponent();
+
+    console.log('opponent', opponent);
 
     const backgroundId = 'backgroundId' in opponent ? opponent.backgroundId : 0;
 
@@ -567,11 +588,22 @@ const SceneSelector = () => {
         }
     };
 
-    const handleSelectReplay = (mind: PlayerAgent, opponentIndex: number) => {
+    const handleSelectReplay = (
+        mind: OnlineOpponent,
+        opponentIndex: number
+    ) => {
         setPlayerAgent(mind);
         setSelectedOpponent(opponentIndex);
-        setScene(Scenes.MAIN_SCENE);
+
         setMainSceneMode(MainSceneMode.REPLAY);
+
+        const spectatableOpponents =
+            character == Character.Jessica
+                ? JessicaOnlineOpponents
+                : AntocOnlineOpponents;
+
+        setSpectatableOpponentChoices(spectatableOpponents);
+        setScene(Scenes.SPECTATE);
     };
 
     const pauseMenu = (

@@ -1,11 +1,11 @@
 import { Box, Grid, Typography } from '@mui/material';
 import FullArtBackground from '../layout/FullArtBackground';
-import { PlayerAgent } from '../../types/Agent';
 import Leaderboard from './TopScores';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
+import { OnlineOpponent } from '../../types/Opponent';
 
 interface LeaderboardSceneProps {
-    handleSelectReplay: (mind: PlayerAgent, opponentIndex: number) => void;
+    handleSelectReplay: (mind: OnlineOpponent, opponentIndex: number) => void;
     transitionBack: () => void;
 }
 

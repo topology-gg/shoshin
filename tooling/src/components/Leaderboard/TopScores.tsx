@@ -21,13 +21,12 @@ import { Character } from '../../constants/constants';
 import React, { useEffect } from 'react';
 import ScoreDetail from './ScoreDetail';
 import LoadMind from './LoadMind';
-import { PlayerAgent } from '../../types/Agent';
 import MindPreview from '../MindPreview/MindPreview';
-import { SavedMind } from '../../types/Opponent';
+import { OnlineOpponent, SavedMind } from '../../types/Opponent';
 
 interface LeaderboardProps {
     opponents: number[];
-    handleSelectReplay: (mind: PlayerAgent, opponentIndex: number) => void;
+    handleSelectReplay: (mind: OnlineOpponent, opponentIndex: number) => void;
 }
 
 interface LeaderboardScore {
@@ -194,7 +193,14 @@ const Leaderboard = ({ opponents, handleSelectReplay }: LeaderboardProps) => {
     };
 
     const handleReplayClick = () => {
-        handleSelectReplay(selectedMind.mind, selectedOpponentIndex);
+        //@ts-ignore
+        const mindAsOnlineOpp: OnlineOpponent = {
+            agent: selectedMind.mind,
+            mindName: '',
+            playerName: '',
+        };
+
+        handleSelectReplay(mindAsOnlineOpp, selectedOpponentIndex);
         handleMindViewClose();
     };
     return (
