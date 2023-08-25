@@ -188,6 +188,7 @@ const Leaderboard = ({ opponents, handleSelectReplay }: LeaderboardProps) => {
     };
 
     const handleMindViewClose = () => {
+        setOpenSelectScore(false);
         setLeadboardState(LeadboardStates.VIEW_SCORES);
     };
 
@@ -200,8 +201,7 @@ const Leaderboard = ({ opponents, handleSelectReplay }: LeaderboardProps) => {
         };
 
         handleSelectReplay(mindAsOnlineOpp, selectedOpponentIndex);
-        setOpenSelectScore(false);
-        setLeadboardState(LeadboardStates.VIEW_SCORES);
+        handleMindViewClose();
     };
     return (
         <Box>
@@ -256,7 +256,11 @@ const Leaderboard = ({ opponents, handleSelectReplay }: LeaderboardProps) => {
 
                         <DialogActions>
                             <Button
-                                onClick={handleMindViewClose}
+                                onClick={() =>
+                                    setLeadboardState(
+                                        LeadboardStates.VIEW_SCORES
+                                    )
+                                }
                                 color="primary"
                             >
                                 Back
