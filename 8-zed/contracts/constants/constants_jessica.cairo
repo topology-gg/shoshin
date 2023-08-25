@@ -35,6 +35,7 @@ namespace ns_jessica_character_dimension {
     const BODY_HITBOX_W = 50;
     const BODY_HITBOX_W_HALF = 25;
     const BODY_HITBOX_H = 116;
+    const PROJECTILE_Y = 58;
 
     const BODY_KNOCKED_EARLY_HITBOX_W = 70;
     const BODY_KNOCKED_LATE_HITBOX_W = 100;

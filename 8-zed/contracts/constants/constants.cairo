@@ -75,6 +75,7 @@ namespace ns_stimulus {
     // const GROUND = 4;
     const LAUNCHED = 5;
     const GOOD_BLOCK = 6;
+    const CRASH = 7;
 
     const ENCODING = 10000;
     const GROUND_ENCODING = 1000;
@@ -123,6 +124,11 @@ struct BodyState {
     fatigued : felt,
     state_index: felt,
     opponent_state_index_last_hit: felt,
+}
+
+struct FireCommand {
+    fire: felt,
+    fire_dir: felt,
 }
 
 struct ProjectileBodyState {
@@ -186,8 +192,8 @@ struct RealTimeAgent {
 struct FrameScene {
     agent_0: Frame,
     agent_1: Frame,
-    // projectile_0: ProjectileFrame,
-    // projectile_1: ProjectileFrame,
+    projectile_0: ProjectileFrame,
+    projectile_1: ProjectileFrame,
 }
 
 struct RealTimeFrameScene {
