@@ -1,7 +1,9 @@
 import {
     Box,
+    Button,
     CircularProgress,
     Dialog,
+    DialogActions,
     DialogContent,
     DialogTitle,
     Paper,
@@ -16,11 +18,15 @@ import {
 import { useGetScoresForOpponents } from '../../../lib/api';
 import { SinglePlayerScore } from '../ChooseOpponent/ScoreDisplay';
 import { Character } from '../../constants/constants';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ScoreDetail from './ScoreDetail';
+import LoadMind from './LoadMind';
+import { PlayerAgent } from '../../types/Agent';
+import MindPreview from '../MindPreview/MindPreview';
 
 interface LeaderboardProps {
     opponents: number[];
+    handleSelectReplay: (mind: PlayerAgent, opponentIndex: number) => void;
 }
 
 interface LeaderboardScore {
@@ -29,7 +35,7 @@ interface LeaderboardScore {
     topScores: SinglePlayerScore[];
     scores: SinglePlayerScore[];
 }
-const Leaderboard = ({ opponents }: LeaderboardProps) => {
+const Leaderboard = ({ opponents, handleSelectReplay }: LeaderboardProps) => {
     const { data: data } = useGetScoresForOpponents(opponents);
     const scores = data?.scores ? data.scores : [];
 
@@ -84,7 +90,6 @@ const Leaderboard = ({ opponents }: LeaderboardProps) => {
         fontSize: '14px',
     };
 
-    console.log('sorted scores', sortedScores, scores);
     const scoreRows = (sortedScores as LeaderboardScore[]).map(
         (score, index) => {
             const copyAddress = () => {
@@ -151,22 +156,112 @@ const Leaderboard = ({ opponents }: LeaderboardProps) => {
         setSelectedScore(index);
         setOpenSelectScore(true);
     };
+
+    const [selectedMindId, setSelectedMindId] = React.useState<string>('');
+    const [selectedOpponentIndex, setSelectedOpponentIndex] =
+        React.useState<number>(0);
+    const [selectedMind, setSelectedMind] = React.useState<any>();
+
+    enum LeadboardStates {
+        VIEW_SCORES,
+        LOADING_MIND,
+        VIEW_MIND,
+    }
+
+    const [leadboardState, setLeadboardState] = React.useState<LeadboardStates>(
+        LeadboardStates.VIEW_SCORES
+    );
+
+    const handleLoadMind = (mind: any) => {
+        if (mind === null || mind === undefined) {
+            setLeadboardState(LeadboardStates.VIEW_SCORES);
+        } else {
+            setSelectedMind(mind);
+            setLeadboardState(LeadboardStates.VIEW_MIND);
+        }
+    };
+
+    const handleSelectScore = (index: string, opponentIndex: number) => {
+        setSelectedMindId(index);
+        setSelectedOpponentIndex(opponentIndex);
+        setLeadboardState(LeadboardStates.LOADING_MIND);
+    };
+
+    const handleMindViewClose = () => {
+        setOpenSelectScore(false);
+        setLeadboardState(LeadboardStates.VIEW_SCORES);
+    };
+
+    const handleReplayClick = () => {
+        handleSelectReplay(selectedMind.mind, selectedOpponentIndex);
+        handleMindViewClose();
+    };
     return (
         <Box>
             <Dialog
                 open={openSelectScore}
-                onClose={() => setOpenSelectScore(false)}
+                onClose={handleMindViewClose}
                 fullWidth={true}
                 maxWidth={'lg'}
             >
-                <DialogTitle>
-                    {sortedScores.length
-                        ? sortedScores[selectedScore].playerAddress
-                        : ''}
-                </DialogTitle>
-                <DialogContent>
-                    <ScoreDetail score={sortedScores[selectedScore]} />
-                </DialogContent>
+                {leadboardState == LeadboardStates.VIEW_SCORES && (
+                    <Box>
+                        <DialogTitle>
+                            {sortedScores.length
+                                ? sortedScores[selectedScore].playerAddress
+                                : ''}
+                        </DialogTitle>
+                        <DialogContent>
+                            <ScoreDetail
+                                score={sortedScores[selectedScore]}
+                                onScoreClick={handleSelectScore}
+                            />
+                        </DialogContent>
+                    </Box>
+                )}
+                {leadboardState == LeadboardStates.LOADING_MIND && (
+                    <Box>
+                        <DialogTitle>
+                            {sortedScores.length
+                                ? sortedScores[selectedScore].playerAddress
+                                : ''}
+                        </DialogTitle>
+                        <DialogContent>
+                            <LoadMind
+                                onLoadMind={handleLoadMind}
+                                mindId={selectedMindId}
+                            />
+                        </DialogContent>
+                    </Box>
+                )}
+                {leadboardState == LeadboardStates.VIEW_MIND && (
+                    <Box>
+                        <DialogTitle>
+                            {sortedScores.length
+                                ? sortedScores[selectedScore].playerAddress
+                                : ''}
+                        </DialogTitle>
+                        <DialogContent>
+                            <MindPreview mind={{ agent: selectedMind.mind }} />
+                        </DialogContent>
+
+                        <DialogActions>
+                            <Button
+                                onClick={handleMindViewClose}
+                                color="primary"
+                            >
+                                Back
+                            </Button>
+                            <Button
+                                onClick={handleReplayClick}
+                                color="primary"
+                                variant="contained"
+                            >
+                                View Replay
+                            </Button>
+                        </DialogActions>
+                    </Box>
+                )}
             </Dialog>
 
             <TableContainer sx={{ overflowX: 'initial' }} component={Paper}>

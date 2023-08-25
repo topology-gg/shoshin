@@ -9,11 +9,10 @@ import {
     TableRow,
 } from '@mui/material';
 import { SinglePlayerScore } from '../ChooseOpponent/ScoreDisplay';
-import { useGetMindFromId } from '../../../lib/api';
 
 interface ScoreDetailProps {
     score: LeaderboardScore;
-    onScoreClick: (index: number) => void;
+    onScoreClick: (index: string, opponentIndex: number) => void;
 }
 
 interface LeaderboardScore {
@@ -23,11 +22,10 @@ interface LeaderboardScore {
     scores: SinglePlayerScore[];
 }
 
-const ScoreDetail = ({ score }: ScoreDetailProps) => {
-    const { data: data } = useGetMindFromId(0);
-    const scores = data?.mind ? data.mind : [];
-
-    const handleScoreClick = (index) => {};
+const ScoreDetail = ({ score, onScoreClick }: ScoreDetailProps) => {
+    const handleScoreClick = (index, opponentIndex) => {
+        onScoreClick(score.scores[index].mindId, opponentIndex);
+    };
 
     const tableCellSx = {
         fontSize: '14px',
@@ -41,7 +39,7 @@ const ScoreDetail = ({ score }: ScoreDetailProps) => {
                     key={index}
                     hover={true}
                     style={{ cursor: 'pointer' }}
-                    onClick={() => handleScoreClick(index)}
+                    onClick={() => handleScoreClick(index, score.opponentIndex)}
                 >
                     <TableCell sx={{ ...tableCellSx, textAlign: 'center' }}>
                         {score.opponentIndex}

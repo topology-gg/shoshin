@@ -23,7 +23,7 @@ interface ScoreDisplayProps {
 
 export interface SinglePlayerScore {
     playerAddress: string;
-    mindId: number;
+    mindId: string;
     character: Character;
     score: ScoreMap;
     opponentIndex: number;

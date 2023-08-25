@@ -531,6 +531,13 @@ const SceneSelector = () => {
         }
     };
 
+    const handleSelectReplay = (mind: PlayerAgent, opponentIndex: number) => {
+        setPlayerAgent(mind);
+        setSelectedOpponent(opponentIndex);
+        setScene(Scenes.MAIN_SCENE);
+        setPreviewMode(true);
+    };
+
     const pauseMenu = (
         <PauseMenu
             onQuit={handleQuit}
@@ -682,7 +689,7 @@ const SceneSelector = () => {
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.LEADERBOARD}>
-                <LeadboardScene />
+                <LeadboardScene handleSelectReplay={handleSelectReplay} />
             </SceneSingle>
         </Box>
     );

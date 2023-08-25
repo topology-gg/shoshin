@@ -1,8 +1,13 @@
 import { Box, Grid, Typography } from '@mui/material';
 import FullArtBackground from '../layout/FullArtBackground';
+import { PlayerAgent } from '../../types/Agent';
 import Leaderboard from './Leaderboard';
 
-const LeadboardScene = () => {
+interface LeaderboardSceneProps {
+    handleSelectReplay: (mind: PlayerAgent, opponentIndex: number) => void;
+}
+
+const LeadboardScene = ({ handleSelectReplay }: LeaderboardSceneProps) => {
     return (
         <div>
             <FullArtBackground useAlt={true}>
@@ -19,6 +24,7 @@ const LeadboardScene = () => {
                             maxHeight={'80vh'}
                         >
                             <Leaderboard
+                                handleSelectReplay={handleSelectReplay}
                                 opponents={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
                             />
                         </Box>
