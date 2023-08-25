@@ -132,12 +132,8 @@ export const Sidecut: Action = {
         active: [3],
         interrupts: [
             {
-                left: [DashForwardId],
-                duration: 3,
-            },
-            {
-                left: [DashBackwardId],
-                duration: 3,
+                left: [JumpId],
+                duration: 6,
             },
             {
                 left: [JumpId, DashForwardId],
@@ -145,6 +141,14 @@ export const Sidecut: Action = {
             },
             {
                 left: [JumpId, DashBackwardId],
+                duration: 4,
+            },
+            {
+                left: [DashForwardId],
+                duration: 4,
+            },
+            {
+                left: [DashBackwardId],
                 duration: 4,
             },
         ],
