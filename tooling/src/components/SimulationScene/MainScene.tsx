@@ -74,6 +74,7 @@ import useAnimationControls, {
 } from '../../hooks/useAnimationControls';
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import SubmitOptions from './SubmitOptions/SubmitOptions';
+import eventsCenter from '../../Game/EventsCenter';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -369,20 +370,6 @@ const SimulationScene = React.forwardRef(
             performance = Medal.BRONZE;
         }
 
-        useEffect(() => {
-            let res = animationFrame % 4;
-
-            if (res == 0) {
-                setLives([2, 2]);
-            } else if (res == 1) {
-                setLives([1, 2]);
-            } else if (res == 2) {
-                setLives([1, 1]);
-            } else if (res == 3) {
-                setLives([1, 0]);
-            }
-        }, [animationFrame]);
-
         //
         // Compute score from the fight
         //
@@ -457,8 +444,9 @@ const SimulationScene = React.forwardRef(
         };
 
         let playerOneName = null;
-
+        let playerOneNameString = '';
         if ('playerName' in player) {
+            playerOneNameString = player.mindName + ' by ' + player.playerName;
             playerOneName = (
                 <Typography>
                     {player.mindName} by {player.playerName}
@@ -466,11 +454,14 @@ const SimulationScene = React.forwardRef(
             );
         } else {
             playerOneName = <Typography>{player.character}</Typography>;
+            playerOneNameString = player.character;
         }
 
         let playerTwoName = null;
-
+        let playerTwoNameString = '';
         if ('playerName' in opponent) {
+            playerTwoNameString =
+                opponent.mindName + ' by ' + opponent.playerName;
             playerTwoName = (
                 <Typography>
                     {opponent.mindName} by {opponent.playerName}
@@ -482,6 +473,7 @@ const SimulationScene = React.forwardRef(
                     {numberToCharacter(opponent.agent.character)}
                 </Typography>
             );
+            playerTwoNameString = numberToCharacter(opponent.agent.character);
         }
 
         const backgroundId =
@@ -586,7 +578,7 @@ const SimulationScene = React.forwardRef(
                                             onClick={() => handleOverlayClick()}
                                         >
                                             <div className={overlayClassName}>
-                                                <Box
+                                                {/* <Box
                                                     sx={{
                                                         display: 'flex',
                                                         flexDirection: 'row',
@@ -634,7 +626,7 @@ const SimulationScene = React.forwardRef(
                                                         </Typography>
                                                         {playerTwoName}
                                                     </Box>
-                                                </Box>
+                                                </Box> */}
                                                 <Game
                                                     onPhaserLoad={() =>
                                                         setPhaserLoaded(true)
@@ -658,6 +650,12 @@ const SimulationScene = React.forwardRef(
                                                     backgroundId={backgroundId}
                                                     volume={volume}
                                                     lives={lives}
+                                                    playerOneName={
+                                                        playerOneNameString
+                                                    }
+                                                    playerTwoName={
+                                                        playerTwoNameString
+                                                    }
                                                 />
                                             </div>
                                             {playOnly && (

@@ -100,7 +100,7 @@ interface BattleEvent {
     eventCount: number;
 }
 
-interface CircleLabel {
+export interface CircleLabel {
     cir: Phaser.GameObjects.Arc;
     text: Phaser.GameObjects.Text;
 }
@@ -1315,10 +1315,6 @@ export default class Simulator extends Phaser.Scene {
         this.distance_marker.setVisible(true);
         this.distance_marker_label.cir.setVisible(true);
         this.distance_marker_label.text.setVisible(true);
-
-        [0, 1].forEach((index) => {
-            setPlayerPointerVisible(this.player_pointers[index], true);
-        });
     }
 
     private hideDebug() {
@@ -1335,10 +1331,6 @@ export default class Simulator extends Phaser.Scene {
         this.distance_marker.setVisible(false);
         this.distance_marker_label.cir.setVisible(false);
         this.distance_marker_label.text.setVisible(false);
-
-        [0, 1].forEach((index) => {
-            setPlayerPointerVisible(this.player_pointers[index], false);
-        });
     }
 
     private adjustCamera(charOneX: number, charTwoX: number) {
@@ -1396,7 +1388,7 @@ export default class Simulator extends Phaser.Scene {
         if (lives[0] == -1) {
             return;
         }
-        console.log('emitting lives', lives);
+        // console.log('emitting lives', lives);
         eventsCenter.emit('setLives', lives);
     }
 
@@ -2015,6 +2007,23 @@ export default class Simulator extends Phaser.Scene {
         }
 
         //
+        // Handle player switching side
+        //
+        const switchedSide =
+            agentFrame0.physics_state.pos.x > agentFrame1.physics_state.pos.x;
+        if (switchedSide) {
+            this.setPlayerOnePointer(agentFrame0);
+            this.setPlayerTwoPointer(agentFrame1);
+            [0, 1].forEach((index) => {
+                setPlayerPointerVisible(this.player_pointers[index], true);
+            });
+        } else {
+            [0, 1].forEach((index) => {
+                setPlayerPointerVisible(this.player_pointers[index], false);
+            });
+        }
+
+        //
         // Handle frame data display
         //
         if (showDebug) {
@@ -2023,8 +2032,6 @@ export default class Simulator extends Phaser.Scene {
             this.setPlayerTwoBodyHitbox(agentFrame1);
             this.setPlayerOneActionHitbox(agentFrame0);
             this.setPlayerTwoActionHitbox(agentFrame1);
-            this.setPlayerOnePointer(agentFrame0);
-            this.setPlayerTwoPointer(agentFrame1);
             this.setDistanceMarker(agentFrame0, agentFrame1);
 
             eventsCenter.emit('frame-data-show', [

@@ -12,7 +12,7 @@ import Agent, { agentsToArray } from '../types/Agent';
 const useRunCairoSimulation = (p1: Agent, p2: Agent) => {
     const ctx = useContext(ShoshinWASMContext);
 
-    console.log('p1', p1, 'p2', p2);
+    // console.log('p1', p1, 'p2', p2);
     const runCairoSimulation = useCallback(() => {
         if (!ctx.wasm) {
             console.warn('WASM not initialized');

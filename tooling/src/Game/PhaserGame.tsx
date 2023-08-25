@@ -26,6 +26,8 @@ const Game = ({
     onPhaserLoad,
     volume,
     lives,
+    playerOneName,
+    playerTwoName,
 }: PhaserGameProps) => {
     const tagName = 'div';
     const className = 'relative top-0 left-0 w-full h-full my-12';
@@ -239,7 +241,23 @@ const Game = ({
     }, [isInView]);
 
     React.useEffect(() => {
+        if (isGameSceneDefined(gameMode)) {
+            eventsCenter.emit('setPlayerOneName', playerOneName);
+            eventsCenter.emit('setPlayerTwoName', playerTwoName);
+        }
+    }, [testJson, playerOneName, playerTwoName]);
+
+    // const [lastTimeLog, setLastTimeLog] = React.useState<number>(0);
+    // React.useEffect(() => {
+    //     console.log('Time elapsed since last change in animationFrame:', Date.now() - lastTimeLog);
+    //     setLastTimeLog((_) => Date.now());
+    // }, [animationFrame])
+
+    React.useEffect(() => {
         if (isGameSceneDefined(gameMode) && testJson) {
+            // console.log('Time elapsed:', Date.now() - lastTimeLog, 'animationFrame', animationFrame);
+            // setLastTimeLog((_) => Date.now());
+
             // @ts-ignore
             let scene = game.current?.scene.getScene('simulator') as Simulator;
             scene.updateSceneFromFrame({
@@ -253,6 +271,7 @@ const Game = ({
 
         //render stuff
     }, [testJson, animationFrame, showDebug, ctx.wasm, volume, lives]);
+
     return (
         <div
             style={{

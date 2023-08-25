@@ -48,8 +48,14 @@ const getActionCondition = (
         (action) => action.id == layer.action.id
     );
     const actionName = action.display.name;
-    const duration = action.frames.duration - 1;
+    const duration = action.frames.duration;
     const sui = layer.sui ?? false;
+
+    // get counterEnd
+    // note: for jump, the frame counter at last frame does not equal to animation duration, which can be longer from character staying in the air longer
+    const counterEnd = action.frames.lastFrame
+        ? action.frames.lastFrame - 1
+        : duration - 1; // use lastFrame if specified, otherwise use duration
 
     // Block needs to be handled differently because its body counter saturates at 3 until intent changes
     // when blocking, termination condition is the inverse of the condition for this layer;
@@ -68,7 +74,7 @@ const getActionCondition = (
         );
         return inverseCondition;
     } else {
-        return getIsFinishedCondition(duration, layerIndex);
+        return getIsFinishedCondition(counterEnd, layerIndex);
     }
 };
 
@@ -317,7 +323,7 @@ const getInverseCondition = (id: number, conditions: Condition[]) => {
     };
 };
 
-const getIsFinishedCondition = (duration: number, id: number) => {
+const getIsFinishedCondition = (counterEnd: number, id: number) => {
     return {
         elements: [
             {
@@ -333,7 +339,7 @@ const getIsFinishedCondition = (duration: number, id: number) => {
                 type: 'Operator',
             },
             {
-                value: duration,
+                value: counterEnd,
                 type: 'Constant',
             },
             {

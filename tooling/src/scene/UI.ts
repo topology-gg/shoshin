@@ -7,6 +7,7 @@ import {
 } from '../constants/constants';
 import { Action, CHARACTERS_ACTIONS } from '../types/Action';
 import { Frame, FrameLike } from '../types/Frame';
+import { CircleLabel } from './Simulator';
 
 const HP_BAR_COLOR = 0xff355e; //0xf7a08c;
 const STAMINA_BAR_COLOR = 0x00ff7f; //0xa06ccb; //0xadd8e6;
@@ -21,7 +22,7 @@ const LIFE_X_P2 = PHASER_CANVAS_W - STATS_BAR_X_OFFSET - STATS_BAR_W + 15;
 const LIFE_X_SPACING = 40;
 const LIFE_SCALE = 0.125;
 
-const STATS_BAR_Y_OFFSET = LIFE_Y + 40;
+const STATS_BAR_Y_OFFSET = LIFE_Y + 50;
 const STATA_BAR_Y_SPACING = 15;
 const STATS_BAR_P1_LEFT_BOUND = STATS_BAR_X_OFFSET + STATS_BAR_W / 2;
 const STATS_BAR_P2_LEFT_BOUND =
@@ -30,6 +31,11 @@ const STATS_BAR_HP_Y = STATS_BAR_Y_OFFSET;
 const STATS_BAR_STAMINA_Y = STATS_BAR_HP_Y + STATS_BAR_H + STATA_BAR_Y_SPACING;
 
 const STATS_BAR_BG_BORDER_STROKEWIDTH = 1.5;
+
+// const EVENT_TEXT_FONT_SIZE = 140;
+// const EVENT_TEXT_ALPHA = 0.5;
+const EVENT_TEXT_FONT_SIZE = 36;
+const EVENT_TEXT_ALPHA = 0.8;
 
 const TOURNAMENT_LIVE_COUNT = 2;
 
@@ -55,6 +61,28 @@ export default class UI extends Phaser.Scene {
 
     p1Lives: Phaser.GameObjects.Image[];
     p2Lives: Phaser.GameObjects.Image[];
+
+    p1Header: CircleLabel;
+    p2Header: CircleLabel;
+    p1Name: Phaser.GameObjects.Text;
+    p2Name: Phaser.GameObjects.Text;
+
+    addCircleHelper(
+        strokeStyle: number,
+        strokeWidth: number,
+        colorHex: number,
+        alpha: number
+    ) {
+        const cir = this.add.circle(0, 0, 0);
+        if (strokeWidth > 0) cir.setStrokeStyle(strokeWidth, strokeStyle);
+        cir.setFillStyle(colorHex, alpha);
+        return cir;
+    }
+    addTextHelper(colorHexString: string, fontSize: number) {
+        const text = this.add.text(0, 0, '', { color: colorHexString });
+        text.setFontSize(fontSize).setAlign('center');
+        return text;
+    }
 
     preload() {
         this.load.image(`heart-empty`, 'images/ui/shoshin-heart-black.png');
@@ -136,14 +164,14 @@ export default class UI extends Phaser.Scene {
         this.PlayerOneEvent = this.add
             .text(25, 140, '', {
                 fontFamily: 'Oswald',
-                fontSize: '36px',
+                fontSize: `${EVENT_TEXT_FONT_SIZE}px`,
                 color: '#FFFB37',
                 fontStyle: 'italic',
                 stroke: '#000000',
                 strokeThickness: 4,
                 padding: { left: null, right: 30 },
             })
-            .setAlpha(0.8);
+            .setAlpha(EVENT_TEXT_ALPHA);
 
         //
         // Event alert for player 2
@@ -151,23 +179,71 @@ export default class UI extends Phaser.Scene {
         this.PlayerTwoEvent = this.add
             .text(600, 140, '', {
                 fontFamily: 'Oswald',
-                fontSize: '36px',
+                fontSize: `${EVENT_TEXT_FONT_SIZE}px`,
                 color: '#FFFB37',
                 fontStyle: 'italic',
                 stroke: '#000000',
                 strokeThickness: 4,
                 padding: { left: null, right: 30 },
             })
-            .setAlpha(0.8);
+            .setAlpha(EVENT_TEXT_ALPHA);
+
+        //
+        // Player headers
+        //
+        this.p1Header = {
+            cir: this.addCircleHelper(0x0, 1.5, 0xff0000, 1.0),
+            text: this.addTextHelper('#fff', 16),
+        };
+        this.p2Header = {
+            cir: this.addCircleHelper(0x0, 1.5, 0x0000ff, 1.0),
+            text: this.addTextHelper('#fff', 16),
+        };
+        this.p1Header.cir.setRadius(16);
+        this.p1Header.cir.setPosition(STATS_BAR_X_OFFSET + 14, LIFE_Y + 6);
+        this.p1Header.text.setText('P1');
+        Phaser.Display.Align.In.Center(this.p1Header.text, this.p1Header.cir);
+        this.p1Header.text.setPosition(
+            Math.floor(this.p1Header.text.x + 1),
+            Math.floor(this.p1Header.text.y + 1)
+        );
+
+        this.p2Header.cir.setRadius(16);
+        this.p2Header.cir.setPosition(
+            PHASER_CANVAS_W - STATS_BAR_X_OFFSET - 14,
+            LIFE_Y + 6
+        );
+        this.p2Header.text.setText('P2');
+        Phaser.Display.Align.In.Center(this.p2Header.text, this.p2Header.cir);
+        this.p2Header.text.setPosition(
+            Math.floor(this.p2Header.text.x + 1),
+            Math.floor(this.p2Header.text.y + 1)
+        );
+
+        //
+        // Player names
+        //
+        this.p1Name = this.addTextHelper('#fff', 16);
+        this.p2Name = this.addTextHelper('#fff', 16);
 
         //
         // Frame data shown under debug mode
         //
         this.debug_info_objects = {};
-        const borderWidth = 250;
-        const borderHeight = 86.5;
+        const frameDataItems = [
+            'health',
+            'rage',
+            'action',
+            'body_state',
+            'body_counter',
+            'position',
+        ];
+        const rowHeight = 20.5;
         const borderStrokeWidth = 4;
-        const topMargin = 102;
+        const borderWidth = 250;
+        const borderHeight =
+            rowHeight * frameDataItems.length + borderStrokeWidth;
+        const topMargin = 140;
         const topPadding = 5;
         const leftMargin = 35;
         [0, 1].forEach((index) => {
@@ -190,41 +266,46 @@ export default class UI extends Phaser.Scene {
                 .setStrokeStyle(borderStrokeWidth, 0x0, 0.2)
                 .setVisible(false);
 
-            ['body_state', 'body_counter', 'action', 'position'].forEach(
-                (stats, stats_i) => {
-                    const rowHeight = 20.5;
-                    const y = rowHeight * stats_i + topMargin + topPadding;
-                    const descWidth = 120;
+            frameDataItems.forEach((stats, stats_i) => {
+                const y = rowHeight * stats_i + topMargin + topPadding;
+                const descWidth = 120;
 
-                    this.debug_info_objects[index][stats] = {};
+                this.debug_info_objects[index][stats] = {};
 
-                    this.debug_info_objects[index][stats]['bg'] = this.add
-                        .rectangle(
-                            x + borderWidth / 2 - 5,
-                            y + 7.5,
-                            borderWidth - 5,
-                            rowHeight
-                        )
-                        .setFillStyle(0x0, stats_i % 2 == 0 ? 0.6 : 0.7)
-                        .setStrokeStyle(0, 0x0, 0.0)
-                        .setVisible(false);
+                this.debug_info_objects[index][stats]['bg'] = this.add
+                    .rectangle(
+                        x + borderWidth / 2 - 5,
+                        y + 7.5,
+                        borderWidth - 5,
+                        rowHeight
+                    )
+                    .setFillStyle(0x0, stats_i % 2 == 0 ? 0.6 : 0.7)
+                    .setStrokeStyle(0, 0x0, 0.0)
+                    .setVisible(false);
 
-                    this.debug_info_objects[index][stats]['desc'] =
-                        this.add.text(x, y, '', {
-                            fontFamily: 'sans-serif',
-                            fontSize: '15px',
-                            color: '#fff',
-                        });
+                this.debug_info_objects[index][stats]['desc'] = this.add.text(
+                    x,
+                    y,
+                    '',
+                    {
+                        fontFamily: 'sans-serif',
+                        fontSize: '15px',
+                        color: '#fff',
+                    }
+                );
 
-                    this.debug_info_objects[index][stats]['data'] =
-                        this.add.text(x + descWidth, y, '', {
-                            fontFamily: 'sans-serif',
-                            fontSize: '15px',
-                            fontStyle: 'bold',
-                            color: '#fff',
-                        });
-                }
-            );
+                this.debug_info_objects[index][stats]['data'] = this.add.text(
+                    x + descWidth,
+                    y,
+                    '',
+                    {
+                        fontFamily: 'sans-serif',
+                        fontSize: '15px',
+                        fontStyle: 'bold',
+                        color: '#fff',
+                    }
+                );
+            });
         });
 
         this.p1Lives = [];
@@ -278,7 +359,9 @@ export default class UI extends Phaser.Scene {
             .on('end-text-hide', this.onEndTextHide, this)
             .on('update-stats', this.onStatsUpdate, this)
             .on('reset-stats', this.onStatsReset, this)
-            .on('setLives', this.onSetLives, this);
+            .on('setLives', this.onSetLives, this)
+            .on('setPlayerOneName', this.onSetPlayerOneName, this)
+            .on('setPlayerTwoName', this.onSetPlayerTwoName, this);
 
         this.events.on('destroy', () => {
             eventsCenter
@@ -301,7 +384,17 @@ export default class UI extends Phaser.Scene {
                 .removeListener('end-text-hide', this.onEndTextHide, this)
                 .removeListener('update-stats', this.onStatsUpdate, this)
                 .removeListener('reset-stats', this.onStatsReset, this)
-                .removeListener('setLives', this.onSetLives, this);
+                .removeListener('setLives', this.onSetLives, this)
+                .removeListener(
+                    'setPlayerOneName',
+                    this.onSetPlayerOneName,
+                    this
+                )
+                .removeListener(
+                    'setPlayerTwoName',
+                    this.onSetPlayerTwoName,
+                    this
+                );
         });
         // this.scene.get('play').events
         // eventsCenter
@@ -317,6 +410,39 @@ export default class UI extends Phaser.Scene {
     }
     create() {
         this.initialize();
+    }
+
+    //
+    // Player name handlers
+    //
+    onSetPlayerOneName(name: string) {
+        console.log(
+            'UI.ts onSetPlayerOneName() name',
+            name,
+            'this.p1Name',
+            this.p1Name
+        );
+        this.p1Name.setText(name);
+        Phaser.Display.Align.In.LeftCenter(
+            this.p1Name,
+            this.stats_bars[0]['hp_bg']
+        );
+        this.p1Name.setPosition(
+            Math.floor(this.p1Name.x + 8),
+            Math.floor(this.p1Name.y + 1)
+        );
+    }
+    onSetPlayerTwoName(name: string) {
+        console.log('UI.ts onSetPlayerTwoName()', name);
+        this.p2Name.setText(name);
+        Phaser.Display.Align.In.RightCenter(
+            this.p2Name,
+            this.stats_bars[1]['hp_bg']
+        );
+        this.p2Name.setPosition(
+            Math.floor(this.p2Name.x - 8),
+            Math.floor(this.p2Name.y + 1)
+        );
     }
 
     //
@@ -400,14 +526,15 @@ export default class UI extends Phaser.Scene {
         eventText: string,
         eventCount: number
     ) {
+        const eventTextFormatted = eventText; //.toUpperCase();
+        const text =
+            eventCount > 0
+                ? `${eventTextFormatted} X${eventCount + 1}`
+                : eventTextFormatted;
         if (playerIndex == 1) {
-            this.PlayerOneEvent?.setText(
-                eventCount > 0 ? `${eventText} x${eventCount + 1}` : eventText
-            );
+            this.PlayerOneEvent?.setText(text);
         } else {
-            this.PlayerTwoEvent?.setText(
-                eventCount > 0 ? `${eventText} x${eventCount + 1}` : eventText
-            );
+            this.PlayerTwoEvent?.setText(text);
         }
     }
 
@@ -426,7 +553,9 @@ export default class UI extends Phaser.Scene {
         [0, 1].forEach((index) => {
             this.debug_info_objects[index]['border'].setVisible(true);
 
+            //
             // body state
+            //
             const state = frames[index].body_state.state;
             const isAntoc = state > 1000;
             const stateName =
@@ -450,7 +579,9 @@ export default class UI extends Phaser.Scene {
                 true
             );
 
+            //
             // action
+            //
             console.log('frame', frames[index]);
             const action = (frames[index] as Frame).action;
             const characterActions = CHARACTERS_ACTIONS[isAntoc ? 1 : 0];
@@ -464,7 +595,9 @@ export default class UI extends Phaser.Scene {
             this.debug_info_objects[index]['action']['desc'].setText('Action');
             this.debug_info_objects[index]['action']['bg'].setVisible(true);
 
+            //
             // position
+            //
             this.debug_info_objects[index]['position']['data'].setText(
                 `(${frames[index].physics_state.pos.x},${frames[index].physics_state.pos.y})`
             );
@@ -472,6 +605,24 @@ export default class UI extends Phaser.Scene {
                 'Position'
             );
             this.debug_info_objects[index]['position']['bg'].setVisible(true);
+
+            //
+            // health
+            //
+            this.debug_info_objects[index]['health']['data'].setText(
+                `${frames[index].body_state.integrity}`
+            );
+            this.debug_info_objects[index]['health']['desc'].setText('Health');
+            this.debug_info_objects[index]['health']['bg'].setVisible(true);
+
+            //
+            // rage
+            //
+            this.debug_info_objects[index]['rage']['data'].setText(
+                `${frames[index].body_state.stamina}`
+            );
+            this.debug_info_objects[index]['rage']['desc'].setText('Rage');
+            this.debug_info_objects[index]['rage']['bg'].setVisible(true);
         });
     }
 

@@ -10,6 +10,7 @@ export interface Action {
     // How long the action takes
     frames: {
         duration: number;
+        lastFrame?: number;
         // The intents of an action in a combo buffer
         intents?: number[];
         active?: number[];
@@ -41,6 +42,10 @@ export const defaultAction: Action = {
 };
 
 const RestId = 0;
+const DashForwardId = 7;
+const DashBackwardId = 8;
+const JumpId = 9;
+
 export const Rest: Action = {
     id: RestId,
     display: {
@@ -60,7 +65,20 @@ export const Slash: Action = {
         unicode: '\u{1F5E1}',
         icon: './images/actions/slash.png',
     },
-    frames: { duration: 5, active: [3] },
+    frames: {
+        duration: 5,
+        active: [3],
+        interrupts: [
+            {
+                left: [DashForwardId],
+                duration: 4,
+            },
+            {
+                left: [DashBackwardId],
+                duration: 4,
+            },
+        ],
+    },
     key: 'J',
     tutorial: {
         video: './media/tutorial/slash.mp4',
@@ -82,8 +100,16 @@ export const Upswing: Action = {
         active: [3],
         interrupts: [
             {
+                left: [DashForwardId],
+                duration: 7,
+            },
+            {
+                left: [DashBackwardId],
+                duration: 7,
+            },
+            {
                 left: [JessicaLowKickId],
-                duration: 4,
+                duration: 7,
             },
         ],
     },
@@ -102,7 +128,32 @@ export const Sidecut: Action = {
         unicode: '\u{1F5E1}',
         icon: './images/actions/sidecut.png',
     },
-    frames: { duration: 5, active: [3] },
+    frames: {
+        duration: 5,
+        active: [3],
+        interrupts: [
+            {
+                left: [JumpId],
+                duration: 6,
+            },
+            {
+                left: [JumpId, DashForwardId],
+                duration: 4,
+            },
+            {
+                left: [JumpId, DashBackwardId],
+                duration: 4,
+            },
+            {
+                left: [DashForwardId],
+                duration: 4,
+            },
+            {
+                left: [DashBackwardId],
+                duration: 4,
+            },
+        ],
+    },
     key: 'L',
     tutorial: {
         video: './media/tutorial/sidecut.mp4',
@@ -172,8 +223,6 @@ const MoveBackward: Action = {
     key: 'A',
     bodyState: 100,
 };
-
-const JumpId = 9;
 
 export const DashForward: Action = {
     id: 7,
@@ -248,6 +297,7 @@ export const Jump: Action = {
     },
     frames: {
         duration: 8, // given current gravity setting, Jessica's jump is 6 (original) + 2 (air) = 8 frames long
+        lastFrame: 6,
         interrupts: [
             {
                 right: [Sidecut.id],
@@ -390,12 +440,16 @@ export const Vert: Action = {
                 duration: 8,
             },
             {
+                left: [AntocJumpId],
+                duration: 6,
+            },
+            {
                 left: [AntocJumpId, AntocDashForwardId],
-                duration: 8,
+                duration: 4,
             },
             {
                 left: [AntocJumpId, AntocDashBackwardId],
-                duration: 8,
+                duration: 4,
             },
         ],
     },
@@ -553,6 +607,7 @@ export const AntocJump: Action = {
     },
     frames: {
         duration: 9, // given current gravity setting, Antoc's jump is 7 (original) + 2 (air) = 9 frames long
+        lastFrame: 7,
         interrupts: [
             {
                 right: [Vert.id],
