@@ -260,7 +260,6 @@ const SpectatorScene = React.forwardRef(
         const [fullReplay, setFullReplay] = useState<boolean>(true);
         // React states for simulation / animation control
         const [outputs, setOutputs] = useState<FrameScene[]>([]);
-        console.log('outputs', outputs);
 
         const [simulationError, setSimulationError] = useState();
         const [reSimulationNeeded, setReSimulationNeeded] =
@@ -387,8 +386,6 @@ const SpectatorScene = React.forwardRef(
 
         const p1 = playerAgentToAgent(player.agent);
         const p2 = playerAgentToAgent(opponent.agent);
-        console.log(`p1`, p1);
-        console.log(`p2`, p2);
 
         const ctx = useContext(ShoshinWASMContext);
 
@@ -415,6 +412,9 @@ const SpectatorScene = React.forwardRef(
                     outputs.push(output);
                 }
 
+                console.log(`p1`, p1);
+                console.log(`p2`, p2);
+                console.log('outputs', outputs);
                 setOutputs(outputs);
             }
         }, [phaserLoaded]);
@@ -1203,25 +1203,27 @@ const SpectatorScene = React.forwardRef(
                                                 overflowY: 'auto',
                                             }}
                                         >
-                                            <Gambit
-                                                isAnimationRunning={
-                                                    animationState ==
-                                                    AnimationState.RUN
-                                                }
-                                                layers={chosenPlayer.layers}
-                                                setLayers={() => {}}
-                                                features={SpectatorFeatures}
-                                                character={
-                                                    chosenPlayer.character
-                                                }
-                                                conditions={
-                                                    chosenPlayer.conditions
-                                                }
-                                                combos={chosenPlayer.combos}
-                                                setCombos={() => {}}
-                                                activeMs={activeMs}
-                                                actions={actions}
-                                            />
+                                            {!isObserver && (
+                                                <Gambit
+                                                    isAnimationRunning={
+                                                        animationState ==
+                                                        AnimationState.RUN
+                                                    }
+                                                    layers={chosenPlayer.layers}
+                                                    setLayers={() => {}}
+                                                    features={SpectatorFeatures}
+                                                    character={
+                                                        chosenPlayer.character
+                                                    }
+                                                    conditions={
+                                                        chosenPlayer.conditions
+                                                    }
+                                                    combos={chosenPlayer.combos}
+                                                    setCombos={() => {}}
+                                                    activeMs={activeMs}
+                                                    actions={actions}
+                                                />
+                                            )}
                                         </Box>
                                         {score > 0 && (
                                             <Typography>
