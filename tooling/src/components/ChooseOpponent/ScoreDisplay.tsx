@@ -19,6 +19,7 @@ import { useAccount } from '@starknet-react/core';
 
 interface ScoreDisplayProps {
     opponentIndex: number;
+    playerCharacter: Character;
 }
 
 export interface SinglePlayerScore {

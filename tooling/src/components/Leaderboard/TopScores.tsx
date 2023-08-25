@@ -29,7 +29,7 @@ interface LeaderboardProps {
     handleSelectReplay: (mind: OnlineOpponent, opponentIndex: number) => void;
 }
 
-interface LeaderboardScore {
+export interface LeaderboardScore {
     playerAddress: string;
     totalScore: number;
     topScores: SinglePlayerScore[];

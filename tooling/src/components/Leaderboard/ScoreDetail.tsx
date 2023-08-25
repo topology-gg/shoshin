@@ -9,17 +9,16 @@ import {
     TableRow,
 } from '@mui/material';
 import { SinglePlayerScore } from '../ChooseOpponent/ScoreDisplay';
+import { LeaderboardScore } from './TopScores';
+import { Character } from '../../constants/constants';
+import {
+    AntocOnlineOpponents,
+    JessicaOnlineOpponents,
+} from '../ChooseOpponent/opponents/opponents';
 
 interface ScoreDetailProps {
     score: LeaderboardScore;
     onScoreClick: (index: string, opponentIndex: number) => void;
-}
-
-interface LeaderboardScore {
-    playerAddress: string;
-    totalScore: number;
-    topScores: SinglePlayerScore[];
-    scores: SinglePlayerScore[];
 }
 
 const ScoreDetail = ({ score, onScoreClick }: ScoreDetailProps) => {
@@ -34,6 +33,11 @@ const ScoreDetail = ({ score, onScoreClick }: ScoreDetailProps) => {
     const rows = score.topScores
         .sort((a, b) => a.opponentIndex - b.opponentIndex)
         .map((score, index) => {
+            const opponentName =
+                score.character == Character.Jessica
+                    ? JessicaOnlineOpponents[score.opponentIndex].mindName
+                    : AntocOnlineOpponents[score.opponentIndex].mindName;
+
             return (
                 <TableRow
                     key={index}
@@ -42,7 +46,7 @@ const ScoreDetail = ({ score, onScoreClick }: ScoreDetailProps) => {
                     onClick={() => handleScoreClick(index, score.opponentIndex)}
                 >
                     <TableCell sx={{ ...tableCellSx, textAlign: 'center' }}>
-                        {score.opponentIndex}
+                        {opponentName}
                     </TableCell>
                     <TableCell sx={tableCellSx}>
                         {score.score.totalScore}
@@ -57,7 +61,7 @@ const ScoreDetail = ({ score, onScoreClick }: ScoreDetailProps) => {
             <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                     <TableRow>
-                        <TableCell sx={tableCellSx}>Opponent Id</TableCell>
+                        <TableCell sx={tableCellSx}>Opponent Name</TableCell>
                         <TableCell sx={tableCellSx}>Total Score</TableCell>
                         <TableCell sx={tableCellSx}>Character</TableCell>
                     </TableRow>
