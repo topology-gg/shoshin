@@ -460,12 +460,15 @@ const SimulationScene = React.forwardRef(
         let playerOneName = null;
         let playerOneNameString = '';
         if ('playerName' in player) {
-            playerOneNameString = player.mindName + ' by ' + player.playerName;
-            playerOneName = (
-                <Typography>
-                    {player.mindName} by {player.playerName}
-                </Typography>
-            );
+            if ('playerName' in player && player.playerName.length) {
+                playerOneNameString =
+                    player.mindName + ' by ' + player.playerName;
+            } else if ('mindName' in player && !player.mindName.length) {
+                playerOneNameString = player.mindName;
+            } else {
+                playerOneNameString = player.agent.character;
+            }
+            playerOneName = <Typography>{playerOneNameString}</Typography>;
         } else {
             playerOneName = <Typography>{player.character}</Typography>;
             playerOneNameString = player.character;
@@ -474,13 +477,16 @@ const SimulationScene = React.forwardRef(
         let playerTwoName = null;
         let playerTwoNameString = '';
         if ('playerName' in opponent) {
-            playerTwoNameString =
-                opponent.mindName + ' by ' + opponent.playerName;
-            playerTwoName = (
-                <Typography>
-                    {opponent.mindName} by {opponent.playerName}
-                </Typography>
-            );
+            if ('playerName' in opponent && opponent.playerName.length) {
+                playerTwoNameString =
+                    opponent.mindName + ' by ' + opponent.playerName;
+            } else if ('mindName' in opponent && !opponent.mindName.length) {
+                playerTwoNameString = opponent.mindName;
+            } else {
+                playerTwoNameString = opponent.agent.character;
+            }
+
+            playerTwoName = <Typography>{playerTwoNameString}</Typography>;
         } else {
             playerTwoName = (
                 <Typography>
