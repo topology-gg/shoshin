@@ -11,6 +11,7 @@ import {
     DialogContentText,
     DialogTitle,
     Grid,
+    Paper,
     TextField,
     Typography,
 } from '@mui/material';
@@ -22,12 +23,15 @@ import { useListMinds } from '../../../lib/api';
 import { OnlineOpponent, SavedMind } from '../../types/Opponent';
 import MindPreview from '../MindPreview/MindPreview';
 import PreviewAgainst from '../MindPreview/PreviewAgainst';
+import PreviewAgainstDialogue from '../MindPreview/PreviewAgainst';
+import { MatchFormat } from '../../constants/constants';
 
 interface OnlineMenuProps {
     transitionBack: () => void;
     transitionFromOnlineMenu: (
         playerMind: SavedMind | OnlineOpponent,
-        opp: OnlineOpponent
+        opp: OnlineOpponent,
+        isSpectate: boolean
     ) => void;
     savedMinds: SavedMind[];
     saveMinds: (minds: SavedMind[]) => void;
@@ -47,11 +51,33 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                 return;
             }
             setOpenChooseMind(false);
-            transitionFromOnlineMenu(mind, onlineOpponents[selectedOpponent]);
+            transitionFromOnlineMenu(
+                mind,
+                onlineOpponents[selectedOpponent],
+                false
+            );
+        };
+
+        const handleChooseSpectate = (mind: SavedMind | OnlineOpponent) => {
+            if (onlineOpponents === undefined) {
+                return;
+            }
+            setOpenChooseSpectate(false);
+            transitionFromOnlineMenu(
+                mind,
+                onlineOpponents[selectedOpponent],
+                true
+            );
         };
 
         const [previewOpen, setPreviewOpen] = useState<boolean>(false);
         const [openChooseMind, setOpenChooseMind] = useState<boolean>(false);
+        const [openChooseSpectate, setOpenChooseSpectate] =
+            useState<boolean>(false);
+
+        const [format, selectFormat] = useState<MatchFormat>(
+            MatchFormat.SINGLE
+        );
 
         const handleAddToSavedMinds = () => {
             saveMinds([
@@ -161,21 +187,20 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                         </DialogContent>
                     </Dialog>
 
-                    <Dialog
-                        open={openChooseMind}
-                        onClose={() => setOpenChooseMind(false)}
-                        fullWidth={true}
-                        maxWidth={'lg'}
-                    >
-                        <DialogTitle>Choose your mind</DialogTitle>
-                        <DialogContent>
-                            <PreviewAgainst
-                                savedMinds={savedMinds}
-                                chooseOpponent={handleChooseMind}
-                                close={() => setOpenChooseMind(false)}
-                            />
-                        </DialogContent>
-                    </Dialog>
+                    <PreviewAgainstDialogue
+                        savedMinds={savedMinds}
+                        chooseOpponent={handleChooseMind}
+                        close={() => setOpenChooseMind(false)}
+                        previewOpen={openChooseMind}
+                    />
+
+                    <PreviewAgainstDialogue
+                        savedMinds={savedMinds}
+                        chooseOpponent={handleChooseSpectate}
+                        close={() => setOpenChooseSpectate(false)}
+                        previewOpen={openChooseSpectate}
+                        selectFormat={selectFormat}
+                    />
 
                     {isSubmitOpeoned && (
                         <div className={'overlay-menu'} onClick={toggleMenu}>
@@ -260,6 +285,14 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                                     disabled={selectedOpponent === -1}
                                 >
                                     Preview
+                                </ShoshinMenuButton>
+
+                                <ShoshinMenuButton
+                                    sx={{ width: 200 }}
+                                    onClick={() => setOpenChooseSpectate(true)}
+                                    disabled={selectedOpponent === -1}
+                                >
+                                    Spectate
                                 </ShoshinMenuButton>
 
                                 <ShoshinMenuButton

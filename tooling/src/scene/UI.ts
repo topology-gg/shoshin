@@ -14,14 +14,24 @@ const TIMER_FONT_COLOR = '#FEEEAA'; //'#FFFD01'; //'#FFFFFF';
 const STATS_BAR_W = 410;
 const STATS_BAR_H = 26;
 const STATS_BAR_X_OFFSET = 30;
-const STATS_BAR_Y_OFFSET = 30;
+
+const LIFE_Y = 30;
+const LIFE_X_P1 = STATS_BAR_X_OFFSET + STATS_BAR_W - 15;
+const LIFE_X_P2 = PHASER_CANVAS_W - STATS_BAR_X_OFFSET - STATS_BAR_W + 15;
+const LIFE_X_SPACING = 40;
+const LIFE_SCALE = 0.125;
+
+const STATS_BAR_Y_OFFSET = LIFE_Y + 40;
 const STATA_BAR_Y_SPACING = 15;
 const STATS_BAR_P1_LEFT_BOUND = STATS_BAR_X_OFFSET + STATS_BAR_W / 2;
 const STATS_BAR_P2_LEFT_BOUND =
     PHASER_CANVAS_W - STATS_BAR_X_OFFSET - STATS_BAR_W / 2;
 const STATS_BAR_HP_Y = STATS_BAR_Y_OFFSET;
 const STATS_BAR_STAMINA_Y = STATS_BAR_HP_Y + STATS_BAR_H + STATA_BAR_Y_SPACING;
+
 const STATS_BAR_BG_BORDER_STROKEWIDTH = 1.5;
+
+const TOURNAMENT_LIVE_COUNT = 2;
 
 export interface statsInfo {
     hp: number;
@@ -42,6 +52,14 @@ export default class UI extends Phaser.Scene {
     endTextBg: Phaser.GameObjects.Rectangle;
     endText: Phaser.GameObjects.Text;
     endTextFootnote: Phaser.GameObjects.Text;
+
+    p1Lives: Phaser.GameObjects.Image[];
+    p2Lives: Phaser.GameObjects.Image[];
+
+    preload() {
+        this.load.image(`heart-empty`, 'images/ui/shoshin-heart-black.png');
+        this.load.image(`heart-solid`, 'images/ui/shoshin-heart-red.png');
+    }
 
     initialize() {
         console.log('UI scene initialize()');
@@ -209,6 +227,17 @@ export default class UI extends Phaser.Scene {
             );
         });
 
+        this.p1Lives = [];
+        this.p2Lives = [];
+        for (let i = 0; i < TOURNAMENT_LIVE_COUNT; i++) {
+            this.p1Lives[i] = this.add
+                .sprite(LIFE_X_P1 - i * LIFE_X_SPACING, LIFE_Y, `heart-solid`)
+                .setScale(LIFE_SCALE);
+            this.p2Lives[i] = this.add
+                .sprite(LIFE_X_P2 + i * LIFE_X_SPACING, LIFE_Y, `heart-solid`)
+                .setScale(LIFE_SCALE);
+        }
+
         //
         // End game message
         //
@@ -248,7 +277,8 @@ export default class UI extends Phaser.Scene {
             .on('end-text-show', this.onEndTextShow, this)
             .on('end-text-hide', this.onEndTextHide, this)
             .on('update-stats', this.onStatsUpdate, this)
-            .on('reset-stats', this.onStatsReset, this);
+            .on('reset-stats', this.onStatsReset, this)
+            .on('setLives', this.onSetLives, this);
 
         this.events.on('destroy', () => {
             eventsCenter
@@ -270,7 +300,8 @@ export default class UI extends Phaser.Scene {
                 .removeListener('end-text-show', this.onEndTextShow, this)
                 .removeListener('end-text-hide', this.onEndTextHide, this)
                 .removeListener('update-stats', this.onStatsUpdate, this)
-                .removeListener('reset-stats', this.onStatsReset, this);
+                .removeListener('reset-stats', this.onStatsReset, this)
+                .removeListener('setLives', this.onSetLives, this);
         });
         // this.scene.get('play').events
         // eventsCenter
@@ -476,5 +507,33 @@ export default class UI extends Phaser.Scene {
         this.endTextFootnote.setText('');
         this.endText.setText('');
         this.endTextBg.setVisible(false);
+    }
+
+    onSetLives(lives: number[]) {
+        // render lives when arg is valid
+        if (lives.length == 2) {
+            // each element lies in range [0,2]
+            if (lives[0] == 0) {
+                this.p1Lives[0].setTexture('heart-empty');
+                this.p1Lives[1].setTexture('heart-empty');
+            } else if (lives[0] == 1) {
+                this.p1Lives[0].setTexture('heart-solid');
+                this.p1Lives[1].setTexture('heart-empty');
+            } else if (lives[0] == 2) {
+                this.p1Lives[0].setTexture('heart-solid');
+                this.p1Lives[1].setTexture('heart-solid');
+            }
+
+            if (lives[1] == 0) {
+                this.p2Lives[0].setTexture('heart-empty');
+                this.p2Lives[1].setTexture('heart-empty');
+            } else if (lives[1] == 1) {
+                this.p2Lives[0].setTexture('heart-solid');
+                this.p2Lives[1].setTexture('heart-empty');
+            } else if (lives[1] == 2) {
+                this.p2Lives[0].setTexture('heart-solid');
+                this.p2Lives[1].setTexture('heart-solid');
+            }
+        }
     }
 }

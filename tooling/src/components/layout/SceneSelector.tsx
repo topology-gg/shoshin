@@ -7,7 +7,12 @@ import MainMenu from '../MainMenu/MainMenu';
 import ChooseCharacter from '../ChooseCharacter/ChooseCharacter';
 import ChooseOpponent from '../ChooseOpponent/ChooseOpponent';
 import MainScene from '../SimulationScene/MainScene';
-import { Character, IDLE_AGENT, nullScoreMap } from '../../constants/constants';
+import {
+    Character,
+    IDLE_AGENT,
+    MatchFormat,
+    nullScoreMap,
+} from '../../constants/constants';
 import { INITIAL_AGENT_COMPONENTS } from '../../constants/starter_agent';
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 import { Layer } from '../../types/Layer';
@@ -54,6 +59,7 @@ export const Scenes = {
     ONLINE_MENU: 'online_menu',
     MINDS: 'minds',
     LEADERBOARD: 'leaderboard',
+    SPECTATE: 'spectate',
 } as const;
 import {
     track_character_select,
@@ -61,6 +67,7 @@ import {
     track_beat_opponent,
 } from '../../helpers/track';
 import LeadboardScene from '../Leaderboard/LeaderboardScene';
+import SpectatorScene from '../SimulationScene/SpectatorScene';
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
 
@@ -86,6 +93,7 @@ const defaultOpponent: Opponent = {
 };
 
 export type Playable = SavedMind | OnlineOpponent | PlayerAgent;
+export type Spectatable = SavedMind | OnlineOpponent;
 
 const ShowFullReplayStorageKey = 'showFullReplay';
 const CompletedTutorialStorageKey = 'CompletedTutorial';
@@ -97,6 +105,8 @@ const SceneSelector = () => {
     const [onlineMode, setOnlineMode] = useState<boolean>(false);
     const [previewMode, setPreviewMode] = useState<boolean>(false);
     const [completedTutorial, setCompletedTutorial] = useState<boolean>(true);
+
+    const [format, setFormat] = useState<MatchFormat>(MatchFormat.BO3);
 
     const musicRef = useRef<HTMLAudioElement>();
     const ctx = React.useContext(ShoshinWASMContext);
@@ -502,13 +512,20 @@ const SceneSelector = () => {
 
     const transitionFromOnlineMenu = (
         playerOneMind: SavedMind | OnlineOpponent,
-        opponent: OnlineOpponent
+        opponent: OnlineOpponent,
+        isSpectate: boolean
     ) => {
         setOnlineMode(true);
-        setScene(Scenes.MAIN_SCENE);
+        if (isSpectate == true) {
+            setScene(Scenes.SPECTATE);
+        } else {
+            setScene(Scenes.MAIN_SCENE);
+        }
+
         pauseMusic();
         setPlayerAgent(playerOneMind);
         setOnlineOpponentChoice(opponent);
+        setFormat(format);
     };
 
     const handleQuit = () => {
@@ -642,8 +659,25 @@ const SceneSelector = () => {
                     pauseMenu={pauseMenu}
                     showFullReplay={showFullReplay && !previewMode}
                     isPreview={previewMode}
+                    matchFormat={format}
                     isCampaign={isCampaign}
                     opponentIndex={selectedOpponent}
+                />
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.SPECTATE}>
+                <SpectatorScene
+                    savePlayerAgent={savePlayerAgent}
+                    player={playerAgent as Spectatable}
+                    opponent={opponent as Spectatable}
+                    onContinue={handleContinue}
+                    onQuit={handleQuit}
+                    transitionToActionReference={transitionToActionReference}
+                    volume={volume}
+                    pauseMenu={pauseMenu}
+                    showFullReplay={showFullReplay && !previewMode}
+                    isPreview={previewMode}
+                    matchFormat={format}
+                    bestOf={3}
                 />
             </SceneSingle>
             <SceneSingle active={scene === Scenes.ARCADE}>
