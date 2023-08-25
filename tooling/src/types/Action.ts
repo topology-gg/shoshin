@@ -10,6 +10,7 @@ export interface Action {
     // How long the action takes
     frames: {
         duration: number;
+        lastFrame?: number;
         // The intents of an action in a combo buffer
         intents?: number[];
         active?: number[];
@@ -248,6 +249,7 @@ export const Jump: Action = {
     },
     frames: {
         duration: 8, // given current gravity setting, Jessica's jump is 6 (original) + 2 (air) = 8 frames long
+        lastFrame: 6,
         interrupts: [
             {
                 right: [Sidecut.id],
@@ -553,6 +555,7 @@ export const AntocJump: Action = {
     },
     frames: {
         duration: 9, // given current gravity setting, Antoc's jump is 7 (original) + 2 (air) = 9 frames long
+        lastFrame: 7,
         interrupts: [
             {
                 right: [Vert.id],
