@@ -622,20 +622,14 @@ const SpectatorScene = React.forwardRef(
         const overlayClassName = isObserver ? spectatorSceneStyles.overlay : '';
 
         let playerOneName = null;
-
-        playerOneName = (
-            <Typography>
-                {player.mindName} by {player.playerName}
-            </Typography>
-        );
+        const playerOneNameString =
+            player.mindName + ' by ' + player.playerName;
+        playerOneName = <Typography>{playerOneNameString}</Typography>;
 
         let playerTwoName = null;
-
-        playerTwoName = (
-            <Typography>
-                {opponent.mindName} by {opponent.playerName}
-            </Typography>
-        );
+        let playerTwoNameString =
+            opponent.mindName + ' by ' + opponent.playerName;
+        playerTwoName = <Typography>{playerTwoNameString}</Typography>;
 
         let activeMs = 0;
 
@@ -950,7 +944,7 @@ const SpectatorScene = React.forwardRef(
                                                         )}
                                                     </div>
                                                 </Box>
-                                                <Box
+                                                {/* <Box
                                                     sx={{
                                                         display: 'flex',
                                                         flexDirection: 'row',
@@ -998,7 +992,7 @@ const SpectatorScene = React.forwardRef(
                                                         </Typography>
                                                         {playerTwoName}
                                                     </Box>
-                                                </Box>
+                                                </Box> */}
                                                 <Box
                                                     onClick={handleOverlayPress}
                                                 >
@@ -1027,6 +1021,12 @@ const SpectatorScene = React.forwardRef(
                                                         backgroundId={1}
                                                         volume={volume}
                                                         lives={lives}
+                                                        playerOneName={
+                                                            playerOneNameString
+                                                        }
+                                                        playerTwoName={
+                                                            playerTwoNameString
+                                                        }
                                                     />
                                                 </Box>
                                             </div>

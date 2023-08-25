@@ -26,6 +26,8 @@ const Game = ({
     onPhaserLoad,
     volume,
     lives,
+    playerOneName,
+    playerTwoName,
 }: PhaserGameProps) => {
     const tagName = 'div';
     const className = 'relative top-0 left-0 w-full h-full my-12';
@@ -237,6 +239,13 @@ const Game = ({
             }
         }
     }, [isInView]);
+
+    React.useEffect(() => {
+        if (isGameSceneDefined(gameMode)) {
+            eventsCenter.emit('setPlayerOneName', playerOneName);
+            eventsCenter.emit('setPlayerTwoName', playerTwoName);
+        }
+    }, [testJson, playerOneName, playerTwoName]);
 
     React.useEffect(() => {
         if (isGameSceneDefined(gameMode) && testJson) {
