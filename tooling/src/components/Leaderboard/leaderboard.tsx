@@ -23,6 +23,7 @@ import ScoreDetail from './ScoreDetail';
 import LoadMind from './LoadMind';
 import { PlayerAgent } from '../../types/Agent';
 import MindPreview from '../MindPreview/MindPreview';
+import { SavedMind } from '../../types/Opponent';
 
 interface LeaderboardProps {
     opponents: number[];
@@ -242,7 +243,9 @@ const Leaderboard = ({ opponents, handleSelectReplay }: LeaderboardProps) => {
                                 : ''}
                         </DialogTitle>
                         <DialogContent>
-                            <MindPreview mind={{ agent: selectedMind.mind }} />
+                            <MindPreview
+                                mind={{ agent: selectedMind.mind } as SavedMind}
+                            />
                         </DialogContent>
 
                         <DialogActions>
