@@ -260,6 +260,7 @@ const SpectatorScene = React.forwardRef(
         const [fullReplay, setFullReplay] = useState<boolean>(true);
         // React states for simulation / animation control
         const [outputs, setOutputs] = useState<FrameScene[]>([]);
+        console.log('outputs', outputs);
 
         const [simulationError, setSimulationError] = useState();
         const [reSimulationNeeded, setReSimulationNeeded] =
@@ -382,7 +383,7 @@ const SpectatorScene = React.forwardRef(
                     };
                 });
             }
-        }, [outputs]);
+        }, [outputs, round]);
 
         const p1 = playerAgentToAgent(player.agent);
         const p2 = playerAgentToAgent(opponent.agent);
