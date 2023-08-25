@@ -32,6 +32,11 @@ const STATS_BAR_STAMINA_Y = STATS_BAR_HP_Y + STATS_BAR_H + STATA_BAR_Y_SPACING;
 
 const STATS_BAR_BG_BORDER_STROKEWIDTH = 1.5;
 
+// const EVENT_TEXT_FONT_SIZE = 140;
+// const EVENT_TEXT_ALPHA = 0.5;
+const EVENT_TEXT_FONT_SIZE = 36;
+const EVENT_TEXT_ALPHA = 0.8;
+
 const TOURNAMENT_LIVE_COUNT = 2;
 
 export interface statsInfo {
@@ -159,14 +164,14 @@ export default class UI extends Phaser.Scene {
         this.PlayerOneEvent = this.add
             .text(25, 140, '', {
                 fontFamily: 'Oswald',
-                fontSize: '36px',
+                fontSize: `${EVENT_TEXT_FONT_SIZE}px`,
                 color: '#FFFB37',
                 fontStyle: 'italic',
                 stroke: '#000000',
                 strokeThickness: 4,
                 padding: { left: null, right: 30 },
             })
-            .setAlpha(0.8);
+            .setAlpha(EVENT_TEXT_ALPHA);
 
         //
         // Event alert for player 2
@@ -174,14 +179,14 @@ export default class UI extends Phaser.Scene {
         this.PlayerTwoEvent = this.add
             .text(600, 140, '', {
                 fontFamily: 'Oswald',
-                fontSize: '36px',
+                fontSize: `${EVENT_TEXT_FONT_SIZE}px`,
                 color: '#FFFB37',
                 fontStyle: 'italic',
                 stroke: '#000000',
                 strokeThickness: 4,
                 padding: { left: null, right: 30 },
             })
-            .setAlpha(0.8);
+            .setAlpha(EVENT_TEXT_ALPHA);
 
         //
         // Player headers
@@ -225,10 +230,20 @@ export default class UI extends Phaser.Scene {
         // Frame data shown under debug mode
         //
         this.debug_info_objects = {};
-        const borderWidth = 250;
-        const borderHeight = 86.5;
+        const frameDataItems = [
+            'health',
+            'rage',
+            'action',
+            'body_state',
+            'body_counter',
+            'position',
+        ];
+        const rowHeight = 20.5;
         const borderStrokeWidth = 4;
-        const topMargin = 102;
+        const borderWidth = 250;
+        const borderHeight =
+            rowHeight * frameDataItems.length + borderStrokeWidth;
+        const topMargin = 140;
         const topPadding = 5;
         const leftMargin = 35;
         [0, 1].forEach((index) => {
@@ -251,41 +266,46 @@ export default class UI extends Phaser.Scene {
                 .setStrokeStyle(borderStrokeWidth, 0x0, 0.2)
                 .setVisible(false);
 
-            ['body_state', 'body_counter', 'action', 'position'].forEach(
-                (stats, stats_i) => {
-                    const rowHeight = 20.5;
-                    const y = rowHeight * stats_i + topMargin + topPadding;
-                    const descWidth = 120;
+            frameDataItems.forEach((stats, stats_i) => {
+                const y = rowHeight * stats_i + topMargin + topPadding;
+                const descWidth = 120;
 
-                    this.debug_info_objects[index][stats] = {};
+                this.debug_info_objects[index][stats] = {};
 
-                    this.debug_info_objects[index][stats]['bg'] = this.add
-                        .rectangle(
-                            x + borderWidth / 2 - 5,
-                            y + 7.5,
-                            borderWidth - 5,
-                            rowHeight
-                        )
-                        .setFillStyle(0x0, stats_i % 2 == 0 ? 0.6 : 0.7)
-                        .setStrokeStyle(0, 0x0, 0.0)
-                        .setVisible(false);
+                this.debug_info_objects[index][stats]['bg'] = this.add
+                    .rectangle(
+                        x + borderWidth / 2 - 5,
+                        y + 7.5,
+                        borderWidth - 5,
+                        rowHeight
+                    )
+                    .setFillStyle(0x0, stats_i % 2 == 0 ? 0.6 : 0.7)
+                    .setStrokeStyle(0, 0x0, 0.0)
+                    .setVisible(false);
 
-                    this.debug_info_objects[index][stats]['desc'] =
-                        this.add.text(x, y, '', {
-                            fontFamily: 'sans-serif',
-                            fontSize: '15px',
-                            color: '#fff',
-                        });
+                this.debug_info_objects[index][stats]['desc'] = this.add.text(
+                    x,
+                    y,
+                    '',
+                    {
+                        fontFamily: 'sans-serif',
+                        fontSize: '15px',
+                        color: '#fff',
+                    }
+                );
 
-                    this.debug_info_objects[index][stats]['data'] =
-                        this.add.text(x + descWidth, y, '', {
-                            fontFamily: 'sans-serif',
-                            fontSize: '15px',
-                            fontStyle: 'bold',
-                            color: '#fff',
-                        });
-                }
-            );
+                this.debug_info_objects[index][stats]['data'] = this.add.text(
+                    x + descWidth,
+                    y,
+                    '',
+                    {
+                        fontFamily: 'sans-serif',
+                        fontSize: '15px',
+                        fontStyle: 'bold',
+                        color: '#fff',
+                    }
+                );
+            });
         });
 
         this.p1Lives = [];
@@ -506,14 +526,15 @@ export default class UI extends Phaser.Scene {
         eventText: string,
         eventCount: number
     ) {
+        const eventTextFormatted = eventText; //.toUpperCase();
+        const text =
+            eventCount > 0
+                ? `${eventTextFormatted} X${eventCount + 1}`
+                : eventTextFormatted;
         if (playerIndex == 1) {
-            this.PlayerOneEvent?.setText(
-                eventCount > 0 ? `${eventText} x${eventCount + 1}` : eventText
-            );
+            this.PlayerOneEvent?.setText(text);
         } else {
-            this.PlayerTwoEvent?.setText(
-                eventCount > 0 ? `${eventText} x${eventCount + 1}` : eventText
-            );
+            this.PlayerTwoEvent?.setText(text);
         }
     }
 
@@ -532,7 +553,9 @@ export default class UI extends Phaser.Scene {
         [0, 1].forEach((index) => {
             this.debug_info_objects[index]['border'].setVisible(true);
 
+            //
             // body state
+            //
             const state = frames[index].body_state.state;
             const isAntoc = state > 1000;
             const stateName =
@@ -556,7 +579,9 @@ export default class UI extends Phaser.Scene {
                 true
             );
 
+            //
             // action
+            //
             console.log('frame', frames[index]);
             const action = (frames[index] as Frame).action;
             const characterActions = CHARACTERS_ACTIONS[isAntoc ? 1 : 0];
@@ -570,7 +595,9 @@ export default class UI extends Phaser.Scene {
             this.debug_info_objects[index]['action']['desc'].setText('Action');
             this.debug_info_objects[index]['action']['bg'].setVisible(true);
 
+            //
             // position
+            //
             this.debug_info_objects[index]['position']['data'].setText(
                 `(${frames[index].physics_state.pos.x},${frames[index].physics_state.pos.y})`
             );
@@ -578,6 +605,24 @@ export default class UI extends Phaser.Scene {
                 'Position'
             );
             this.debug_info_objects[index]['position']['bg'].setVisible(true);
+
+            //
+            // health
+            //
+            this.debug_info_objects[index]['health']['data'].setText(
+                `${frames[index].body_state.integrity}`
+            );
+            this.debug_info_objects[index]['health']['desc'].setText('Health');
+            this.debug_info_objects[index]['health']['bg'].setVisible(true);
+
+            //
+            // rage
+            //
+            this.debug_info_objects[index]['rage']['data'].setText(
+                `${frames[index].body_state.stamina}`
+            );
+            this.debug_info_objects[index]['rage']['desc'].setText('Rage');
+            this.debug_info_objects[index]['rage']['bg'].setVisible(true);
         });
     }
 
