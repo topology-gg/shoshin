@@ -70,11 +70,11 @@ export const Slash: Action = {
         interrupts: [
             {
                 left: [DashForwardId],
-                duration: 3,
+                duration: 4,
             },
             {
                 left: [DashBackwardId],
-                duration: 3,
+                duration: 4,
             },
         ],
     },
@@ -100,11 +100,11 @@ export const Upswing: Action = {
         interrupts: [
             {
                 left: [DashForwardId],
-                duration: 6,
+                duration: 7,
             },
             {
                 left: [DashBackwardId],
-                duration: 6,
+                duration: 7,
             },
             {
                 left: [JessicaLowKickId],
@@ -439,7 +439,7 @@ export const Vert: Action = {
             },
             {
                 left: [AntocJumpId],
-                duration: 4,
+                duration: 6,
             },
             {
                 left: [AntocJumpId, AntocDashForwardId],
