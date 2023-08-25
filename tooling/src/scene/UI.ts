@@ -31,6 +31,11 @@ const STATS_BAR_STAMINA_Y = STATS_BAR_HP_Y + STATS_BAR_H + STATA_BAR_Y_SPACING;
 
 const STATS_BAR_BG_BORDER_STROKEWIDTH = 1.5;
 
+// const EVENT_TEXT_FONT_SIZE = 140;
+// const EVENT_TEXT_ALPHA = 0.5;
+const EVENT_TEXT_FONT_SIZE = 36;
+const EVENT_TEXT_ALPHA = 0.8;
+
 const TOURNAMENT_LIVE_COUNT = 2;
 
 export interface statsInfo {
@@ -136,14 +141,14 @@ export default class UI extends Phaser.Scene {
         this.PlayerOneEvent = this.add
             .text(25, 140, '', {
                 fontFamily: 'Oswald',
-                fontSize: '36px',
+                fontSize: `${EVENT_TEXT_FONT_SIZE}px`,
                 color: '#FFFB37',
                 fontStyle: 'italic',
                 stroke: '#000000',
                 strokeThickness: 4,
                 padding: { left: null, right: 30 },
             })
-            .setAlpha(0.8);
+            .setAlpha(EVENT_TEXT_ALPHA);
 
         //
         // Event alert for player 2
@@ -151,14 +156,14 @@ export default class UI extends Phaser.Scene {
         this.PlayerTwoEvent = this.add
             .text(600, 140, '', {
                 fontFamily: 'Oswald',
-                fontSize: '36px',
+                fontSize: `${EVENT_TEXT_FONT_SIZE}px`,
                 color: '#FFFB37',
                 fontStyle: 'italic',
                 stroke: '#000000',
                 strokeThickness: 4,
                 padding: { left: null, right: 30 },
             })
-            .setAlpha(0.8);
+            .setAlpha(EVENT_TEXT_ALPHA);
 
         //
         // Frame data shown under debug mode
@@ -415,14 +420,15 @@ export default class UI extends Phaser.Scene {
         eventText: string,
         eventCount: number
     ) {
+        const eventTextFormatted = eventText; //.toUpperCase();
+        const text =
+            eventCount > 0
+                ? `${eventTextFormatted} X${eventCount + 1}`
+                : eventTextFormatted;
         if (playerIndex == 1) {
-            this.PlayerOneEvent?.setText(
-                eventCount > 0 ? `${eventText} x${eventCount + 1}` : eventText
-            );
+            this.PlayerOneEvent?.setText(text);
         } else {
-            this.PlayerTwoEvent?.setText(
-                eventCount > 0 ? `${eventText} x${eventCount + 1}` : eventText
-            );
+            this.PlayerTwoEvent?.setText(text);
         }
     }
 
