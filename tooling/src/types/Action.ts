@@ -41,6 +41,10 @@ export const defaultAction: Action = {
 };
 
 const RestId = 0;
+const DashForwardId = 7;
+const DashBackwardId = 8;
+const JumpId = 9;
+
 export const Rest: Action = {
     id: RestId,
     display: {
@@ -60,7 +64,20 @@ export const Slash: Action = {
         unicode: '\u{1F5E1}',
         icon: './images/actions/slash.png',
     },
-    frames: { duration: 5, active: [3] },
+    frames: {
+        duration: 5,
+        active: [3],
+        interrupts: [
+            {
+                left: [DashForwardId],
+                duration: 3,
+            },
+            {
+                left: [DashBackwardId],
+                duration: 3,
+            },
+        ],
+    },
     key: 'J',
     tutorial: {
         video: './media/tutorial/slash.mp4',
@@ -82,8 +99,16 @@ export const Upswing: Action = {
         active: [3],
         interrupts: [
             {
+                left: [DashForwardId],
+                duration: 6,
+            },
+            {
+                left: [DashBackwardId],
+                duration: 6,
+            },
+            {
                 left: [JessicaLowKickId],
-                duration: 4,
+                duration: 7,
             },
         ],
     },
@@ -102,7 +127,28 @@ export const Sidecut: Action = {
         unicode: '\u{1F5E1}',
         icon: './images/actions/sidecut.png',
     },
-    frames: { duration: 5, active: [3] },
+    frames: {
+        duration: 5,
+        active: [3],
+        interrupts: [
+            {
+                left: [DashForwardId],
+                duration: 3,
+            },
+            {
+                left: [DashBackwardId],
+                duration: 3,
+            },
+            {
+                left: [JumpId, DashForwardId],
+                duration: 4,
+            },
+            {
+                left: [JumpId, DashBackwardId],
+                duration: 4,
+            },
+        ],
+    },
     key: 'L',
     tutorial: {
         video: './media/tutorial/sidecut.mp4',
@@ -172,8 +218,6 @@ const MoveBackward: Action = {
     key: 'A',
     bodyState: 100,
 };
-
-const JumpId = 9;
 
 export const DashForward: Action = {
     id: 7,
@@ -390,12 +434,16 @@ export const Vert: Action = {
                 duration: 8,
             },
             {
+                left: [AntocJumpId],
+                duration: 4,
+            },
+            {
                 left: [AntocJumpId, AntocDashForwardId],
-                duration: 8,
+                duration: 4,
             },
             {
                 left: [AntocJumpId, AntocDashBackwardId],
-                duration: 8,
+                duration: 4,
             },
         ],
     },
