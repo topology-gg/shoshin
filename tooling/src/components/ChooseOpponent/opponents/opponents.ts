@@ -51,7 +51,7 @@ export const JessicaOnlineOpponents = [
         mindName: 'Tempete',
         backgroundId: 2,
     },
-    { agent: onlineOpponentAdam.agent, mindName: 'Shock', backgroundId: 3 },
+    { agent: onlineOpponentShock.agent, mindName: 'Shock', backgroundId: 3 },
     { agent: onlineOpponentYui.agent, mindName: 'Yui', backgroundId: 4 },
     { agent: onlineOpponentWrath.agent, mindName: 'Wrath', backgroundId: 5 },
 ];

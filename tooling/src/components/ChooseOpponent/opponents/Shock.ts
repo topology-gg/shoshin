@@ -3659,7 +3659,7 @@ export const onlineOpponentShock: OnlineOpponent = {
     agent: {
         //@ts-ignore
         layers,
-        character: Character.Antoc,
+        character: Character.Jessica,
         //@ts-ignore
         combos,
         //@ts-ignore
