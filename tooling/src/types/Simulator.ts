@@ -13,6 +13,8 @@ export interface PhaserGameProps {
     onPhaserLoad?: () => void;
     volume: number;
     lives?: number[];
+    playerOneName?: string;
+    playerTwoName?: string;
 }
 export interface SimulatorProps {
     testJson: TestJson;

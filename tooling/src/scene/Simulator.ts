@@ -100,7 +100,7 @@ interface BattleEvent {
     eventCount: number;
 }
 
-interface CircleLabel {
+export interface CircleLabel {
     cir: Phaser.GameObjects.Arc;
     text: Phaser.GameObjects.Text;
 }
@@ -1388,7 +1388,7 @@ export default class Simulator extends Phaser.Scene {
         if (lives[0] == -1) {
             return;
         }
-        console.log('emitting lives', lives);
+        // console.log('emitting lives', lives);
         eventsCenter.emit('setLives', lives);
     }
 
