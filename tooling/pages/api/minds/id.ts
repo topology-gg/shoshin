@@ -19,5 +19,9 @@ export default async function handler(req, res) {
         .collection(COLLECTION_NAME_CAMPAIGN_MINDS)
         .findOne(queryFilter);
 
-    res.status(200).json({ mind });
+    if (!mind) {
+        res.status(404).json({ error: 'Mind not found' }); // Return a 404 Not Found response
+    } else {
+        res.status(200).json({ mind });
+    }
 }

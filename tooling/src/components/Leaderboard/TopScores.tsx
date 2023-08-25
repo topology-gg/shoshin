@@ -188,7 +188,6 @@ const Leaderboard = ({ opponents, handleSelectReplay }: LeaderboardProps) => {
     };
 
     const handleMindViewClose = () => {
-        setOpenSelectScore(false);
         setLeadboardState(LeadboardStates.VIEW_SCORES);
     };
 
@@ -201,7 +200,8 @@ const Leaderboard = ({ opponents, handleSelectReplay }: LeaderboardProps) => {
         };
 
         handleSelectReplay(mindAsOnlineOpp, selectedOpponentIndex);
-        handleMindViewClose();
+        setOpenSelectScore(false);
+        setLeadboardState(LeadboardStates.VIEW_SCORES);
     };
     return (
         <Box>

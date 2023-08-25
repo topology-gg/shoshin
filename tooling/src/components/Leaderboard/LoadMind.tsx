@@ -3,11 +3,17 @@ import { useGetMindFromId } from '../../../lib/api';
 import { useEffect } from 'react';
 
 const LoadMind = ({ mindId, onLoadMind }) => {
-    const { data: data } = useGetMindFromId(mindId);
+    console.log('res', mindId);
+    const { data, error } = useGetMindFromId(mindId);
     const mind = data?.mind ? data.mind : undefined;
 
     useEffect(() => {
-        onLoadMind(mind);
+        if (mind) {
+            onLoadMind(mind);
+        }
+        if (error) {
+            onLoadMind(null);
+        }
     }, [mind]);
 
     return (
