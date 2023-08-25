@@ -34,7 +34,13 @@ const LeadboardScene = ({
                             />
                         </Box>
                     </Grid>
-                    <Grid item xs={0} sm={2} md={4} lg={6}></Grid>
+                </Grid>
+
+                <Grid
+                    container
+                    sx={{ width: '66%', height: '70%' }}
+                    spacing={2}
+                >
                     <Grid item xs={4}>
                         <ShoshinMenuButton
                             sx={{ width: 150 }}
