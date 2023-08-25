@@ -353,7 +353,7 @@ const MidScreenControl = ({
                             fontWeight: 'normal',
                             top: 4,
                             backgroundColor: 'unset',
-                            color: '#eee',
+                            color: '#000000',
                             '&:before': {
                                 display: 'none',
                             },

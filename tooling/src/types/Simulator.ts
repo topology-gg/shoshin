@@ -12,11 +12,13 @@ export interface PhaserGameProps {
     backgroundId: number;
     onPhaserLoad?: () => void;
     volume: number;
+    lives?: number[];
 }
 export interface SimulatorProps {
     testJson: TestJson;
     animationFrame: number;
     showDebug: boolean;
+    lives?: number[];
 }
 
 interface RealTimeOptions {

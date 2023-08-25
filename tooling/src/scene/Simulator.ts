@@ -1392,10 +1392,19 @@ export default class Simulator extends Phaser.Scene {
         this.backgroundId = data.backgroundId;
     }
 
+    updateLives(lives) {
+        if (lives[0] == -1) {
+            return;
+        }
+        console.log('emitting lives', lives);
+        eventsCenter.emit('setLives', lives);
+    }
+
     updateSceneFromFrame({
         testJson,
         animationFrame,
         showDebug,
+        lives,
     }: SimulatorProps) {
         const characterType0 = testJson?.agent_0.type;
         const characterType1 = testJson?.agent_1.type;
@@ -1411,7 +1420,6 @@ export default class Simulator extends Phaser.Scene {
         const agentFrame1 = testJson?.agent_1.frames[animationFrame];
         const fightLength = testJson?.agent_0.frames.length;
         // console.log('animationFrame', animationFrame, 'agentFrame0.body_state', agentFrame0.body_state, 'agentFrame1.body_state', agentFrame1.body_state)
-
         this.updateScene(
             characterType0,
             characterType1,
@@ -1431,6 +1439,8 @@ export default class Simulator extends Phaser.Scene {
             agentFrame1,
             animationFrame
         );
+
+        this.updateLives(lives);
 
         const rewound = this.last_accessed_frame > animationFrame;
         this.last_accessed_frame = animationFrame;

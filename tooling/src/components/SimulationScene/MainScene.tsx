@@ -26,6 +26,13 @@ import StatusBarPanel, {
 import { Action, CHARACTERS_ACTIONS } from '../../types/Action';
 import {
     Character,
+    DamageType,
+    FRAME_COUNT,
+    MatchFormat,
+    SCORING,
+    ScoreMap,
+    isDamaged,
+    nullScoreMap,
     calculateScoreMap,
     numberToCharacter,
 } from '../../constants/constants';
@@ -65,6 +72,7 @@ import SubmitMindButton from './SubmitOptions/MainSceneSubmit';
 import useAnimationControls, {
     AnimationState,
 } from '../../hooks/useAnimationControls';
+import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import SubmitOptions from './SubmitOptions/SubmitOptions';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
@@ -84,6 +92,7 @@ interface SimulationProps {
     pauseMenu: ReactNode;
     showFullReplay: boolean;
     isPreview: boolean;
+    matchFormat: MatchFormat;
     isCampaign: boolean;
 }
 //We need Players agent and opponent
@@ -99,6 +108,7 @@ const SimulationScene = React.forwardRef(
             pauseMenu,
             showFullReplay,
             isPreview,
+            matchFormat,
             opponentIndex,
             isCampaign,
         } = props;
@@ -113,6 +123,9 @@ const SimulationScene = React.forwardRef(
             useState<boolean>(false);
 
         let p2: Agent;
+
+        const [lives, setLives] = useState<number[]>([2, 2]);
+
         if ('layers' in opponent.agent) {
             const { layers, character, combos } = opponent.agent;
             const charIndex = character == Character.Jessica ? 0 : 1;
@@ -355,6 +368,20 @@ const SimulationScene = React.forwardRef(
         } else {
             performance = Medal.BRONZE;
         }
+
+        useEffect(() => {
+            let res = animationFrame % 4;
+
+            if (res == 0) {
+                setLives([2, 2]);
+            } else if (res == 1) {
+                setLives([1, 2]);
+            } else if (res == 2) {
+                setLives([1, 1]);
+            } else if (res == 3) {
+                setLives([1, 0]);
+            }
+        }, [animationFrame]);
 
         //
         // Compute score from the fight
@@ -630,6 +657,7 @@ const SimulationScene = React.forwardRef(
                                                     isInView={true}
                                                     backgroundId={backgroundId}
                                                     volume={volume}
+                                                    lives={lives}
                                                 />
                                             </div>
                                             {playOnly && (

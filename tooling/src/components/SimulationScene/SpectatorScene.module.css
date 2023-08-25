@@ -1,0 +1,55 @@
+.overlayContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 10;
+}
+
+.overlay {
+    width: 90%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    z-index: 10;
+}
+
+.simulatorContainer {
+    background-color: white;
+}
+
+.optionsHover {
+    position: absolute;
+    top: 0;
+    left: 500px;
+    background-color: rgba(256, 256, 256, 0.2);
+    color: white;
+}
+
+.timelineHover {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(256, 256, 256, 0.2);
+    color: white;
+}
+
+.timeline {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 40rem;
+    justify-self: center;
+    z-index: 10;
+}
