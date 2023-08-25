@@ -370,20 +370,6 @@ const SimulationScene = React.forwardRef(
             performance = Medal.BRONZE;
         }
 
-        useEffect(() => {
-            let res = animationFrame % 4;
-
-            if (res == 0) {
-                setLives([2, 2]);
-            } else if (res == 1) {
-                setLives([1, 2]);
-            } else if (res == 2) {
-                setLives([1, 1]);
-            } else if (res == 3) {
-                setLives([1, 0]);
-            }
-        }, [animationFrame]);
-
         //
         // Compute score from the fight
         //
