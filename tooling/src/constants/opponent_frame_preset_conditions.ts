@@ -4,8 +4,6 @@ import {
     Condition,
     Perceptible,
 } from '../types/Condition';
-import { alwaysTrueCondition } from '../types/Layer';
-import { Direction, Tree } from '../types/Tree';
 
 export const opponent_frame_preset_conditions = [
     {

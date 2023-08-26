@@ -1,4 +1,13 @@
-import { Action, CHARACTERS_ACTIONS, MoveForward, Rest } from './Action';
+import {
+    Action,
+    AntocDashBackward,
+    AntocLowKick,
+    CHARACTERS_ACTIONS,
+    DashBackward,
+    JessicaLowKick,
+    MoveForward,
+    Rest,
+} from './Action';
 import {
     BodystatesAntoc,
     BodystatesJessica,
@@ -899,62 +908,62 @@ export const jessicaKnockedRecoveryLayer: Layer = {
     //@ts-ignore
     conditions: getKnockedRecoveryCondition(JESSICA),
     action: {
-        id: Rest.id,
+        id: DashBackward.id,
         isCombo: false,
     },
     sui: false,
     locked: false,
     actionAlternative: {
-        id: Rest.id,
+        id: JessicaLowKick.id,
         isCombo: false,
     },
-    probability: 0,
+    probability: 5,
 };
 
 export const antocKnockedRecoveryLayer: Layer = {
     //@ts-ignore
     conditions: getKnockedRecoveryCondition(ANTOC),
     action: {
-        id: Rest.id,
+        id: AntocDashBackward.id,
         isCombo: false,
     },
     sui: false,
     locked: false,
     actionAlternative: {
-        id: Rest.id,
+        id: AntocLowKick.id,
         isCombo: false,
     },
-    probability: 0,
+    probability: 5,
 };
 
 export const jessicaLaunchedRecoveryLayer: Layer = {
     //@ts-ignore
     conditions: getLaunchedRecoveryCondition(JESSICA),
     action: {
-        id: Rest.id,
+        id: DashBackward.id,
         isCombo: false,
     },
     sui: false,
     locked: false,
     actionAlternative: {
-        id: Rest.id,
+        id: JessicaLowKick.id,
         isCombo: false,
     },
-    probability: 0,
+    probability: 5,
 };
 
 export const antocLaunchedRecoveryLayer: Layer = {
     //@ts-ignore
     conditions: getLaunchedRecoveryCondition(ANTOC),
     action: {
-        id: Rest.id,
+        id: AntocDashBackward.id,
         isCombo: false,
     },
     sui: false,
     locked: false,
     actionAlternative: {
-        id: Rest.id,
+        id: AntocLowKick.id,
         isCombo: false,
     },
-    probability: 0,
+    probability: 5,
 };
