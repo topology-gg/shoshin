@@ -186,6 +186,51 @@ namespace ns_jessica_body_state {
     const KO = 240; // 14 frames
 }
 
+func jessica_active_body_state_duration_lookup {range_check_ptr}(state: felt) -> felt {
+    if (state == ns_jessica_body_state.SLASH) {
+        return ns_jessica_body_state_duration.SLASH;
+    }
+    if (state == ns_jessica_body_state.UPSWING) {
+        return ns_jessica_body_state_duration.UPSWING;
+    }
+    if (state == ns_jessica_body_state.SIDECUT) {
+        return ns_jessica_body_state_duration.SIDECUT;
+    }
+    if (state == ns_jessica_body_state.DASH_FORWARD) {
+        return ns_jessica_body_state_duration.DASH_FORWARD;
+    }
+    if (state == ns_jessica_body_state.DASH_BACKWARD) {
+        return ns_jessica_body_state_duration.DASH_BACKWARD;
+    }
+    if (state == ns_jessica_body_state.JUMP) {
+        return ns_jessica_body_state_duration.JUMP;
+    }
+    if (state == ns_jessica_body_state.GATOTSU) {
+        return ns_jessica_body_state_duration.GATOTSU;
+    }
+    if (state == ns_jessica_body_state.LOW_KICK) {
+        return ns_jessica_body_state_duration.LOW_KICK;
+    }
+    if (state == ns_jessica_body_state.TAUNT_PARIS23) {
+        return ns_jessica_body_state_duration.TAUNT_PARIS23;
+    }
+
+    // these states sustain only with sustained action
+    // so treat their duration as 1
+    if (state == ns_jessica_body_state.BLOCK) {
+        return 1;
+    }
+    if (state == ns_jessica_body_state.MOVE_FORWARD) {
+        return 1;
+    }
+    if (state == ns_jessica_body_state.MOVE_BACKWARD) {
+        return 1;
+    }
+
+    // otherwise return 1
+    return 1;
+}
+
 namespace ns_jessica_body_state_qualifiers {
 
     func is_in_slash_active {range_check_ptr}(state: felt, counter: felt) -> felt {
