@@ -74,7 +74,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
-import { Playable, Spectatable } from '../layout/SceneSelector';
+import { Spectatable } from '../layout/SceneSelector';
 import useAnimationControls, {
     AnimationState,
 } from '../../hooks/useAnimationControls';
@@ -82,6 +82,7 @@ import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import { ShoshinWASMContext } from '../../context/wasm-shoshin';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import { Playable, getNameForPlayable } from '../../types/Playable';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -621,15 +622,8 @@ const SpectatorScene = React.forwardRef(
         //Having this class be conditional on playOnly may not be needed
         const overlayClassName = isObserver ? spectatorSceneStyles.overlay : '';
 
-        let playerOneName = null;
-        const playerOneNameString =
-            player.mindName + ' by ' + player.playerName;
-        playerOneName = <Typography>{playerOneNameString}</Typography>;
-
-        let playerTwoName = null;
-        let playerTwoNameString =
-            opponent.mindName + ' by ' + opponent.playerName;
-        playerTwoName = <Typography>{playerTwoNameString}</Typography>;
+        const playerOneNameString = getNameForPlayable(player);
+        const playerTwoNameString = getNameForPlayable(opponent);
 
         let activeMs = 0;
 

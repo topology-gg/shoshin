@@ -66,6 +66,7 @@ import {
     track_beat_opponent,
 } from '../../helpers/track';
 import SpectatorScene from '../SimulationScene/SpectatorScene';
+import { Playable } from '../../types/Playable';
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
 
@@ -90,7 +91,6 @@ const defaultOpponent: Opponent = {
     scoreMap: nullScoreMap,
 };
 
-export type Playable = SavedMind | OnlineOpponent | PlayerAgent;
 export type Spectatable = SavedMind | OnlineOpponent;
 
 const ShowFullReplayStorageKey = 'showFullReplay';

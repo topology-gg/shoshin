@@ -67,7 +67,6 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
-import { Playable } from '../layout/SceneSelector';
 import SubmitMindButton from './SubmitOptions/MainSceneSubmit';
 import useAnimationControls, {
     AnimationState,
@@ -75,6 +74,7 @@ import useAnimationControls, {
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import SubmitOptions from './SubmitOptions/SubmitOptions';
 import eventsCenter from '../../Game/EventsCenter';
+import { getNameForPlayable } from '../../types/Playable';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -457,44 +457,9 @@ const SimulationScene = React.forwardRef(
             }
         };
 
-        let playerOneName = null;
-        let playerOneNameString = '';
-        if ('playerName' in player) {
-            if ('playerName' in player && player.playerName.length) {
-                playerOneNameString =
-                    player.mindName + ' by ' + player.playerName;
-            } else if ('mindName' in player && !player.mindName.length) {
-                playerOneNameString = player.mindName;
-            } else {
-                playerOneNameString = player.agent.character;
-            }
-            playerOneName = <Typography>{playerOneNameString}</Typography>;
-        } else {
-            playerOneName = <Typography>{player.character}</Typography>;
-            playerOneNameString = player.character;
-        }
+        const playerOneNameString = getNameForPlayable(player);
 
-        let playerTwoName = null;
-        let playerTwoNameString = '';
-        if ('playerName' in opponent) {
-            if ('playerName' in opponent && opponent.playerName.length) {
-                playerTwoNameString =
-                    opponent.mindName + ' by ' + opponent.playerName;
-            } else if ('mindName' in opponent && !opponent.mindName.length) {
-                playerTwoNameString = opponent.mindName;
-            } else {
-                playerTwoNameString = opponent.agent.character;
-            }
-
-            playerTwoName = <Typography>{playerTwoNameString}</Typography>;
-        } else {
-            playerTwoName = (
-                <Typography>
-                    {numberToCharacter(opponent.agent.character)}
-                </Typography>
-            );
-            playerTwoNameString = numberToCharacter(opponent.agent.character);
-        }
+        const playerTwoNameString = getNameForPlayable(opponent);
 
         const backgroundId =
             'backgroundId' in opponent ? opponent.backgroundId : 0;
