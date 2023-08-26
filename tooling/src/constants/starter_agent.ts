@@ -23,7 +23,7 @@ import { spacing_preset_conditions } from './spacing_preset_conditions';
 import { y_position_preset_conditions } from './y_position_preset_conditions';
 
 // source: https://stackoverflow.com/a/40958850
-function simpleHash(str: string) {
+export function simpleHash(str: string) {
     var hash = 0,
         i,
         chr,

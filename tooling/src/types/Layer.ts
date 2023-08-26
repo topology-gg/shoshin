@@ -12,6 +12,7 @@ import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
 import { actionIntentsInCombo } from './Action';
 import { ANTOC, JESSICA } from '../constants/constants';
+import { simpleHash } from '../constants/starter_agent';
 //Layer conditions have extra metadate while they are being edited
 export interface LayerCondition extends Condition {
     isInverted: boolean;
@@ -607,10 +608,12 @@ const getKnockedRecoveryCondition = (character: number): Condition[] => {
         ] as ConditionElement[],
         displayName: "I'm Knocked",
         type: 'my state',
+        key: simpleHash("I'm Knocked" + 1000).toString(),
     };
 
     const iAmKnockedLastFrame = (character) => {
         const lastFrame = character == JESSICA ? 11 : 11;
+        const displayName = `My Frame = ${lastFrame}`;
         return {
             elements: [
                 {
@@ -634,8 +637,9 @@ const getKnockedRecoveryCondition = (character: number): Condition[] => {
                     type: 'Operator',
                 },
             ] as ConditionElement[],
-            displayName: `My Frame = ${lastFrame}`,
+            displayName: displayName,
             type: 'my state',
+            key: simpleHash(displayName + 1000).toString(),
         };
     };
 
@@ -700,10 +704,12 @@ const getLaunchedRecoveryCondition = (character: number): Condition[] => {
         ] as ConditionElement[],
         displayName: "I'm Launched",
         type: 'my state',
+        key: simpleHash("I'm Launched" + 1000).toString(),
     };
 
     const iAmLaunchedLastFrame = (character) => {
         const lastFrame = character == JESSICA ? 11 : 9;
+        const displayName: string = `My Frame = ${lastFrame}`;
         return {
             elements: [
                 {
@@ -727,8 +733,9 @@ const getLaunchedRecoveryCondition = (character: number): Condition[] => {
                     type: 'Operator',
                 },
             ] as ConditionElement[],
-            displayName: `My Frame = ${lastFrame}`,
+            displayName: displayName,
             type: 'my state',
+            key: simpleHash(displayName + 1000).toString(),
         };
     };
 
