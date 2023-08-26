@@ -74,7 +74,7 @@ import useAnimationControls, {
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import SubmitOptions from './SubmitOptions/SubmitOptions';
 import eventsCenter from '../../Game/EventsCenter';
-import { getNameForPlayable } from '../../types/Playable';
+import { Playable, getNameForPlayable } from '../../types/Playable';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
