@@ -67,7 +67,6 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 
 import { buildAgentFromLayers } from '../ChooseOpponent/opponents/util';
-import { Playable } from '../layout/SceneSelector';
 import SubmitMindButton from './SubmitOptions/MainSceneSubmit';
 import useAnimationControls, {
     AnimationState,
@@ -75,6 +74,7 @@ import useAnimationControls, {
 import ShoshinMenuButton from '../ui/ShoshinMenuButton';
 import SubmitOptions from './SubmitOptions/SubmitOptions';
 import eventsCenter from '../../Game/EventsCenter';
+import { Playable, getNameForPlayable } from '../../types/Playable';
 //@ts-ignore
 const Game = dynamic(() => import('../../../src/Game/PhaserGame'), {
     ssr: false,
@@ -443,38 +443,9 @@ const SimulationScene = React.forwardRef(
             }
         };
 
-        let playerOneName = null;
-        let playerOneNameString = '';
-        if ('playerName' in player) {
-            playerOneNameString = player.mindName + ' by ' + player.playerName;
-            playerOneName = (
-                <Typography>
-                    {player.mindName} by {player.playerName}
-                </Typography>
-            );
-        } else {
-            playerOneName = <Typography>{player.character}</Typography>;
-            playerOneNameString = player.character;
-        }
+        const playerOneNameString = getNameForPlayable(player);
 
-        let playerTwoName = null;
-        let playerTwoNameString = '';
-        if ('playerName' in opponent) {
-            playerTwoNameString =
-                opponent.mindName + ' by ' + opponent.playerName;
-            playerTwoName = (
-                <Typography>
-                    {opponent.mindName} by {opponent.playerName}
-                </Typography>
-            );
-        } else {
-            playerTwoName = (
-                <Typography>
-                    {numberToCharacter(opponent.agent.character)}
-                </Typography>
-            );
-            playerTwoNameString = numberToCharacter(opponent.agent.character);
-        }
+        const playerTwoNameString = getNameForPlayable(opponent);
 
         const backgroundId =
             'backgroundId' in opponent ? opponent.backgroundId : 0;

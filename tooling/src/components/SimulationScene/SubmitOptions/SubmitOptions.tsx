@@ -3,8 +3,7 @@ import SubmitMindButton from './MainSceneSubmit';
 import CampaignSubmitButton from './CampaignSubmit';
 import FileDownloadOffIcon from '@mui/icons-material/FileDownloadOff';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import { Playable } from '../../layout/SceneSelector';
-import { Opponent } from '../../../types/Opponent';
+import { Playable } from '../../../types/Playable';
 
 interface SubmitOptionsProps {
     isPreview: boolean;
