@@ -1984,7 +1984,8 @@ const json = {
         },
     ],
 };
-const { layers, char, combos, conditions } = json;
+const { layers, char, combos, conditions, agent_name } = json;
+
 //@ts-ignore
 export const Adam = buildAgentFromLayers(layers, char, combos);
 

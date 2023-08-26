@@ -13,8 +13,14 @@ import {
 import CardSimple from '../ui/CardSimple';
 import { EMPTY_JESSICA } from '../../constants/starter_agent';
 import { PlayerAgent } from '../../types/Agent';
-import { Character, ScoreMap, WhitelistEntry } from '../../constants/constants';
-import { useGetScoresForOpponent, useWhitelist } from '../../../lib/api';
+import {
+    Character,
+    JESSICA,
+    ScoreMap,
+    WhitelistEntry,
+} from '../../constants/constants';
+import { useGetScoresForOpponents, useWhitelist } from '../../../lib/api';
+import { useAccount } from '@starknet-react/core';
 
 interface ScoreDisplayProps {
     opponentIndex: number;
@@ -22,13 +28,13 @@ interface ScoreDisplayProps {
 
 export interface SinglePlayerScore {
     playerAddress: string;
-    mindId: number;
+    mindId: string;
     character: Character;
     score: ScoreMap;
     opponentIndex: number;
 }
 const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
-    const { data: data } = useGetScoresForOpponent(opponentIndex);
+    const { data: data } = useGetScoresForOpponents([opponentIndex], 20);
     const scores = data?.scores ? data.scores : [];
 
     const { data: whitelistData } = useWhitelist();

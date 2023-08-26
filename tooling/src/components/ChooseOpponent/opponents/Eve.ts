@@ -1,3 +1,5 @@
+import { Character } from '../../../constants/constants';
+import { OnlineOpponent } from '../../../types/Opponent';
 import { buildAgentFromLayers } from './util';
 
 const json = {
@@ -2042,6 +2044,20 @@ const json = {
         },
     ],
 };
-const { layers, char, combos } = json;
+const { layers, char, combos, conditions } = json;
 //@ts-ignore
 export const Eve = buildAgentFromLayers(layers, char, combos);
+
+export const onlineOpponentEve: OnlineOpponent = {
+    agent: {
+        //@ts-ignore
+        layers,
+        character: Character.Jessica,
+        //@ts-ignore
+        combos,
+        //@ts-ignore
+        conditions,
+    },
+    mindName: 'Eve',
+    playerName: 'Non',
+};

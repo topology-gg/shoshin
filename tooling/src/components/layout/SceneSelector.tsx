@@ -21,7 +21,9 @@ import Arcade from '../Arcade/Arcade';
 import { GameModes } from '../../types/Simulator';
 import { ShoshinWASMContext } from '../../context/wasm-shoshin';
 import {
+    AntocOnlineOpponents,
     AntocOpponents,
+    JessicaOnlineOpponents,
     JessicaOpponents,
 } from '../ChooseOpponent/opponents/opponents';
 import MoveTutorial from '../MoveTutorial/MoveTutorial';
@@ -58,6 +60,7 @@ export const Scenes = {
     ACTION_REFERENCE: 'action_reference',
     ONLINE_MENU: 'online_menu',
     MINDS: 'minds',
+    LEADERBOARD: 'leaderboard',
     SPECTATE: 'spectate',
 } as const;
 import {
@@ -65,6 +68,7 @@ import {
     track_scene_change,
     track_beat_opponent,
 } from '../../helpers/track';
+import LeadboardScene from '../Leaderboard/LeaderboardScene';
 import SpectatorScene from '../SimulationScene/SpectatorScene';
 
 export type Scene = (typeof Scenes)[keyof typeof Scenes];
@@ -96,12 +100,22 @@ export type Spectatable = SavedMind | OnlineOpponent;
 const ShowFullReplayStorageKey = 'showFullReplay';
 const CompletedTutorialStorageKey = 'CompletedTutorial';
 
+enum MainSceneMode {
+    CAMPAIGN,
+    ONLINE,
+    PREVIEW,
+    REPLAY,
+}
+
 const SceneSelector = () => {
     const [scene, setScene] = useState<Scene>();
 
     const [lastScene, setLastScene] = useState<Scene>(Scenes.MAIN_MENU);
-    const [onlineMode, setOnlineMode] = useState<boolean>(false);
-    const [previewMode, setPreviewMode] = useState<boolean>(false);
+
+    const [mainSceneMode, setMainSceneMode] = useState<MainSceneMode>(
+        MainSceneMode.CAMPAIGN
+    );
+
     const [completedTutorial, setCompletedTutorial] = useState<boolean>(true);
 
     const [format, setFormat] = useState<MatchFormat>(MatchFormat.BO3);
@@ -206,10 +220,12 @@ const SceneSelector = () => {
         }
     };
     const transitionChooseOpponent = () => {
-        if (previewMode) {
+        if (mainSceneMode == MainSceneMode.PREVIEW) {
             setScene(Scenes.MINDS);
-        } else if (onlineMode == true) {
+        } else if (mainSceneMode == MainSceneMode.ONLINE) {
             setScene(Scenes.ONLINE_MENU);
+        } else if (mainSceneMode == MainSceneMode.REPLAY) {
+            setScene(Scenes.LEADERBOARD);
         } else {
             setScene(Scenes.CHOOSE_OPPONENT);
         }
@@ -314,15 +330,35 @@ const SceneSelector = () => {
     const [opponentChoices, setOpponentChoices] =
         useState<Opponent[]>(defaultOpponents);
 
+    const defaultSpectatableOpponents =
+        character == Character.Jessica
+            ? JessicaOnlineOpponents
+            : AntocOnlineOpponents;
+
+    const [spectatableOpponentChoices, setSpectatableOpponentChoices] =
+        useState<any[]>(defaultSpectatableOpponents);
+
     const [onlineOpponentChoice, setOnlineOpponentChoice] =
         useState<OnlineOpponent>(onlineOpponentAdam);
 
     const [selectedOpponent, setSelectedOpponent] = useState<number>(0);
 
-    const opponent =
-        onlineMode == true || previewMode == true
-            ? onlineOpponentChoice
-            : opponentChoices[selectedOpponent];
+    const getOpponent = () => {
+        if (
+            mainSceneMode == MainSceneMode.PREVIEW ||
+            mainSceneMode == MainSceneMode.ONLINE
+        ) {
+            return onlineOpponentChoice;
+        }
+        console.log('mainSceneMode', mainSceneMode, spectatableOpponentChoices);
+        if (mainSceneMode == MainSceneMode.REPLAY) {
+            return spectatableOpponentChoices[selectedOpponent];
+        }
+        return opponentChoices[selectedOpponent];
+    };
+    const opponent = getOpponent();
+
+    console.log('opponent', opponent);
 
     const backgroundId = 'backgroundId' in opponent ? opponent.backgroundId : 0;
 
@@ -334,7 +370,10 @@ const SceneSelector = () => {
             updatedState = state;
         }
 
-        if ('mindName' in playerAgent && !previewMode) {
+        if (
+            'mindName' in playerAgent &&
+            mainSceneMode !== MainSceneMode.PREVIEW
+        ) {
             const newMinds = minds.map((mind) => {
                 if (
                     mind.mindName == playerAgent.mindName &&
@@ -462,21 +501,19 @@ const SceneSelector = () => {
         if (scene == Scenes.ARCADE) {
             setGameMode(GameModes.realtime);
             transitionChooseCharacter();
-            setOnlineMode(false);
-            setPreviewMode(false);
+
+            setMainSceneMode(MainSceneMode.CAMPAIGN);
         } else if (scene == Scenes.MAIN_SCENE) {
             setGameMode(GameModes.simulation);
             transitionChooseCharacter();
-            setOnlineMode(false);
-            setPreviewMode(false);
+            setMainSceneMode(MainSceneMode.CAMPAIGN);
         } else if (scene == Scenes.ONLINE_MENU) {
             setGameMode(GameModes.simulation);
-            setOnlineMode(true);
-            setPreviewMode(false);
+            setMainSceneMode(MainSceneMode.ONLINE);
             setScene(scene);
         } else if (scene == Scenes.MINDS) {
             setGameMode(GameModes.simulation);
-            setOnlineMode(false);
+            setMainSceneMode(MainSceneMode.CAMPAIGN);
             setScene(scene);
         } else {
             setScene(scene);
@@ -513,7 +550,8 @@ const SceneSelector = () => {
         opponent: OnlineOpponent,
         isSpectate: boolean
     ) => {
-        setOnlineMode(true);
+        setMainSceneMode(MainSceneMode.ONLINE);
+        setScene(Scenes.MAIN_SCENE);
         if (isSpectate == true) {
             setScene(Scenes.SPECTATE);
         } else {
@@ -527,23 +565,45 @@ const SceneSelector = () => {
     };
 
     const handleQuit = () => {
-        if (onlineMode) {
+        if (mainSceneMode == MainSceneMode.ONLINE) {
             setScene(Scenes.ONLINE_MENU);
-        } else if (previewMode) {
+        } else if (mainSceneMode == MainSceneMode.PREVIEW) {
             setScene(Scenes.MINDS);
+        } else if (mainSceneMode == MainSceneMode.REPLAY) {
+            setScene(Scenes.LEADERBOARD);
         } else {
             setScene(Scenes.MAIN_MENU);
         }
     };
 
     const handleContinue = () => {
-        if (onlineMode) {
+        if (mainSceneMode == MainSceneMode.ONLINE) {
             setScene(Scenes.ONLINE_MENU);
-        } else if (previewMode) {
+        } else if (mainSceneMode == MainSceneMode.PREVIEW) {
             setScene(Scenes.MINDS);
+        } else if (mainSceneMode == MainSceneMode.REPLAY) {
+            setScene(Scenes.LEADERBOARD);
         } else {
             setScene(Scenes.CHOOSE_OPPONENT);
         }
+    };
+
+    const handleSelectReplay = (
+        mind: OnlineOpponent,
+        opponentIndex: number
+    ) => {
+        setPlayerAgent(mind);
+        setSelectedOpponent(opponentIndex);
+
+        setMainSceneMode(MainSceneMode.REPLAY);
+
+        const spectatableOpponents =
+            character == Character.Jessica
+                ? JessicaOnlineOpponents
+                : AntocOnlineOpponents;
+
+        setSpectatableOpponentChoices(spectatableOpponents);
+        setScene(Scenes.SPECTATE);
     };
 
     const pauseMenu = (
@@ -565,7 +625,7 @@ const SceneSelector = () => {
         setOnlineOpponentChoice(opponent as OnlineOpponent);
         setPlayerAgent(player);
         setScene(Scenes.MAIN_SCENE);
-        setPreviewMode(true);
+        setMainSceneMode(MainSceneMode.PREVIEW);
     };
 
     const onSaveMinds = (minds: SavedMind[]) => {
@@ -594,7 +654,8 @@ const SceneSelector = () => {
     };
 
     const isCampaign =
-        GameModes.simulation == gameMode && !onlineMode && !previewMode;
+        GameModes.simulation == gameMode &&
+        mainSceneMode == MainSceneMode.CAMPAIGN;
     return (
         <Box sx={{ position: 'relative', width: '100vw', height: '100vh' }}>
             <SceneSingle active={scene === Scenes.WALLET_CONNECT}>
@@ -648,8 +709,11 @@ const SceneSelector = () => {
                     transitionToActionReference={transitionToActionReference}
                     volume={volume}
                     pauseMenu={pauseMenu}
-                    showFullReplay={showFullReplay && !previewMode}
-                    isPreview={previewMode}
+                    showFullReplay={
+                        showFullReplay &&
+                        mainSceneMode !== MainSceneMode.PREVIEW
+                    }
+                    isPreview={mainSceneMode == MainSceneMode.PREVIEW}
                     matchFormat={format}
                     isCampaign={isCampaign}
                     opponentIndex={selectedOpponent}
@@ -665,8 +729,11 @@ const SceneSelector = () => {
                     transitionToActionReference={transitionToActionReference}
                     volume={volume}
                     pauseMenu={pauseMenu}
-                    showFullReplay={showFullReplay && !previewMode}
-                    isPreview={previewMode}
+                    showFullReplay={
+                        showFullReplay &&
+                        mainSceneMode !== MainSceneMode.PREVIEW
+                    }
+                    isPreview={mainSceneMode == MainSceneMode.PREVIEW}
                     matchFormat={format}
                     bestOf={3}
                 />
@@ -710,6 +777,12 @@ const SceneSelector = () => {
                     minds={minds}
                     saveMinds={onSaveMinds}
                     transitionToPreview={transitionToPreview}
+                    transitionBack={() => onTransition(Scenes.MAIN_MENU)}
+                />
+            </SceneSingle>
+            <SceneSingle active={scene === Scenes.LEADERBOARD}>
+                <LeadboardScene
+                    handleSelectReplay={handleSelectReplay}
                     transitionBack={() => onTransition(Scenes.MAIN_MENU)}
                 />
             </SceneSingle>
