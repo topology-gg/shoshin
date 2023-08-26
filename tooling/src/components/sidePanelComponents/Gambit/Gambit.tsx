@@ -11,13 +11,21 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
-import { ACTION_UNICODE_MAP, Character } from '../../../constants/constants';
+import {
+    ACTION_UNICODE_MAP,
+    Character,
+    JESSICA,
+} from '../../../constants/constants';
 import BlurrableButton from '../../ui/BlurrableButton';
 import {
     Layer,
     defaultLayer,
     alwaysTrueCondition,
     LayerCondition,
+    jessicaKnockedRecoveryLayer,
+    antocKnockedRecoveryLayer,
+    jessicaLaunchedRecoveryLayer,
+    antocLaunchedRecoveryLayer,
 } from '../../../types/Layer';
 import { Condition } from '../../../types/Condition';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -837,12 +845,21 @@ const Gambit = ({
         // insert layer at lowest priority
         setLayers([...layers, deepCopy]);
     };
+    const handleCreatePresetLayer = (layer) => {
+        const deepCopy = JSON.parse(JSON.stringify(layer));
+        // insert layer at lowest priority
+        setLayers([...layers, deepCopy]);
+    };
 
     let characterIndex = Object.keys(Character).indexOf(character);
 
     const [selectedCombo, changeSelectedCombo] = useState<number>(
         initialSelectedCombo >= 0 ? initialSelectedCombo : -1
     );
+
+    const presetsButtonRef = useRef();
+
+    const [presetsMenuOpen, setPresetsMenuOpen] = useState<boolean>(false);
 
     useEffect(() => {
         changeSelectedCombo(initialSelectedCombo);
@@ -1167,18 +1184,71 @@ const Gambit = ({
                     </Grid>
                     <Grid item xs={10} marginBottom={'16px'}>
                         {features.layerAddAndDelete ? (
-                            <Button
-                                onClick={(_) => {
-                                    handleCreateLayer();
-                                }}
+                            <div
                                 style={{
-                                    fontFamily: 'Eurostile',
-                                    color: '#000',
+                                    display: 'flex',
+                                    flexDirection: 'row',
                                 }}
                             >
-                                <AddIcon sx={{ mr: '3px' }} />
-                                {'LAYER'}
-                            </Button>
+                                <Button
+                                    onClick={(_) => {
+                                        handleCreateLayer();
+                                    }}
+                                    style={{
+                                        fontFamily: 'Eurostile',
+                                        color: '#000',
+                                    }}
+                                >
+                                    <AddIcon sx={{ mr: '3px' }} />
+                                    {'LAYER'}
+                                </Button>
+
+                                <div>
+                                    <Button
+                                        onClick={(_) =>
+                                            setPresetsMenuOpen(true)
+                                        }
+                                        style={{
+                                            fontFamily: 'Eurostile',
+                                            color: '#000',
+                                        }}
+                                        ref={presetsButtonRef}
+                                    >
+                                        <AddIcon sx={{ mr: '3px' }} />
+                                        {'PRESETS'}
+                                    </Button>
+                                    <Menu
+                                        open={presetsMenuOpen}
+                                        onClose={() =>
+                                            setPresetsMenuOpen(false)
+                                        }
+                                        anchorEl={presetsButtonRef.current}
+                                    >
+                                        <MenuItem
+                                            onClick={(_) =>
+                                                handleCreatePresetLayer(
+                                                    characterIndex == JESSICA
+                                                        ? jessicaKnockedRecoveryLayer
+                                                        : antocKnockedRecoveryLayer
+                                                )
+                                            }
+                                        >
+                                            + KNOCKED RECOVERY LAYER
+                                        </MenuItem>
+                                        <MenuItem
+                                            onClick={() =>
+                                                handleCreatePresetLayer(
+                                                    characterIndex == JESSICA
+                                                        ? jessicaLaunchedRecoveryLayer
+                                                        : antocLaunchedRecoveryLayer
+                                                )
+                                            }
+                                        >
+                                            + LAUNCHED RECOVERY LAYER
+                                        </MenuItem>
+                                    </Menu>
+                                </div>
+                            </div>
                         ) : (
                             <div />
                         )}

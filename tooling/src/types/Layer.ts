@@ -11,7 +11,7 @@ import {
 import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
 import { actionIntentsInCombo } from './Action';
-import { JESSICA } from '../constants/constants';
+import { ANTOC, JESSICA } from '../constants/constants';
 //Layer conditions have extra metadate while they are being edited
 export interface LayerCondition extends Condition {
     isInverted: boolean;
@@ -549,6 +549,192 @@ export const alwaysTrueCondition = {
     isInverted: false,
 };
 
+const getKnockedRecoveryCondition = (character: number): Condition[] => {
+    const iAmKnocked = {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.Knocked,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.Knocked,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ] as ConditionElement[],
+        displayName: "I'm Knocked",
+        type: 'my state',
+    };
+
+    const iAmKnockedLastFrame = (character) => {
+        const lastFrame = character == JESSICA ? 11 : 11;
+        return {
+            elements: [
+                {
+                    value: '(',
+                    type: 'Operator',
+                },
+                {
+                    value: Perceptible.SelfBodyCounter,
+                    type: 'Perceptible',
+                },
+                {
+                    value: '==',
+                    type: 'Operator',
+                },
+                {
+                    value: lastFrame - 1,
+                    type: 'Constant',
+                },
+                {
+                    value: ')',
+                    type: 'Operator',
+                },
+            ] as ConditionElement[],
+            displayName: `My Frame = ${lastFrame}`,
+            type: 'my state',
+        };
+    };
+
+    return [iAmKnocked, iAmKnockedLastFrame(character)];
+};
+
+const getLaunchedRecoveryCondition = (character: number): Condition[] => {
+    const iAmLaunched = {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.Launched,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.Launched,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ] as ConditionElement[],
+        displayName: "I'm Launched",
+        type: 'my state',
+    };
+
+    const iAmLaunchedLastFrame = (character) => {
+        const lastFrame = character == JESSICA ? 11 : 9;
+        return {
+            elements: [
+                {
+                    value: '(',
+                    type: 'Operator',
+                },
+                {
+                    value: Perceptible.SelfBodyCounter,
+                    type: 'Perceptible',
+                },
+                {
+                    value: '==',
+                    type: 'Operator',
+                },
+                {
+                    value: lastFrame - 1,
+                    type: 'Constant',
+                },
+                {
+                    value: ')',
+                    type: 'Operator',
+                },
+            ] as ConditionElement[],
+            displayName: `My Frame = ${lastFrame}`,
+            type: 'my state',
+        };
+    };
+
+    return [iAmLaunched, iAmLaunchedLastFrame(character)];
+};
+
 const interruptCondtions = {
     elements: [
         {
@@ -689,6 +875,70 @@ const exampleMS = [
 export const defaultLayer: Layer = {
     //@ts-ignore
     conditions: [alwaysTrueCondition],
+    action: {
+        id: Rest.id,
+        isCombo: false,
+    },
+    sui: false,
+    locked: false,
+    actionAlternative: {
+        id: Rest.id,
+        isCombo: false,
+    },
+    probability: 0,
+};
+
+export const jessicaKnockedRecoveryLayer: Layer = {
+    //@ts-ignore
+    conditions: getKnockedRecoveryCondition(JESSICA),
+    action: {
+        id: Rest.id,
+        isCombo: false,
+    },
+    sui: false,
+    locked: false,
+    actionAlternative: {
+        id: Rest.id,
+        isCombo: false,
+    },
+    probability: 0,
+};
+
+export const antocKnockedRecoveryLayer: Layer = {
+    //@ts-ignore
+    conditions: getKnockedRecoveryCondition(ANTOC),
+    action: {
+        id: Rest.id,
+        isCombo: false,
+    },
+    sui: false,
+    locked: false,
+    actionAlternative: {
+        id: Rest.id,
+        isCombo: false,
+    },
+    probability: 0,
+};
+
+export const jessicaLaunchedRecoveryLayer: Layer = {
+    //@ts-ignore
+    conditions: getLaunchedRecoveryCondition(JESSICA),
+    action: {
+        id: Rest.id,
+        isCombo: false,
+    },
+    sui: false,
+    locked: false,
+    actionAlternative: {
+        id: Rest.id,
+        isCombo: false,
+    },
+    probability: 0,
+};
+
+export const antocLaunchedRecoveryLayer: Layer = {
+    //@ts-ignore
+    conditions: getLaunchedRecoveryCondition(ANTOC),
     action: {
         id: Rest.id,
         isCombo: false,
