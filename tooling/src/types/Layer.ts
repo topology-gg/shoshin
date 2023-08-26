@@ -1,4 +1,13 @@
-import { Action, CHARACTERS_ACTIONS, MoveForward, Rest } from './Action';
+import {
+    Action,
+    AntocDashBackward,
+    AntocLowKick,
+    CHARACTERS_ACTIONS,
+    DashBackward,
+    JessicaLowKick,
+    MoveForward,
+    Rest,
+} from './Action';
 import {
     BodystatesAntoc,
     BodystatesJessica,
@@ -11,7 +20,8 @@ import {
 import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
 import { actionIntentsInCombo } from './Action';
-import { JESSICA } from '../constants/constants';
+import { ANTOC, JESSICA } from '../constants/constants';
+import { simpleHash } from './utils';
 //Layer conditions have extra metadate while they are being edited
 export interface LayerCondition extends Condition {
     isInverted: boolean;
@@ -549,6 +559,198 @@ export const alwaysTrueCondition = {
     isInverted: false,
 };
 
+const getKnockedRecoveryCondition = (character: number): Condition[] => {
+    const iAmKnocked = {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.Knocked,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.Knocked,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ] as ConditionElement[],
+        displayName: "I'm Knocked",
+        type: 'my state',
+        key: simpleHash("I'm Knocked" + 1000).toString(),
+    };
+
+    const iAmKnockedLastFrame = (character) => {
+        const lastFrame = character == JESSICA ? 11 : 11;
+        const displayName = `My Frame = ${lastFrame}`;
+        return {
+            elements: [
+                {
+                    value: '(',
+                    type: 'Operator',
+                },
+                {
+                    value: Perceptible.SelfBodyCounter,
+                    type: 'Perceptible',
+                },
+                {
+                    value: '==',
+                    type: 'Operator',
+                },
+                {
+                    value: lastFrame - 1,
+                    type: 'Constant',
+                },
+                {
+                    value: ')',
+                    type: 'Operator',
+                },
+            ] as ConditionElement[],
+            displayName: displayName,
+            type: 'my state',
+            key: simpleHash(displayName + 1000).toString(),
+        };
+    };
+
+    return [iAmKnocked, iAmKnockedLastFrame(character)];
+};
+
+const getLaunchedRecoveryCondition = (character: number): Condition[] => {
+    const iAmLaunched = {
+        elements: [
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesJessica.Launched,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: 'OR',
+                type: 'Operator',
+            },
+            {
+                value: '(',
+                type: 'Operator',
+            },
+            {
+                value: Perceptible.SelfBodyState,
+                type: 'Perceptible',
+            },
+            {
+                value: '==',
+                type: 'Operator',
+            },
+            {
+                value: BodystatesAntoc.Launched,
+                type: 'BodyState',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+            {
+                value: ')',
+                type: 'Operator',
+            },
+        ] as ConditionElement[],
+        displayName: "I'm Launched",
+        type: 'my state',
+        key: simpleHash("I'm Launched" + 1000).toString(),
+    };
+
+    const iAmLaunchedLastFrame = (character) => {
+        const lastFrame = character == JESSICA ? 11 : 9;
+        const displayName: string = `My Frame = ${lastFrame}`;
+        return {
+            elements: [
+                {
+                    value: '(',
+                    type: 'Operator',
+                },
+                {
+                    value: Perceptible.SelfBodyCounter,
+                    type: 'Perceptible',
+                },
+                {
+                    value: '==',
+                    type: 'Operator',
+                },
+                {
+                    value: lastFrame - 1,
+                    type: 'Constant',
+                },
+                {
+                    value: ')',
+                    type: 'Operator',
+                },
+            ] as ConditionElement[],
+            displayName: displayName,
+            type: 'my state',
+            key: simpleHash(displayName + 1000).toString(),
+        };
+    };
+
+    return [iAmLaunched, iAmLaunchedLastFrame(character)];
+};
+
 const interruptCondtions = {
     elements: [
         {
@@ -700,4 +902,68 @@ export const defaultLayer: Layer = {
         isCombo: false,
     },
     probability: 0,
+};
+
+export const jessicaKnockedRecoveryLayer: Layer = {
+    //@ts-ignore
+    conditions: getKnockedRecoveryCondition(JESSICA),
+    action: {
+        id: DashBackward.id,
+        isCombo: false,
+    },
+    sui: false,
+    locked: false,
+    actionAlternative: {
+        id: JessicaLowKick.id,
+        isCombo: false,
+    },
+    probability: 5,
+};
+
+export const antocKnockedRecoveryLayer: Layer = {
+    //@ts-ignore
+    conditions: getKnockedRecoveryCondition(ANTOC),
+    action: {
+        id: AntocDashBackward.id,
+        isCombo: false,
+    },
+    sui: false,
+    locked: false,
+    actionAlternative: {
+        id: AntocLowKick.id,
+        isCombo: false,
+    },
+    probability: 5,
+};
+
+export const jessicaLaunchedRecoveryLayer: Layer = {
+    //@ts-ignore
+    conditions: getLaunchedRecoveryCondition(JESSICA),
+    action: {
+        id: DashBackward.id,
+        isCombo: false,
+    },
+    sui: false,
+    locked: false,
+    actionAlternative: {
+        id: JessicaLowKick.id,
+        isCombo: false,
+    },
+    probability: 5,
+};
+
+export const antocLaunchedRecoveryLayer: Layer = {
+    //@ts-ignore
+    conditions: getLaunchedRecoveryCondition(ANTOC),
+    action: {
+        id: AntocDashBackward.id,
+        isCombo: false,
+    },
+    sui: false,
+    locked: false,
+    actionAlternative: {
+        id: AntocLowKick.id,
+        isCombo: false,
+    },
+    probability: 5,
 };

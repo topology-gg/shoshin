@@ -1,6 +1,4 @@
 import { BodystatesJessica, Condition, Perceptible } from '../types/Condition';
-import { alwaysTrueCondition } from '../types/Layer';
-import { Direction, Tree } from '../types/Tree';
 
 export const jessica_opponent_preset_conditions = [
     {
