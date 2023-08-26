@@ -3,8 +3,8 @@
 from starkware.cairo.common.math_cmp import (is_le, is_nn)
 from starkware.cairo.common.bool import (TRUE, FALSE)
 from contracts.constants.constants import (ns_common_stamina_effect, ns_stamina, ns_character_type)
-from contracts.constants.constants_antoc import (ns_antoc_stamina_effect, ns_antoc_action, ns_antoc_body_state, ns_antoc_body_state_duration)
-from contracts.constants.constants_jessica import (ns_jessica_stamina_effect, ns_jessica_action, ns_jessica_body_state, ns_jessica_body_state_duration)
+from contracts.constants.constants_antoc import (ns_antoc_stamina_effect, ns_antoc_action, ns_antoc_body_state, ns_antoc_body_state_duration, antoc_active_body_state_duration_lookup)
+from contracts.constants.constants_jessica import (ns_jessica_stamina_effect, ns_jessica_action, ns_jessica_body_state, ns_jessica_body_state_duration, jessica_active_body_state_duration_lookup)
 
 func player_lost {range_check_ptr} (
     character_type: felt,
@@ -182,3 +182,9 @@ func _settle_stamina_change{range_check_ptr}(stamina : felt, stamina_change : fe
         return (updated_stamina, TRUE);
     }
 
+func character_active_body_state_duration_lookup {range_check_ptr}(character: felt, state: felt) -> felt {
+    if (character == ns_character_type.JESSICA) {
+        return jessica_active_body_state_duration_lookup(state);
+    }
+    return antoc_active_body_state_duration_lookup(state);
+}
