@@ -1,3 +1,5 @@
+import { Character } from '../../../constants/constants';
+import { OnlineOpponent } from '../../../types/Opponent';
 import { buildAgentFromLayers } from './util';
 
 const json = {
@@ -2438,6 +2440,20 @@ const json = {
     agent_name: "Hansun's Shinigami #1",
 };
 
-const { layers, char, combos } = json;
+const { layers, char, combos, conditions } = json;
 //@ts-ignore
 export const Shinigami = buildAgentFromLayers(layers, char, combos);
+
+export const onlineOpponentShinigami: OnlineOpponent = {
+    agent: {
+        //@ts-ignore
+        layers,
+        character: Character.Jessica,
+        //@ts-ignore
+        combos,
+        //@ts-ignore
+        conditions,
+    },
+    mindName: 'Shinigami',
+    playerName: 'NonCents',
+};

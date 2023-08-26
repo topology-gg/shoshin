@@ -13,8 +13,13 @@ import {
 import CardSimple from '../ui/CardSimple';
 import { EMPTY_JESSICA } from '../../constants/starter_agent';
 import { PlayerAgent } from '../../types/Agent';
-import { Character, JESSICA, ScoreMap } from '../../constants/constants';
-import { useGetScoresForOpponent } from '../../../lib/api';
+import {
+    Character,
+    JESSICA,
+    ScoreMap,
+    WhitelistEntry,
+} from '../../constants/constants';
+import { useGetScoresForOpponents, useWhitelist } from '../../../lib/api';
 import { useAccount } from '@starknet-react/core';
 
 interface ScoreDisplayProps {
@@ -23,14 +28,16 @@ interface ScoreDisplayProps {
 
 export interface SinglePlayerScore {
     playerAddress: string;
-    mindId: number;
+    mindId: string;
     character: Character;
     score: ScoreMap;
     opponentIndex: number;
 }
 const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
-    const { data: data } = useGetScoresForOpponent(opponentIndex);
+    const { data: data } = useGetScoresForOpponents([opponentIndex], 20);
     const scores = data?.scores ? data.scores : [];
+
+    const { data: whitelistData } = useWhitelist();
 
     const tableCellSx = {
         fontSize: '14px',
@@ -40,6 +47,14 @@ const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
         const copyAddress = () => {
             navigator.clipboard.writeText(score.playerAddress);
         };
+
+        const whitelistEntry = (
+            whitelistData ? whitelistData : ([] as WhitelistEntry[])
+        ).find((entry) => entry.address == score.playerAddress);
+        let identifier = whitelistEntry
+            ? whitelistEntry.username
+            : score.playerAddress;
+
         return (
             <TableRow key={index} hover={true} style={{ cursor: 'pointer' }}>
                 <TableCell sx={{ ...tableCellSx, textAlign: 'center' }}>
@@ -54,7 +69,7 @@ const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
                             width={'200px'}
                             onClick={copyAddress}
                         >
-                            {score.playerAddress}
+                            {identifier}
                         </Box>
                     </Tooltip>
                 </TableCell>

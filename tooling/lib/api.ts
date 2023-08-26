@@ -69,8 +69,11 @@ export function useGetMind(username, character, mindName) {
     );
 }
 
-export function useGetScoresForOpponent(index) {
-    return useSWR(`/api/campaign/list?opponentIndex=${index}`, fetcher);
+export function useGetScoresForOpponents(indexes, max = 999999) {
+    return useSWR(
+        `/api/campaign/list?opponentIndex=${indexes}&max=${max}`,
+        fetcher
+    );
 }
 
 async function submitCampaignMindRequest(url, requestBody) {
@@ -97,4 +100,8 @@ export function useSubmitCampaignMind(index, mind, address) {
     return useSWR<any, any>(`/api/campaign/${index}}`, () =>
         submitCampaignMindRequest(`/api/campaign/${index}`, reqBody)
     );
+}
+
+export function useGetMindFromId(id) {
+    return useSWR(`/api/minds/id?id=${id}`, fetcher);
 }

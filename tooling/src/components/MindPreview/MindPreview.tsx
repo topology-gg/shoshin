@@ -30,8 +30,6 @@ const MindPreview = ({ mind }: MindPreviewProps) => {
         mind.mindName
     );
 
-    console.log('mind mind', mind);
-
     const isOnline = onlineMind.error ? false : true;
     return (
         <Paper sx={{ height: '100%' }}>
