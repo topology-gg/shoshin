@@ -150,6 +150,7 @@ const Condition = ({
                 onClick={(event) => {
                     isReadOnly ? null : onClick(event);
                 }}
+                disabled={isReadOnly}
             >
                 <Box sx={{ display: 'flex', gap: 1 }}>
                     <ConditionLabel

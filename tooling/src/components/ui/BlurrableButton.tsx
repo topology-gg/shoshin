@@ -3,7 +3,7 @@ import React from 'react';
 /**
  * A button wrapper that auto-blurs itself after change
  */
-const BlurrableButton = ({ children, onClick, ...props }) => {
+const BlurrableButton = ({ children, onClick, disabled, ...props }) => {
     const handleClick = (event) => {
         onClick(event);
         setTimeout(() => {
@@ -17,7 +17,7 @@ const BlurrableButton = ({ children, onClick, ...props }) => {
         }, 0);
     };
     return (
-        <button {...props} onClick={handleClick}>
+        <button {...props} onClick={handleClick} disabled={disabled}>
             {children}
         </button>
     );

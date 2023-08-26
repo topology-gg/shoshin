@@ -21,7 +21,8 @@ const SimpleLayerList = ({ playerAgent }: SimpleLayerList) => {
         layerAddAndDelete: false,
         conditionAnd: false,
         combos: true,
-        sui: false,
+        sui: true,
+        actionRandomness: true,
     };
 
     const handleSelectCombo = (layerIndex: number) => {

@@ -258,6 +258,7 @@ const MentalStates = ({
                                         padding: '8px',
                                         lineHeight: '9px',
                                     }}
+                                    disabled={isReadOnly}
                                 >
                                     {state.state}
                                 </BlurrableButton>

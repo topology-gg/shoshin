@@ -19,6 +19,10 @@
     height: 2.2rem;
     cursor: pointer;
 }
+.gambitLeftHalfButton {
+    cursor: default;
+}
+
 .invertPositive {
     background-color: #2faa79;
 }
@@ -45,6 +49,7 @@
     border-radius: 0px 14px 14px 0px;
     cursor: pointer;
 }
+
 .probabilityButton{
     font-size: 11px;
     color: #000;
@@ -52,6 +57,10 @@
 }
 .probabilityButton:hover{
     background-color: #e5e5e5;
+}
+.probabilityButton:disabled{
+    color: #000000;
+    cursor: default;
 }
 
 .mentalStateButton {
@@ -76,6 +85,9 @@
 .conditionButton:hover {
     background-color: #e5e5e5;
 }
+.conditionButton:disabled {
+    cursor: default;
+}
 
 .actionButton {
     /* background-color: #a8e4a0; */
@@ -90,6 +102,11 @@
 .actionButton:hover {
     /* background-color: #a8e4a088; */
     background-color: #e5e5e5;
+}
+
+.actionButton:disabled {
+    color: #000000;
+    cursor: default;
 }
 
 .actionMenuItem:hover{

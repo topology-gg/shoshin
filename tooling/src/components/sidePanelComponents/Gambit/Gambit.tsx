@@ -394,6 +394,7 @@ export const LayerComponent = ({
                 <button
                     className={`${styles.gambitLeftHalfButton} ${styles.probabilityButton}`}
                     onClick={(evt) => handleActionProbClick(evt, false)}
+                    disabled={isReadOnly}
                 >
                     {`${layer.probability * 10}%`}
                 </button>
@@ -408,6 +409,7 @@ export const LayerComponent = ({
                 key={`action-button-${i}`}
                 id={`condition-btn-${i}`}
                 onClick={(evt) => handleActionClick(evt, false)}
+                disabled={action.id == -1 ? false : isReadOnly}
             >
                 {/* <span style={{ marginRight: '7px' }}>
                     {action.display.unicode}
@@ -422,6 +424,7 @@ export const LayerComponent = ({
             <button
                 className={`${styles.gambitLeftHalfButton} ${styles.probabilityButton}`}
                 onClick={(evt) => handleActionProbClick(evt, true)}
+                disabled={isReadOnly}
             >
                 {`${(10 - layer.probability) * 10}%`}
             </button>
@@ -434,6 +437,7 @@ export const LayerComponent = ({
                 key={`alt-action-button-${i}`}
                 id={`condition-btn-${i}`}
                 onClick={(evt) => handleActionClick(evt, true)}
+                disabled={isReadOnly}
             >
                 {/* <span style={{ marginRight: '7px' }}>
                     {altAction.display.unicode}
@@ -732,6 +736,7 @@ export const LayerComponent = ({
                                 }}
                                 checked={layer.sui}
                                 sx={switchSx('SUI', suiFontColor)}
+                                disabled={isReadOnly}
                             />
                         )}
 
@@ -750,6 +755,7 @@ export const LayerComponent = ({
                                 }}
                                 checked={randomnessEnabled}
                                 sx={switchSx('MIX', rndFontColor)}
+                                disabled={isReadOnly}
                             />
                         )}
                     </div>
