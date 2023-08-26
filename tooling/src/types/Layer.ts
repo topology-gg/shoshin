@@ -21,7 +21,7 @@ import { MentalState } from './MentalState';
 import { Direction, Tree } from './Tree';
 import { actionIntentsInCombo } from './Action';
 import { ANTOC, JESSICA } from '../constants/constants';
-import { simpleHash } from '../constants/starter_agent';
+import { simpleHash } from './utils';
 //Layer conditions have extra metadate while they are being edited
 export interface LayerCondition extends Condition {
     isInverted: boolean;

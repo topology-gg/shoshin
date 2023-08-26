@@ -21,21 +21,7 @@ import { my_frame_preset_conditions } from './my_frame_preset_conditions';
 import { opponent_frame_preset_conditions } from './opponent_frame_preset_conditions';
 import { spacing_preset_conditions } from './spacing_preset_conditions';
 import { y_position_preset_conditions } from './y_position_preset_conditions';
-
-// source: https://stackoverflow.com/a/40958850
-export function simpleHash(str: string) {
-    var hash = 0,
-        i,
-        chr,
-        len;
-    if (str.length === 0) return hash;
-    for (i = 0, len = str.length; i < len; i++) {
-        chr = str.charCodeAt(i);
-        hash = (hash << 5) - hash + chr;
-        hash |= 0; // Convert to 32bit integer
-    }
-    return hash;
-}
+import { simpleHash } from '../types/utils';
 
 const common_my_stats_preset_conditions = [
     {
