@@ -26,11 +26,11 @@ from contracts.constants.constants import (
     RealTimeAgent,
     RealTimePlayer,
     RealTimeFrameScene,
-    RealTimeComboInfo
+    RealTimeComboInfo,
 )
 from contracts.constants.constants_jessica import ns_jessica_character_dimension
 from contracts.body.body import _body
-from contracts.body.body_utils import player_lost
+from contracts.body.body_utils import player_lost, character_active_body_state_duration_lookup
 from contracts.combo import _combo
 from contracts.physics import _physicality, _test_rectangle_overlap
 from contracts.perceptibles import update_perceptibles
@@ -636,29 +636,39 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     //
     local new_action_completed_0;
     local new_action_completed_1;
+    let curr_body_duration_0 = character_active_body_state_duration_lookup(character_type_0, body_state_0.state);
+    let curr_body_duration_1 = character_active_body_state_duration_lookup(character_type_1, body_state_1.state);
     if (is_combo_0 == 1) {
         if (combos_0_new.combo_counter == combo_len_0 - 1) {
             // is combo and combo counter reaches the end of combo
-            assert new_action_completed_0 = 0;
+            assert new_action_completed_0 = 1;
         } else {
             // in the middle of a combo
-            assert new_action_completed_0 = 1;
+            assert new_action_completed_0 = 0;
         }
     } else {
-        // is atomic action
-        assert new_action_completed_0 = 1;
+        // is atomic action -- given my body state, look up its duration, and check that against my body counter
+        if (body_state_0.counter == curr_body_duration_0 - 1) {
+            assert new_action_completed_0 = 1;
+        } else {
+            assert new_action_completed_0 = 0;
+        }
     }
     if (is_combo_1 == 1) {
         if (combos_1_new.combo_counter == combo_len_1 - 1) {
             // is combo and combo counter reaches the end of combo
-            assert new_action_completed_1 = 0;
+            assert new_action_completed_1 = 1;
         } else {
             // in the middle of a combo
-            assert new_action_completed_1 = 1;
+            assert new_action_completed_1 = 0;
         }
     } else {
-        // is atomic action
-        assert new_action_completed_1 = 1;
+        // is atomic action -- given my body state, look up its duration, and check that against my body counter
+        if (body_state_1.counter == curr_body_duration_1 - 1) {
+            assert new_action_completed_1 = 1;
+        } else {
+            assert new_action_completed_1 = 0;
+        }
     }
 
     //

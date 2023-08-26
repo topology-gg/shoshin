@@ -196,6 +196,51 @@ namespace ns_antoc_body_state {
     const KO = 1320; // 14 frames
 }
 
+func antoc_active_body_state_duration_lookup {range_check_ptr}(state: felt) -> felt {
+    if (state == ns_antoc_body_state.HORI) {
+        return ns_antoc_body_state_duration.HORI;
+    }
+    if (state == ns_antoc_body_state.VERT) {
+        return ns_antoc_body_state_duration.VERT;
+    }
+    if (state == ns_antoc_body_state.DASH_FORWARD) {
+        return ns_antoc_body_state_duration.DASH_FORWARD;
+    }
+    if (state == ns_antoc_body_state.DASH_BACKWARD) {
+        return ns_antoc_body_state_duration.DASH_BACKWARD;
+    }
+    if (state == ns_antoc_body_state.STEP_FORWARD) {
+        return ns_antoc_body_state_duration.STEP_FORWARD;
+    }
+    if (state == ns_antoc_body_state.JUMP) {
+        return ns_antoc_body_state_duration.JUMP;
+    }
+    if (state == ns_antoc_body_state.LOW_KICK) {
+        return ns_antoc_body_state_duration.LOW_KICK;
+    }
+    if (state == ns_antoc_body_state.CYCLONE) {
+        return ns_antoc_body_state_duration.CYCLONE;
+    }
+    if (state == ns_antoc_body_state.TAUNT_PARIS23) {
+        return ns_antoc_body_state_duration.TAUNT_PARIS23;
+    }
+
+    // these states sustain only with sustained action
+    // so treat their duration as 1
+    if (state == ns_antoc_body_state.BLOCK) {
+        return 1;
+    }
+    if (state == ns_antoc_body_state.MOVE_FORWARD) {
+        return 1;
+    }
+    if (state == ns_antoc_body_state.MOVE_BACKWARD) {
+        return 1;
+    }
+
+    // otherwise return 1
+    return 1;
+}
+
 namespace ns_antoc_body_state_qualifiers {
 
     func is_in_hori_active {range_check_ptr}(state: felt, counter: felt) -> felt {
