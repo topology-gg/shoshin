@@ -16,6 +16,8 @@ import { PlayerAgent } from '../../types/Agent';
 import { Character, JESSICA, ScoreMap } from '../../constants/constants';
 import { useGetScoresForOpponents } from '../../../lib/api';
 import { useAccount } from '@starknet-react/core';
+import { Character, ScoreMap, WhitelistEntry } from '../../constants/constants';
+import { useGetScoresForOpponent, useWhitelist } from '../../../lib/api';
 
 interface ScoreDisplayProps {
     opponentIndex: number;
@@ -32,6 +34,8 @@ const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
     const { data: data } = useGetScoresForOpponents([opponentIndex], 20);
     const scores = data?.scores ? data.scores : [];
 
+    const { data: whitelistData } = useWhitelist();
+
     const tableCellSx = {
         fontSize: '14px',
     };
@@ -40,6 +44,14 @@ const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
         const copyAddress = () => {
             navigator.clipboard.writeText(score.playerAddress);
         };
+
+        const whitelistEntry = (
+            whitelistData ? whitelistData : ([] as WhitelistEntry[])
+        ).find((entry) => entry.address == score.playerAddress);
+        let identifier = whitelistEntry
+            ? whitelistEntry.username
+            : score.playerAddress;
+
         return (
             <TableRow key={index} hover={true} style={{ cursor: 'pointer' }}>
                 <TableCell sx={{ ...tableCellSx, textAlign: 'center' }}>
@@ -54,7 +66,7 @@ const ScoreDisplay = ({ opponentIndex }: ScoreDisplayProps) => {
                             width={'200px'}
                             onClick={copyAddress}
                         >
-                            {score.playerAddress}
+                            {identifier}
                         </Box>
                     </Tooltip>
                 </TableCell>

@@ -1131,3 +1131,8 @@ export enum MatchFormat {
     SINGLE = 'SINGLE',
     BO3 = 'BO3',
 }
+
+export interface WhitelistEntry {
+    username: string;
+    address: string;
+}
