@@ -13,11 +13,14 @@ import {
 import CardSimple from '../ui/CardSimple';
 import { EMPTY_JESSICA } from '../../constants/starter_agent';
 import { PlayerAgent } from '../../types/Agent';
-import { Character, JESSICA, ScoreMap } from '../../constants/constants';
-import { useGetScoresForOpponents } from '../../../lib/api';
+import {
+    Character,
+    JESSICA,
+    ScoreMap,
+    WhitelistEntry,
+} from '../../constants/constants';
+import { useGetScoresForOpponents, useWhitelist } from '../../../lib/api';
 import { useAccount } from '@starknet-react/core';
-import { Character, ScoreMap, WhitelistEntry } from '../../constants/constants';
-import { useGetScoresForOpponent, useWhitelist } from '../../../lib/api';
 
 interface ScoreDisplayProps {
     opponentIndex: number;
