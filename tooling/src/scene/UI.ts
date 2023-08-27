@@ -37,6 +37,15 @@ const STATS_BAR_BG_BORDER_STROKEWIDTH = 1.5;
 const EVENT_TEXT_FONT_SIZE = 36;
 const EVENT_TEXT_ALPHA = 0.8;
 
+const frameDataItems = [
+    'health',
+    'rage',
+    'action',
+    'body_state',
+    'body_counter',
+    'position',
+];
+
 const TOURNAMENT_LIVE_COUNT = 2;
 
 export interface statsInfo {
@@ -230,14 +239,6 @@ export default class UI extends Phaser.Scene {
         // Frame data shown under debug mode
         //
         this.debug_info_objects = {};
-        const frameDataItems = [
-            'health',
-            'rage',
-            'action',
-            'body_state',
-            'body_counter',
-            'position',
-        ];
         const rowHeight = 20.5;
         const borderStrokeWidth = 4;
         const borderWidth = 250;
@@ -630,16 +631,12 @@ export default class UI extends Phaser.Scene {
         [0, 1].forEach((index) => {
             this.debug_info_objects[index]['border'].setVisible(false);
 
-            ['body_state', 'body_counter', 'action', 'position'].forEach(
-                (stats) => {
-                    this.debug_info_objects[index][stats]['bg'].setVisible(
-                        false
-                    );
-                    ['data', 'desc'].forEach((item) => {
-                        this.debug_info_objects[index][stats][item].setText('');
-                    });
-                }
-            );
+            frameDataItems.forEach((stats) => {
+                this.debug_info_objects[index][stats]['bg'].setVisible(false);
+                ['data', 'desc'].forEach((item) => {
+                    this.debug_info_objects[index][stats][item].setText('');
+                });
+            });
         });
     }
 
