@@ -212,12 +212,12 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         pos=Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM), vel_fp=Vec2(0, 0), acc_fp=Vec2(0, 0)
     );
     let projectile_0_body = Rectangle(
-        agent_0_origin,
-        Vec2(ns_projectile_dimension.BODY_HITBOX_W, ns_projectile_dimension.BODY_HITBOX_H),
+        Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM),
+        Vec2(0,0),
     );
     let projectile_1_body = Rectangle(
-        agent_1_origin,
-        Vec2(ns_projectile_dimension.BODY_HITBOX_W, ns_projectile_dimension.BODY_HITBOX_H),
+        Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM),
+        Vec2(0,0),
     );
 
     // IDLE body state is 0 for both Jessica and Antoc; right is 1

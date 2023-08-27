@@ -4,7 +4,7 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math_cmp import is_le
 from contracts.constants.constants import (
-    ns_dynamics, Vec2, Rectangle, ns_hitbox, ns_scene, LEFT, RIGHT
+    ns_dynamics, Vec2, Rectangle, ns_hitbox, ns_scene, LEFT, RIGHT, ns_character_type
 )
 
 namespace ns_projectile_dynamics {
@@ -13,9 +13,18 @@ namespace ns_projectile_dynamics {
 }
 
 namespace ns_projectile_dimension {
-    const BODY_HITBOX_W = 50;
-    const BODY_HITBOX_W_HALF = 25;
-    const BODY_HITBOX_H = 50;
+    const BOLT_HITBOX_W = 76;
+    const BOLT_HITBOX_W_HALF = 38;
+    const BOLT_HITBOX_H = 10;
+
+    const MOON_HITBOX_W = 16;
+    const MOON_HITBOX_W_HALF =8;
+    const MOON_HITBOX_H = 160;
+}
+
+namespace ns_projectile_position {
+    const BOLT_SPAWN_Y = 70;
+    const MOON_SPAWN_Y = 40;
 }
 
 namespace ns_projectile_body_state_duration {
@@ -33,6 +42,32 @@ namespace ns_projectile_body_state {
 namespace ns_projectile_body_state_qualifiers {
 }
 
-namespace ns_projectile_hitbox {
+func get_projectile_dimension_by_character {range_check_ptr}(
+        character_type: felt
+    ) -> (
+        width: felt, half_width: felt, height: felt
+) {
+    if (character_type == ns_character_type.JESSICA) {
+        return (
+            width = ns_projectile_dimension.BOLT_HITBOX_W,
+            half_width = ns_projectile_dimension.BOLT_HITBOX_W_HALF,
+            height = ns_projectile_dimension.BOLT_HITBOX_H,
+        );
+    } else {
+        return (
+            width = ns_projectile_dimension.MOON_HITBOX_W,
+            half_width = ns_projectile_dimension.MOON_HITBOX_W_HALF,
+            height = ns_projectile_dimension.MOON_HITBOX_H,
+        );
+    }
 }
 
+func get_projectile_spawn_y_by_character {range_check_ptr}(
+    character_type: felt
+) -> felt {
+    if (character_type == ns_character_type.JESSICA) {
+        return ns_projectile_position.BOLT_SPAWN_Y;
+    } else {
+        return ns_projectile_position.MOON_SPAWN_Y;
+    }
+}

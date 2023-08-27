@@ -27,7 +27,7 @@ from contracts.constants.constants_antoc import (
     ns_antoc_character_dimension, ns_antoc_body_state_qualifiers, ns_antoc_hitbox, ns_antoc_stimulus, ns_antoc_body_state
 )
 from contracts.constants.constants_projectile import (
-    ns_projectile_body_state, ns_projectile_dimension,
+    ns_projectile_body_state, ns_projectile_dimension, get_projectile_dimension_by_character, get_projectile_spawn_y_by_character
 )
 from contracts.body.body_utils import (
     _settle_stamina_change
@@ -315,10 +315,13 @@ func _physicality{range_check_ptr}(
     // Create candidate body hitboxes for projectiles
     local projectile_body_0_cand: Rectangle;
     local projectile_body_1_cand: Rectangle;
+
+    let (PROJECTILE_WIDTH, PROJECTILE_HALF_WIDTH, PROJECTILE_HEIGHT) = get_projectile_dimension_by_character (character_type_0);
+    let SPAWN_Y = get_projectile_spawn_y_by_character(character_type_0);
     if (is_projectile_0_active == 1) {
         assert projectile_body_0_cand = Rectangle (
-            Vec2(candidate_projectile_physics_state_0.pos.x - ns_projectile_dimension.BODY_HITBOX_W_HALF, candidate_projectile_physics_state_0.pos.y),
-            Vec2(ns_projectile_dimension.BODY_HITBOX_W, ns_projectile_dimension.BODY_HITBOX_H),
+            Vec2(candidate_projectile_physics_state_0.pos.x - PROJECTILE_HALF_WIDTH, SPAWN_Y),
+            Vec2(PROJECTILE_WIDTH, PROJECTILE_HEIGHT),
         );
     } else {
         assert projectile_body_0_cand = Rectangle (
@@ -326,10 +329,13 @@ func _physicality{range_check_ptr}(
             Vec2(0,0),
         );
     }
+
+    let (PROJECTILE_WIDTH, PROJECTILE_HALF_WIDTH, PROJECTILE_HEIGHT) = get_projectile_dimension_by_character (character_type_1);
+    let SPAWN_Y = get_projectile_spawn_y_by_character(character_type_1);
     if (is_projectile_1_active == 1) {
         assert projectile_body_1_cand = Rectangle (
-            Vec2(candidate_projectile_physics_state_1.pos.x - ns_projectile_dimension.BODY_HITBOX_W_HALF, candidate_projectile_physics_state_1.pos.y),
-            Vec2(ns_projectile_dimension.BODY_HITBOX_W, ns_projectile_dimension.BODY_HITBOX_H),
+            Vec2(candidate_projectile_physics_state_1.pos.x - PROJECTILE_HALF_WIDTH, SPAWN_Y),
+            Vec2(PROJECTILE_WIDTH, PROJECTILE_HEIGHT),
         );
     } else {
         assert projectile_body_1_cand = Rectangle (
@@ -585,8 +591,10 @@ func _physicality{range_check_ptr}(
         opp_body_state = curr_body_state_0.state
     );
 
-    let projectile_0_stimulus = bool_projectile_0_hit + bool_projectile_clash + bool_projectile_0_oob;
-    let projectile_1_stimulus = bool_projectile_1_hit + bool_projectile_clash + bool_projectile_1_oob;
+    // Produce stimulus value for projectiles
+    // note: assume the boolean flags are mutually exclusive
+    let projectile_0_stimulus = 1 * bool_projectile_0_hit + 2 * bool_projectile_clash + 3 * bool_projectile_0_oob;
+    let projectile_1_stimulus = 1 * bool_projectile_1_hit + 2 * bool_projectile_clash + 3 * bool_projectile_1_oob;
 
     // assemble the stimulus here
     let curr_stimulus_0 = curr_stimulus_type_0 * ns_stimulus.ENCODING + bool_agent_0_ground * ns_stimulus.GROUND_ENCODING + damage_received_0;
