@@ -113,6 +113,8 @@ const setPlayerPointerVisible = (
 };
 
 export default class Simulator extends Phaser.Scene {
+    createCompleted: boolean = false;
+
     player_one: Phaser.GameObjects.Image;
     player_two: Phaser.GameObjects.Image;
 
@@ -1006,6 +1008,10 @@ export default class Simulator extends Phaser.Scene {
     create() {
         console.log('>>>>>> create()');
         this.initialize();
+        this.createCompleted = true;
+    }
+    public getCreateCompleted() {
+        return this.createCompleted;
     }
 
     addRectangleHelper(
