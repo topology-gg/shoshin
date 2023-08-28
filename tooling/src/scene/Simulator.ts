@@ -411,6 +411,11 @@ export default class Simulator extends Phaser.Scene {
         this.load.image('level-3-bg', 'images/bg/shoshin-bg-desert.png');
         this.load.image('level-4-bg', 'images/bg/shoshin-bg-cave.png');
         this.load.image('level-5-bg', 'images/bg/shoshin-bg-volcano.png');
+        this.load.image(
+            'stanford-bluesky-bg',
+            'images/bg/stanford-bluesky.png'
+        );
+        this.load.image('stanford-sunset-bg', 'images/bg/stanford-sunset.png');
 
         // VFX
         this.load.spritesheet('spark', 'images/effects/spark/spritesheet.png', {
@@ -895,12 +900,28 @@ export default class Simulator extends Phaser.Scene {
         this.initializeVFX();
 
         this.backgroundSets = {};
-        [0, 1, 2, 3, 4, 5].forEach((level: number) => {
+        [0, 1, 2, 3, 4, 5, 6, 7].forEach((level: number) => {
             let bg;
             if (level == 0) {
                 // show practice background
                 bg = this.add.image(0, 0, 'arena_bg').setVisible(false);
                 bg.setScale(PRACTICE_BG_SCALE).setPosition(
+                    BG_X_OFFSET,
+                    bg.y + BG_Y_OFFSET
+                );
+            } else if (level == 6) {
+                bg = this.add
+                    .image(0, 0, 'stanford-bluesky-bg')
+                    .setVisible(false);
+                bg.setScale(BG_SCALE).setPosition(
+                    BG_X_OFFSET,
+                    bg.y + BG_Y_OFFSET
+                );
+            } else if (level == 7) {
+                bg = this.add
+                    .image(0, 0, 'stanford-sunset-bg')
+                    .setVisible(false);
+                bg.setScale(BG_SCALE).setPosition(
                     BG_X_OFFSET,
                     bg.y + BG_Y_OFFSET
                 );
