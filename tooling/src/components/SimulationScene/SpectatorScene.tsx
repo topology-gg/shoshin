@@ -902,7 +902,7 @@ const SpectatorScene = React.forwardRef(
                                                             setPlayerStatuses,
                                                         }}
                                                         isInView={true}
-                                                        backgroundId={1}
+                                                        backgroundId={6}
                                                         volume={volume}
                                                         lives={lives}
                                                         playerOneName={
