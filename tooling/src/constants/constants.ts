@@ -247,6 +247,11 @@ export const calculateScoreMap = (
     });
 
     const frameSpent = play.agent_0.length;
+    const playerWon =
+        play.agent_0[play.agent_0.length - 1].body_state.integrity >
+        play.agent_1[play.agent_1.length - 1].body_state.integrity
+            ? 1
+            : 0;
 
     const healthDifference =
         play.agent_0[play.agent_0.length - 1].body_state.integrity -
@@ -277,9 +282,8 @@ export const calculateScoreMap = (
         timeBonus: scoreTimeBonus,
         totalScore:
             scoreLaborPoints +
-            scoreHealthBonus +
-            scoreFullHealthBonus +
-            scoreTimeBonus,
+            playerWon *
+                (scoreHealthBonus + scoreFullHealthBonus + scoreTimeBonus),
     };
 
     return scoreMap;
