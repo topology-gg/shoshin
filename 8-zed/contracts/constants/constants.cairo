@@ -21,6 +21,7 @@ namespace ns_dynamics {
     const FRICTION_ACC_FP = 6000 * ns_dynamics.SCALE_FP;
 
     const BACKOFF_VEL_X_FP = 200 * ns_dynamics.SCALE_FP;
+    const NUDGE_VEL_X_FP = 100 * ns_dynamics.SCALE_FP;
     const BLOCK_BACKOFF_VEL_X_FP = 75 * ns_dynamics.SCALE_FP;
 
     const IN_AIR_VEL_X_FP = 150 * ns_dynamics.SCALE_FP;
