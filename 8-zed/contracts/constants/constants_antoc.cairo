@@ -20,7 +20,7 @@ namespace ns_antoc_dynamics {
     const KNOCK_VEL_X_FP = 250 * ns_dynamics.SCALE_FP;
     const KNOCK_VEL_Y_FP = 400 * ns_dynamics.SCALE_FP;
 
-    const LAUNCHED_VEL_X_FP = 10 * ns_dynamics.SCALE_FP;
+    const LAUNCHED_VEL_X_FP = 30 * ns_dynamics.SCALE_FP;
     const LAUNCHED_VEL_Y_FP = 600 * ns_dynamics.SCALE_FP;
 
     const DEACC_FP = 10000 * ns_dynamics.SCALE_FP;
