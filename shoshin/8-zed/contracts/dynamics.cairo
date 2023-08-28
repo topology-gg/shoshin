@@ -14,6 +14,9 @@ from contracts.constants.constants_jessica import (
 from contracts.constants.constants_antoc import (
     ns_antoc_dynamics, ns_antoc_character_dimension, ns_antoc_action, ns_antoc_body_state
 )
+from contracts.constants.constants_general import (
+    should_nudge_body_state
+)
 from contracts.numerics import mul_fp, div_fp_ul
 
 func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
@@ -136,8 +139,6 @@ func _euler_forward_no_hitbox {range_check_ptr}(
 ) {
     alloc_locals;
 
-    local vel_fp_nxt: Vec2;
-
     // unpack
     let state   = body_state.state;
     let counter = body_state.counter;
@@ -182,8 +183,14 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     ) = _character_specific_constants (character_type);
 
     //
+    // Check if this body state should be nudged forward
+    //
+    let (should_nudge, counter_to_nudge) = should_nudge_body_state (state);
+
+    //
     // Set acceleration (fp) according to body state
     //
+    local vel_fp_nxt: Vec2;
     local acc_fp_x;
     local acc_fp_y;
     local vel_fp_x;
@@ -191,6 +198,18 @@ func _euler_forward_no_hitbox {range_check_ptr}(
     let last_vel_fp_x = physics_state.vel_fp.x;
     let sign_vel_x = sign(physics_state.vel_fp.x);
     local physics_state_fwd: PhysicsState;
+
+    if (should_nudge == 1 and counter == counter_to_nudge) {
+        if (dir == 1) {
+            assert vel_fp_nxt = Vec2(ns_dynamics.NUDGE_VEL_X_FP, 0);
+        } else {
+            assert vel_fp_nxt = Vec2((-1) * ns_dynamics.NUDGE_VEL_X_FP, 0);
+        }
+        assert acc_fp_x = 0;
+        assert acc_fp_y = 0;
+        tempvar range_check_ptr = range_check_ptr;
+        jmp update_pos;
+    }
 
     if (state == MOVE_FORWARD) {
         if (dir == 1) {
