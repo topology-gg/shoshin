@@ -260,6 +260,10 @@ const Game = ({
 
             // @ts-ignore
             let scene = game.current?.scene.getScene('simulator') as Simulator;
+
+            const sceneCreateCompleted = scene.getCreateCompleted();
+            if (!sceneCreateCompleted) return;
+
             scene.updateSceneFromFrame({
                 testJson,
                 animationFrame,

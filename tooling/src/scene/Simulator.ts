@@ -113,6 +113,8 @@ const setPlayerPointerVisible = (
 };
 
 export default class Simulator extends Phaser.Scene {
+    createCompleted: boolean = false;
+
     player_one: Phaser.GameObjects.Image;
     player_two: Phaser.GameObjects.Image;
 
@@ -1023,10 +1025,16 @@ export default class Simulator extends Phaser.Scene {
         this.cameras.main.centerOn(0, BG_Y_OFFSET);
         this.cameras.main.setBackgroundColor('#FFFFFF');
         this.initializeCameraSettings();
+
+        this.createCompleted = true;
     }
     create() {
         console.log('>>>>>> create()');
         this.initialize();
+        this.createCompleted && console.log('>>>>>> create() completed');
+    }
+    public getCreateCompleted() {
+        return this.createCompleted;
     }
 
     addRectangleHelper(
