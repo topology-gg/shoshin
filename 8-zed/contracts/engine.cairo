@@ -16,6 +16,7 @@ from contracts.constants.constants import (
     PhysicsState,
     BodyState,
     Frame,
+    ProjectileFrame,
     FrameScene,
     Combo,
     Metadata,
@@ -27,10 +28,16 @@ from contracts.constants.constants import (
     RealTimePlayer,
     RealTimeFrameScene,
     RealTimeComboInfo,
+    LEFT,
+    RIGHT,
+    ProjectileBodyState,
+    FireCommand,
 )
 from contracts.constants.constants_jessica import ns_jessica_character_dimension
+from contracts.constants.constants_projectile import ns_projectile_body_state, ns_projectile_dimension
 from contracts.body.body import _body
 from contracts.body.body_utils import player_lost, character_active_body_state_duration_lookup
+from contracts.body.body_projectile import _body_projectile
 from contracts.combo import _combo
 from contracts.physics import _physicality, _test_rectangle_overlap
 from contracts.perceptibles import update_perceptibles
@@ -201,6 +208,17 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     let physics_state_1 = PhysicsState(
         pos=agent_1_origin, vel_fp=Vec2(0, 0), acc_fp=Vec2(0, 0)
     );
+    let projectile_physics_state_origin = PhysicsState(
+        pos=Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM), vel_fp=Vec2(0, 0), acc_fp=Vec2(0, 0)
+    );
+    let projectile_0_body = Rectangle(
+        Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM),
+        Vec2(0,0),
+    );
+    let projectile_1_body = Rectangle(
+        Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM),
+        Vec2(0,0),
+    );
 
     // IDLE body state is 0 for both Jessica and Antoc; right is 1
     // NULL action is 0 for both Jessica and Antoc
@@ -214,13 +232,13 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
             hitboxes      = Hitboxes(
                 action = null_rect,
                 body   = agent_0_body
-                ),
+            ),
             combo         = Combo(
                 combo_index   = 0,
                 action_index = 0,
-                ),
-            gamma         = 0,
             ),
+            gamma         = 0,
+        ),
         agent_1 = Frame(
             mental_state  = agent_1_initial_state,
             body_state    = BodyState(0, 0, ns_integrity.INIT_INTEGRITY, ns_stamina.INIT_STAMINA, 0, 0, 0, -1),
@@ -236,8 +254,20 @@ func loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 action_index = 0,
                 ),
             gamma         = 1,
-            ),
-        );
+        ),
+        projectile_0 = ProjectileFrame(
+            body_state = ProjectileBodyState(ns_projectile_body_state.DORMANT, 0, RIGHT),
+            physics_state = projectile_physics_state_origin,
+            stimulus = 0,
+            hitbox = projectile_0_body,
+        ),
+        projectile_1 = ProjectileFrame(
+            body_state = ProjectileBodyState(ns_projectile_body_state.DORMANT, 0, LEFT),
+            physics_state = projectile_physics_state_origin,
+            stimulus = 0,
+            hitbox = projectile_1_body,
+        ),
+    );
 
     //
     // Preparing dictionaries
@@ -587,22 +617,34 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     }
 
     //
-    // Body Phase
+    // Body Phase for characters
     // (given agent intent, stimulus, and last frame's body state, produce this frame's body state)
     //
-    let (body_state_0 : BodyState) = _body (
+    let (fire_command_0: FireCommand, body_state_0 : BodyState) = _body (
         character_type = character_type_0,
         body_state     = last_frame.agent_0.body_state,
         stimulus       = last_frame.agent_0.stimulus,
         intent         = a_0,
         opponent_body_state_index = last_frame.agent_1.body_state.state_index,
     );
-    let (body_state_1 : BodyState) = _body (
+    let (fire_command_1: FireCommand, body_state_1 : BodyState) = _body (
         character_type = character_type_1,
         body_state     = last_frame.agent_1.body_state,
         stimulus       = last_frame.agent_1.stimulus,
         intent         = a_1,
         opponent_body_state_index = last_frame.agent_0.body_state.state_index,
+    );
+
+    // Body Phase for projectiles
+    let (projectile_body_state_0: ProjectileBodyState) = _body_projectile (
+        body_state   = last_frame.projectile_0.body_state,
+        stimulus     = last_frame.projectile_0.stimulus,
+        fire_command = fire_command_0
+    );
+    let (projectile_body_state_1: ProjectileBodyState) = _body_projectile (
+        body_state   = last_frame.projectile_1.body_state,
+        stimulus     = last_frame.projectile_1.stimulus,
+        fire_command = fire_command_1
     );
 
     //
@@ -620,6 +662,12 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         new_dir_1: felt,
         new_rage_0: felt,
         new_rage_1: felt,
+        projectile_physics_state_0: PhysicsState,
+        projectile_physics_state_1: PhysicsState,
+        projectile_stimulus_0: felt,
+        projectile_stimulus_1: felt,
+        projectile_hitbox_0: Rectangle,
+        projectile_hitbox_1: Rectangle,
     ) = _physicality(
         character_type_0     = character_type_0,
         character_type_1     = character_type_1,
@@ -629,6 +677,12 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         curr_body_state_1    = body_state_1,
         curr_stimulus_0      = last_frame.agent_0.stimulus,
         curr_stimulus_1      = last_frame.agent_1.stimulus,
+        last_projectile_physics_state_0 = last_frame.projectile_0.physics_state,
+        last_projectile_physics_state_1 = last_frame.projectile_1.physics_state,
+        curr_projectile_body_state_0    = projectile_body_state_0,
+        curr_projectile_body_state_1    = projectile_body_state_1,
+        curr_projectile_stimulus_0      = last_frame.projectile_0.stimulus,
+        curr_projectile_stimulus_1      = last_frame.projectile_1.stimulus,
     );
 
     //
@@ -718,8 +772,21 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 action_index  = combos_1_new.combo_counter
                 ),
             gamma         = gamma_1,
-        )
+        ),
+        projectile_0 = ProjectileFrame(
+            body_state = projectile_body_state_0,
+            physics_state = projectile_physics_state_0,
+            stimulus = projectile_stimulus_0,
+            hitbox = projectile_hitbox_0,
+        ),
+        projectile_1 = ProjectileFrame(
+            body_state = projectile_body_state_1,
+            physics_state = projectile_physics_state_1,
+            stimulus = projectile_stimulus_1,
+            hitbox = projectile_hitbox_1,
+        ),
     );
+
 
     //
     // Tail recursion
@@ -950,14 +1017,14 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
     // Body Phase
     // (given agent intent, stimulus, and last frame's body state, produce this frame's body state)
     //
-    let (body_state_0 : BodyState) = _body (
+    let (_, body_state_0 : BodyState) = _body (
         character_type = agent_0_character_type,
         body_state     = agent_0_body_state,
         stimulus       = agent_0_stimulus,
         intent         = agent_0_action,
         opponent_body_state_index = agent_1_body_state_state_index,
     );
-    let (body_state_1 : BodyState) = _body (
+    let (_, body_state_1 : BodyState) = _body (
         character_type = agent_1_character_type,
         body_state     = agent_1_body_state,
         stimulus       = agent_1_stimulus,
@@ -980,6 +1047,7 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         new_dir_1: felt,
         new_rage_0: felt,
         new_rage_1: felt,
+        _,_,_,_,_,_,
     ) = _physicality(
         character_type_0     = agent_0_character_type,
         character_type_1     = agent_1_character_type,
@@ -989,8 +1057,13 @@ func playerInLoop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
         curr_body_state_1    = body_state_1,
         curr_stimulus_0      = agent_0_stimulus,
         curr_stimulus_1      = agent_1_stimulus,
+        last_projectile_physics_state_0 = PhysicsState(Vec2(0,0),Vec2(0,0),Vec2(0,0)),
+        last_projectile_physics_state_1 = PhysicsState(Vec2(0,0),Vec2(0,0),Vec2(0,0)),
+        curr_projectile_body_state_0    = ProjectileBodyState(0,0,0),
+        curr_projectile_body_state_1    = ProjectileBodyState(0,0,0),
+        curr_projectile_stimulus_0      = 0,
+        curr_projectile_stimulus_1      = 0,
     );
-
 
     let combo_info_1 = RealTimeComboInfo(
         current_combo=combos_1_new.current_combo,

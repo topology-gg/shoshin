@@ -35,6 +35,7 @@ namespace ns_jessica_character_dimension {
     const BODY_HITBOX_W = 50;
     const BODY_HITBOX_W_HALF = 25;
     const BODY_HITBOX_H = 116;
+    const PROJECTILE_Y = 58;
 
     const BODY_KNOCKED_EARLY_HITBOX_W = 70;
     const BODY_KNOCKED_LATE_HITBOX_W = 100;
@@ -111,6 +112,7 @@ namespace ns_jessica_action {
     const GATOTSU = 10;
     const LOW_KICK = 11;
     const TAUNT = 12;
+    const BOLT = 13;
 }
 
 namespace ns_jessica_stamina_effect {
@@ -121,6 +123,7 @@ namespace ns_jessica_stamina_effect {
     const SIDECUT = 5;
     const LOW_KICK = 5;
     const BIRDSWING = 5;
+    const BOLT = 5;
 
     // character special consumes rage, whether hit or whiff
     const GATOTSU = -500;
@@ -135,6 +138,7 @@ namespace ns_jessica_stimulus {
     const SIDECUT_DAMAGE = 80;
     const LOW_KICK_DAMAGE = 50;
     const BIRDSWING_DAMAGE = 80;
+    const BOLT_DAMAGE = 50;
 
     // character special
     const GATOTSU_DAMAGE = 300;
@@ -160,6 +164,7 @@ namespace ns_jessica_body_state_duration {
     const LAUNCHED = 11;
     const TAUNT_PARIS23 = 33;
     const KO = 14;
+    const BOLT = 7;
 }
 
 namespace ns_jessica_body_state {
@@ -184,6 +189,7 @@ namespace ns_jessica_body_state {
     const JUMP_MOVE_BACKWARD = 190;
     const TAUNT_PARIS23 = 200; // 33 frames
     const KO = 240; // 14 frames
+    const BOLT = 260; // 7 frames
 }
 
 func jessica_active_body_state_duration_lookup {range_check_ptr}(state: felt) -> felt {

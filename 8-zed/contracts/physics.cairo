@@ -18,6 +18,7 @@ from contracts.constants.constants import (
     BodyState,
     Hitboxes,
     ns_hitbox,
+    ProjectileBodyState,
 )
 from contracts.constants.constants_jessica import (
     ns_jessica_character_dimension, ns_jessica_body_state_qualifiers, ns_jessica_hitbox, ns_jessica_stimulus, ns_jessica_body_state
@@ -25,10 +26,13 @@ from contracts.constants.constants_jessica import (
 from contracts.constants.constants_antoc import (
     ns_antoc_character_dimension, ns_antoc_body_state_qualifiers, ns_antoc_hitbox, ns_antoc_stimulus, ns_antoc_body_state
 )
+from contracts.constants.constants_projectile import (
+    ns_projectile_body_state, ns_projectile_dimension, get_projectile_dimension_by_character, get_projectile_spawn_y_by_character
+)
 from contracts.body.body_utils import (
     _settle_stamina_change
 )
-from contracts.dynamics import _euler_forward_no_hitbox, _euler_forward_consider_hitbox
+from contracts.dynamics import _euler_forward_no_hitbox, _euler_forward_consider_hitbox, _projectile_euler_forward_no_hitbox
 
 func _bool_or{range_check_ptr}(bool_0: felt, bool_1: felt) -> (bool: felt) {
     if (bool_0 + bool_1 == 0) {
@@ -137,6 +141,13 @@ func _physicality{range_check_ptr}(
     curr_body_state_1: BodyState,
     curr_stimulus_0: felt,
     curr_stimulus_1: felt,
+
+    last_projectile_physics_state_0: PhysicsState,
+    last_projectile_physics_state_1: PhysicsState,
+    curr_projectile_body_state_0: ProjectileBodyState,
+    curr_projectile_body_state_1: ProjectileBodyState,
+    curr_projectile_stimulus_0: felt,
+    curr_projectile_stimulus_1: felt,
 ) -> (
     curr_physics_state_0: PhysicsState,
     curr_physics_state_1: PhysicsState,
@@ -148,10 +159,17 @@ func _physicality{range_check_ptr}(
     new_dir_1: felt,
     new_rage_0: felt,
     new_rage_1: felt,
+    curr_projectile_physics_state_0: PhysicsState,
+    curr_projectile_physics_state_1: PhysicsState,
+    curr_projectile_stimulus_0: felt,
+    curr_projectile_stimulus_1: felt,
+    projectile_hitbox_0: Rectangle,
+    projectile_hitbox_1: Rectangle,
 ) {
     alloc_locals;
 
     // Algorithm:
+    // 0. Force set physics states of projectiles
     // 1. Movement first pass (candidate positions)
     // 2. Create hitboxes (body, action, environment)
     // 3. Test hitbox overlaps
@@ -160,14 +178,76 @@ func _physicality{range_check_ptr}(
     // 6. Produce stimuli
 
     //
+    // 0. Force set physics state of projectiles
+    //
+    let projectile_state_0   = curr_projectile_body_state_0.state;
+    let projectile_counter_0 = curr_projectile_body_state_0.counter;
+    let projectile_state_1   = curr_projectile_body_state_1.state;
+    let projectile_counter_1 = curr_projectile_body_state_1.counter;
+    local forced_projectile_physics_state_0: PhysicsState;
+    local forced_projectile_physics_state_1: PhysicsState;
+    if ( (projectile_state_0 - ns_projectile_body_state.FLY) + projectile_counter_0 == 0 ) {
+        assert forced_projectile_physics_state_0 = PhysicsState(
+            pos    = Vec2(last_physics_state_0.pos.x, last_physics_state_0.pos.y),
+            vel_fp = Vec2(0,0),
+            acc_fp = Vec2(0,0),
+        );
+    } else {
+        if (projectile_state_0 == ns_projectile_body_state.DORMANT) {
+            assert forced_projectile_physics_state_0 = PhysicsState(
+                pos    = Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM),
+                vel_fp = Vec2(0,0),
+                acc_fp = Vec2(0,0),
+            );
+        } else {
+            assert forced_projectile_physics_state_0 = last_projectile_physics_state_0;
+        }
+    }
+    if ( (projectile_state_1 - ns_projectile_body_state.FLY) + projectile_counter_1 == 0 ) {
+        assert forced_projectile_physics_state_1 = PhysicsState(
+            pos    = Vec2(last_physics_state_1.pos.x, last_physics_state_1.pos.y),
+            vel_fp = Vec2(0,0),
+            acc_fp = Vec2(0,0),
+        );
+    } else {
+        if (projectile_state_1 == ns_projectile_body_state.DORMANT) {
+            assert forced_projectile_physics_state_1 = PhysicsState(
+                pos    = Vec2(ns_scene.BIGNUM, ns_scene.BIGNUM),
+                vel_fp = Vec2(0,0),
+                acc_fp = Vec2(0,0),
+            );
+        } else {
+            assert forced_projectile_physics_state_1 = last_projectile_physics_state_1;
+        }
+    }
+
+    //
     // 1. Movement first pass (candidate positions)
     //
-    let (candidate_physics_state_0) = _euler_forward_no_hitbox(
+    let (candidate_physics_state_0: PhysicsState) = _euler_forward_no_hitbox(
         character_type_0, last_physics_state_0, curr_body_state_0, curr_stimulus_0
     );
-    let (candidate_physics_state_1) = _euler_forward_no_hitbox(
+    let (candidate_physics_state_1: PhysicsState) = _euler_forward_no_hitbox(
         character_type_1, last_physics_state_1, curr_body_state_1, curr_stimulus_1
     );
+    let (candidate_projectile_physics_state_0: PhysicsState) = _projectile_euler_forward_no_hitbox(
+        forced_projectile_physics_state_0, curr_projectile_body_state_0, curr_projectile_stimulus_0
+    );
+    let (candidate_projectile_physics_state_1: PhysicsState) = _projectile_euler_forward_no_hitbox(
+        forced_projectile_physics_state_1, curr_projectile_body_state_1, curr_projectile_stimulus_1
+    );
+    local is_projectile_0_active;
+    local is_projectile_1_active;
+    if (curr_projectile_body_state_0.state == ns_projectile_body_state.FLY) {
+        assert is_projectile_0_active = 1;
+    } else {
+        assert is_projectile_0_active = 0;
+    }
+    if (curr_projectile_body_state_1.state == ns_projectile_body_state.FLY) {
+        assert is_projectile_1_active = 1;
+    } else {
+        assert is_projectile_1_active = 0;
+    }
 
     //
     // 2. Create hitboxes
@@ -185,7 +265,7 @@ func _physicality{range_check_ptr}(
         bool_body_in_active_1: felt,
     ) = is_in_various_states_given_character_type (character_type_1, curr_body_state_1.state, curr_body_state_1.counter);
 
-    // compute body hitboxes
+    // compute body hitbox dimensions
     let (body_dim_0: Vec2, body_half_width_0: felt) = get_body_hitbox_dimension (
         character_type_0,
         curr_body_state_0.state,
@@ -222,7 +302,7 @@ func _physicality{range_check_ptr}(
         assert is_action_1_attack = 0;
     }
 
-    // Create candidate body hitboxes
+    // Create candidate body hitboxes for characters
     let body_0_cand: Rectangle = Rectangle (
         Vec2(candidate_physics_state_0.pos.x - body_half_width_0, candidate_physics_state_0.pos.y),
         body_dim_0
@@ -231,6 +311,38 @@ func _physicality{range_check_ptr}(
         Vec2(candidate_physics_state_1.pos.x - body_half_width_1, candidate_physics_state_1.pos.y),
         body_dim_1
     );
+
+    // Create candidate body hitboxes for projectiles
+    local projectile_body_0_cand: Rectangle;
+    local projectile_body_1_cand: Rectangle;
+
+    let (PROJECTILE_WIDTH, PROJECTILE_HALF_WIDTH, PROJECTILE_HEIGHT) = get_projectile_dimension_by_character (character_type_0);
+    let SPAWN_Y = get_projectile_spawn_y_by_character(character_type_0);
+    if (is_projectile_0_active == 1) {
+        assert projectile_body_0_cand = Rectangle (
+            Vec2(candidate_projectile_physics_state_0.pos.x - PROJECTILE_HALF_WIDTH, SPAWN_Y),
+            Vec2(PROJECTILE_WIDTH, PROJECTILE_HEIGHT),
+        );
+    } else {
+        assert projectile_body_0_cand = Rectangle (
+            Vec2(ns_scene.P1_X_INIT, 0),
+            Vec2(0,0),
+        );
+    }
+
+    let (PROJECTILE_WIDTH, PROJECTILE_HALF_WIDTH, PROJECTILE_HEIGHT) = get_projectile_dimension_by_character (character_type_1);
+    let SPAWN_Y = get_projectile_spawn_y_by_character(character_type_1);
+    if (is_projectile_1_active == 1) {
+        assert projectile_body_1_cand = Rectangle (
+            Vec2(candidate_projectile_physics_state_1.pos.x - PROJECTILE_HALF_WIDTH, SPAWN_Y),
+            Vec2(PROJECTILE_WIDTH, PROJECTILE_HEIGHT),
+        );
+    } else {
+        assert projectile_body_1_cand = Rectangle (
+            Vec2(ns_scene.P2_X_INIT, 0),
+            Vec2(0,0),
+        );
+    }
 
     //
     // 3. Test body hitbox overlaps
@@ -261,8 +373,11 @@ func _physicality{range_check_ptr}(
         bool_body_in_knocked_0,
         bool_body_in_knocked_1,
     );
+    let curr_projectile_physics_state_0 = candidate_projectile_physics_state_0;
+    let curr_projectile_physics_state_1 = candidate_projectile_physics_state_1;
 
     // Create final body hitboxes
+    // Note: projectiles do not need overlap handling because they crash and disappear when they overlap with things
     let body_0: Rectangle = Rectangle (
         Vec2(curr_physics_state_0.pos.x - body_half_width_0, curr_physics_state_0.pos.y),
         body_dim_0
@@ -271,6 +386,8 @@ func _physicality{range_check_ptr}(
         Vec2(curr_physics_state_1.pos.x - body_half_width_1, curr_physics_state_1.pos.y),
         body_dim_1
     );
+    let projectile_body_0: Rectangle = projectile_body_0_cand;
+    let projectile_body_1: Rectangle = projectile_body_1_cand;
 
     // Compute final action hitboxes
     let (action_0: Rectangle) = get_action_hitbox (
@@ -322,6 +439,67 @@ func _physicality{range_check_ptr}(
 
     // Action clash / block: action 0 against action 1
     let (bool_action_overlap) = _test_rectangle_overlap(hitboxes_0.action, hitboxes_1.action);
+
+    // Projectile 0 hits Agent 1
+    local bool_projectile_0_hit;
+    if (is_projectile_0_active == 1) {
+        let (bool_projectile_0_hit_) = _test_rectangle_overlap(projectile_body_0, hitboxes_1.body);
+        assert bool_projectile_0_hit = bool_projectile_0_hit_;
+        tempvar range_check_ptr = range_check_ptr;
+    } else {
+        assert bool_projectile_0_hit = 0;
+        tempvar range_check_ptr = range_check_ptr;
+    }
+
+    // Projectile 1 hits Agent 0
+    local bool_projectile_1_hit;
+    if (is_projectile_1_active == 1) {
+        let (bool_projectile_1_hit_) = _test_rectangle_overlap(hitboxes_0.body, projectile_body_1);
+        assert bool_projectile_1_hit = bool_projectile_1_hit_;
+        tempvar range_check_ptr = range_check_ptr;
+    } else {
+        assert bool_projectile_1_hit = 0;
+        tempvar range_check_ptr = range_check_ptr;
+    }
+
+    // Projectile 0 clashes against Projectile 1
+    local bool_projectile_clash;
+    if (is_projectile_0_active * is_projectile_1_active == 1) {
+        let (bool_projectile_clash_) = _test_rectangle_overlap(projectile_body_0, projectile_body_1);
+        assert bool_projectile_clash = bool_projectile_clash_;
+        tempvar range_check_ptr = range_check_ptr;
+    } else {
+        assert bool_projectile_clash = 0;
+        tempvar range_check_ptr = range_check_ptr;
+    }
+
+    // Projectile 0 out of bound;
+    local bool_projectile_0_oob;
+    if (is_projectile_0_active == 0) {
+        assert bool_projectile_0_oob = 0;
+        tempvar range_check_ptr = range_check_ptr;
+    } else {
+        // test rect right bound against scene right bound
+        let oob_right = is_le (ns_scene.X_MAX, projectile_body_0.origin.x + projectile_body_0.dimension.x);
+        // test rect left bound against scene left bound
+        let oob_left = is_le (projectile_body_0.origin.x, ns_scene.X_MIN);
+        assert bool_projectile_0_oob = oob_right + oob_left;
+        tempvar range_check_ptr = range_check_ptr;
+    }
+
+    // Projectile 1 crosses X bounds
+    local bool_projectile_1_oob;
+    if (is_projectile_1_active == 0) {
+        assert bool_projectile_1_oob = 0;
+        tempvar range_check_ptr = range_check_ptr;
+    } else {
+        // test rect right bound against scene right bound
+        let oob_right = is_le (ns_scene.X_MAX, projectile_body_1.origin.x + projectile_body_1.dimension.x);
+        // test rect left bound against scene left bound
+        let oob_left = is_le (projectile_body_1.origin.x, ns_scene.X_MIN);
+        assert bool_projectile_1_oob = oob_right + oob_left;
+        tempvar range_check_ptr = range_check_ptr;
+    }
 
     //
     // 5. Handle direction switching
@@ -388,13 +566,13 @@ func _physicality{range_check_ptr}(
         bool_opp_atk_active = bool_body_in_atk_active_1,
         bool_opp_block_active = bool_body_in_block_1,
         bool_self_ground = bool_agent_0_ground,
+        bool_self_hit_by_projectile = bool_projectile_1_hit,
         self_integrity = curr_body_state_0.integrity,
         self_character_type = character_type_0,
         opp_character_type = character_type_1,
         self_body_state = curr_body_state_0.state,
         opp_body_state = curr_body_state_1.state
     );
-
     let (curr_stimulus_type_1, damage_received_1) = produce_stimulus_given_conditions (
         bool_self_hit = bool_agent_1_hit,
         bool_opp_hit = bool_agent_0_hit,
@@ -405,12 +583,18 @@ func _physicality{range_check_ptr}(
         bool_opp_atk_active = bool_body_in_atk_active_0,
         bool_opp_block_active = bool_body_in_block_0,
         bool_self_ground = bool_agent_1_ground,
+        bool_self_hit_by_projectile = bool_projectile_0_hit,
         self_integrity = curr_body_state_1.integrity,
         self_character_type = character_type_1,
         opp_character_type = character_type_0,
         self_body_state = curr_body_state_1.state,
         opp_body_state = curr_body_state_0.state
     );
+
+    // Produce stimulus value for projectiles
+    // note: assume the boolean flags are mutually exclusive
+    let projectile_0_stimulus = 1 * bool_projectile_0_hit + 2 * bool_projectile_clash + 3 * bool_projectile_0_oob;
+    let projectile_1_stimulus = 1 * bool_projectile_1_hit + 2 * bool_projectile_clash + 3 * bool_projectile_1_oob;
 
     // assemble the stimulus here
     let curr_stimulus_0 = curr_stimulus_type_0 * ns_stimulus.ENCODING + bool_agent_0_ground * ns_stimulus.GROUND_ENCODING + damage_received_0;
@@ -431,6 +615,12 @@ func _physicality{range_check_ptr}(
         new_dir_1,
         new_rage_0,
         new_rage_1,
+        curr_projectile_physics_state_0,
+        curr_projectile_physics_state_1,
+        projectile_0_stimulus,
+        projectile_1_stimulus,
+        projectile_body_0,
+        projectile_body_1,
     );
 }
 
@@ -496,6 +686,7 @@ func produce_stimulus_given_conditions {range_check_ptr} (
     bool_opp_atk_active: felt,
     bool_opp_block_active: felt,
     bool_self_ground: felt,
+    bool_self_hit_by_projectile: felt,
     self_integrity: felt,
     self_character_type: felt,
     opp_character_type: felt,
@@ -509,6 +700,15 @@ func produce_stimulus_given_conditions {range_check_ptr} (
 
     // Stimulus determination logic:
     // (TODO in Cairo 1.0 redesign, abstract this by defining character-specific parameters and devising a parameter-driven logic to determine stimulus)
+
+    // Handle projectile first
+    if (bool_self_hit_by_projectile == 1) {
+        if (bool_self_ground == 1) {
+            return (ns_stimulus.HURT, 50);
+        } else {
+            return (ns_stimulus.KNOCKED, 50);
+        }
+    }
 
     // self attacks into opp's block
     if (bool_self_atk_active == 1 and bool_opp_block_active == 1 and bool_action_overlap == 1) {

@@ -6,7 +6,10 @@ from starkware.cairo.common.math import abs_value, unsigned_div_rem, signed_div_
 from starkware.cairo.common.math_cmp import is_le, is_not_zero
 from contracts.constants.constants import (
     ns_dynamics, ns_character_type, ns_scene, ns_stimulus,
-    Vec2, PhysicsState, BodyState, LEFT, RIGHT
+    Vec2, PhysicsState, BodyState, LEFT, RIGHT, ProjectileBodyState
+)
+from contracts.constants.constants_projectile import (
+    ns_projectile_dynamics, ns_projectile_body_state
 )
 from contracts.constants.constants_jessica import (
     ns_jessica_dynamics, ns_jessica_character_dimension, ns_jessica_action, ns_jessica_body_state
@@ -127,6 +130,56 @@ func _character_specific_constants {range_check_ptr}(character_type: felt) -> (
             ns_dynamics.BACKOFF_VEL_X_FP,
         );
     }
+}
+
+func _projectile_euler_forward_no_hitbox {range_check_ptr}(
+    physics_state: PhysicsState,
+    body_state: ProjectileBodyState,
+    stimulus: felt,
+) -> (
+    physics_state_fwd: PhysicsState
+) {
+    alloc_locals;
+
+    // unpack
+    let state   = body_state.state;
+    let counter = body_state.counter;
+    let dir     = body_state.dir;
+
+    // Physics
+    local vel_fp_nxt: Vec2;
+    if (state == ns_projectile_body_state.FLY) {
+        if (dir == RIGHT) {
+            assert vel_fp_nxt = Vec2(ns_projectile_dynamics.FLY_VEL_FP, 0);
+        } else {
+            assert vel_fp_nxt = Vec2(-1 * ns_projectile_dynamics.FLY_VEL_FP, 0);
+        }
+    } else {
+        assert vel_fp_nxt = Vec2(0,0);
+    }
+
+    //
+    // Update pos with vel_fp
+    //
+    local physics_state_fwd: PhysicsState;
+    update_pos:
+    let (pos_nxt: Vec2) = _euler_forward_pos_no_hitbox(physics_state.pos, vel_fp_nxt);
+    assert physics_state_fwd = PhysicsState(
+        pos=pos_nxt,
+        vel_fp=vel_fp_nxt,
+        acc_fp=Vec2(0,0),
+    );
+    tempvar range_check_ptr = range_check_ptr;
+
+    cap:
+    let (x_cap) = _cap_fp(physics_state_fwd.pos.x, ns_scene.X_MAX, ns_scene.X_MIN);
+    let physics_state_fwd: PhysicsState = PhysicsState(
+        pos=Vec2(x=x_cap, y=physics_state_fwd.pos.y),
+        vel_fp=physics_state_fwd.vel_fp,
+        acc_fp=physics_state_fwd.acc_fp,
+    );
+
+    return (physics_state_fwd,);
 }
 
 func _euler_forward_no_hitbox {range_check_ptr}(

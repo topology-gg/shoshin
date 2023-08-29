@@ -34,6 +34,7 @@ namespace ns_antoc_character_dimension {
     const BODY_HITBOX_W = 50;
     const BODY_HITBOX_W_HALF = 25;
     const BODY_HITBOX_H = 116;
+    const PROJECTILE_Y = 0;
 
     const BODY_KNOCKED_EARLY_HITBOX_W = 60;
     const BODY_KNOCKED_LATE_HITBOX_W = 116;
@@ -121,6 +122,8 @@ namespace ns_antoc_action {
     const CYCLONE = 12;
 
     const TAUNT = 13;
+
+    const MOON = 14;
 }
 
 namespace ns_antoc_stamina_effect {
@@ -130,6 +133,7 @@ namespace ns_antoc_stamina_effect {
     const VERT = 5;
     const LOW_KICK = 5;
     const STEP_FORWARD = 10;
+    const MOON = 5;
 
     // character special consumes rage, whether hit or whiff
     const CYCLONE = -500;
@@ -145,6 +149,7 @@ namespace ns_antoc_stimulus {
     const VERT_DAMAGE = 150;
     const LOW_KICK_DAMAGE = 50;
     const DROP_SLASH_DAMAGE = 100;
+    const MOON_DAMAGE = 50;
 
     // character special
     const CYCLONE_DAMAGE = 170;
@@ -170,6 +175,7 @@ namespace ns_antoc_body_state_duration {
     const CYCLONE = 18; // active for counter == 5,10
     const TAUNT_PARIS23 = 59;
     const KO = 14;
+    const MOON = 7;
 }
 
 namespace ns_antoc_body_state {
@@ -194,6 +200,7 @@ namespace ns_antoc_body_state {
     const CYCLONE = 1220; // 18 frames
     const TAUNT_PARIS23 = 1250; // 59 frames
     const KO = 1320; // 14 frames
+    const MOON = 1340; // 7 frames
 }
 
 func antoc_active_body_state_duration_lookup {range_check_ptr}(state: felt) -> felt {
