@@ -143,6 +143,11 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.HORI) {
 
+        // clash does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+        }
+
         // body responds to stimulus first
         if (opponent_state_index_has_progressed == 1) {
             if (stimulus_type == ns_stimulus.HURT) {
@@ -153,9 +158,6 @@ func _body_antoc {range_check_ptr}(
             }
             if (stimulus_type == ns_stimulus.LAUNCHED) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            if (stimulus_type == ns_stimulus.CLASH) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
             }
         }
 
@@ -186,6 +188,11 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.VERT) {
 
+        // clash does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+        }
+
         // body responds to stimulus first
         if (opponent_state_index_has_progressed == 1) {
             if (stimulus_type == ns_stimulus.HURT) {
@@ -196,9 +203,6 @@ func _body_antoc {range_check_ptr}(
             }
             if (stimulus_type == ns_stimulus.LAUNCHED) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            if (stimulus_type == ns_stimulus.CLASH) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
             }
         }
 
@@ -701,6 +705,11 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.LOW_KICK) {
 
+        // clash does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+        }
+
         // body responds to stimulus first
         if (opponent_state_index_has_progressed == 1) {
             if (stimulus_type == ns_stimulus.HURT) {
@@ -711,9 +720,6 @@ func _body_antoc {range_check_ptr}(
             }
             if (stimulus_type == ns_stimulus.LAUNCHED) {
                 return ( body_state_nxt = BodyState(ns_antoc_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            if (stimulus_type == ns_stimulus.CLASH) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
             }
         }
 
@@ -823,10 +829,9 @@ func _body_antoc {range_check_ptr}(
     //
     if (state == ns_antoc_body_state.CYCLONE) {
 
-        if (opponent_state_index_has_progressed == 1) {
-            if (stimulus_type == ns_stimulus.CLASH) {
-                return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
+        // clash does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_antoc_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
         }
 
         // if counter is full => return to IDLE
