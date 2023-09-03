@@ -8,7 +8,7 @@ export default async function handler(req, res) {
         .collection(COLLECTION_NAME_PVP)
         .find({})
         .sort({ rank: 1 }) // sort by _id descending
-        .limit(50) // get 20 last tuple of agents
+        .limit(100) // get 20 last tuple of agents
         .toArray();
 
     res.status(200).json({ onlineOpponents: onlineOpponents });
