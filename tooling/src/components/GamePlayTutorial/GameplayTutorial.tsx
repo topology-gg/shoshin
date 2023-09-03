@@ -611,6 +611,7 @@ const GameplayTutorialScene = React.forwardRef(
                                                 isInView={true}
                                                 backgroundId={0}
                                                 volume={volume}
+                                                lives={[2, 2]}
                                             />
                                         </div>
                                     </div>
