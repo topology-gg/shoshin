@@ -21,7 +21,7 @@ interface SubmittingProps extends SubmitButtonProps {
     newMindName: string;
     newAuthorName: string;
 }
-const Submitting = ({
+export const SubmittingOnline = ({
     mind,
     username,
     handleLoaded,
@@ -46,6 +46,42 @@ const Submitting = ({
     );
 };
 
+export const OnlineSubmitButtonDialogContent = ({
+    newMindName,
+    setNewMindName,
+    newAuthorName,
+    setNewAuthorName,
+}) => {
+    return (
+        <div>
+            <DialogTitle>Agent name?</DialogTitle>
+            <DialogContent>
+                <input
+                    autoFocus
+                    type="text"
+                    id="name"
+                    placeholder={newMindName}
+                    style={{ width: '100%', marginTop: '1rem' }}
+                    value={newMindName}
+                    onChange={(event) => setNewMindName(event.target.value)}
+                />
+            </DialogContent>
+            <DialogTitle>Author name?</DialogTitle>
+            <DialogContent>
+                <input
+                    autoFocus
+                    type="text"
+                    id="name"
+                    placeholder={newAuthorName}
+                    style={{ width: '100%', marginTop: '1rem' }}
+                    value={newAuthorName}
+                    onChange={(event) => setNewAuthorName(event.target.value)}
+                />
+            </DialogContent>
+        </div>
+    );
+};
+
 const SubmitMindButton = ({ mind, username }: SubmitButtonProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [namingOpen, setNamingOpen] = useState<boolean>(false);
@@ -63,7 +99,7 @@ const SubmitMindButton = ({ mind, username }: SubmitButtonProps) => {
                     {!loading ? (
                         'Submit'
                     ) : (
-                        <Submitting
+                        <SubmittingOnline
                             mind={mind}
                             username={username}
                             handleLoaded={() => setLoading(false)}
@@ -74,34 +110,12 @@ const SubmitMindButton = ({ mind, username }: SubmitButtonProps) => {
                 </Button>
 
                 <Dialog open={namingOpen} onClose={() => setNamingOpen(false)}>
-                    <DialogTitle>Agent name?</DialogTitle>
-                    <DialogContent>
-                        <input
-                            autoFocus
-                            type="text"
-                            id="name"
-                            placeholder={mind.mindName}
-                            style={{ width: '100%', marginTop: '1rem' }}
-                            value={newMindName}
-                            onChange={(event) =>
-                                setNewMindName(event.target.value)
-                            }
-                        />
-                    </DialogContent>
-                    <DialogTitle>Author name?</DialogTitle>
-                    <DialogContent>
-                        <input
-                            autoFocus
-                            type="text"
-                            id="name"
-                            placeholder={username as string}
-                            style={{ width: '100%', marginTop: '1rem' }}
-                            value={newAuthorName}
-                            onChange={(event) =>
-                                setNewAuthorName(event.target.value)
-                            }
-                        />
-                    </DialogContent>
+                    <OnlineSubmitButtonDialogContent
+                        newMindName={newMindName}
+                        setNewMindName={setNewMindName}
+                        newAuthorName={newAuthorName}
+                        setNewAuthorName={setNewAuthorName}
+                    />
                     <DialogActions>
                         <Button
                             onClick={() => setNamingOpen(false)}

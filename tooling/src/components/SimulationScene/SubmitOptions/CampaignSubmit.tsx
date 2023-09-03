@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Opponent, SavedMind } from '../../../types/Opponent';
 import { useSubmitCampaignMind, useUpdateMind } from '../../../../lib/api';
 import {
+    Box,
     Button,
     CircularProgress,
     Dialog,
@@ -14,6 +15,11 @@ import {
 import ConnectWallet from '../../ConnectWallet';
 import { useAccount } from '@starknet-react/core';
 import { PlayerAgent } from '../../../types/Agent';
+import ShoshinMenuButton from '../../ui/ShoshinMenuButton';
+import {
+    OnlineSubmitButtonDialogContent,
+    SubmittingOnline,
+} from './MainSceneSubmit';
 
 interface CampaignSubmitButtonProps {
     mind: PlayerAgent;
@@ -47,10 +53,12 @@ const Submitting = ({
 };
 
 enum CampaignSubmitStage {
+    CHOOSE_SUBMIT,
     WALLET_AUTH,
     CONFIRM,
     LOADING,
     SUCCESS,
+    ONLINE_SUBMIT,
 }
 const CampaignSubmitButton = ({
     mind,
@@ -59,13 +67,23 @@ const CampaignSubmitButton = ({
 }: CampaignSubmitButtonProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [namingOpen, setNamingOpen] = useState<boolean>(false);
+    const [onlineDalogOpen, setOnlineDialogOpen] = useState<boolean>(false);
+    const [newMindName, setNewMindName] = useState<string>('');
+    const [newAuthorName, setNewAuthorName] = useState<string>('');
 
     const { address } = useAccount();
 
     const [stage, setStage] = useState<CampaignSubmitStage>(
-        !address ? CampaignSubmitStage.WALLET_AUTH : CampaignSubmitStage.CONFIRM
+        CampaignSubmitStage.CHOOSE_SUBMIT
     );
 
+    const handleCampaignSelect = () => {
+        setStage(
+            !address
+                ? CampaignSubmitStage.WALLET_AUTH
+                : CampaignSubmitStage.CONFIRM
+        );
+    };
     const handleLoaded = () => {
         setLoading(false);
         setStage(CampaignSubmitStage.SUCCESS);
@@ -73,11 +91,7 @@ const CampaignSubmitButton = ({
 
     const handleClose = () => {
         setNamingOpen(false);
-        setStage(
-            !address
-                ? CampaignSubmitStage.WALLET_AUTH
-                : CampaignSubmitStage.CONFIRM
-        );
+        setStage(CampaignSubmitStage.CHOOSE_SUBMIT);
     };
 
     useEffect(() => {
@@ -85,102 +99,180 @@ const CampaignSubmitButton = ({
             setStage(CampaignSubmitStage.CONFIRM);
         }
     }, [address]);
+
+    //@ts-ignore
+    const onlineVersion: SavedMind = {
+        agent: mind,
+        mindName: newMindName,
+        playerName: newAuthorName,
+        createdDate: Date.now().toString(),
+        rank: 9999999,
+    };
+
     return (
-        <Tooltip title={'Submit your mind to log your high score'}>
-            <div>
-                <Button
-                    variant="outlined"
-                    disabled={CampaignSubmitStage.LOADING == stage}
-                    onClick={() => setNamingOpen(true)}
-                >
-                    Submit
-                </Button>
+        <div>
+            <Button
+                variant="outlined"
+                disabled={CampaignSubmitStage.LOADING == stage}
+                onClick={() => setNamingOpen(true)}
+            >
+                Submit
+            </Button>
 
-                <Dialog
-                    open={namingOpen}
-                    onClose={() => setNamingOpen(false)}
-                    fullWidth
-                    maxWidth={'md'}
-                >
-                    {stage == CampaignSubmitStage.WALLET_AUTH && (
-                        <div>
-                            <DialogTitle>Connect StarkNet Wallet</DialogTitle>
-                            <DialogContent>
-                                {!address ? (
-                                    <ConnectWallet />
-                                ) : (
-                                    'Address ' + address
-                                )}
-                            </DialogContent>
-                        </div>
-                    )}
+            <Dialog
+                open={namingOpen}
+                onClose={handleClose}
+                fullWidth
+                maxWidth={'md'}
+            >
+                {stage == CampaignSubmitStage.CHOOSE_SUBMIT && (
+                    <div>
+                        <DialogTitle>Choose Submit</DialogTitle>
+                        <DialogContent>
+                            Choose where to submit the mind
+                            <Box display="flex">
+                                <ShoshinMenuButton
+                                    onClick={handleCampaignSelect}
+                                >
+                                    Campaign Leaderboard
+                                </ShoshinMenuButton>
+                                <ShoshinMenuButton
+                                    onClick={() => {
+                                        setStage(
+                                            CampaignSubmitStage.ONLINE_SUBMIT
+                                        );
+                                    }}
+                                >
+                                    Online{' '}
+                                </ShoshinMenuButton>
+                            </Box>
+                        </DialogContent>
+                    </div>
+                )}
 
-                    {stage == CampaignSubmitStage.CONFIRM && (
-                        <div>
-                            <DialogTitle>Submit Agent</DialogTitle>
-                            <DialogContent>
-                                Submitting as: {address} {'\n'}
-                                <Typography>
-                                    If you have already submitted a mind for
-                                    this opponent. Your highest score will be
-                                    reflected in the leaderboard.
-                                </Typography>
-                            </DialogContent>
-                        </div>
-                    )}
+                {stage == CampaignSubmitStage.ONLINE_SUBMIT && (
+                    <OnlineSubmitButtonDialogContent
+                        newMindName={newMindName}
+                        setNewMindName={setNewMindName}
+                        newAuthorName={newAuthorName}
+                        setNewAuthorName={setNewAuthorName}
+                    />
+                )}
 
-                    {stage == CampaignSubmitStage.LOADING && (
-                        <Submitting
-                            mind={mind}
-                            opponentIndex={opponentIndex}
-                            handleLoaded={handleLoaded}
-                            address={address}
-                        />
-                    )}
+                {stage == CampaignSubmitStage.WALLET_AUTH && (
+                    <div>
+                        <DialogTitle>Connect StarkNet Wallet</DialogTitle>
+                        <DialogContent>
+                            {!address ? (
+                                <ConnectWallet />
+                            ) : (
+                                'Address ' + address
+                            )}
+                        </DialogContent>
+                    </div>
+                )}
 
-                    {stage == CampaignSubmitStage.SUCCESS && (
-                        <div>
-                            <DialogTitle>Submit Agent</DialogTitle>
-                            <DialogContent>
-                                Mind submitted successfully!
-                            </DialogContent>
-                        </div>
-                    )}
+                {stage == CampaignSubmitStage.CONFIRM && (
+                    <div>
+                        <DialogTitle>Submit Agent</DialogTitle>
+                        <DialogContent>
+                            Submitting as: {address} {'\n'}
+                            <Typography>
+                                If you have already submitted a mind for this
+                                opponent. Your highest score will be reflected
+                                in the leaderboard.
+                            </Typography>
+                        </DialogContent>
+                    </div>
+                )}
 
-                    <DialogActions>
-                        {stage !== CampaignSubmitStage.SUCCESS && (
+                {stage == CampaignSubmitStage.LOADING && !loading && (
+                    <Submitting
+                        mind={mind}
+                        opponentIndex={opponentIndex}
+                        handleLoaded={handleLoaded}
+                        address={address}
+                    />
+                )}
+
+                {stage == CampaignSubmitStage.LOADING && loading && (
+                    <SubmittingOnline
+                        mind={onlineVersion}
+                        username={newAuthorName}
+                        handleLoaded={() => setLoading(false)}
+                        newMindName={newMindName}
+                        newAuthorName={newAuthorName}
+                    />
+                )}
+
+                {stage == CampaignSubmitStage.SUCCESS && (
+                    <div>
+                        <DialogTitle>Submit Agent</DialogTitle>
+                        <DialogContent>
+                            Mind submitted successfully!
+                        </DialogContent>
+                    </div>
+                )}
+
+                <DialogActions>
+                    {stage !== CampaignSubmitStage.SUCCESS &&
+                        stage !== CampaignSubmitStage.ONLINE_SUBMIT && (
                             <Button onClick={handleClose} color="primary">
                                 Cancel
                             </Button>
                         )}
 
-                        {stage == CampaignSubmitStage.CONFIRM && (
-                            <Button
-                                onClick={() => {
-                                    setStage(CampaignSubmitStage.LOADING);
-                                }}
-                                color="primary"
-                                variant="contained"
-                                disabled={!address}
-                            >
-                                Submit
-                            </Button>
-                        )}
+                    {stage == CampaignSubmitStage.CONFIRM && (
+                        <Button
+                            onClick={() => {
+                                setStage(CampaignSubmitStage.LOADING);
+                            }}
+                            color="primary"
+                            variant="contained"
+                            disabled={!address}
+                        >
+                            Submit
+                        </Button>
+                    )}
 
-                        {stage == CampaignSubmitStage.SUCCESS && (
-                            <Button
-                                onClick={handleClose}
-                                color="primary"
-                                variant="contained"
-                                disabled={!address}
-                            >
-                                Close
-                            </Button>
-                        )}
-                    </DialogActions>
-                </Dialog>
-            </div>
-        </Tooltip>
+                    {stage == CampaignSubmitStage.ONLINE_SUBMIT && (
+                        <div>
+                            <DialogActions>
+                                <Button
+                                    onClick={() =>
+                                        setStage(
+                                            CampaignSubmitStage.CHOOSE_SUBMIT
+                                        )
+                                    }
+                                    color="primary"
+                                >
+                                    Back
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        setLoading(true);
+                                        setStage(CampaignSubmitStage.LOADING);
+                                    }}
+                                    color="primary"
+                                    variant="contained"
+                                >
+                                    Confirm
+                                </Button>
+                            </DialogActions>
+                        </div>
+                    )}
+                    {stage == CampaignSubmitStage.SUCCESS && (
+                        <Button
+                            onClick={handleClose}
+                            color="primary"
+                            variant="contained"
+                        >
+                            Close
+                        </Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+        </div>
     );
 };
 
