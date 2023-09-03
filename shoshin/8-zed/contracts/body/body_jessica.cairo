@@ -143,16 +143,20 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.SLASH) {
 
+        // clash does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+        }
+
+        // attacker getting knocked does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+        }
+
         // body responds to stimulus first
         if (opponent_state_index_has_progressed == 1) {
             if (stimulus_type == ns_stimulus.HURT) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            if (stimulus_type == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            if (stimulus_type == ns_stimulus.CLASH) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
             }
             if (stimulus_type == ns_stimulus.LAUNCHED) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
@@ -184,16 +188,20 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.UPSWING) {
 
+        // clash does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+        }
+
+        // attacker getting knocked does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+        }
+
         // body responds to stimulus first
         if (opponent_state_index_has_progressed == 1) {
             if (stimulus_type == ns_stimulus.HURT) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            if (stimulus_type == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            if (stimulus_type == ns_stimulus.CLASH) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
             }
             if (stimulus_type == ns_stimulus.LAUNCHED) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
@@ -224,16 +232,20 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.SIDECUT) {
 
+        // clash does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+        }
+
+        // attacker getting knocked does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+        }
+
         // body responds to stimulus first
         if (opponent_state_index_has_progressed == 1) {
             if (stimulus_type == ns_stimulus.HURT) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            if (stimulus_type == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            if (stimulus_type == ns_stimulus.CLASH) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
             }
             if (stimulus_type == ns_stimulus.LAUNCHED) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
@@ -676,10 +688,9 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.GATOTSU) {
 
-        if (opponent_state_index_has_progressed == 1) {
-            if (stimulus_type == ns_stimulus.CLASH) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
+        // clash does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
         }
 
         // if counter is full => return to IDLE
@@ -696,16 +707,20 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.LOW_KICK) {
 
+        // clash does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.CLASH) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+        }
+
+        // attacker getting knocked does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+        }
+
         // body responds to stimulus first
         if (opponent_state_index_has_progressed == 1) {
             if (stimulus_type == ns_stimulus.HURT) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.HURT, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            if (stimulus_type == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
-            if (stimulus_type == ns_stimulus.CLASH) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.CLASH, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
             }
             if (stimulus_type == ns_stimulus.LAUNCHED) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
@@ -742,11 +757,12 @@ func _body_jessica {range_check_ptr}(
     //
     if (state == ns_jessica_body_state.BIRDSWING) {
 
+        // attacker getting knocked does not depend on opponent having progressed on state index
+        if (stimulus_type == ns_stimulus.KNOCKED) {
+            return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
+        }
+
         if (opponent_state_index_has_progressed == 1) {
-            // can be knocked
-            if (stimulus_type == ns_stimulus.KNOCKED) {
-                return ( body_state_nxt = BodyState(ns_jessica_body_state.KNOCKED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
-            }
             if (stimulus_type == ns_stimulus.LAUNCHED) {
                 return ( body_state_nxt = BodyState(ns_jessica_body_state.LAUNCHED, 0, updated_integrity, stamina, dir, FALSE, state_index+1, opponent_body_state_index) );
             }
