@@ -36,7 +36,7 @@ const MindPreview = ({ savedMinds, chooseMind }: CombinedMindListProps) => {
         }
     };
 
-    const { data: data } = useListMinds();
+    const { data: data } = useListMinds(undefined, undefined);
     const onlineOpponents = data?.onlineOpponents;
 
     return (
