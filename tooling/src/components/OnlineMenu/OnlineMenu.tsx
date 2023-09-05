@@ -25,6 +25,7 @@ import MindPreview from '../MindPreview/MindPreview';
 import PreviewAgainst from '../MindPreview/PreviewAgainst';
 import PreviewAgainstDialogue from '../MindPreview/PreviewAgainst';
 import { MatchFormat } from '../../constants/constants';
+import { SearchBar, SearchType } from './Search';
 
 interface OnlineMenuProps {
     transitionBack: () => void;
@@ -43,7 +44,12 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
     ) => {
         const [selectedOpponent, selectOpponent] = useState<number>(-1);
 
-        const { data: data } = useListMinds();
+        const [searchTerm, setSearchTerm] = useState<string>('');
+        const [searchType, setSearchType] = useState<SearchType>(
+            SearchType.MindName
+        );
+
+        const { data: data } = useListMinds(searchType, searchTerm);
         const onlineOpponents = data?.onlineOpponents;
 
         const handleChooseMind = (mind: SavedMind | OnlineOpponent) => {
@@ -127,6 +133,11 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
         }, []);
         const handleInputChange = (e) => {
             setUsername(e.target.value);
+        };
+
+        const handleSearch = (searchType: SearchType, searchTerm: string) => {
+            setSearchType(searchType);
+            setSearchTerm(searchTerm);
         };
 
         const mindAlreadySaved =
@@ -236,8 +247,10 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
                         <Typography variant="h3" gutterBottom>
                             Online Opponents
                         </Typography>
+                        <SearchBar onSearch={handleSearch} />
                         <Box
                             maxHeight={'60vh'}
+                            minHeight={'60vh'}
                             width={'100%'}
                             sx={{ overflowY: 'auto', marginBottom: '16px' }}
                         >

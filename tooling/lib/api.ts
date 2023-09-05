@@ -1,4 +1,5 @@
 import useSWR from 'swr';
+import { SearchType } from '../src/components/OnlineMenu/Search';
 
 //@ts-ignore
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
@@ -47,8 +48,17 @@ export function useUpdateMind(username, character, mindName, mind) {
     );
 }
 
-export function useListMinds() {
-    return useSWR('/api/minds/list', fetcher);
+export function useListMinds(searchType: SearchType, searchTerm: string) {
+    let url = '/api/minds/list';
+
+    if (searchType == SearchType.MindName && searchTerm.length) {
+        url += '?';
+        url += `mindName=${searchTerm}`;
+    } else if (searchType == SearchType.PlayerName && searchTerm.length) {
+        url += '?';
+        url += `playerName=${searchTerm}`;
+    }
+    return useSWR(url, fetcher);
 }
 
 async function getMindRequest(url) {
