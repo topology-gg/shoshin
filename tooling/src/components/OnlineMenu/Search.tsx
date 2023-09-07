@@ -45,38 +45,31 @@ export function SearchBar({ onSearch }) {
             m={'12px'}
             justifyContent={'center'}
         >
-            <FormControl variant="standard">
-                <Select
-                    value={searchType}
-                    onChange={handleSearchTypeSelect}
-                    label="Search Type"
-                    defaultValue={SearchType.MindName}
-                    variant="outlined"
-                    style={{ width: '30%', backgroundColor: 'white' }}
-                >
-                    <MenuItem value={SearchType.MindName}>Mind Name</MenuItem>
-                    <MenuItem value={SearchType.PlayerName}>Creator</MenuItem>
-                </Select>
+            <select
+                value={searchType}
+                onChange={handleSearchTypeSelect}
+                style={{ width: '30%', backgroundColor: 'white' }}
+            >
+                <option value="mindName">Mind Name</option>
+                <option value="playerName">Creator</option>
+            </select>
 
-                <input
-                    autoFocus
-                    style={{
-                        width: '50%',
-                        backgroundColor: 'white',
-                        borderWidth: '1px',
-                        borderColor: 'lightgrey',
-                        borderRadius: '5px',
-                    }}
-                    type="text"
-                    placeholder={`Search by ${
-                        searchType === SearchType.MindName
-                            ? 'Mind Name'
-                            : 'Creator'
-                    }`}
-                    value={searchTerm}
-                    onChange={handleSearchTerm}
-                />
-            </FormControl>
+            <input
+                autoFocus
+                style={{
+                    width: '50%',
+                    backgroundColor: 'white',
+                    borderWidth: '1px',
+                    borderColor: 'lightgrey',
+                    borderRadius: '5px',
+                }}
+                type="text"
+                placeholder={`Search by ${
+                    searchType === SearchType.MindName ? 'Mind Name' : 'Creator'
+                }`}
+                value={searchTerm}
+                onChange={handleSearchTerm}
+            />
             <Button
                 variant="contained"
                 color="primary"
