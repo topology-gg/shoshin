@@ -59,21 +59,21 @@ export function SearchBar({ onSearch }) {
                     <MenuItem value={SearchType.PlayerName}>Creator</MenuItem>
                 </Select>
             </FormControl>
-            <TextField
-                label={`Search by ${
+            <input
+                autoFocus
+                style={{
+                    width: '50%',
+                    backgroundColor: 'white',
+                    borderWidth: '1px',
+                    borderColor: 'lightgrey',
+                    borderRadius: '5px',
+                }}
+                type="text"
+                placeholder={`Search by ${
                     searchType === SearchType.MindName ? 'Mind Name' : 'Creator'
                 }`}
-                variant="outlined"
                 value={searchTerm}
                 onChange={handleSearchTerm}
-                style={{ width: '50%', backgroundColor: 'white' }}
-                inputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon />
-                        </InputAdornment>
-                    ),
-                }}
             />
             <Button
                 variant="contained"
