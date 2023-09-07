@@ -136,6 +136,7 @@ const OnlineMenu = React.forwardRef<HTMLDivElement, OnlineMenuProps>(
         };
 
         const handleSearch = (searchType: SearchType, searchTerm: string) => {
+            selectOpponent(-1);
             setSearchType(searchType);
             setSearchTerm(searchTerm);
         };
