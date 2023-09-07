@@ -45,20 +45,6 @@ export function SearchBar({ onSearch }) {
             m={'12px'}
             justifyContent={'center'}
         >
-            <FormControl
-                variant="outlined"
-                style={{ width: '30%', backgroundColor: 'white' }}
-            >
-                <Select
-                    value={searchType}
-                    onChange={handleSearchTypeSelect}
-                    label="Search Type"
-                    defaultValue={SearchType.MindName}
-                >
-                    <MenuItem value={SearchType.MindName}>Mind Name</MenuItem>
-                    <MenuItem value={SearchType.PlayerName}>Creator</MenuItem>
-                </Select>
-            </FormControl>
             <input
                 autoFocus
                 style={{
