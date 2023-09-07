@@ -45,22 +45,38 @@ export function SearchBar({ onSearch }) {
             m={'12px'}
             justifyContent={'center'}
         >
-            <input
-                autoFocus
-                style={{
-                    width: '50%',
-                    backgroundColor: 'white',
-                    borderWidth: '1px',
-                    borderColor: 'lightgrey',
-                    borderRadius: '5px',
-                }}
-                type="text"
-                placeholder={`Search by ${
-                    searchType === SearchType.MindName ? 'Mind Name' : 'Creator'
-                }`}
-                value={searchTerm}
-                onChange={handleSearchTerm}
-            />
+            <FormControl variant="standard">
+                <Select
+                    value={searchType}
+                    onChange={handleSearchTypeSelect}
+                    label="Search Type"
+                    defaultValue={SearchType.MindName}
+                    variant="outlined"
+                    style={{ width: '30%', backgroundColor: 'white' }}
+                >
+                    <MenuItem value={SearchType.MindName}>Mind Name</MenuItem>
+                    <MenuItem value={SearchType.PlayerName}>Creator</MenuItem>
+                </Select>
+
+                <input
+                    autoFocus
+                    style={{
+                        width: '50%',
+                        backgroundColor: 'white',
+                        borderWidth: '1px',
+                        borderColor: 'lightgrey',
+                        borderRadius: '5px',
+                    }}
+                    type="text"
+                    placeholder={`Search by ${
+                        searchType === SearchType.MindName
+                            ? 'Mind Name'
+                            : 'Creator'
+                    }`}
+                    value={searchTerm}
+                    onChange={handleSearchTerm}
+                />
+            </FormControl>
             <Button
                 variant="contained"
                 color="primary"
