@@ -492,20 +492,21 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 assert agent_action_0 = actions_0 [agent_state_0];
             }
             tempvar range_check_ptr = range_check_ptr;
+            tempvar pedersen_ptr = pedersen_ptr;
         } else {
             assert agent_action_0 = actions_0 [agent_state_0];
             assert gamma_0 = 0;
             assert new_seed_0 = prev_seed_0;
             tempvar range_check_ptr = range_check_ptr;
+            tempvar pedersen_ptr = pedersen_ptr;
         }
-
-        tempvar range_check_ptr = range_check_ptr;
     } else {
         assert agent_action_0 = actions_0 [agent_state_0];
         assert gamma_0 = 0;
         assert new_seed_0 = prev_seed_0;
 
         tempvar range_check_ptr = range_check_ptr;
+        tempvar pedersen_ptr = pedersen_ptr;
     }
 
     //
@@ -530,20 +531,23 @@ func _loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
                 assert agent_action_1 = actions_1 [agent_state_1];
             }
             tempvar range_check_ptr = range_check_ptr;
+            tempvar pedersen_ptr = pedersen_ptr;
         } else {
             assert agent_action_1 = actions_1 [agent_state_1];
             assert gamma_1 = 0;
             assert new_seed_1 = prev_seed_0;
             tempvar range_check_ptr = range_check_ptr;
+            tempvar pedersen_ptr = pedersen_ptr;            
         }
-
-        tempvar range_check_ptr = range_check_ptr;
+        
+          
     } else {
         assert agent_action_1 = actions_1 [agent_state_1];
         assert gamma_1 = 0;
         assert new_seed_1 = prev_seed_0;
 
         tempvar range_check_ptr = range_check_ptr;
+        tempvar pedersen_ptr = pedersen_ptr;      
     }
 
     //

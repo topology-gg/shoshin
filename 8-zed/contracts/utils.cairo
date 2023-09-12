@@ -68,14 +68,14 @@ func sum_arr{range_check_ptr}(len: felt, sum: felt, arr: felt*) -> felt {
 // Get hard-to-predict values as pseudorandom number
 // Credit: @eth_worm at https://github.com/dopedao/RYO/blob/main/contracts/GameEngineV1.cairo
 //
-func get_prn {hash_ptr: HashBuiltin*, range_check_ptr} (
+func get_prn {pedersen_ptr: HashBuiltin*, range_check_ptr} (
     old_seed: felt,
     entropy : felt
 ) -> (
     new_seed : felt
 ){
     alloc_locals;
-    let (hash_ptr: HashBuiltin*) = alloc();
+    let (pedersen_ptr: HashBuiltin*) = alloc();
     // Seed is fed to linear congruential generator.
     // seed = (multiplier * seed + increment) % modulus.
     // Params from GCC. (https://en.wikipedia.org/wiki/Linear_congruential_generator).
@@ -89,12 +89,12 @@ func get_prn {hash_ptr: HashBuiltin*, range_check_ptr} (
     if (entropy == 0){
         return (new_seed = new_seed_);
     } else {
-        let (new_seed) = hash2 {hash_ptr=hash_ptr} (new_seed_, entropy);
+        let (new_seed) = hash2 {hash_ptr=pedersen_ptr} (new_seed_, entropy);
         return (new_seed = new_seed);
     }
 }
 
-func get_prn_mod {hash_ptr: HashBuiltin*, range_check_ptr} (
+func get_prn_mod {pedersen_ptr: HashBuiltin*, range_check_ptr} (
     old_seed: felt,
     entropy : felt,
     mod : felt,

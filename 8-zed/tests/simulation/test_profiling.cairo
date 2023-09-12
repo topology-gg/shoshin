@@ -52,6 +52,12 @@ func test_simulation{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
     local actions_len_1: felt;
     let (local actions_1) = alloc();
 
+    local actions_alternatives_0_len: felt;
+    let (local actions_alternatives_0) = alloc();
+
+    local action_probabilities_len: felt;
+    let (local action_probabilities) = alloc();
+
     %{
         from starkware.cairo.lang.vm.memory_segments import MemorySegmentManager
         memory_segments = MemorySegmentManager(memory, PRIME)
@@ -76,6 +82,8 @@ func test_simulation{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
         ids.functions_offsets_len_0 = len(functions_offsets_0)
         ids.functions_len_0 = len(functions_0)
         ids.actions_len_0 = len(actions_0)
+        ids.actions_alternatives_0_len = len(actions_0)
+        ids.action_probabilities_len = len(actions_0)
 
         memory_segments.write_arg(ids.combos_offset_0, combos_offset_0);
         memory_segments.write_arg(ids.combos_0, combos_0);
@@ -84,6 +92,8 @@ func test_simulation{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
         memory_segments.write_arg(ids.functions_offsets_0, functions_offsets_0);
         memory_segments.write_arg(ids.functions_0, flatten_function_0);
         memory_segments.write_arg(ids.actions_0, actions_0);
+        memory_segments.write_arg(ids.actions_alternatives_0, actions_0);
+        memory_segments.write_arg(ids.action_probabilities, [0] * len(actions_0));
 
         (
             combos_offset_1,
@@ -119,7 +129,7 @@ func test_simulation{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
     let tree_state_machine_1 = cast(state_machine_1, Tree*);
     let tree_functions_0 = cast(functions_0, Tree*);
     let tree_functions_1 = cast(functions_1, Tree*);
-
+    
     loop(
         120, 
         combos_offset_len_0, 
@@ -152,6 +162,16 @@ func test_simulation{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
         actions_0, 
         actions_len_1, 
         actions_1, 
+        actions_alternatives_0,
+        actions_alternatives_0_len,
+        actions_alternatives_0,
+        actions_alternatives_0_len,
+        action_probabilities_len,
+        action_probabilities,
+        action_probabilities_len,
+        action_probabilities,
+        10,
+        11,
         1, 
         0
     );
