@@ -1,0 +1,522 @@
+// Placeholder functions to check compilation, will be replaced.
+
+/*
+Code structure:
+euler_forward_pos_no_hitbox: changes physics state per character state: move, dash, or Knocked
+- euler_forward_vel_no_hitbox: changes velocity per accelaration, no cap check
+- euler_forward_pos_no_hitbox: changes position per velocity, no cap check
+- cap_fp: checks limit of the scene border
+- 
+*/
+
+use core::traits::PartialEq;
+use core::traits::PartialOrd;
+
+const GRAVITY_ACC_FP: u128 = 0_u128;
+const DT_FP: u128 = 0_u128;
+const SCALE_FP: u128 = 0_u128;
+const X_MAX: u128 = 0_u128;
+const Y_MIN: u128 = 0_u128;
+
+fn abs_value(x: u128) -> u128 {
+    if (x < 0_u128) {
+        -x
+    } else {
+        x
+    }
+}
+
+// Placeholder end.
+
+enum CharacterType {
+    Antoc: (),
+    Jessica: (),
+}
+
+#[derive(Copy, Drop)]
+struct Vec2 {
+    x: u128,
+    y: u128,
+}
+
+struct PhysicsState {
+    pos: Vec2,
+    vel_fp: Vec2,
+    acc_fp: Vec2,
+}
+
+trait PhysicsStateTrait {
+    fn update_pos(ref self: PhysicsState, vel_fp_next: Vec2, acc_fp_next: Vec2) -> PhysicsState;
+    //fn move(ref self: PhysicsState) -> PhysicsState;
+    //fn dash(ref self: PhysicsState) -> PhysicsState;
+}
+
+impl PhysicsStateImpl of PhysicsStateTrait {
+    fn update_pos(
+        ref self: PhysicsState,
+        vel_fp_next: Vec2,
+        acc_fp_next: Vec2,
+    ) -> PhysicsState {
+        // euler_forward_pos_no_hitbox
+        let delta_pos_x = vel_fp_next.x * DT_FP / SCALE_FP;
+        let delta_pos_y = vel_fp_next.y * DT_FP / SCALE_FP;
+        
+        PhysicsState{
+            pos: Vec2{x: self.pos.x + delta_pos_x, y: self.pos.y + delta_pos_y},
+            vel_fp: vel_fp_next,
+            acc_fp: acc_fp_next,
+        }
+    }
+}
+
+trait CharacterPhysics<T> {
+    fn move_with_acc(acc: Vec2) -> T;
+    fn move_with
+
+    // Dynamics related constants
+    fn MAX_VEL_MOVE_FP() -> u128;
+    fn MIB_VEL_MOVE_FP() -> u128;
+
+    fn MAX_VEL_DASH_FP() -> u128;
+    fn MIN_VEL_DASH_FP() -> u128;
+
+    fn MOVE_ACC_FP() -> u128;
+    fn DASH_ACC_FP() -> u128;
+
+    fn DASH_VEL_FP() -> u128; // TODO
+
+    fn KNOCK_VEL_X_FP() -> u128;
+    fn KNOCK_VEL_Y_FP() -> u128;
+
+    fn DEACC_FP() -> u128;
+
+    // Dimension related constants
+    fn BODY_KNOCKED_ADJUST_W() -> u128;
+    // TODO
+
+    // Action related constants
+    // TODO
+
+    // Stamina effects related constants
+    // TODO
+
+    // Body state related constants
+    // TODO
+
+    //
+
+    // common body state getters
+    fn is_in_move_forward(ref self: T) -> bool;
+    fn is_in_move_backward(ref self: T) -> bool;
+    fn is_in_dash_forward(ref self: T) -> bool;
+    fn is_in_dash_backward(ref self: T) -> bool;
+    fn is_in_knocked(ref self: T) -> bool;
+
+    // dir() should return either 1 or -1.
+    fn dir(ref self: T) -> u128;
+    fn counter(ref self: T) -> u128;
+}
+
+#[derive(PartialEq, Copy, Drop)]
+enum AntocBodyState {
+    Idle: (),
+    Hori: (),
+    Vert: (),
+    Block: (),
+    Hurt: (),
+    Knocked: (),
+    MoveForward: (),
+    MoveBackward: (),
+    DashForward: (),
+    DashBackward: (),
+}
+
+#[derive(Copy, Drop)]
+struct Antoc {
+    body_state: AntocBodyState,
+    dir: u128,
+    counter: u128,
+}
+
+impl AntocPhysics of CharacterPhysics::<Antoc> {
+    // Dynamics
+    // Note: https://github.com/starkware-libs/cairo/pull/2563
+    fn MAX_VEL_MOVE_FP() -> u128 {
+        100_u128 * SCALE_FP
+    }
+    fn MIN_VEL_MOVE_FP() -> u128 {
+        (-100_u128) * SCALE_FP
+    }
+
+    fn MAX_VEL_DASH_FP() -> u128 {
+        900_u128 * SCALE_FP
+    }
+    fn MIN_VEL_DASH_FP() -> u128 {
+        (-900_u128) * SCALE_FP
+    }
+
+    fn DASH_VEL_FP() -> u128 {
+        0_u128 // TODO
+    }
+
+    fn MOVE_ACC_FP() -> u128 {
+        300_u128 * SCALE_FP
+    }
+    fn DASH_ACC_FP() -> u128 {
+        900_u128 * SCALE_FP
+    }
+
+    fn KNOCK_VEL_X_FP() -> u128 {
+        150_u128 * SCALE_FP
+    }
+    fn KNOCK_VEL_Y_FP() -> u128 {
+        400_u128 * SCALE_FP
+    }
+
+    fn DEACC_FP() -> u128 {
+        10000_u128 * SCALE_FP
+    }
+
+    // Dimension
+
+    fn BODY_KNOCKED_ADJUST_W() -> u128 {
+        0_u128 // TODO // Self::BODY_KNOCKED_LATE_HITBOX_W - Self::BODY_HITBOX_W;
+    }
+
+    // body state
+    fn is_in_move_forward(ref self: Antoc) -> bool {
+        self.body_state == AntocBodyState::MoveForward(())
+    }
+
+    fn is_in_move_backward(ref self: Antoc) -> bool {
+        self.body_state == AntocBodyState::MoveBackward(())
+    }
+
+    fn is_in_dash_forward(ref self: Antoc) -> bool {
+        self.body_state == AntocBodyState::DashForward(())
+    }
+
+    fn is_in_dash_backward(ref self: Antoc) -> bool {
+        self.body_state == AntocBodyState::DashBackward(())
+    }
+
+    fn is_in_knocked(ref self: Antoc) -> bool {
+        self.body_state == AntocBodyState::Knocked(())
+    }
+
+    fn dir(ref self: Antoc) -> u128 {
+        self.dir
+    }
+
+    fn counter(ref self: Antoc) -> u128 {
+        self.counter
+    }
+}
+
+// update_vel updates the velocity with the given accelaration.
+// Returns the updated velocity.
+fn update_vel(
+    vel_fp: Vec2,
+    acc_fp: Vec2,
+    max_vel: Vec2,
+    min_vel: Vec2,
+) -> Vec2 {
+    euler_forward_vel_no_hitbox(
+        vel_fp, 
+        acc_fp,
+        max_vel,
+        min_vel,
+    )
+}
+
+fn update_vel_move<C, impl Physics: CharacterPhysics::<C>>(
+    vel_fp: Vec2,
+    acc_fp_x: u128,
+    acc_fp_y: u128,
+) -> Vec2 {
+    euler_forward_vel_no_hitbox(
+        vel_fp,
+        Vec2{x: acc_fp_x, y: acc_fp_y},
+        Physics::MAX_VEL_MOVE_FP(),
+        Physics::MIN_VEL_MOVE_FP(),
+    )
+}
+
+fn update_vel_knocked<C, impl Physics: CharacterPhysics::<C>>(
+    vel_fp: Vec2,
+    acc_fp_x: u128,
+    acc_fp_y: u128,
+) -> Vec2 {
+    euler_forward_vel_no_hitbox(
+        vel_fp,
+        Vec2{x: acc_fp_x, y: acc_fp_y},
+        Physics::MAX_VEL_DASH_FP(),
+        Physics::MIN_VEL_DASH_FP(),
+    );
+}
+
+fn euler_forward_no_hitbox<C, impl Physics: CharacterPhysics::<C>>(mut character: C, physics_state: PhysicsState) -> PhysicsState {
+    // TODO: cap logic not yet added
+
+    if (character.is_in_move_forward()) {
+        let acc_fp_x = character.dir() * Physics::MOVE_ACC_FP();
+        let acc_fp_y = 0_u128;
+        physics_state.update_with_acc(Vec2{x: acc_fp_x, y: acc_fp_y})
+        /*
+        let vel_fp_next = update_vel(physics_state.vel_fp, acc_fp_x, acc_fp_y, Physics::MAX_VEL_MOVE_FP(), Physics::MIN_VEL_MOVE_FP);
+        let pos_next = update_pos(physics_state.pos, vel_fp_next);
+        return PhysicsState {
+            pos: pos_next,
+            vel_fp: vel_fp_next,
+            acc_fp: Vec2{ x: acc_fp_x, y: acc_fp_y },
+        };
+        */
+    }
+    
+    if (character.is_in_move_backward()) {
+        let acc_fp_x = character.dir() * Physics::MOVE_ACC_FP() * (-1);
+        let acc_fp_y = 0_u128;
+        physics_state.update_with_acc(Vec2{x: acc_fp_x, y: acc_fp_y})
+        /*
+        let vel_fp_next = update_vel(physics_state.vel_fp, acc_fp_x, acc_fp_y, Physics::MAX_VEL_MOVE_FP(), MIN_VEL_MOVE_FP());
+        let pos_next = update_pos(physics_state.pos, vel_fp_next);
+        return PhysicsState {
+            pos: pos_next,
+            vel_fp: vel_fp_next,
+            acc_fp: Vec2{ x: acc_fp_x, y: acc_fp_y },
+        };
+        */
+    } 
+    
+    if (character.is_in_dash_forward()) {
+        let vel = character.dir() * Physics::DASH_VEL_FP();
+        let vel_fp_next = if (character.counter() == 1_u128) {
+            Vec2{x: vel, y: 0_u128}
+        } else {
+            Vec2{x: 0_u128, y: 0_u128}
+        };
+        physics_state.update_with_vel_no_acc(vel_fp_next)
+        /*
+
+        let acc_fp_x = 0_u128;
+        let acc_fp_y = 0_u128;
+        let pos_next = update_pos(physics_state.pos, vel_fp_next);
+        return PhysicsState {
+            pos: pos_next,
+            vel_fp: vel_fp_next,
+            acc_fp: Vec2{ x: acc_fp_x, y: acc_fp_y },
+        };
+        */
+    } 
+    
+    if (character.is_in_dash_backward()) {
+        let vel = character.dir() * Physics::DASH_VEL_FP() * (-1);
+        let vel_fp_next = if (character.counter() == 1_u128) {
+            Vec2{x: vel, y: 0_u128}
+        } else {
+            Vec2{x: 0_u128, y: 0_u128}
+        };
+        physics_state.update_with_vel_no_acc(vel_fp_next)
+        /*
+        let acc_fp_x = 0_u128;
+        let acc_fp_y = 0_u128;
+        physics_state.update(vel_fp_next, Vec2{x: 0_u128, y: 0_u128})
+        */
+    }
+
+    if (character.is_in_knocked()) {
+        if (character.counter() == 0_u128) {
+            let vel_fp_y = Physics::KNOCK_VEL_Y_FP();
+            let vel_fp_x = character.dir() * Physics::KNOCK_VEL_X_FP() * (-1);
+            physics_state.update_with_vel_no_acc(Vec2{x: vel_fp_x, y: vel_fp_y})
+        } else {
+            if (character.counter() == 0) {
+                physics_state.vel_fp.x = 0_u128;
+            }
+            physics_state.update_with_acc(Vec2{x: 0_u128, y: GRAVITY_ACC_FP})
+        };
+        /*
+        let vel_next = update_vel(physics_state.vel_fp, acc_fp_x, acc_fp_y, Physics::MAX_VEL_MOVE_FP(), Physics::MIN_VEL_MOVE_FP());
+        let pos_next = update_pos(physics_state.pos, vel_next);
+        return PhysicsState {
+            pos: pos_next,
+            vel_fp: vel_next,
+            acc_fp: Vec2{ x: acc_fp_x, acc_fp_y },
+        };
+        */
+    }
+
+    else {
+        return PhysicsState {
+            pos: physics_state.pos,
+            vel_fp: Vec2{x: 0_u128, y: 0_u128},
+            acc_fp: Vec2{x: 0_u128, y: 0_u128},
+        };
+    }
+
+    // TODO
+}
+
+fn euler_forward_vel_no_hitbox(
+    vel_fp: Vec2, acc_fp: Vec2, max_vel_x_fp: u128, min_vel_x_fp: u128
+) -> Vec2 {
+    let delta_vel_x = mul_fp(acc_fp.x, DT_FP);
+    let delta_vel_y = mul_fp(acc_fp.y, DT_FP);
+
+    let vel_fp_next_x = cap_fp(vel_fp.x + delta_vel_x, max_vel_x_fp, min_vel_x_fp);
+    let vel_fp_next_y = vel_fp.y + delta_vel_y;
+
+    return Vec2{x: vel_fp_next_x, y: vel_fp_next_y};
+}
+
+fn cap_fp(x_fp: u128, max_fp: u128, min_fp: u128) -> u128 {
+    // TODO: comparison may need importing corelib traits
+    if (max_fp < x_fp) {
+        return max_fp;
+    }
+
+    if (x_fp < min_fp) {
+        return min_fp;
+    }
+
+    return x_fp;
+}
+
+fn is_cap_fp(x_fp: u128, max_fp: u128, min_fp: u128) -> bool {
+    true // TODO
+}
+
+fn euler_forward_consider_hitbox(
+    physics_state_0: PhysicsState,
+    physics_state_cand_0: PhysicsState,
+    physics_state_1: PhysicsState,
+    physics_state_cand_1: PhysicsState,
+    body_dim_0: Vec2,
+    body_dim_1: Vec2,
+    body_overlap: bool,
+    agent_0_ground: bool,
+    agent_1_ground: bool,
+    agent_0_knocked: bool,
+    agent_1_knocked: bool,
+) -> (PhysicsState, PhysicsState) {
+    let mut y_0_ground_handled: u128 = 0_u128;
+    let mut y_1_ground_handled: u128 = 0_u128;
+    let mut vy_fp_0_ground_handled: u128 = 0_u128;
+    let mut vy_fp_1_ground_handled: u128 = 0_u128;
+
+    if (agent_0_ground) {
+        y_0_ground_handled = 0_u128;
+        vy_fp_0_ground_handled = 0_u128;
+    } else {
+        y_0_ground_handled = physics_state_cand_0.pos.y;
+        vy_fp_0_ground_handled = physics_state_cand_0.vel_fp.y
+    }
+
+    if (!body_overlap) {
+        let physics_state_fwd_0 = PhysicsState {
+            pos: Vec2{x: physics_state_cand_0.pos.x, y: y_0_ground_handled},
+            vel_fp: Vec2{x: physics_state_cand_0.vel_fp.x, y: vy_fp_0_ground_handled},
+            acc_fp: physics_state_cand_0.acc_fp,
+        };
+
+        let physics_state_fwd_1 = PhysicsState {
+            pos: Vec2{x: physics_state_cand_1.pos.x, y: y_1_ground_handled},
+            vec_fp: Vec2{x: physics_state_cand_1}
+        };
+    }
+
+    //
+    // Handle X component only in case body-body overlaps
+    // Back the character bodies off from candidate positions using reversed candidate velocities;
+    //
+
+    let mut move_0: u128 = 0_u128;
+    let mut move_1: u128 = 0_u128;
+    let mut abs_relative_vx_fp: u128 = 0_u128;
+
+    if (is_cap_fp(physics_state_cand_0.pos.x, X_MAX, ns_scene.X_MIN)) {
+        move_0 = 0_u128;
+        move_1 = 1_u128;
+        abs_relative_vx_fp = abs_value(physics_state_cand_1.vel_fp.x);
+    } else if (is_cap_fp(physics_state_cand_1.pos.x, X_MAX, X_MIN)) {
+        move_0 = 1_u128;
+        move_1 = 0_u128;
+        abs_relative_vx_fp = abs_value(physics_state_cand_0.vel_fp.x);
+    } else {
+        move_0 = 1_u128;
+        move_1 = 1_u128;
+        abs_relative_vx_fp = abs_value(physics_state_cand_1.vel_fp.x)
+    }
+
+    let mut direction: u128 = 0_u128;
+
+    // note: body_dim_i contains the current body dimension
+    // fix direction of backoff based on how agents are placed
+    // TODO: comparison needs traits
+    if (physics_state_1.pos.x > physics_state_0.pos.x) {
+        abs_distance = body_dim_0.x - (physics_state_cand_1.pos.x - physics_state_cand_0.pos.x);
+        direction = -1;
+    } else {
+        abs_distance = body_dim_1.x - (physics_state_cand_0.pos.x - physics_state_cand_1.pox.x);
+        direction = 1_u128;
+    }
+
+    // abs(physics_state_cand_0.vel_fp.x) = sign_vx_cand_0 * physics_state_cand_0.vel_fp.x;
+    // direction = -1 if 1 to the right of 0 else 1 
+    let vx_fp_cand_reversed_0: u128 = direction * sign_vx_cand_0 * physics_state_cand_0.vel_fp.x;
+    let vx_fp_cand_reversed_1: u128 = (-direction) * sign_vx_cand_1 * physics_state_cand_1.vel_fp.x;
+    let abs_distance_fp_fp = abs_distance * SCALE_FP * SCALE_FP;
+
+    let mut back_off_x_0_scaled: u128 = 0_u128;
+    let mut back_off_x_1_scaled: u128 = 0_u128;
+
+    // avoid division by 0 if abs_relative_vx_fp == 0_u128 
+    // use direction in order to set the sign for back_off_x_i_scaled
+    if (abs_relative_vx_fp == 0_u128) {
+        let abs_distance_fp_half = abs_distance_fp_fp / 2;
+        back_off_x_0_scaled = (direction) * abs_distance_fp_half * (2 * move_0 - move_1);
+        let back_off_x_1_scaled = (-direction) * abs_distance_fp_half * (2 * move_1 - move_0);
+    } else {
+        let time_required_to_separate_fp = unsigned_div_rem(abs_distance_fp_fp, abs_relative_vx_fp);
+        back_off_x_0_scaled = vx_fp_cand_reversed_0 * time_required_to_separate_fp;
+        back_off_x_1_scaled = vx_fp_cand_reversed_1 * time_required_to_separate_fp;
+    }
+
+    let back_off_x_0 = signed_div_rem(
+        back_off_x_0_scaled,
+        SCALE_FP * SCALE_FP,
+        RANGE_CHECK_BOUND,
+    );
+
+    let back_off_x_1 = signed_div_rem(
+        back_off_x_1_scaled,
+        SCALE_FP * SCALE_FP,
+        RANGE_CHECK_BOUND,
+    );
+
+    let mut vx_fp_0_final: u128 = 0_u128;
+    let mut vx_fp_1_final: u128 = 1_u128;
+    if (agent_0_knocked) {
+        vx_fp_0_final = physics_state_cand_0.vel_fp.x;
+    } else {
+        vx_fp_0_final = 0_u128;
+    }
+    if (agent_1_knocked) {
+        vx_fp_1_final = physics_state_cand_1.vel_fp.x;
+    } else {
+        vx_fp_1_final = 0_u128;
+    }
+
+    let physics_state_fwd_0: PhysicsState = PhysicsState {
+        pos: Vec2{x: x_0, y: y_0_ground_handled},
+        vel_fp: Vec2{x: vx_fp_0_final, y: vy_fp_0_ground_handled},
+        acc_fp: physics_state_cand_0.acc_fp,
+    };
+    let physics_state_fwd_1: PhysicsState = PhysicsState {
+        pos: Vec2{x: x_1, y: y_1_ground_handled},
+        vel_fp: Vec2{x: vx_fp_1_final, y: vy_fp_1_ground_handled},
+        acc_fp: physics_state_cand_1.acc_fp,
+    };
+
+    return (physics_state_fwd_0, physics_state_fwd_1);
+}
