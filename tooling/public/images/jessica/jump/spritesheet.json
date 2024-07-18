@@ -1,0 +1,135 @@
+{
+	"frames": {
+		"frame_0.png": {
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 135,
+				"h": 146
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 135,
+				"h": 146
+			},
+			"sourceSize": {
+				"w": 135,
+				"h": 146
+			}
+		},
+		"frame_1.png": {
+			"frame": {
+				"x": 136,
+				"y": 1,
+				"w": 135,
+				"h": 146
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 135,
+				"h": 146
+			},
+			"sourceSize": {
+				"w": 135,
+				"h": 146
+			}
+		},
+        "frame_2.png": {
+			"frame": {
+				"x": 271,
+				"y": 1,
+				"w": 135,
+				"h": 146
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 135,
+				"h": 146
+			},
+			"sourceSize": {
+				"w": 135,
+				"h": 146
+			}
+		},
+        "frame_3.png": {
+			"frame": {
+				"x": 406,
+				"y": 1,
+				"w": 135,
+				"h": 146
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 135,
+				"h": 146
+			},
+			"sourceSize": {
+				"w": 135,
+				"h": 146
+			}
+		},
+        "frame_4.png": {
+			"frame": {
+				"x": 541,
+				"y": 1,
+				"w": 135,
+				"h": 146
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 135,
+				"h": 146
+			},
+			"sourceSize": {
+				"w": 135,
+				"h": 146
+			}
+		},
+        "frame_5.png": {
+			"frame": {
+				"x": 676,
+				"y": 1,
+				"w": 135,
+				"h": 146
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 135,
+				"h": 146
+			},
+			"sourceSize": {
+				"w": 135,
+				"h": 146
+			}
+		}
+	},
+	"meta": {
+		"app": "https://codeshack.io/images-sprite-sheet-generator/",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 945,
+			"h": 146
+		},
+		"scale": "1"
+	}
+}

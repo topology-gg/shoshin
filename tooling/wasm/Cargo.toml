@@ -1,0 +1,9 @@
+[workspace]
+
+members = [
+    "shoshin",
+    "cairo_derive",
+    "cairo_execution",
+    "cairo_types",
+    "condition_eval",
+]

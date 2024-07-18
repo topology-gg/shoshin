@@ -1,0 +1,155 @@
+{
+	"frames": {
+        "frame_0.png": {
+			"frame": {
+				"x": 206,
+				"y": 1,
+				"w": 205,
+				"h": 167
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 205,
+				"h": 167
+			},
+			"sourceSize": {
+				"w": 205,
+				"h": 167
+			}
+		},
+        "frame_1.png": {
+			"frame": {
+				"x": 411,
+				"y": 1,
+				"w": 205,
+				"h": 167
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 205,
+				"h": 167
+			},
+			"sourceSize": {
+				"w": 205,
+				"h": 167
+			}
+		},
+        "frame_2.png": {
+			"frame": {
+				"x": 616,
+				"y": 1,
+				"w": 205,
+				"h": 167
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 205,
+				"h": 167
+			},
+			"sourceSize": {
+				"w": 205,
+				"h": 167
+			}
+		},
+        "frame_3.png": {
+			"frame": {
+				"x": 821,
+				"y": 1,
+				"w": 205,
+				"h": 167
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 205,
+				"h": 167
+			},
+			"sourceSize": {
+				"w": 205,
+				"h": 167
+			}
+		},
+        "frame_4.png": {
+			"frame": {
+				"x": 1026,
+				"y": 1,
+				"w": 205,
+				"h": 167
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 205,
+				"h": 167
+			},
+			"sourceSize": {
+				"w": 205,
+				"h": 167
+			}
+		},
+        "frame_5.png": {
+			"frame": {
+				"x": 1231,
+				"y": 1,
+				"w": 205,
+				"h": 167
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 205,
+				"h": 167
+			},
+			"sourceSize": {
+				"w": 205,
+				"h": 167
+			}
+		},
+        "frame_6.png": {
+			"frame": {
+				"x": 1436,
+				"y": 1,
+				"w": 205,
+				"h": 167
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 205,
+				"h": 167
+			},
+			"sourceSize": {
+				"w": 205,
+				"h": 167
+			}
+		}
+	},
+	"meta": {
+		"app": "https://codeshack.io/images-sprite-sheet-generator/",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 1640,
+			"h": 167
+		},
+		"scale": "1"
+	}
+}

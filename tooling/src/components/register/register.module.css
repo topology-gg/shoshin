@@ -1,0 +1,23 @@
+/*
+    Cropping the shoshin splash image to fit better
+    https://stackoverflow.com/questions/41092973/crop-image-from-the-top
+
+*/
+.imageContainer {
+    overflow: hidden;
+    height: 300px;
+    width: 600px;
+    max-height: 300px;
+    position: relative;
+    margin-top: 20px;
+    border: 1px solid lightgrey;
+}
+
+.splashImage {
+    display: block;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    bottom: 0;
+    
+}

@@ -1,0 +1,114 @@
+.gambitButton {
+    /* margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+    margin-left: 0.2rem;
+    margin-right: 0.2rem; */
+    height: 2rem;
+    padding: 4px;
+    border: 2px solid #333;
+    border-radius: 14px;
+}
+.gambitButton {
+    cursor: pointer;
+}
+.gambitLeftHalfButton {
+    font-family: Raleway;
+    vertical-align: middle;
+    border: 2px solid #333;
+    border-radius: 14px 0 0 14px;
+    height: 2.2rem;
+    cursor: pointer;
+}
+.gambitLeftHalfButton {
+    cursor: default;
+}
+
+.invertPositive {
+    background-color: #2faa79;
+}
+.invertPositive:hover {
+    background-color: #2faa7999;
+}
+.invertNegative {
+    background-color: #ab3031;
+}
+.invertNegative:hover {
+    background-color: #ab303199;
+}
+
+.gambitRightHalfButton {
+    font-family: Raleway;
+    font-size: 13px;
+    vertical-align: middle;
+    padding: 0 0 0 8px;
+    border-top: 2px solid #333;
+    border-right: 2px solid #333;
+    border-bottom: 2px solid #333;
+    border-left: none;
+    height: 2.2rem;
+    border-radius: 0px 14px 14px 0px;
+    cursor: pointer;
+}
+
+.probabilityButton{
+    font-size: 11px;
+    color: #000;
+    background-color: #ffffff;
+}
+.probabilityButton:hover{
+    background-color: #e5e5e5;
+}
+.probabilityButton:disabled{
+    color: #000000;
+    cursor: default;
+}
+
+.mentalStateButton {
+    background-color: #ffa0bf;
+}
+.mentalStateButton:hover {
+    background-color: #ffcedf;
+}
+
+.conditionButton {
+    /* background-color: #afdbf5; */
+    background-color: #ffffff;
+}
+
+.invertedConditionButton {
+    /* background-color: white;
+    color: #78c7f6;
+    border: 1px #78c7f6 solid; */
+    background-color: #ffffff;
+}
+
+.conditionButton:hover {
+    background-color: #e5e5e5;
+}
+.conditionButton:disabled {
+    cursor: default;
+}
+
+.actionButton {
+    /* background-color: #a8e4a0; */
+    background-color: #ffffff;
+
+    font-family: Eurostile;
+    font-size: 13px;
+    padding: 8px 14px;
+    line-height: 9px;
+    width: 7rem;
+}
+.actionButton:hover {
+    /* background-color: #a8e4a088; */
+    background-color: #e5e5e5;
+}
+
+.actionButton:disabled {
+    color: #000000;
+    cursor: default;
+}
+
+.actionMenuItem:hover{
+    background-color: #555555;
+}

@@ -1,0 +1,10 @@
+.backgroundVideo {
+    position: fixed;
+    top: 10%;
+    left: 25%;
+    width: 50%;
+    height: 100%;
+    z-index: 1;
+    mix-blend-mode: multiply;
+    opacity: 0.5;
+}

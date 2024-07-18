@@ -1,0 +1,389 @@
+@font-face {
+    font-family: 'Raleway';
+    src: url('./fonts/Raleway/Raleway-Regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Raleway';
+    src: url('./fonts/Raleway/Raleway-Bold.ttf') format('truetype');
+    font-weight: bold;
+}
+@font-face {
+    font-family: 'Raleway';
+    src: url('./fonts/Raleway/Raleway-Italic.ttf') format('truetype');
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Raleway';
+    src: url('./fonts/Raleway/Raleway-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Oswald';
+    src: url('./fonts/Oswald/Oswald-VariableFont_wght.ttf') format('truetype');
+    font-variation-settings: 'wght' 400;
+}
+
+@font-face {
+    font-family: 'HVDPoster';
+    src: url('./fonts/HVD_Poster_PC/HVD_Poster.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Eurostile';
+    src: url('./fonts/Eurostile/Eurostile.ttf') format('truetype');
+}
+
+* {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+    font-family: Eurostile, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+        Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
+        sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+p {
+    font-size: 0.75rem;
+}
+
+input {
+    font-family: menlo;
+}
+
+.button {
+    font-family: menlo;
+    font-size: 0.75rem;
+    margin-right: 3px;
+    height: 1.5rem;
+    border: 1px solid #333333;
+    border-radius: 3px;
+}
+.button:hover {
+    background-color: #fffe71;
+    cursor: pointer;
+}
+
+#submit-button {
+    font-family: menlo;
+    font-size: 0.75rem;
+    margin-right: 3px;
+    height: 1.75rem;
+    border: 1px solid #333333;
+    border-radius: 3px;
+    background: #ffffff url('../public/rsz_1starknet_icon.png') no-repeat;
+    background-position: 93% 50%;
+    padding-right: 1.6rem;
+}
+#submit-button:hover {
+    background-color: #2ee59d;
+    cursor: pointer;
+    color: '#fff';
+    transition: 'background 0.2s, color 0.2s';
+}
+
+.grid {
+    display: flex;
+    font-size: 0.2em;
+    margin: 0.2rem;
+    padding: 0rem;
+    width: 1rem;
+    height: 1rem;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    color: inherit;
+    cursor: default;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: color 0.15s ease, border-color 0.15s ease;
+    max-width: 300px;
+}
+
+.grid:hover {
+    outline-width: 1px;
+    outline-style: dashed;
+    outline-color: #63e2ff88;
+}
+
+.machine {
+    background-color: #0070f3;
+}
+
+.mech_open {
+    border: 1px solid #ffffff;
+}
+
+.mech_close {
+    border: 1px solid #ff7a00;
+}
+
+.atom_free {
+    background-color: #da2c43;
+}
+
+.atom_possessed {
+    background-color: #ff6347;
+}
+
+.leaderboard_row {
+    width: 8rem;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.solution_row:hover {
+    background-color: #fffe71;
+    cursor: pointer;
+}
+
+.stardisc {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+.stardisc:hover {
+    background-color: #fffe71;
+    cursor: pointer;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    color-scheme: light;
+}
+/* body {
+    color: black;
+    background: white;
+} */
+
+li {
+    font-size: 0.75rem;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+/* source for styling range input below:
+https://stackoverflow.com/questions/18389224/how-to-style-html5-range-input-to-have-different-color-before-and-after-slider */
+/*Chrome*/
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    input[type='range'] {
+        overflow: hidden;
+        width: 40px;
+        -webkit-appearance: none;
+        background-color: #cccccc;
+        border-radius: 5px;
+    }
+
+    input[type='range']::-webkit-slider-runnable-track {
+        height: 10px;
+        -webkit-appearance: none;
+        color: #98c0bb;
+        /* margin-top: -1px; */
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+        width: 10px;
+        -webkit-appearance: none;
+        height: 10px;
+        cursor: ew-resize;
+        background: #2d4249;
+        border-radius: 5px;
+    }
+    input[type='range']:disabled::-webkit-slider-thumb {
+        cursor: default;
+        background: #999999;
+    }
+}
+/** FF*/
+input[type='range']::-moz-range-progress {
+    /* background-color: #43e5f7; */
+    background-color: #eeeeee;
+}
+input[type='range']::-moz-range-track {
+    /* background-color: #9a905d; */
+    background-color: #eeeeee;
+}
+/* IE*/
+input[type='range']::-ms-fill-lower {
+    /* background-color: #43e5f7; */
+    background-color: #eeeeee;
+}
+input[type='range']::-ms-fill-upper {
+    /* background-color: #9a905d; */
+    background-color: #eeeeee;
+}
+
+/*
+@media (prefers-color-scheme: light) {
+  html {
+    color-scheme: light;
+  }
+  body {
+    color: black;
+    background: white;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    color: white;
+    background: black;
+  }
+} */
+
+:root {
+    --font-family-secondary: Raleway, Menlo, Monaco, Lucida Console,
+        Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New,
+        monospace;
+}
+
+/* ref: https://alvarotrigo.com/blog/css-highlight-text/ */
+strong {
+    position: relative;
+}
+strong::before {
+    /* Highlight color */
+    background-color: #fffe71;
+
+    content: '';
+    position: absolute;
+    width: calc(100% + 4px);
+    height: 60%;
+    left: -2px;
+    bottom: 0;
+    z-index: -1;
+    transform: rotate(-5deg);
+}
+
+input::placeholder {
+    opacity: 0.5;
+}
+
+.result {
+    font-size: 12px;
+    margin-right: 0.5rem;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.unit {
+    display: flex;
+    font-size: 0.75em;
+    position: relative;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.05s ease, border-color 0.05s ease;
+    color: #bbbbbb;
+}
+
+/* from Cairo:
+
+    namespace ns_antoc_body_state {
+        const IDLE = 0;      // 5 frames
+        const HORI = 10;     // 7 frames
+        const VERT = 20;  // 10 frames
+        const BLOCK = 40;    // 6 frames
+        const HURT = 50;     // 3 frames
+        const KNOCKED = 60;  // 20 frames
+        const MOVE_FORWARD = 90;  // 7 frames
+        const MOVE_BACKWARD = 100;  // 6 frames
+        const DASH_FORWARD = 110;  // 9 frames
+        const DASH_BACKWARD = 120;  // 9 frames
+    }
+
+    namespace ns_jessica_body_state {
+        const IDLE = 0; // 5 frames
+        const SLASH = 10; // 5 frames
+        const UPSWING = 20;  // 5 frames
+        const SIDECUT = 30;  // 5 frames
+        const BLOCK = 40; // 3 frames
+        const CLASH = 50; // 4 frames;
+        const HURT = 60; // 3 frames
+        const KNOCKED = 70; // 11 frames
+        const MOVE_FORWARD = 90;  // 8 frames
+        const MOVE_BACKWARD = 100;  // 6 frames
+        const DASH_FORWARD = 110;  // 5 frames
+        const DASH_BACKWARD = 120;  // 5 frames
+    }
+
+    */
+
+#simulator-background {
+    background: #ffffff00 url('../public/images/bg/shoshin-bg-white-long.png')
+        no-repeat;
+    background-size: cover;
+    background-position: bottom;
+    /* Render the bg image and the sprites as pixelated images */
+    image-rendering: pixelated;
+}
+
+th,
+td {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+}
+.actionButton:hover {
+    background-color: #a8e4a088;
+}
+
+.comboActionDiv {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    min-width: 1rem;
+    width: 100%;
+    margin-right: 0.3rem;
+    padding: 0.3rem;
+    border: 1px solid #ccc;
+    border-radius: 0.8rem;
+    transition-duration: 50ms;
+    cursor: pointer;
+    background-color: #eee;
+}
+.comboActionDiv:hover {
+    background-color: #f8f8f8;
+}
+
+.overlay-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+.elevated {
+    z-index: 3;
+    position: relative;
+}
+.hoverable:hover {
+    cursor: pointer;
+}
