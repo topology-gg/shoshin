@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: apibara
+      MONGO_INITDB_ROOT_PASSWORD: apibara
+    ports:
+    - 27017:27017
+    volumes:
+    - mongo-data:/data/db
+
+  indexer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    command:
+    - start
+    - --mongo-url
+    - "mongodb://apibara:apibara@mongo:27017"
+    - --server-url 
+    - "goerli.starknet.a5a.ch"
+    environment:
+      PYTHONUNBUFFERED: "1"
+    links:
+    - mongo
+
+volumes:
+  mongo-data:
