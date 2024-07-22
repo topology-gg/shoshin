@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "jsx": "preserve"
+    },
+    "include": ["/src/test/**/*.test.ts", "/src/euler.ts"],
+    "exclude": [
+        "node_modules"
+    ]
+  }
